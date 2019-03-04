@@ -1,0 +1,8 @@
+NETStandard.Library
+
+Microsoft.Extensions.Configuration
+Microsoft.Extensions.Configuration.FileExtensions
+Microsoft.Extensions.Configuration.Json
+
+Structurizr.Core
+Structurizr.Client

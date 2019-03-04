@@ -1,0 +1,25 @@
+type file
+version 1.0.0
+
+id Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Legacy
+title Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Legacy
+
+authors Basisregisters.Vlaanderen
+owners Vlaamse overheid
+copyright Copyright (c) Vlaamse overheid
+requireLicenseAcceptance false
+projectUrl https://vlaanderen.be/informatie-vlaanderen
+
+description Address Registry.
+
+files
+  AddressRegistry.Api.Legacy.dll => lib\netcoreapp2.2
+  AddressRegistry.Api.Legacy.pdb => lib\netcoreapp2.2
+  AddressRegistry.Api.Legacy.xml => lib\netcoreapp2.2
+  AddressRegistry.Api.Legacy.xml => content
+
+  AddressRegistry.Projections.Legacy.dll => lib\netcoreapp2.2
+  AddressRegistry.Projections.Legacy.pdb => lib\netcoreapp2.2
+
+  AddressRegistry.dll => lib\netcoreapp2.2
+  AddressRegistry.pdb => lib\netcoreapp2.2

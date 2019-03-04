@@ -1,0 +1,22 @@
+type file
+version 1.0.0
+
+id Be.Vlaanderen.Basisregisters.AddressRegistry.Api.CrabImport
+title Be.Vlaanderen.Basisregisters.AddressRegistry.Api.CrabImport
+
+authors Basisregisters.Vlaanderen
+owners Vlaamse overheid
+copyright Copyright (c) Vlaamse overheid
+requireLicenseAcceptance false
+projectUrl https://vlaanderen.be/informatie-vlaanderen
+
+description Address Registry.
+
+files
+  AddressRegistry.Api.CrabImport.dll => lib\netcoreapp2.2
+  AddressRegistry.Api.CrabImport.pdb => lib\netcoreapp2.2
+  AddressRegistry.Api.CrabImport.xml => lib\netcoreapp2.2
+  AddressRegistry.Api.CrabImport.xml => content
+
+  AddressRegistry.dll => lib\netcoreapp2.2
+  AddressRegistry.pdb => lib\netcoreapp2.2

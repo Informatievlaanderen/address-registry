@@ -1,0 +1,42 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="AddressRegistry.Importer.HouseNumber.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="ImportEndpoint" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">v1/crabimport</Value>
+    </Setting>
+    <Setting Name="HttpTimeoutInMinutes" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">5</Value>
+    </Setting>
+    <Setting Name="NrOfProducers" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="BufferSize" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="NrOfConsumers" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="BatchSize" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="TimeMargin" Type="System.TimeSpan" Scope="Application">
+      <Value Profile="(Default)">00:05:00</Value>
+    </Setting>
+    <Setting Name="LastRunDate" Type="System.DateTime" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="EndDateRecovery" Type="System.DateTime" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="BaseUrl" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://localhost:1093</Value>
+    </Setting>
+    <Setting Name="ImportAuthUserName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ImportAuthPassword" Type="System.String" Scope="Application">
+      <Value Profile="(Default)" />
+    </Setting>
+  </Settings>
+</SettingsFile>

@@ -1,0 +1,26 @@
+type file
+version 1.0.0
+
+id Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Extract
+title Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Extract
+
+authors Basisregisters.Vlaanderen
+owners Vlaamse overheid
+copyright Copyright (c) Vlaamse overheid
+requireLicenseAcceptance false
+projectUrl https://vlaanderen.be/informatie-vlaanderen
+
+description Address Registry.
+
+dependencies
+  framework: netstandard20
+    Be.Vlaanderen.Basisregisters.Shaperon >= LOCKEDVERSION
+
+files
+  AddressRegistry.Api.Extract.dll => lib\netcoreapp2.2
+  AddressRegistry.Api.Extract.pdb => lib\netcoreapp2.2
+  AddressRegistry.Api.Extract.xml => lib\netcoreapp2.2
+  AddressRegistry.Api.Extract.xml => content
+
+  AddressRegistry.Projections.Extract.dll => lib\netcoreapp2.2
+  AddressRegistry.Projections.Extract.pdb => lib\netcoreapp2.2

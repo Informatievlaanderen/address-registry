@@ -11,7 +11,7 @@ namespace AddressRegistry.Projections.Syndication.Municipality
         MunicipalityNisCodeWasCorrected,
         MunicipalityOfficialLanguageWasAdded,
         MunicipalityOfficialLanguageWasRemoved,
-        MunicipalityFacilitiesLanuageWasAdded,
-        MunicipalityFacilitiesLanuageWasRemoved,
+        MunicipalityFacilitiesLanguageWasAdded,
+        MunicipalityFacilitiesLanguageWasRemoved,
     }
 }

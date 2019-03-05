@@ -18,8 +18,8 @@ namespace AddressRegistry.Projections.Syndication.Municipality
             When(MunicipalityEvent.MunicipalityNameWasCleared, AddSyndicationItemEntry);
             When(MunicipalityEvent.MunicipalityNameWasCorrected, AddSyndicationItemEntry);
             When(MunicipalityEvent.MunicipalityNameWasCorrectedToCleared, AddSyndicationItemEntry);
-            When(MunicipalityEvent.MunicipalityOfficialLanuageWasAdded, AddSyndicationItemEntry);
-            When(MunicipalityEvent.MunicipalityOfficialLanuageWasRemoved, AddSyndicationItemEntry);
+            When(MunicipalityEvent.MunicipalityOfficialLanguageWasAdded, AddSyndicationItemEntry);
+            When(MunicipalityEvent.MunicipalityOfficialLanguageWasRemoved, AddSyndicationItemEntry);
         }
 
         private static async Task AddSyndicationItemEntry(AtomEntry<Municipality> entry, SyndicationContext context, CancellationToken ct)

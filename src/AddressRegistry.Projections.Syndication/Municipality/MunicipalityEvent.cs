@@ -9,8 +9,8 @@ namespace AddressRegistry.Projections.Syndication.Municipality
         MunicipalityNameWasCorrectedToCleared,
         MunicipalityNisCodeWasDefined,
         MunicipalityNisCodeWasCorrected,
-        MunicipalityOfficialLanuageWasAdded,
-        MunicipalityOfficialLanuageWasRemoved,
+        MunicipalityOfficialLanguageWasAdded,
+        MunicipalityOfficialLanguageWasRemoved,
         MunicipalityFacilitiesLanuageWasAdded,
         MunicipalityFacilitiesLanuageWasRemoved,
     }

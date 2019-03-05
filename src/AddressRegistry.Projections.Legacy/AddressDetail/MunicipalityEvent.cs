@@ -9,9 +9,9 @@ namespace AddressRegistry.Projections.Legacy.AddressDetail
         MunicipalityNameWasCorrectedToCleared,
         MunicipalityNisCodeWasDefined,
         MunicipalityNisCodeWasCorrected,
-        MunicipalityOfficialLanuageWasAdded,
-        MunicipalityOfficialLanuageWasRemoved,
-        MunicipalityFacilitiesLanuageWasAdded,
-        MunicipalityFacilitiesLanuageWasRemoved,
+        MunicipalityOfficialLanguageWasAdded,
+        MunicipalityOfficialLanguageWasRemoved,
+        MunicipalityFacilitiesLanguageWasAdded,
+        MunicipalityFacilitiesLanguageWasRemoved,
     }
 }

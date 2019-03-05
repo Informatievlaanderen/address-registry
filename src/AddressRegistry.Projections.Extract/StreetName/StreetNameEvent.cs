@@ -14,7 +14,7 @@ namespace AddressRegistry.Projections.Extract.StreetName
         StreetNameNameWasCleared,
         StreetNameNameWasCorrected,
         StreetNameNameWasCorrectedToCleared,
-        StreetNameNameWasNamed,
+        StreetNameWasNamed,
 
         StreetNameOsloIdWasAssigned,
 

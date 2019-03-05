@@ -17,7 +17,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
             When(StreetNameEvent.StreetNameNameWasCleared, AddSyndicationItemEntry);
             When(StreetNameEvent.StreetNameNameWasCorrected, AddSyndicationItemEntry);
             When(StreetNameEvent.StreetNameNameWasCorrectedToCleared, AddSyndicationItemEntry);
-            When(StreetNameEvent.StreetNameNameWasNamed, AddSyndicationItemEntry);
+            When(StreetNameEvent.StreetNameWasNamed, AddSyndicationItemEntry);
 
             When(StreetNameEvent.StreetNamePrimaryLanguageWasCleared, AddSyndicationItemEntry);
             When(StreetNameEvent.StreetNamePrimaryLanguageWasCorrected, AddSyndicationItemEntry);

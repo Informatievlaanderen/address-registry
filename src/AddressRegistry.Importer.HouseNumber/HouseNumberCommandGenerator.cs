@@ -23,8 +23,8 @@ namespace AddressRegistry.Importer.HouseNumber
 
         public HouseNumberCommandGenerator(string vbrConnectionString)
         {
-            _osloIdCommands =
-                new Lazy<ILookup<int, AssignOsloIdForCrabHouseNumberId>>(() => GetOsloCommandsToPost(vbrConnectionString).ToLookup(x => (int) x.HouseNumberId, x => x));
+            _osloIdCommands = new Lazy<ILookup<int, AssignOsloIdForCrabHouseNumberId>>(() =>
+                GetOsloCommandsToPost(vbrConnectionString).ToLookup(x => (int) x.HouseNumberId, x => x));
         }
 
         public IEnumerable<int> GetChangedKeys(DateTime from,
@@ -61,48 +61,52 @@ namespace AddressRegistry.Importer.HouseNumber
             DateTime until)
         {
             var importHouseNumberCommands = new List<ImportHouseNumberFromCrab>();
-            List<ImportHouseNumberFromCrab> importHouseNumberHistCommands;
-            List<ImportHouseNumberStatusFromCrab> importHouseNumberStatusCommands;
-            List<ImportHouseNumberStatusFromCrab> importHouseNumberStatusHistCommands;
-            List<ImportHouseNumberPositionFromCrab> importHouseNumberPositionCommands;
-            List<ImportHouseNumberPositionFromCrab> importHouseNumberPositionHistCommands;
-            List<ImportHouseNumberMailCantonFromCrab> importHouseNumberMailCantonCommands;
-            List<ImportHouseNumberMailCantonFromCrab> importHouseNumberMailCantonHistCommands;
 
-            //using (var context = new CRABEntities())
-            {
-                var tblHuisNummerByHuisnummerIdTask = Task.Run(() => RunOnContext(context => AdresHuisnummerQueries.GetTblHuisNummerByHuisnummerId(huisnummerId, context)));
-                var importHouseNumberHistCommandsTask = Task.Run(() =>
-                    RunOnContext(context => CrabHouseNumberMapper.Map(AdresHuisnummerQueries.GetTblHuisNummerHistByHuisnummerId(huisnummerId, context)).ToList()));
-                var importHouseNumberStatusCommandsTask = Task.Run(() =>
-                    RunOnContext(context => CrabHouseNumberStatusMapper.Map(AdresHuisnummerQueries.GetTblHuisnummerstatussenByHuisnummerId(huisnummerId, context)).ToList()));
-                var importHouseNumberStatusHistCommandsTask = Task.Run(() => RunOnContext(context =>
-                    CrabHouseNumberStatusMapper.Map(AdresHuisnummerQueries.GetTblHuisnummerstatussenHistByHuisnummerId(huisnummerId, context)).ToList()));
-                var importHouseNumberPositionCommandsTask = Task.Run(() =>
-                    RunOnContext(context => CrabHouseNumberPositionMapper.Map(AdresHuisnummerQueries.GetTblAdresPositiesByHuisnummerId(huisnummerId, context)).ToList()));
-                var importHouseNumberPositionHistCommandsTask = Task.Run(() =>
-                    RunOnContext(context => CrabHouseNumberPositionMapper.Map(AdresHuisnummerQueries.GetTblAdresPositiesHistByHuisnummerId(huisnummerId, context)).ToList()));
-                var importHouseNumberMailCantonCommandsTask = Task.Run(() => RunOnContext(context =>
-                    CrabHouseNumberMailCantonMapper.Map(AdresHuisnummerQueries.GetTblHuisnummerPostkantonsByHuisnummerId(huisnummerId, context)).ToList()));
-                var importHouseNumberMailCantonHistCommandsTask = Task.Run(() => RunOnContext(context =>
-                    CrabHouseNumberMailCantonMapper.Map(AdresHuisnummerQueries.GetTblHuisnummerPostKantonsHistByHuisnummerId(huisnummerId, context)).ToList()));
+            var tblHuisNummerByHuisnummerIdTask = Task.Run(() => RunOnContext(context =>
+                AdresHuisnummerQueries.GetTblHuisNummerByHuisnummerId(huisnummerId, context)));
 
-                Task.WaitAll(tblHuisNummerByHuisnummerIdTask, importHouseNumberHistCommandsTask, importHouseNumberStatusCommandsTask,
-                    importHouseNumberStatusHistCommandsTask, importHouseNumberPositionCommandsTask, importHouseNumberPositionHistCommandsTask,
-                    importHouseNumberMailCantonCommandsTask, importHouseNumberMailCantonHistCommandsTask);
+            var importHouseNumberHistCommandsTask = Task.Run(() => RunOnContext(context =>
+                CrabHouseNumberMapper.Map(AdresHuisnummerQueries.GetTblHuisNummerHistByHuisnummerId(huisnummerId, context)).ToList()));
 
-                var tblHuisNummerByHuisnummerId = tblHuisNummerByHuisnummerIdTask.Result;
-                if (tblHuisNummerByHuisnummerId != null)
-                    importHouseNumberCommands = new List<ImportHouseNumberFromCrab> {CrabHouseNumberMapper.Map(tblHuisNummerByHuisnummerId)};
+            var importHouseNumberStatusCommandsTask = Task.Run(() => RunOnContext(context =>
+                CrabHouseNumberStatusMapper.Map(AdresHuisnummerQueries.GetTblHuisnummerstatussenByHuisnummerId(huisnummerId, context)).ToList()));
 
-                importHouseNumberHistCommands = importHouseNumberHistCommandsTask.Result;
-                importHouseNumberStatusCommands = importHouseNumberStatusCommandsTask.Result;
-                importHouseNumberStatusHistCommands = importHouseNumberStatusHistCommandsTask.Result;
-                importHouseNumberPositionCommands = importHouseNumberPositionCommandsTask.Result;
-                importHouseNumberPositionHistCommands = importHouseNumberPositionHistCommandsTask.Result;
-                importHouseNumberMailCantonCommands = importHouseNumberMailCantonCommandsTask.Result;
-                importHouseNumberMailCantonHistCommands = importHouseNumberMailCantonHistCommandsTask.Result;
-            }
+            var importHouseNumberStatusHistCommandsTask = Task.Run(() => RunOnContext(context =>
+                CrabHouseNumberStatusMapper.Map(AdresHuisnummerQueries.GetTblHuisnummerstatussenHistByHuisnummerId(huisnummerId, context)).ToList()));
+
+            var importHouseNumberPositionCommandsTask = Task.Run(() => RunOnContext(context =>
+                CrabHouseNumberPositionMapper.Map(AdresHuisnummerQueries.GetTblAdresPositiesByHuisnummerId(huisnummerId, context)).ToList()));
+
+            var importHouseNumberPositionHistCommandsTask = Task.Run(() => RunOnContext(context =>
+                CrabHouseNumberPositionMapper.Map(AdresHuisnummerQueries.GetTblAdresPositiesHistByHuisnummerId(huisnummerId, context)).ToList()));
+
+            var importHouseNumberMailCantonCommandsTask = Task.Run(() => RunOnContext(context =>
+                CrabHouseNumberMailCantonMapper.Map(AdresHuisnummerQueries.GetTblHuisnummerPostkantonsByHuisnummerId(huisnummerId, context)).ToList()));
+
+            var importHouseNumberMailCantonHistCommandsTask = Task.Run(() => RunOnContext(context =>
+                CrabHouseNumberMailCantonMapper.Map(AdresHuisnummerQueries.GetTblHuisnummerPostKantonsHistByHuisnummerId(huisnummerId, context)).ToList()));
+
+            Task.WaitAll(
+                tblHuisNummerByHuisnummerIdTask,
+                importHouseNumberHistCommandsTask,
+                importHouseNumberStatusCommandsTask,
+                importHouseNumberStatusHistCommandsTask,
+                importHouseNumberPositionCommandsTask,
+                importHouseNumberPositionHistCommandsTask,
+                importHouseNumberMailCantonCommandsTask,
+                importHouseNumberMailCantonHistCommandsTask);
+
+            var tblHuisNummerByHuisnummerId = tblHuisNummerByHuisnummerIdTask.Result;
+            if (tblHuisNummerByHuisnummerId != null)
+                importHouseNumberCommands = new List<ImportHouseNumberFromCrab> {CrabHouseNumberMapper.Map(tblHuisNummerByHuisnummerId)};
+
+            var importHouseNumberHistCommands = importHouseNumberHistCommandsTask.Result;
+            var importHouseNumberStatusCommands = importHouseNumberStatusCommandsTask.Result;
+            var importHouseNumberStatusHistCommands = importHouseNumberStatusHistCommandsTask.Result;
+            var importHouseNumberPositionCommands = importHouseNumberPositionCommandsTask.Result;
+            var importHouseNumberPositionHistCommands = importHouseNumberPositionHistCommandsTask.Result;
+            var importHouseNumberMailCantonCommands = importHouseNumberMailCantonCommandsTask.Result;
+            var importHouseNumberMailCantonHistCommands = importHouseNumberMailCantonHistCommandsTask.Result;
 
             var commandsByHouseNumber = importHouseNumberCommands
                 .Concat(importHouseNumberHistCommands)
@@ -134,21 +138,18 @@ namespace AddressRegistry.Importer.HouseNumber
                 .ThenBy(x => x.Item2)
                 .ThenBy(x => x.Item3);
 
-            foreach (var adresCommand in adresCommands)
-                commands.Add(adresCommand.Item1);
+            commands.AddRange(adresCommands.Select(adresCommand => adresCommand.Item1));
 
             return commands;
         }
 
-        private T RunOnContext<T>(Func<CRABEntities, T> query)
+        private static T RunOnContext<T>(Func<CRABEntities, T> query)
         {
             using (var context = new CRABEntities())
-            {
                 return query(context);
-            }
         }
 
-        private IEnumerable<AssignOsloIdForCrabHouseNumberId> GetOsloCommandsToPost(string connectionString)
+        private static IEnumerable<AssignOsloIdForCrabHouseNumberId> GetOsloCommandsToPost(string connectionString)
         {
             using (var connection = new SqlConnection(connectionString))
             {

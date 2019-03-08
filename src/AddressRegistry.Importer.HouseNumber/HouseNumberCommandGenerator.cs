@@ -27,7 +27,8 @@ namespace AddressRegistry.Importer.HouseNumber
                 GetOsloCommandsToPost(vbrConnectionString).ToLookup(x => (int) x.HouseNumberId, x => x));
         }
 
-        public IEnumerable<int> GetChangedKeys(DateTime from,
+        public IEnumerable<int> GetChangedKeys(
+            DateTime from,
             DateTime until) => CrabQueries.GetChangedHuisnummerIdsBetween(from, until).Distinct();
 
         public IEnumerable<dynamic> GenerateInitCommandsFor(

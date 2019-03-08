@@ -23,7 +23,8 @@ namespace AddressRegistry.Importer.Subaddress
 
         public SubaddressCommandGenerator(string vbrConnectionString)
         {
-            _osloIdCommands = new Lazy<ILookup<int, AssignOsloIdForCrabSubaddressId>>(() => GetOsloCommandsToPost(vbrConnectionString).ToLookup(x => (int) x.SubaddressId, x => x));
+            _osloIdCommands = new Lazy<ILookup<int, AssignOsloIdForCrabSubaddressId>>(() =>
+                GetOsloCommandsToPost(vbrConnectionString).ToLookup(x => (int)x.SubaddressId, x => x));
         }
 
         public IEnumerable<int> GetChangedKeys(
@@ -55,7 +56,9 @@ namespace AddressRegistry.Importer.Subaddress
             return crabCommands;
         }
 
-        protected List<dynamic> CreateCommandsInOrder(ImportMode importMode, int id,
+        protected List<dynamic> CreateCommandsInOrder(
+            ImportMode importMode,
+            int id,
             DateTime from,
             DateTime until)
         {
@@ -74,7 +77,7 @@ namespace AddressRegistry.Importer.Subaddress
             {
                 var importSubaddressFromCrab = AdresSubadresQueries.GetTblSubadresBySubadresId(id, context);
                 if (importSubaddressFromCrab != null)
-                    importSubaddressCommands = new List<ImportSubaddressFromCrab> {CrabSubaddressMapper.Map(importSubaddressFromCrab)};
+                    importSubaddressCommands = new List<ImportSubaddressFromCrab> { CrabSubaddressMapper.Map(importSubaddressFromCrab) };
 
                 importSubaddressHistCommands = CrabSubaddressMapper.Map(AdresSubadresQueries.GetTblSubadresHistBySubadresId(id, context)).ToList();
 
@@ -84,9 +87,9 @@ namespace AddressRegistry.Importer.Subaddress
                 importSubaddressPositionCommands = CrabSubaddressPositionMapper.Map(AdresSubadresQueries.GetTblAdrespositiesBySubadresId(id, context)).ToList();
                 importSubaddressPositionHistCommands = CrabSubaddressPositionMapper.Map(AdresSubadresQueries.GetTblAdrespositiesHistBySubadresId(id, context)).ToList();
 
-                var allHouseNumbers = importSubaddressHistCommands.Select(x => (int) x.HouseNumberId).ToList();
+                var allHouseNumbers = importSubaddressHistCommands.Select(x => (int)x.HouseNumberId).ToList();
                 if (importSubaddressFromCrab != null)
-                    allHouseNumbers.Add((int) importSubaddressCommands.First().HouseNumberId);
+                    allHouseNumbers.Add((int)importSubaddressCommands.First().HouseNumberId);
 
                 allHouseNumbers = allHouseNumbers.Distinct().ToList();
 
@@ -106,6 +109,7 @@ namespace AddressRegistry.Importer.Subaddress
 
                 importHouseNumberSubaddressCommandsHist =
                     CrabSubaddressHouseNumberMapper.Map(AdresHuisnummerQueries.GetTblHuisNummerHistByHuisnummerIds(allHouseNumbers, context), id).ToList();
+
                 importSubaddressMailCantonCommandsHist =
                     CrabSubaddressMailCantonMapper.GetCommandsFor(AdresHuisnummerQueries.GetTblHuisnummerPostKantonHistsByHuisnummerIds(allHouseNumbers, context),
                         id).ToList();
@@ -136,20 +140,22 @@ namespace AddressRegistry.Importer.Subaddress
             var addressCommands = allSubaddressCommands
                 .Where(x => x.Item1.Timestamp > from.ToCrabInstant() && x.Item1.Timestamp <= until.ToCrabInstant());
 
-            if (importMode == ImportMode.Update
-            ) //if an update changes the subaddress' house number, make sure the commands for that house number are also sent
+            if (importMode == ImportMode.Update) //if an update changes the subaddress' house number, make sure the commands for that house number are also sent
             {
                 var houseNumbersForUpdate = importSubaddressCommands
                     .Concat(importSubaddressHistCommands)
                     .Where(x => x.Timestamp > from.ToCrabInstant() && x.Timestamp <= until.ToCrabInstant())
                     .Select(x => x.HouseNumberId).ToList();
+
                 if (houseNumbersForUpdate.Any())
                 {
                     var houseNumbersBeforeUpdate = importSubaddressCommands
                         .Concat(importSubaddressHistCommands)
                         .Where(x => x.Timestamp <= from.ToCrabInstant())
                         .Select(x => x.HouseNumberId).ToList();
+
                     var newHouseNumbers = houseNumbersForUpdate.Except(houseNumbersBeforeUpdate);
+
                     foreach (var newHouseNumber in newHouseNumbers)
                     {
                         addressCommands = addressCommands.Concat(allSubaddressCommands.Except(addressCommands).Where(x =>
@@ -171,16 +177,16 @@ namespace AddressRegistry.Importer.Subaddress
             {
                 initialImportHouseNumberSubaddressFromCrab = importHouseNumberSubaddressCommands
                     .Concat(importHouseNumberSubaddressCommandsHist)
-                    .OrderBy(x => (Instant) x.Timestamp).First(x =>
-                        x.HouseNumberId ==
-                        ((ImportSubaddressFromCrab) addressCommands.First(c => c.Item1 is ImportSubaddressFromCrab).Item1)
-                        .HouseNumberId);
+                    .OrderBy(x => (Instant)x.Timestamp).First(x =>
+                       x.HouseNumberId ==
+                       ((ImportSubaddressFromCrab)addressCommands.First(c => c.Item1 is ImportSubaddressFromCrab).Item1)
+                       .HouseNumberId);
 
                 commands.Add(initialImportHouseNumberSubaddressFromCrab);
             }
 
             foreach (var adresCommand in addressCommands)
-                if (importMode==ImportMode.Update || !adresCommand.Item1.Equals(initialImportHouseNumberSubaddressFromCrab))
+                if (importMode == ImportMode.Update || !adresCommand.Item1.Equals(initialImportHouseNumberSubaddressFromCrab))
                     commands.Add(adresCommand.Item1);
 
             return commands;

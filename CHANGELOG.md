@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/informatievlaanderen/address-registry/compare/v1.0.3...v1.0.4) (2019-03-08)
+
+
+### Bug Fixes
+
+* get rid of testing connectingstring (password is changed!) ([83a4c9f](https://github.com/informatievlaanderen/address-registry/commit/83a4c9f))
+
 ## [1.0.3](https://github.com/informatievlaanderen/address-registry/compare/v1.0.2...v1.0.3) (2019-03-05)
 
 

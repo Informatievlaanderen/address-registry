@@ -10,8 +10,8 @@ namespace AddressRegistry.Importer.Subaddress
         public Uri BaseUrl => new Uri(Settings.Default.BaseUrl);
         public string ImportEndpoint => Settings.Default.ImportEndpoint;
         public int HttpTimeoutMinutes => Settings.Default.HttpTimeoutInMinutes;
-        public string AuthUserName => Settings.Default.ImportAuthUserName;
-        public string AuthPassword => Settings.Default.ImportAuthPassword;
+        public string AuthUserName => Settings.Default.ImportAuthUser;
+        public string AuthPassword => Settings.Default.ImportAuthPass;
         public int NrOfProducers => Settings.Default.NrOfProducers;
         public int BufferSize => Settings.Default.BufferSize;
         public int NrOfConsumers => Settings.Default.NrOfConsumers;

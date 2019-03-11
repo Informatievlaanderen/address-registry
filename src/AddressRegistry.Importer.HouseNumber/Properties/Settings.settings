@@ -32,10 +32,10 @@
     <Setting Name="BaseUrl" Type="System.String" Scope="Application">
       <Value Profile="(Default)">http://localhost:1093</Value>
     </Setting>
-    <Setting Name="ImportAuthUserName" Type="System.String" Scope="Application">
+    <Setting Name="ImportAuthUser" Type="System.String" Scope="Application">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="ImportAuthPassword" Type="System.String" Scope="Application">
+    <Setting Name="ImportAuthPass" Type="System.String" Scope="Application">
       <Value Profile="(Default)" />
     </Setting>
   </Settings>

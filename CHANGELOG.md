@@ -1,3 +1,10 @@
+## [1.0.6](https://github.com/informatievlaanderen/address-registry/compare/v1.0.5...v1.0.6) (2019-04-16)
+
+
+### Bug Fixes
+
+* sort address list on olsoid (objectid) by default [GR-717] ([69bdc2f](https://github.com/informatievlaanderen/address-registry/commit/69bdc2f))
+
 ## [1.0.5](https://github.com/informatievlaanderen/address-registry/compare/v1.0.4...v1.0.5) (2019-03-11)
 
 ## [1.0.4](https://github.com/informatievlaanderen/address-registry/compare/v1.0.3...v1.0.4) (2019-03-08)

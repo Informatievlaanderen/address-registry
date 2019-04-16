@@ -107,9 +107,10 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             nameof(AddressListItem.BoxNumber),
             nameof(AddressListItem.HouseNumber),
             nameof(AddressListItem.PostalCode),
+            nameof(AddressListItem.OsloId)
         };
 
-        public SortingHeader DefaultSortingHeader { get; } = new SortingHeader(nameof(AddressListItem.PostalCode), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new SortingHeader(nameof(AddressListItem.OsloId), SortOrder.Ascending);
     }
 
     public class AddressFilter

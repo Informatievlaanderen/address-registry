@@ -27,7 +27,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         /// <summary>
         /// De URL voor het ophalen van de volgende verzameling.
         /// </summary>
-        [DataMember(Name = "Volgende", Order = 3)]
+        [DataMember(Name = "Volgende", Order = 3, EmitDefaultValue = false)]
         public Uri Volgende { get; set; }
     }
 

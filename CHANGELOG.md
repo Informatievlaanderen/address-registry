@@ -1,3 +1,10 @@
+## [1.0.7](https://github.com/informatievlaanderen/address-registry/compare/v1.0.6...v1.0.7) (2019-04-17)
+
+
+### Bug Fixes
+
+* volgende is now not emitted if null ([bc4e1e6](https://github.com/informatievlaanderen/address-registry/commit/bc4e1e6))
+
 ## [1.0.6](https://github.com/informatievlaanderen/address-registry/compare/v1.0.5...v1.0.6) (2019-04-16)
 
 

@@ -1,24 +1,23 @@
 namespace AddressRegistry.Api.CrabImport.CrabImport
 {
-    using AddressRegistry.Address;
-    using AddressRegistry.Address.Commands.Crab;
-    using Autofac;
+    using Address;
+    using Address.Commands.Crab;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
+    using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Api;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using SqlStreamStore;
     using System;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using Be.Vlaanderen.Basisregisters.EventHandling;
-    using SqlStreamStore;
 
     public class IdempotentCommandHandlerModuleProcessor : IIdempotentCommandHandlerModuleProcessor
     {
         private readonly ConcurrentUnitOfWork _concurrentUnitOfWork;
         private readonly AddressCommandHandlerModule _addressCommandHandlerModule;
-        private readonly Func<IHasCrabProvenance, Address, Provenance> _provenanceFactory;
+        private readonly Func<IHasCrabProvenance, Address, Provenance> _provenanceFactory = new AddressProvenanceFactory().CreateFrom;
         private readonly Func<IAddresses> _getAddresses;
 
         public IdempotentCommandHandlerModuleProcessor(
@@ -32,7 +31,6 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
         {
             _getAddresses = getAddresses;
             _concurrentUnitOfWork = concurrentUnitOfWork;
-            _provenanceFactory = provenanceFactory.CreateFrom;
 
             _addressCommandHandlerModule = new AddressCommandHandlerModule(
                 _getAddresses,
@@ -47,6 +45,7 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
         public async Task<CommandMessage> Process(
             dynamic commandToProcess,
             IDictionary<string, object> metadata,
+            int currentPosition,
             CancellationToken cancellationToken)
         {
             switch (commandToProcess)
@@ -54,55 +53,55 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
                 case ImportHouseNumberFromCrab command:
                     var commandHouseNumberMessage = new CommandMessage<ImportHouseNumberFromCrab>(command.CreateCommandId(), command, metadata);
                     await _addressCommandHandlerModule.ImportHouseNumberFromCrab(_getAddresses, commandHouseNumberMessage, cancellationToken);
-                    AddProvenancePipe.AddProvenance(() => _concurrentUnitOfWork, commandHouseNumberMessage, _provenanceFactory);
+                    AddProvenancePipe.AddProvenance(() => _concurrentUnitOfWork, commandHouseNumberMessage, _provenanceFactory, currentPosition);
                     return commandHouseNumberMessage;
 
                 case ImportHouseNumberStatusFromCrab command:
                     var commandHouseNumberStatusMessage = new CommandMessage<ImportHouseNumberStatusFromCrab>(command.CreateCommandId(), command, metadata);
                     await _addressCommandHandlerModule.ImportHouseNumberStatusFromCrab(_getAddresses, commandHouseNumberStatusMessage, cancellationToken);
-                    AddProvenancePipe.AddProvenance(() => _concurrentUnitOfWork, commandHouseNumberStatusMessage, _provenanceFactory);
+                    AddProvenancePipe.AddProvenance(() => _concurrentUnitOfWork, commandHouseNumberStatusMessage, _provenanceFactory, currentPosition);
                     return commandHouseNumberStatusMessage;
 
                 case ImportHouseNumberPositionFromCrab command:
                     var commandHouseNumberPositionMessage = new CommandMessage<ImportHouseNumberPositionFromCrab>(command.CreateCommandId(), command, metadata);
                     await _addressCommandHandlerModule.ImportHouseNumberPositionFromCrab(_getAddresses, commandHouseNumberPositionMessage, cancellationToken);
-                    AddProvenancePipe.AddProvenance(() => _concurrentUnitOfWork, commandHouseNumberPositionMessage, _provenanceFactory);
+                    AddProvenancePipe.AddProvenance(() => _concurrentUnitOfWork, commandHouseNumberPositionMessage, _provenanceFactory, currentPosition);
                     return commandHouseNumberPositionMessage;
 
                 case ImportHouseNumberMailCantonFromCrab command:
                     var commandHouseNumberMailCantonMessage = new CommandMessage<ImportHouseNumberMailCantonFromCrab>(command.CreateCommandId(), command, metadata);
                     await _addressCommandHandlerModule.ImportHouseNumberMailCantonFromCrab(_getAddresses, commandHouseNumberMailCantonMessage, cancellationToken);
-                    AddProvenancePipe.AddProvenance(() => _concurrentUnitOfWork, commandHouseNumberMailCantonMessage, _provenanceFactory);
+                    AddProvenancePipe.AddProvenance(() => _concurrentUnitOfWork, commandHouseNumberMailCantonMessage, _provenanceFactory, currentPosition);
                     return commandHouseNumberMailCantonMessage;
 
                 case ImportHouseNumberSubaddressFromCrab command:
                     var commandHouseNumberSubaddressMessage = new CommandMessage<ImportHouseNumberSubaddressFromCrab>(command.CreateCommandId(), command, metadata);
                     await _addressCommandHandlerModule.ImportHouseNumberSubaddressFromCrab(_getAddresses, commandHouseNumberSubaddressMessage, cancellationToken);
-                    AddProvenancePipe.AddProvenance(() => _concurrentUnitOfWork, commandHouseNumberSubaddressMessage, _provenanceFactory);
+                    AddProvenancePipe.AddProvenance(() => _concurrentUnitOfWork, commandHouseNumberSubaddressMessage, _provenanceFactory, currentPosition);
                     return commandHouseNumberSubaddressMessage;
 
                 case ImportSubaddressFromCrab command:
                     var commandSubaddressMessage = new CommandMessage<ImportSubaddressFromCrab>(command.CreateCommandId(), command, metadata);
                     await _addressCommandHandlerModule.ImportSubaddressFromCrab(_getAddresses, commandSubaddressMessage, cancellationToken);
-                    AddProvenancePipe.AddProvenance(() => _concurrentUnitOfWork, commandSubaddressMessage, _provenanceFactory);
+                    AddProvenancePipe.AddProvenance(() => _concurrentUnitOfWork, commandSubaddressMessage, _provenanceFactory, currentPosition);
                     return commandSubaddressMessage;
 
                 case ImportSubaddressStatusFromCrab command:
                     var commandSubaddressStatusMessage = new CommandMessage<ImportSubaddressStatusFromCrab>(command.CreateCommandId(), command, metadata);
                     await _addressCommandHandlerModule.ImportSubaddressStatusFromCrab(_getAddresses, commandSubaddressStatusMessage, cancellationToken);
-                    AddProvenancePipe.AddProvenance(() => _concurrentUnitOfWork, commandSubaddressStatusMessage, _provenanceFactory);
+                    AddProvenancePipe.AddProvenance(() => _concurrentUnitOfWork, commandSubaddressStatusMessage, _provenanceFactory, currentPosition);
                     return commandSubaddressStatusMessage;
 
                 case ImportSubaddressPositionFromCrab command:
                     var commandSubaddressPositionMessage = new CommandMessage<ImportSubaddressPositionFromCrab>(command.CreateCommandId(), command, metadata);
                     await _addressCommandHandlerModule.ImportSubaddressPositionFromCrab(_getAddresses, commandSubaddressPositionMessage, cancellationToken);
-                    AddProvenancePipe.AddProvenance(() => _concurrentUnitOfWork, commandSubaddressPositionMessage, _provenanceFactory);
+                    AddProvenancePipe.AddProvenance(() => _concurrentUnitOfWork, commandSubaddressPositionMessage, _provenanceFactory, currentPosition);
                     return commandSubaddressPositionMessage;
 
                 case ImportSubaddressMailCantonFromCrab command:
                     var commandSubaddressMailCantonMessage = new CommandMessage<ImportSubaddressMailCantonFromCrab>(command.CreateCommandId(), command, metadata);
                     await _addressCommandHandlerModule.ImportSubaddressMailCantonFromCrab(_getAddresses, commandSubaddressMailCantonMessage, cancellationToken);
-                    AddProvenancePipe.AddProvenance(() => _concurrentUnitOfWork, commandSubaddressMailCantonMessage, _provenanceFactory);
+                    AddProvenancePipe.AddProvenance(() => _concurrentUnitOfWork, commandSubaddressMailCantonMessage, _provenanceFactory, currentPosition);
                     return commandSubaddressMailCantonMessage;
 
                 case AssignOsloIdForCrabHouseNumberId command:

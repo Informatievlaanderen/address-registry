@@ -17,7 +17,7 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
     {
         private readonly ConcurrentUnitOfWork _concurrentUnitOfWork;
         private readonly AddressCommandHandlerModule _addressCommandHandlerModule;
-        private readonly Func<IHasCrabProvenance, Address, Provenance> _provenanceFactory = new AddressProvenanceFactory().CreateFrom;
+        private readonly Func<IHasCrabProvenance, Address, Provenance> _provenanceFactory;
         private readonly Func<IAddresses> _getAddresses;
 
         public IdempotentCommandHandlerModuleProcessor(
@@ -31,6 +31,7 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
         {
             _getAddresses = getAddresses;
             _concurrentUnitOfWork = concurrentUnitOfWork;
+            _provenanceFactory = provenanceFactory.CreateFrom;
 
             _addressCommandHandlerModule = new AddressCommandHandlerModule(
                 _getAddresses,

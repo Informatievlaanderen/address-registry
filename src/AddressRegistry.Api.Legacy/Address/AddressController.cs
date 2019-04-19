@@ -47,14 +47,14 @@ namespace AddressRegistry.Api.Legacy.Address
         /// <param name="context"></param>
         /// <param name="syndicationContext"></param>
         /// <param name="responseOptions"></param>
-        /// <param name="adresId">Identificator van het adres.</param>
+        /// <param name="addressId">Identificator van het adres.</param>
         /// <param name="taal">De taal in dewelke het adres wordt teruggegeven.</param>
         /// <param name="cancellationToken"></param>
         /// <response code="200">Als het adres gevonden is.</response>
         /// <response code="404">Als het adres niet gevonden kan worden.</response>
         /// <response code="410">Als het adres verwijderd is.</response>
         /// <response code="500">Als er een interne fout is opgetreden.</response>
-        [HttpGet("{adresId}")]
+        [HttpGet("{addressId}")]
         [ProducesResponseType(typeof(AddressResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BasicApiProblem), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(BasicApiProblem), StatusCodes.Status410Gone)]
@@ -67,14 +67,14 @@ namespace AddressRegistry.Api.Legacy.Address
             [FromServices] LegacyContext context,
             [FromServices] SyndicationContext syndicationContext,
             [FromServices] IOptions<ResponseOptions> responseOptions,
-            [FromRoute] int adresId,
+            [FromRoute] int addressId,
             [FromRoute] Taal? taal,
             CancellationToken cancellationToken = default)
         {
             var address = await context
                 .AddressDetail
                 .AsNoTracking()
-                .SingleOrDefaultAsync(item => item.OsloId == adresId, cancellationToken);
+                .SingleOrDefaultAsync(item => item.OsloId == addressId, cancellationToken);
 
             if (address == null || !address.Complete)
                 throw new ApiException("Onbestaand adres.", StatusCodes.Status404NotFound);

@@ -1,29 +1,30 @@
 namespace AddressRegistry.Api.CrabImport.Infrastructure
 {
-    using System;
-    using System.Linq;
-    using System.Reflection;
-    using Be.Vlaanderen.Basisregisters.Api;
-    using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.AspNetCore;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
+    using Be.Vlaanderen.Basisregisters.Api;
+    using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
+    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Configuration;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc.ApiExplorer;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Diagnostics.HealthChecks;
     using Microsoft.Extensions.Logging;
     using Modules;
     using SqlStreamStore;
     using Swashbuckle.AspNetCore.Swagger;
+    using System;
+    using System.Linq;
+    using System.Reflection;
 
     /// <summary>Represents the startup process for the application.</summary>
     public class Startup
     {
+        private const string DatabaseTag = "db";
+
         private IContainer _applicationContainer;
 
         private readonly IConfiguration _configuration;
@@ -42,24 +43,50 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services
-                .ConfigureDefaultForApi<Startup>(
-                    (provider, description) => new Info
+                .ConfigureDefaultForApi<Startup>(new StartupConfigureOptions
+                {
+                    Cors =
                     {
-                        Version = description.ApiVersion.ToString(),
-                        Title = "Basisregisters Vlaanderen Address Registry API",
-                        Description = GetApiLeadingText(description),
-                        Contact = new Contact
+                        Origins = _configuration
+                            .GetSection("Cors")
+                            .GetChildren()
+                            .Select(c => c.Value)
+                            .ToArray()
+                    },
+                    Swagger =
+                    {
+                        ApiInfo = (provider, description) => new Info
                         {
-                            Name = "Informatie Vlaanderen",
-                            Email = "informatie.vlaanderen@vlaanderen.be",
-                            Url = "https://legacy.basisregisters.vlaanderen"
-                        }
+                            Version = description.ApiVersion.ToString(),
+                            Title = "Basisregisters Vlaanderen Address Registry API",
+                            Description = GetApiLeadingText(description),
+                            Contact = new Contact
+                            {
+                                Name = "Informatie Vlaanderen",
+                                Email = "informatie.vlaanderen@vlaanderen.be",
+                                Url = "https://legacy.basisregisters.vlaanderen"
+                            }
+                        },
+                        XmlCommentPaths = new[] {typeof(Startup).GetTypeInfo().Assembly.GetName().Name}
                     },
-                    new []
+                    MiddlewareHooks =
                     {
-                        typeof(Startup).GetTypeInfo().Assembly.GetName().Name,
-                    },
-                    _configuration.GetSection("Cors").GetChildren().Select(c => c.Value).ToArray());
+                        FluentValidation = fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>(),
+
+                        AfterHealthChecks = health =>
+                        {
+                            var connectionStrings = _configuration
+                                .GetSection("ConnectionStrings")
+                                .GetChildren();
+
+                            foreach (var connectionString in connectionStrings)
+                                health.AddSqlServer(
+                                    connectionString.Value,
+                                    name: $"sqlserver-{connectionString.Key.ToLowerInvariant()}",
+                                    tags: new[] { DatabaseTag, "sql", "sqlserver" });
+                        }
+                    }
+                });
 
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterModule(new ApiModule(_configuration, services, _loggerFactory));
@@ -77,38 +104,44 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure
             IApiVersionDescriptionProvider apiVersionProvider,
             MsSqlStreamStore streamStore,
             ApiDataDogToggle datadogToggle,
-            ApiDebugDataDogToggle debugDataDogToggle)
+            ApiDebugDataDogToggle debugDataDogToggle,
+            HealthCheckService healthCheckService)
         {
+            StartupHelpers.CheckDatabases(healthCheckService, DatabaseTag).GetAwaiter().GetResult();
             StartupHelpers.EnsureSqlStreamStoreSchema<Startup>(streamStore, loggerFactory);
 
-            if (datadogToggle.FeatureEnabled)
-            {
-                if (debugDataDogToggle.FeatureEnabled)
-                    StartupHelpers.SetupSourceListener(serviceProvider.GetRequiredService<TraceSource>());
-
-                app.UseDataDogTracing(
-                    serviceProvider.GetRequiredService<TraceSource>(),
-                    _configuration["DataDog:ServiceName"],
-                    pathToCheck => pathToCheck != "/");
-            }
-
-            app.UseDefaultForApi(new StartupOptions
-            {
-                ApplicationContainer = _applicationContainer,
-                ServiceProvider = serviceProvider,
-                HostingEnvironment = env,
-                ApplicationLifetime = appLifetime,
-                LoggerFactory = loggerFactory,
-                Api =
+            app
+                .UseDatadog<Startup>(
+                    serviceProvider,
+                    loggerFactory,
+                    datadogToggle,
+                    debugDataDogToggle,
+                    _configuration["DataDog:ServiceName"])
+                .UseDefaultForApi(new StartupUseOptions
                 {
-                    VersionProvider = apiVersionProvider,
-                    Info = groupName => $"Basisregisters Vlaanderen - Address Registry API {groupName}"
-                },
-                MiddlewareHooks =
-                {
-                    AfterMiddleware = x => x.UseMiddleware<AddNoCacheHeadersMiddleware>(),
-                }
-            });
+                    Common =
+                    {
+                        ApplicationContainer = _applicationContainer,
+                        ServiceProvider = serviceProvider,
+                        HostingEnvironment = env,
+                        ApplicationLifetime = appLifetime,
+                        LoggerFactory = loggerFactory,
+                    },
+                    Api =
+                    {
+                        VersionProvider = apiVersionProvider,
+                        Info = groupName => $"Basisregisters Vlaanderen - Address Registry API {groupName}"
+                    },
+                    Server =
+                    {
+                        PoweredByName = "Vlaamse overheid - Basisregisters Vlaanderen",
+                        ServerName = "agentschap Informatie Vlaanderen"
+                    },
+                    MiddlewareHooks =
+                    {
+                        AfterMiddleware = x => x.UseMiddleware<AddNoCacheHeadersMiddleware>(),
+                    }
+                });
 
             app.UseIdempotencyDatabaseMigrations();
 

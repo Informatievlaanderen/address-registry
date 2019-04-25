@@ -1,19 +1,19 @@
 namespace AddressRegistry.Projections.LastChangedList
 {
-    using System;
-    using System.IO;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Autofac.Features.OwnedInstances;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Modules;
     using Serilog;
     using SqlStreamStore;
+    using System;
+    using System.IO;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     public class Program
     {
@@ -53,11 +53,9 @@ namespace AddressRegistry.Projections.LastChangedList
             {
                 var runner = container.GetService<AddressLastChangedListRunner>();
 
-                var lastChangedList = new LastChangedListMigrationsHelper(
-                    configuration.GetConnectionString("LastChangedList"),
-                    container.GetService<ILoggerFactory>());
-
-                await lastChangedList.RunMigrationsAsync(ct);
+                await new LastChangedListContextMigrationFactory()
+                    .CreateMigrator(configuration, container.GetService<ILoggerFactory>())
+                    .MigrateAsync(ct);
 
                 await runner.StartAsync(
                     container.GetService<IStreamStore>(),

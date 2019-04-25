@@ -1,3 +1,5 @@
+AspNetCore.HealthChecks.SqlServer
+
 Be.Vlaanderen.Basisregisters.Api
 Be.Vlaanderen.Basisregisters.EventHandling.Autofac
 Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac

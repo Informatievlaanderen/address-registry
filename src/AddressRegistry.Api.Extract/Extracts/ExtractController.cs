@@ -11,6 +11,7 @@ namespace AddressRegistry.Api.Extract.Extracts
     using System;
     using System.Threading;
     using Be.Vlaanderen.Basisregisters.Api.Extract;
+    using Projections.Syndication;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
@@ -24,6 +25,7 @@ namespace AddressRegistry.Api.Extract.Extracts
         /// Vraag een dump van het volledige register op.
         /// </summary>
         /// <param name="context"></param>
+        /// <param name="syndicationContext"></param>
         /// <param name="cancellationToken"></param>
         /// <response code="200">Als adresregister kan gedownload worden.</response>
         /// <response code="500">Als er een interne fout is opgetreden.</response>
@@ -34,8 +36,9 @@ namespace AddressRegistry.Api.Extract.Extracts
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples), jsonConverter: typeof(StringEnumConverter))]
         public IActionResult Get(
             [FromServices] ExtractContext context,
+            [FromServices] SyndicationContext syndicationContext,
             CancellationToken cancellationToken = default) =>
-            new ExtractArchive($"{ZipName}-{DateTime.Now:yyyy-MM-dd}") { AddressRegistryExtractBuilder.CreateAddressFiles(context) }
+            new ExtractArchive($"{ZipName}-{DateTime.Now:yyyy-MM-dd}") { AddressRegistryExtractBuilder.CreateAddressFiles(context, syndicationContext) }
                 .CreateFileCallbackResult(cancellationToken);
     }
 }

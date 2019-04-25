@@ -6,6 +6,7 @@ namespace AddressRegistry.Api.Extract.Infrastructure.Modules
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Projections.Syndication;
 
     public class ApiModule : Module
     {
@@ -30,6 +31,9 @@ namespace AddressRegistry.Api.Extract.Infrastructure.Modules
 
             containerBuilder
                 .RegisterModule(new ExtractModule(_configuration, _services, _loggerFactory));
+
+            containerBuilder
+                .RegisterModule(new SyndicationModule(_configuration, _services, _loggerFactory));
 
             containerBuilder.Populate(_services);
         }

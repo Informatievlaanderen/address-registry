@@ -9,10 +9,11 @@ namespace AddressRegistry.Api.Extract.Extracts
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.Api.Extract;
     using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
+    using Projections.Syndication;
 
     public class AddressRegistryExtractBuilder
     {
-        public static IEnumerable<ExtractFile> CreateAddressFiles(ExtractContext context)
+        public static IEnumerable<ExtractFile> CreateAddressFiles(ExtractContext context, SyndicationContext syndicationContext)
         {
             var extractItems = context
                 .AddressExtract
@@ -20,8 +21,8 @@ namespace AddressRegistry.Api.Extract.Extracts
                 .Where(m => m.Complete)
                 .OrderBy(m => m.AddressOsloId);
 
-            var cachedMunicipalities = context.AddressExtractMunicipalities.AsNoTracking().ToList();
-            var cachedStreetNames = context.AddressExtractStreetNames.AsNoTracking().ToList();
+            var cachedMunicipalities = syndicationContext.MunicipalityLatestItems.AsNoTracking().ToList();
+            var cachedStreetNames = syndicationContext.StreetNameLatestItems.AsNoTracking().ToList();
 
             byte[] TransformRecord(AddressExtractItem r)
             {

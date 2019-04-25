@@ -14,8 +14,6 @@ namespace AddressRegistry.Projections.Extract
         public override string ProjectionStateSchema => Schema.Extract;
 
         public DbSet<AddressExtractItem> AddressExtract { get; set; }
-        public DbSet<AddressExtractMunicipality> AddressExtractMunicipalities { get; set; }
-        public DbSet<AddressExtractStreetName> AddressExtractStreetNames { get; set; }
 
         // This needs to be here to please EF
         public ExtractContext() { }

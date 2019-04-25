@@ -14,10 +14,6 @@ namespace AddressRegistry.Projections.Extract
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
-    using AddressExtract;
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication;
-    using Municipality;
-    using StreetName;
 
     internal class Program
     {
@@ -60,7 +56,7 @@ namespace AddressRegistry.Projections.Extract
                     container.GetService<ILoggerFactory>(),
                     ct);
 
-                await Task.WhenAll(StartRunners(configuration, container, ct));
+                await Task.WhenAll(StartRunners(container, ct));
 
                 Console.WriteLine("Running... Press CTRL + C to exit.");
                 Closing.WaitOne();
@@ -80,40 +76,12 @@ namespace AddressRegistry.Projections.Extract
             Closing.Close();
         }
 
-        private static IEnumerable<Task> StartRunners(IConfiguration configuration, IServiceProvider container, CancellationToken ct)
+        private static IEnumerable<Task> StartRunners(IServiceProvider container, CancellationToken ct)
         {
             var runner = container.GetService<AddressExtractRunner>();
 
             yield return runner.StartAsync(
                 container.GetService<IStreamStore>(),
-                container.GetService<Func<Owned<ExtractContext>>>(),
-                ct);
-
-            var municipalityRunner = new FeedProjectionRunner<MunicipalityEvent, Municipality.Municipality, ExtractContext>(
-                "municipality",
-                configuration.GetValue<Uri>("SyndicationFeeds:Municipality"),
-                configuration.GetValue<string>("SyndicationFeeds:MunicipalityAuthUserName"),
-                configuration.GetValue<string>("SyndicationFeeds:MunicipalityAuthPassword"),
-                configuration.GetValue<int>("SyndicationFeeds:MunicipalityPollingInMilliseconds"),
-                container.GetService<ILogger<Program>>(),
-                container.GetService<IRegistryAtomFeedReader>(),
-                new AddressExtractMunicipalityProjection());
-
-            var streetNameRunner = new FeedProjectionRunner<StreetNameEvent, StreetName.StreetName, ExtractContext>(
-                "streetname",
-                configuration.GetValue<Uri>("SyndicationFeeds:StreetName"),
-                configuration.GetValue<string>("SyndicationFeeds:StreetNameAuthUserName"),
-                configuration.GetValue<string>("SyndicationFeeds:StreetNameAuthPassword"),
-                configuration.GetValue<int>("SyndicationFeeds:StreetNamePollingInMilliseconds"),
-                container.GetService<ILogger<Program>>(),
-                container.GetService<IRegistryAtomFeedReader>(),
-                new AddressExtractStreetNameProjection());
-
-            yield return municipalityRunner.CatchUpAsync(
-                container.GetService<Func<Owned<ExtractContext>>>(),
-                ct);
-
-            yield return streetNameRunner.CatchUpAsync(
                 container.GetService<Func<Owned<ExtractContext>>>(),
                 ct);
         }

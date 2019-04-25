@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AddressRegistry.Projections.Extract\AddressRegistry.Projections.Extract.csproj" />
+    <ProjectReference Include="..\AddressRegistry.Projections.Syndication\AddressRegistry.Projections.Syndication.csproj" />
   </ItemGroup>
 
   <Import Project="..\..\.paket\Paket.Restore.targets" />

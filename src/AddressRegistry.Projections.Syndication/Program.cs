@@ -87,7 +87,8 @@ namespace AddressRegistry.Projections.Syndication
                 container.GetService<ILogger<Program>>(),
                 container.GetService<IRegistryAtomFeedReader>(),
                 new MunicipalitySyndiciationItemProjections(),
-                new MunicipalityLatestProjections());
+                new MunicipalityLatestProjections(),
+                new MunicipalityBosaProjections());
 
             var streetNameRunner = new FeedProjectionRunner<StreetNameEvent, StreetName.StreetName, SyndicationContext>(
                 "streetname",
@@ -98,7 +99,8 @@ namespace AddressRegistry.Projections.Syndication
                 container.GetService<ILogger<Program>>(),
                 container.GetService<IRegistryAtomFeedReader>(),
                 new StreetNameSyndicationItemProjections(),
-                new StreetNameLatestProjections());
+                new StreetNameLatestProjections(),
+                new StreetNameBosaProjections());
 
             yield return municipalityRunner.CatchUpAsync(
                 container.GetService<Func<Owned<SyndicationContext>>>(),

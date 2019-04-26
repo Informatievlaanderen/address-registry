@@ -10,14 +10,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AddressRegistry.Projections.Legacy.Migrations
 {
     [DbContext(typeof(LegacyContext))]
-    [Migration("20190219091546_Initial")]
+    [Migration("20190426091337_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.1-servicing-10028")
+                .HasAnnotation("ProductVersion", "2.2.4-servicing-10062")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -59,113 +59,6 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                     b.HasIndex("OsloId");
 
                     b.ToTable("AddressDetails","AddressRegistryLegacy");
-                });
-
-            modelBuilder.Entity("AddressRegistry.Projections.Legacy.AddressDetail.MunicipalityBosaItem", b =>
-                {
-                    b.Property<Guid>("MunicipalityId")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<bool>("IsFlemishRegion");
-
-                    b.Property<string>("NameDutch");
-
-                    b.Property<string>("NameDutchSearch");
-
-                    b.Property<string>("NameEnglish");
-
-                    b.Property<string>("NameEnglishSearch");
-
-                    b.Property<string>("NameFrench");
-
-                    b.Property<string>("NameFrenchSearch");
-
-                    b.Property<string>("NameGerman");
-
-                    b.Property<string>("NameGermanSearch");
-
-                    b.Property<string>("NisCode");
-
-                    b.Property<long>("Position");
-
-                    b.Property<int?>("PrimaryLanguage");
-
-                    b.Property<DateTimeOffset?>("Version");
-
-                    b.HasKey("MunicipalityId")
-                        .HasAnnotation("SqlServer:Clustered", false);
-
-                    b.HasIndex("NameDutchSearch");
-
-                    b.HasIndex("NameEnglishSearch");
-
-                    b.HasIndex("NameFrenchSearch");
-
-                    b.HasIndex("NameGermanSearch");
-
-                    b.HasIndex("NisCode")
-                        .HasAnnotation("SqlServer:Clustered", true);
-
-                    b.HasIndex("Position");
-
-                    b.ToTable("MunicipalityBosa","AddressRegistryLegacy");
-                });
-
-            modelBuilder.Entity("AddressRegistry.Projections.Legacy.AddressDetail.StreetNameBosaItem", b =>
-                {
-                    b.Property<Guid>("StreetNameId")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("HomonymAdditionDutch");
-
-                    b.Property<string>("HomonymAdditionEnglish");
-
-                    b.Property<string>("HomonymAdditionFrench");
-
-                    b.Property<string>("HomonymAdditionGerman");
-
-                    b.Property<bool>("IsComplete");
-
-                    b.Property<string>("NameDutch");
-
-                    b.Property<string>("NameDutchSearch");
-
-                    b.Property<string>("NameEnglish");
-
-                    b.Property<string>("NameEnglishSearch");
-
-                    b.Property<string>("NameFrench");
-
-                    b.Property<string>("NameFrenchSearch");
-
-                    b.Property<string>("NameGerman");
-
-                    b.Property<string>("NameGermanSearch");
-
-                    b.Property<string>("NisCode");
-
-                    b.Property<string>("OsloId");
-
-                    b.Property<long>("Position");
-
-                    b.Property<DateTimeOffset?>("Version");
-
-                    b.HasKey("StreetNameId")
-                        .HasAnnotation("SqlServer:Clustered", false);
-
-                    b.HasIndex("IsComplete");
-
-                    b.HasIndex("NameDutchSearch");
-
-                    b.HasIndex("NameEnglishSearch");
-
-                    b.HasIndex("NameFrenchSearch");
-
-                    b.HasIndex("NameGermanSearch");
-
-                    b.HasIndex("NisCode");
-
-                    b.ToTable("StreetNameBosa","AddressRegistryLegacy");
                 });
 
             modelBuilder.Entity("AddressRegistry.Projections.Legacy.AddressList.AddressListItem", b =>

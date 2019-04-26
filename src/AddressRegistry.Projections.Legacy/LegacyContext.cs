@@ -25,9 +25,6 @@ namespace AddressRegistry.Projections.Legacy
         public DbSet<AddressListItem> AddressList { get; set; }
         public DbSet<AddressSyndicationItem> AddressSyndication { get; set; }
 
-        public DbSet<MunicipalityBosaItem> MunicipalityBosaItems { get; set; }
-        public DbSet<StreetNameBosaItem> StreetNameBosaItems { get; set; }
-
         public LegacyContext() { }
 
         // This needs to be DbContextOptions<T> for Autofac!

@@ -10,16 +10,66 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AddressRegistry.Projections.Syndication.Migrations
 {
     [DbContext(typeof(SyndicationContext))]
-    [Migration("20190211140039_RemovedBosaTables")]
-    partial class RemovedBosaTables
+    [Migration("20190426091205_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.1-servicing-10028")
+                .HasAnnotation("ProductVersion", "2.2.4-servicing-10062")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("AddressRegistry.Projections.Syndication.Municipality.MunicipalityBosaItem", b =>
+                {
+                    b.Property<Guid>("MunicipalityId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<bool>("IsFlemishRegion");
+
+                    b.Property<string>("NameDutch");
+
+                    b.Property<string>("NameDutchSearch");
+
+                    b.Property<string>("NameEnglish");
+
+                    b.Property<string>("NameEnglishSearch");
+
+                    b.Property<string>("NameFrench");
+
+                    b.Property<string>("NameFrenchSearch");
+
+                    b.Property<string>("NameGerman");
+
+                    b.Property<string>("NameGermanSearch");
+
+                    b.Property<string>("NisCode");
+
+                    b.Property<long>("Position");
+
+                    b.Property<int?>("PrimaryLanguage");
+
+                    b.Property<DateTimeOffset?>("Version");
+
+                    b.HasKey("MunicipalityId")
+                        .HasAnnotation("SqlServer:Clustered", false);
+
+                    b.HasIndex("NameDutchSearch");
+
+                    b.HasIndex("NameEnglishSearch");
+
+                    b.HasIndex("NameFrenchSearch");
+
+                    b.HasIndex("NameGermanSearch");
+
+                    b.HasIndex("NisCode")
+                        .HasAnnotation("SqlServer:Clustered", true);
+
+                    b.HasIndex("Position");
+
+                    b.ToTable("MunicipalityBosa","AddressRegistryLegacy");
+                });
 
             modelBuilder.Entity("AddressRegistry.Projections.Syndication.Municipality.MunicipalityLatestItem", b =>
                 {
@@ -101,6 +151,63 @@ namespace AddressRegistry.Projections.Syndication.Migrations
                     b.HasIndex("Version");
 
                     b.ToTable("MunicipalitySyndication","AddressRegistrySyndication");
+                });
+
+            modelBuilder.Entity("AddressRegistry.Projections.Syndication.StreetName.StreetNameBosaItem", b =>
+                {
+                    b.Property<Guid>("StreetNameId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("HomonymAdditionDutch");
+
+                    b.Property<string>("HomonymAdditionEnglish");
+
+                    b.Property<string>("HomonymAdditionFrench");
+
+                    b.Property<string>("HomonymAdditionGerman");
+
+                    b.Property<bool>("IsComplete");
+
+                    b.Property<string>("NameDutch");
+
+                    b.Property<string>("NameDutchSearch");
+
+                    b.Property<string>("NameEnglish");
+
+                    b.Property<string>("NameEnglishSearch");
+
+                    b.Property<string>("NameFrench");
+
+                    b.Property<string>("NameFrenchSearch");
+
+                    b.Property<string>("NameGerman");
+
+                    b.Property<string>("NameGermanSearch");
+
+                    b.Property<string>("NisCode");
+
+                    b.Property<string>("OsloId");
+
+                    b.Property<long>("Position");
+
+                    b.Property<DateTimeOffset?>("Version");
+
+                    b.HasKey("StreetNameId")
+                        .HasAnnotation("SqlServer:Clustered", false);
+
+                    b.HasIndex("IsComplete");
+
+                    b.HasIndex("NameDutchSearch");
+
+                    b.HasIndex("NameEnglishSearch");
+
+                    b.HasIndex("NameFrenchSearch");
+
+                    b.HasIndex("NameGermanSearch");
+
+                    b.HasIndex("NisCode");
+
+                    b.ToTable("StreetNameBosa","AddressRegistryLegacy");
                 });
 
             modelBuilder.Entity("AddressRegistry.Projections.Syndication.StreetName.StreetNameLatestItem", b =>

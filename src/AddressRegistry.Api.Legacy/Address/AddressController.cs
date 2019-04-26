@@ -250,6 +250,7 @@ namespace AddressRegistry.Api.Legacy.Address
         /// Vraag een adres op.
         /// </summary>
         /// <param name="context"></param>
+        /// <param name="syndicationContext"></param>
         /// <param name="responseOptions"></param>
         /// <param name="addressRequest"></param>
         /// <param name="cancellationToken"></param>
@@ -266,11 +267,12 @@ namespace AddressRegistry.Api.Legacy.Address
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples), jsonConverter: typeof(StringEnumConverter))]
         public async Task<IActionResult> Post(
             [FromServices] LegacyContext context,
+            [FromServices] SyndicationContext syndicationContext,
             [FromServices] IOptions<ResponseOptions> responseOptions,
             [FromBody] AddressBosaRequest addressRequest,
             CancellationToken cancellationToken = default)
         {
-            var query = new AddressBosaQuery(context, responseOptions.Value);
+            var query = new AddressBosaQuery(context, syndicationContext, responseOptions.Value);
 
             return Ok(await query.Filter(addressRequest));
         }
@@ -279,6 +281,7 @@ namespace AddressRegistry.Api.Legacy.Address
         /// Vraag een adres op.
         /// </summary>
         /// <param name="context"></param>
+        /// <param name="syndicationContext"></param>
         /// <param name="responseOptions"></param>
         /// <param name="request"></param>
         /// <param name="cancellationToken"></param>
@@ -297,6 +300,7 @@ namespace AddressRegistry.Api.Legacy.Address
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples), jsonConverter: typeof(StringEnumConverter))]
         public async Task<IActionResult> PostBosaAddressRepresentations(
             [FromServices] LegacyContext context,
+            [FromServices] SyndicationContext syndicationContext,
             [FromServices] IOptions<ResponseOptions> responseOptions,
             [FromBody] AddressRepresentationBosaRequest request,
             CancellationToken cancellationToken = default)
@@ -308,11 +312,11 @@ namespace AddressRegistry.Api.Legacy.Address
             if (address == null)
                 return NotFound();
 
-            var streetName = await context
+            var streetName = await syndicationContext
                 .StreetNameBosaItems
                 .FirstOrDefaultAsync(x => x.StreetNameId == address.StreetNameId, cancellationToken);
 
-            var municipality = await context
+            var municipality = await syndicationContext
                 .MunicipalityBosaItems
                 .FirstOrDefaultAsync(x => x.NisCode == streetName.NisCode, cancellationToken);
 

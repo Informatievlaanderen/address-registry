@@ -1,4 +1,4 @@
-namespace AddressRegistry.Projections.Legacy.AddressDetail
+namespace AddressRegistry.Projections.Syndication.StreetName
 {
     using System;
     using Infrastructure;

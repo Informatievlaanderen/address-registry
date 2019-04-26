@@ -1,4 +1,4 @@
-namespace AddressRegistry.Projections.Legacy.AddressDetail
+namespace AddressRegistry.Projections.Syndication.Municipality
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -8,7 +8,7 @@ namespace AddressRegistry.Projections.Legacy.AddressDetail
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication;
 
-    public class MunicipalityBosaProjections : AtomEntryProjectionHandlerModule<MunicipalityEvent, Municipality, LegacyContext>
+    public class MunicipalityBosaProjections : AtomEntryProjectionHandlerModule<MunicipalityEvent, Municipality, SyndicationContext>
     {
         public MunicipalityBosaProjections()
         {
@@ -23,7 +23,7 @@ namespace AddressRegistry.Projections.Legacy.AddressDetail
             When(MunicipalityEvent.MunicipalityOfficialLanguageWasRemoved, AddSyndicationItemEntry);
         }
 
-        private static async Task AddSyndicationItemEntry(AtomEntry<Municipality> entry, LegacyContext context, CancellationToken ct)
+        private static async Task AddSyndicationItemEntry(AtomEntry<Municipality> entry, SyndicationContext context, CancellationToken ct)
         {
             var municipalityItem = await context
                 .MunicipalityBosaItems

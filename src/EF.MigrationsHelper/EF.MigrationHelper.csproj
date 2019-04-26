@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <LangVersion>latest</LangVersion>
+
+    <RuntimeFrameworkVersion>2.2.0</RuntimeFrameworkVersion>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+    <OutputType>Exe</OutputType>
+
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>EF</PackageId>
+    <Title>EF</Title>
+    <Authors>Basisregisters Vlaanderen</Authors>
+    <Description>Entity Framework Migrations Dummy Project.</Description>
+    <Copyright>Copyright (c) Vlaamse overheid</Copyright>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AddressRegistry.Projections.Extract\AddressRegistry.Projections.Extract.csproj" />
+    <ProjectReference Include="..\AddressRegistry.Projections.Legacy\AddressRegistry.Projections.Legacy.csproj" />
+	<ProjectReference Include="..\AddressRegistry.Projections.Syndication\AddressRegistry.Projections.Syndication.csproj" />
+  </ItemGroup>
+
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>

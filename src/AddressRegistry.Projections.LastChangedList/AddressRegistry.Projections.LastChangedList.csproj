@@ -1,11 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.App.props" />
-
-  <ItemGroup>
-    <Content Include="appsettings.json" CopyToOutputDirectory="Always" />
-    <Content Include="appsettings.*.json" CopyToOutputDirectory="Always" />
-    <Content Include="Dockerfile" CopyToOutputDirectory="Always" />
-  </ItemGroup>
+  <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.Library.props" />
 
   <ItemGroup>
     <ProjectReference Include="..\AddressRegistry.Infrastructure\AddressRegistry.Infrastructure.csproj" />

@@ -48,6 +48,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "adr", "adr", "{01BBABB2-5AC
 		docs\adr\0001-record-architecture-decisions.md = docs\adr\0001-record-architecture-decisions.md
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddressRegistry.Api.Projector", "src\AddressRegistry.Api.Projector\AddressRegistry.Api.Projector.csproj", "{8614F1A6-07FC-4100-9A67-9CBF6B25BF85}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -190,6 +192,18 @@ Global
 		{46150B3B-2CE5-4651-9FFA-40638701938B}.Release|x64.Build.0 = Release|Any CPU
 		{46150B3B-2CE5-4651-9FFA-40638701938B}.Release|x86.ActiveCfg = Release|Any CPU
 		{46150B3B-2CE5-4651-9FFA-40638701938B}.Release|x86.Build.0 = Release|Any CPU
+		{8614F1A6-07FC-4100-9A67-9CBF6B25BF85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8614F1A6-07FC-4100-9A67-9CBF6B25BF85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8614F1A6-07FC-4100-9A67-9CBF6B25BF85}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8614F1A6-07FC-4100-9A67-9CBF6B25BF85}.Debug|x64.Build.0 = Debug|Any CPU
+		{8614F1A6-07FC-4100-9A67-9CBF6B25BF85}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8614F1A6-07FC-4100-9A67-9CBF6B25BF85}.Debug|x86.Build.0 = Debug|Any CPU
+		{8614F1A6-07FC-4100-9A67-9CBF6B25BF85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8614F1A6-07FC-4100-9A67-9CBF6B25BF85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8614F1A6-07FC-4100-9A67-9CBF6B25BF85}.Release|x64.ActiveCfg = Release|Any CPU
+		{8614F1A6-07FC-4100-9A67-9CBF6B25BF85}.Release|x64.Build.0 = Release|Any CPU
+		{8614F1A6-07FC-4100-9A67-9CBF6B25BF85}.Release|x86.ActiveCfg = Release|Any CPU
+		{8614F1A6-07FC-4100-9A67-9CBF6B25BF85}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -206,6 +220,7 @@ Global
 		{194008C2-C941-4A6D-BEFF-19D74B3A5A1D} = {C2F8FF63-7A48-4179-A720-86206C42F496}
 		{FB5ECDFF-5362-49B8-AC7D-AADA6572810E} = {C2F8FF63-7A48-4179-A720-86206C42F496}
 		{46150B3B-2CE5-4651-9FFA-40638701938B} = {C2F8FF63-7A48-4179-A720-86206C42F496}
+		{8614F1A6-07FC-4100-9A67-9CBF6B25BF85} = {C2F8FF63-7A48-4179-A720-86206C42F496}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2EB87445-E263-4E1E-89CC-3839170028E5}

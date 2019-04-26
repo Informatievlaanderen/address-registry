@@ -8,11 +8,14 @@ namespace AddressRegistry.Projections.Syndication.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
+                name: "AddressRegistryLegacy");
+
+            migrationBuilder.EnsureSchema(
                 name: "AddressRegistrySyndication");
 
             migrationBuilder.CreateTable(
-                name: "MunicipalityBosaSyndication",
-                schema: "AddressRegistrySyndication",
+                name: "MunicipalityBosa",
+                schema: "AddressRegistryLegacy",
                 columns: table => new
                 {
                     MunicipalityId = table.Column<Guid>(nullable: false),
@@ -32,7 +35,37 @@ namespace AddressRegistry.Projections.Syndication.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MunicipalityBosaSyndication", x => x.MunicipalityId)
+                    table.PrimaryKey("PK_MunicipalityBosa", x => x.MunicipalityId)
+                        .Annotation("SqlServer:Clustered", false);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StreetNameBosa",
+                schema: "AddressRegistryLegacy",
+                columns: table => new
+                {
+                    StreetNameId = table.Column<Guid>(nullable: false),
+                    OsloId = table.Column<string>(nullable: true),
+                    NisCode = table.Column<string>(nullable: true),
+                    NameDutch = table.Column<string>(nullable: true),
+                    NameDutchSearch = table.Column<string>(nullable: true),
+                    NameFrench = table.Column<string>(nullable: true),
+                    NameFrenchSearch = table.Column<string>(nullable: true),
+                    NameGerman = table.Column<string>(nullable: true),
+                    NameGermanSearch = table.Column<string>(nullable: true),
+                    NameEnglish = table.Column<string>(nullable: true),
+                    NameEnglishSearch = table.Column<string>(nullable: true),
+                    HomonymAdditionDutch = table.Column<string>(nullable: true),
+                    HomonymAdditionFrench = table.Column<string>(nullable: true),
+                    HomonymAdditionGerman = table.Column<string>(nullable: true),
+                    HomonymAdditionEnglish = table.Column<string>(nullable: true),
+                    Version = table.Column<DateTimeOffset>(nullable: true),
+                    Position = table.Column<long>(nullable: false),
+                    IsComplete = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StreetNameBosa", x => x.StreetNameId)
                         .Annotation("SqlServer:Clustered", false);
                 });
 
@@ -97,36 +130,6 @@ namespace AddressRegistry.Projections.Syndication.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "StreetNameBosaSyndication",
-                schema: "AddressRegistrySyndication",
-                columns: table => new
-                {
-                    StreetNameId = table.Column<Guid>(nullable: false),
-                    OsloId = table.Column<string>(nullable: true),
-                    NisCode = table.Column<string>(nullable: true),
-                    NameDutch = table.Column<string>(nullable: true),
-                    NameDutchSearch = table.Column<string>(nullable: true),
-                    NameFrench = table.Column<string>(nullable: true),
-                    NameFrenchSearch = table.Column<string>(nullable: true),
-                    NameGerman = table.Column<string>(nullable: true),
-                    NameGermanSearch = table.Column<string>(nullable: true),
-                    NameEnglish = table.Column<string>(nullable: true),
-                    NameEnglishSearch = table.Column<string>(nullable: true),
-                    HomonymAdditionDutch = table.Column<string>(nullable: true),
-                    HomonymAdditionFrench = table.Column<string>(nullable: true),
-                    HomonymAdditionGerman = table.Column<string>(nullable: true),
-                    HomonymAdditionEnglish = table.Column<string>(nullable: true),
-                    Version = table.Column<DateTimeOffset>(nullable: true),
-                    Position = table.Column<long>(nullable: false),
-                    IsComplete = table.Column<bool>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_StreetNameBosaSyndication", x => x.StreetNameId)
-                        .Annotation("SqlServer:Clustered", false);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "StreetNameLatestSyndication",
                 schema: "AddressRegistrySyndication",
                 columns: table => new
@@ -178,41 +181,77 @@ namespace AddressRegistry.Projections.Syndication.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_MunicipalityBosaSyndication_NameDutchSearch",
-                schema: "AddressRegistrySyndication",
-                table: "MunicipalityBosaSyndication",
+                name: "IX_MunicipalityBosa_NameDutchSearch",
+                schema: "AddressRegistryLegacy",
+                table: "MunicipalityBosa",
                 column: "NameDutchSearch");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MunicipalityBosaSyndication_NameEnglishSearch",
-                schema: "AddressRegistrySyndication",
-                table: "MunicipalityBosaSyndication",
+                name: "IX_MunicipalityBosa_NameEnglishSearch",
+                schema: "AddressRegistryLegacy",
+                table: "MunicipalityBosa",
                 column: "NameEnglishSearch");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MunicipalityBosaSyndication_NameFrenchSearch",
-                schema: "AddressRegistrySyndication",
-                table: "MunicipalityBosaSyndication",
+                name: "IX_MunicipalityBosa_NameFrenchSearch",
+                schema: "AddressRegistryLegacy",
+                table: "MunicipalityBosa",
                 column: "NameFrenchSearch");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MunicipalityBosaSyndication_NameGermanSearch",
-                schema: "AddressRegistrySyndication",
-                table: "MunicipalityBosaSyndication",
+                name: "IX_MunicipalityBosa_NameGermanSearch",
+                schema: "AddressRegistryLegacy",
+                table: "MunicipalityBosa",
                 column: "NameGermanSearch");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MunicipalityBosaSyndication_NisCode",
-                schema: "AddressRegistrySyndication",
-                table: "MunicipalityBosaSyndication",
+                name: "IX_MunicipalityBosa_NisCode",
+                schema: "AddressRegistryLegacy",
+                table: "MunicipalityBosa",
                 column: "NisCode")
                 .Annotation("SqlServer:Clustered", true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_MunicipalityBosaSyndication_Position",
-                schema: "AddressRegistrySyndication",
-                table: "MunicipalityBosaSyndication",
+                name: "IX_MunicipalityBosa_Position",
+                schema: "AddressRegistryLegacy",
+                table: "MunicipalityBosa",
                 column: "Position");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StreetNameBosa_IsComplete",
+                schema: "AddressRegistryLegacy",
+                table: "StreetNameBosa",
+                column: "IsComplete");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StreetNameBosa_NameDutchSearch",
+                schema: "AddressRegistryLegacy",
+                table: "StreetNameBosa",
+                column: "NameDutchSearch");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StreetNameBosa_NameEnglishSearch",
+                schema: "AddressRegistryLegacy",
+                table: "StreetNameBosa",
+                column: "NameEnglishSearch");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StreetNameBosa_NameFrenchSearch",
+                schema: "AddressRegistryLegacy",
+                table: "StreetNameBosa",
+                column: "NameFrenchSearch");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StreetNameBosa_NameGermanSearch",
+                schema: "AddressRegistryLegacy",
+                table: "StreetNameBosa",
+                column: "NameGermanSearch");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StreetNameBosa_NisCode",
+                schema: "AddressRegistryLegacy",
+                table: "StreetNameBosa",
+                column: "NisCode");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MunicipalityLatestSyndication_NameDutchSearch",
@@ -269,42 +308,6 @@ namespace AddressRegistry.Projections.Syndication.Migrations
                 schema: "AddressRegistrySyndication",
                 table: "MunicipalitySyndication",
                 column: "Version");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_StreetNameBosaSyndication_IsComplete",
-                schema: "AddressRegistrySyndication",
-                table: "StreetNameBosaSyndication",
-                column: "IsComplete");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_StreetNameBosaSyndication_NameDutchSearch",
-                schema: "AddressRegistrySyndication",
-                table: "StreetNameBosaSyndication",
-                column: "NameDutchSearch");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_StreetNameBosaSyndication_NameEnglishSearch",
-                schema: "AddressRegistrySyndication",
-                table: "StreetNameBosaSyndication",
-                column: "NameEnglishSearch");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_StreetNameBosaSyndication_NameFrenchSearch",
-                schema: "AddressRegistrySyndication",
-                table: "StreetNameBosaSyndication",
-                column: "NameFrenchSearch");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_StreetNameBosaSyndication_NameGermanSearch",
-                schema: "AddressRegistrySyndication",
-                table: "StreetNameBosaSyndication",
-                column: "NameGermanSearch");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_StreetNameBosaSyndication_NisCode",
-                schema: "AddressRegistrySyndication",
-                table: "StreetNameBosaSyndication",
-                column: "NisCode");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StreetNameLatestSyndication_HomonymAdditionDutch",
@@ -418,8 +421,12 @@ namespace AddressRegistry.Projections.Syndication.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "MunicipalityBosaSyndication",
-                schema: "AddressRegistrySyndication");
+                name: "MunicipalityBosa",
+                schema: "AddressRegistryLegacy");
+
+            migrationBuilder.DropTable(
+                name: "StreetNameBosa",
+                schema: "AddressRegistryLegacy");
 
             migrationBuilder.DropTable(
                 name: "MunicipalityLatestSyndication",
@@ -431,10 +438,6 @@ namespace AddressRegistry.Projections.Syndication.Migrations
 
             migrationBuilder.DropTable(
                 name: "ProjectionStates",
-                schema: "AddressRegistrySyndication");
-
-            migrationBuilder.DropTable(
-                name: "StreetNameBosaSyndication",
                 schema: "AddressRegistrySyndication");
 
             migrationBuilder.DropTable(

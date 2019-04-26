@@ -1,4 +1,4 @@
-namespace AddressRegistry.Projections.Legacy.AddressDetail
+namespace AddressRegistry.Projections.Syndication.StreetName
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -8,7 +8,7 @@ namespace AddressRegistry.Projections.Legacy.AddressDetail
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication;
 
-    public class StreetNameBosaProjections : AtomEntryProjectionHandlerModule<StreetNameEvent, StreetName, LegacyContext>
+    public class StreetNameBosaProjections : AtomEntryProjectionHandlerModule<StreetNameEvent, StreetName, SyndicationContext>
     {
         public StreetNameBosaProjections()
         {
@@ -48,7 +48,7 @@ namespace AddressRegistry.Projections.Legacy.AddressDetail
             When(StreetNameEvent.StreetNameWasRemoved, AddSyndicationItemEntry);
         }
 
-        private static async Task AddSyndicationItemEntry(AtomEntry<StreetName> entry, LegacyContext context, CancellationToken ct)
+        private static async Task AddSyndicationItemEntry(AtomEntry<StreetName> entry, SyndicationContext context, CancellationToken ct)
         {
             var latestItem = await context
                 .StreetNameBosaItems

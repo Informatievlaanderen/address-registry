@@ -1,4 +1,4 @@
-namespace AddressRegistry.Projections.Legacy.AddressDetail
+namespace AddressRegistry.Projections.Syndication.Municipality
 {
     using System;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;

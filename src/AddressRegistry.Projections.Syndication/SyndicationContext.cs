@@ -19,6 +19,9 @@ namespace AddressRegistry.Projections.Syndication
         public DbSet<StreetNameLatestItem> StreetNameLatestItems { get; set; }
         public DbSet<StreetNameSyndicationItem> StreetNameSyndicationItems { get; set; }
 
+        public DbSet<MunicipalityBosaItem> MunicipalityBosaItems { get; set; }
+        public DbSet<StreetNameBosaItem> StreetNameBosaItems { get; set; }
+
         // This needs to be here to please EF
         public SyndicationContext() { }
 

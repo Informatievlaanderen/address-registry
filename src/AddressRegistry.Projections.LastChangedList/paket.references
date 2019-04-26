@@ -1,21 +1,3 @@
-Microsoft.NETCore.App
-
-Serilog
-Serilog.Settings.Configuration
-Serilog.Extensions.Logging
-Serilog.Sinks.Console
-Serilog.Sinks.File
-Serilog.Enrichers.Thread
-Serilog.Enrichers.Environment
-
-Destructurama.JsonNet
-
-Microsoft.Extensions.Configuration
-Microsoft.Extensions.Configuration.CommandLine
-Microsoft.Extensions.Configuration.FileExtensions
-Microsoft.Extensions.Configuration.EnvironmentVariables
-Microsoft.Extensions.Configuration.Json
-
 Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList
 Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore
 

@@ -10,14 +10,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AddressRegistry.Projections.Extract.Migrations
 {
     [DbContext(typeof(ExtractContext))]
-    [Migration("20190219085917_Initial")]
+    [Migration("20190426074055_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.1-servicing-10028")
+                .HasAnnotation("ProductVersion", "2.2.4-servicing-10062")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -56,67 +56,6 @@ namespace AddressRegistry.Projections.Extract.Migrations
                     b.HasIndex("StreetNameId");
 
                     b.ToTable("Address","AddressRegistryExtract");
-                });
-
-            modelBuilder.Entity("AddressRegistry.Projections.Extract.AddressExtract.AddressExtractMunicipality", b =>
-                {
-                    b.Property<Guid>("MunicipalityId")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("NameDutch");
-
-                    b.Property<string>("NameEnglish");
-
-                    b.Property<string>("NameFrench");
-
-                    b.Property<string>("NameGerman");
-
-                    b.Property<string>("NisCode");
-
-                    b.Property<long>("Position");
-
-                    b.Property<int?>("PrimaryLanguage");
-
-                    b.Property<DateTimeOffset?>("Version");
-
-                    b.HasKey("MunicipalityId")
-                        .HasAnnotation("SqlServer:Clustered", false);
-
-                    b.HasIndex("NisCode")
-                        .HasAnnotation("SqlServer:Clustered", true);
-
-                    b.HasIndex("Position");
-
-                    b.ToTable("AddressExtractMunicipalities","AddressRegistryExtract");
-                });
-
-            modelBuilder.Entity("AddressRegistry.Projections.Extract.AddressExtract.AddressExtractStreetName", b =>
-                {
-                    b.Property<Guid>("StreetNameId")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("NameDutch");
-
-                    b.Property<string>("NameEnglish");
-
-                    b.Property<string>("NameFrench");
-
-                    b.Property<string>("NameGerman");
-
-                    b.Property<string>("NisCode");
-
-                    b.Property<string>("OsloId");
-
-                    b.Property<long>("Position");
-
-                    b.Property<DateTimeOffset?>("Version");
-
-                    b.HasKey("StreetNameId")
-                        .HasAnnotation("SqlServer:Clustered", false);
-
-                    b.HasIndex("NisCode");
-
-                    b.ToTable("AddressExtractStreetNames","AddressRegistryExtract");
                 });
 
             modelBuilder.Entity("Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.ProjectionStates.ProjectionStateItem", b =>

@@ -4,14 +4,14 @@ namespace AddressRegistry.Projections.LastChangedList
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
 
-    public class Projections : LastChangedListConnectedProjection
+    public class LastChangedListProjections : LastChangedListConnectedProjection
     {
         protected override string CacheKeyFormat => "legacy/address:{{0}}.{1}";
         protected override string UriFormat => "/v1/adressen/{{0}}";
 
         private static readonly AcceptType[] SupportedAcceptTypes = { AcceptType.Json, AcceptType.Xml };
 
-        public Projections()
+        public LastChangedListProjections()
             : base(SupportedAcceptTypes)
         {
             When<Envelope<AddressOsloIdWasAssigned>>(async (context, message, ct) =>

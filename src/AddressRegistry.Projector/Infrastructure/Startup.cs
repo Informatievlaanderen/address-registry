@@ -1,4 +1,4 @@
-namespace AddressRegistry.Api.Projector.Infrastructure
+namespace AddressRegistry.Projector.Infrastructure
 {
     using Autofac;
     using Autofac.Extensions.DependencyInjection;

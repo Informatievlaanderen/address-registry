@@ -48,7 +48,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "adr", "adr", "{01BBABB2-5AC
 		docs\adr\0001-record-architecture-decisions.md = docs\adr\0001-record-architecture-decisions.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddressRegistry.Api.Projector", "src\AddressRegistry.Api.Projector\AddressRegistry.Api.Projector.csproj", "{8614F1A6-07FC-4100-9A67-9CBF6B25BF85}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddressRegistry.Projector", "src\AddressRegistry.Projector\AddressRegistry.Projector.csproj", "{8614F1A6-07FC-4100-9A67-9CBF6B25BF85}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

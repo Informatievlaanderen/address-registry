@@ -1,4 +1,4 @@
-namespace AddressRegistry.Api.Projector.Infrastructure.Configuration
+namespace AddressRegistry.Projector.Infrastructure.Configuration
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;

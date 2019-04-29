@@ -1,4 +1,4 @@
-namespace AddressRegistry.Api.Projector.Infrastructure.Modules
+namespace AddressRegistry.Projector.Infrastructure.Modules
 {
     using System;
     using Autofac;

@@ -66,6 +66,7 @@ Target "Test_Solution" (fun _ -> test "AddressRegistry")
 
 Target "Publish_Solution" (fun _ ->
   [
+    "AddressRegistry.Projector"
     "AddressRegistry.Api.Legacy"
     "AddressRegistry.Api.Extract"
     "AddressRegistry.Api.CrabImport"
@@ -77,10 +78,14 @@ Target "Publish_Solution" (fun _ ->
 
 Target "Pack_Solution" (fun _ ->
   [
+    "AddressRegistry.Projector"
     "AddressRegistry.Api.Legacy"
     "AddressRegistry.Api.Extract"
     "AddressRegistry.Api.CrabImport"
   ] |> List.iter pack)
+
+Target "Containerize_Projector" (fun _ -> containerize "AddressRegistry.Projector" "projections")
+Target "PushContainer_Projector" (fun _ -> push "projections")
 
 Target "Containerize_ApiLegacy" (fun _ -> containerize "AddressRegistry.Api.Legacy" "api-legacy")
 Target "PushContainer_ApiLegacy" (fun _ -> push "api-legacy")
@@ -128,23 +133,19 @@ Target "Push" DoNothing
 "Pack_Solution"      ==> "Pack"
 
 "Pack"                                    ==> "Containerize"
+"Containerize_Projector"                  ==> "Containerize"
 "Containerize_ApiLegacy"                  ==> "Containerize"
 "Containerize_ApiExtract"                 ==> "Containerize"
 "Containerize_ApiCrabImport"              ==> "Containerize"
-"Containerize_ProjectionsLegacy"          ==> "Containerize"
-"Containerize_ProjectionsExtract"         ==> "Containerize"
-"Containerize_ProjectionsRedis"           ==> "Containerize"
 "Containerize_ProjectionsSyndication"     ==> "Containerize"
 // Possibly add more projects to containerize here
 
 "Containerize"                            ==> "Push"
 "DockerLogin"                             ==> "Push"
+"PushContainer_Projector"                 ==> "Push"
 "PushContainer_ApiLegacy"                 ==> "Push"
 "PushContainer_ApiExtract"                ==> "Push"
 "PushContainer_ApiCrabImport"             ==> "Push"
-"PushContainer_ProjectionsLegacy"         ==> "Push"
-"PushContainer_ProjectionsExtract"        ==> "Push"
-"PushContainer_ProjectionsRedis"          ==> "Push"
 "PushContainer_ProjectionsSyndication"    ==> "Push"
 // Possibly add more projects to push here
 

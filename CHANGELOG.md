@@ -1,3 +1,12 @@
+# [1.1.0](https://github.com/informatievlaanderen/address-registry/compare/v1.0.8...v1.1.0) (2019-04-30)
+
+
+### Features
+
+* add projector + clean up projection libs ([32887dd](https://github.com/informatievlaanderen/address-registry/commit/32887dd))
+* moved bosa sync from legacy projections to syndication ([a6cd8be](https://github.com/informatievlaanderen/address-registry/commit/a6cd8be))
+* upgrade packages ([bcf33bc](https://github.com/informatievlaanderen/address-registry/commit/bcf33bc))
+
 ## [1.0.8](https://github.com/informatievlaanderen/address-registry/compare/v1.0.7...v1.0.8) (2019-04-18)
 
 ## [1.0.7](https://github.com/informatievlaanderen/address-registry/compare/v1.0.6...v1.0.7) (2019-04-17)

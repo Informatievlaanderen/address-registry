@@ -23,6 +23,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		SEMVER.md = SEMVER.md
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddressRegistry.Importer.AddressMatch", "src\AddressRegistry.Importer.AddressMatch\AddressRegistry.Importer.AddressMatch.csproj", "{22B3713C-BAE2-413B-A192-CFBCCFCF6697}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,6 +69,18 @@ Global
 		{A5F51BE8-D76D-4611-B439-1BD9DB0DE8FE}.Release|x64.ActiveCfg = Release|Any CPU
 		{A5F51BE8-D76D-4611-B439-1BD9DB0DE8FE}.Release|x64.Build.0 = Release|Any CPU
 		{A5F51BE8-D76D-4611-B439-1BD9DB0DE8FE}.Release|x86.ActiveCfg = Release|Any CPU
+		{22B3713C-BAE2-413B-A192-CFBCCFCF6697}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22B3713C-BAE2-413B-A192-CFBCCFCF6697}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22B3713C-BAE2-413B-A192-CFBCCFCF6697}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{22B3713C-BAE2-413B-A192-CFBCCFCF6697}.Debug|x64.Build.0 = Debug|Any CPU
+		{22B3713C-BAE2-413B-A192-CFBCCFCF6697}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{22B3713C-BAE2-413B-A192-CFBCCFCF6697}.Debug|x86.Build.0 = Debug|Any CPU
+		{22B3713C-BAE2-413B-A192-CFBCCFCF6697}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22B3713C-BAE2-413B-A192-CFBCCFCF6697}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22B3713C-BAE2-413B-A192-CFBCCFCF6697}.Release|x64.ActiveCfg = Release|Any CPU
+		{22B3713C-BAE2-413B-A192-CFBCCFCF6697}.Release|x64.Build.0 = Release|Any CPU
+		{22B3713C-BAE2-413B-A192-CFBCCFCF6697}.Release|x86.ActiveCfg = Release|Any CPU
+		{22B3713C-BAE2-413B-A192-CFBCCFCF6697}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -75,6 +89,7 @@ Global
 		{BE9DCAED-271E-49EB-B2CC-BB4D727AFA21} = {C2F8FF63-7A48-4179-A720-86206C42F496}
 		{05649016-9F88-44CD-A5C2-2ED0CA1FF360} = {C2F8FF63-7A48-4179-A720-86206C42F496}
 		{A5F51BE8-D76D-4611-B439-1BD9DB0DE8FE} = {C2F8FF63-7A48-4179-A720-86206C42F496}
+		{22B3713C-BAE2-413B-A192-CFBCCFCF6697} = {C2F8FF63-7A48-4179-A720-86206C42F496}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2EB87445-E263-4E1E-89CC-3839170028E5}

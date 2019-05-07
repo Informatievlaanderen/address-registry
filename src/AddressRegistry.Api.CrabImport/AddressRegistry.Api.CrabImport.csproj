@@ -24,6 +24,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="appsettings - Copy.json" />
+    <None Remove="appsettings.aocws277.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\AddressRegistry.Infrastructure\AddressRegistry.Infrastructure.csproj" />
     <ProjectReference Include="..\AddressRegistry\AddressRegistry.csproj" />
   </ItemGroup>

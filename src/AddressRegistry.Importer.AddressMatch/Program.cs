@@ -16,7 +16,7 @@ namespace AddressRegistry.Importer.AddressMatch
     class Program
     {
         private static string _crabConnectionString;
-        private static readonly Configuration CsvConfiguration = new Configuration { Encoding = Encoding.UTF8 };
+        private static readonly Configuration CsvConfiguration = new Configuration { Encoding = Encoding.UTF8, Delimiter = ";" };
         private static readonly string RRStreetNamesPath = "RRStreetNames.csv";
         private static readonly string KadStreetNamesPath = "KadStreetNames.csv";
         private static readonly string RRAddressesPath = "RRAddresses.csv";

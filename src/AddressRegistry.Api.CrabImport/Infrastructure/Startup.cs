@@ -17,8 +17,10 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure
     using SqlStreamStore;
     using Swashbuckle.AspNetCore.Swagger;
     using System;
+    using System.IO;
     using System.Linq;
     using System.Reflection;
+    using Microsoft.Extensions.FileProviders;
 
     /// <summary>Represents the startup process for the application.</summary>
     public class Startup
@@ -86,7 +88,8 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure
                                     tags: new[] { DatabaseTag, "sql", "sqlserver" });
                         }
                     }
-                });
+                })
+                .AddSingleton<IFileProvider>(new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")));
 
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterModule(new ApiModule(_configuration, services, _loggerFactory));

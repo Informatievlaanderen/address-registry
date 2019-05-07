@@ -11,18 +11,24 @@ namespace AddressRegistry.Importer.AddressMatch
     using System.IO;
     using System.IO.Compression;
     using System.Linq;
+    using System.Net.Http;
     using System.Text;
+    using System.Threading.Tasks;
 
     class Program
     {
+        private const string ImportUrlKey = "ImportUrl";
+        private const string HttpFormFileName = "file";
+
         private static string _crabConnectionString;
+
         private static readonly Configuration CsvConfiguration = new Configuration { Encoding = Encoding.UTF8, Delimiter = ";" };
         private static readonly string RRStreetNamesPath = "RRStreetNames.csv";
         private static readonly string KadStreetNamesPath = "KadStreetNames.csv";
         private static readonly string RRAddressesPath = "RRAddresses.csv";
         private static readonly string ImportAddressMatchZipPath = "importAddressMatch.zip";
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             Console.WriteLine("Starting AddressRegistry.Importer.AddressMatch");
 
@@ -49,20 +55,40 @@ namespace AddressRegistry.Importer.AddressMatch
             WriteCsvFile(ExtractKadStreetNames(), KadStreetNamesPath);
             WriteCsvFile(ExtractRRAddress(), RRAddressesPath);
 
+            Console.WriteLine($"Creating Zip");
+
             CreateZip(new[] { RRStreetNamesPath, KadStreetNamesPath, RRAddressesPath });
 
-            Console.WriteLine($"Zip created, sending Zip");
+            Console.WriteLine($"Sending Zip");
 
-            //SendZip
+            await ZendZip(configuration.GetValue<string>(ImportUrlKey));
+
+            Console.WriteLine($"Cleaning up");
 
             CleanUpFiles(new[] { RRStreetNamesPath, KadStreetNamesPath, RRAddressesPath, ImportAddressMatchZipPath });
         }
 
+        private static async Task ZendZip(string importUrl)
+        {
+            using (var zipStream = File.OpenRead(ImportAddressMatchZipPath))
+            using (var client = new HttpClient())
+            {
+                client.Timeout = new TimeSpan(0, 15, 0);
+                HttpContent fileStreamContent = new StreamContent(zipStream);
+                using (var formData = new MultipartFormDataContent())
+                {
+                    formData.Add(fileStreamContent, HttpFormFileName, ImportAddressMatchZipPath);
+                    var response = await client.PostAsync(importUrl, formData);
+                    response.EnsureSuccessStatusCode();
+                }
+            }
+        }
+
         private static void CreateZip(IEnumerable<string> filesToInclude)
         {
-            using (FileStream zipToOpen = new FileStream(ImportAddressMatchZipPath, FileMode.OpenOrCreate))
+            using (var zipToOpen = File.Open(ImportAddressMatchZipPath, FileMode.OpenOrCreate))
             {
-                using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Create))
+                using (var archive = new ZipArchive(zipToOpen, ZipArchiveMode.Create))
                 {
                     foreach (var file in filesToInclude)
                     {

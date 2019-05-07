@@ -17,6 +17,7 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure.Modules
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Projections.Legacy;
 
     public class ApiModule : Module
     {
@@ -39,7 +40,8 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure.Modules
             var eventSerializerSettings = EventsJsonSerializerSettingsProvider.CreateSerializerSettings();
 
             containerBuilder
-                .RegisterModule(new DataDogModule(_configuration));
+                .RegisterModule(new DataDogModule(_configuration))
+                .RegisterModule(new LegacyModule(_configuration, _services, _loggerFactory));
 
             containerBuilder
                 .RegisterModule(new IdempotencyModule(

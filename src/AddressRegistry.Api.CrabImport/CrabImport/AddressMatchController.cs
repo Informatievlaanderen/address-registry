@@ -16,6 +16,7 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using Projections.Legacy.AddressMatch;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
@@ -40,8 +41,7 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
 
             ZipFile.ExtractToDirectory(Path.Combine(_filePath, file.FileName), _filePath, true);
 
-            var connectionString = configuration.GetConnectionString("AddressMatch");
-            await CreateTmpTables(connectionString);
+            var connectionString = configuration.GetConnectionString("LegacyProjectionsAdmin");
 
             using (var connection = new SqlConnection(connectionString))
             {
@@ -49,6 +49,12 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
                 var transaction = connection.BeginTransaction();
                 try
                 {
+                    await connection.ExecuteAsync($@"
+                        TRUNCATE TABLE {Schema.Legacy}.{RRStreetName.TableName};
+                        TRUNCATE TABLE {Schema.Legacy}.{KadStreetName.TableName};
+                        TRUNCATE TABLE {Schema.Legacy}.{RRAddress.TableName};",
+                        transaction: transaction);
+
                     ImportRrStreetNames(connection, transaction);
                     ImportKadStreetNames(connection, transaction);
                     ImportRrAddresses(connection, transaction);
@@ -60,14 +66,12 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
                 }
             }
 
-            //Switch tables
-
             return Ok();
         }
 
         private void ImportRrStreetNames(SqlConnection connection, SqlTransaction transaction)
         {
-            var destinationTableName = $"{Schema.Legacy}.tmpRRStreetNames";
+            var destinationTableName = $"{Schema.Legacy}.RRStreetNames";
             var dataTable = new DataTable();
             dataTable.Columns.Add("StreetNameId", typeof(int));
             dataTable.Columns.Add("StreetName", typeof(string));
@@ -80,7 +84,7 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
 
         private void ImportKadStreetNames(SqlConnection connection, SqlTransaction transaction)
         {
-            var destinationTableName = $"{Schema.Legacy}.tmpKadStreetNames";
+            var destinationTableName = $"{Schema.Legacy}.KadStreetNames";
             var dataTable = new DataTable();
             dataTable.Columns.Add("StreetNameId", typeof(int));
             dataTable.Columns.Add("KadStreetNameCode", typeof(string));
@@ -92,7 +96,7 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
 
         private void ImportRrAddresses(SqlConnection connection, SqlTransaction transaction)
         {
-            var destinationTableName = $"{Schema.Legacy}.tmpRRAddresses";
+            var destinationTableName = $"{Schema.Legacy}.RRAddresses";
             var dataTable = new DataTable();
             dataTable.Columns.Add("AddressId", typeof(int));
             dataTable.Columns.Add("AddressType", typeof(string));
@@ -147,52 +151,6 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
 
             using (var fileStream = new FileStream(path, FileMode.Create))
                 await file.CopyToAsync(fileStream, cancellationToken);
-        }
-
-        private async Task CreateTmpTables(string connectionString)
-        {
-            using (var connection = new SqlConnection(connectionString))
-            {
-                await connection.ExecuteAsync($@"
-                    IF NOT EXISTS (
-                    SELECT  schema_name
-                    FROM    information_schema.schemata
-                    WHERE   schema_name = '{Schema.Legacy}')
-
-                    BEGIN
-                    EXEC sp_executesql N'CREATE SCHEMA {Schema.Legacy}'
-                    END");
-
-                await connection.ExecuteAsync($@"
-                    DROP TABLE IF EXISTS {Schema.Legacy}.tmpRRStreetNames;
-                    DROP TABLE IF EXISTS {Schema.Legacy}.tmpKadStreetNames;
-                    DROP TABLE IF EXISTS {Schema.Legacy}.tmpRRAddresses");
-
-                await connection.ExecuteAsync($@"
-                    CREATE TABLE {Schema.Legacy}.tmpRRStreetNames(
-                        StreetNameId [int] NOT NULL,
-                        StreetName [nvarchar](max) NULL,
-                        StreetCode [nvarchar](4) NULL,
-                        PostalCode [nvarchar](4) NULL)
-                    ");
-
-                await connection.ExecuteAsync($@"
-                    CREATE TABLE {Schema.Legacy}.tmpKadStreetNames(
-                        StreetNameId [int] NOT NULL,
-                        KadStreetNameCode [nvarchar](5) NULL,
-                        NisCode [nvarchar](5) NULL)
-                    ");
-
-                await connection.ExecuteAsync($@"
-                    CREATE TABLE {Schema.Legacy}.tmpRRAddresses(
-                        AddressId [int] NOT NULL,
-                        AddressType [nvarchar](1) NOT NULL,
-                        RRHouseNumber [nvarchar](11) NULL,
-                        RRIndex [nvarchar](4) NULL,
-                        StreetCode [nvarchar](4) NULL,
-                        PostalCode [nvarchar](4) NULL)
-                    ");
-            }
         }
     }
 }

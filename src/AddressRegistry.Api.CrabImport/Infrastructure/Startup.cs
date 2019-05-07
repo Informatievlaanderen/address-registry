@@ -20,7 +20,9 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure
     using System.IO;
     using System.Linq;
     using System.Reflection;
+    using System.Threading;
     using Microsoft.Extensions.FileProviders;
+    using Projections.Legacy;
 
     /// <summary>Represents the startup process for the application.</summary>
     public class Startup
@@ -151,6 +153,12 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure
             MigrationsHelper.Run(
                 _configuration.GetConnectionString("Sequences"),
                 serviceProvider.GetService<ILoggerFactory>());
+
+            new LegacyContextMigrationFactory()
+                .CreateMigrator(_configuration, _loggerFactory)
+                .MigrateAsync(new CancellationToken())
+                .GetAwaiter()
+                .GetResult();
         }
 
         private static string GetApiLeadingText(ApiVersionDescription description)

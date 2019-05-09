@@ -7,7 +7,6 @@ namespace AddressRegistry.Importer.Subaddress
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing.Commandline;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing.Serilog;
-    using Be.Vlaanderen.Basisregisters.GrAr.Import.Xunit;
     using HouseNumber.Crab;
     using Serilog;
     using Serilog.Events;
@@ -36,7 +35,6 @@ namespace AddressRegistry.Importer.Subaddress
                         settings.EndDateRecovery,
                         settings.TimeMargin,
                         int.Parse,
-                        new UnitTestConfigForSubAddress(),
                         errors => WaitForExit("Could not parse commandline options."));
 
                 WaitForStart();

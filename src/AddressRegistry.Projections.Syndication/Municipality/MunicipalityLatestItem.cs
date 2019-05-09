@@ -1,6 +1,7 @@
 namespace AddressRegistry.Projections.Syndication.Municipality
 {
     using System;
+    using System.Collections.Generic;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,28 @@ namespace AddressRegistry.Projections.Syndication.Municipality
         public Taal? PrimaryLanguage { get; set; }
         public DateTimeOffset? Version { get; set; }
         public long Position { get; set; }
+
+        public KeyValuePair<Taal, string> DefaultName
+        {
+            get
+            {
+                switch (PrimaryLanguage)
+                {
+                    default:
+                    case Taal.NL:
+                        return new KeyValuePair<Taal, string>(Taal.NL, NameDutch);
+
+                    case Taal.FR:
+                        return new KeyValuePair<Taal, string>(Taal.FR, NameFrench);
+
+                    case Taal.DE:
+                        return new KeyValuePair<Taal, string>(Taal.DE, NameGerman);
+
+                    case Taal.EN:
+                        return new KeyValuePair<Taal, string>(Taal.EN, NameEnglish);
+                }
+            }
+        }
     }
 
     public class MunicipalityLatestItemConfiguration : IEntityTypeConfiguration<MunicipalityLatestItem>

@@ -7,7 +7,6 @@ namespace AddressRegistry.Importer.HouseNumber
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing.Commandline;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing.Serilog;
-    using Be.Vlaanderen.Basisregisters.GrAr.Import.Xunit;
     using Crab;
     using Serilog;
     using Serilog.Events;
@@ -36,7 +35,6 @@ namespace AddressRegistry.Importer.HouseNumber
                         settings.EndDateRecovery,
                         settings.TimeMargin,
                         int.Parse,
-                        new UnitTestConfigForHuisnummer(),
                         errors => WaitForExit("Could not parse commandline options."));
 
                 WaitForStart();

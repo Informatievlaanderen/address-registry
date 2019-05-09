@@ -16,6 +16,7 @@ namespace AddressRegistry.Projections.Syndication
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
+    using PostalInfo;
 
     class Program
     {
@@ -102,11 +103,25 @@ namespace AddressRegistry.Projections.Syndication
                 new StreetNameLatestProjections(),
                 new StreetNameBosaProjections());
 
+            var postalInfoRunner = new FeedProjectionRunner<PostalInfoEvent, PostalInfo.PostalInfo, SyndicationContext>(
+                "postalInfo",
+                configuration.GetValue<Uri>("SyndicationFeeds:PostalInfo"),
+                configuration.GetValue<string>("SyndicationFeeds:PostalInfoAuthUserName"),
+                configuration.GetValue<string>("SyndicationFeeds:PostalInfoAuthPassword"),
+                configuration.GetValue<int>("SyndicationFeeds:PostalInfoPollingInMilliseconds"),
+                container.GetService<ILogger<Program>>(),
+                container.GetService<IRegistryAtomFeedReader>(),
+                new PostalInfoLatestProjections());
+
             yield return municipalityRunner.CatchUpAsync(
                 container.GetService<Func<Owned<SyndicationContext>>>(),
                 ct);
 
             yield return streetNameRunner.CatchUpAsync(
+                container.GetService<Func<Owned<SyndicationContext>>>(),
+                ct);
+
+            yield return postalInfoRunner.CatchUpAsync(
                 container.GetService<Func<Owned<SyndicationContext>>>(),
                 ct);
         }

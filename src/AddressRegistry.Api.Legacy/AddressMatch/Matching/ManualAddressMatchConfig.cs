@@ -1,4 +1,4 @@
-namespace AddressRegistry.Api.Legacy.AddressMatch
+namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 {
     public class ManualAddressMatchConfig
     {

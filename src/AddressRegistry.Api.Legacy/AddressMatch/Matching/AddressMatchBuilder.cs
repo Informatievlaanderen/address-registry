@@ -1,4 +1,4 @@
-namespace AddressRegistry.Api.Legacy.AddressMatch
+namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 {
     using System;
     using System.Collections;
@@ -115,10 +115,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
                 municipalityWrapper.ClearStreetNames();
         }
 
-        public IEnumerable<string> NisCodes
-        {
-            get { return _municipalities.Keys; }
-        }
+        public IEnumerable<string> NisCodes => _municipalities.Keys;
 
         public void AddMunicipalities(IEnumerable<MunicipalityLatestItem> municipalities)
         {
@@ -149,7 +146,6 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
         public IEnumerable<string> GetMatchRepresentationsForScoring()
         {
             IEnumerable<string> municipalityNames = _municipalities.Values.Select(g => g.Name).Concat(new[] { Query.MunicipalityName }).Where(x => x != null).Distinct(StringComparer.InvariantCultureIgnoreCase);
-
 
             IEnumerable<StreetNameWrapper> relevantStreetNames = AllStreetNames();
             //if addresses found, forget about the streetnames without addresses

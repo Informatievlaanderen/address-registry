@@ -1,10 +1,9 @@
-namespace AddressRegistry.Api.Legacy.AddressMatch
+namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 {
+    using System.Collections.Generic;
     using Projections.Legacy.AddressDetail;
-    using Projections.Syndication;
     using Projections.Syndication.Municipality;
     using Projections.Syndication.StreetName;
-    using System.Collections.Generic;
 
     /// <summary>
     /// Implements an algorithm for matching AdresMatchQueryComponents to Gemeentes, Straatnamen or Adressen and scoring the results.
@@ -16,7 +15,6 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
         //private readonly ITelemetry _telemetry; TODO:Datadog
 
         public AddressMatchMatchingAlgorithm(
-            SyndicationContext syndicationContext,
             IKadRrService kadRrService,
             ManualAddressMatchConfig config,
             ILatestQueries latestQueries,
@@ -26,7 +24,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
             IWarningLogger warnings) :
             //ITelemetry telemetry) :
             base(new RrAddressMatcher<TResult>(kadRrService, addressMapper, warnings),
-                new MunicipalityMatcher<TResult>(latestQueries, syndicationContext, config, municipalityMapper, warnings),//, telemetry),
+                new MunicipalityMatcher<TResult>(latestQueries, config, municipalityMapper, warnings),//, telemetry),
                 new StreetNameMatcher<TResult>(latestQueries, kadRrService, config, streetNameMapper, warnings),//, telemetry),
                 new AddressMatcher<TResult>(latestQueries, addressMapper, warnings))
         {

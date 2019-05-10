@@ -191,6 +191,28 @@ namespace AddressRegistry.Api.Legacy.Address
             }
         }
 
+        public static KeyValuePair<Taal, string>? GetDefaultHomonymAddition(StreetNameLatestItem streetName, Taal? municipalityLanguage)
+        {
+            if (!streetName.HasHomonymAddition)
+                return null;
+
+            switch (municipalityLanguage)
+            {
+                default:
+                case Taal.NL:
+                    return new KeyValuePair<Taal, string>(Taal.NL, streetName.HomonymAdditionDutch);
+
+                case Taal.FR:
+                    return new KeyValuePair<Taal, string>(Taal.FR, streetName.HomonymAdditionFrench);
+
+                case Taal.DE:
+                    return new KeyValuePair<Taal, string>(Taal.DE, streetName.HomonymAdditionGerman);
+
+                case Taal.EN:
+                    return new KeyValuePair<Taal, string>(Taal.EN, streetName.HomonymAdditionEnglish);
+            }
+        }
+
         public static KeyValuePair<Taal, string> GetDefaultStreetNameName(StreetNameBosaItem streetName, Taal? municipalityLanguage)
         {
             switch (municipalityLanguage)

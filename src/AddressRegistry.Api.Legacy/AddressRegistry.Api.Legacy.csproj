@@ -29,5 +29,9 @@
     <ProjectReference Include="..\AddressRegistry\AddressRegistry.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="AddressMatch\Responses\" />
+  </ItemGroup>
+
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

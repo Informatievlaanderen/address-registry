@@ -1,8 +1,8 @@
-namespace AddressRegistry.Api.Legacy.AddressMatch
+namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 {
-    using Microsoft.Extensions.Caching.Memory;
     using System;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Caching.Memory;
 
     public abstract class CachedService
     {

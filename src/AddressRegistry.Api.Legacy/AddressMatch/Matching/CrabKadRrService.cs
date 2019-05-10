@@ -1,14 +1,14 @@
-namespace AddressRegistry.Api.Legacy.AddressMatch
+namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
     using Microsoft.Extensions.Caching.Memory;
     using Projections.Legacy;
     using Projections.Legacy.AddressDetail;
     using Projections.Legacy.AddressMatch;
     using Projections.Syndication.StreetName;
-    using System;
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.Linq;
 
     public interface IKadRrService
     {

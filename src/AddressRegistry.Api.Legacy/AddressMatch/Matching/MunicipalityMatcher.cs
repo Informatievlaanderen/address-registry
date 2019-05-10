@@ -1,26 +1,23 @@
-namespace AddressRegistry.Api.Legacy.AddressMatch
+namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 {
+    using Projections.Syndication.Municipality;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Projections.Syndication;
-    using Projections.Syndication.Municipality;
 
     internal class MunicipalityMatcher<TResult> : ScoreableObjectMatcherBase<AddressMatchBuilder, TResult>
         where TResult : IScoreable
     {
         private readonly ManualAddressMatchConfig _config;
         private readonly ILatestQueries _latestQueries;
-        private readonly SyndicationContext _syndicationContext;
         private readonly IMapper<MunicipalityLatestItem, TResult> _mapper;
         private readonly IWarningLogger _warnings;
         //private readonly ITelemetry _telemetry; TODO: Datadog
 
-        public MunicipalityMatcher(ILatestQueries latestQueries, SyndicationContext syndicationContext, ManualAddressMatchConfig config,
+        public MunicipalityMatcher(ILatestQueries latestQueries, ManualAddressMatchConfig config,
             IMapper<MunicipalityLatestItem, TResult> mapper, IWarningLogger warnings)//, ITelemetry telemetry)
         {
             _latestQueries = latestQueries;
-            _syndicationContext = syndicationContext;
             _config = config;
             _mapper = mapper;
             _warnings = warnings;
@@ -97,7 +94,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
 
         private IEnumerable<MunicipalityLatestItem> FilterByPostcode(IEnumerable<MunicipalityLatestItem> municipalities, AddressMatchBuilder results)
         {
-            var postalInfo = _syndicationContext.PostalInfoLatestItems.Find(results.Query.PostalCode);
+            var postalInfo = _latestQueries.GetAllPostalInfo().FirstOrDefault(x => x.PostalCode == results.Query.PostalCode);
             if (postalInfo != null)
             {
                 if (results.Any() && !results.ContainsNisCode(postalInfo.NisCode))
@@ -114,7 +111,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
 
         private IEnumerable<Tuple<string, MunicipalityLatestItem>> FilterByDeelgemeente(IEnumerable<MunicipalityLatestItem> municipalities, AddressMatchBuilder results)
         {
-            var allPostalInfo = _syndicationContext.PostalInfoLatestItems.ToList();
+            var allPostalInfo = _latestQueries.GetAllPostalInfo();
             return allPostalInfo
                 .Where(postalInfo => postalInfo.PostalNames.Any(
                     postalName => postalName.PostalName.EqIgnoreDiacritics(results.Query.MunicipalityName)))
@@ -127,8 +124,5 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
                     .Where(g => g.NisCode == x.MissingNisCode)
                     .Select(g => new Tuple<string, MunicipalityLatestItem>(x.PostalCode, g)));
         }
-
     }
-
-
 }

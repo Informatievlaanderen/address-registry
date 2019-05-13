@@ -1,5 +1,6 @@
 namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
 {
+    using AddressMatch.Matching;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
@@ -35,6 +36,10 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
 
             containerBuilder
                 .RegisterModule(new SyndicationModule(_configuration, _services, _loggerFactory));
+
+            containerBuilder
+                .RegisterAssemblyTypes(typeof(IKadRrService).Assembly)
+                .AsImplementedInterfaces();
 
             containerBuilder.Populate(_services);
         }

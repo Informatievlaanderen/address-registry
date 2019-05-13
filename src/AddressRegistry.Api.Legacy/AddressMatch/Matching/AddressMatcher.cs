@@ -25,9 +25,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 
         protected override AddressMatchBuilder DoMatchInternal(AddressMatchBuilder results)
         {
-            List<Sanitizer.HouseNumberWithSubaddress> houseNumberWithSubaddresses = new List<Sanitizer.HouseNumberWithSubaddress>();
+            List<HouseNumberWithSubaddress> houseNumberWithSubaddresses = new List<HouseNumberWithSubaddress>();
             if (!string.IsNullOrEmpty(results.Query.BoxNumber))
-                houseNumberWithSubaddresses.Add(new Sanitizer.HouseNumberWithSubaddress(results.Query.HouseNumber, results.Query.BoxNumber, null));
+                houseNumberWithSubaddresses.Add(new HouseNumberWithSubaddress(results.Query.HouseNumber, results.Query.BoxNumber, null));
             else
                 houseNumberWithSubaddresses.AddRange(_sanitizer.Sanitize(results.Query.StreetName, results.Query.HouseNumber, results.Query.Index));
 

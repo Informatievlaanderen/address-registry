@@ -5,22 +5,22 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
     using System.Linq;
     using System.Text.RegularExpressions;
 
-    internal class Sanitizer
+    public class HouseNumberWithSubaddress
     {
-        public class HouseNumberWithSubaddress
+        internal HouseNumberWithSubaddress(string houseNumber, string boxNumber, string appNumber)
         {
-            internal HouseNumberWithSubaddress(string houseNumber, string boxNumber, string appNumber)
-            {
-                HouseNumber = houseNumber;
-                BoxNumber = boxNumber;
-                AppNumber = appNumber;
-            }
-
-            public string HouseNumber { get; set; }
-            public string BoxNumber { get; set; }
-            public string AppNumber { get; set; }
+            HouseNumber = houseNumber;
+            BoxNumber = boxNumber;
+            AppNumber = appNumber;
         }
 
+        public string HouseNumber { get; set; }
+        public string BoxNumber { get; set; }
+        public string AppNumber { get; set; }
+    }
+
+    internal class Sanitizer
+    {
         private static Regex _containsNumber = new Regex("[0-9]+");
         //private static Regex brackets = new Regex("\\([A-Za-z0-9]*\\)");
         private static Regex _begin = new Regex("^[0-9]+|^[a-zA-Z]+");

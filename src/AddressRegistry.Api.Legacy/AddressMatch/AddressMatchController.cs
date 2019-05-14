@@ -1,19 +1,19 @@
 namespace AddressRegistry.Api.Legacy.AddressMatch
 {
     using Be.Vlaanderen.Basisregisters.Api;
+    using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Infrastructure.Options;
     using Matching;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Options;
+    using Newtonsoft.Json.Converters;
     using Requests;
     using Responses;
+    using Swashbuckle.AspNetCore.Filters;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Be.Vlaanderen.Basisregisters.Api.Exceptions;
-    using Microsoft.AspNetCore.Http;
-    using Newtonsoft.Json.Converters;
-    using Swashbuckle.AspNetCore.Filters;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
@@ -24,11 +24,12 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
         private const double SimilarityThreshold = 75.0;
         private const int MaxStreetNamesThreshold = 100;
 
-        //TODO: Add Examples
-        //TODO: StatusCodes?
         [HttpGet]
         [ProducesResponseType(typeof(AdresMatchCollectie), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BasicApiProblem), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BasicApiProblem), StatusCodes.Status500InternalServerError)]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(AddressMatchResponseExamples), jsonConverter: typeof(StringEnumConverter))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(AddressMatchBadRequestExamples), jsonConverter: typeof(StringEnumConverter))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples), jsonConverter: typeof(StringEnumConverter))]
         public async Task<IActionResult> Get(
             [FromServices] IKadRrService kadRrService,

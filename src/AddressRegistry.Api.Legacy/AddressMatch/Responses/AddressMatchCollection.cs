@@ -1,16 +1,22 @@
 namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
 {
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-    using System.Runtime.Serialization;
-    using System.Xml.Serialization;
+    using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Gemeente;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Straatnaam;
+    using Infrastructure.Options;
     using Matching;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
+    using Swashbuckle.AspNetCore.Filters;
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.Runtime.Serialization;
+    using System.Xml.Serialization;
 
     [DataContract(Name = "AdresMatchCollectie")]
     public class AdresMatchCollectie
@@ -31,53 +37,6 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         [XmlArrayItem(ElementName = "Warning")]
         [JsonProperty(PropertyName = "Warnings")]
         public List<ValidationMessage> Warnings { get; set; }
-
-        //[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-        //internal static AdresMatchCollectie GetSample()
-        //{
-        //    return new AdresMatchCollectie
-        //    {
-        //        AdresMatches = new List<AdresMatchItem>
-        //        {
-        //            new AdresMatchItem
-        //            {
-        //                Identificator = Identificator.Create(Constants.AdresIdUri, "36416228", null),
-        //                Detail = "http://baseuri/api/adres/36416228/",
-        //                Gemeente = new AdresMatchItemGemeente { ObjectId = "44021", Detail = "http://baseuri/api/gemeente/44021/", Gemeentenaam =  Gemeentenaam.Create(new GeografischeNaam("Gent", TaalCode.NL)) },
-        //                Straatnaam = AdresMatchItemStraatnaam.Create("69499", "http://baseuri/api/straatnaam/69499/", new GeografischeNaam("Aalbessenlaan", TaalCode.NL)),
-        //                Postinfo = AdresMatchItemPostinfo.Create("9032", "http://baseuri/api/postinfo/9032"),
-        //                Huisnummer = "14",
-        //                Busnummer = null,
-        //                AdresPositie = new Point
-        //                {
-        //                    JsonPoint = new GeoJSONPoint
-        //                    {
-        //                        Type = "point",
-        //                        Coordinates = new double[] { 103024.22, 197113.18 }
-        //                    },
-        //                    XmlPoint = new GmlPoint
-        //                    {
-        //                        Pos = "103024.22 197113.18"
-        //                    }
-        //                },
-        //                PositieSpecificatie = PositieSpecificatie.Perceel,
-        //                PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-        //                VolledigAdres = VolledigAdres.Create(new GeografischeNaam("Aalbessenlaan 14, 9032 Gent", TaalCode.NL)),
-        //                AdresStatus = AdresStatus.InGebruik,
-        //                AdresseerbareObjecten = new List<AdresseerbaarObject>
-        //                {
-        //                    new AdresseerbaarObject { ObjectId = "3466", ObjectType=ObjectType.Gebouweenheid, Detail = "http://baseuri/api/gebouweenheid/3466" }
-        //                },
-        //                OfficieelToegekend = false,
-        //                Score = 89.3
-        //            }
-        //        },
-        //        Warnings = new List<ValidationMessage>
-        //        {
-        //            new ValidationMessage { Code="11", Message = "'Postcode' should be numeric. - 'Postcode' hoort numeriek te zijn." }
-        //        }
-        //    };
-        //}
     }
 
     [DataContract(Name = "AdresMatchItem")]
@@ -205,18 +164,6 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         /// </summary>
         [Required]
         public Gemeentenaam Gemeentenaam { get; set; }
-
-        //public static AdresMatchItemGemeente Create(string objectId, string detail, SpecificGemeenteVersion gemeentenaam)
-        //{
-        //    var gemeentenaam = new GeografischeNaam(gemeentenaam.Gemeentenaam, gemeentenaam.TaalCode.ToApiEnum());
-
-        //    return new AdresMatchItemGemeente
-        //    {
-        //        ObjectId = objectId,
-        //        Detail = detail,
-        //        Gemeentenaam = Gemeentenaam.Create(gemeentenaam)
-        //    };
-        //}
     }
 
     public class AdresMatchItemStraatnaam
@@ -248,16 +195,6 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
                 Straatnaam = new Straatnaam(straatnaam)
             };
         }
-
-        //public static AdresMatchItemStraatnaam Create(string objectId, string detail, SpecificStraatnaamVersion straatnaam)
-        //{
-        //    return new AdresMatchItemStraatnaam
-        //    {
-        //        ObjectId = objectId,
-        //        Detail = detail,
-        //        Straatnaam = Features.Straatnaam.Straatnaam.Create(straatnaam)
-        //    };
-        //}
     }
 
     public class AdresMatchItemPostinfo
@@ -311,5 +248,90 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         /// </summary>
         [Required]
         public string Detail { get; set; }
+    }
+
+    public class AddressMatchResponseExamples : IExamplesProvider
+    {
+        private readonly ResponseOptions _options;
+
+        public AddressMatchResponseExamples(IOptions<ResponseOptions> options)
+        {
+            _options = options.Value;
+        }
+
+        public object GetExamples()
+        {
+            return new AdresMatchCollectie
+            {
+                AdresMatches = new List<AdresMatchItem>
+                {
+                    new AdresMatchItem
+                    {
+                        Identificator = new Identificator(_options.Naamruimte, "36416228", DateTimeOffset.Now),
+                        Detail = string.Format(_options.DetailUrl, "36416228"),
+                        Gemeente = new AdresMatchItemGemeente
+                        {
+                            ObjectId = "44021",
+                            Detail = string.Format(_options.GemeenteDetailUrl, "44021"),
+                            Gemeentenaam =  new Gemeentenaam(new GeografischeNaam("Gent", Taal.NL))
+                        },
+                        Straatnaam = AdresMatchItemStraatnaam.Create("69499", string.Format(_options.StraatnaamDetailUrl, "69499"), new GeografischeNaam("Aalbessenlaan", Taal.NL)),
+                        Postinfo = AdresMatchItemPostinfo.Create("9032", string.Format(_options.PostInfoDetailUrl, "9032")),
+                        Huisnummer = "14",
+                        Busnummer = null,
+                        AdresPositie = new Point
+                        {
+                            JsonPoint = new GeoJSONPoint
+                            {
+                                Type = "point",
+                                Coordinates = new double[] { 103024.22, 197113.18 }
+                            },
+                            XmlPoint = new GmlPoint
+                            {
+                                Pos = "103024.22 197113.18"
+                            }
+                        },
+                        PositieSpecificatie = PositieSpecificatie.Perceel,
+                        PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
+                        VolledigAdres = new VolledigAdres(new GeografischeNaam("Aalbessenlaan 14, 9032 Gent", Taal.NL)),
+                        AdresStatus = AdresStatus.InGebruik,
+                        AdresseerbareObjecten = new List<AdresseerbaarObject>
+                        {
+                            new AdresseerbaarObject
+                            {
+                                ObjectId = "3466",
+                                ObjectType =ObjectType.Gebouweenheid,
+                                Detail = string.Format(_options.GebouweenheidDetailUrl, "3466")
+                            }
+                        },
+                        OfficieelToegekend = false,
+                        Score = 89.3
+                    }
+                },
+                Warnings = new List<ValidationMessage>
+                {
+                    new ValidationMessage { Code="11", Message = "'Postcode' should be numeric. - 'Postcode' hoort numeriek te zijn." }
+                }
+            };
+        }
+    }
+
+    public class AddressMatchBadRequestExamples : IExamplesProvider
+    {
+        public object GetExamples()
+        {
+            return new BasicApiValidationProblem
+            {
+                HttpStatus = StatusCodes.Status400BadRequest,
+                Title = BasicApiProblem.DefaultTitle,
+                Detail = "Validation failed",
+                ProblemInstanceUri = BasicApiProblem.GetProblemNumber(),
+                ValidationErrors = new string[]
+                {
+                    "Gelieve minstens een van volgende velden op te geven, 'Gemeentenaam, Niscode, Postcode'.",
+                    "'Straatnaam' mag maximaal 18 karakters lang zijn. U gaf xx karakters op."
+                }
+            };
+        }
     }
 }

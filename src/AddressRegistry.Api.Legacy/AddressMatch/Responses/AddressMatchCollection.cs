@@ -315,23 +315,4 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
             };
         }
     }
-
-    public class AddressMatchBadRequestExamples : IExamplesProvider
-    {
-        public object GetExamples()
-        {
-            return new BasicApiValidationProblem
-            {
-                HttpStatus = StatusCodes.Status400BadRequest,
-                Title = BasicApiProblem.DefaultTitle,
-                Detail = "Validation failed",
-                ProblemInstanceUri = BasicApiProblem.GetProblemNumber(),
-                ValidationErrors = new string[]
-                {
-                    "Gelieve minstens een van volgende velden op te geven, 'Gemeentenaam, Niscode, Postcode'.",
-                    "'Straatnaam' mag maximaal 18 karakters lang zijn. U gaf xx karakters op."
-                }
-            };
-        }
-    }
 }

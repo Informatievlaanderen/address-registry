@@ -1,6 +1,5 @@
 namespace AddressRegistry.Api.Legacy.Address.Responses
 {
-    using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
@@ -10,6 +9,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
     using Swashbuckle.AspNetCore.Filters;
     using System;
     using System.Runtime.Serialization;
+    using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
     [DataContract(Name = "AdresDetail", Namespace = "")]
     public class AddressResponse
@@ -171,12 +171,12 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
     {
         public object GetExamples()
         {
-            return new BasicApiProblem
+            return new ProblemDetails
             {
                 HttpStatus = StatusCodes.Status404NotFound,
-                Title = BasicApiProblem.DefaultTitle,
+                Title = ProblemDetails.DefaultTitle,
                 Detail = "Onbestaand adres.",
-                ProblemInstanceUri = BasicApiProblem.GetProblemNumber()
+                ProblemInstanceUri = ProblemDetails.GetProblemNumber()
             };
         }
     }
@@ -185,12 +185,12 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
     {
         public object GetExamples()
         {
-            return new BasicApiProblem
+            return new ProblemDetails
             {
                 HttpStatus = StatusCodes.Status410Gone,
-                Title = BasicApiProblem.DefaultTitle,
+                Title = ProblemDetails.DefaultTitle,
                 Detail = "Adres werd verwijderd.",
-                ProblemInstanceUri = BasicApiProblem.GetProblemNumber()
+                ProblemInstanceUri = ProblemDetails.GetProblemNumber()
             };
         }
     }

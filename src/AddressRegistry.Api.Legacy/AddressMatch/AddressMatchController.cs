@@ -2,6 +2,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
 {
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
+    using Be.Vlaanderen.Basisregisters.BasicApiProblem;
     using Infrastructure.Options;
     using Matching;
     using Microsoft.AspNetCore.Http;
@@ -14,6 +15,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
@@ -26,10 +28,10 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
 
         [HttpGet]
         [ProducesResponseType(typeof(AdresMatchCollectie), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(BasicApiProblem), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(BasicApiProblem), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(AddressMatchResponseExamples), jsonConverter: typeof(StringEnumConverter))]
-        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(AddressMatchBadRequestExamples), jsonConverter: typeof(StringEnumConverter))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ValidationErrorResponseExamples), jsonConverter: typeof(StringEnumConverter))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples), jsonConverter: typeof(StringEnumConverter))]
         public async Task<IActionResult> Get(
             [FromServices] IKadRrService kadRrService,
@@ -38,7 +40,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
             [FromQuery] AddressMatchRequest addressMatchRequest,
             CancellationToken cancellationToken = default)
         {
-            //TODO: Implement validator
+            await new AddressMatchRequestValidator()
+                .ValidateAndThrowAsync(addressMatchRequest, cancellationToken: cancellationToken);
 
             var warningLogger = new ValidationMessageWarningLogger();
             var addressMatch = new AddressMatchMatchingAlgorithm<AdresMatchItem>(

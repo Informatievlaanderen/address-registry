@@ -15,17 +15,17 @@ source https://api.nuget.org/v3/index.json
 // nuget Microsoft.AspNetCore.All 2.0.0
 
 // DOTNETCORE ISSUES
-nuget Microsoft.NETCore.App 2.2.0
-nuget Microsoft.NETCore.DotNetAppHost 2.2.0
-nuget Microsoft.NETCore.DotNetHostResolver 2.2.0
-nuget Microsoft.NETCore.DotNetHostPolicy 2.2.0
+nuget Microsoft.NETCore.App 2.2.4
+nuget Microsoft.NETCore.DotNetAppHost 2.2.4
+nuget Microsoft.NETCore.DotNetHostResolver 2.2.4
+nuget Microsoft.NETCore.DotNetHostPolicy 2.2.4
 nuget NETStandard.Library 2.0.3
 
 // PRODUCTION STUFF
 nuget Microsoft.Extensions.Configuration 2.2.0
 nuget Microsoft.Extensions.Configuration.CommandLine 2.2.0
 nuget Microsoft.Extensions.Configuration.FileExtensions 2.2.0
-nuget Microsoft.Extensions.Configuration.EnvironmentVariables 2.2.0
+nuget Microsoft.Extensions.Configuration.EnvironmentVariables 2.2.4
 nuget Microsoft.Extensions.Configuration.Json 2.2.0
 
 nuget Microsoft.Extensions.Http.Polly 2.2.0
@@ -37,7 +37,7 @@ nuget Autofac.Extensions.DependencyInjection 4.4.0
 
 nuget Serilog 2.8.0
 nuget Serilog.Settings.Configuration 3.0.1
-nuget Serilog.Extensions.Logging 2.0.2
+nuget Serilog.Extensions.Logging 2.0.4
 nuget Serilog.Sinks.Console 3.1.1
 nuget Serilog.Sinks.File 4.0.0
 nuget Serilog.Enrichers.Thread 3.0.0
@@ -52,10 +52,10 @@ nuget CsvHelper 12.1.2
 
 nuget NetTopologySuite 1.15.1
 
-nuget Microsoft.EntityFrameworkCore.Design 2.2.0
+nuget Microsoft.EntityFrameworkCore.Design 2.2.4
 
 // VBR STUFF
-nuget Be.Vlaanderen.Basisregisters.Build.Pipeline ~> 1.5
+nuget Be.Vlaanderen.Basisregisters.Build.Pipeline ~> 1.6
 nuget Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events ~> 1.0 content: true, copy_content_to_output_dir: always, copy_local: true
 
 nuget Be.Vlaanderen.Basisregisters.AggregateSource ~> 3.0
@@ -66,7 +66,7 @@ nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.CommandHandling ~> 3.
 nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac ~> 3.0
 nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit ~> 3.0
 
-nuget Be.Vlaanderen.Basisregisters.Api ~> 6.0
+nuget Be.Vlaanderen.Basisregisters.Api ~> 7.0
 
 nuget Be.Vlaanderen.Basisregisters.CommandHandling ~> 3.0
 nuget Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency ~> 3.0
@@ -110,8 +110,8 @@ nuget Structurizr.Client 0.9.0
 nuget Structurizr.AdrTools 0.9.0
 
 // TEST STUFF
-nuget Microsoft.NET.Test.Sdk 15.9.0
-nuget Microsoft.EntityFrameworkCore.InMemory 2.2.0
+nuget Microsoft.NET.Test.Sdk 16.0.1
+nuget Microsoft.EntityFrameworkCore.InMemory 2.2.4
 nuget Microsoft.AspNetCore.Mvc.Testing 2.2.0
 nuget xunit 2.4.1
 nuget xunit.runner.visualstudio 2.4.1
@@ -119,7 +119,6 @@ nuget xunit.categories 2.0.4
 nuget FluentAssertions 5.6.0
 nuget Moq 4.10.1
 nuget AutoFixture.Xunit2 4.8.0
-nuget CsvHelper 12.1.2
 nuget Serilog.Sinks.XUnit 1.0.8
 
 // BUILD STUFF

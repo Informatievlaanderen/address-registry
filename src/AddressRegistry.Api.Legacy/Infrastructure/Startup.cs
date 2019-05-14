@@ -107,6 +107,8 @@ namespace AddressRegistry.Api.Legacy.Infrastructure
             ApiDebugDataDogToggle debugDataDogToggle,
             HealthCheckService healthCheckService)
         {
+            StartupHelpers.CheckDatabases(healthCheckService, DatabaseTag).GetAwaiter().GetResult();
+
             app
                 .UseDatadog<Startup>(
                     serviceProvider,

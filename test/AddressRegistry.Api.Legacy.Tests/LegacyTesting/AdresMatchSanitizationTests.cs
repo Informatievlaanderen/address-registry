@@ -1,16 +1,15 @@
 namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
     using AddressMatch.Requests;
-    using AddressMatch.Responses;
     using Assert;
     using Generate;
     using Microsoft.AspNetCore.Mvc;
     using Mocking;
     using Projections.Legacy.AddressDetail;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -35,7 +34,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting
             _arrangeStraatnaam = straatnaam =>
             {
                 int straatnaamId = Generate.Generate.Id.Generate(_random);
-                _latest.ArrangeLatestStraatnaam(existingNisCode, existingGemeentenaam, straatnaamId.ToString(), straatnaam);
+                _latest.ArrangeLatestStraatnaam(existingNisCode, existingGemeentenaam, straatnaamId.ToString(), straatnaam, Guid.NewGuid());
             };
 
             /* huisnummer in straatnaam */

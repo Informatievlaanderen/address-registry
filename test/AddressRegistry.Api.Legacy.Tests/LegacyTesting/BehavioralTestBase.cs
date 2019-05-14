@@ -21,8 +21,8 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting
     {
         protected Mocking<IKadRrService, KadRrServiceSetup, KadRrServiceVerification> _kadRrService;
         protected Mocking<ILatestQueries, LatestQueriesSetup, LatestQueriesVerification> _latest;
-        private SyndicationContextMemory _syndicationContext;
-        private LegacyContextMemory _legacyContext;
+        protected SyndicationContextMemory _syndicationContext;
+        protected LegacyContextMemory _legacyContext;
         protected Random _random;
         private readonly AddressMatchController _controller;
 

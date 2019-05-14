@@ -1,13 +1,14 @@
 namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting.Mocking
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using AddressMatch.Matching;
     using Moq;
     using Projections.Legacy.AddressDetail;
     using Projections.Syndication.Municipality;
+    using Projections.Syndication.PostalInfo;
     using Projections.Syndication.StreetName;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
 
     public class LatestQueriesSetup : MockingSetup<ILatestQueries>
     {
@@ -31,6 +32,24 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting.Mocking
                 Moq.Setup(m => m.FindLatestStreetNameById(straatnaam.OsloId)).Returns(straatnaam);
             }
 
+            return this;
+        }
+
+        internal LatestQueriesSetup LatestGemeentes(IEnumerable<MunicipalityLatestItem> gemeentes)
+        {
+            Moq.Setup(x => x.GetAllLatestMunicipalities()).Returns(gemeentes);
+            return this;
+        }
+
+        internal LatestQueriesSetup LatestStraatNamen(IEnumerable<StreetNameLatestItem> streetNames)
+        {
+            Moq.Setup(x => x.GetAllLatestStreetNames()).Returns(streetNames);
+            return this;
+        }
+
+        internal LatestQueriesSetup LatestPostInfo(IEnumerable<PostalInfoLatestItem> postalInfos)
+        {
+            Moq.Setup(x => x.GetAllPostalInfo()).Returns(postalInfos);
             return this;
         }
 

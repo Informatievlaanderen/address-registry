@@ -118,11 +118,11 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 .Select(postalInfo => new
                 {
                     PostalCode = postalInfo.PostalCode,
-                    MissingNisCode = results.ContainsNisCode(postalInfo.NisCode) ? postalInfo.NisCode : null,
+                    MissingNisCode = results.ContainsNisCode(postalInfo.NisCode) ? null : postalInfo.NisCode,
                 })
-                .SelectMany(x => municipalities
-                    .Where(g => g.NisCode == x.MissingNisCode)
-                    .Select(g => new Tuple<string, MunicipalityLatestItem>(x.PostalCode, g)));
+               .SelectMany(x => municipalities
+                 .Where(g => g.NisCode == x.MissingNisCode)
+                 .Select(g => new Tuple<string, MunicipalityLatestItem>(x.PostalCode, g)));
         }
     }
 }

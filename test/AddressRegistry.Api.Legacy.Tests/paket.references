@@ -10,7 +10,6 @@ AutoFixture.Xunit2
 NetTopologySuite
 Moq
 Serilog.Sinks.XUnit
-CsvHelper
 
 Be.Vlaanderen.Basisregisters.Crab
 

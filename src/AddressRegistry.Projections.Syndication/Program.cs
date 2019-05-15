@@ -16,6 +16,7 @@ namespace AddressRegistry.Projections.Syndication
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
+    using Parcel;
     using PostalInfo;
 
     class Program
@@ -113,6 +114,16 @@ namespace AddressRegistry.Projections.Syndication
                 container.GetService<IRegistryAtomFeedReader>(),
                 new PostalInfoLatestProjections());
 
+            var parcelRunner = new FeedProjectionRunner<ParcelEvent, Parcel.Parcel, SyndicationContext>(
+                "perceel",
+                configuration.GetValue<Uri>("SyndicationFeeds:Parcel"),
+                configuration.GetValue<string>("SyndicationFeeds:ParcelAuthUserName"),
+                configuration.GetValue<string>("SyndicationFeeds:ParcelAuthPassword"),
+                configuration.GetValue<int>("SyndicationFeeds:ParcelPollingInMilliseconds"),
+                container.GetService<ILogger<Program>>(),
+                container.GetService<IRegistryAtomFeedReader>(),
+                new ParcelAddressMatchProjections());
+
             yield return municipalityRunner.CatchUpAsync(
                 container.GetService<Func<Owned<SyndicationContext>>>(),
                 ct);
@@ -122,6 +133,10 @@ namespace AddressRegistry.Projections.Syndication
                 ct);
 
             yield return postalInfoRunner.CatchUpAsync(
+                container.GetService<Func<Owned<SyndicationContext>>>(),
+                ct);
+
+            yield return parcelRunner.CatchUpAsync(
                 container.GetService<Func<Owned<SyndicationContext>>>(),
                 ct);
         }

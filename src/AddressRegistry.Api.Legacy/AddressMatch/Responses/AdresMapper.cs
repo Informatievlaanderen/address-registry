@@ -9,16 +9,19 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
     using Infrastructure.Options;
     using Matching;
     using Projections.Legacy.AddressDetail;
+    using Projections.Syndication;
 
     internal class AdresMapper : IMapper<AddressDetailItem, AdresMatchItem>
     {
         private readonly ResponseOptions _responseOptions;
         private readonly ILatestQueries _latestQueries;
+        private readonly SyndicationContext _syndicationContext;
 
-        public AdresMapper(ResponseOptions responseOptions, ILatestQueries latestQueries)
+        public AdresMapper(ResponseOptions responseOptions, ILatestQueries latestQueries, SyndicationContext syndicationContext)
         {
             _responseOptions = responseOptions;
             _latestQueries = latestQueries;
+            _syndicationContext = syndicationContext;
         }
 
         public AdresMatchItem Map(AddressDetailItem source)
@@ -63,12 +66,17 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
                 //    ObjectId = gObjectID.ToString(),
                 //    ObjectType = ObjectType.Gebouweenheid,
                 //    Detail = _responseOptions.Link(GebouweenheidController.GebouweenheidGetLatestVersionRouteName, new { ObjectId = gObjectID.ToString() })
-                //}).Concat(adresDetail.PerceelCapaKeys.Select(pCapaKey => new AdresseerbaarObject
-                //{
-                //    ObjectId = pCapaKey,
-                //    ObjectType = ObjectType.Perceel,
-                //    Detail = _responseOptions.Link(PerceelController.PerceelGetLatestVersionRouteName, new { ObjectId = pCapaKey })
-                //})).ToList()
+                //}).Concat(
+                AdresseerbareObjecten = _syndicationContext.ParcelAddressMatchLatestItems
+                    .Where(x => x.AddressId == source.AddressId)
+                    .ToList()
+                    .Select(matchLatestItem => new AdresseerbaarObject
+                    {
+                        ObjectId = matchLatestItem.ParcelOsloId,
+                        ObjectType = ObjectType.Perceel,
+                        Detail = string.Format(_responseOptions.PerceelDetailUrl, matchLatestItem.ParcelOsloId),
+                    })
+                    .ToList()
             };
 
         }

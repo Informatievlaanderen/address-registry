@@ -50,13 +50,18 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting
 
         public Task<IActionResult> Send(AddressMatchRequest request)
         {
-            return _controller.Get(_kadRrService.Object, _latest.Object, new OptionsWrapper<ResponseOptions>(new ResponseOptions
-            {
-                DetailUrl = "detail/{0}",
-                GemeenteDetailUrl = "gemeentedetail/{0}",
-                StraatnaamDetailUrl = "straatnaamdetail/{0}",
-                PostInfoDetailUrl = "postinfodetail/{0}",
-            }), request);
+            return _controller.Get(
+                _kadRrService.Object,
+                _latest.Object,
+                new OptionsWrapper<ResponseOptions>(new ResponseOptions
+                {
+                    DetailUrl = "detail/{0}",
+                    GemeenteDetailUrl = "gemeentedetail/{0}",
+                    StraatnaamDetailUrl = "straatnaamdetail/{0}",
+                    PostInfoDetailUrl = "postinfodetail/{0}",
+                }),
+                _syndicationContext,
+                request);
         }
     }
 

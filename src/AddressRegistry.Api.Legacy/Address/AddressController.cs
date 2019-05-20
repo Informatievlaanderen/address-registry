@@ -33,7 +33,7 @@ namespace AddressRegistry.Api.Legacy.Address
     using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
-    using StringWriterWithEncoding = Be.Vlaanderen.Basisregisters.Shaperon.StringWriterWithEncoding;
+    using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]

@@ -19,6 +19,7 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
     using Newtonsoft.Json.Converters;
     using Requests;
     using Swashbuckle.AspNetCore.Filters;
+    using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]

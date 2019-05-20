@@ -12,6 +12,7 @@ namespace AddressRegistry.Api.Extract.Extracts
     using System.Threading;
     using Be.Vlaanderen.Basisregisters.Api.Extract;
     using Projections.Syndication;
+    using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]

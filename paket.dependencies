@@ -8,53 +8,34 @@ source https://api.nuget.org/v3/index.json
 // When doing development as an employee, uncomment this to use the private NuGet proxy
 // source https://informatievlaanderen.myget.org/F/nuget-mirror/api/v3/index.json username: "%MYGET_FEED_USER%" password: "%MYGET_FEED_PASS%" authtype: "basic"
 
-// This is what Microsoft likes to do from now on, except it makes no sense
-// - It does not work for self contained apps
-// - It requires you to pre install this new "GAC" on every machine
-// - It requires huge Docker base images to contain this new "GAC"
-// nuget Microsoft.AspNetCore.All 2.0.0
-
 // DOTNETCORE ISSUES
-nuget Microsoft.NETCore.App 2.2.0
-nuget Microsoft.NETCore.DotNetAppHost 2.2.0
-nuget Microsoft.NETCore.DotNetHostResolver 2.2.0
-nuget Microsoft.NETCore.DotNetHostPolicy 2.2.0
+nuget Microsoft.NETCore.App 2.2.4
+nuget Microsoft.NETCore.DotNetAppHost 2.2.4
+nuget Microsoft.NETCore.DotNetHostResolver 2.2.4
+nuget Microsoft.NETCore.DotNetHostPolicy 2.2.4
 nuget NETStandard.Library 2.0.3
 
 // PRODUCTION STUFF
 nuget Microsoft.Extensions.Configuration 2.2.0
 nuget Microsoft.Extensions.Configuration.CommandLine 2.2.0
 nuget Microsoft.Extensions.Configuration.FileExtensions 2.2.0
-nuget Microsoft.Extensions.Configuration.EnvironmentVariables 2.2.0
+nuget Microsoft.Extensions.Configuration.EnvironmentVariables 2.2.4
 nuget Microsoft.Extensions.Configuration.Json 2.2.0
 
 nuget Microsoft.Extensions.Http.Polly 2.2.0
-
-nuget Microsoft.SyndicationFeed.ReaderWriter 1.0.2
-
-nuget Autofac 4.9.2
-nuget Autofac.Extensions.DependencyInjection 4.4.0
-
-nuget Serilog 2.8.0
-nuget Serilog.Settings.Configuration 3.0.1
-nuget Serilog.Extensions.Logging 2.0.2
-nuget Serilog.Sinks.Console 3.1.1
-nuget Serilog.Sinks.File 4.0.0
-nuget Serilog.Enrichers.Thread 3.0.0
-nuget Serilog.Enrichers.Environment 2.1.3
 
 // For more healtchecks, look at https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks
 nuget AspNetCore.HealthChecks.SqlServer 2.2.0
 
 nuget AsyncEnumerator 2.2.2
-nuget Dapper 1.60.1
+nuget Dapper 1.60.6
 
-nuget NetTopologySuite 1.15.1
+nuget NetTopologySuite 1.15.2
 
-nuget Microsoft.EntityFrameworkCore.Design 2.2.0
+nuget Microsoft.EntityFrameworkCore.Design 2.2.4
 
 // VBR STUFF
-nuget Be.Vlaanderen.Basisregisters.Build.Pipeline ~> 1.5
+nuget Be.Vlaanderen.Basisregisters.Build.Pipeline ~> 1.6
 nuget Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events ~> 1.0 content: true, copy_content_to_output_dir: always, copy_local: true
 
 nuget Be.Vlaanderen.Basisregisters.AggregateSource ~> 3.0
@@ -65,7 +46,7 @@ nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.CommandHandling ~> 3.
 nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac ~> 3.0
 nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit ~> 3.0
 
-nuget Be.Vlaanderen.Basisregisters.Api ~> 6.0
+nuget Be.Vlaanderen.Basisregisters.Api ~> 7.0
 
 nuget Be.Vlaanderen.Basisregisters.CommandHandling ~> 3.0
 nuget Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency ~> 3.0
@@ -74,13 +55,13 @@ nuget Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore ~> 3.0
 nuget Be.Vlaanderen.Basisregisters.EventHandling ~> 1.0
 nuget Be.Vlaanderen.Basisregisters.EventHandling.Autofac ~> 1.0
 
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList ~> 3.0
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore ~> 3.0
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac ~> 3.0
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner ~> 3.0
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing ~> 3.0
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit ~> 3.0
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication ~> 3.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList ~> 3.5
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore ~> 3.5
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac ~> 3.5
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner ~> 3.5
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing ~> 3.5
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit ~> 3.5
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication ~> 3.5
 
 nuget Be.Vlaanderen.Basisregisters.Projector ~> 3.1
 
@@ -96,7 +77,7 @@ nuget Be.Vlaanderen.Basisregisters.GrAr.Legacy ~> 6.0
 nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance ~> 6.0
 nuget Be.Vlaanderen.Basisregisters.GrAr.Extracts ~> 6.0
 
-nuget Be.Vlaanderen.Basisregisters.Shaperon ~> 4.0
+nuget Be.Vlaanderen.Basisregisters.Shaperon ~> 4.1
 
 // .NET CLASSIC STUFF
 nuget EntityFramework 6.2.0
@@ -109,7 +90,7 @@ nuget Structurizr.AdrTools 0.9.0
 
 // TEST STUFF
 nuget Microsoft.NET.Test.Sdk 15.9.0
-nuget Microsoft.EntityFrameworkCore.InMemory 2.2.0
+nuget Microsoft.EntityFrameworkCore.InMemory 2.2.4
 nuget xunit 2.4.1
 nuget xunit.runner.visualstudio 2.4.1
 nuget xunit.categories 2.0.4

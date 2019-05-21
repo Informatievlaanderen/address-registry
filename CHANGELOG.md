@@ -1,3 +1,14 @@
+## [1.1.3](https://github.com/informatievlaanderen/address-registry/compare/v1.1.2...v1.1.3) (2019-05-21)
+
+## [1.1.2](https://github.com/informatievlaanderen/address-registry/compare/v1.1.1...v1.1.2) (2019-05-20)
+
+## [1.1.1](https://github.com/informatievlaanderen/address-registry/compare/v1.1.0...v1.1.1) (2019-05-17)
+
+
+### Bug Fixes
+
+* remove test code from applications ([456784c](https://github.com/informatievlaanderen/address-registry/commit/456784c))
+
 # [1.1.0](https://github.com/informatievlaanderen/address-registry/compare/v1.0.8...v1.1.0) (2019-04-30)
 
 

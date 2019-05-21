@@ -8,12 +8,6 @@ source https://api.nuget.org/v3/index.json
 // When doing development as an employee, uncomment this to use the private NuGet proxy
 // source https://informatievlaanderen.myget.org/F/nuget-mirror/api/v3/index.json username: "%MYGET_FEED_USER%" password: "%MYGET_FEED_PASS%" authtype: "basic"
 
-// This is what Microsoft likes to do from now on, except it makes no sense
-// - It does not work for self contained apps
-// - It requires you to pre install this new "GAC" on every machine
-// - It requires huge Docker base images to contain this new "GAC"
-// nuget Microsoft.AspNetCore.All 2.0.0
-
 // DOTNETCORE ISSUES
 nuget Microsoft.NETCore.App 2.2.4
 nuget Microsoft.NETCore.DotNetAppHost 2.2.4
@@ -30,27 +24,14 @@ nuget Microsoft.Extensions.Configuration.Json 2.2.0
 
 nuget Microsoft.Extensions.Http.Polly 2.2.0
 
-nuget Microsoft.SyndicationFeed.ReaderWriter 1.0.2
-
-nuget Autofac 4.9.2
-nuget Autofac.Extensions.DependencyInjection 4.4.0
-
-nuget Serilog 2.8.0
-nuget Serilog.Settings.Configuration 3.0.1
-nuget Serilog.Extensions.Logging 2.0.4
-nuget Serilog.Sinks.Console 3.1.1
-nuget Serilog.Sinks.File 4.0.0
-nuget Serilog.Enrichers.Thread 3.0.0
-nuget Serilog.Enrichers.Environment 2.1.3
-
 // For more healtchecks, look at https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks
 nuget AspNetCore.HealthChecks.SqlServer 2.2.0
 
 nuget AsyncEnumerator 2.2.2
-nuget Dapper 1.60.1
+nuget Dapper 1.60.6
 nuget CsvHelper 12.1.2
 
-nuget NetTopologySuite 1.15.1
+nuget NetTopologySuite 1.15.2
 
 nuget Microsoft.EntityFrameworkCore.Design 2.2.4
 
@@ -93,12 +74,11 @@ nuget Be.Vlaanderen.Basisregisters.Crab ~> 1.0
 
 nuget Be.Vlaanderen.Basisregisters.GrAr.Common ~> 6.0
 nuget Be.Vlaanderen.Basisregisters.GrAr.Import ~> 6.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Import.Xunit ~> 6.0
 nuget Be.Vlaanderen.Basisregisters.GrAr.Legacy ~> 6.0
 nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance ~> 6.0
 nuget Be.Vlaanderen.Basisregisters.GrAr.Extracts ~> 6.0
 
-nuget Be.Vlaanderen.Basisregisters.Shaperon ~> 4.0
+nuget Be.Vlaanderen.Basisregisters.Shaperon ~> 4.1
 
 // .NET CLASSIC STUFF
 nuget EntityFramework 6.2.0
@@ -112,7 +92,6 @@ nuget Structurizr.AdrTools 0.9.0
 // TEST STUFF
 nuget Microsoft.NET.Test.Sdk 16.0.1
 nuget Microsoft.EntityFrameworkCore.InMemory 2.2.4
-nuget Microsoft.AspNetCore.Mvc.Testing 2.2.0
 nuget xunit 2.4.1
 nuget xunit.runner.visualstudio 2.4.1
 nuget xunit.categories 2.0.4

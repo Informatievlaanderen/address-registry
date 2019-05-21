@@ -366,7 +366,8 @@ namespace AddressRegistry.Api.Legacy.Address
                     syndicationConfiguration.GetSection("Related").GetChildren().Select(c => c.Value).ToArray());
 
                 var nextUri = BuildVolgendeUri(pagedAddresses.PaginationInfo, syndicationConfiguration["NextUri"]);
-                await writer.Write(new SyndicationLink(nextUri, "next"));
+                if (nextUri != null)
+                    await writer.Write(new SyndicationLink(nextUri, "next"));
 
                 foreach (var address in pagedAddresses.Items)
                     await writer.WriteAddress(responseOptions, formatter, syndicationConfiguration["Category"], address);

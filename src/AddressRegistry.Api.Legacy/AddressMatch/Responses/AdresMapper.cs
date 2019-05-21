@@ -61,22 +61,29 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
                 PositieGeometrieMethode = AddressMapper.ConvertFromGeometryMethod(source.PositionMethod),
                 AdresStatus = AddressMapper.ConvertFromAddressStatus(source.Status),
                 OfficieelToegekend = source.OfficiallyAssigned,
-                //AdresseerbareObjecten = adresDetail.GebouweenheidObjectIds.Select(gObjectID => new AdresseerbaarObject
-                //{
-                //    ObjectId = gObjectID.ToString(),
-                //    ObjectType = ObjectType.Gebouweenheid,
-                //    Detail = _responseOptions.Link(GebouweenheidController.GebouweenheidGetLatestVersionRouteName, new { ObjectId = gObjectID.ToString() })
-                //}).Concat(
-                AdresseerbareObjecten = _syndicationContext.ParcelAddressMatchLatestItems
-                    .Where(x => x.AddressId == source.AddressId)
-                    .ToList()
-                    .Select(matchLatestItem => new AdresseerbaarObject
-                    {
-                        ObjectId = matchLatestItem.ParcelOsloId,
-                        ObjectType = ObjectType.Perceel,
-                        Detail = string.Format(_responseOptions.PerceelDetailUrl, matchLatestItem.ParcelOsloId),
-                    })
-                    .ToList()
+                AdresseerbareObjecten =
+                    _syndicationContext.BuildingUnitAddressMatchLatestItems
+                        .Where(x => x.AddressId == source.AddressId)
+                        .ToList()
+                        .Select(matchLatestItem => new AdresseerbaarObject
+                        {
+                            ObjectId = matchLatestItem.BuildingUnitOsloId,
+                            ObjectType = ObjectType.Gebouweenheid,
+                            Detail = string.Format(_responseOptions.GebouweenheidDetailUrl, matchLatestItem.BuildingUnitOsloId),
+                        })
+                        .ToList()
+                        .Concat(
+                            _syndicationContext.ParcelAddressMatchLatestItems
+                            .Where(x => x.AddressId == source.AddressId)
+                            .ToList()
+                            .Select(matchLatestItem => new AdresseerbaarObject
+                            {
+                                ObjectId = matchLatestItem.ParcelOsloId,
+                                ObjectType = ObjectType.Perceel,
+                                Detail = string.Format(_responseOptions.PerceelDetailUrl, matchLatestItem.ParcelOsloId),
+                            })
+                            .ToList())
+                        .ToList()
             };
 
         }

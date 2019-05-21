@@ -10,6 +10,7 @@ namespace AddressRegistry.Projections.Syndication
     using StreetName;
     using System;
     using System.IO;
+    using BuildingUnit;
     using Parcel;
 
     public class SyndicationContext : RunnerDbContext<SyndicationContext>
@@ -26,6 +27,7 @@ namespace AddressRegistry.Projections.Syndication
         public DbSet<StreetNameBosaItem> StreetNameBosaItems { get; set; }
 
         public DbSet<ParcelAddressMatchLatestItem> ParcelAddressMatchLatestItems { get; set; }
+        public DbSet<BuildingUnitAddressMatchLatestItem> BuildingUnitAddressMatchLatestItems { get; set; }
 
         // This needs to be here to please EF
         public SyndicationContext() { }

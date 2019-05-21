@@ -16,6 +16,7 @@ namespace AddressRegistry.Projections.Syndication
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
+    using BuildingUnit;
     using Parcel;
     using PostalInfo;
 
@@ -86,6 +87,8 @@ namespace AddressRegistry.Projections.Syndication
                 configuration.GetValue<string>("SyndicationFeeds:MunicipalityAuthUserName"),
                 configuration.GetValue<string>("SyndicationFeeds:MunicipalityAuthPassword"),
                 configuration.GetValue<int>("SyndicationFeeds:MunicipalityPollingInMilliseconds"),
+                true,
+                true,
                 container.GetService<ILogger<Program>>(),
                 container.GetService<IRegistryAtomFeedReader>(),
                 new MunicipalitySyndiciationItemProjections(),
@@ -98,6 +101,8 @@ namespace AddressRegistry.Projections.Syndication
                 configuration.GetValue<string>("SyndicationFeeds:StreetNameAuthUserName"),
                 configuration.GetValue<string>("SyndicationFeeds:StreetNameAuthPassword"),
                 configuration.GetValue<int>("SyndicationFeeds:StreetNamePollingInMilliseconds"),
+                true,
+                true,
                 container.GetService<ILogger<Program>>(),
                 container.GetService<IRegistryAtomFeedReader>(),
                 new StreetNameSyndicationItemProjections(),
@@ -110,6 +115,8 @@ namespace AddressRegistry.Projections.Syndication
                 configuration.GetValue<string>("SyndicationFeeds:PostalInfoAuthUserName"),
                 configuration.GetValue<string>("SyndicationFeeds:PostalInfoAuthPassword"),
                 configuration.GetValue<int>("SyndicationFeeds:PostalInfoPollingInMilliseconds"),
+                true,
+                true,
                 container.GetService<ILogger<Program>>(),
                 container.GetService<IRegistryAtomFeedReader>(),
                 new PostalInfoLatestProjections());
@@ -120,9 +127,23 @@ namespace AddressRegistry.Projections.Syndication
                 configuration.GetValue<string>("SyndicationFeeds:ParcelAuthUserName"),
                 configuration.GetValue<string>("SyndicationFeeds:ParcelAuthPassword"),
                 configuration.GetValue<int>("SyndicationFeeds:ParcelPollingInMilliseconds"),
+                true,
+                true,
                 container.GetService<ILogger<Program>>(),
                 container.GetService<IRegistryAtomFeedReader>(),
                 new ParcelAddressMatchProjections());
+
+            var buildingUnitRunner = new FeedProjectionRunner<BuildingEvent, SyncItem<Building>, SyndicationContext>(
+                "gebouweenheid",
+                configuration.GetValue<Uri>("SyndicationFeeds:Building"),
+                configuration.GetValue<string>("SyndicationFeeds:BuildingAuthUserName"),
+                configuration.GetValue<string>("SyndicationFeeds:BuildingAuthPassword"),
+                configuration.GetValue<int>("SyndicationFeeds:BuildingPollingInMilliseconds"),
+                true,
+                true,
+                container.GetService<ILogger<Program>>(),
+                container.GetService<IRegistryAtomFeedReader>(),
+                new BuildingUnitAddressMatchProjections());
 
             yield return municipalityRunner.CatchUpAsync(
                 container.GetService<Func<Owned<SyndicationContext>>>(),
@@ -137,6 +158,10 @@ namespace AddressRegistry.Projections.Syndication
                 ct);
 
             yield return parcelRunner.CatchUpAsync(
+                container.GetService<Func<Owned<SyndicationContext>>>(),
+                ct);
+
+            yield return buildingUnitRunner.CatchUpAsync(
                 container.GetService<Func<Owned<SyndicationContext>>>(),
                 ct);
         }

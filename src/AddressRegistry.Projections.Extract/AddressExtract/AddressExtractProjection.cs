@@ -128,7 +128,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                     UpdateDbaseRecordField(item, record =>
                     {
                         record.id.Value = $"{IdUri}/{message.Message.OsloId}";
-                        record.adresid.Value = message.Message.OsloId.ToString();
+                        record.adresid.Value = message.Message.OsloId;
                     });
             });
 

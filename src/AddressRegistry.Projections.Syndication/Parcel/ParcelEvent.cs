@@ -9,6 +9,6 @@ namespace AddressRegistry.Projections.Syndication.Parcel
         ParcelWasCorrectedToRealized,
         ParcelWasCorrectedToRetired,
         ParcelAddressWasAttached,
-        ParcelAddressWasDettached,
+        ParcelAddressWasDetached,
     }
 }

@@ -17,7 +17,7 @@ namespace AddressRegistry.Projections.Syndication.Parcel
             When(ParcelEvent.ParcelWasRetired, AddSyndicationItemEntry);
             When(ParcelEvent.ParcelWasCorrectedToRetired, AddSyndicationItemEntry);
             When(ParcelEvent.ParcelAddressWasAttached, AddSyndicationItemEntry);
-            When(ParcelEvent.ParcelAddressWasDettached, AddSyndicationItemEntry);
+            When(ParcelEvent.ParcelAddressWasDetached, AddSyndicationItemEntry);
         }
 
         private static async Task RemoveParcel(AtomEntry<SyndicationItem<Parcel>> entry, SyndicationContext context, CancellationToken ct)

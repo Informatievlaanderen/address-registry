@@ -235,7 +235,11 @@ namespace AddressRegistry.Api.Legacy.Address
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
-            var pagedAddresses = new AddressSyndicationQuery(context).Fetch(filtering, sorting, pagination);
+            var pagedAddresses = new AddressSyndicationQuery(
+                context,
+                filtering.Filter?.ContainsEvent ?? false,
+                filtering.Filter?.ContainsObject ?? false)
+                .Fetch(filtering, sorting, pagination);
 
             Response.AddPaginationResponse(pagedAddresses.PaginationInfo);
             Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);

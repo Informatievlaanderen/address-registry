@@ -15,7 +15,8 @@ namespace AddressRegistry.Api.Legacy.Address.Query
 
     public class AddressSyndicationQueryResult
     {
-        public bool ContainsDetails { get; }
+        public bool ContainsEvent { get; }
+        public bool ContainsObject { get; }
 
         public Guid AddressId { get; }
         public long Position { get; }
@@ -31,6 +32,60 @@ namespace AddressRegistry.Api.Legacy.Address.Query
         public bool IsComplete { get; }
         public Organisation? Organisation { get; }
         public Plan? Plan { get; }
+        public string EventDataAsXml { get; }
+
+        public AddressSyndicationQueryResult(
+            Guid addressId,
+            long position,
+            int? osloId,
+            string changeType,
+            Instant recordCreateAt,
+            Instant lastChangedOn,
+            bool isComplete,
+            Organisation? organisation,
+            Plan? plan)
+        {
+            ContainsObject = false;
+            ContainsEvent = false;
+
+            AddressId = addressId;
+            Position = position;
+            OsloId = osloId;
+
+            ChangeType = changeType;
+            RecordCreatedAt = recordCreateAt;
+            LastChangedOn = lastChangedOn;
+            IsComplete = isComplete;
+            Organisation = organisation;
+            Plan = plan;
+        }
+
+        public AddressSyndicationQueryResult(
+            Guid addressId,
+            long position,
+            int? osloId,
+            string changeType,
+            Instant recordCreateAt,
+            Instant lastChangedOn,
+            bool isComplete,
+            Organisation? organisation,
+            Plan? plan,
+            string eventDataAsXml)
+            : this(
+                addressId,
+                position,
+                osloId,
+                changeType,
+                recordCreateAt,
+                lastChangedOn,
+                isComplete,
+                organisation,
+                plan)
+        {
+            ContainsEvent = true;
+
+            EventDataAsXml = eventDataAsXml;
+        }
 
         public AddressSyndicationQueryResult(
             Guid addressId,
@@ -47,8 +102,18 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             AddressStatus? status,
             Organisation? organisation,
             Plan? plan)
+            : this(
+                addressId,
+                position,
+                osloId,
+                changeType,
+                recordCreateAt,
+                lastChangedOn,
+                isComplete,
+                organisation,
+                plan)
         {
-            ContainsDetails = false;
+            ContainsObject = true;
 
             AddressId = addressId;
             Position = position;
@@ -65,32 +130,124 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             Organisation = organisation;
             Plan = plan;
         }
+
+        public AddressSyndicationQueryResult(
+            Guid addressId,
+            long position,
+            int? osloId,
+            string houseNumber,
+            string boxNumber,
+            Guid? streetNameId,
+            string postalCode,
+            string changeType,
+            Instant recordCreateAt,
+            Instant lastChangedOn,
+            bool isComplete,
+            AddressStatus? status,
+            Organisation? organisation,
+            Plan? plan,
+            string eventDataAsXml)
+            : this(
+                addressId,
+                position,
+                osloId,
+                houseNumber,
+                boxNumber,
+                streetNameId,
+                postalCode,
+                changeType,
+                recordCreateAt,
+                lastChangedOn,
+                isComplete,
+                status,
+                organisation,
+                plan)
+        {
+            ContainsEvent = true;
+
+            EventDataAsXml = eventDataAsXml;
+        }
     }
 
     public class AddressSyndicationQuery : Query<AddressSyndicationItem, AddressSyndicationFilter, AddressSyndicationQueryResult>
     {
         private readonly LegacyContext _context;
+        private readonly bool _embedEvent;
+        private readonly bool _embedObject;
 
-        public AddressSyndicationQuery(LegacyContext context) => _context = context;
+        public AddressSyndicationQuery(LegacyContext context, bool embedEvent, bool embedObject)
+        {
+            _context = context;
+            _embedEvent = embedEvent;
+            _embedObject = embedObject;
+        }
 
         protected override ISorting Sorting => new AddressSyndicationSorting();
 
-        protected override Expression<Func<AddressSyndicationItem, AddressSyndicationQueryResult>> Transformation =>
-            x => new AddressSyndicationQueryResult(
-                x.AddressId.Value,
-                x.Position,
-                x.OsloId,
-                x.HouseNumber,
-                x.BoxNumber,
-                x.StreetNameId,
-                x.PostalCode,
-                x.ChangeType,
-                x.RecordCreatedAt,
-                x.LastChangedOn,
-                x.IsComplete,
-                x.Status,
-                x.Organisation,
-                x.Plan);
+        protected override Expression<Func<AddressSyndicationItem, AddressSyndicationQueryResult>> Transformation
+        {
+            get
+            {
+                if (_embedEvent && _embedObject)
+                    return x => new AddressSyndicationQueryResult(
+                        x.AddressId.Value,
+                        x.Position,
+                        x.OsloId,
+                        x.HouseNumber,
+                        x.BoxNumber,
+                        x.StreetNameId,
+                        x.PostalCode,
+                        x.ChangeType,
+                        x.RecordCreatedAt,
+                        x.LastChangedOn,
+                        x.IsComplete,
+                        x.Status,
+                        x.Organisation,
+                        x.Plan,
+                        x.EventDataAsXml);
+
+                if (_embedEvent)
+                    return x => new AddressSyndicationQueryResult(
+                        x.AddressId.Value,
+                        x.Position,
+                        x.OsloId,
+                        x.ChangeType,
+                        x.RecordCreatedAt,
+                        x.LastChangedOn,
+                        x.IsComplete,
+                        x.Organisation,
+                        x.Plan,
+                        x.EventDataAsXml);
+
+                if (_embedObject)
+                    return x => new AddressSyndicationQueryResult(
+                        x.AddressId.Value,
+                        x.Position,
+                        x.OsloId,
+                        x.HouseNumber,
+                        x.BoxNumber,
+                        x.StreetNameId,
+                        x.PostalCode,
+                        x.ChangeType,
+                        x.RecordCreatedAt,
+                        x.LastChangedOn,
+                        x.IsComplete,
+                        x.Status,
+                        x.Organisation,
+                        x.Plan);
+
+                return x => new AddressSyndicationQueryResult(
+                    x.AddressId.Value,
+                    x.Position,
+                    x.OsloId,
+                    x.ChangeType,
+                    x.RecordCreatedAt,
+                    x.LastChangedOn,
+                    x.IsComplete,
+                    x.Organisation,
+                    x.Plan);
+            }
+        }
 
         protected override IQueryable<AddressSyndicationItem> Filter(FilteringHeader<AddressSyndicationFilter> filtering)
         {
@@ -121,5 +278,12 @@ namespace AddressRegistry.Api.Legacy.Address.Query
     public class AddressSyndicationFilter
     {
         public long? Position { get; set; }
+        public string Embed { get; set; }
+
+        public bool ContainsEvent =>
+            Embed.Contains("event", StringComparison.OrdinalIgnoreCase);
+
+        public bool ContainsObject =>
+            Embed.Contains("object", StringComparison.OrdinalIgnoreCase);
     }
 }

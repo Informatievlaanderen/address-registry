@@ -8,7 +8,7 @@ namespace AddressRegistry.Projections.Syndication.StreetName
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication;
 
-    public class StreetNameBosaProjections : AtomEntryProjectionHandlerModule<StreetNameEvent, StreetName, SyndicationContext>
+    public class StreetNameBosaProjections : AtomEntryProjectionHandlerModule<StreetNameEvent, SyndicationItem<StreetName>, SyndicationContext>
     {
         public StreetNameBosaProjections()
         {
@@ -48,26 +48,26 @@ namespace AddressRegistry.Projections.Syndication.StreetName
             When(StreetNameEvent.StreetNameWasRemoved, AddSyndicationItemEntry);
         }
 
-        private static async Task AddSyndicationItemEntry(AtomEntry<StreetName> entry, SyndicationContext context, CancellationToken ct)
+        private static async Task AddSyndicationItemEntry(AtomEntry<SyndicationItem<StreetName>> entry, SyndicationContext context, CancellationToken ct)
         {
             var latestItem = await context
                 .StreetNameBosaItems
-                .FindAsync(entry.Content.StreetNameId);
+                .FindAsync(entry.Content.Object.StreetNameId);
 
             if (latestItem == null)
             {
                 latestItem = new StreetNameBosaItem
                 {
-                    StreetNameId = entry.Content.StreetNameId,
-                    NisCode = entry.Content.NisCode,
-                    Version = entry.Content.Identificator?.Versie.Value,
+                    StreetNameId = entry.Content.Object.StreetNameId,
+                    NisCode = entry.Content.Object.NisCode,
+                    Version = entry.Content.Object.Identificator?.Versie.Value,
                     Position = long.Parse(entry.FeedEntry.Id),
-                    OsloId = entry.Content.Identificator?.ObjectId,
-                    IsComplete = entry.Content.IsComplete,
+                    OsloId = entry.Content.Object.Identificator?.ObjectId,
+                    IsComplete = entry.Content.Object.IsComplete,
                 };
 
-                UpdateNames(latestItem, entry.Content.StreetNames);
-                UpdateHomonymAdditions(latestItem, entry.Content.HomonymAdditions);
+                UpdateNames(latestItem, entry.Content.Object.StreetNames);
+                UpdateHomonymAdditions(latestItem, entry.Content.Object.HomonymAdditions);
 
                 await context
                     .StreetNameBosaItems
@@ -75,14 +75,14 @@ namespace AddressRegistry.Projections.Syndication.StreetName
             }
             else
             {
-                latestItem.NisCode = entry.Content.NisCode;
-                latestItem.Version = entry.Content.Identificator?.Versie.Value;
+                latestItem.NisCode = entry.Content.Object.NisCode;
+                latestItem.Version = entry.Content.Object.Identificator?.Versie.Value;
                 latestItem.Position = long.Parse(entry.FeedEntry.Id);
-                latestItem.OsloId = entry.Content.Identificator?.ObjectId;
-                latestItem.IsComplete = entry.Content.IsComplete;
+                latestItem.OsloId = entry.Content.Object.Identificator?.ObjectId;
+                latestItem.IsComplete = entry.Content.Object.IsComplete;
 
-                UpdateNames(latestItem, entry.Content.StreetNames);
-                UpdateHomonymAdditions(latestItem, entry.Content.HomonymAdditions);
+                UpdateNames(latestItem, entry.Content.Object.StreetNames);
+                UpdateHomonymAdditions(latestItem, entry.Content.Object.HomonymAdditions);
             }
         }
 

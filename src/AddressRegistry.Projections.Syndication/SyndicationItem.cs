@@ -4,7 +4,7 @@ namespace AddressRegistry.Projections.Syndication
     using System.Xml;
 
     [DataContract(Name = "Content", Namespace = "")]
-    public class SyncItem<TObject>
+    public class SyndicationItem<TObject>
     {
         [DataMember]
         public XmlElement Event { get; set; }

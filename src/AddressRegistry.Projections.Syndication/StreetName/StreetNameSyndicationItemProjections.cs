@@ -7,7 +7,7 @@ namespace AddressRegistry.Projections.Syndication.StreetName
     using System.Threading;
     using System.Threading.Tasks;
 
-    public class StreetNameSyndicationItemProjections : AtomEntryProjectionHandlerModule<StreetNameEvent, StreetName, SyndicationContext>
+    public class StreetNameSyndicationItemProjections : AtomEntryProjectionHandlerModule<StreetNameEvent, SyndicationItem<StreetName>, SyndicationContext>
     {
         public StreetNameSyndicationItemProjections()
         {
@@ -47,19 +47,19 @@ namespace AddressRegistry.Projections.Syndication.StreetName
             When(StreetNameEvent.StreetNameWasRemoved, AddSyndicationItemEntry);
         }
 
-        private static async Task AddSyndicationItemEntry(AtomEntry<StreetName> entry, SyndicationContext context, CancellationToken ct)
+        private static async Task AddSyndicationItemEntry(AtomEntry<SyndicationItem<StreetName>> entry, SyndicationContext context, CancellationToken ct)
         {
             var latestItem = new StreetNameSyndicationItem
             {
-                StreetNameId = entry.Content.StreetNameId,
-                NisCode = entry.Content.NisCode,
-                Version = entry.Content.Identificator?.Versie.Value,
+                StreetNameId = entry.Content.Object.StreetNameId,
+                NisCode = entry.Content.Object.NisCode,
+                Version = entry.Content.Object.Identificator?.Versie.Value,
                 Position = long.Parse(entry.FeedEntry.Id),
-                OsloId = entry.Content.Identificator?.ObjectId,
+                OsloId = entry.Content.Object.Identificator?.ObjectId,
             };
 
-            UpdateNames(latestItem, entry.Content.StreetNames);
-            UpdateHomonymAdditions(latestItem, entry.Content.HomonymAdditions);
+            UpdateNames(latestItem, entry.Content.Object.StreetNames);
+            UpdateHomonymAdditions(latestItem, entry.Content.Object.HomonymAdditions);
 
             await context
                 .StreetNameSyndicationItems

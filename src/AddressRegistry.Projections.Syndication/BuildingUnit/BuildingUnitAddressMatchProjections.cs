@@ -6,7 +6,7 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication;
 
-    public class BuildingUnitAddressMatchProjections : AtomEntryProjectionHandlerModule<BuildingEvent, SyncItem<Building>, SyndicationContext>
+    public class BuildingUnitAddressMatchProjections : AtomEntryProjectionHandlerModule<BuildingEvent, SyndicationItem<Building>, SyndicationContext>
     {
         public BuildingUnitAddressMatchProjections()
         {
@@ -43,7 +43,7 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
             When(BuildingEvent.BuildingWasRemoved, RemoveBuilding);
         }
 
-        private static async Task RemoveBuilding(AtomEntry<SyncItem<Building>> entry, SyndicationContext context, CancellationToken ct)
+        private static async Task RemoveBuilding(AtomEntry<SyndicationItem<Building>> entry, SyndicationContext context, CancellationToken ct)
         {
             var buildingUnitAddressMatchLatestItems =
                 context
@@ -54,7 +54,7 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
             context.BuildingUnitAddressMatchLatestItems.RemoveRange(buildingUnitAddressMatchLatestItems);
         }
 
-        private static async Task AddSyndicationItemEntry(AtomEntry<SyncItem<Building>> entry, SyndicationContext context, CancellationToken ct)
+        private static async Task AddSyndicationItemEntry(AtomEntry<SyndicationItem<Building>> entry, SyndicationContext context, CancellationToken ct)
         {
             var buildingUnitAddressMatchLatestItems =
                 context

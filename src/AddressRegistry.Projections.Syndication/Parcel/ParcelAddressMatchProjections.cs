@@ -6,7 +6,7 @@ namespace AddressRegistry.Projections.Syndication.Parcel
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication;
 
-    public class ParcelAddressMatchProjections : AtomEntryProjectionHandlerModule<ParcelEvent, Parcel, SyndicationContext>
+    public class ParcelAddressMatchProjections : AtomEntryProjectionHandlerModule<ParcelEvent, SyndicationItem<Parcel>, SyndicationContext>
     {
         public ParcelAddressMatchProjections()
         {
@@ -20,42 +20,42 @@ namespace AddressRegistry.Projections.Syndication.Parcel
             When(ParcelEvent.ParcelAddressWasDettached, AddSyndicationItemEntry);
         }
 
-        private static async Task RemoveParcel(AtomEntry<Parcel> entry, SyndicationContext context, CancellationToken ct)
+        private static async Task RemoveParcel(AtomEntry<SyndicationItem<Parcel>> entry, SyndicationContext context, CancellationToken ct)
         {
             var parcelAddressMatchLatestItems =
                 context
                     .ParcelAddressMatchLatestItems
-                    .Where(x => x.ParcelId == entry.Content.Id)
-                    .Concat(context.ParcelAddressMatchLatestItems.Local.Where(x => x.ParcelId == entry.Content.Id));
+                    .Where(x => x.ParcelId == entry.Content.Object.Id)
+                    .Concat(context.ParcelAddressMatchLatestItems.Local.Where(x => x.ParcelId == entry.Content.Object.Id));
 
             context.ParcelAddressMatchLatestItems.RemoveRange(parcelAddressMatchLatestItems);
         }
 
-        private static async Task AddSyndicationItemEntry(AtomEntry<Parcel> entry, SyndicationContext context, CancellationToken ct)
+        private static async Task AddSyndicationItemEntry(AtomEntry<SyndicationItem<Parcel>> entry, SyndicationContext context, CancellationToken ct)
         {
             var parcelAddressMatchLatestItems =
                 context
                     .ParcelAddressMatchLatestItems
-                    .Where(x => x.ParcelId == entry.Content.Id)
-                    .Concat(context.ParcelAddressMatchLatestItems.Local.Where(x => x.ParcelId == entry.Content.Id));
+                    .Where(x => x.ParcelId == entry.Content.Object.Id)
+                    .Concat(context.ParcelAddressMatchLatestItems.Local.Where(x => x.ParcelId == entry.Content.Object.Id));
 
             var itemsToRemove = new List<ParcelAddressMatchLatestItem>();
             foreach (var parcelAddressMatchLatestItem in parcelAddressMatchLatestItems)
             {
-                if (!entry.Content.AddressIds.Contains(parcelAddressMatchLatestItem.AddressId))
+                if (!entry.Content.Object.AddressIds.Contains(parcelAddressMatchLatestItem.AddressId))
                     itemsToRemove.Add(parcelAddressMatchLatestItem);
             }
 
             context.ParcelAddressMatchLatestItems.RemoveRange(itemsToRemove);
 
-            foreach (var addressId in entry.Content.AddressIds)
+            foreach (var addressId in entry.Content.Object.AddressIds)
             {
                 if (!parcelAddressMatchLatestItems.Any(x => x.AddressId == addressId))
                     await context.ParcelAddressMatchLatestItems.AddAsync(new ParcelAddressMatchLatestItem
                     {
-                        ParcelId = entry.Content.Id,
+                        ParcelId = entry.Content.Object.Id,
                         AddressId = addressId,
-                        ParcelOsloId = entry.Content.Identificator.ObjectId
+                        ParcelOsloId = entry.Content.Object.Identificator.ObjectId
                     }, ct);
             }
         }

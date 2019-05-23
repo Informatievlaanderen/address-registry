@@ -6,7 +6,7 @@ namespace AddressRegistry.Projections.Syndication.PostalInfo
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.PostInfo;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication;
 
-    public class PostalInfoLatestProjections : AtomEntryProjectionHandlerModule<PostalInfoEvent, PostalInfo, SyndicationContext>
+    public class PostalInfoLatestProjections : AtomEntryProjectionHandlerModule<PostalInfoEvent, SyndicationItem<PostalInfo>, SyndicationContext>
     {
         public PostalInfoLatestProjections()
         {
@@ -18,23 +18,23 @@ namespace AddressRegistry.Projections.Syndication.PostalInfo
             When(PostalInfoEvent.MunicipalityWasLinkedToPostalInformation, AddSyndicationItemEntry);
         }
 
-        private static async Task AddSyndicationItemEntry(AtomEntry<PostalInfo> entry, SyndicationContext context, CancellationToken ct)
+        private static async Task AddSyndicationItemEntry(AtomEntry<SyndicationItem<PostalInfo>> entry, SyndicationContext context, CancellationToken ct)
         {
             var latestItem = await context
                 .PostalInfoLatestItems
-                .FindAsync(entry.Content.PostalCode);
+                .FindAsync(entry.Content.Object.PostalCode);
 
             if (latestItem == null)
             {
                 latestItem = new PostalInfoLatestItem
                 {
-                    PostalCode = entry.Content.PostalCode,
-                    Version = entry.Content.Identificator?.Versie.Value,
+                    PostalCode = entry.Content.Object.PostalCode,
+                    Version = entry.Content.Object.Identificator?.Versie.Value,
                     Position = long.Parse(entry.FeedEntry.Id),
-                    NisCode = entry.Content.MunicipalityOsloId,
+                    NisCode = entry.Content.Object.MunicipalityOsloId,
                 };
 
-                UpdateNames(latestItem, entry.Content.PostalNames);
+                UpdateNames(latestItem, entry.Content.Object.PostalNames);
 
                 await context
                     .PostalInfoLatestItems
@@ -44,11 +44,11 @@ namespace AddressRegistry.Projections.Syndication.PostalInfo
             {
                 await context.Entry(latestItem).Collection(x => x.PostalNames).LoadAsync(ct);
 
-                latestItem.Version = entry.Content.Identificator?.Versie.Value;
+                latestItem.Version = entry.Content.Object.Identificator?.Versie.Value;
                 latestItem.Position = long.Parse(entry.FeedEntry.Id);
-                latestItem.NisCode = entry.Content.MunicipalityOsloId;
+                latestItem.NisCode = entry.Content.Object.MunicipalityOsloId;
 
-                UpdateNames(latestItem, entry.Content.PostalNames);
+                UpdateNames(latestItem, entry.Content.Object.PostalNames);
             }
         }
 

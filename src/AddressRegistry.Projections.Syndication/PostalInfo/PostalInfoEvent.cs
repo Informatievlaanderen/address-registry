@@ -5,7 +5,7 @@ namespace AddressRegistry.Projections.Syndication.PostalInfo
         PostalInformationWasRegistered,
         PostalInformationBecameCurrent,
         PostalInformationWasRetired,
-        MunicipalityWasLinkedToPostalInformation,
+        MunicipalityWasAttached,
         PostalInformationPostalNameWasAdded,
         PostalInformationPostalNameWasRemoved,
     }

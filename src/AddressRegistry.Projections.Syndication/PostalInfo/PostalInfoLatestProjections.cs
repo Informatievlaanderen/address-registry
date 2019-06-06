@@ -15,7 +15,7 @@ namespace AddressRegistry.Projections.Syndication.PostalInfo
             When(PostalInfoEvent.PostalInformationWasRetired, AddSyndicationItemEntry);
             When(PostalInfoEvent.PostalInformationPostalNameWasAdded, AddSyndicationItemEntry);
             When(PostalInfoEvent.PostalInformationPostalNameWasRemoved, AddSyndicationItemEntry);
-            When(PostalInfoEvent.MunicipalityWasLinkedToPostalInformation, AddSyndicationItemEntry);
+            When(PostalInfoEvent.MunicipalityWasAttached, AddSyndicationItemEntry);
         }
 
         private static async Task AddSyndicationItemEntry(AtomEntry<SyndicationItem<PostalInfo>> entry, SyndicationContext context, CancellationToken ct)

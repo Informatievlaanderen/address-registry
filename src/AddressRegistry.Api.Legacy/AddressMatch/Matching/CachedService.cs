@@ -37,6 +37,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                         }
                     }
                 });
+
                 return ifCacheNotHit();
             }
         }
@@ -46,22 +47,20 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
         {
             T cached = _cache.Get(key) as T;
             if (cached != null)
-            {
                 return cached;
-            }
+
             lock (CacheLock)
             {
                 cached = _cache.Get(key) as T;
                 if (cached != null)
-                {
                     return cached;
-                }
+
                 T item = getter();
                 if (item != null)
                     _cache.Set(key, item, new MemoryCacheEntryOptions { AbsoluteExpiration = new DateTimeOffset(DateTime.Now.Add(cacheDuration)) });
+
                 return item;
             }
-
         }
     }
 }

@@ -29,15 +29,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 _addresses = _addresses.Concat(addresses).Distinct(AddressComparer).ToList();
             }
 
-            public IEnumerator<AddressDetailItem> GetEnumerator()
-            {
-                return _addresses.GetEnumerator();
-            }
+            public IEnumerator<AddressDetailItem> GetEnumerator() => _addresses.GetEnumerator();
 
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return GetEnumerator();
-            }
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         }
 
         public class MunicipalityWrapper : IEnumerable<StreetNameWrapper>
@@ -59,30 +53,21 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 _streetNames = _streetNames.Concat(streetNames.Select(s => new StreetNameWrapper { StreetName = s })).Distinct(StreetNameWrapper.Comparer).ToList();
             }
 
-            public void AddStreetName(StreetNameLatestItem streetName)
-            {
-                AddStreetNames(new[] { streetName });
-            }
+            public void AddStreetName(StreetNameLatestItem streetName) => AddStreetNames(new[] { streetName });
 
-            public IEnumerator<StreetNameWrapper> GetEnumerator()
-            {
-                return _streetNames.GetEnumerator();
-            }
+            public IEnumerator<StreetNameWrapper> GetEnumerator() => _streetNames.GetEnumerator();
 
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return GetEnumerator();
-            }
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-            internal void ClearStreetNames()
-            {
-                _streetNames.Clear();
-            }
+            internal void ClearStreetNames() => _streetNames.Clear();
         }
 
         private readonly Dictionary<string, MunicipalityWrapper> _municipalities;
         private readonly List<AddressDetailItem> _rrAddresses;
         private readonly Sanitizer _sanitizer;
+
+        public AddressMatchQueryComponents Query { get; }
+        public IEnumerable<string> NisCodes => _municipalities.Keys;
 
         public AddressMatchBuilder(AddressMatchQueryComponents query)
         {
@@ -92,22 +77,11 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             _sanitizer = new Sanitizer();
         }
 
-        public AddressMatchQueryComponents Query { get; }
+        public IEnumerator<MunicipalityWrapper> GetEnumerator() => _municipalities.Values.GetEnumerator();
 
-        public IEnumerator<MunicipalityWrapper> GetEnumerator()
-        {
-            return _municipalities.Values.GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        public bool ContainsNisCode(string nisCode)
-        {
-            return _municipalities.ContainsKey(nisCode);
-        }
+        public bool ContainsNisCode(string nisCode) => _municipalities.ContainsKey(nisCode);
 
         internal void ClearAllStreetNames()
         {
@@ -115,12 +89,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 municipalityWrapper.ClearStreetNames();
         }
 
-        public IEnumerable<string> NisCodes => _municipalities.Keys;
-
-        public void AddMunicipalities(IEnumerable<MunicipalityLatestItem> municipalities)
-        {
-            AddMunicipalitiesByPostalCode(municipalities, null);
-        }
+        public void AddMunicipalities(IEnumerable<MunicipalityLatestItem> municipalities) => AddMunicipalitiesByPostalCode(municipalities, null);
 
         public void AddMunicipalitiesByPostalCode(IEnumerable<MunicipalityLatestItem> municipalities, string postalCodes)
         {
@@ -128,20 +97,13 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 _municipalities[municipality.NisCode] = new MunicipalityWrapper { Name = municipality.DefaultName.Value, NisCode = municipality.NisCode, PostalCode = postalCodes, Municipality = municipality };
         }
 
-        public void AddRrAddresses(IEnumerable<AddressDetailItem> rrAddresses)
-        {
-            _rrAddresses.AddRange(rrAddresses);
-        }
+        public void AddRrAddresses(IEnumerable<AddressDetailItem> rrAddresses) => _rrAddresses.AddRange(rrAddresses);
 
-        public IEnumerable<StreetNameWrapper> AllStreetNames()
-        {
-            return this.SelectMany(municipalityWrapper => municipalityWrapper).Distinct(StreetNameWrapper.Comparer);
-        }
+        public IEnumerable<StreetNameWrapper> AllStreetNames() =>
+            this.SelectMany(municipalityWrapper => municipalityWrapper).Distinct(StreetNameWrapper.Comparer);
 
-        public IEnumerable<AddressDetailItem> AllAddresses()
-        {
-            return AllStreetNames().SelectMany(s => s).Union(_rrAddresses).Distinct(StreetNameWrapper.AddressComparer);
-        }
+        public IEnumerable<AddressDetailItem> AllAddresses() =>
+            AllStreetNames().SelectMany(s => s).Union(_rrAddresses).Distinct(StreetNameWrapper.AddressComparer);
 
         public IEnumerable<string> GetMatchRepresentationsForScoring()
         {

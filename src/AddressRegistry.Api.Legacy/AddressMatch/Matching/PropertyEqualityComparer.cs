@@ -21,14 +21,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             _propertyGetter = propertyGetter;
         }
 
-        bool IEqualityComparer<T>.Equals(T x, T y)
-        {
-            return _propertyGetter(x).Equals(_propertyGetter(y));
-        }
+        bool IEqualityComparer<T>.Equals(T x, T y) => _propertyGetter(x).Equals(_propertyGetter(y));
 
-        int IEqualityComparer<T>.GetHashCode(T obj)
-        {
-            return _propertyGetter(obj).GetHashCode();
-        }
+        int IEqualityComparer<T>.GetHashCode(T obj) => _propertyGetter(obj).GetHashCode();
     }
 }

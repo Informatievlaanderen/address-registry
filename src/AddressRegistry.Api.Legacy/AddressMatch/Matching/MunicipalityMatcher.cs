@@ -24,10 +24,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             //_telemetry = telemetry;
         }
 
-        protected override IReadOnlyList<TResult> BuildResultsInternal(AddressMatchBuilder results)
-        {
-            return results.Select(g => g.Municipality).Select(_mapper.Map).ToList();
-        }
+        protected override IReadOnlyList<TResult> BuildResultsInternal(AddressMatchBuilder results) =>
+            results.Select(g => g.Municipality).Select(_mapper.Map).ToList();
 
         protected override AddressMatchBuilder DoMatchInternal(AddressMatchBuilder results)
         {
@@ -42,11 +40,11 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 _warnings.AddWarning("9", "Geen overeenkomst tussen 'Niscode' en 'Gemeentenaam'.");
 
             if (!string.IsNullOrEmpty(results.Query.PostalCode))
-                results.AddMunicipalitiesByPostalCode(FilterByPostcode(municipalities, results), results.Query.PostalCode);
+                results.AddMunicipalitiesByPostalCode(FilterByPostalcode(municipalities, results), results.Query.PostalCode);
 
             if (!string.IsNullOrEmpty(results.Query.MunicipalityName) && !results.Any())
             {
-                var municipalitiesByPostalCode = FilterByDeelgemeente(municipalities, results)
+                var municipalitiesByPostalCode = FilterByPartOfMunicipality(municipalities, results)
                     .GroupBy(municipalityPostCode => municipalityPostCode.Item1);
 
                 foreach (var municipalitiesGroup in municipalitiesByPostalCode)
@@ -64,15 +62,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             return results;
         }
 
-        protected override bool IsValidMatch(AddressMatchBuilder matchResult)
-        {
-            return matchResult.Any();
-        }
+        protected override bool IsValidMatch(AddressMatchBuilder matchResult) => matchResult.Any();
 
-        protected override bool ShouldProceed(AddressMatchBuilder matchResult)
-        {
-            return IsValidMatch(matchResult);
-        }
+        protected override bool ShouldProceed(AddressMatchBuilder matchResult) => IsValidMatch(matchResult);
 
         private IEnumerable<MunicipalityLatestItem> FilterByName(IEnumerable<MunicipalityLatestItem> municipalities, AddressMatchBuilder results)
         {
@@ -92,7 +84,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             return municipalitiesByNisCode;
         }
 
-        private IEnumerable<MunicipalityLatestItem> FilterByPostcode(IEnumerable<MunicipalityLatestItem> municipalities, AddressMatchBuilder results)
+        private IEnumerable<MunicipalityLatestItem> FilterByPostalcode(IEnumerable<MunicipalityLatestItem> municipalities, AddressMatchBuilder results)
         {
             var postalInfo = _latestQueries.GetAllPostalInfo().FirstOrDefault(x => x.PostalCode == results.Query.PostalCode);
             if (postalInfo != null)
@@ -109,10 +101,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             }
         }
 
-        private IEnumerable<Tuple<string, MunicipalityLatestItem>> FilterByDeelgemeente(IEnumerable<MunicipalityLatestItem> municipalities, AddressMatchBuilder results)
-        {
-            var allPostalInfo = _latestQueries.GetAllPostalInfo();
-            return allPostalInfo
+        private IEnumerable<Tuple<string, MunicipalityLatestItem>> FilterByPartOfMunicipality(IEnumerable<MunicipalityLatestItem> municipalities, AddressMatchBuilder results) =>
+            _latestQueries.GetAllPostalInfo()
                 .Where(postalInfo => postalInfo.PostalNames.Any(
                     postalName => postalName.PostalName.EqIgnoreDiacritics(results.Query.MunicipalityName)))
                 .Select(postalInfo => new
@@ -120,9 +110,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                     PostalCode = postalInfo.PostalCode,
                     MissingNisCode = results.ContainsNisCode(postalInfo.NisCode) ? null : postalInfo.NisCode,
                 })
-               .SelectMany(x => municipalities
-                 .Where(g => g.NisCode == x.MissingNisCode)
-                 .Select(g => new Tuple<string, MunicipalityLatestItem>(x.PostalCode, g)));
-        }
+                .SelectMany(x => municipalities
+                    .Where(g => g.NisCode == x.MissingNisCode)
+                    .Select(g => new Tuple<string, MunicipalityLatestItem>(x.PostalCode, g)));
     }
 }

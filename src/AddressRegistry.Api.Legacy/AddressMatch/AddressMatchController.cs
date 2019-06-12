@@ -24,11 +24,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
     [ApiExplorerSettings(GroupName = "AdresMatch")]
     public class AddressMatchController : ApiController
     {
-        private const double SimilarityThreshold = 75.0;
-        private const int MaxStreetNamesThreshold = 100;
-
         [HttpGet]
-        [ProducesResponseType(typeof(AdresMatchCollectie), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AddressMatchCollection), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(AddressMatchResponseExamples), jsonConverter: typeof(StringEnumConverter))]
@@ -48,7 +45,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
             var warningLogger = new ValidationMessageWarningLogger();
             var addressMatch = new AddressMatchMatchingAlgorithm<AdresMatchItem>(
                 kadRrService,
-                new ManualAddressMatchConfig(SimilarityThreshold, MaxStreetNamesThreshold),
+                new ManualAddressMatchConfig(responseOptions.Value.SimilarityThreshold, responseOptions.Value.MaxStreetNamesThreshold),
                 latestQueries,
                 new GemeenteMapper(responseOptions.Value),
                 new StreetNameMapper(responseOptions.Value, latestQueries),
@@ -56,16 +53,15 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
                 warningLogger);
 
             var result = addressMatch.Process(new AddressMatchBuilder(Map(addressMatchRequest)));
-            return Ok(new AdresMatchCollectie
+            return Ok(new AddressMatchCollection
             {
                 AdresMatches = result.OrderByDescending(i => i.Score).Take(10).ToList(),
                 Warnings = warningLogger.Warnings
             });
         }
 
-        public AddressMatchQueryComponents Map(AddressMatchRequest request)
-        {
-            return new AddressMatchQueryComponents
+        public AddressMatchQueryComponents Map(AddressMatchRequest request) =>
+            new AddressMatchQueryComponents
             {
                 MunicipalityName = request.Gemeentenaam,
                 HouseNumber = request.Huisnummer,
@@ -77,6 +73,5 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
                 RrStreetCode = request.RrStraatcode,
                 StreetName = request.Straatnaam
             };
-        }
     }
 }

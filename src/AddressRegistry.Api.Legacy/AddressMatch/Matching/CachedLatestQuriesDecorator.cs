@@ -34,7 +34,6 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
         private const string AllMunicipalitiesCacheKey = "GetAllLatestMunicipalities";
         private const string AllPostalInfoCacheKey = "GetAllLatestPostalInfo";
 
-
         public CachedLatestQueriesDecorator(IMemoryCache memoryCache, LegacyContext legacyContext, SyndicationContext syndicationContext)
             : base(memoryCache)
         {
@@ -42,33 +41,25 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             _syndicationContext = syndicationContext;
         }
 
-        public IEnumerable<PostalInfoLatestItem> GetAllPostalInfo()
-        {
-            return GetOrAdd(AllPostalInfoCacheKey,
+        public IEnumerable<PostalInfoLatestItem> GetAllPostalInfo() =>
+            GetOrAdd(AllPostalInfoCacheKey,
                 () => _syndicationContext.PostalInfoLatestItems.ToList(),
                 AllPostalInfoCacheDuration);
-        }
 
-        public StreetNameLatestItem FindLatestStreetNameById(string streetNameOsloId)
-        {
-            return GetOrAddLatestStreetNames(
+        public StreetNameLatestItem FindLatestStreetNameById(string streetNameOsloId) =>
+            GetOrAddLatestStreetNames(
                 streetNames => streetNames.SelectMany(kvp => kvp.Value).Single(s => s.OsloId == streetNameOsloId),
                 () => GetLatestStreetNameItems().FirstOrDefault(x => x.OsloId == streetNameOsloId));
-        }
 
-        public IEnumerable<MunicipalityLatestItem> GetAllLatestMunicipalities()
-        {
-            return GetOrAdd(AllMunicipalitiesCacheKey,
+        public IEnumerable<MunicipalityLatestItem> GetAllLatestMunicipalities() =>
+            GetOrAdd(AllMunicipalitiesCacheKey,
                 () => _syndicationContext.MunicipalityLatestItems.ToList(),
                 AllMunicipalitiesCacheDuration);
-        }
 
-        public IEnumerable<StreetNameLatestItem> GetAllLatestStreetNames()
-        {
-            return GetOrAdd(AllStreetNamesCacheKey,
+        public IEnumerable<StreetNameLatestItem> GetAllLatestStreetNames() =>
+            GetOrAdd(AllStreetNamesCacheKey,
                 () => ConvertToCachedModel(GetLatestStreetNameItems().ToList()),
                 AllStreetNamesCacheDuration).SelectMany(kvp => kvp.Value);
-        }
 
         private IQueryable<StreetNameLatestItem> GetLatestStreetNameItems()
         {
@@ -93,29 +84,25 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             return query;
         }
 
-        public IEnumerable<AddressDetailItem> FindLatestAddressesByCrabSubaddressIds(IEnumerable<int> crabSubaddressIds)
-        {
-            //no caching for addresses
-            return _legacyContext.AddressDetail
+        //no caching for addresses
+        public IEnumerable<AddressDetailItem> FindLatestAddressesByCrabSubaddressIds(IEnumerable<int> crabSubaddressIds) =>
+            _legacyContext.AddressDetail
                 .Where(x => x.Complete && !x.Removed && x.OsloId.HasValue)
                 .Where(detailItem =>
                     _legacyContext.CrabIdToOsloIds
                         .Where(osloIdItem => crabSubaddressIds.Contains(osloIdItem.SubaddressId.Value))
                         .Select(y => y.AddressId)
                         .Contains(detailItem.AddressId));
-        }
 
-        public IEnumerable<AddressDetailItem> FindLatestAddressesByCrabHouseNumberIds(IEnumerable<int> crabHouseNumberIds)
-        {
-            //no caching for addresses
-            return _legacyContext.AddressDetail
+        //no caching for addresses
+        public IEnumerable<AddressDetailItem> FindLatestAddressesByCrabHouseNumberIds(IEnumerable<int> crabHouseNumberIds) =>
+            _legacyContext.AddressDetail
                 .Where(x => x.Complete && !x.Removed && x.OsloId.HasValue)
                 .Where(detailItem =>
                     _legacyContext.CrabIdToOsloIds
                         .Where(osloIdItem => crabHouseNumberIds.Contains(osloIdItem.HouseNumberId.Value))
                         .Select(y => y.AddressId)
                         .Contains(detailItem.AddressId));
-        }
 
         public IEnumerable<StreetNameLatestItem> GetLatestStreetNamesBy(params string[] municipalityNames)
         {
@@ -134,19 +121,14 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
         }
 
 
-        private T GetOrAddLatestStreetNames<T>(Func<Dictionary<string, IEnumerable<StreetNameLatestItem>>, T> ifCacheHit, Func<T> ifCacheNotHit)
-        {
-            return GetOrAdd(AllStreetNamesCacheKey,
+        private T GetOrAddLatestStreetNames<T>(Func<Dictionary<string, IEnumerable<StreetNameLatestItem>>, T> ifCacheHit, Func<T> ifCacheNotHit) =>
+            GetOrAdd(AllStreetNamesCacheKey,
                 () => ConvertToCachedModel(GetLatestStreetNameItems().ToList()),
                 AllStreetNamesCacheDuration,
                 ifCacheHit,
                 ifCacheNotHit);
-        }
 
-        private Dictionary<string, IEnumerable<StreetNameLatestItem>> ConvertToCachedModel(IEnumerable<StreetNameLatestItem> query)
-        {
-            return query.GroupBy(s => s.NisCode).ToDictionary(s => s.Key, s => s.AsEnumerable());
-        }
-
+        private Dictionary<string, IEnumerable<StreetNameLatestItem>> ConvertToCachedModel(IEnumerable<StreetNameLatestItem> query) =>
+            query.GroupBy(s => s.NisCode).ToDictionary(s => s.Key, s => s.AsEnumerable());
     }
 }

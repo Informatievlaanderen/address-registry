@@ -35,7 +35,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting
             _latest.ArrangeLatestGemeente(existingNisCode, existingGemeentenaam);
 
             //Act
-            var response = (AdresMatchCollectie)((OkObjectResult)await Send(request)).Value;
+            var response = (AddressMatchCollection)((OkObjectResult)await Send(request)).Value;
 
             //Assert
             response.Should().NotBeNull();
@@ -73,7 +73,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting
             _latest.ArrangeLatestGemeente(existingNisCode, existingGemeentenaam);
 
             //Act
-            var response = (AdresMatchCollectie)((OkObjectResult)await Send(request)).Value;
+            var response = (AddressMatchCollection)((OkObjectResult)await Send(request)).Value;
 
             //Assert
             response.Should().NotBeNull();
@@ -103,7 +103,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting
             _latest.ArrangeLatestGemeente(existingNisCode, existingGemeentenaam);
 
             //Act
-            var response = (AdresMatchCollectie)((OkObjectResult)await Send(request)).Value;
+            var response = (AddressMatchCollection)((OkObjectResult)await Send(request)).Value;
 
             //Assert
             response.Should().NotBeNull();
@@ -131,7 +131,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting
             _latest.ArrangeLatestGemeente(requestedNiscode, existingGemeentenaam);
 
             //Act
-            var response = (AdresMatchCollectie)((OkObjectResult)await Send(request)).Value;
+            var response = (AddressMatchCollection)((OkObjectResult)await Send(request)).Value;
 
             //Assert
             response.Should().NotBeNull();
@@ -170,7 +170,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting
             _latest.ArrangeLatestStraatnaam(existingNisCode, existingGemeentenaam, existingStraatnaamId.ToString(), existingStraatnaam, Guid.NewGuid());
 
             //Act
-            var response = (AdresMatchCollectie)((OkObjectResult)await Send(request)).Value;
+            var response = (AddressMatchCollection)((OkObjectResult)await Send(request)).Value;
 
             //Assert
             response.Should().NotBeNull();
@@ -217,7 +217,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting
             _kadRrService.ArrangeKadStraatnamen(existingNisCode, existingGemeentenaam, existingStraatnaamId, existingStraatnaam, requestededKadStraatCode);
 
             //Act
-            var response = (AdresMatchCollectie)((OkObjectResult)await Send(request)).Value;
+            var response = (AddressMatchCollection)((OkObjectResult)await Send(request)).Value;
 
             //Assert
             response.Should().NotBeNull();
@@ -252,7 +252,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting
             _latest.ArrangeLatestPostInfo(existingNisCode, request.Postcode);
 
             //Act
-            var response = (AdresMatchCollectie)((OkObjectResult)await Send(request)).Value;
+            var response = (AddressMatchCollection)((OkObjectResult)await Send(request)).Value;
 
             //Assert
             response.Should().NotBeNull();
@@ -290,7 +290,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting
                     (when, x) => when.AdresMappingExistsFor(x, request.Huisnummer, request.Index, request.RrStraatcode, request.Postcode));
 
             //Act
-            var response = (AdresMatchCollectie)((OkObjectResult)await Send(request)).Value;
+            var response = (AddressMatchCollection)((OkObjectResult)await Send(request)).Value;
 
             //Assert
             response.Should().NotBeNull();
@@ -324,7 +324,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting
             var existingAdres = _latest.ArrangeLatestAdres(existingGemeente, existingStraatnaam, postcode, request.Huisnummer, null).Single();
 
             //Act
-            var response = (AdresMatchCollectie)((OkObjectResult)await Send(request)).Value;
+            var response = (AddressMatchCollection)((OkObjectResult)await Send(request)).Value;
 
             //Assert
             response.Should().NotBeNull();
@@ -361,7 +361,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting
             var existingAdres = _latest.ArrangeLatestAdres(existingGemeente, existingStraatnaam, postcode, request.Huisnummer, request.Busnummer).Single();
 
             //Act
-            var response = (AdresMatchCollectie)((OkObjectResult)await Send(request)).Value;
+            var response = (AddressMatchCollection)((OkObjectResult)await Send(request)).Value;
 
             //Assert
             response.Should().NotBeNull();

@@ -9,13 +9,13 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
     {
         private readonly IKadRrService _kadRrService;
         private readonly IMapper<AddressDetailItem, TResult> _mapper;
-        private readonly IWarningLogger _warmings;
+        private readonly IWarningLogger _warnings;
 
         public RrAddressMatcher(IKadRrService kadRrService, IMapper<AddressDetailItem, TResult> mapper, IWarningLogger warnings)
         {
             _kadRrService = kadRrService;
             _mapper = mapper;
-            _warmings = warnings;
+            _warnings = warnings;
         }
 
         public override IReadOnlyList<TResult> BuildResults(AddressMatchBuilder builder)
@@ -24,7 +24,6 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             results.ForEach(s => s.Score = 100);
 
             return results;
-
         }
 
         protected override AddressMatchBuilder DoMatchInternal(AddressMatchBuilder builder)
@@ -35,20 +34,14 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 if (rrAddresses.Any())
                 {
                     builder.AddRrAddresses(rrAddresses);
-                    _warmings.AddWarning("21", "De adressen in het resultaat werden gevonden via een rechtstreekse link naar het opgegeven rijksregister adres.");
+                    _warnings.AddWarning("21", "De adressen in het resultaat werden gevonden via een rechtstreekse link naar het opgegeven rijksregister adres.");
                 }
             }
             return builder;
         }
 
-        protected override bool IsValidMatch(AddressMatchBuilder builder)
-        {
-            return builder.AllAddresses().Any();
-        }
+        protected override bool IsValidMatch(AddressMatchBuilder builder) => builder.AllAddresses().Any();
 
-        protected override bool ShouldProceed(AddressMatchBuilder builder)
-        {
-            return !IsValidMatch(builder);
-        }
+        protected override bool ShouldProceed(AddressMatchBuilder builder) => !IsValidMatch(builder);
     }
 }

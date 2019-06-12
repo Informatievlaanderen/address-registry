@@ -15,9 +15,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
             _responseOptions = responseOptions;
         }
 
-        public AdresMatchItem Map(MunicipalityLatestItem source)
-        {
-            return new AdresMatchItem
+        public AdresMatchItem Map(MunicipalityLatestItem source) =>
+            new AdresMatchItem
             {
                 Gemeente = new AdresMatchItemGemeente
                 {
@@ -26,6 +25,5 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
                     Gemeentenaam = new Gemeentenaam(new GeografischeNaam(source.DefaultName.Value, source.DefaultName.Key))
                 },
             };
-        }
     }
 }

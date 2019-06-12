@@ -6,7 +6,6 @@ namespace AddressRegistry.Api.Legacy.Address
     using Be.Vlaanderen.Basisregisters.Api.Search.Pagination;
     using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
     using Be.Vlaanderen.Basisregisters.Api.Syndication;
-    using Be.Vlaanderen.Basisregisters.BasicApiProblem;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
@@ -35,7 +34,6 @@ namespace AddressRegistry.Api.Legacy.Address
     using System.Threading.Tasks;
     using System.Xml;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
-    using StringWriterWithEncoding = Be.Vlaanderen.Basisregisters.Shaperon.StringWriterWithEncoding;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]

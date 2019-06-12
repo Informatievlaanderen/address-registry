@@ -12,10 +12,18 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
     public static class XmlTools
     {
         private static readonly Type[] WriteTypes = new[] {
-            typeof(string), typeof(DateTime), typeof(Enum),
-            typeof(decimal), typeof(Guid), typeof(Instant),
-            typeof(LocalDate), typeof(LocalDateTime), typeof(DateTimeOffset),
-            typeof(Plan), typeof(Organisation), typeof(Modification)
+            typeof(string),
+            typeof(DateTime),
+            typeof(Enum),
+            typeof(decimal),
+            typeof(Guid),
+            typeof(Instant),
+            typeof(LocalDate),
+            typeof(LocalDateTime),
+            typeof(DateTimeOffset),
+            typeof(Plan),
+            typeof(Organisation),
+            typeof(Modification)
         };
 
         /// <summary>
@@ -34,25 +42,13 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             "Operator"
         };
 
-        private static bool IsSimpleType(this Type type)
-        {
-            return type.IsPrimitive || WriteTypes.Contains(type);
-        }
+        private static bool IsSimpleType(this Type type) => type.IsPrimitive || WriteTypes.Contains(type);
 
-        private static bool IsExcludedType(this Type type)
-        {
-            return ExcludeTypes.Contains(type);
-        }
+        private static bool IsExcludedType(this Type type) => ExcludeTypes.Contains(type);
 
-        private static bool IsExcludedPropertyName(this string propertyName)
-        {
-            return ExcludePropertyNames.Contains(propertyName);
-        }
+        private static bool IsExcludedPropertyName(this string propertyName) => ExcludePropertyNames.Contains(propertyName);
 
-        public static XElement ToXml(this object input)
-        {
-            return input.ToXml(null);
-        }
+        public static XElement ToXml(this object input) => input.ToXml(null);
 
         public static XElement ToXml(this object input, string element, int? arrayIndex = null, string arrayName = null)
         {
@@ -94,10 +90,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             typeof(string)
         };
 
-        public static bool IsEnumerable(this Type type)
-        {
-            return typeof(IEnumerable).IsAssignableFrom(type) && !FlatternTypes.Contains(type);
-        }
+        public static bool IsEnumerable(this Type type) => typeof(IEnumerable).IsAssignableFrom(type) && !FlatternTypes.Contains(type);
 
         private static XElement GetEnumerableElements(PropertyInfo info, IEnumerable input)
         {

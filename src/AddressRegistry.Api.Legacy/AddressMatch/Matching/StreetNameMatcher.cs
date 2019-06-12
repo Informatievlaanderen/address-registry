@@ -44,10 +44,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             //_telemetry = telemetry;
         }
 
-        protected override IReadOnlyList<TResult> BuildResultsInternal(AddressMatchBuilder results)
-        {
-            return results.AllStreetNames().Select(w => _mapper.Map(w.StreetName)).ToList();
-        }
+        protected override IReadOnlyList<TResult> BuildResultsInternal(AddressMatchBuilder results) =>
+            results.AllStreetNames().Select(w => _mapper.Map(w.StreetName)).ToList();
 
         protected override AddressMatchBuilder DoMatchInternal(AddressMatchBuilder results)
         {
@@ -67,13 +65,13 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 if (!IsValidMatch(results))
                     FindStreetNamesByNameToggleAbreviations(results, municipalityWithStreetNames);
                 if (!IsValidMatch(results))
-                    FindStratenByFuzzyMatch(results, municipalityWithStreetNames);
+                    FindStreetNamesByFuzzyMatch(results, municipalityWithStreetNames);
                 if (!IsValidMatch(results))
-                    FindStratenByFuzzyMatchToggleAbreviations(results, municipalityWithStreetNames);
+                    FindStreetNamesByFuzzyMatchToggleAbreviations(results, municipalityWithStreetNames);
                 if (!IsValidMatch(results) && results.Query.StreetName.Length > 3)
-                    FindStratenByStraatnaamContainsInput(results, municipalityWithStreetNames);
+                    FindStreetNamesByStreetNameContainsInput(results, municipalityWithStreetNames);
                 if (!IsValidMatch(results) && results.Query.StreetName.Length > 3)
-                    FindStratenByInputContainsStraatnaam(results, municipalityWithStreetNames);
+                    FindStreetNamesByInputContainsStreetName(results, municipalityWithStreetNames);
             }
 
             if (!IsValidMatch(results))
@@ -88,19 +86,12 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 results.ClearAllStreetNames();
             }
 
-
             return results;
         }
 
-        protected override bool IsValidMatch(AddressMatchBuilder matchResult)
-        {
-            return matchResult.AllStreetNames().Any();
-        }
+        protected override bool IsValidMatch(AddressMatchBuilder matchResult) => matchResult.AllStreetNames().Any();
 
-        protected override bool ShouldProceed(AddressMatchBuilder matchResult)
-        {
-            return IsValidMatch(matchResult);
-        }
+        protected override bool ShouldProceed(AddressMatchBuilder matchResult) => IsValidMatch(matchResult);
 
         private void FindStreetNamesByKadStreetCode(AddressMatchBuilder results)
         {
@@ -109,6 +100,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 municipalityWrapper.AddStreetNames(_streetNameService.GetStreetNamesByKadStreet(results.Query.KadStreetNameCode, municipalityWrapper.NisCode));
                 //_telemetry.TrackStraatnaamMatch(gemeente.Naam, results.Query.Straatnaam, results.Query.KadStraatcode, results.Query.RrStraatcode, gemeente.Count(), (int)StraatnaamMatchLevel.KadStraatCode);
             }
+
             if (!string.IsNullOrEmpty(results.Query.StreetName) && !results.AllStreetNames().Any(w => w.StreetName.NameDutch.EqIgnoreCase(results.Query.StreetName)))
                 _warnings.AddWarning("7", "Geen overeenkomst tussen 'KadStraatcode' en 'Straatnaam'.");
         }
@@ -124,46 +116,33 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 
             if (!string.IsNullOrEmpty(results.Query.StreetName) && !results.AllStreetNames().Any(w => w.StreetName.NameDutch.EqIgnoreCase(results.Query.StreetName)))
                 _warnings.AddWarning("7", "Geen overeenkomst tussen 'RrStraatcode' en 'Straatnaam'.");
-
         }
 
-        private void FindStreetNamesByName(AddressMatchBuilder results, Dictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames)
-        {
-            FindStratenBy(results, municipalitiesWithStreetNames,
+        private void FindStreetNamesByName(AddressMatchBuilder results, Dictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames) =>
+            FindStreetNamesBy(results, municipalitiesWithStreetNames,
                 (exisitingStreetName, requestedStreetName) => exisitingStreetName.EqIgnoreCase(requestedStreetName), StraatnaamMatchLevel.ExactMatch);
-        }
 
-        private void FindStreetNamesByNameToggleAbreviations(AddressMatchBuilder results, Dictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames)
-        {
-            FindStratenBy(results, municipalitiesWithStreetNames,
+        private void FindStreetNamesByNameToggleAbreviations(AddressMatchBuilder results, Dictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames) =>
+            FindStreetNamesBy(results, municipalitiesWithStreetNames,
                 (exisitingStreetName, requestedStreetName) => exisitingStreetName.EqIgnoreCase(requestedStreetName.ToggleAbbreviations()), StraatnaamMatchLevel.ExactMatchReplaceAbbreviations);
-        }
 
-        private void FindStratenByFuzzyMatch(AddressMatchBuilder results, Dictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames)
-        {
-            FindStratenBy(results, municipalitiesWithStreetNames,
+        private void FindStreetNamesByFuzzyMatch(AddressMatchBuilder results, Dictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames) =>
+            FindStreetNamesBy(results, municipalitiesWithStreetNames,
                 (exisitingStreetName, requestedStreetName) => exisitingStreetName.EqFuzzyMatch(requestedStreetName, _config.FuzzyMatchThreshold), StraatnaamMatchLevel.FuzzyMatch);
-        }
 
-        private void FindStratenByFuzzyMatchToggleAbreviations(AddressMatchBuilder results, Dictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames)
-        {
-            FindStratenBy(results, municipalitiesWithStreetNames,
+        private void FindStreetNamesByFuzzyMatchToggleAbreviations(AddressMatchBuilder results, Dictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames) =>
+            FindStreetNamesBy(results, municipalitiesWithStreetNames,
                 (exisitingStreetName, requestedStreetName) => exisitingStreetName.EqFuzzyMatchToggleAbreviations(requestedStreetName, _config.FuzzyMatchThreshold), StraatnaamMatchLevel.FuzzyMatchReplaceAbbreviations);
-        }
 
-        private void FindStratenByStraatnaamContainsInput(AddressMatchBuilder results, Dictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames)
-        {
-            FindStratenBy(results, municipalitiesWithStreetNames,
+        private void FindStreetNamesByStreetNameContainsInput(AddressMatchBuilder results, Dictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames) =>
+            FindStreetNamesBy(results, municipalitiesWithStreetNames,
                 (exisitingStreetName, requestedStreetName) => exisitingStreetName.ContainsIgnoreCase(requestedStreetName), StraatnaamMatchLevel.MatchStraatnaamContainsInput);
-        }
 
-        private void FindStratenByInputContainsStraatnaam(AddressMatchBuilder results, Dictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames)
-        {
-            FindStratenBy(results, municipalitiesWithStreetNames,
+        private void FindStreetNamesByInputContainsStreetName(AddressMatchBuilder results, Dictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames) =>
+            FindStreetNamesBy(results, municipalitiesWithStreetNames,
                 (exisitingStreetName, requestedStreetName) => requestedStreetName.ContainsIgnoreCase(exisitingStreetName), StraatnaamMatchLevel.MatchInputContainsStraatnaam);
-        }
 
-        private void FindStratenBy(AddressMatchBuilder results, Dictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames, Func<string, string, bool> comparer, StraatnaamMatchLevel level)
+        private void FindStreetNamesBy(AddressMatchBuilder results, Dictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames, Func<string, string, bool> comparer, StraatnaamMatchLevel level)
         {
             foreach (var municipalityWrapper in results)
             {

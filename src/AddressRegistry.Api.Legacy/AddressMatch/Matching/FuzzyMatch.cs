@@ -27,9 +27,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             return similarity * 100;
         }
 
-        class FuzzyMatchAlgorithms
+        private class FuzzyMatchAlgorithms
         {
-
             /// <summary>
             /// Calculates the Dice Coefficient for two given strings.
             /// </summary>
@@ -196,7 +195,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             }
         }
 
-        class Bigram
+        private class Bigram
         {
             /// <summary>
             /// Breaks pStr into bigram segments.

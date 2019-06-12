@@ -6,10 +6,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
     {
         public List<string> Warnings { get; } = new List<string>();
 
-        public void AddWarning(string code, string message)
-        {
-            Warnings.Add($"{code}: {message}");
-        }
+        public void AddWarning(string code, string message) => Warnings.Add($"{code}: {message}");
     }
 
     public interface IWarningLogger

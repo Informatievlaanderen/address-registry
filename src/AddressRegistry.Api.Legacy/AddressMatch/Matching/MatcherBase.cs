@@ -27,10 +27,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 
                 return _isMatch.Value;
             }
-            private set
-            {
-                _isMatch = value;
-            }
+            private set => _isMatch = value;
         }
 
         public bool Proceed
@@ -42,10 +39,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 
                 return _proceed.Value;
             }
-            private set
-            {
-                _proceed = value;
-            }
+            private set => _proceed = value;
         }
 
         public abstract IReadOnlyList<TResult> BuildResults(TMatchBuilder builder);
@@ -58,7 +52,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 
         public TMatchBuilder DoMatch(TMatchBuilder builder)
         {
-            TMatchBuilder nextBuilder = DoMatchInternal(builder);
+            var nextBuilder = DoMatchInternal(builder);
 
             Proceed = ShouldProceed(nextBuilder);
             IsMatch = IsValidMatch(nextBuilder);

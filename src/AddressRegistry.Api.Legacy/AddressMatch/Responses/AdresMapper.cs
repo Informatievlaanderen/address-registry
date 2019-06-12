@@ -85,7 +85,6 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
                             .ToList())
                         .ToList()
             };
-
         }
     }
 }

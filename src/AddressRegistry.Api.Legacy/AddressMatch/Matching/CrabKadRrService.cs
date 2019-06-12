@@ -31,19 +31,15 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             _legacyContext = legacyContext;
         }
 
-        public IEnumerable<StreetNameLatestItem> GetStreetNamesByKadStreet(string kadStreetCode, string nisCode)
-        {
-            return GetOrAdd("GetStreetNamesByKadStreet", GetAllKadStreetNamesMappingsFromCrab, AllKadStreetMappingsCacheDuration,
+        public IEnumerable<StreetNameLatestItem> GetStreetNamesByKadStreet(string kadStreetCode, string nisCode) =>
+            GetOrAdd("GetStreetNamesByKadStreet", GetAllKadStreetNamesMappingsFromCrab, AllKadStreetMappingsCacheDuration,
                 mappings => mappings.Where(m => m.KadStreetNameCode == kadStreetCode && m.NisCode == nisCode).Select(Map),
                 () => GetStreetNamesByKadStreetFromCrab(kadStreetCode, nisCode));
-        }
 
-        public StreetNameLatestItem GetStreetNameByRrStreet(string rrStreetCode, string postalCode)
-        {
-            return GetOrAdd("GetStreetNamesByRrStreet", GetAllRrStreetNamesMappingsFromCrab, AllRrStreetMappingsCacheDuration,
+        public StreetNameLatestItem GetStreetNameByRrStreet(string rrStreetCode, string postalCode) =>
+            GetOrAdd("GetStreetNamesByRrStreet", GetAllRrStreetNamesMappingsFromCrab, AllRrStreetMappingsCacheDuration,
                 mappings => Map(mappings.SingleOrDefault(m => m.StreetCode == rrStreetCode && m.PostalCode == postalCode)),
                 () => GetStreetNamesByRrStreetFromCrab(rrStreetCode, postalCode));
-        }
 
         public IEnumerable<AddressDetailItem> GetAddressesBy(string houseNumber, string index, string rrStreetCode, string postalCode)
         {
@@ -59,34 +55,19 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                     _latestQueries.FindLatestAddressesByCrabHouseNumberIds(mappings.Where(rram => rram.AddressType == "2").Select(rram => rram.AddressId)));
         }
 
-        private IEnumerable<StreetNameLatestItem> GetStreetNamesByKadStreetFromCrab(string kadStreetCode, string nisCode)
-        {
-            return _legacyContext
-                    .KadStreetNames
-                    .Where(x => x.KadStreetNameCode == kadStreetCode && x.NisCode == nisCode)
-                    .ToList()
-                    .Select(Map);
-        }
+        private IEnumerable<StreetNameLatestItem> GetStreetNamesByKadStreetFromCrab(string kadStreetCode, string nisCode) =>
+            _legacyContext
+                .KadStreetNames
+                .Where(x => x.KadStreetNameCode == kadStreetCode && x.NisCode == nisCode)
+                .ToList()
+                .Select(Map);
 
-        private IEnumerable<KadStreetName> GetAllKadStreetNamesMappingsFromCrab()
-        {
-            return _legacyContext.KadStreetNames.ToList();
-        }
+        private IEnumerable<KadStreetName> GetAllKadStreetNamesMappingsFromCrab() => _legacyContext.KadStreetNames.ToList();
 
-        private StreetNameLatestItem GetStreetNamesByRrStreetFromCrab(string rrStreetCode, string postalCode)
-        {
-            var streetName = _legacyContext.RRStreetNames.SingleOrDefault(x => x.StreetCode == rrStreetCode && x.PostalCode == postalCode);
+        private StreetNameLatestItem GetStreetNamesByRrStreetFromCrab(string rrStreetCode, string postalCode) =>
+            Map(_legacyContext.RRStreetNames.SingleOrDefault(x => x.StreetCode == rrStreetCode && x.PostalCode == postalCode));
 
-            if (streetName == null)
-                return null;
-
-            return Map(streetName);
-        }
-
-        private IEnumerable<RRStreetName> GetAllRrStreetNamesMappingsFromCrab()
-        {
-            return _legacyContext.RRStreetNames.ToList();
-        }
+        private IEnumerable<RRStreetName> GetAllRrStreetNamesMappingsFromCrab() => _legacyContext.RRStreetNames.ToList();
 
         private StreetNameLatestItem Map(KadStreetName source)
         {
@@ -104,9 +85,6 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             return FindById(source.StreetNameId);
         }
 
-        private StreetNameLatestItem FindById(int osloId)
-        {
-            return _latestQueries.FindLatestStreetNameById(osloId.ToString(CultureInfo.InvariantCulture));
-        }
+        private StreetNameLatestItem FindById(int osloId) => _latestQueries.FindLatestStreetNameById(osloId.ToString(CultureInfo.InvariantCulture));
     }
 }

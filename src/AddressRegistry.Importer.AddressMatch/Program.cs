@@ -61,14 +61,14 @@ namespace AddressRegistry.Importer.AddressMatch
 
             Console.WriteLine($"Sending Zip");
 
-            await ZendZip(configuration.GetValue<string>(ImportUrlKey));
+            await SendZip(configuration.GetValue<string>(ImportUrlKey));
 
             Console.WriteLine($"Cleaning up");
 
             CleanUpFiles(new[] { RRStreetNamesPath, KadStreetNamesPath, RRAddressesPath, ImportAddressMatchZipPath });
         }
 
-        private static async Task ZendZip(string importUrl)
+        private static async Task SendZip(string importUrl)
         {
             using (var zipStream = File.OpenRead(ImportAddressMatchZipPath))
             using (var client = new HttpClient())

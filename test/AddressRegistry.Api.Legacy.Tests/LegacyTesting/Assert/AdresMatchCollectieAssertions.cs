@@ -5,9 +5,9 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting.Assert
     using FluentAssertions;
     using Newtonsoft.Json;
 
-    public class AdresMatchCollectieAssertions : Assertions<AdresMatchCollectie, AdresMatchCollectieAssertions>
+    public class AdresMatchCollectieAssertions : Assertions<AddressMatchCollection, AdresMatchCollectieAssertions>
     {
-        public AdresMatchCollectieAssertions(AdresMatchCollectie subject) : base(subject)
+        public AdresMatchCollectieAssertions(AddressMatchCollection subject) : base(subject)
         {
         }
 
@@ -29,9 +29,9 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting.Assert
             return And();
         }
 
-        internal void BeEquivalentTo(AdresMatchCollectie adresMatchCollectie)
+        internal void BeEquivalentTo(AddressMatchCollection addressMatchCollection)
         {
-            JsonConvert.SerializeObject((object) Subject).Should().Be(JsonConvert.SerializeObject(adresMatchCollectie));
+            JsonConvert.SerializeObject((object) Subject).Should().Be(JsonConvert.SerializeObject(addressMatchCollection));
         }
     }
 }

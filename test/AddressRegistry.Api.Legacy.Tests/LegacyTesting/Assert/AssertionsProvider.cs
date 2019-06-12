@@ -28,7 +28,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting.Assert
             return new AdresListFiltersTaskAssertions(task);
         }
 
-        public static AdresMatchCollectieAssertions Should(this AdresMatchCollectie subject)
+        public static AdresMatchCollectieAssertions Should(this AddressMatchCollection subject)
         {
             return new AdresMatchCollectieAssertions(subject);
         }

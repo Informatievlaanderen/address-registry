@@ -50,9 +50,9 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
                 try
                 {
                     await connection.ExecuteAsync($@"
-                        TRUNCATE TABLE {Schema.Legacy}.{RRStreetName.TableName};
-                        TRUNCATE TABLE {Schema.Legacy}.{KadStreetName.TableName};
-                        TRUNCATE TABLE {Schema.Legacy}.{RRAddress.TableName};",
+                        TRUNCATE TABLE [{Schema.Legacy}].[{RRStreetName.TableName}];
+                        TRUNCATE TABLE [{Schema.Legacy}].[{KadStreetName.TableName}];
+                        TRUNCATE TABLE [{Schema.Legacy}].[{RRAddress.TableName}];",
                         transaction: transaction);
 
                     ImportRrStreetNames(connection, transaction);
@@ -71,12 +71,12 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
 
         private void ImportRrStreetNames(SqlConnection connection, SqlTransaction transaction)
         {
-            var destinationTableName = $"{Schema.Legacy}.RRStreetNames";
+            var destinationTableName = $"{Schema.Legacy}.{RRStreetName.TableName}";
             var dataTable = new DataTable();
-            dataTable.Columns.Add("StreetNameId", typeof(int));
-            dataTable.Columns.Add("StreetName", typeof(string));
-            dataTable.Columns.Add("StreetCode", typeof(string));
-            dataTable.Columns.Add("PostalCode", typeof(string));
+            dataTable.Columns.Add(nameof(RRStreetName.StreetNameId), typeof(int));
+            dataTable.Columns.Add(nameof(RRStreetName.StreetName), typeof(string));
+            dataTable.Columns.Add(nameof(RRStreetName.StreetCode), typeof(string));
+            dataTable.Columns.Add(nameof(RRStreetName.PostalCode), typeof(string));
 
             ExtractAndTransform(RrStreetNamesFileName, dataTable);
             Load(connection, transaction, destinationTableName, dataTable);
@@ -84,11 +84,11 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
 
         private void ImportKadStreetNames(SqlConnection connection, SqlTransaction transaction)
         {
-            var destinationTableName = $"{Schema.Legacy}.KadStreetNames";
+            var destinationTableName = $"{Schema.Legacy}.{KadStreetName.TableName}";
             var dataTable = new DataTable();
-            dataTable.Columns.Add("StreetNameId", typeof(int));
-            dataTable.Columns.Add("KadStreetNameCode", typeof(string));
-            dataTable.Columns.Add("NisCode", typeof(string));
+            dataTable.Columns.Add(nameof(KadStreetName.StreetNameId), typeof(int));
+            dataTable.Columns.Add(nameof(KadStreetName.KadStreetNameCode), typeof(string));
+            dataTable.Columns.Add(nameof(KadStreetName.NisCode), typeof(string));
 
             ExtractAndTransform(KadStreetNamesFileName, dataTable);
             Load(connection, transaction, destinationTableName, dataTable);
@@ -96,14 +96,14 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
 
         private void ImportRrAddresses(SqlConnection connection, SqlTransaction transaction)
         {
-            var destinationTableName = $"{Schema.Legacy}.RRAddresses";
+            var destinationTableName = $"{Schema.Legacy}.{RRAddress.TableName}";
             var dataTable = new DataTable();
-            dataTable.Columns.Add("AddressId", typeof(int));
-            dataTable.Columns.Add("AddressType", typeof(string));
-            dataTable.Columns.Add("RRHouseNumber", typeof(string));
-            dataTable.Columns.Add("RRIndex", typeof(string));
-            dataTable.Columns.Add("StreetCode", typeof(string));
-            dataTable.Columns.Add("PostalCode", typeof(string));
+            dataTable.Columns.Add(nameof(RRAddress.AddressId), typeof(int));
+            dataTable.Columns.Add(nameof(RRAddress.AddressType), typeof(string));
+            dataTable.Columns.Add(nameof(RRAddress.RRHouseNumber), typeof(string));
+            dataTable.Columns.Add(nameof(RRAddress.RRIndex), typeof(string));
+            dataTable.Columns.Add(nameof(RRAddress.StreetCode), typeof(string));
+            dataTable.Columns.Add(nameof(RRAddress.PostalCode), typeof(string));
 
             ExtractAndTransform(RrAddressesFileName, dataTable);
             Load(connection, transaction, destinationTableName, dataTable);

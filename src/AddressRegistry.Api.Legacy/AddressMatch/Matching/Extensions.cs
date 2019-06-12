@@ -8,40 +8,20 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 
     public static class Extensions
     {
-        public static bool In<T>(this T element, IEnumerable<T> elements)
-        {
-            return elements.Any(t => EqualityComparer<T>.Default.Equals(t, element));
-        }
+        public static bool In<T>(this T element, IEnumerable<T> elements) =>
+            elements.Any(t => EqualityComparer<T>.Default.Equals(t, element));
 
-        public static bool EqIgnoreCase(this string a, string b)
-        {
-            return a.Equals(b, StringComparison.InvariantCultureIgnoreCase);
-        }
+        public static bool EqIgnoreCase(this string a, string b) => a.Equals(b, StringComparison.InvariantCultureIgnoreCase);
 
-        public static bool EqIgnoreDiacritics(this string a, string b)
-        {
-            return a.RemoveDiacritics().Equals(b.RemoveDiacritics());
-        }
+        public static bool EqIgnoreDiacritics(this string a, string b) => a.RemoveDiacritics().Equals(b.RemoveDiacritics());
 
-        public static bool EqIgnoreCaseAndDiacritics(this string a, string b)
-        {
-            return a.RemoveDiacritics().EqIgnoreCase(b.RemoveDiacritics());
-        }
+        public static bool EqIgnoreCaseAndDiacritics(this string a, string b) => a.RemoveDiacritics().EqIgnoreCase(b.RemoveDiacritics());
 
-        public static bool EqFuzzyMatch(this string a, string b, double threshold)
-        {
-            return a.FuzzyScore(b) > threshold;
-        }
+        public static bool EqFuzzyMatch(this string a, string b, double threshold) => a.FuzzyScore(b) > threshold;
 
-        public static bool EqFuzzyMatchToggleAbreviations(this string a, string b, double threshold)
-        {
-            return a.EqFuzzyMatch(b.ToggleAbbreviations(), threshold);
-        }
+        public static bool EqFuzzyMatchToggleAbreviations(this string a, string b, double threshold) => a.EqFuzzyMatch(b.ToggleAbbreviations(), threshold);
 
-        public static bool ContainsIgnoreCase(this string a, string b)
-        {
-            return CultureInfo.CurrentCulture.CompareInfo.IndexOf(a, b, CompareOptions.IgnoreCase) >= 0;
-        }
+        public static bool ContainsIgnoreCase(this string a, string b) => CultureInfo.CurrentCulture.CompareInfo.IndexOf(a, b, CompareOptions.IgnoreCase) >= 0;
 
         public static string RemoveDiacritics(this string text)
         {
@@ -60,10 +40,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
         }
 
-        public static double FuzzyScore(this string a, string b)
-        {
-            return FuzzyMatch.Calculate(a, b);
-        }
+        public static double FuzzyScore(this string a, string b) => FuzzyMatch.Calculate(a, b);
 
         public static string ToggleAbbreviations(this string input)
         {

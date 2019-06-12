@@ -1,6 +1,5 @@
 namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
 {
-    using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Gemeente;
@@ -8,7 +7,6 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Straatnaam;
     using Infrastructure.Options;
     using Matching;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
     using Swashbuckle.AspNetCore.Filters;
@@ -19,7 +17,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
     using System.Xml.Serialization;
 
     [DataContract(Name = "AdresMatchCollectie")]
-    public class AdresMatchCollectie
+    public class AddressMatchCollection
     {
         /// <summary>
         /// the first 10 found address matches
@@ -186,15 +184,13 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         [Required]
         public Straatnaam Straatnaam { get; set; }
 
-        public static AdresMatchItemStraatnaam Create(string objectId, string detail, GeografischeNaam straatnaam)
-        {
-            return new AdresMatchItemStraatnaam
+        public static AdresMatchItemStraatnaam Create(string objectId, string detail, GeografischeNaam straatnaam) =>
+            new AdresMatchItemStraatnaam
             {
                 ObjectId = objectId,
                 Detail = detail,
                 Straatnaam = new Straatnaam(straatnaam)
             };
-        }
     }
 
     public class AdresMatchItemPostinfo
@@ -211,14 +207,12 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         [Required]
         public string Detail { get; set; }
 
-        public static AdresMatchItemPostinfo Create(string objectId, string detail)
-        {
-            return new AdresMatchItemPostinfo
+        public static AdresMatchItemPostinfo Create(string objectId, string detail) =>
+            new AdresMatchItemPostinfo
             {
                 ObjectId = objectId,
                 Detail = detail,
             };
-        }
     }
 
     public enum ObjectType
@@ -261,7 +255,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
 
         public object GetExamples()
         {
-            return new AdresMatchCollectie
+            return new AddressMatchCollection
             {
                 AdresMatches = new List<AdresMatchItem>
                 {

@@ -18,10 +18,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             _sanitizer = new Sanitizer { Warnings = warnings };
         }
 
-        protected override IReadOnlyList<TResult> BuildResultsInternal(AddressMatchBuilder results)
-        {
-            return results.AllAddresses().Select(_mapper.Map).ToList();
-        }
+        protected override IReadOnlyList<TResult> BuildResultsInternal(AddressMatchBuilder results) => results.AllAddresses().Select(_mapper.Map).ToList();
 
         protected override AddressMatchBuilder DoMatchInternal(AddressMatchBuilder results)
         {
@@ -45,15 +42,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             return results;
         }
 
-        protected override bool IsValidMatch(AddressMatchBuilder matchResult)
-        {
-            return matchResult.AllAddresses().Any();
-        }
+        protected override bool IsValidMatch(AddressMatchBuilder matchResult) => matchResult.AllAddresses().Any();
 
-        protected override bool ShouldProceed(AddressMatchBuilder matchResult)
-        {
-            //adresmatcher is the latest, so should never proceed
-            return false;
-        }
+        //adresmatcher is the latest, so should never proceed
+        protected override bool ShouldProceed(AddressMatchBuilder matchResult) => false;
     }
 }

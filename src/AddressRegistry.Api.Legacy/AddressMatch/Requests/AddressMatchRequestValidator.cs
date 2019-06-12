@@ -48,30 +48,20 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Requests
             RuleFor(r => r.Gemeentenaam).MaximumLength(40).WithMessage(MAX_LENGTH_NL).WithErrorCode("18");
         }
 
-        private bool BeNumeric(string input)
-        {
-            int number;
-            return int.TryParse(input, out number);
-        }
+        private bool BeNumeric(string input) => int.TryParse(input, out var number);
 
-        private Func<AddressMatchRequest, AddressMatchRequest, PropertyValidatorContext, bool> HaveMinimumOne(params Expression<Func<AddressMatchRequest, string>>[] propertySelectors)
-        {
-            return (request, request2, ct) =>
+        private Func<AddressMatchRequest, AddressMatchRequest, PropertyValidatorContext, bool> HaveMinimumOne(params Expression<Func<AddressMatchRequest, string>>[] propertySelectors) =>
+            (request, request2, ct) =>
             {
                 ct.MessageFormatter.AppendArgument(MINIMUM_ONE_ARGS, string.Join(", ", propertySelectors.Select(selector => (selector.Body as MemberExpression)?.Member?.Name)));
                 return propertySelectors.Any(selector => !string.IsNullOrEmpty(selector.Compile().Invoke(request)));
             };
 
-        }
-
-        private Func<AddressMatchRequest, AddressMatchRequest, PropertyValidatorContext, bool> HaveMaximumOne(params Expression<Func<AddressMatchRequest, string>>[] propertySelectors)
-        {
-            return (request, request2, ct) =>
+        private Func<AddressMatchRequest, AddressMatchRequest, PropertyValidatorContext, bool> HaveMaximumOne(params Expression<Func<AddressMatchRequest, string>>[] propertySelectors) =>
+            (request, request2, ct) =>
             {
                 ct.MessageFormatter.AppendArgument(MAXIMUM_ONE_ARGS, string.Join(", ", propertySelectors.Select(selector => (selector.Body as MemberExpression)?.Member?.Name)));
                 return propertySelectors.Count(selector => !string.IsNullOrEmpty(selector.Compile().Invoke(request))) <= 1;
             };
-
-        }
     }
 }

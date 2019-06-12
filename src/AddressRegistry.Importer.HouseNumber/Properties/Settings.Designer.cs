@@ -12,7 +12,7 @@ namespace AddressRegistry.Importer.HouseNumber.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.9.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.0.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -86,28 +86,6 @@ namespace AddressRegistry.Importer.HouseNumber.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.DateTime LastRunDate {
-            get {
-                return ((global::System.DateTime)(this["LastRunDate"]));
-            }
-            set {
-                this["LastRunDate"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.DateTime EndDateRecovery {
-            get {
-                return ((global::System.DateTime)(this["EndDateRecovery"]));
-            }
-            set {
-                this["EndDateRecovery"] = value;
-            }
-        }
-        
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:1093")]
@@ -132,6 +110,15 @@ namespace AddressRegistry.Importer.HouseNumber.Properties {
         public string ImportAuthPass {
             get {
                 return ((string)(this["ImportAuthPass"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("v1/crabimport/housenumber/batch/current")]
+        public string ImportBatchStatusEndpoint {
+            get {
+                return ((string)(this["ImportBatchStatusEndpoint"]));
             }
         }
     }

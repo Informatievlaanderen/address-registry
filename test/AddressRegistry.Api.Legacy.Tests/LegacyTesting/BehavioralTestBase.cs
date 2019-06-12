@@ -59,6 +59,8 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting
                     GemeenteDetailUrl = "gemeentedetail/{0}",
                     StraatnaamDetailUrl = "straatnaamdetail/{0}",
                     PostInfoDetailUrl = "postinfodetail/{0}",
+                    MaxStreetNamesThreshold = 100,
+                    SimilarityThreshold = 75.0
                 }),
                 _syndicationContext,
                 request);

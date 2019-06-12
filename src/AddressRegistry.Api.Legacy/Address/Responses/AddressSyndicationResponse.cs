@@ -91,7 +91,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
                     address.LastChangedOn.ToBelgianDateTimeOffset(),
                     address.IsComplete,
                     address.Organisation,
-                    address.Plan);
+                    address.Reason);
 
             if (address.ContainsEvent)
             {
@@ -183,7 +183,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             DateTimeOffset version,
             bool isComplete,
             Organisation? organisation,
-            Plan? plan)
+            string reason)
         {
             AddressId = addressId;
             Identificator = new Identificator(naamruimte, osloId.HasValue ? osloId.ToString() : string.Empty, version);
@@ -194,7 +194,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             AdressStatus = status;
             IsComplete = isComplete;
 
-            Provenance = new Provenance(organisation, plan);
+            Provenance = new Provenance(organisation, new Reason(reason));
         }
     }
 
@@ -214,7 +214,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
                     DateTimeOffset.Now,
                     true,
                     Organisation.Agiv,
-                    Plan.Unknown)
+                    Reason.CentralManagementCrab)
             };
 
         private readonly ResponseOptions _responseOptions;

@@ -62,7 +62,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             item.Modification = provenance.Modification;
             item.Operator = provenance.Operator;
             item.Organisation = provenance.Organisation;
-            item.Plan = provenance.Plan;
+            item.Reason = provenance.Reason;
         }
 
         public static void SetEventData<T>(this AddressSyndicationItem syndicationItem, T message)

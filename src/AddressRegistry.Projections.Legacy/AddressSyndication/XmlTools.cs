@@ -21,7 +21,6 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             typeof(LocalDate),
             typeof(LocalDateTime),
             typeof(DateTimeOffset),
-            typeof(Plan),
             typeof(Organisation),
             typeof(Modification)
         };

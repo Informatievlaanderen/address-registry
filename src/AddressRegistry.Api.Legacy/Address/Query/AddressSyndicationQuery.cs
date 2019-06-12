@@ -31,7 +31,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
         public AddressStatus? Status { get; }
         public bool IsComplete { get; }
         public Organisation? Organisation { get; }
-        public Plan? Plan { get; }
+        public string Reason { get; }
         public string EventDataAsXml { get; }
 
         public AddressSyndicationQueryResult(
@@ -43,7 +43,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             Instant lastChangedOn,
             bool isComplete,
             Organisation? organisation,
-            Plan? plan)
+            string reason)
         {
             ContainsObject = false;
             ContainsEvent = false;
@@ -57,7 +57,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             LastChangedOn = lastChangedOn;
             IsComplete = isComplete;
             Organisation = organisation;
-            Plan = plan;
+            Reason = reason;
         }
 
         public AddressSyndicationQueryResult(
@@ -69,7 +69,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             Instant lastChangedOn,
             bool isComplete,
             Organisation? organisation,
-            Plan? plan,
+            string reason,
             string eventDataAsXml)
             : this(
                 addressId,
@@ -80,7 +80,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 lastChangedOn,
                 isComplete,
                 organisation,
-                plan)
+                reason)
         {
             ContainsEvent = true;
 
@@ -101,7 +101,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             bool isComplete,
             AddressStatus? status,
             Organisation? organisation,
-            Plan? plan)
+            string reason)
             : this(
                 addressId,
                 position,
@@ -111,7 +111,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 lastChangedOn,
                 isComplete,
                 organisation,
-                plan)
+                reason)
         {
             ContainsObject = true;
 
@@ -128,7 +128,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             IsComplete = isComplete;
             Status = status;
             Organisation = organisation;
-            Plan = plan;
+            Reason = reason;
         }
 
         public AddressSyndicationQueryResult(
@@ -145,7 +145,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             bool isComplete,
             AddressStatus? status,
             Organisation? organisation,
-            Plan? plan,
+            string reason,
             string eventDataAsXml)
             : this(
                 addressId,
@@ -161,7 +161,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 isComplete,
                 status,
                 organisation,
-                plan)
+                reason)
         {
             ContainsEvent = true;
 
@@ -203,7 +203,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                         x.IsComplete,
                         x.Status,
                         x.Organisation,
-                        x.Plan,
+                        x.Reason,
                         x.EventDataAsXml);
 
                 if (_embedEvent)
@@ -216,7 +216,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                         x.LastChangedOn,
                         x.IsComplete,
                         x.Organisation,
-                        x.Plan,
+                        x.Reason,
                         x.EventDataAsXml);
 
                 if (_embedObject)
@@ -234,7 +234,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                         x.IsComplete,
                         x.Status,
                         x.Organisation,
-                        x.Plan);
+                        x.Reason);
 
                 return x => new AddressSyndicationQueryResult(
                     x.AddressId.Value,
@@ -245,7 +245,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                     x.LastChangedOn,
                     x.IsComplete,
                     x.Organisation,
-                    x.Plan);
+                    x.Reason);
             }
         }
 

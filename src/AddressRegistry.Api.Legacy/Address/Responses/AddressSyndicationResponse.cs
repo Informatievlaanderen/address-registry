@@ -200,19 +200,22 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
 
     public class AddressSyndicationResponseExamples : IExamplesProvider
     {
-        private AddressSyndicationContent ContentExample => new AddressSyndicationContent(
-            Guid.NewGuid(),
-            _responseOptions.Naamruimte,
-            Guid.NewGuid(),
-            13023,
-            "70",
-            null,
-            "9000",
-            AdresStatus.InGebruik,
-            DateTimeOffset.Now,
-            true,
-            Organisation.Agiv,
-            Plan.Unknown);
+        private SyndicationContent ContentExample =>
+            new SyndicationContent {
+                Object = new AddressSyndicationContent(
+                    Guid.NewGuid(),
+                    _responseOptions.Naamruimte,
+                    Guid.NewGuid(),
+                    13023,
+                    "70",
+                    null,
+                    "9000",
+                    AdresStatus.InGebruik,
+                    DateTimeOffset.Now,
+                    true,
+                    Organisation.Agiv,
+                    Plan.Unknown)
+            };
 
         private readonly ResponseOptions _responseOptions;
 

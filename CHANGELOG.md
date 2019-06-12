@@ -1,3 +1,33 @@
+# [1.2.0](https://github.com/informatievlaanderen/address-registry/compare/v1.1.3...v1.2.0) (2019-06-12)
+
+
+### Bug Fixes
+
+* correct event name to MunicipalityWasAttached ([be7a40d](https://github.com/informatievlaanderen/address-registry/commit/be7a40d))
+* correct parcel event typo ([c2133e4](https://github.com/informatievlaanderen/address-registry/commit/c2133e4))
+* correct syndication example to build ([bc50e72](https://github.com/informatievlaanderen/address-registry/commit/bc50e72))
+* fix tests addressmatch after refactor ([c981329](https://github.com/informatievlaanderen/address-registry/commit/c981329))
+* remove deleted files from csproj ([d17a01b](https://github.com/informatievlaanderen/address-registry/commit/d17a01b))
+* set oslo id to integer for extract ([a4e9d40](https://github.com/informatievlaanderen/address-registry/commit/a4e9d40))
+
+
+### Features
+
+* add addressmatch import in api into tmp tables ([da31094](https://github.com/informatievlaanderen/address-registry/commit/da31094))
+* add buildingunits syndication to addressmatch ([2c76173](https://github.com/informatievlaanderen/address-registry/commit/2c76173))
+* add eventdata to sync ([b0cd328](https://github.com/informatievlaanderen/address-registry/commit/b0cd328))
+* add Importer to create and zip files ([982a8ad](https://github.com/informatievlaanderen/address-registry/commit/982a8ad))
+* add parcel syndication for addressmatch ([b2a8131](https://github.com/informatievlaanderen/address-registry/commit/b2a8131))
+* add parcel to addressmatch response ([50b1240](https://github.com/informatievlaanderen/address-registry/commit/50b1240))
+* add postal info syndication ([54f27a4](https://github.com/informatievlaanderen/address-registry/commit/54f27a4))
+* add response examples addressmatch ([9ccf351](https://github.com/informatievlaanderen/address-registry/commit/9ccf351))
+* add testing infrastructure legacy addressmatch + 1 test working ([6d8b162](https://github.com/informatievlaanderen/address-registry/commit/6d8b162))
+* completed import + upload to crab tables ([f670336](https://github.com/informatievlaanderen/address-registry/commit/f670336))
+* ported addressmatch tests + some clean up ([696427b](https://github.com/informatievlaanderen/address-registry/commit/696427b))
+* ported api for addressmatch (WIP) ([977bb5f](https://github.com/informatievlaanderen/address-registry/commit/977bb5f))
+* ported old addressmatch code ([b79ca94](https://github.com/informatievlaanderen/address-registry/commit/b79ca94))
+* upgrade to netcore 2.2.4 + validations ([22a9b7b](https://github.com/informatievlaanderen/address-registry/commit/22a9b7b))
+
 ## [1.1.3](https://github.com/informatievlaanderen/address-registry/compare/v1.1.2...v1.1.3) (2019-05-21)
 
 ## [1.1.2](https://github.com/informatievlaanderen/address-registry/compare/v1.1.1...v1.1.2) (2019-05-20)

@@ -1,13 +1,9 @@
 namespace AddressRegistry.Api.Legacy.Infrastructure
 {
-    using System;
-    using System.Linq;
-    using System.Reflection;
-    using Be.Vlaanderen.Basisregisters.Api;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.AspNetCore;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
+    using Be.Vlaanderen.Basisregisters.Api;
+    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Configuration;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -19,7 +15,9 @@ namespace AddressRegistry.Api.Legacy.Infrastructure
     using Modules;
     using Options;
     using Swashbuckle.AspNetCore.Swagger;
-    using TraceSource = Be.Vlaanderen.Basisregisters.DataDog.Tracing.TraceSource;
+    using System;
+    using System.Linq;
+    using System.Reflection;
 
     /// <summary>Represents the startup process for the application.</summary>
     public class Startup
@@ -88,7 +86,8 @@ namespace AddressRegistry.Api.Legacy.Infrastructure
                         }
                     }
                 })
-                .Configure<ResponseOptions>(_configuration);
+                .Configure<ResponseOptions>(_configuration)
+                .AddMemoryCache();
 
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterModule(new ApiModule(_configuration, services, _loggerFactory));
@@ -108,6 +107,8 @@ namespace AddressRegistry.Api.Legacy.Infrastructure
             ApiDebugDataDogToggle debugDataDogToggle,
             HealthCheckService healthCheckService)
         {
+            StartupHelpers.CheckDatabases(healthCheckService, DatabaseTag).GetAwaiter().GetResult();
+
             app
                 .UseDatadog<Startup>(
                     serviceProvider,

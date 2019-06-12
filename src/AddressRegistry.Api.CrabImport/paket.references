@@ -8,6 +8,8 @@ Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac
 Be.Vlaanderen.Basisregisters.GrAr.Import
 
 AsyncEnumerator
+CsvHelper
+Dapper
 
 SourceLink.Embed.AllSourceFiles
 SourceLink.Copy.PdbFiles

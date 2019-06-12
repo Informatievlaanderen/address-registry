@@ -29,6 +29,7 @@ nuget AspNetCore.HealthChecks.SqlServer 2.2.0
 
 nuget AsyncEnumerator 2.2.2
 nuget Dapper 1.60.6
+nuget CsvHelper 12.1.2
 
 nuget NetTopologySuite 1.15.2
 
@@ -89,7 +90,7 @@ nuget Structurizr.Client 0.9.0
 nuget Structurizr.AdrTools 0.9.0
 
 // TEST STUFF
-nuget Microsoft.NET.Test.Sdk 15.9.0
+nuget Microsoft.NET.Test.Sdk 16.0.1
 nuget Microsoft.EntityFrameworkCore.InMemory 2.2.4
 nuget xunit 2.4.1
 nuget xunit.runner.visualstudio 2.4.1
@@ -97,6 +98,7 @@ nuget xunit.categories 2.0.4
 nuget FluentAssertions 5.6.0
 nuget Moq 4.10.1
 nuget AutoFixture.Xunit2 4.8.0
+nuget Serilog.Sinks.XUnit 1.0.8
 
 // BUILD STUFF
 nuget FAKE 4.64.13 // Don't update to v5!

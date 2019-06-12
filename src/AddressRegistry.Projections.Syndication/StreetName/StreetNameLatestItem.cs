@@ -24,6 +24,12 @@ namespace AddressRegistry.Projections.Syndication.StreetName
         public DateTimeOffset? Version { get; set; }
         public long Position { get; set; }
         public bool IsComplete { get; set; }
+
+        public bool HasHomonymAddition =>
+            !string.IsNullOrEmpty(HomonymAdditionDutch) ||
+            !string.IsNullOrEmpty(HomonymAdditionEnglish) ||
+            !string.IsNullOrEmpty(HomonymAdditionFrench) ||
+            !string.IsNullOrEmpty(HomonymAdditionGerman);
     }
 
     public class StreetNameLatestItemConfiguration : IEntityTypeConfiguration<StreetNameLatestItem>

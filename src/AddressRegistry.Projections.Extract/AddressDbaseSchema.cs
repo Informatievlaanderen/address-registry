@@ -22,7 +22,7 @@ namespace AddressRegistry.Projections.Extract
         public AddressDbaseSchema() => Fields = new[]
         {
             DbaseField.CreateStringField(new DbaseFieldName(nameof(id)), new DbaseFieldLength(50)),
-            DbaseField.CreateStringField(new DbaseFieldName(nameof(adresid)), new DbaseFieldLength(10)),
+            DbaseField.CreateInt32Field(new DbaseFieldName(nameof(adresid)), new DbaseFieldLength(10)),
             DbaseField.CreateDateTimeField(new DbaseFieldName(nameof(versie))),
             DbaseField.CreateStringField(new DbaseFieldName(nameof(posspec)), new DbaseFieldLength(20)),
             DbaseField.CreateStringField(new DbaseFieldName(nameof(posgeommet)), new DbaseFieldLength(30)),

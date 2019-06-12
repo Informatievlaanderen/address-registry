@@ -8,7 +8,7 @@ namespace AddressRegistry.Projections.Syndication.Municipality
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication;
 
-    public class MunicipalityLatestProjections : AtomEntryProjectionHandlerModule<MunicipalityEvent, Municipality, SyndicationContext>
+    public class MunicipalityLatestProjections : AtomEntryProjectionHandlerModule<MunicipalityEvent, SyndicationItem<Municipality>, SyndicationContext>
     {
         public MunicipalityLatestProjections()
         {
@@ -23,24 +23,24 @@ namespace AddressRegistry.Projections.Syndication.Municipality
             When(MunicipalityEvent.MunicipalityOfficialLanguageWasRemoved, AddSyndicationItemEntry);
         }
 
-        private static async Task AddSyndicationItemEntry(AtomEntry<Municipality> entry, SyndicationContext context, CancellationToken ct)
+        private static async Task AddSyndicationItemEntry(AtomEntry<SyndicationItem<Municipality>> entry, SyndicationContext context, CancellationToken ct)
         {
             var municipalityLatestItem = await context
                 .MunicipalityLatestItems
-                .FindAsync(entry.Content.Id);
+                .FindAsync(entry.Content.Object.Id);
 
             if (municipalityLatestItem == null)
             {
                 municipalityLatestItem = new MunicipalityLatestItem
                 {
-                    MunicipalityId = entry.Content.Id,
-                    NisCode = entry.Content.Identificator?.ObjectId,
-                    Version = entry.Content.Identificator?.Versie.Value,
+                    MunicipalityId = entry.Content.Object.Id,
+                    NisCode = entry.Content.Object.Identificator?.ObjectId,
+                    Version = entry.Content.Object.Identificator?.Versie.Value,
                     Position = long.Parse(entry.FeedEntry.Id),
-                    PrimaryLanguage = entry.Content.OfficialLanguages.FirstOrDefault()
+                    PrimaryLanguage = entry.Content.Object.OfficialLanguages.FirstOrDefault()
                 };
 
-                UpdateNamesByGemeentenamen(municipalityLatestItem, entry.Content.MunicipalityNames);
+                UpdateNamesByGemeentenamen(municipalityLatestItem, entry.Content.Object.MunicipalityNames);
 
                 await context
                     .MunicipalityLatestItems
@@ -48,12 +48,12 @@ namespace AddressRegistry.Projections.Syndication.Municipality
             }
             else
             {
-                municipalityLatestItem.NisCode = entry.Content.Identificator?.ObjectId;
-                municipalityLatestItem.Version = entry.Content.Identificator?.Versie.Value;
+                municipalityLatestItem.NisCode = entry.Content.Object.Identificator?.ObjectId;
+                municipalityLatestItem.Version = entry.Content.Object.Identificator?.Versie.Value;
                 municipalityLatestItem.Position = long.Parse(entry.FeedEntry.Id);
-                municipalityLatestItem.PrimaryLanguage = entry.Content.OfficialLanguages.FirstOrDefault();
+                municipalityLatestItem.PrimaryLanguage = entry.Content.Object.OfficialLanguages.FirstOrDefault();
 
-                UpdateNamesByGemeentenamen(municipalityLatestItem, entry.Content.MunicipalityNames);
+                UpdateNamesByGemeentenamen(municipalityLatestItem, entry.Content.Object.MunicipalityNames);
             }
         }
 

@@ -108,6 +108,8 @@ namespace AddressRegistry.Projections.Legacy.Migrations
 
                     b.Property<string>("ChangeType");
 
+                    b.Property<string>("EventDataAsXml");
+
                     b.Property<string>("HouseNumber");
 
                     b.Property<bool>("IsComplete");

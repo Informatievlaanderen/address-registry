@@ -17,6 +17,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
     using System.Net.Mime;
     using System.Runtime.Serialization;
     using System.Threading.Tasks;
+    using System.Xml;
     using Provenance = Be.Vlaanderen.Basisregisters.GrAr.Provenance.Syndication.Provenance;
 
     public static class AddressSyndicationResponse
@@ -69,31 +70,52 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
                     "informatie.vlaanderen@vlaanderen.be",
                     AtomContributorTypes.Author));
 
-            await writer.Write(new SyndicationContent(formatter.CreateContent(item)));
+            await writer.Write(item);
         }
 
         private static string BuildDescription(AddressSyndicationQueryResult address, string naamruimte)
         {
-            var content = new AddressSyndicationContent(
-                address.AddressId,
-                naamruimte,
-                address.StreetNameId,
-                address.OsloId,
-                address.HouseNumber,
-                address.BoxNumber,
-                address.PostalCode,
-                address.Status.ConvertFromAddressStatus(),
-                address.LastChangedOn.ToBelgianDateTimeOffset(),
-                address.IsComplete,
-                address.Organisation,
-                address.Plan);
+            if (!address.ContainsEvent && !address.ContainsObject)
+                return "No data embedded";
+
+            var content = new SyndicationContent();
+            if (address.ContainsObject)
+                content.Object = new AddressSyndicationContent(address.AddressId,
+                    naamruimte,
+                    address.StreetNameId,
+                    address.OsloId,
+                    address.HouseNumber,
+                    address.BoxNumber,
+                    address.PostalCode,
+                    address.Status.ConvertFromAddressStatus(),
+                    address.LastChangedOn.ToBelgianDateTimeOffset(),
+                    address.IsComplete,
+                    address.Organisation,
+                    address.Plan);
+
+            if (address.ContainsEvent)
+            {
+                var doc = new XmlDocument();
+                doc.LoadXml(address.EventDataAsXml);
+                content.Event = doc.DocumentElement;
+            }
 
             return content.ToXml();
         }
     }
 
+    [DataContract(Name = "Content", Namespace = "")]
+    public class SyndicationContent : SyndicationContentBase
+    {
+        [DataMember(Name = "Event")]
+        public XmlElement Event { get; set; }
+
+        [DataMember(Name = "Object")]
+        public AddressSyndicationContent Object { get; set; }
+    }
+
     [DataContract(Name = "Adres", Namespace = "")]
-    public class AddressSyndicationContent : SyndicationContentBase
+    public class AddressSyndicationContent
     {
         /// <summary>
         /// De technische id van het adres.

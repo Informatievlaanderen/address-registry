@@ -19,6 +19,28 @@ namespace AddressRegistry.Projections.Syndication.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("AddressRegistry.Projections.Syndication.BuildingUnit.BuildingUnitAddressMatchLatestItem", b =>
+                {
+                    b.Property<Guid>("BuildingUnitId");
+
+                    b.Property<Guid>("AddressId");
+
+                    b.Property<Guid>("BuildingId");
+
+                    b.Property<string>("BuildingUnitOsloId");
+
+                    b.Property<bool>("IsComplete");
+
+                    b.HasKey("BuildingUnitId", "AddressId")
+                        .HasAnnotation("SqlServer:Clustered", false);
+
+                    b.HasIndex("BuildingId");
+
+                    b.HasIndex("AddressId", "IsComplete");
+
+                    b.ToTable("BuildingUnitAddressMatchLatestItemSyndication","AddressRegistrySyndication");
+                });
+
             modelBuilder.Entity("AddressRegistry.Projections.Syndication.Municipality.MunicipalityBosaItem", b =>
                 {
                     b.Property<Guid>("MunicipalityId")
@@ -149,6 +171,57 @@ namespace AddressRegistry.Projections.Syndication.Migrations
                     b.HasIndex("Version");
 
                     b.ToTable("MunicipalitySyndication","AddressRegistrySyndication");
+                });
+
+            modelBuilder.Entity("AddressRegistry.Projections.Syndication.Parcel.ParcelAddressMatchLatestItem", b =>
+                {
+                    b.Property<Guid>("ParcelId");
+
+                    b.Property<Guid>("AddressId");
+
+                    b.Property<string>("ParcelOsloId");
+
+                    b.HasKey("ParcelId", "AddressId")
+                        .HasAnnotation("SqlServer:Clustered", false);
+
+                    b.HasIndex("AddressId");
+
+                    b.ToTable("ParcelAddressMatchLatestItemSyndication","AddressRegistrySyndication");
+                });
+
+            modelBuilder.Entity("AddressRegistry.Projections.Syndication.PostalInfo.PostalInfoLatestItem", b =>
+                {
+                    b.Property<string>("PostalCode")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("NisCode");
+
+                    b.Property<long>("Position");
+
+                    b.Property<DateTimeOffset?>("Version");
+
+                    b.HasKey("PostalCode")
+                        .HasAnnotation("SqlServer:Clustered", false);
+
+                    b.HasIndex("NisCode");
+
+                    b.ToTable("PostalInfoLatestSyndication","AddressRegistrySyndication");
+                });
+
+            modelBuilder.Entity("AddressRegistry.Projections.Syndication.PostalInfo.PostalInfoPostalName", b =>
+                {
+                    b.Property<string>("PostalCode");
+
+                    b.Property<string>("PostalName");
+
+                    b.Property<int>("Language");
+
+                    b.HasKey("PostalCode", "PostalName")
+                        .HasAnnotation("SqlServer:Clustered", false);
+
+                    b.HasIndex("PostalName");
+
+                    b.ToTable("PostalInfoPostalNamesLatestSyndication","AddressRegistrySyndication");
                 });
 
             modelBuilder.Entity("AddressRegistry.Projections.Syndication.StreetName.StreetNameBosaItem", b =>
@@ -326,6 +399,14 @@ namespace AddressRegistry.Projections.Syndication.Migrations
                         .HasAnnotation("SqlServer:Clustered", true);
 
                     b.ToTable("ProjectionStates","AddressRegistrySyndication");
+                });
+
+            modelBuilder.Entity("AddressRegistry.Projections.Syndication.PostalInfo.PostalInfoPostalName", b =>
+                {
+                    b.HasOne("AddressRegistry.Projections.Syndication.PostalInfo.PostalInfoLatestItem")
+                        .WithMany("PostalNames")
+                        .HasForeignKey("PostalCode")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

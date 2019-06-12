@@ -8,7 +8,7 @@ namespace AddressRegistry.Projections.Syndication.Municipality
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication;
 
-    public class MunicipalityBosaProjections : AtomEntryProjectionHandlerModule<MunicipalityEvent, Municipality, SyndicationContext>
+    public class MunicipalityBosaProjections : AtomEntryProjectionHandlerModule<MunicipalityEvent, SyndicationItem<Municipality>, SyndicationContext>
     {
         public MunicipalityBosaProjections()
         {
@@ -23,25 +23,25 @@ namespace AddressRegistry.Projections.Syndication.Municipality
             When(MunicipalityEvent.MunicipalityOfficialLanguageWasRemoved, AddSyndicationItemEntry);
         }
 
-        private static async Task AddSyndicationItemEntry(AtomEntry<Municipality> entry, SyndicationContext context, CancellationToken ct)
+        private static async Task AddSyndicationItemEntry(AtomEntry<SyndicationItem<Municipality>> entry, SyndicationContext context, CancellationToken ct)
         {
             var municipalityItem = await context
                 .MunicipalityBosaItems
-                .FindAsync(entry.Content.Id);
+                .FindAsync(entry.Content.Object.Id);
 
             if (municipalityItem == null)
             {
                 municipalityItem = new MunicipalityBosaItem
                 {
-                    MunicipalityId = entry.Content.Id,
-                    NisCode = entry.Content.Identificator?.ObjectId,
-                    Version = entry.Content.Identificator?.Versie.Value,
+                    MunicipalityId = entry.Content.Object.Id,
+                    NisCode = entry.Content.Object.Identificator?.ObjectId,
+                    Version = entry.Content.Object.Identificator?.Versie.Value,
                     Position = long.Parse(entry.FeedEntry.Id),
-                    PrimaryLanguage = entry.Content.OfficialLanguages.FirstOrDefault(),
-                    IsFlemishRegion = RegionFilter.IsFlemishRegion(entry.Content.Identificator?.ObjectId)
+                    PrimaryLanguage = entry.Content.Object.OfficialLanguages.FirstOrDefault(),
+                    IsFlemishRegion = RegionFilter.IsFlemishRegion(entry.Content.Object.Identificator?.ObjectId)
                 };
 
-                UpdateNamesByGemeentenamen(municipalityItem, entry.Content.MunicipalityNames);
+                UpdateNamesByGemeentenamen(municipalityItem, entry.Content.Object.MunicipalityNames);
 
                 await context
                     .MunicipalityBosaItems
@@ -49,13 +49,13 @@ namespace AddressRegistry.Projections.Syndication.Municipality
             }
             else
             {
-                municipalityItem.NisCode = entry.Content.Identificator?.ObjectId;
-                municipalityItem.Version = entry.Content.Identificator?.Versie.Value;
+                municipalityItem.NisCode = entry.Content.Object.Identificator?.ObjectId;
+                municipalityItem.Version = entry.Content.Object.Identificator?.Versie.Value;
                 municipalityItem.Position = long.Parse(entry.FeedEntry.Id);
-                municipalityItem.PrimaryLanguage = entry.Content.OfficialLanguages.FirstOrDefault();
-                municipalityItem.IsFlemishRegion = RegionFilter.IsFlemishRegion(entry.Content.Identificator?.ObjectId);
+                municipalityItem.PrimaryLanguage = entry.Content.Object.OfficialLanguages.FirstOrDefault();
+                municipalityItem.IsFlemishRegion = RegionFilter.IsFlemishRegion(entry.Content.Object.Identificator?.ObjectId);
 
-                UpdateNamesByGemeentenamen(municipalityItem, entry.Content.MunicipalityNames);
+                UpdateNamesByGemeentenamen(municipalityItem, entry.Content.Object.MunicipalityNames);
             }
         }
 

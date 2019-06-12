@@ -11,6 +11,7 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
+    using Be.Vlaanderen.Basisregisters.BasicApiProblem;
     using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Middleware;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Api;
     using Microsoft.AspNetCore.Http;
@@ -73,8 +74,8 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
                 {
                     var commandsPerCommandId = registerCrabImports
                         .Select(RegisterCrabImportRequestMapping.Map)
-                        .Distinct(new LambdaEqualityComparer<dynamic>(x => (string) x.CreateCommandId().ToString()))
-                        .ToDictionary(x => (Guid?) x.CreateCommandId(), x => x);
+                        .Distinct(new LambdaEqualityComparer<dynamic>(x => (string)x.CreateCommandId().ToString()))
+                        .ToDictionary(x => (Guid?)x.CreateCommandId(), x => x);
 
                     var tag = await bus
                         .IdempotentCommandHandlerDispatchBatch(

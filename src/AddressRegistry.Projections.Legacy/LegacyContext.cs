@@ -2,6 +2,7 @@ namespace AddressRegistry.Projections.Legacy
 {
     using AddressDetail;
     using AddressList;
+    using AddressMatch;
     using AddressSyndication;
     using Be.Vlaanderen.Basisregisters.EntityFrameworkCore.EntityTypeConfiguration;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
@@ -24,6 +25,9 @@ namespace AddressRegistry.Projections.Legacy
         public DbSet<AddressDetailItem> AddressDetail { get; set; }
         public DbSet<AddressListItem> AddressList { get; set; }
         public DbSet<AddressSyndicationItem> AddressSyndication { get; set; }
+        public DbQuery<RRStreetName> RRStreetNames { get; set; }
+        public DbQuery<KadStreetName> KadStreetNames { get; set; }
+        public DbQuery<RRAddress> RRAddresses { get; set; }
 
         public LegacyContext() { }
 

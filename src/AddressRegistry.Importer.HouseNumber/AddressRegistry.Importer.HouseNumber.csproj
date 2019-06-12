@@ -69,7 +69,6 @@
     <Compile Include="SqlServerTypes\Loader.cs">
       <Paket>True</Paket>
     </Compile>
-    <Compile Include="UnitTestConfigForHuisnummer.cs" />
     <Content Include="SqlServerTypes\readme.htm">
       <Paket>True</Paket>
     </Content>

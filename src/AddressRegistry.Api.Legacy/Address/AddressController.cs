@@ -233,7 +233,11 @@ namespace AddressRegistry.Api.Legacy.Address
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
-            var pagedAddresses = new AddressSyndicationQuery(context).Fetch(filtering, sorting, pagination);
+            var pagedAddresses = new AddressSyndicationQuery(
+                context,
+                filtering.Filter?.ContainsEvent ?? false,
+                filtering.Filter?.ContainsObject ?? false)
+                .Fetch(filtering, sorting, pagination);
 
             Response.AddPaginationResponse(pagedAddresses.PaginationInfo);
             Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);
@@ -364,7 +368,8 @@ namespace AddressRegistry.Api.Legacy.Address
                     syndicationConfiguration.GetSection("Related").GetChildren().Select(c => c.Value).ToArray());
 
                 var nextUri = BuildVolgendeUri(pagedAddresses.PaginationInfo, syndicationConfiguration["NextUri"]);
-                await writer.Write(new SyndicationLink(nextUri, "next"));
+                if (nextUri != null)
+                    await writer.Write(new SyndicationLink(nextUri, "next"));
 
                 foreach (var address in pagedAddresses.Items)
                     await writer.WriteAddress(responseOptions, formatter, syndicationConfiguration["Category"], address);

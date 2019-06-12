@@ -7,7 +7,7 @@ namespace AddressRegistry.Projections.Extract
         public static readonly AddressDbaseSchema Schema = new AddressDbaseSchema();
 
         public DbaseString id { get; }
-        public DbaseString adresid { get; }
+        public DbaseInt32 adresid { get; }
         public DbaseDateTime versie { get; }
         public DbaseString posspec { get; }
         public DbaseString posgeommet { get; }
@@ -24,7 +24,7 @@ namespace AddressRegistry.Projections.Extract
         public AddressDbaseRecord()
         {
             id = new DbaseString(Schema.id);
-            adresid = new DbaseString(Schema.adresid);
+            adresid = new DbaseInt32(Schema.adresid);
             versie = new DbaseDateTime(Schema.versie);
             posspec = new DbaseString(Schema.posspec);
             posgeommet = new DbaseString(Schema.posgeommet);

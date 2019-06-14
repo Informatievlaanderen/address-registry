@@ -8,12 +8,17 @@ namespace AddressRegistry.Tests.ProjectionTests
     using Projections.Legacy;
     using Projections.Legacy.AddressDetail;
     using System.Threading.Tasks;
+    using Address;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using GeoAPI.Geometries;
+    using NetTopologySuite.IO;
     using Xunit;
     using Xunit.Abstractions;
 
     public class AddressDetailProjectionsTests : ProjectionTest<LegacyContext, AddressDetailProjections>
     {
+        private readonly WKBReader _wkbReader = WKBReaderFactory.Create();
+
         public AddressDetailProjectionsTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
         }
@@ -208,7 +213,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        Position = addressPositionWasCorrected.ExtendedWkbGeometry.ToByteArray(),
+                        Position = (IPoint)_wkbReader.Read(addressPositionWasCorrected.ExtendedWkbGeometry.ToByteArray()),
                         PositionMethod = addressPositionWasCorrected.GeometryMethod,
                         PositionSpecification = addressPositionWasCorrected.GeometrySpecification
                     }));
@@ -464,7 +469,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        Position = addressWasPositioned.ExtendedWkbGeometry.ToByteArray(),
+                        Position = (IPoint)_wkbReader.Read(addressWasPositioned.ExtendedWkbGeometry.ToByteArray()),
                         PositionMethod = addressWasPositioned.GeometryMethod,
                         PositionSpecification = addressWasPositioned.GeometrySpecification
                     }));
@@ -724,7 +729,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        Position = addressWasPositioned.ExtendedWkbGeometry.ToByteArray(),
+                        Position = (IPoint)_wkbReader.Read(addressWasPositioned.ExtendedWkbGeometry.ToByteArray()),
                         PositionMethod = addressWasPositioned.GeometryMethod,
                         PositionSpecification = addressWasPositioned.GeometrySpecification,
                         Removed = true,
@@ -733,6 +738,6 @@ namespace AddressRegistry.Tests.ProjectionTests
 
         protected override LegacyContext CreateContext(DbContextOptions<LegacyContext> options) => new LegacyContext(options);
 
-        protected override AddressDetailProjections CreateProjection() => new AddressDetailProjections();
+        protected override AddressDetailProjections CreateProjection() => new AddressDetailProjections(_wkbReader);
     }
 }

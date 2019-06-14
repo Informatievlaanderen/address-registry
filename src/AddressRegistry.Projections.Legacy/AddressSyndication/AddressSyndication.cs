@@ -2,6 +2,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
 {
     using System;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using GeoAPI.Geometries;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -20,9 +21,13 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
         public string HouseNumber { get; set; }
         public string BoxNumber { get; set; }
 
-        public AddressStatus? Status { get; set; }
+        public IPoint PointPosition { get; set; }
+        public GeometryMethod? PositionMethod { get; set; }
+        public GeometrySpecification? PositionSpecification { get; set; }
 
+        public AddressStatus? Status { get; set; }
         public bool IsComplete { get; set; }
+        public bool IsOfficiallyAssigned { get; set; }
 
         public DateTimeOffset RecordCreatedAtAsDateTimeOffset { get; set; }
         public DateTimeOffset LastChangedOnAsDateTimeOffset { get; set; }
@@ -65,7 +70,11 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                 HouseNumber = HouseNumber,
                 BoxNumber = BoxNumber,
                 Status = Status,
+                PointPosition = PointPosition,
+                PositionMethod = PositionMethod,
+                PositionSpecification = PositionSpecification,
                 IsComplete = IsComplete,
+                IsOfficiallyAssigned = IsOfficiallyAssigned,
                 RecordCreatedAt = RecordCreatedAt,
                 Application = Application,
                 Modification = Modification,
@@ -101,8 +110,12 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             b.Property(x => x.BoxNumber);
 
             b.Property(x => x.Status);
-
+            b.Property(x => x.IsOfficiallyAssigned);
             b.Property(x => x.IsComplete);
+
+            b.Property(x => x.PointPosition);
+            b.Property(x => x.PositionMethod);
+            b.Property(x => x.PositionSpecification);
 
             b.Property(x => x.RecordCreatedAtAsDateTimeOffset).HasColumnName("RecordCreatedAt");
             b.Property(x => x.LastChangedOnAsDateTimeOffset).HasColumnName("LastChangedOn");

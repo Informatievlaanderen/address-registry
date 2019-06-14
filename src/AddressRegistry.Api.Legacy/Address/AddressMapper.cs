@@ -4,7 +4,7 @@ namespace AddressRegistry.Api.Legacy.Address
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
-    using NetTopologySuite.IO;
+    using GeoAPI.Geometries;
     using Projections.Legacy.AddressDetail;
     using Projections.Syndication.Municipality;
     using Projections.Syndication.StreetName;
@@ -37,13 +37,12 @@ namespace AddressRegistry.Api.Legacy.Address
                 defaultMunicipalityName.Key);
         }
 
-        public static Point GetAdresPoint(AddressDetailItem address)
+        public static Point GetAddressPoint(IPoint point)
         {
-            var geometry = new WKBReader().Read(address.Position);
             return new Point
             {
-                XmlPoint = new GmlPoint { Pos = $"{geometry.Coordinate.X} {geometry.Coordinate.Y}" },
-                JsonPoint = new GeoJSONPoint { Coordinates = new[] { geometry.Coordinate.X, geometry.Coordinate.Y } }
+                XmlPoint = new GmlPoint { Pos = $"{point.Coordinate.X} {point.Coordinate.Y}" },
+                JsonPoint = new GeoJSONPoint { Coordinates = new[] { point.Coordinate.X, point.Coordinate.Y } }
             };
         }
 

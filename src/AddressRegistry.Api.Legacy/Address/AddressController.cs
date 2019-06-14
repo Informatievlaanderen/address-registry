@@ -110,7 +110,7 @@ namespace AddressRegistry.Api.Legacy.Address
                     gemeente,
                     straat,
                     postInfo,
-                    AddressMapper.GetAdresPoint(address),
+                    AddressMapper.GetAddressPoint(address.Position),
                     AddressMapper.ConvertFromGeometryMethod(address.PositionMethod),
                     AddressMapper.ConvertFromGeometrySpecification(address.PositionSpecification),
                     AddressMapper.ConvertFromAddressStatus(address.Status),

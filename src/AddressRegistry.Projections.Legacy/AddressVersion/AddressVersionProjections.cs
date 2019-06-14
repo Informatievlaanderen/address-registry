@@ -10,6 +10,8 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using GeoAPI.Geometries;
+    using NetTopologySuite.IO;
 
     public static class AddressVersionsQueries
     {
@@ -37,7 +39,7 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
 
     public class AddressVersionProjections : ConnectedProjection<LegacyContext>
     {
-        public AddressVersionProjections()
+        public AddressVersionProjections(WKBReader wkbReader)
         {
             When<Envelope<AddressWasRegistered>>(async (context, message, ct) =>
             {
@@ -130,7 +132,7 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
                     message,
                     item =>
                     {
-                        item.Position = message.Message.ExtendedWkbGeometry.ToByteArray();
+                        item.Position = (IPoint)wkbReader.Read(message.Message.ExtendedWkbGeometry.ToByteArray());
                         item.PositionMethod = message.Message.GeometryMethod;
                         item.PositionSpecification = message.Message.GeometrySpecification;
                     },
@@ -256,7 +258,7 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
                     message,
                     item =>
                     {
-                        item.Position = message.Message.ExtendedWkbGeometry.ToByteArray();
+                        item.Position = (IPoint)wkbReader.Read(message.Message.ExtendedWkbGeometry.ToByteArray());
                         item.PositionMethod = message.Message.GeometryMethod;
                         item.PositionSpecification = message.Message.GeometrySpecification;
                     },

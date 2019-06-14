@@ -2,6 +2,7 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
 {
     using System;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using GeoAPI.Geometries;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -22,7 +23,7 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
         public AddressStatus? Status { get; set; }
         public bool? OfficiallyAssigned { get; set; }
 
-        public byte[] Position { get; set; }
+        public IPoint Position { get; set; }
         public GeometryMethod? PositionMethod { get; set; }
         public GeometrySpecification? PositionSpecification { get; set; }
 

@@ -15,6 +15,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting
     using Newtonsoft.Json;
     using Projections.Legacy;
     using Projections.Syndication;
+    using Serilog.Formatting.Json;
     using Xunit.Abstractions;
 
     public abstract class BehavioralTestBase : HandlerTestBase
@@ -36,6 +37,11 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting
             _controller = new AddressMatchController();
             _syndicationContext = new SyndicationContextMemory("DB", InMemoryDatabaseRootRoot);
             _legacyContext = new LegacyContextMemory("DB", InMemoryDatabaseRootRoot);
+
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            };
         }
 
         protected override void ConfigureMocks(ContainerBuilder containerBuilder)

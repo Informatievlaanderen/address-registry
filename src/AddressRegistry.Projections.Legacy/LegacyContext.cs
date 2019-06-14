@@ -1,19 +1,17 @@
 namespace AddressRegistry.Projections.Legacy
 {
+    using System;
+    using System.IO;
     using AddressDetail;
     using AddressList;
     using AddressMatch;
     using AddressSyndication;
-    using Be.Vlaanderen.Basisregisters.EntityFrameworkCore.EntityTypeConfiguration;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
     using CrabIdToOsloId;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Design;
     using Microsoft.Extensions.Configuration;
-    using System;
-    using System.IO;
-    using System.Reflection;
 
     public class LegacyContext : RunnerDbContext<LegacyContext>
     {
@@ -34,28 +32,18 @@ namespace AddressRegistry.Projections.Legacy
         // This needs to be DbContextOptions<T> for Autofac!
         public LegacyContext(DbContextOptions<LegacyContext> options)
             : base(options) { }
-
-        protected override void OnConfiguringOptionsBuilder(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=EFProviders.InMemory.AddressRegistry.AddressRegistryLegacyContext;Trusted_Connection=True;");
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-
-            modelBuilder.AddEntityConfigurationsFromAssembly(Assembly.GetAssembly(typeof(AddressDetailItem)));
-        }
     }
 
-    public class ConfigBasedLegacyContextFactory : IDesignTimeDbContextFactory<LegacyContext>
+    public class ConfigBasedContextFactory : IDesignTimeDbContextFactory<LegacyContext>
     {
         public LegacyContext CreateDbContext(string[] args)
         {
-            var migrationConnectionStringName = "LegacyProjectionsAdmin";
+            const string migrationConnectionStringName = "LegacyProjectionsAdmin";
 
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
-                .AddJsonFile($"appsettings.{Environment.MachineName}.json")
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+                .AddJsonFile($"appsettings.{Environment.MachineName.ToLowerInvariant()}.json", optional: true, reloadOnChange: false)
                 .AddEnvironmentVariables()
                 .Build();
 
@@ -68,6 +56,7 @@ namespace AddressRegistry.Projections.Legacy
                 {
                     sqlServerOptions.EnableRetryOnFailure();
                     sqlServerOptions.MigrationsHistoryTable(MigrationTables.Legacy, Schema.Legacy);
+                    sqlServerOptions.UseNetTopologySuite();
                 });
 
             return new LegacyContext(builder.Options);

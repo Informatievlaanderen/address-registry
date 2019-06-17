@@ -35,7 +35,8 @@ namespace AddressRegistry.Projections.Legacy.Migrations
 
                     b.Property<int?>("OsloId");
 
-                    b.Property<IPoint>("Position");
+                    b.Property<IPoint>("Position")
+                        .HasColumnType("sys.geometry");
 
                     b.Property<int?>("PositionMethod");
 
@@ -130,7 +131,8 @@ namespace AddressRegistry.Projections.Legacy.Migrations
 
                     b.Property<int?>("Plan");
 
-                    b.Property<IPoint>("PointPosition");
+                    b.Property<IPoint>("PointPosition")
+                        .HasColumnType("sys.geometry");
 
                     b.Property<int?>("PositionMethod");
 
@@ -181,7 +183,8 @@ namespace AddressRegistry.Projections.Legacy.Migrations
 
                     b.Property<int?>("Plan");
 
-                    b.Property<IPoint>("Position");
+                    b.Property<IPoint>("Position")
+                        .HasColumnType("sys.geometry");
 
                     b.Property<int?>("PositionMethod");
 

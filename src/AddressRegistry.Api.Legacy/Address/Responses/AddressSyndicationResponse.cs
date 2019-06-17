@@ -4,6 +4,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Syndication;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Convertors;
     using Infrastructure.Options;
@@ -18,7 +19,6 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
     using System.Runtime.Serialization;
     using System.Threading.Tasks;
     using System.Xml;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
     using Provenance = Be.Vlaanderen.Basisregisters.GrAr.Provenance.Syndication.Provenance;
 
     public static class AddressSyndicationResponse
@@ -168,7 +168,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         /// De positie van het adres.
         /// </summary>
         [DataMember(Name = "AdresPositie", Order = 8)]
-        public Point Point { get; set; }
+        public GmlPoint Point { get; set; }
 
         /// <summary>
         /// De gebruikte methode om de positie te bepalen.
@@ -222,7 +222,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             Identificator = new Identificator(naamruimte, osloId.HasValue ? osloId.ToString() : string.Empty, version);
             SteetnameId = streetNameId;
             PostalCode = postalCode;
-            Point = point;
+            Point = point?.XmlPoint;
             GeometryMethod = geometryMethod;
             PositionSpecification = positionSpecification;
             HouseNumber = houseNumber;
@@ -238,7 +238,8 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
     public class AddressSyndicationResponseExamples : IExamplesProvider
     {
         private SyndicationContent ContentExample =>
-            new SyndicationContent {
+            new SyndicationContent
+            {
                 Object = new AddressSyndicationContent(
                     Guid.NewGuid(),
                     _responseOptions.Naamruimte,
@@ -247,7 +248,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
                     "70",
                     null,
                     "9000",
-                    new Point{XmlPoint = new GmlPoint{ Pos = "188473.52 193390.22" } },
+                    new Point { XmlPoint = new GmlPoint { Pos = "188473.52 193390.22" } },
                     PositieGeometrieMethode.AfgeleidVanObject,
                     PositieSpecificatie.Gebouweenheid,
                     AdresStatus.InGebruik,

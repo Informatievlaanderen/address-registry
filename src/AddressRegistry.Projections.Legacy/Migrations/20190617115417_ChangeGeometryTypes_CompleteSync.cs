@@ -12,6 +12,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                 name: "Position",
                 schema: "AddressRegistryLegacy",
                 table: "AddressVersions",
+                type: "sys.geometry",
                 nullable: true,
                 oldClrType: typeof(byte[]),
                 oldNullable: true);
@@ -27,6 +28,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                 name: "PointPosition",
                 schema: "AddressRegistryLegacy",
                 table: "AddressSyndication",
+                type: "sys.geometry",
                 nullable: true);
 
             migrationBuilder.AddColumn<int>(
@@ -45,6 +47,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                 name: "Position",
                 schema: "AddressRegistryLegacy",
                 table: "AddressDetails",
+                type: "sys.geometry",
                 nullable: true,
                 oldClrType: typeof(byte[]),
                 oldNullable: true);
@@ -78,6 +81,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                 table: "AddressVersions",
                 nullable: true,
                 oldClrType: typeof(IPoint),
+                oldType: "sys.geometry",
                 oldNullable: true);
 
             migrationBuilder.AlterColumn<byte[]>(
@@ -86,6 +90,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                 table: "AddressDetails",
                 nullable: true,
                 oldClrType: typeof(IPoint),
+                oldType: "sys.geometry",
                 oldNullable: true);
         }
     }

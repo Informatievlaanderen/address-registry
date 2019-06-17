@@ -316,6 +316,8 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     Instant.FromDateTimeUtc(message.CreatedUtc.ToUniversalTime()),
                     x => x.OsloId = message.Message.OsloId);
 
+                newAddressSyndicationItem.SetEventData(message.Message);
+
                 await context
                     .AddressSyndication
                     .AddAsync(newAddressSyndicationItem, ct);

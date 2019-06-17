@@ -59,7 +59,8 @@ namespace AddressRegistry.Projections.Legacy.AddressDetail
             b.Property(p => p.HouseNumber);
             b.Property(p => p.BoxNumber);
             b.Property(p => p.OfficiallyAssigned);
-            b.Property(p => p.Position);
+            b.Property(p => p.Position)
+                .HasColumnType("sys.geometry");
             b.Property(p => p.PositionSpecification);
             b.Property(p => p.PositionMethod);
             b.Property(p => p.Complete);

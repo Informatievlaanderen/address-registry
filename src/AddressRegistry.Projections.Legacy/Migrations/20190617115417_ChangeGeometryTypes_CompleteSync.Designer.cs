@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AddressRegistry.Projections.Legacy.Migrations
 {
     [DbContext(typeof(LegacyContext))]
-    [Migration("20190614124120_ChangeGeometryTypes_CompleteSync")]
+    [Migration("20190617115417_ChangeGeometryTypes_CompleteSync")]
     partial class ChangeGeometryTypes_CompleteSync
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,7 +37,8 @@ namespace AddressRegistry.Projections.Legacy.Migrations
 
                     b.Property<int?>("OsloId");
 
-                    b.Property<IPoint>("Position");
+                    b.Property<IPoint>("Position")
+                        .HasColumnType("sys.geometry");
 
                     b.Property<int?>("PositionMethod");
 
@@ -132,7 +133,8 @@ namespace AddressRegistry.Projections.Legacy.Migrations
 
                     b.Property<int?>("Plan");
 
-                    b.Property<IPoint>("PointPosition");
+                    b.Property<IPoint>("PointPosition")
+                        .HasColumnType("sys.geometry");
 
                     b.Property<int?>("PositionMethod");
 
@@ -183,7 +185,8 @@ namespace AddressRegistry.Projections.Legacy.Migrations
 
                     b.Property<int?>("Plan");
 
-                    b.Property<IPoint>("Position");
+                    b.Property<IPoint>("Position")
+                        .HasColumnType("sys.geometry");
 
                     b.Property<int?>("PositionMethod");
 

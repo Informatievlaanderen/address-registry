@@ -113,7 +113,8 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             b.Property(x => x.IsOfficiallyAssigned);
             b.Property(x => x.IsComplete);
 
-            b.Property(x => x.PointPosition);
+            b.Property(x => x.PointPosition)
+                .HasColumnType("sys.geometry");
             b.Property(x => x.PositionMethod);
             b.Property(x => x.PositionSpecification);
 

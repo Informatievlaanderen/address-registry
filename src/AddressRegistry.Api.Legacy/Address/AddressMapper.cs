@@ -5,7 +5,6 @@ namespace AddressRegistry.Api.Legacy.Address
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
     using GeoAPI.Geometries;
-    using Projections.Legacy.AddressDetail;
     using Projections.Syndication.Municipality;
     using Projections.Syndication.StreetName;
 

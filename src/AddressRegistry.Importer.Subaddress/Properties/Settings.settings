@@ -33,7 +33,7 @@
       <Value Profile="(Default)">100</Value>
     </Setting>
     <Setting Name="ImportBatchStatusEndpoint" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">v1/crabimport/subaddress/batch/current/</Value>
+      <Value Profile="(Default)">v1/crabimport/batch</Value>
     </Setting>
   </Settings>
 </SettingsFile>

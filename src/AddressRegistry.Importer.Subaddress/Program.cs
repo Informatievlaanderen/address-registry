@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace AddressRegistry.Importer.Subaddress
 {
     using System;
@@ -42,6 +44,7 @@ namespace AddressRegistry.Importer.Subaddress
                     .UseHttpApiProxyConfig(settings)
                     .UseCommandProcessorConfig(settings)
                     .UseDefaultSerializerSettingsForCrabImports()
+                    .ConfigureImportFeed((ImportFeed)Assembly.GetExecutingAssembly().GetName().Name)
                     .Build();
 
                 WaitForStart();

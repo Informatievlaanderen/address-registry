@@ -21,6 +21,7 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure
     using System.Linq;
     using System.Reflection;
     using System.Threading;
+    using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing.CrabImport;
     using Microsoft.Extensions.FileProviders;
     using Projections.Legacy;
 
@@ -148,7 +149,8 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure
                     }
                 });
 
-            app.UseIdempotencyDatabaseMigrations();
+            app.UseIdempotencyDatabaseMigrations()
+                .UseCrabImportMigrations();
 
             MigrationsHelper.Run(
                 _configuration.GetConnectionString("Sequences"),

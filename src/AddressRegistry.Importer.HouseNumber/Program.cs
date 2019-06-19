@@ -1,9 +1,10 @@
+using System.Reflection;
+
 namespace AddressRegistry.Importer.HouseNumber
 {
     using System;
     using System.Configuration;
     using System.Diagnostics;
-    using System.Linq;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing.CommandLine;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing.Serilog;
@@ -43,6 +44,7 @@ namespace AddressRegistry.Importer.HouseNumber
                     .UseHttpApiProxyConfig(settings)
                     .UseCommandProcessorConfig(settings)
                     .UseDefaultSerializerSettingsForCrabImports()
+                    .ConfigureImportFeed((ImportFeed)Assembly.GetExecutingAssembly().GetName().Name)
                     .Build();
 ;
                 WaitForStart();

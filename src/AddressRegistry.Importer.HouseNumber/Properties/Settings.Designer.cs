@@ -115,7 +115,7 @@ namespace AddressRegistry.Importer.HouseNumber.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("v1/crabimport/housenumber/batch/current")]
+        [global::System.Configuration.DefaultSettingValueAttribute("v1/crabimport/batch")]
         public string ImportBatchStatusEndpoint {
             get {
                 return ((string)(this["ImportBatchStatusEndpoint"]));

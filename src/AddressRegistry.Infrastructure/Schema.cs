@@ -3,6 +3,7 @@ namespace AddressRegistry.Infrastructure
     public class Schema
     {
         public const string Default = "AddressRegistry";
+        public const string Import = "AddressRegistryImport";
 
         public const string Legacy = "AddressRegistryLegacy";
         public const string Extract = "AddressRegistryExtract";

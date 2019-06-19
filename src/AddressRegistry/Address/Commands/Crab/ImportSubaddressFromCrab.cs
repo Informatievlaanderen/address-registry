@@ -49,7 +49,7 @@ namespace AddressRegistry.Address.Commands.Crab
             yield return HouseNumberId;
             yield return BoxNumber;
             yield return BoxNumberType;
-            yield return Lifetime;
+            yield return Lifetime.BeginDateTime.Print();
             yield return Timestamp;
             yield return Operator;
             yield return Modification;

@@ -1,7 +1,6 @@
 namespace AddressRegistry.Api.CrabImport.Infrastructure.Modules
 {
     using Address;
-    using AddressRegistry.Address;
     using AddressRegistry.Infrastructure;
     using AddressRegistry.Infrastructure.Modules;
     using Autofac;
@@ -11,6 +10,7 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Api;
+    using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing.CrabImport;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac;
     using CrabImport;
     using Microsoft.EntityFrameworkCore;
@@ -47,8 +47,8 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure.Modules
                 .RegisterModule(new IdempotencyModule(
                     _services,
                     _configuration.GetSection(IdempotencyConfiguration.Section).Get<IdempotencyConfiguration>().ConnectionString,
-                    new IdempotencyMigrationsTableInfo(Schema.Default),
-                    new IdempotencyTableInfo(Schema.Default),
+                    new IdempotencyMigrationsTableInfo(Schema.Import),
+                    new IdempotencyTableInfo(Schema.Import),
                     _loggerFactory));
 
             containerBuilder
@@ -75,6 +75,13 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure.Modules
             containerBuilder
                 .RegisterType<IdempotentCommandHandlerModuleProcessor>()
                 .As<IIdempotentCommandHandlerModuleProcessor>();
+
+            containerBuilder.RegisterModule(
+                new CrabImportModule(
+                    _services,
+                    _configuration.GetConnectionString("CrabImport"),
+                    Schema.Import,
+                    _loggerFactory));
 
             var projectionsConnectionString = _configuration.GetConnectionString("Sequences");
 

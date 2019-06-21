@@ -53,7 +53,7 @@ namespace AddressRegistry.Address.Commands.Crab
             yield return SubaddressId;
             yield return MailCantonId;
             yield return MailCantonCode;
-            yield return Lifetime;
+            yield return Lifetime.BeginDateTime.Print();
             yield return Timestamp;
             yield return Operator;
             yield return Modification;

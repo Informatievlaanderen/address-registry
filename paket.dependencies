@@ -72,11 +72,11 @@ nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.SqlStreamStore ~> 3.0
 
 nuget Be.Vlaanderen.Basisregisters.Crab ~> 1.0
 
-nuget Be.Vlaanderen.Basisregisters.GrAr.Common ~> 8.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Import ~> 8.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Legacy ~> 8.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance ~> 8.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Extracts ~> 8.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Common ~> 9.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Import ~> 9.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Legacy ~> 9.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance ~> 9.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Extracts ~> 9.0
 
 nuget Be.Vlaanderen.Basisregisters.Shaperon ~> 4.1
 
@@ -95,8 +95,8 @@ nuget Microsoft.EntityFrameworkCore.InMemory 2.2.4
 nuget xunit 2.4.1
 nuget xunit.runner.visualstudio 2.4.1
 nuget xunit.categories 2.0.4
-nuget FluentAssertions 5.6.0
-nuget Moq 4.10.1
+nuget FluentAssertions 5.7.0
+nuget Moq 4.11.0
 nuget AutoFixture.Xunit2 4.9.0
 nuget Serilog.Sinks.XUnit 1.0.8
 

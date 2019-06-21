@@ -168,7 +168,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         /// De positie van het adres.
         /// </summary>
         [DataMember(Name = "AdresPositie", Order = 8)]
-        public GmlPoint Point { get; set; }
+        public SyndicationPoint Point { get; set; }
 
         /// <summary>
         /// De gebruikte methode om de positie te bepalen.
@@ -222,7 +222,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             Identificator = new Identificator(naamruimte, osloId.HasValue ? osloId.ToString() : string.Empty, version);
             SteetnameId = streetNameId;
             PostalCode = postalCode;
-            Point = point?.XmlPoint;
+            Point = point == null ? null : new SyndicationPoint { XmlPoint = point.XmlPoint };
             GeometryMethod = geometryMethod;
             PositionSpecification = positionSpecification;
             HouseNumber = houseNumber;

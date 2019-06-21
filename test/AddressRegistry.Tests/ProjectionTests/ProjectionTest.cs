@@ -7,6 +7,7 @@ namespace AddressRegistry.Tests.ProjectionTests
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing;
     using Microsoft.EntityFrameworkCore;
+    using Newtonsoft.Json;
     using Xunit.Abstractions;
 
     public abstract class ProjectionTest<TContext, TProjection>
@@ -15,7 +16,14 @@ namespace AddressRegistry.Tests.ProjectionTests
     {
         private readonly XUnitLogger _logger;
 
-        protected ProjectionTest(ITestOutputHelper testOutputHelper) => _logger = new XUnitLogger(testOutputHelper);
+        protected ProjectionTest(ITestOutputHelper testOutputHelper)
+        {
+            _logger = new XUnitLogger(testOutputHelper);
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            };
+        }
 
         protected async Task Assert(ConnectedProjectionTestSpecification<TContext> specification)
         {

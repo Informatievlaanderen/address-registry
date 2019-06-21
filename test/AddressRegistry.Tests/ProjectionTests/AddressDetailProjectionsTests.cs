@@ -206,17 +206,18 @@ namespace AddressRegistry.Tests.ProjectionTests
             ((ISetProvenance)addressPositionWasCorrected).SetProvenance(provenance);
 
             await Assert(
-                Given(addressWasRegistered,
-                        addressPositionWasCorrected)
-                    .Expect(ctx => ctx.AddressDetail, new AddressDetailItem
-                    {
-                        AddressId = addressWasRegistered.AddressId,
-                        StreetNameId = addressWasRegistered.StreetNameId,
-                        HouseNumber = addressWasRegistered.HouseNumber,
-                        Position = (IPoint)_wkbReader.Read(addressPositionWasCorrected.ExtendedWkbGeometry.ToByteArray()),
-                        PositionMethod = addressPositionWasCorrected.GeometryMethod,
-                        PositionSpecification = addressPositionWasCorrected.GeometrySpecification
-                    }));
+                    Given(addressWasRegistered, addressPositionWasCorrected)
+                    .Expect(new AddressComparer<AddressDetailItem>(),
+                        ctx => ctx.AddressDetail,
+                        new AddressDetailItem
+                        {
+                            AddressId = addressWasRegistered.AddressId,
+                            StreetNameId = addressWasRegistered.StreetNameId,
+                            HouseNumber = addressWasRegistered.HouseNumber,
+                            Position = (IPoint)_wkbReader.Read(addressPositionWasCorrected.ExtendedWkbGeometry.ToByteArray()),
+                            PositionMethod = addressPositionWasCorrected.GeometryMethod,
+                            PositionSpecification = addressPositionWasCorrected.GeometrySpecification
+                        }));
         }
 
         [Theory]
@@ -462,17 +463,19 @@ namespace AddressRegistry.Tests.ProjectionTests
             ((ISetProvenance)addressWasPositioned).SetProvenance(provenance);
 
             await Assert(
-                Given(addressWasRegistered,
-                        addressWasPositioned)
-                    .Expect(ctx => ctx.AddressDetail, new AddressDetailItem
-                    {
-                        AddressId = addressWasRegistered.AddressId,
-                        StreetNameId = addressWasRegistered.StreetNameId,
-                        HouseNumber = addressWasRegistered.HouseNumber,
-                        Position = (IPoint)_wkbReader.Read(addressWasPositioned.ExtendedWkbGeometry.ToByteArray()),
-                        PositionMethod = addressWasPositioned.GeometryMethod,
-                        PositionSpecification = addressWasPositioned.GeometrySpecification
-                    }));
+                    Given(addressWasRegistered, addressWasPositioned)
+                    .Expect(
+                        new AddressComparer<AddressDetailItem>(),
+                        ctx => ctx.AddressDetail,
+                        new AddressDetailItem
+                        {
+                            AddressId = addressWasRegistered.AddressId,
+                            StreetNameId = addressWasRegistered.StreetNameId,
+                            HouseNumber = addressWasRegistered.HouseNumber,
+                            Position = (IPoint)_wkbReader.Read(addressWasPositioned.ExtendedWkbGeometry.ToByteArray()),
+                            PositionMethod = addressWasPositioned.GeometryMethod,
+                            PositionSpecification = addressWasPositioned.GeometrySpecification
+                        }));
         }
 
         [Theory]
@@ -718,22 +721,24 @@ namespace AddressRegistry.Tests.ProjectionTests
         public async Task AddressWasPositionedAfterRemoveIsSet(
             AddressWasRegistered addressWasRegistered,
             AddressWasRemoved addressWasRemoved,
-            AddressWasPositioned addressWasPositioned)
+            AddressWasPositioned addressWasPositioned,
+            WkbGeometry geometry)
         {
+            addressWasPositioned = addressWasPositioned.WithAddressGeometry(new AddressGeometry(GeometryMethod.AppointedByAdministrator, GeometrySpecification.Building, GeometryHelpers.CreateEwkbFrom(geometry)));
             await Assert(
-                Given(addressWasRegistered,
-                        addressWasRemoved,
-                        addressWasPositioned)
-                    .Expect(ctx => ctx.AddressDetail, new AddressDetailItem
-                    {
-                        AddressId = addressWasRegistered.AddressId,
-                        StreetNameId = addressWasRegistered.StreetNameId,
-                        HouseNumber = addressWasRegistered.HouseNumber,
-                        Position = (IPoint)_wkbReader.Read(addressWasPositioned.ExtendedWkbGeometry.ToByteArray()),
-                        PositionMethod = addressWasPositioned.GeometryMethod,
-                        PositionSpecification = addressWasPositioned.GeometrySpecification,
-                        Removed = true,
-                    }));
+                    Given(addressWasRegistered, addressWasRemoved, addressWasPositioned)
+                    .Expect(
+                        new AddressComparer<AddressDetailItem>(),
+                        ctx => ctx.AddressDetail, new AddressDetailItem
+                        {
+                            AddressId = addressWasRegistered.AddressId,
+                            StreetNameId = addressWasRegistered.StreetNameId,
+                            HouseNumber = addressWasRegistered.HouseNumber,
+                            Position = (IPoint)_wkbReader.Read(addressWasPositioned.ExtendedWkbGeometry.ToByteArray()),
+                            PositionMethod = addressWasPositioned.GeometryMethod,
+                            PositionSpecification = addressWasPositioned.GeometrySpecification,
+                            Removed = true,
+                        }));
         }
 
         protected override LegacyContext CreateContext(DbContextOptions<LegacyContext> options) => new LegacyContext(options);

@@ -22,9 +22,9 @@ namespace AddressRegistry.Tests.AutoFixture
 
     public class InlineDefaultDataAttribute : InlineAutoDataAttribute
     {
-        public InlineDefaultDataAttribute(params object[] values):base(new DefaultDataAttribute(),values)
+        public InlineDefaultDataAttribute(params object[] values) : base(new DefaultDataAttribute(), values)
         {
-                
+
         }
     }
 

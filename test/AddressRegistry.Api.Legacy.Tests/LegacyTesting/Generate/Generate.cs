@@ -57,12 +57,13 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting.Generate
                 HouseNumber = Huisnummer.Generate(r),
                 BoxNumber = Busnummer.Generate(r),
                 Status = AddressStatus.Current,
-                Position = DbGeometry.Generate(r).AsBinary(),
+                Position = DbGeometry.Generate(r),
                 PositionMethod = GeometryMethod.AppointedByAdministrator,
                 PositionSpecification = GeometrySpecification.BuildingUnit,
                 PostalCode = Postcode.Generate(r),
                 OsloId = Id.Generate(r),
                 Complete = true,
+                OfficiallyAssigned = true,
             };
         });
 

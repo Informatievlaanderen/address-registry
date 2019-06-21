@@ -3,11 +3,14 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
     using Address.Events;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
+    using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
+    using GeoAPI.Geometries;
+    using NetTopologySuite.IO;
     using NodaTime;
 
     public class AddressSyndicationProjections : ConnectedProjection<LegacyContext>
     {
-        public AddressSyndicationProjections()
+        public AddressSyndicationProjections(WKBReader wkbReader)
         {
             When<Envelope<AddressWasRegistered>>(async (context, message, ct) =>
             {
@@ -57,6 +60,15 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     ct);
             });
 
+            When<Envelope<AddressBecameNotOfficiallyAssigned>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressId,
+                    message,
+                    x => x.IsOfficiallyAssigned = false,
+                    ct);
+            });
+
             When<Envelope<AddressBoxNumberWasChanged>>(async (context, message, ct) =>
             {
                 await context.CreateNewAddressSyndicationItem(
@@ -99,6 +111,43 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     message.Message.AddressId,
                     message,
                     x => x.HouseNumber = message.Message.HouseNumber,
+                    ct);
+            });
+
+            When<Envelope<AddressOfficialAssignmentWasRemoved>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressId,
+                    message,
+                    x => x.IsOfficiallyAssigned = false,
+                    ct);
+            });
+
+            When<Envelope<AddressPositionWasCorrected>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressId,
+                    message,
+                    x =>
+                    {
+                        x.PositionMethod = message.Message.GeometryMethod;
+                        x.PositionSpecification = message.Message.GeometrySpecification;
+                        x.PointPosition = (IPoint) wkbReader.Read(message.Message.ExtendedWkbGeometry.ToByteArray());
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressPositionWasRemoved>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressId,
+                    message,
+                    x =>
+                    {
+                        x.PositionMethod = null;
+                        x.PositionSpecification = null;
+                        x.PointPosition = null;
+                    },
                     ct);
             });
 
@@ -174,6 +223,15 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     ct);
             });
 
+            When<Envelope<AddressWasCorrectedToOfficiallyAssigned>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressId,
+                    message,
+                    x => x.IsOfficiallyAssigned = true,
+                    ct);
+            });
+
             When<Envelope<AddressWasCorrectedToProposed>>(async (context, message, ct) =>
             {
                 await context.CreateNewAddressSyndicationItem(
@@ -189,6 +247,29 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     message.Message.AddressId,
                     message,
                     x => x.Status = AddressStatus.Retired,
+                    ct);
+            });
+
+            When<Envelope<AddressWasOfficiallyAssigned>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressId,
+                    message,
+                    x => x.IsOfficiallyAssigned = true,
+                    ct);
+            });
+
+            When<Envelope<AddressWasPositioned>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressId,
+                    message,
+                    x =>
+                    {
+                        x.PositionMethod = message.Message.GeometryMethod;
+                        x.PositionSpecification = message.Message.GeometrySpecification;
+                        x.PointPosition = (IPoint)wkbReader.Read(message.Message.ExtendedWkbGeometry.ToByteArray());
+                    },
                     ct);
             });
 
@@ -219,33 +300,6 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     ct);
             });
 
-            When<Envelope<AddressPostalCodeWasChanged>>(async (context, message, ct) =>
-            {
-                await context.CreateNewAddressSyndicationItem(
-                    message.Message.AddressId,
-                    message,
-                    x => x.PostalCode = message.Message.PostalCode,
-                    ct);
-            });
-
-            When<Envelope<AddressPostalCodeWasCorrected>>(async (context, message, ct) =>
-            {
-                await context.CreateNewAddressSyndicationItem(
-                    message.Message.AddressId,
-                    message,
-                    x => x.PostalCode = message.Message.PostalCode,
-                    ct);
-            });
-
-            When<Envelope<AddressPostalCodeWasRemoved>>(async (context, message, ct) =>
-            {
-                await context.CreateNewAddressSyndicationItem(
-                    message.Message.AddressId,
-                    message,
-                    x => x.PostalCode = null,
-                    ct);
-            });
-
             When<Envelope<AddressOsloIdWasAssigned>>(async (context, message, ct) =>
             {
                 var addressSyndicationItem = await context.LatestPosition(message.Message.AddressId, ct);
@@ -261,6 +315,8 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     message.EventName,
                     Instant.FromDateTimeUtc(message.CreatedUtc.ToUniversalTime()),
                     x => x.OsloId = message.Message.OsloId);
+
+                newAddressSyndicationItem.SetEventData(message.Message);
 
                 await context
                     .AddressSyndication

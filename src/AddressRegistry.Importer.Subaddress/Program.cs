@@ -1,16 +1,15 @@
-using System.Reflection;
-
 namespace AddressRegistry.Importer.Subaddress
 {
-    using System;
-    using System.Configuration;
-    using System.Diagnostics;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing.CommandLine;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing.Serilog;
     using HouseNumber.Crab;
     using Serilog;
     using Serilog.Events;
+    using System;
+    using System.Configuration;
+    using System.Diagnostics;
+    using System.Reflection;
 
     internal class Program
     {
@@ -44,7 +43,7 @@ namespace AddressRegistry.Importer.Subaddress
                     .UseHttpApiProxyConfig(settings)
                     .UseCommandProcessorConfig(settings)
                     .UseDefaultSerializerSettingsForCrabImports()
-                    .ConfigureImportFeed((ImportFeed)Assembly.GetExecutingAssembly().GetName().Name)
+                    .ConfigureImportFeedFromAssembly(Assembly.GetExecutingAssembly())
                     .Build();
 
                 WaitForStart();

@@ -116,7 +116,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                             x.HouseNumber,
                             x.BoxNumber,
                             x.OfficiallyAssigned,
-                            AddressMapper.GetAdresPoint(x),
+                            AddressMapper.GetAddressPoint(x.Position),
                             AddressMapper.ConvertFromGeometryMethod(x.PositionMethod),
                             AddressMapper.ConvertFromGeometrySpecification(x.PositionSpecification),
                             x.VersionTimestamp.ToBelgianDateTimeOffset(),

@@ -4,6 +4,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Syndication;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Convertors;
     using Infrastructure.Options;
@@ -87,9 +88,13 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
                     address.HouseNumber,
                     address.BoxNumber,
                     address.PostalCode,
+                    address.PointPosition == null ? null : AddressMapper.GetAddressPoint(address.PointPosition),
+                    address.GeometryMethod == null ? (PositieGeometrieMethode?)null : AddressMapper.ConvertFromGeometryMethod(address.GeometryMethod.Value),
+                    address.GeometrySpecification == null ? (PositieSpecificatie?)null : AddressMapper.ConvertFromGeometrySpecification(address.GeometrySpecification.Value),
                     address.Status.ConvertFromAddressStatus(),
                     address.LastChangedOn.ToBelgianDateTimeOffset(),
                     address.IsComplete,
+                    address.IsOfficiallyAssigned,
                     address.Organisation,
                     address.Reason);
 
@@ -160,15 +165,39 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         public AdresStatus? AdressStatus { get; set; }
 
         /// <summary>
+        /// De positie van het adres.
+        /// </summary>
+        [DataMember(Name = "AdresPositie", Order = 8)]
+        public GmlPoint Point { get; set; }
+
+        /// <summary>
+        /// De gebruikte methode om de positie te bepalen.
+        /// </summary>
+        [DataMember(Name = "PositieGeometrieMethode", Order = 9)]
+        public PositieGeometrieMethode? GeometryMethod { get; set; }
+
+        /// <summary>
+        /// De specificatie van het object, voorgesteld door de positie.
+        /// </summary>
+        [DataMember(Name = "PositieSpecificatie", Order = 10)]
+        public PositieSpecificatie? PositionSpecification { get; set; }
+
+        /// <summary>
         /// Duidt aan of het item compleet is.
         /// </summary>
-        [DataMember(Name = "IsCompleet", Order = 8)]
+        [DataMember(Name = "IsCompleet", Order = 11)]
         public bool IsComplete { get; set; }
+
+        /// <summary>
+        /// False wanneer het bestaan van het adres niet geweten is ten tijde van administratieve procedures, maar pas na plaatselijke observatie.
+        /// </summary>
+        [DataMember(Name = "OfficieelToegekend", Order = 12)]
+        public bool IsOfficiallyAssigned { get; set; }
 
         /// <summary>
         /// Creatie data ivm het item.
         /// </summary>
-        [DataMember(Name = "Creatie", Order = 9)]
+        [DataMember(Name = "Creatie", Order = 13)]
         public Provenance Provenance { get; set; }
 
         public AddressSyndicationContent(
@@ -179,9 +208,13 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             string houseNumber,
             string boxNumber,
             string postalCode,
+            Point point,
+            PositieGeometrieMethode? geometryMethod,
+            PositieSpecificatie? positionSpecification,
             AdresStatus? status,
             DateTimeOffset version,
             bool isComplete,
+            bool isOfficiallyAssigned,
             Organisation? organisation,
             string reason)
         {
@@ -189,10 +222,14 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             Identificator = new Identificator(naamruimte, osloId.HasValue ? osloId.ToString() : string.Empty, version);
             SteetnameId = streetNameId;
             PostalCode = postalCode;
+            Point = point?.XmlPoint;
+            GeometryMethod = geometryMethod;
+            PositionSpecification = positionSpecification;
             HouseNumber = houseNumber;
             BoxNumber = boxNumber;
             AdressStatus = status;
             IsComplete = isComplete;
+            IsOfficiallyAssigned = isOfficiallyAssigned;
 
             Provenance = new Provenance(organisation, new Reason(reason));
         }
@@ -201,7 +238,8 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
     public class AddressSyndicationResponseExamples : IExamplesProvider
     {
         private SyndicationContent ContentExample =>
-            new SyndicationContent {
+            new SyndicationContent
+            {
                 Object = new AddressSyndicationContent(
                     Guid.NewGuid(),
                     _responseOptions.Naamruimte,
@@ -210,8 +248,12 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
                     "70",
                     null,
                     "9000",
+                    new Point { XmlPoint = new GmlPoint { Pos = "188473.52 193390.22" } },
+                    PositieGeometrieMethode.AfgeleidVanObject,
+                    PositieSpecificatie.Gebouweenheid,
                     AdresStatus.InGebruik,
                     DateTimeOffset.Now,
+                    true,
                     true,
                     Organisation.Agiv,
                     Reason.CentralManagementCrab)

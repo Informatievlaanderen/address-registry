@@ -9,11 +9,16 @@ namespace AddressRegistry.Tests.ProjectionTests
     using Projections.Legacy;
     using Projections.Legacy.AddressVersion;
     using System.Threading.Tasks;
+    using Address;
+    using GeoAPI.Geometries;
+    using NetTopologySuite.IO;
     using Xunit;
     using Xunit.Abstractions;
 
     public class AddressVersionsProjectionsTests : ProjectionTest<LegacyContext, AddressVersionProjections>
     {
+        private readonly WKBReader _wkbReader = WKBReaderFactory.Create();
+
         public AddressVersionsProjectionsTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
         }
@@ -359,7 +364,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             AddressId = addressWasRegistered.AddressId,
                             StreetNameId = addressWasRegistered.StreetNameId,
                             HouseNumber = addressWasRegistered.HouseNumber,
-                            Position = addressPositionWasCorrected.ExtendedWkbGeometry.ToByteArray(),
+                            Position = (IPoint) _wkbReader.Read(addressPositionWasCorrected.ExtendedWkbGeometry.ToByteArray()),
                             PositionMethod = addressPositionWasCorrected.GeometryMethod,
                             PositionSpecification = addressPositionWasCorrected.GeometrySpecification,
                             VersionTimestamp = addressPositionWasCorrected.Provenance.Timestamp,
@@ -399,7 +404,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             AddressId = addressWasRegistered.AddressId,
                             StreetNameId = addressWasRegistered.StreetNameId,
                             HouseNumber = addressWasRegistered.HouseNumber,
-                            Position = addressPositionWasCorrected.ExtendedWkbGeometry.ToByteArray(),
+                            Position = (IPoint)_wkbReader.Read(addressPositionWasCorrected.ExtendedWkbGeometry.ToByteArray()),
                             PositionMethod = addressPositionWasCorrected.GeometryMethod,
                             PositionSpecification = addressPositionWasCorrected.GeometrySpecification,
                             StreamPosition = 1,
@@ -851,7 +856,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             AddressId = addressWasRegistered.AddressId,
                             StreetNameId = addressWasRegistered.StreetNameId,
                             HouseNumber = addressWasRegistered.HouseNumber,
-                            Position = addressWasPositioned.ExtendedWkbGeometry.ToByteArray(),
+                            Position = (IPoint)_wkbReader.Read(addressWasPositioned.ExtendedWkbGeometry.ToByteArray()),
                             PositionMethod = addressWasPositioned.GeometryMethod,
                             PositionSpecification = addressWasPositioned.GeometrySpecification,
                             StreamPosition = 1,
@@ -1074,6 +1079,6 @@ namespace AddressRegistry.Tests.ProjectionTests
 
         protected override LegacyContext CreateContext(DbContextOptions<LegacyContext> options) => new LegacyContext(options);
 
-        protected override AddressVersionProjections CreateProjection() => new AddressVersionProjections();
+        protected override AddressVersionProjections CreateProjection() => new AddressVersionProjections(_wkbReader);
     }
 }

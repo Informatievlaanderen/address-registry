@@ -5,10 +5,6 @@ namespace AddressRegistry.Address
     using Crab;
     using Events;
     using Events.Crab;
-    using GeoAPI.Geometries;
-    using NetTopologySuite;
-    using NetTopologySuite.Geometries;
-    using NetTopologySuite.Geometries.Implementation;
     using NetTopologySuite.IO;
     using System;
     using System.Collections.Generic;
@@ -405,11 +401,7 @@ namespace AddressRegistry.Address
             if (wkb == null)
                 return null;
 
-            var geometry = new WKBReader(
-                new NtsGeometryServices(
-                    new DotSpatialAffineCoordinateSequenceFactory(Ordinates.XY),
-                    new PrecisionModel(PrecisionModels.Floating),
-                    SpatialReferenceSystemId.Lambert72))
+            var geometry = WKBReaderFactory.Create()
                 .Read(wkb);
 
             geometry.SRID = SpatialReferenceSystemId.Lambert72;

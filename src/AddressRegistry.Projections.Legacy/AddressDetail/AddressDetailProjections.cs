@@ -4,11 +4,13 @@ namespace AddressRegistry.Projections.Legacy.AddressDetail
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
+    using GeoAPI.Geometries;
+    using NetTopologySuite.IO;
     using NodaTime;
 
     public class AddressDetailProjections : ConnectedProjection<LegacyContext>
     {
-        public AddressDetailProjections()
+        public AddressDetailProjections(WKBReader wkbReader)
         {
             When<Envelope<AddressWasRegistered>>(async (context, message, ct) =>
             {
@@ -125,7 +127,7 @@ namespace AddressRegistry.Projections.Legacy.AddressDetail
                     message.Message.AddressId,
                     item =>
                     {
-                        item.Position = message.Message.ExtendedWkbGeometry.ToByteArray();
+                        item.Position = (IPoint) wkbReader.Read(message.Message.ExtendedWkbGeometry.ToByteArray());
                         item.PositionMethod = message.Message.GeometryMethod;
                         item.PositionSpecification = message.Message.GeometrySpecification;
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
@@ -285,7 +287,7 @@ namespace AddressRegistry.Projections.Legacy.AddressDetail
                     message.Message.AddressId,
                     item =>
                     {
-                        item.Position = message.Message.ExtendedWkbGeometry.ToByteArray();
+                        item.Position = (IPoint)wkbReader.Read(message.Message.ExtendedWkbGeometry.ToByteArray());
                         item.PositionMethod = message.Message.GeometryMethod;
                         item.PositionSpecification = message.Message.GeometrySpecification;
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);

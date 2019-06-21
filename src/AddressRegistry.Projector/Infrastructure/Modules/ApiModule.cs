@@ -1,5 +1,6 @@
 namespace AddressRegistry.Projector.Infrastructure.Modules
 {
+    using Address;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
@@ -112,10 +113,10 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .RegisterProjectionMigrator<LegacyContextMigrationFactory>(
                     _configuration,
                     _loggerFactory)
-                .RegisterProjections<AddressDetailProjections, LegacyContext>()
+                .RegisterProjections<AddressDetailProjections, LegacyContext>(() => new AddressDetailProjections(WKBReaderFactory.Create()))
                 .RegisterProjections<AddressListProjections, LegacyContext>()
-                .RegisterProjections<AddressSyndicationProjections, LegacyContext>()
-                .RegisterProjections<AddressVersionProjections, LegacyContext>()
+                .RegisterProjections<AddressSyndicationProjections, LegacyContext>(() => new AddressSyndicationProjections(WKBReaderFactory.Create()))
+                .RegisterProjections<AddressVersionProjections, LegacyContext>(() => new AddressVersionProjections(WKBReaderFactory.Create()))
                 .RegisterProjections<CrabIdToOsloIdProjections, LegacyContext>();
         }
     }

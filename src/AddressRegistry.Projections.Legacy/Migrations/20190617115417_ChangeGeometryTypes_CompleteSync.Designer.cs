@@ -5,14 +5,16 @@ using GeoAPI.Geometries;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AddressRegistry.Projections.Legacy.Migrations
 {
     [DbContext(typeof(LegacyContext))]
-    partial class LegacyContextModelSnapshot : ModelSnapshot
+    [Migration("20190617115417_ChangeGeometryTypes_CompleteSync")]
+    partial class ChangeGeometryTypes_CompleteSync
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -129,6 +131,8 @@ namespace AddressRegistry.Projections.Legacy.Migrations
 
                     b.Property<int?>("OsloId");
 
+                    b.Property<int?>("Plan");
+
                     b.Property<IPoint>("PointPosition")
                         .HasColumnType("sys.geometry");
 
@@ -137,7 +141,6 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                     b.Property<int?>("PositionSpecification");
 
                     b.Property<string>("PostalCode");
-                    b.Property<string>("Reason");
 
                     b.Property<DateTimeOffset>("RecordCreatedAtAsDateTimeOffset")
                         .HasColumnName("RecordCreatedAt");
@@ -179,7 +182,8 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                     b.Property<int?>("Organisation");
 
                     b.Property<int>("OsloId");
-                    
+
+                    b.Property<int?>("Plan");
 
                     b.Property<IPoint>("Position")
                         .HasColumnType("sys.geometry");
@@ -189,8 +193,6 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                     b.Property<int?>("PositionSpecification");
 
                     b.Property<string>("PostalCode");
-
-                    b.Property<string>("Reason");
 
                     b.Property<bool>("Removed");
 

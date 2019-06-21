@@ -45,7 +45,7 @@ namespace AddressRegistry.Address.Commands.Crab
             yield return HouseNumberStatusId;
             yield return HouseNumberId;
             yield return AddressStatus;
-            yield return Lifetime;
+            yield return Lifetime.BeginDateTime.Print();
             yield return Timestamp;
             yield return Operator;
             yield return Modification;

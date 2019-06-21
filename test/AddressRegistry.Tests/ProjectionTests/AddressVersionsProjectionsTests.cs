@@ -9,11 +9,16 @@ namespace AddressRegistry.Tests.ProjectionTests
     using Projections.Legacy;
     using Projections.Legacy.AddressVersion;
     using System.Threading.Tasks;
+    using Address;
+    using GeoAPI.Geometries;
+    using NetTopologySuite.IO;
     using Xunit;
     using Xunit.Abstractions;
 
     public class AddressVersionsProjectionsTests : ProjectionTest<LegacyContext, AddressVersionProjections>
     {
+        private readonly WKBReader _wkbReader = WKBReaderFactory.Create();
+
         public AddressVersionsProjectionsTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
         }
@@ -61,7 +66,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressBecameComplete.Provenance.Organisation,
                             Operator = addressBecameComplete.Provenance.Operator,
                             Modification = addressBecameComplete.Provenance.Modification,
-                            Plan = addressBecameComplete.Provenance.Plan,
+                            Reason = addressBecameComplete.Provenance.Reason,
                         }));
         }
 
@@ -93,7 +98,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressBecameCurrent.Provenance.Organisation,
                             Operator = addressBecameCurrent.Provenance.Operator,
                             Modification = addressBecameCurrent.Provenance.Modification,
-                            Plan = addressBecameCurrent.Provenance.Plan,
+                            Reason = addressBecameCurrent.Provenance.Reason,
                         }));
         }
 
@@ -127,7 +132,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressBecameComplete.Provenance.Organisation,
                             Operator = addressBecameComplete.Provenance.Operator,
                             Modification = addressBecameComplete.Provenance.Modification,
-                            Plan = addressBecameComplete.Provenance.Plan,
+                            Reason = addressBecameComplete.Provenance.Reason,
                         },
                         new AddressVersion
                         {
@@ -141,7 +146,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressBecameIncomplete.Provenance.Organisation,
                             Operator = addressBecameIncomplete.Provenance.Operator,
                             Modification = addressBecameIncomplete.Provenance.Modification,
-                            Plan = addressBecameIncomplete.Provenance.Plan,
+                            Reason = addressBecameIncomplete.Provenance.Reason,
                         }));
         }
 
@@ -175,7 +180,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressWasOfficiallyAssigned.Provenance.Organisation,
                             Operator = addressWasOfficiallyAssigned.Provenance.Operator,
                             Modification = addressWasOfficiallyAssigned.Provenance.Modification,
-                            Plan = addressWasOfficiallyAssigned.Provenance.Plan,
+                            Reason = addressWasOfficiallyAssigned.Provenance.Reason,
                         },
                         new AddressVersion
                         {
@@ -189,7 +194,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressBecameNotOfficiallyAssigned.Provenance.Organisation,
                             Operator = addressBecameNotOfficiallyAssigned.Provenance.Operator,
                             Modification = addressBecameNotOfficiallyAssigned.Provenance.Modification,
-                            Plan = addressBecameNotOfficiallyAssigned.Provenance.Plan,
+                            Reason = addressBecameNotOfficiallyAssigned.Provenance.Reason,
                         }));
         }
 
@@ -224,7 +229,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressHouseNumberWasChanged.Provenance.Organisation,
                             Operator = addressHouseNumberWasChanged.Provenance.Operator,
                             Modification = addressHouseNumberWasChanged.Provenance.Modification,
-                            Plan = addressHouseNumberWasChanged.Provenance.Plan,
+                            Reason = addressHouseNumberWasChanged.Provenance.Reason,
                         }));
         }
 
@@ -259,7 +264,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressHouseNumberWasCorrected.Provenance.Organisation,
                             Operator = addressHouseNumberWasCorrected.Provenance.Operator,
                             Modification = addressHouseNumberWasCorrected.Provenance.Modification,
-                            Plan = addressHouseNumberWasCorrected.Provenance.Plan,
+                            Reason = addressHouseNumberWasCorrected.Provenance.Reason,
                         }));
         }
 
@@ -293,7 +298,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressWasOfficiallyAssigned.Provenance.Organisation,
                             Operator = addressWasOfficiallyAssigned.Provenance.Operator,
                             Modification = addressWasOfficiallyAssigned.Provenance.Modification,
-                            Plan = addressWasOfficiallyAssigned.Provenance.Plan,
+                            Reason = addressWasOfficiallyAssigned.Provenance.Reason,
                         },
                         new AddressVersion
                         {
@@ -307,7 +312,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressOfficialAssignmentWasRemoved.Provenance.Organisation,
                             Operator = addressOfficialAssignmentWasRemoved.Provenance.Operator,
                             Modification = addressOfficialAssignmentWasRemoved.Provenance.Modification,
-                            Plan = addressOfficialAssignmentWasRemoved.Provenance.Plan,
+                            Reason = addressOfficialAssignmentWasRemoved.Provenance.Reason,
                         }));
         }
 
@@ -359,7 +364,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             AddressId = addressWasRegistered.AddressId,
                             StreetNameId = addressWasRegistered.StreetNameId,
                             HouseNumber = addressWasRegistered.HouseNumber,
-                            Position = addressPositionWasCorrected.ExtendedWkbGeometry.ToByteArray(),
+                            Position = (IPoint) _wkbReader.Read(addressPositionWasCorrected.ExtendedWkbGeometry.ToByteArray()),
                             PositionMethod = addressPositionWasCorrected.GeometryMethod,
                             PositionSpecification = addressPositionWasCorrected.GeometrySpecification,
                             VersionTimestamp = addressPositionWasCorrected.Provenance.Timestamp,
@@ -367,7 +372,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressPositionWasCorrected.Provenance.Organisation,
                             Operator = addressPositionWasCorrected.Provenance.Operator,
                             Modification = addressPositionWasCorrected.Provenance.Modification,
-                            Plan = addressPositionWasCorrected.Provenance.Plan,
+                            Reason = addressPositionWasCorrected.Provenance.Reason,
                         }));
         }
 
@@ -399,7 +404,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             AddressId = addressWasRegistered.AddressId,
                             StreetNameId = addressWasRegistered.StreetNameId,
                             HouseNumber = addressWasRegistered.HouseNumber,
-                            Position = addressPositionWasCorrected.ExtendedWkbGeometry.ToByteArray(),
+                            Position = (IPoint)_wkbReader.Read(addressPositionWasCorrected.ExtendedWkbGeometry.ToByteArray()),
                             PositionMethod = addressPositionWasCorrected.GeometryMethod,
                             PositionSpecification = addressPositionWasCorrected.GeometrySpecification,
                             StreamPosition = 1,
@@ -408,7 +413,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressPositionWasCorrected.Provenance.Organisation,
                             Operator = addressPositionWasCorrected.Provenance.Operator,
                             Modification = addressPositionWasCorrected.Provenance.Modification,
-                            Plan = addressPositionWasCorrected.Provenance.Plan,
+                            Reason = addressPositionWasCorrected.Provenance.Reason,
                         },
                         new AddressVersion
                         {
@@ -422,7 +427,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressPositionWasRemoved.Provenance.Organisation,
                             Operator = addressPositionWasRemoved.Provenance.Operator,
                             Modification = addressPositionWasRemoved.Provenance.Modification,
-                            Plan = addressPositionWasRemoved.Provenance.Plan,
+                            Reason = addressPositionWasRemoved.Provenance.Reason,
                         }));
         }
 
@@ -454,7 +459,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressPostalCodeWasChanged.Provenance.Organisation,
                             Operator = addressPostalCodeWasChanged.Provenance.Operator,
                             Modification = addressPostalCodeWasChanged.Provenance.Modification,
-                            Plan = addressPostalCodeWasChanged.Provenance.Plan,
+                            Reason = addressPostalCodeWasChanged.Provenance.Reason,
                         }));
         }
         [Theory]
@@ -485,7 +490,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressPostalCodeWasCorrected.Provenance.Organisation,
                             Operator = addressPostalCodeWasCorrected.Provenance.Operator,
                             Modification = addressPostalCodeWasCorrected.Provenance.Modification,
-                            Plan = addressPostalCodeWasCorrected.Provenance.Plan,
+                            Reason = addressPostalCodeWasCorrected.Provenance.Reason,
                         }));
         }
 
@@ -519,7 +524,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressPostalCodeWasChanged.Provenance.Organisation,
                             Operator = addressPostalCodeWasChanged.Provenance.Operator,
                             Modification = addressPostalCodeWasChanged.Provenance.Modification,
-                            Plan = addressPostalCodeWasChanged.Provenance.Plan,
+                            Reason = addressPostalCodeWasChanged.Provenance.Reason,
                         },
                         new AddressVersion
                         {
@@ -533,7 +538,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressPostalCodeWasRemoved.Provenance.Organisation,
                             Operator = addressPostalCodeWasRemoved.Provenance.Operator,
                             Modification = addressPostalCodeWasRemoved.Provenance.Modification,
-                            Plan = addressPostalCodeWasRemoved.Provenance.Plan,
+                            Reason = addressPostalCodeWasRemoved.Provenance.Reason,
                         }));
         }
 
@@ -567,7 +572,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressBecameCurrent.Provenance.Organisation,
                             Operator = addressBecameCurrent.Provenance.Operator,
                             Modification = addressBecameCurrent.Provenance.Modification,
-                            Plan = addressBecameCurrent.Provenance.Plan,
+                            Reason = addressBecameCurrent.Provenance.Reason,
                         },
                         new AddressVersion
                         {
@@ -581,7 +586,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressStatusWasCorrectedToRemoved.Provenance.Organisation,
                             Operator = addressStatusWasCorrectedToRemoved.Provenance.Operator,
                             Modification = addressStatusWasCorrectedToRemoved.Provenance.Modification,
-                            Plan = addressStatusWasCorrectedToRemoved.Provenance.Plan,
+                            Reason = addressStatusWasCorrectedToRemoved.Provenance.Reason,
                         }));
         }
 
@@ -615,7 +620,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressBecameCurrent.Provenance.Organisation,
                             Operator = addressBecameCurrent.Provenance.Operator,
                             Modification = addressBecameCurrent.Provenance.Modification,
-                            Plan = addressBecameCurrent.Provenance.Plan,
+                            Reason = addressBecameCurrent.Provenance.Reason,
                         },
                         new AddressVersion
                         {
@@ -629,7 +634,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressStatusWasRemoved.Provenance.Organisation,
                             Operator = addressStatusWasRemoved.Provenance.Operator,
                             Modification = addressStatusWasRemoved.Provenance.Modification,
-                            Plan = addressStatusWasRemoved.Provenance.Plan,
+                            Reason = addressStatusWasRemoved.Provenance.Reason,
                         }));
         }
 
@@ -661,7 +666,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressWasCorrectedToCurrent.Provenance.Organisation,
                             Operator = addressWasCorrectedToCurrent.Provenance.Operator,
                             Modification = addressWasCorrectedToCurrent.Provenance.Modification,
-                            Plan = addressWasCorrectedToCurrent.Provenance.Plan,
+                            Reason = addressWasCorrectedToCurrent.Provenance.Reason,
                         }));
         }
 
@@ -693,7 +698,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressWasCorrectedToNotOfficiallyAssigned.Provenance.Organisation,
                             Operator = addressWasCorrectedToNotOfficiallyAssigned.Provenance.Operator,
                             Modification = addressWasCorrectedToNotOfficiallyAssigned.Provenance.Modification,
-                            Plan = addressWasCorrectedToNotOfficiallyAssigned.Provenance.Plan,
+                            Reason = addressWasCorrectedToNotOfficiallyAssigned.Provenance.Reason,
                         }));
         }
 
@@ -725,7 +730,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressWasCorrectedToOfficiallyAssigned.Provenance.Organisation,
                             Operator = addressWasCorrectedToOfficiallyAssigned.Provenance.Operator,
                             Modification = addressWasCorrectedToOfficiallyAssigned.Provenance.Modification,
-                            Plan = addressWasCorrectedToOfficiallyAssigned.Provenance.Plan,
+                            Reason = addressWasCorrectedToOfficiallyAssigned.Provenance.Reason,
                         }));
         }
 
@@ -757,7 +762,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressWasCorrectedToProposed.Provenance.Organisation,
                             Operator = addressWasCorrectedToProposed.Provenance.Operator,
                             Modification = addressWasCorrectedToProposed.Provenance.Modification,
-                            Plan = addressWasCorrectedToProposed.Provenance.Plan,
+                            Reason = addressWasCorrectedToProposed.Provenance.Reason,
                         }));
         }
 
@@ -789,7 +794,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressWasCorrectedToRetired.Provenance.Organisation,
                             Operator = addressWasCorrectedToRetired.Provenance.Operator,
                             Modification = addressWasCorrectedToRetired.Provenance.Modification,
-                            Plan = addressWasCorrectedToRetired.Provenance.Plan,
+                            Reason = addressWasCorrectedToRetired.Provenance.Reason,
                         }));
         }
 
@@ -821,7 +826,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressWasOfficiallyAssigned.Provenance.Organisation,
                             Operator = addressWasOfficiallyAssigned.Provenance.Operator,
                             Modification = addressWasOfficiallyAssigned.Provenance.Modification,
-                            Plan = addressWasOfficiallyAssigned.Provenance.Plan,
+                            Reason = addressWasOfficiallyAssigned.Provenance.Reason,
                         }));
         }
 
@@ -851,7 +856,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             AddressId = addressWasRegistered.AddressId,
                             StreetNameId = addressWasRegistered.StreetNameId,
                             HouseNumber = addressWasRegistered.HouseNumber,
-                            Position = addressWasPositioned.ExtendedWkbGeometry.ToByteArray(),
+                            Position = (IPoint)_wkbReader.Read(addressWasPositioned.ExtendedWkbGeometry.ToByteArray()),
                             PositionMethod = addressWasPositioned.GeometryMethod,
                             PositionSpecification = addressWasPositioned.GeometrySpecification,
                             StreamPosition = 1,
@@ -860,7 +865,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressWasPositioned.Provenance.Organisation,
                             Operator = addressWasPositioned.Provenance.Operator,
                             Modification = addressWasPositioned.Provenance.Modification,
-                            Plan = addressWasPositioned.Provenance.Plan,
+                            Reason = addressWasPositioned.Provenance.Reason,
                         }));
         }
 
@@ -892,7 +897,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressWasProposed.Provenance.Organisation,
                             Operator = addressWasProposed.Provenance.Operator,
                             Modification = addressWasProposed.Provenance.Modification,
-                            Plan = addressWasProposed.Provenance.Plan,
+                            Reason = addressWasProposed.Provenance.Reason,
                         }));
         }
 
@@ -924,7 +929,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressWasRemoved.Provenance.Organisation,
                             Operator = addressWasRemoved.Provenance.Operator,
                             Modification = addressWasRemoved.Provenance.Modification,
-                            Plan = addressWasRemoved.Provenance.Plan,
+                            Reason = addressWasRemoved.Provenance.Reason,
                         }));
         }
 
@@ -956,7 +961,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressWasRetired.Provenance.Organisation,
                             Operator = addressWasRetired.Provenance.Operator,
                             Modification = addressWasRetired.Provenance.Modification,
-                            Plan = addressWasRetired.Provenance.Plan,
+                            Reason = addressWasRetired.Provenance.Reason,
                         }));
         }
 
@@ -988,7 +993,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressBoxNumberWasChanged.Provenance.Organisation,
                             Operator = addressBoxNumberWasChanged.Provenance.Operator,
                             Modification = addressBoxNumberWasChanged.Provenance.Modification,
-                            Plan = addressBoxNumberWasChanged.Provenance.Plan,
+                            Reason = addressBoxNumberWasChanged.Provenance.Reason,
                         }));
         }
 
@@ -1020,7 +1025,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressBoxNumberWasCorrected.Provenance.Organisation,
                             Operator = addressBoxNumberWasCorrected.Provenance.Operator,
                             Modification = addressBoxNumberWasCorrected.Provenance.Modification,
-                            Plan = addressBoxNumberWasCorrected.Provenance.Plan,
+                            Reason = addressBoxNumberWasCorrected.Provenance.Reason,
                         }));
         }
 
@@ -1054,7 +1059,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressBoxNumberWasChanged.Provenance.Organisation,
                             Operator = addressBoxNumberWasChanged.Provenance.Operator,
                             Modification = addressBoxNumberWasChanged.Provenance.Modification,
-                            Plan = addressBoxNumberWasChanged.Provenance.Plan,
+                            Reason = addressBoxNumberWasChanged.Provenance.Reason,
                         },
                         new AddressVersion
                         {
@@ -1068,12 +1073,12 @@ namespace AddressRegistry.Tests.ProjectionTests
                             Organisation = addressBoxNumberWasRemoved.Provenance.Organisation,
                             Operator = addressBoxNumberWasRemoved.Provenance.Operator,
                             Modification = addressBoxNumberWasRemoved.Provenance.Modification,
-                            Plan = addressBoxNumberWasRemoved.Provenance.Plan,
+                            Reason = addressBoxNumberWasRemoved.Provenance.Reason,
                         }));
         }
 
         protected override LegacyContext CreateContext(DbContextOptions<LegacyContext> options) => new LegacyContext(options);
 
-        protected override AddressVersionProjections CreateProjection() => new AddressVersionProjections();
+        protected override AddressVersionProjections CreateProjection() => new AddressVersionProjections(_wkbReader);
     }
 }

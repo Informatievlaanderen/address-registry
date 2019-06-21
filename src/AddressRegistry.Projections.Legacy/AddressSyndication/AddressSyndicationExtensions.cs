@@ -1,10 +1,14 @@
 namespace AddressRegistry.Projections.Legacy.AddressSyndication
 {
     using System;
+    using System.IO;
     using System.Linq;
+    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using System.Xml;
     using System.Xml.Linq;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
@@ -62,11 +66,22 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             item.Modification = provenance.Modification;
             item.Operator = provenance.Operator;
             item.Organisation = provenance.Organisation;
-            item.Plan = provenance.Plan;
+            item.Reason = provenance.Reason;
         }
 
         public static void SetEventData<T>(this AddressSyndicationItem syndicationItem, T message)
-            => syndicationItem.EventDataAsXml = message.ToXml(message.GetType().Name).ToString(SaveOptions.DisableFormatting);
+        {
+            var xmlElement = message.ToXml(message.GetType().Name);
+            using (var stringWriter = new StringWriterWithEncoding(Encoding.UTF8))
+            {
+                using (var xmlWriter = new XmlTextWriter(stringWriter) { Formatting = Formatting.None })
+                {
+                    xmlElement.WriteTo(xmlWriter);
+                }
+
+                syndicationItem.EventDataAsXml = stringWriter.GetStringBuilder().ToString();
+            }
+        }
 
         public static ProjectionItemNotFoundException<AddressSyndicationProjections> DatabaseItemNotFound(Guid addressId)
             => new ProjectionItemNotFoundException<AddressSyndicationProjections>(addressId.ToString("D"));

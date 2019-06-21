@@ -1,15 +1,15 @@
 namespace AddressRegistry.Importer.HouseNumber
 {
-    using System;
-    using System.Configuration;
-    using System.Diagnostics;
-    using System.Linq;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing;
-    using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing.Commandline;
+    using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing.CommandLine;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing.Serilog;
     using Crab;
     using Serilog;
     using Serilog.Events;
+    using System;
+    using System.Configuration;
+    using System.Diagnostics;
+    using System.Reflection;
 
     internal class Program
     {
@@ -20,28 +20,18 @@ namespace AddressRegistry.Importer.HouseNumber
         {
             try
             {
+                var options = new ImportOptions(
+                    args,
+                    errors => WaitForExit("Could not parse commandline options."));
+
                 var settings = new SettingsBasedConfig();
-                    if (!settings.EndDateRecovery.HasValue && args.Contains("update", StringComparer.OrdinalIgnoreCase))//make sure to perform a clean start when beginning a new update run
-                        args = args.Concat(new[] { "-c" }).Distinct().ToArray();
 
                 var generator = new HouseNumberCommandGenerator(ConfigurationManager.ConnectionStrings["Crab2Vbr"].ConnectionString);
 
                 MapLogging.Log = s => _commandCounter++;
 
-                var builder = new CommandProcessorBuilder<int>(generator)
-                    .UseCommandLineArgs(
-                        args,
-                        settings.LastRunDate,
-                        settings.EndDateRecovery,
-                        settings.TimeMargin,
-                        int.Parse,
-                        errors => WaitForExit("Could not parse commandline options."));
-
-                WaitForStart();
-
-                settings.EndDateRecovery = builder.Options.Until;
-
-                builder
+                var commandProcessor = new CommandProcessorBuilder<int>(generator)
+                    .WithCommandLineOptions(options.ImportArguments)
                     .UseSerilog(cfg => cfg
                         .WriteTo.File(
                             "tracing.log",
@@ -54,10 +44,12 @@ namespace AddressRegistry.Importer.HouseNumber
                     .UseHttpApiProxyConfig(settings)
                     .UseCommandProcessorConfig(settings)
                     .UseDefaultSerializerSettingsForCrabImports()
-                    .BuildAndRun();
+                    .ConfigureImportFeedFromAssembly(Assembly.GetExecutingAssembly())
+                    .Build();
+;
+                WaitForStart();
 
-                settings.LastRunDate = settings.EndDateRecovery;
-                settings.EndDateRecovery = null;
+                commandProcessor.Run(options, settings);
 
                 WaitForExit();
             }

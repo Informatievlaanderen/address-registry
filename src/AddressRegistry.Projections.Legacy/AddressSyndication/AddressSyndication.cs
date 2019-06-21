@@ -2,6 +2,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
 {
     using System;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using GeoAPI.Geometries;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -20,9 +21,13 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
         public string HouseNumber { get; set; }
         public string BoxNumber { get; set; }
 
-        public AddressStatus? Status { get; set; }
+        public IPoint PointPosition { get; set; }
+        public GeometryMethod? PositionMethod { get; set; }
+        public GeometrySpecification? PositionSpecification { get; set; }
 
+        public AddressStatus? Status { get; set; }
         public bool IsComplete { get; set; }
+        public bool IsOfficiallyAssigned { get; set; }
 
         public DateTimeOffset RecordCreatedAtAsDateTimeOffset { get; set; }
         public DateTimeOffset LastChangedOnAsDateTimeOffset { get; set; }
@@ -43,7 +48,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
         public Modification? Modification { get; set; }
         public string Operator { get; set; }
         public Organisation? Organisation { get; set; }
-        public Plan? Plan { get; set; }
+        public string Reason { get; set; }
         public string EventDataAsXml { get; set; }
 
         public AddressSyndicationItem CloneAndApplyEventInfo(
@@ -65,13 +70,17 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                 HouseNumber = HouseNumber,
                 BoxNumber = BoxNumber,
                 Status = Status,
+                PointPosition = PointPosition,
+                PositionMethod = PositionMethod,
+                PositionSpecification = PositionSpecification,
                 IsComplete = IsComplete,
+                IsOfficiallyAssigned = IsOfficiallyAssigned,
                 RecordCreatedAt = RecordCreatedAt,
                 Application = Application,
                 Modification = Modification,
                 Operator = Operator,
                 Organisation = Organisation,
-                Plan = Plan
+                Reason = Reason
             };
 
             editFunc(newItem);
@@ -101,8 +110,13 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             b.Property(x => x.BoxNumber);
 
             b.Property(x => x.Status);
-
+            b.Property(x => x.IsOfficiallyAssigned);
             b.Property(x => x.IsComplete);
+
+            b.Property(x => x.PointPosition)
+                .HasColumnType("sys.geometry");
+            b.Property(x => x.PositionMethod);
+            b.Property(x => x.PositionSpecification);
 
             b.Property(x => x.RecordCreatedAtAsDateTimeOffset).HasColumnName("RecordCreatedAt");
             b.Property(x => x.LastChangedOnAsDateTimeOffset).HasColumnName("LastChangedOn");
@@ -111,7 +125,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             b.Property(x => x.Modification);
             b.Property(x => x.Operator);
             b.Property(x => x.Organisation);
-            b.Property(x => x.Plan);
+            b.Property(x => x.Reason);
             b.Property(x => x.EventDataAsXml);
 
             b.Ignore(x => x.RecordCreatedAt);

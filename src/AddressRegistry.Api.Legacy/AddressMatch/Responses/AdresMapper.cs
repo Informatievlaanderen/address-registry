@@ -56,7 +56,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
                 Huisnummer = source.HouseNumber,
                 Busnummer = source.BoxNumber,
                 VolledigAdres = AddressMapper.GetVolledigAdres(source.HouseNumber, source.BoxNumber, source.PostalCode, streetName, municipality),
-                AdresPositie = AddressMapper.GetAdresPoint(source),
+                AdresPositie = AddressMapper.GetAddressPoint(source.Position),
                 PositieSpecificatie = AddressMapper.ConvertFromGeometrySpecification(source.PositionSpecification),
                 PositieGeometrieMethode = AddressMapper.ConvertFromGeometryMethod(source.PositionMethod),
                 AdresStatus = AddressMapper.ConvertFromAddressStatus(source.Status),

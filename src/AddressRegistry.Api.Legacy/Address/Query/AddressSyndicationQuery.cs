@@ -12,6 +12,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
+    using GeoAPI.Geometries;
 
     public class AddressSyndicationQueryResult
     {
@@ -26,12 +27,16 @@ namespace AddressRegistry.Api.Legacy.Address.Query
         public string ChangeType { get; }
         public Guid? StreetNameId { get; }
         public string PostalCode { get; set; }
+        public IPoint PointPosition { get; set; }
+        public GeometryMethod? GeometryMethod { get; set; }
+        public GeometrySpecification? GeometrySpecification { get; set; }
         public Instant RecordCreatedAt { get; }
         public Instant LastChangedOn { get; }
         public AddressStatus? Status { get; }
         public bool IsComplete { get; }
+        public bool IsOfficiallyAssigned { get; }
         public Organisation? Organisation { get; }
-        public Plan? Plan { get; }
+        public string Reason { get; }
         public string EventDataAsXml { get; }
 
         public AddressSyndicationQueryResult(
@@ -43,7 +48,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             Instant lastChangedOn,
             bool isComplete,
             Organisation? organisation,
-            Plan? plan)
+            string reason)
         {
             ContainsObject = false;
             ContainsEvent = false;
@@ -57,7 +62,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             LastChangedOn = lastChangedOn;
             IsComplete = isComplete;
             Organisation = organisation;
-            Plan = plan;
+            Reason = reason;
         }
 
         public AddressSyndicationQueryResult(
@@ -69,7 +74,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             Instant lastChangedOn,
             bool isComplete,
             Organisation? organisation,
-            Plan? plan,
+            string reason,
             string eventDataAsXml)
             : this(
                 addressId,
@@ -80,7 +85,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 lastChangedOn,
                 isComplete,
                 organisation,
-                plan)
+                reason)
         {
             ContainsEvent = true;
 
@@ -95,13 +100,17 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             string boxNumber,
             Guid? streetNameId,
             string postalCode,
+            IPoint pointPosition,
+            GeometryMethod? geometryMethod,
+            GeometrySpecification? geometrySpecification,
             string changeType,
             Instant recordCreateAt,
             Instant lastChangedOn,
             bool isComplete,
+            bool isOfficiallyAssigned,
             AddressStatus? status,
             Organisation? organisation,
-            Plan? plan)
+            string reason)
             : this(
                 addressId,
                 position,
@@ -111,7 +120,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 lastChangedOn,
                 isComplete,
                 organisation,
-                plan)
+                reason)
         {
             ContainsObject = true;
 
@@ -122,13 +131,17 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             BoxNumber = boxNumber;
             StreetNameId = streetNameId;
             PostalCode = postalCode;
+            PointPosition = pointPosition;
+            GeometryMethod = geometryMethod;
+            GeometrySpecification = geometrySpecification;
             ChangeType = changeType;
             RecordCreatedAt = recordCreateAt;
             LastChangedOn = lastChangedOn;
             IsComplete = isComplete;
+            IsOfficiallyAssigned = isOfficiallyAssigned;
             Status = status;
             Organisation = organisation;
-            Plan = plan;
+            Reason = reason;
         }
 
         public AddressSyndicationQueryResult(
@@ -139,13 +152,17 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             string boxNumber,
             Guid? streetNameId,
             string postalCode,
+            IPoint pointPosition,
+            GeometryMethod? geometryMethod,
+            GeometrySpecification? geometrySpecification,
             string changeType,
             Instant recordCreateAt,
             Instant lastChangedOn,
             bool isComplete,
+            bool isOfficiallyAssigned,
             AddressStatus? status,
             Organisation? organisation,
-            Plan? plan,
+            string reason,
             string eventDataAsXml)
             : this(
                 addressId,
@@ -155,13 +172,17 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 boxNumber,
                 streetNameId,
                 postalCode,
+                pointPosition,
+                geometryMethod,
+                geometrySpecification,
                 changeType,
                 recordCreateAt,
                 lastChangedOn,
                 isComplete,
+                isOfficiallyAssigned,
                 status,
                 organisation,
-                plan)
+                reason)
         {
             ContainsEvent = true;
 
@@ -197,13 +218,17 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                         x.BoxNumber,
                         x.StreetNameId,
                         x.PostalCode,
+                        x.PointPosition,
+                        x.PositionMethod,
+                        x.PositionSpecification,
                         x.ChangeType,
                         x.RecordCreatedAt,
                         x.LastChangedOn,
                         x.IsComplete,
+                        x.IsOfficiallyAssigned,
                         x.Status,
                         x.Organisation,
-                        x.Plan,
+                        x.Reason,
                         x.EventDataAsXml);
 
                 if (_embedEvent)
@@ -216,7 +241,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                         x.LastChangedOn,
                         x.IsComplete,
                         x.Organisation,
-                        x.Plan,
+                        x.Reason,
                         x.EventDataAsXml);
 
                 if (_embedObject)
@@ -228,13 +253,17 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                         x.BoxNumber,
                         x.StreetNameId,
                         x.PostalCode,
+                        x.PointPosition,
+                        x.PositionMethod,
+                        x.PositionSpecification,
                         x.ChangeType,
                         x.RecordCreatedAt,
                         x.LastChangedOn,
                         x.IsComplete,
+                        x.IsOfficiallyAssigned,
                         x.Status,
                         x.Organisation,
-                        x.Plan);
+                        x.Reason);
 
                 return x => new AddressSyndicationQueryResult(
                     x.AddressId.Value,
@@ -245,7 +274,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                     x.LastChangedOn,
                     x.IsComplete,
                     x.Organisation,
-                    x.Plan);
+                    x.Reason);
             }
         }
 

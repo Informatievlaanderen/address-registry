@@ -11,9 +11,11 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
-    using Be.Vlaanderen.Basisregisters.BasicApiProblem;
     using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Middleware;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Api;
+    using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing;
+    using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing.Api.Messages;
+    using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing.CrabImport;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
@@ -119,6 +121,26 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
                 { "UserId", FindClaimValue("urn:be:vlaanderen:addressregistry:acmid") },
                 { "CorrelationId", FindClaimValue(AddCorrelationIdMiddleware.UrnBasisregistersVlaanderenCorrelationId) }
             };
+        }
+
+        [HttpGet("batch/{feed}")]
+        public IActionResult GetBatchStatus(
+            [FromServices] CrabImportContext context,
+            [FromRoute] string feed)
+        {
+            var status = context.LastBatchFor((ImportFeed)feed);
+            return Ok(status);
+        }
+
+        [HttpPost("batch")]
+        public IActionResult SetBatchStatus(
+            [FromServices] CrabImportContext context,
+            [FromBody] BatchStatusUpdate batchStatus)
+        {
+            context.SetCurrent(batchStatus);
+            context.SaveChanges();
+
+            return Ok();
         }
     }
 

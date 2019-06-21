@@ -58,7 +58,7 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
         {
             addressVersion.Organisation = provenance.Organisation;
             addressVersion.Application = provenance.Application;
-            addressVersion.Plan = provenance.Plan;
+            addressVersion.Reason = provenance.Reason;
             addressVersion.Modification = provenance.Modification;
             addressVersion.Operator = provenance.Operator;
             addressVersion.VersionTimestamp = provenance.Timestamp;

@@ -2,6 +2,7 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
 {
     using System;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using GeoAPI.Geometries;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -22,7 +23,7 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
         public AddressStatus? Status { get; set; }
         public bool? OfficiallyAssigned { get; set; }
 
-        public byte[] Position { get; set; }
+        public IPoint Position { get; set; }
         public GeometryMethod? PositionMethod { get; set; }
         public GeometrySpecification? PositionSpecification { get; set; }
 
@@ -41,7 +42,7 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
         public Modification? Modification { get; set; }
         public string Operator { get; set; }
         public Organisation? Organisation { get; set; }
-        public Plan? Plan { get; set; }
+        public string Reason { get; set; }
 
         public AddressVersion CloneAndApplyEventInfo(
             long newStreamPosition,
@@ -69,7 +70,7 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
                 Complete = Complete,
                 Removed = Removed,
 
-                Plan = Plan,
+                Reason = Reason,
                 Modification = Modification,
                 VersionTimestamp = VersionTimestamp,
                 Application = Application,
@@ -101,7 +102,8 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
             b.Property(p => p.HouseNumber);
             b.Property(p => p.BoxNumber);
             b.Property(p => p.OfficiallyAssigned);
-            b.Property(p => p.Position);
+            b.Property(p => p.Position)
+                .HasColumnType("sys.geometry");
             b.Property(p => p.PositionSpecification);
             b.Property(p => p.PositionMethod);
             b.Property(p => p.Complete);
@@ -114,7 +116,7 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
             b.Property(x => x.Modification);
             b.Property(x => x.Operator);
             b.Property(x => x.Organisation);
-            b.Property(x => x.Plan);
+            b.Property(x => x.Reason);
 
             b.Ignore(x => x.VersionTimestamp);
         }

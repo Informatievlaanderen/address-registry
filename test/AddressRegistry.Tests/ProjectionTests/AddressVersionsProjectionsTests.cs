@@ -349,9 +349,10 @@ namespace AddressRegistry.Tests.ProjectionTests
             ((ISetProvenance)addressPositionWasCorrected).SetProvenance(provenance);
 
             await Assert(
-                Given(addressWasRegistered,
-                        addressPositionWasCorrected)
-                    .Expect(ctx => ctx.AddressVersions,
+                    Given(addressWasRegistered, addressPositionWasCorrected)
+                    .Expect(
+                        new AddressComparer<AddressVersion>(),
+                        ctx => ctx.AddressVersions,
                         new AddressVersion
                         {
                             AddressId = addressWasRegistered.AddressId,
@@ -390,9 +391,10 @@ namespace AddressRegistry.Tests.ProjectionTests
             ((ISetProvenance)addressPositionWasCorrected).SetProvenance(provenance);
 
             await Assert(
-                Given(addressWasRegistered,
-                        addressPositionWasCorrected, addressPositionWasRemoved)
-                    .Expect(ctx => ctx.AddressVersions,
+                    Given(addressWasRegistered, addressPositionWasCorrected, addressPositionWasRemoved)
+                    .Expect(
+                        new AddressComparer<AddressVersion>(),
+                        ctx => ctx.AddressVersions,
                         new AddressVersion
                         {
                             AddressId = addressWasRegistered.AddressId,
@@ -842,9 +844,10 @@ namespace AddressRegistry.Tests.ProjectionTests
             ((ISetProvenance)addressWasPositioned).SetProvenance(provenance);
 
             await Assert(
-                Given(addressWasRegistered,
-                        addressWasPositioned)
-                    .Expect(ctx => ctx.AddressVersions,
+                    Given(addressWasRegistered, addressWasPositioned)
+                    .Expect(
+                        new AddressComparer<AddressVersion>(),
+                        ctx => ctx.AddressVersions,
                         new AddressVersion
                         {
                             AddressId = addressWasRegistered.AddressId,

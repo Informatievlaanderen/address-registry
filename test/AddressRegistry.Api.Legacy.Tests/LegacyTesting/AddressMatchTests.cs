@@ -358,7 +358,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting
 
             var existingGemeente = _latest.ArrangeLatestGemeente(existingNisCode, existingGemeentenaam).Single();
             var existingStraatnaam = _latest.ArrangeLatestStraatnaam(existingNisCode, existingGemeentenaam, existingStraatnaamId.ToString(), request.Straatnaam, Guid.NewGuid()).Single();
-             _latest.ArrangeLatestAdres(existingGemeente, existingStraatnaam, postcode, request.Huisnummer, request.Busnummer);
+            _latest.ArrangeLatestAdres(existingGemeente, existingStraatnaam, postcode, request.Huisnummer, request.Busnummer);
 
             //Act
             var response = (AddressMatchCollection)((OkObjectResult)await Send(request)).Value;

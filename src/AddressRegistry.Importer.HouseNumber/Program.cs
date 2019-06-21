@@ -23,6 +23,7 @@ namespace AddressRegistry.Importer.HouseNumber
                 var options = new ImportOptions(
                     args,
                     errors => WaitForExit("Could not parse commandline options."));
+
                 var settings = new SettingsBasedConfig();
 
                 var generator = new HouseNumberCommandGenerator(ConfigurationManager.ConnectionStrings["Crab2Vbr"].ConnectionString);

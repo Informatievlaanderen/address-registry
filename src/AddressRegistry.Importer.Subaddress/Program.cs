@@ -23,6 +23,7 @@ namespace AddressRegistry.Importer.Subaddress
                 var options = new ImportOptions(
                     args,
                     errors => WaitForExit("Could not parse commandline options."));
+
                 var settings = new SettingsBasedConfig();
 
                 var generator = new SubaddressCommandGenerator(ConfigurationManager.ConnectionStrings["Crab2Vbr"].ConnectionString);

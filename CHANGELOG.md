@@ -1,3 +1,23 @@
+# [1.3.0](https://github.com/informatievlaanderen/address-registry/compare/v1.2.0...v1.3.0) (2019-06-24)
+
+
+### Bug Fixes
+
+* add addresscomparer to compare Point ([6ec31b2](https://github.com/informatievlaanderen/address-registry/commit/6ec31b2))
+* correct sync Point to SyndicationPoint ([58b814c](https://github.com/informatievlaanderen/address-registry/commit/58b814c))
+* remove Lifetime.EndDate from identifier fields ([ed66317](https://github.com/informatievlaanderen/address-registry/commit/ed66317))
+* upgrade batch configuration in importers ([7f7eadc](https://github.com/informatievlaanderen/address-registry/commit/7f7eadc))
+* write xml via xml writer for event data ([a975c0d](https://github.com/informatievlaanderen/address-registry/commit/a975c0d))
+
+
+### Features
+
+* change db type geometry + complete syndication ([8019b60](https://github.com/informatievlaanderen/address-registry/commit/8019b60))
+* get import status from import api ([abf31c7](https://github.com/informatievlaanderen/address-registry/commit/abf31c7))
+* upgrade grar packages ([59b5a61](https://github.com/informatievlaanderen/address-registry/commit/59b5a61))
+* upgrade packages grar to 10.0 ([12a69c2](https://github.com/informatievlaanderen/address-registry/commit/12a69c2))
+* upgrade projectionhandling and fix logging of output in tests ([8b007ea](https://github.com/informatievlaanderen/address-registry/commit/8b007ea))
+
 # [1.2.0](https://github.com/informatievlaanderen/address-registry/compare/v1.1.3...v1.2.0) (2019-06-12)
 
 

@@ -12,6 +12,7 @@ namespace AddressRegistry.Tests
     using KellermanSoftware.CompareNetObjects;
     using Microsoft.Extensions.Logging;
     using System;
+    using Newtonsoft.Json;
     using Xunit.Abstractions;
 
     public abstract class AutofacBasedTest
@@ -48,6 +49,11 @@ namespace AddressRegistry.Tests
 
                 return containerBuilder.Build();
             });
+
+            Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing.LogExtensions.LogSerializerSettings = new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            };
         }
 
         protected abstract void ConfigureCommandHandling(ContainerBuilder builder);

@@ -19,10 +19,6 @@ namespace AddressRegistry.Tests.ProjectionTests
         protected ProjectionTest(ITestOutputHelper testOutputHelper)
         {
             _logger = new XUnitLogger(testOutputHelper);
-            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
-            {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            };
         }
 
         protected async Task Assert(ConnectedProjectionTestSpecification<TContext> specification)

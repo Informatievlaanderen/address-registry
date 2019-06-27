@@ -153,6 +153,16 @@ namespace AddressRegistry.Importer.HouseNumber.Crab
                         .Select(s => new { s.Key, beginTijd = s.Min(adres => adres.beginTijd) })
                         .Concat(crabEntities
                             .tblSubAdres_hist
+                            .Where(s =>
+                                s.huisNummerId.HasValue
+                                && (crabEntities
+                                        .tblHuisNummer_hist
+                                        .Select(numberHist => numberHist.huisNummerId)
+                                        .Contains(s.huisNummerId)
+                                    || crabEntities
+                                        .tblHuisNummer
+                                        .Select(nummer => nummer.huisNummerId)
+                                        .Contains(s.huisNummerId.Value)))
                             .GroupBy(s => s.subAdresId)
                             .Select(s => new { Key = s.Key.Value, beginTijd = s.Min(adres => adres.beginTijd.Value) }))
                         .GroupBy(h => h.Key)

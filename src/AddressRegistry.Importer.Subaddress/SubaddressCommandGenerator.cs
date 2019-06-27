@@ -177,10 +177,8 @@ namespace AddressRegistry.Importer.Subaddress
             {
                 initialImportHouseNumberSubaddressFromCrab = importHouseNumberSubaddressCommands
                     .Concat(importHouseNumberSubaddressCommandsHist)
-                    .OrderBy(x => (Instant)x.Timestamp).First(x =>
-                       x.HouseNumberId ==
-                       ((ImportSubaddressFromCrab)addressCommands.First(c => c.Item1 is ImportSubaddressFromCrab).Item1)
-                       .HouseNumberId);
+                    .OrderBy(x => (Instant)x.Timestamp)
+                    .First(x => x.HouseNumberId == addressCommands.First<ImportSubaddressFromCrab>().HouseNumberId);
 
                 commands.Add(initialImportHouseNumberSubaddressFromCrab);
             }
@@ -216,5 +214,12 @@ namespace AddressRegistry.Importer.Subaddress
             public int CrabSubadresId { get; set; }
             public DateTimeOffset MappingCreatedTimestamp { get; set; }
         }
+    }
+
+    internal static class CommandGeneratorHelperExtensions
+    {
+        public static TCommand First<TCommand>(this IEnumerable<Tuple<dynamic, int, int, string>> commands)
+            where TCommand : BaseCrabCommand
+            => (TCommand)commands.First(item => item.Item1 is TCommand).Item1;
     }
 }

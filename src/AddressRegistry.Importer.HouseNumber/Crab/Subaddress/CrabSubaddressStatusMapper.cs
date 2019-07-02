@@ -20,14 +20,17 @@ namespace AddressRegistry.Importer.HouseNumber.Crab.Subaddress
                     {
                         MapLogging.Log(".");
 
+                        var modification = CrabEnumMapper.Map(subadresstatusHist.Bewerking);
+
                         return new ImportSubaddressStatusFromCrab(
                             new CrabSubaddressStatusId(subadresstatusHist.subadresstatusid.Value),
                             new CrabSubaddressId(subadresstatusHist.subadresid.Value),
                             ParseSubaddressStatus(subadresstatusHist.Status),
                             new CrabLifetime(subadresstatusHist.begindatum?.ToCrabLocalDateTime(), subadresstatusHist.einddatum?.ToCrabLocalDateTime()),
-                            new CrabTimestamp(subadresstatusHist.CrabTimestamp.ToCrabInstant()),
+                            new CrabTimestamp(subadresstatusHist.CrabTimestamp.ToCrabInstant())
+                                .CorrectWhenTimeTravelingDelete(modification, subadresstatusHist.begintijd.Value),
                             new CrabOperator(subadresstatusHist.Operator),
-                            CrabEnumMapper.Map(subadresstatusHist.Bewerking),
+                            modification,
                             CrabEnumMapper.Map(subadresstatusHist.Organisatie));
                     });
         }

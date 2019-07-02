@@ -18,6 +18,8 @@ namespace AddressRegistry.Importer.HouseNumber.Crab.Subaddress
                         {
                             MapLogging.Log(".");
 
+                            var modification = CrabEnumMapper.Map(s.Bewerking);
+
                             return new ImportSubaddressPositionFromCrab(
                                 new CrabAddressPositionId(s.adrespositieid.Value),
                                 new CrabSubaddressId(s.adresid.Value),
@@ -25,9 +27,10 @@ namespace AddressRegistry.Importer.HouseNumber.Crab.Subaddress
                                 new CrabAddressNature(s.aardAdres),
                                 CrabEnumMapper.Map(s.HerkomstAdrespositie),
                                 new CrabLifetime(s.beginDatum?.ToCrabLocalDateTime(), s.einddatum?.ToCrabLocalDateTime()),
-                                new CrabTimestamp(s.CrabTimestamp.ToCrabInstant()),
+                                new CrabTimestamp(s.CrabTimestamp.ToCrabInstant())
+                                    .CorrectWhenTimeTravelingDelete(modification, s.begintijd.Value),
                                 new CrabOperator(s.Operator),
-                                CrabEnumMapper.Map(s.Bewerking),
+                                modification,
                                 CrabEnumMapper.Map(s.Organisatie));
                         });
         }

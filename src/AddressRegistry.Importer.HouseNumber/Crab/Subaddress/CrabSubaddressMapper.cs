@@ -17,15 +17,18 @@ namespace AddressRegistry.Importer.HouseNumber.Crab.Subaddress
                     {
                         MapLogging.Log(".");
 
+                        var crabModification = CrabEnumMapper.Map(subaddress.Bewerking);
+
                         return new ImportSubaddressFromCrab(
                             new CrabSubaddressId(subaddress.subAdresId.Value),
                             new CrabHouseNumberId(subaddress.huisNummerId.Value),
                             new BoxNumber(subaddress.subAdres),
                             new CrabBoxNumberType(subaddress.aardSubAdresCode),
                             new CrabLifetime(subaddress.beginDatum?.ToCrabLocalDateTime(), subaddress.eindDatum?.ToCrabLocalDateTime()),
-                            new CrabTimestamp(subaddress.CrabTimestamp.ToCrabInstant()),
+                            new CrabTimestamp(subaddress.CrabTimestamp.ToCrabInstant())
+                                .CorrectWhenTimeTravelingDelete(crabModification, subaddress.beginTijd.Value),
                             new CrabOperator(subaddress.Operator),
-                            CrabEnumMapper.Map(subaddress.Bewerking),
+                            crabModification,
                             CrabEnumMapper.Map(subaddress.Organisatie));
                     });
         }

@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/informatievlaanderen/address-registry/compare/v1.3.0...v1.3.1) (2019-07-04)
+
+
+### Bug Fixes
+
+* use corrext next uris for crabhousenumber and crabsubaddress ([100a080](https://github.com/informatievlaanderen/address-registry/commit/100a080))
+
 # [1.3.0](https://github.com/informatievlaanderen/address-registry/compare/v1.2.0...v1.3.0) (2019-06-24)
 
 

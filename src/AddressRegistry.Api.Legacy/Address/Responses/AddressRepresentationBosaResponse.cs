@@ -65,8 +65,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             => _responseOptions = responseOptionsProvider.Value;
 
         public object GetExamples()
-        {
-            return new AddressRepresentationBosaResponse
+            => new AddressRepresentationBosaResponse
             {
                 Identificator = new Identificator(_responseOptions.Naamruimte, "12345", DateTimeOffset.Now),
                 AdresVoorstellingen = new List<BosaAddressRepresentation>
@@ -75,7 +74,6 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
                     new BosaAddressRepresentation(Taal.FR, "5", "1", "Rue de test 5 bte 1, 9000 Gand", "Gand", "Rue de test", "9000")
                 }
             };
-        }
     }
 }
 

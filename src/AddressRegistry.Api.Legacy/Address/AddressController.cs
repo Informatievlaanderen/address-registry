@@ -265,7 +265,7 @@ namespace AddressRegistry.Api.Legacy.Address
         [ProducesResponseType(typeof(AddressBosaResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-        [SwaggerRequestExample(typeof(AddressBosaRequest), typeof(BosaAddressRequestExamples))]
+        [SwaggerRequestExample(typeof(BosaAddressRequest), typeof(BosaAddressRequestExamples))]
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(AddressBosaResponseExamples), jsonConverter: typeof(StringEnumConverter))]
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(BadRequestResponseExamples), jsonConverter: typeof(StringEnumConverter))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples), jsonConverter: typeof(StringEnumConverter))]
@@ -273,7 +273,7 @@ namespace AddressRegistry.Api.Legacy.Address
             [FromServices] LegacyContext context,
             [FromServices] SyndicationContext syndicationContext,
             [FromServices] IOptions<ResponseOptions> responseOptions,
-            [FromBody] AddressBosaRequest addressRequest,
+            [FromBody] BosaAddressRequest addressRequest,
             CancellationToken cancellationToken = default)
         {
             var query = new AddressBosaQuery(context, syndicationContext, responseOptions.Value);
@@ -297,7 +297,7 @@ namespace AddressRegistry.Api.Legacy.Address
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-        [SwaggerRequestExample(typeof(AddressRepresentationBosaRequest), typeof(AddressRepresentationBosaRequestExamples))]
+        [SwaggerRequestExample(typeof(BosaAddressRepresentationRequest), typeof(BosaAddressRepresentationRequestExamples))]
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(AddressRepresentationBosaResponseExamples), jsonConverter: typeof(StringEnumConverter))]
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(BadRequestResponseExamples), jsonConverter: typeof(StringEnumConverter))]
         [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(AddressNotFoundResponseExamples), jsonConverter: typeof(StringEnumConverter))]
@@ -306,7 +306,7 @@ namespace AddressRegistry.Api.Legacy.Address
             [FromServices] LegacyContext context,
             [FromServices] SyndicationContext syndicationContext,
             [FromServices] IOptions<ResponseOptions> responseOptions,
-            [FromBody] AddressRepresentationBosaRequest request,
+            [FromBody] BosaAddressRepresentationRequest request,
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(request?.AdresCode?.ObjectId) || !int.TryParse(request.AdresCode.ObjectId, out var addressId))

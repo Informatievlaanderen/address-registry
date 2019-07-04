@@ -6,7 +6,7 @@ namespace AddressRegistry.Api.Legacy.Address.Requests
     using Swashbuckle.AspNetCore.Filters;
     using System;
 
-    public class AddressBosaRequest
+    public class BosaAddressRequest
     {
         public ZoekIdentifier AdresCode { get; set; }
         public string Huisnummer { get; set; }
@@ -31,8 +31,7 @@ namespace AddressRegistry.Api.Legacy.Address.Requests
     public class BosaAddressRequestExamples : IExamplesProvider
     {
         public object GetExamples()
-        {
-            return new AddressBosaRequest
+            => new BosaAddressRequest
             {
                 AdresCode = new ZoekIdentifier
                 {
@@ -70,6 +69,5 @@ namespace AddressRegistry.Api.Legacy.Address.Requests
                     VersieId = DateTimeOffset.Now,
                 }
             };
-        }
     }
 }

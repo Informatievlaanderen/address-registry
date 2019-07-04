@@ -34,7 +34,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             _responseOptions = responseOptions;
         }
 
-        public async Task<AddressBosaResponse> Filter(AddressBosaRequest filter)
+        public async Task<AddressBosaResponse> Filter(BosaAddressRequest filter)
         {
             var addressesQuery = _legacyContext.AddressDetail.AsNoTracking().Where(x => x.Complete);
             var streetNamesQuery = _syndicationContext.StreetNameBosaItems.AsNoTracking().Where(x => x.IsComplete);
@@ -146,8 +146,8 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             IQueryable<AddressDetailItem> addresses,
             IEnumerable<Guid> streetNameIds)
         {
-            var filtered =
-                addresses.Where(x => streetNameIds.Contains(x.StreetNameId));
+            var filtered = addresses
+                .Where(x => streetNameIds.Contains(x.StreetNameId));
 
             if (!string.IsNullOrEmpty(osloId))
             {

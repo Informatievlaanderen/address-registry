@@ -84,7 +84,7 @@ namespace AddressRegistry.Api.Legacy.CrabSubaddress
             {
                 Addresses = addressListItemResponses,
                 TotaalAantal = pagedAddresses.PaginationInfo.TotalItems,
-                Volgende = AddressController.BuildVolgendeUri(pagedAddresses.PaginationInfo, responseOptions.Value.VolgendeUrl)
+                Volgende = AddressController.BuildVolgendeUri(pagedAddresses.PaginationInfo, responseOptions.Value.CrabSubadressenVolgendeUrl)
             });
         }
     }

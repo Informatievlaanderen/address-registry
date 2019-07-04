@@ -13,13 +13,13 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
     public class AddressBosaResponse
     {
         /// <summary>
-        /// collection of municipality instances (count lower or equal to Limit)
+        /// Collection of municipality instances (count lower or equal to Limit)
         /// </summary>
         [Required]
         public List<AddressBosaResponseItem> Adressen { get; set; }
 
         /// <summary>
-        /// the total number of municipalities matching the request
+        /// The total number of municipalities matching the request
         /// </summary>
         [Required]
         public long TotaalAantal { get; set; }
@@ -28,7 +28,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
     public class AddressBosaResponseItem
     {
         /// <summary>
-        /// the identifier of the street name
+        /// The identifier of the street name
         /// </summary>
         [Required]
         public Identificator Identificator { get; set; }
@@ -42,19 +42,19 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         public string Busnummer { get; set; }
 
         /// <summary>
-        /// the address position (a point with Lambert-72 coordinates)
+        /// The address position (a point with Lambert-72 coordinates)
         /// </summary>
         [Required]
         public Point AdresPositie { get; set; }
 
         /// <summary>
-        /// the method used to provide the position
+        /// The method used to provide the position
         /// </summary>
         [Required]
         public PositieGeometrieMethode PositieGeometrieMethode { get; set; }
 
         /// <summary>
-        /// the specification of the object represented by the position
+        /// The specification of the object represented by the position
         /// </summary>
         [Required]
         public PositieSpecificatie PositieSpecificatie { get; set; }
@@ -131,7 +131,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
                         JsonPoint = new GeoJSONPoint
                         {
                             Type = "point",
-                            Coordinates = new double[] { 140252.76, 198794.27 }
+                            Coordinates = new[] { 140252.76, 198794.27 }
                         },
                         XmlPoint = new GmlPoint
                         {
@@ -164,7 +164,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
                         JsonPoint = new GeoJSONPoint
                         {
                             Type = "point",
-                            Coordinates = new double[] { 140152.76, 198694.27 }
+                            Coordinates = new[] { 140152.76, 198694.27 }
                         },
                         XmlPoint = new GmlPoint
                         {
@@ -183,7 +183,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
                 ),
             };
 
-            return new AddressBosaResponse()
+            return new AddressBosaResponse
             {
                 Adressen = addressBosaResponseItems,
                 TotaalAantal = 3

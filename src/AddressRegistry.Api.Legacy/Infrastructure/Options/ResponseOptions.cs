@@ -7,6 +7,8 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Options
         public string StraatNaamNaamruimte { get; set; }
         public string PostInfoNaamruimte { get; set; }
         public string VolgendeUrl { get; set; }
+        public string CrabSubadressenVolgendeUrl { get; set; }
+        public string CrabHuisnummersVolgendeUrl { get; set; }
         public string DetailUrl { get; set; }
         public string PostInfoDetailUrl { get; set; }
         public string StraatnaamDetailUrl { get; set; }

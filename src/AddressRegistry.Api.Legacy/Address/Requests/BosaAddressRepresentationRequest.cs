@@ -5,17 +5,16 @@ namespace AddressRegistry.Api.Legacy.Address.Requests
     using Swashbuckle.AspNetCore.Filters;
     using System;
 
-    public class AddressRepresentationBosaRequest
+    public class BosaAddressRepresentationRequest
     {
         public ZoekIdentifier AdresCode { get; set; }
         public Taal? Taal { get; set; }
     }
 
-    public class AddressRepresentationBosaRequestExamples : IExamplesProvider
+    public class BosaAddressRepresentationRequestExamples : IExamplesProvider
     {
         public object GetExamples()
-        {
-            return new AddressRepresentationBosaRequest
+            => new BosaAddressRepresentationRequest
             {
                 AdresCode = new ZoekIdentifier
                 {
@@ -24,6 +23,5 @@ namespace AddressRegistry.Api.Legacy.Address.Requests
                 },
                 Taal = Taal.NL
             };
-        }
     }
 }

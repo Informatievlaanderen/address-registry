@@ -112,6 +112,14 @@
       },
       {
         "path": "@semantic-release/exec",
+        "cmd": "mkdir -p workspace"
+      },
+      {
+        "path": "@semantic-release/exec",
+        "cmd": "echo ${nextRelease.version} > workspace/semver"
+      },
+      {
+        "path": "@semantic-release/exec",
         "cmd": "BITBUCKET_BUILD_NUMBER=${nextRelease.version} ./build.sh Push"
       },
       {

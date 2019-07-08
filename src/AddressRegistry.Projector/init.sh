@@ -4,4 +4,4 @@ CONTAINERID=$(curl -s http://169.254.170.2/v2/metadata | jq -r ".Containers[] | 
 
 sed -i "s/REPLACE_CONTAINERID/$CONTAINERID/g" appsettings.json
 
-./AddressRegistry.Api.Projector
+./AddressRegistry.Projector

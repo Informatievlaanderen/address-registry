@@ -7,6 +7,10 @@ namespace AddressRegistry.Api.Legacy.CrabSubaddress
     using System.Collections.Generic;
     using System.Globalization;
     using System.Runtime.Serialization;
+    using Address.Responses;
+    using Infrastructure.Options;
+    using Microsoft.Extensions.Options;
+    using Swashbuckle.AspNetCore.Filters;
 
     [DataContract(Name = "CrabSubadresCollectie", Namespace = "")]
     public class CrabSubAddressListResponse
@@ -67,5 +71,47 @@ namespace AddressRegistry.Api.Legacy.CrabSubaddress
         /// </summary>
         [DataMember(Name = "Adres", Order = 2)]
         public CrabAddressListItemAddress Address { get; set; }
+    }
+
+    public class CrabSubaddressListResponseExamples : IExamplesProvider
+    {
+        private readonly ResponseOptions _responseOptions;
+
+        public CrabSubaddressListResponseExamples(IOptions<ResponseOptions> responseOptionsProvider)
+            => _responseOptions = responseOptionsProvider.Value;
+
+        public object GetExamples()
+        {
+            var addressExamples = new List<CrabSubAddressListItem>
+            {
+                new CrabSubAddressListItem(
+                    5,
+                    10521,
+                    _responseOptions.Naamruimte,
+                    _responseOptions.DetailUrl,
+                    "70",
+                    "1",
+                    new VolledigAdres("Koningin Maria Hendrikaplein", "70", null, "9000", "Gent", Taal.NL),
+                    DateTimeOffset.Now,
+                    true),
+                new CrabSubAddressListItem(
+                    157,
+                    14874,
+                    _responseOptions.Naamruimte,
+                    _responseOptions.DetailUrl,
+                    "30",
+                    "3",
+                    new VolledigAdres("Boudewijnlaan", "30", "30", "1000", "Brussel", Taal.NL),
+                    DateTimeOffset.Now.AddDays(-2),
+                    false)
+            };
+
+            return new CrabSubAddressListResponse
+            {
+                Addresses = addressExamples,
+                TotaalAantal = 2,
+                Volgende = new Uri(string.Format(_responseOptions.CrabSubadressenVolgendeUrl, 2, 10))
+            };
+        }
     }
 }

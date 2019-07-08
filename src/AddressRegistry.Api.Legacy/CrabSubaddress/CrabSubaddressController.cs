@@ -15,6 +15,10 @@ namespace AddressRegistry.Api.Legacy.CrabSubaddress
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Be.Vlaanderen.Basisregisters.Api.Exceptions;
+    using Microsoft.AspNetCore.Http;
+    using Newtonsoft.Json.Converters;
+    using Swashbuckle.AspNetCore.Filters;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
@@ -22,6 +26,11 @@ namespace AddressRegistry.Api.Legacy.CrabSubaddress
     [ApiExplorerSettings(GroupName = "CrabSubadressen")]
     public class CrabSubaddressController : ApiController
     {
+        [HttpGet]
+        [ProducesResponseType(typeof(CrabSubaddressListResponseExamples), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(CrabSubaddressListResponseExamples), jsonConverter: typeof(StringEnumConverter))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples), jsonConverter: typeof(StringEnumConverter))]
         public async Task<IActionResult> Get(
             [FromServices] LegacyContext context,
             [FromServices] SyndicationContext syndicationContext,

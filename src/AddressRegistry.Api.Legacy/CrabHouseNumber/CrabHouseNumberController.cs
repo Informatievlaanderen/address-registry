@@ -15,6 +15,10 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Be.Vlaanderen.Basisregisters.Api.Exceptions;
+    using Microsoft.AspNetCore.Http;
+    using Newtonsoft.Json.Converters;
+    using Swashbuckle.AspNetCore.Filters;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
@@ -22,6 +26,12 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
     [ApiExplorerSettings(GroupName = "CrabHuisnummers")]
     public class CrabHouseNumberController : ApiController
     {
+        [HttpGet]
+        [ProducesResponseType(typeof(CrabHouseNumberListResponseExamples), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(CrabHouseNumberListResponseExamples), jsonConverter: typeof(StringEnumConverter))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples), jsonConverter: typeof(StringEnumConverter))]
+
         public async Task<IActionResult> Get(
             [FromServices] LegacyContext context,
             [FromServices] SyndicationContext syndicationContext,
@@ -67,7 +77,7 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
                 {
                     var streetName = streetNames.SingleOrDefault(x => x.StreetNameId == a.StreetNameId);
                     var municipality = municipalities.SingleOrDefault(x => x.NisCode == streetName.NisCode);
-                    return new CrabAddressListItem(
+                    return new CrabHouseNumberAddressListItem(
                         a.HouseNumberId.Value,
                         a.OsloId.Value,
                         responseOptions.Value.Naamruimte,
@@ -79,7 +89,7 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
                 })
                 .ToList();
 
-            return Ok(new CrabAddressListResponse
+            return Ok(new CrabHouseNumberAddressListResponse
             {
                 Addresses = addressListItemResponses,
                 TotaalAantal = pagedAddresses.PaginationInfo.TotalItems,

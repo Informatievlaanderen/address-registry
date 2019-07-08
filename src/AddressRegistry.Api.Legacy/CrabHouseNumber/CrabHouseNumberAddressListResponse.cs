@@ -6,15 +6,18 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
     using System.Collections.Generic;
     using System.Globalization;
     using System.Runtime.Serialization;
+    using Infrastructure.Options;
+    using Microsoft.Extensions.Options;
+    using Swashbuckle.AspNetCore.Filters;
 
     [DataContract(Name = "CrabHuisnummerCollectie", Namespace = "")]
-    public class CrabAddressListResponse
+    public class CrabHouseNumberAddressListResponse
     {
         /// <summary>
         /// De verzameling van adressen.
         /// </summary>
         [DataMember(Name = "CrabHuisnummers", Order = 1)]
-        public List<CrabAddressListItem> Addresses { get; set; }
+        public List<CrabHouseNumberAddressListItem> Addresses { get; set; }
 
         /// <summary>
         /// Het totaal aantal gemeenten die overeenkomen met de vraag.
@@ -30,9 +33,9 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
     }
 
     [DataContract(Name = "CrabHuisnummerCollectieItem", Namespace = "")]
-    public class CrabAddressListItem
+    public class CrabHouseNumberAddressListItem
     {
-        public CrabAddressListItem(
+        public CrabHouseNumberAddressListItem(
             int crabHouseNumberId,
             int osloId,
             string naamruimte,
@@ -104,5 +107,45 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
         /// </summary>
         [DataMember(Name = "VolledigAdres", Order = 6)]
         public VolledigAdres VolledigAdres { get; set; }
+    }
+
+    public class CrabHouseNumberListResponseExamples : IExamplesProvider
+    {
+        private readonly ResponseOptions _responseOptions;
+
+        public CrabHouseNumberListResponseExamples(IOptions<ResponseOptions> responseOptionsProvider)
+            => _responseOptions = responseOptionsProvider.Value;
+
+        public object GetExamples()
+        {
+            var addressExamples = new List<CrabHouseNumberAddressListItem>
+            {
+                new CrabHouseNumberAddressListItem(
+                    5,
+                    10521,
+                    _responseOptions.Naamruimte,
+                    _responseOptions.DetailUrl,
+                    "70",
+                    new VolledigAdres("Koningin Maria Hendrikaplein", "70", null, "9000", "Gent", Taal.NL),
+                    DateTimeOffset.Now,
+                    true),
+                new CrabHouseNumberAddressListItem(
+                    157,
+                    14874,
+                    _responseOptions.Naamruimte,
+                    _responseOptions.DetailUrl,
+                    "30",
+                    new VolledigAdres("Boudewijnlaan", "30", "30", "1000", "Brussel", Taal.NL),
+                    DateTimeOffset.Now.AddDays(-2),
+                    false)
+            };
+
+            return new CrabHouseNumberAddressListResponse
+            {
+                Addresses = addressExamples,
+                TotaalAantal = 2,
+                Volgende = new Uri(string.Format(_responseOptions.CrabHuisnummersVolgendeUrl, 2, 10))
+            };
+        }
     }
 }

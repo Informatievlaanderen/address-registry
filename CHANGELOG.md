@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/informatievlaanderen/address-registry/compare/v1.3.1...v1.4.0) (2019-07-08)
+
+
+### Features
+
+* add examples for crab api legacy endpoints ([6966d18](https://github.com/informatievlaanderen/address-registry/commit/6966d18))
+
 ## [1.3.1](https://github.com/informatievlaanderen/address-registry/compare/v1.3.0...v1.3.1) (2019-07-04)
 
 

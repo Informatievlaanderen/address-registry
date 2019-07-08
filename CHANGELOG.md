@@ -1,3 +1,15 @@
+# [1.5.0](https://github.com/informatievlaanderen/address-registry/compare/v1.4.0...v1.5.0) (2019-07-08)
+
+
+### Bug Fixes
+
+* include init.sh files ([f43f2b9](https://github.com/informatievlaanderen/address-registry/commit/f43f2b9))
+
+
+### Features
+
+* prepare for deploy ([30fa25c](https://github.com/informatievlaanderen/address-registry/commit/30fa25c))
+
 # [1.4.0](https://github.com/informatievlaanderen/address-registry/compare/v1.3.1...v1.4.0) (2019-07-08)
 
 

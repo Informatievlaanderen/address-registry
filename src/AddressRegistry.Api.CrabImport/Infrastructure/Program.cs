@@ -5,10 +5,6 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure
 
     public class Program
     {
-        private static readonly DevelopmentCertificate DevelopmentCertificate = new DevelopmentCertificate(
-            "api.dev.adres.basisregisters.vlaanderen.be.pfx",
-            "gemeenteregister!");
-
         public static void Main(string[] args) => CreateWebHostBuilder(args).Build().Run();
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args)
@@ -18,9 +14,12 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure
                     {
                         Hosting =
                         {
-                            HttpPort = 1093,
-                            HttpsPort = 1447,
-                            HttpsCertificate = DevelopmentCertificate.ToCertificate,
+                            HttpPort = 5000
+                        },
+                        Logging =
+                        {
+                            WriteTextToConsole = false,
+                            WriteJsonToConsole = false
                         },
                         Runtime =
                         {

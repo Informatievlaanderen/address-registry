@@ -91,14 +91,14 @@ nuget Structurizr.Client 0.9.0
 nuget Structurizr.AdrTools 0.9.0
 
 // TEST STUFF
-nuget Microsoft.NET.Test.Sdk 16.1.1
+nuget Microsoft.NET.Test.Sdk 16.2.0
 nuget Microsoft.EntityFrameworkCore.InMemory 2.2.4
 nuget xunit 2.4.1
 nuget xunit.runner.visualstudio 2.4.1
 nuget xunit.categories 2.0.4
 nuget FluentAssertions 5.7.0
-nuget Moq 4.11.0
-nuget AutoFixture.Xunit2 4.9.0
+nuget Moq 4.12.0
+nuget AutoFixture.Xunit2 4.10.0
 nuget Serilog.Sinks.XUnit 1.0.8
 
 // BUILD STUFF

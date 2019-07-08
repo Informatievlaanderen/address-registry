@@ -1,3 +1,10 @@
+## [1.5.1](https://github.com/informatievlaanderen/address-registry/compare/v1.5.0...v1.5.1) (2019-07-08)
+
+
+### Bug Fixes
+
+* include version number to deploy ([83b7db8](https://github.com/informatievlaanderen/address-registry/commit/83b7db8))
+
 # [1.5.0](https://github.com/informatievlaanderen/address-registry/compare/v1.4.0...v1.5.0) (2019-07-08)
 
 

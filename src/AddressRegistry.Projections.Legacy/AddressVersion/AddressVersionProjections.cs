@@ -107,6 +107,7 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
                     item => item.HouseNumber = message.Message.HouseNumber,
                     ct);
             });
+
             When<Envelope<AddressHouseNumberWasCorrected>>(async (context, message, ct) =>
             {
                 await context.CreateNewAddressVersion(

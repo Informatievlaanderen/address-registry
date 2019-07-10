@@ -154,52 +154,17 @@ namespace AddressRegistry.Importer.HouseNumber
         {
             using (var connection = new SqlConnection(connectionString))
             {
-                var page = 1;
-                var pageSize = 10000;
-
-                var totalRecords = connection
-                    .ExecuteScalar<int>(
-                        "SELECT COUNT(*) " +
+                return connection
+                    .Query<Crab2VbrHouseNumberMapping>(
+                        "SELECT o.ObjectID, m.AdresIDInternal, m.CrabHuisnummerID, m.MappingCreatedTimestamp " +
                         "FROM crab.AdresMappingToHuisnummer m " +
-                        "INNER JOIN crab.AdresObjectID o ON m.AdresIDInternal = o.AdresIDInternal");
-
-                var crab2VbrMappings = new List<AssignOsloIdForCrabHouseNumberId>();
-
-                do
-                {
-                    var crab2VbrMapping = connection
-                        .Query<Crab2VbrHouseNumberMapping>(
-                            "SELECT o.ObjectID, m.AdresIDInternal, m.CrabHuisnummerID, m.MappingCreatedTimestamp " +
-                            "FROM crab.AdresMappingToHuisnummer m " +
-                            "INNER JOIN crab.AdresObjectID o ON m.AdresIDInternal = o.AdresIDInternal " +
-                            "ORDER BY m.CrabHuisnummerID " +
-                            "OFFSET @Offset ROWS " +
-                            "FETCH NEXT @PageSize ROWS ONLY",
-                            new {Offset = (page - 1) * pageSize, PageSize = pageSize})
-                        .Select(mapping =>
-                            new AssignOsloIdForCrabHouseNumberId(
-                                new CrabHouseNumberId(mapping.CrabHuisnummerId),
-                                new OsloId(Convert.ToInt32(mapping.ObjectId)),
-                                new OsloAssignmentDate(Instant.FromDateTimeOffset(mapping.MappingCreatedTimestamp))))
-                        .ToList();
-
-                    if (crab2VbrMapping.Count > 0)
-                    {
-                        crab2VbrMappings.AddRange(crab2VbrMapping);
-                        page++;
-
-                        Console.CursorLeft = 0;
-                        Console.Write($"{crab2VbrMappings.Count} records read from {totalRecords}...");
-                    }
-                    else
-                    {
-                        break;
-                    }
-                } while (true);
-
-                Console.WriteLine($"Lazy loaded {crab2VbrMappings.Count} osloIdCommands!!");
-
-                return crab2VbrMappings;
+                        "INNER JOIN crab.AdresObjectID o ON m.AdresIDInternal = o.AdresIDInternal " +
+                        "ORDER BY m.CrabHuisnummerID")
+                    .Select(mapping =>
+                        new AssignOsloIdForCrabHouseNumberId(
+                            new CrabHouseNumberId(mapping.CrabHuisnummerId),
+                            new OsloId(Convert.ToInt32(mapping.ObjectId)),
+                            new OsloAssignmentDate(Instant.FromDateTimeOffset(mapping.MappingCreatedTimestamp))));
             }
         }
 

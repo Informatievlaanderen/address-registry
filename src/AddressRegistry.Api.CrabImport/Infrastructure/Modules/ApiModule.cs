@@ -96,8 +96,7 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure.Modules
 
             containerBuilder
                 .RegisterType<SqlPersistentLocalIdGenerator>()
-                .As<IPersistentLocalIdGenerator>()
-                .SingleInstance();
+                .As<IPersistentLocalIdGenerator>();
 
             containerBuilder.Populate(_services);
         }

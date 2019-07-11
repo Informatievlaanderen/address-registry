@@ -55,7 +55,7 @@ namespace AddressRegistry.Projections.Syndication.Parcel
                     {
                         ParcelId = entry.Content.Object.Id,
                         AddressId = addressId,
-                        ParcelOsloId = entry.Content.Object.Identificator.ObjectId
+                        ParcelPersistentLocalId = entry.Content.Object.Identificator.ObjectId
                     }, ct);
             }
         }

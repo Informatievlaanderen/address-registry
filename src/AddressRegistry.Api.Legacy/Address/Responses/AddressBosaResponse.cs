@@ -75,7 +75,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             string municipalityNamespace,
             string streetNameNamespace,
             string addressNamespace,
-            int osloId,
+            int persistentLocalId,
             AdresStatus status,
             string houseNumber,
             string boxNumber,
@@ -91,7 +91,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             string postalCode,
             DateTimeOffset postinfoVersion)
         {
-            Identificator = new Identificator(addressNamespace, osloId.ToString(), version);
+            Identificator = new Identificator(addressNamespace, persistentLocalId.ToString(), version);
             AdresStatus = status;
             Huisnummer = houseNumber;
             Busnummer = boxNumber;

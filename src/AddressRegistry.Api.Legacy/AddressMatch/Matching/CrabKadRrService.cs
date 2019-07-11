@@ -85,6 +85,6 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             return FindById(source.StreetNameId);
         }
 
-        private StreetNameLatestItem FindById(int osloId) => _latestQueries.FindLatestStreetNameById(osloId.ToString(CultureInfo.InvariantCulture));
+        private StreetNameLatestItem FindById(int persistentLocalId) => _latestQueries.FindLatestStreetNameById(persistentLocalId.ToString(CultureInfo.InvariantCulture));
     }
 }

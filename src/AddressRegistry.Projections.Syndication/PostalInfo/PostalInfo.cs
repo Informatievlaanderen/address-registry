@@ -36,7 +36,7 @@ namespace AddressRegistry.Projections.Syndication.PostalInfo
         /// De NisCode van de gemeente waarmee de postcode verwant is.
         /// </summary>
         [DataMember(Name = "NisCode", Order = 3)]
-        public string MunicipalityOsloId { get; set; }
+        public string MunicipalityNisCode { get; set; }
 
         public PostalInfo()
         {

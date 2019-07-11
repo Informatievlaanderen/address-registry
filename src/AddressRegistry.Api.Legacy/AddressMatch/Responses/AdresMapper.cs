@@ -33,8 +33,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
 
             return new AdresMatchItem
             {
-                Identificator = new Identificator(_responseOptions.Naamruimte, source.OsloId.ToString(), source.VersionTimestamp.ToBelgianDateTimeOffset()),
-                Detail = string.Format(_responseOptions.DetailUrl, source.OsloId.Value.ToString()),
+                Identificator = new Identificator(_responseOptions.Naamruimte, source.PersistentLocalId.ToString(), source.VersionTimestamp.ToBelgianDateTimeOffset()),
+                Detail = string.Format(_responseOptions.DetailUrl, source.PersistentLocalId.Value.ToString()),
                 Gemeente = new AdresMatchItemGemeente
                 {
                     ObjectId = municipality.NisCode,
@@ -43,8 +43,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
                 },
                 Straatnaam = new AdresMatchItemStraatnaam
                 {
-                    ObjectId = streetName.OsloId,
-                    Detail = string.Format(_responseOptions.StraatnaamDetailUrl, source.OsloId),
+                    ObjectId = streetName.PersistentLocalId,
+                    Detail = string.Format(_responseOptions.StraatnaamDetailUrl, source.PersistentLocalId),
                     Straatnaam = new Straatnaam(new GeografischeNaam(defaultStreetName.Value, defaultStreetName.Key)),
                 },
                 HomoniemToevoeging = homonym == null ? null : new HomoniemToevoeging(new GeografischeNaam(homonym.Value.Value, homonym.Value.Key)),
@@ -67,9 +67,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
                         .ToList()
                         .Select(matchLatestItem => new AdresseerbaarObject
                         {
-                            ObjectId = matchLatestItem.BuildingUnitOsloId,
+                            ObjectId = matchLatestItem.BuildingUnitPersistentLocalId,
                             ObjectType = ObjectType.Gebouweenheid,
-                            Detail = string.Format(_responseOptions.GebouweenheidDetailUrl, matchLatestItem.BuildingUnitOsloId),
+                            Detail = string.Format(_responseOptions.GebouweenheidDetailUrl, matchLatestItem.BuildingUnitPersistentLocalId),
                         })
                         .ToList()
                         .Concat(
@@ -78,9 +78,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
                             .ToList()
                             .Select(matchLatestItem => new AdresseerbaarObject
                             {
-                                ObjectId = matchLatestItem.ParcelOsloId,
+                                ObjectId = matchLatestItem.ParcelPersistentLocalId,
                                 ObjectType = ObjectType.Perceel,
-                                Detail = string.Format(_responseOptions.PerceelDetailUrl, matchLatestItem.ParcelOsloId),
+                                Detail = string.Format(_responseOptions.PerceelDetailUrl, matchLatestItem.ParcelPersistentLocalId),
                             })
                             .ToList())
                         .ToList()

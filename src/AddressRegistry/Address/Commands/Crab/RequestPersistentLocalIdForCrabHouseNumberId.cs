@@ -6,19 +6,19 @@ namespace AddressRegistry.Address.Commands.Crab
     using System;
     using System.Collections.Generic;
 
-    public class RequestOsloIdForCrabHouseNumberId
+    public class RequestPersistentLocalIdForCrabHouseNumberId
     {
         private static readonly Guid Namespace = new Guid("e07178dc-249a-425b-84a5-d065af8a84cc");
 
         public CrabHouseNumberId HouseNumberId { get; }
 
-        public RequestOsloIdForCrabHouseNumberId(
+        public RequestPersistentLocalIdForCrabHouseNumberId(
             CrabHouseNumberId houseNumberId)
         {
             HouseNumberId = houseNumberId;
         }
 
-        public Guid CreateCommandId() => Deterministic.Create(Namespace, $"RequestOsloId-{ToString()}");
+        public Guid CreateCommandId() => Deterministic.Create(Namespace, $"RequestPersistentLocalIdForCrabHouseNumberId-{ToString()}");
 
         public override string ToString() => ToStringBuilder.ToString(IdentityFields());
 

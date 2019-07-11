@@ -42,23 +42,23 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             // TODO: Hier moet prolly version nog ergens in
             item.AddLink(
                 new SyndicationLink(
-                    new Uri($"{responseOptions.Value.Naamruimte}/{address.OsloId}"),
+                    new Uri($"{responseOptions.Value.Naamruimte}/{address.PersistentLocalId}"),
                     AtomLinkTypes.Related));
 
             item.AddLink(
                 new SyndicationLink(
-                    new Uri(string.Format(responseOptions.Value.DetailUrl, address.OsloId)),
+                    new Uri(string.Format(responseOptions.Value.DetailUrl, address.PersistentLocalId)),
                     AtomLinkTypes.Self));
 
             item.AddLink(
                 new SyndicationLink(
-                        new Uri(string.Format($"{responseOptions.Value.DetailUrl}.xml", address.OsloId)),
+                        new Uri(string.Format($"{responseOptions.Value.DetailUrl}.xml", address.PersistentLocalId)),
                         AtomLinkTypes.Alternate)
                 { MediaType = MediaTypeNames.Application.Xml });
 
             item.AddLink(
                 new SyndicationLink(
-                        new Uri(string.Format($"{responseOptions.Value.DetailUrl}.json", address.OsloId)),
+                        new Uri(string.Format($"{responseOptions.Value.DetailUrl}.json", address.PersistentLocalId)),
                         AtomLinkTypes.Alternate)
                 { MediaType = MediaTypeNames.Application.Json });
 
@@ -84,7 +84,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
                 content.Object = new AddressSyndicationContent(address.AddressId,
                     naamruimte,
                     address.StreetNameId,
-                    address.OsloId,
+                    address.PersistentLocalId,
                     address.HouseNumber,
                     address.BoxNumber,
                     address.PostalCode,
@@ -204,7 +204,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             Guid addressId,
             string naamruimte,
             Guid? streetNameId,
-            int? osloId,
+            int? persistentLocalId,
             string houseNumber,
             string boxNumber,
             string postalCode,
@@ -219,7 +219,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             string reason)
         {
             AddressId = addressId;
-            Identificator = new Identificator(naamruimte, osloId.HasValue ? osloId.ToString() : string.Empty, version);
+            Identificator = new Identificator(naamruimte, persistentLocalId.HasValue ? persistentLocalId.ToString() : string.Empty, version);
             SteetnameId = streetNameId;
             PostalCode = postalCode;
             Point = point == null ? null : new SyndicationPoint { XmlPoint = point.XmlPoint };

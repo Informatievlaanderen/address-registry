@@ -37,7 +37,7 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
     {
         public CrabHouseNumberAddressListItem(
             int crabHouseNumberId,
-            int osloId,
+            int persistentLocalId,
             string naamruimte,
             string detailUrl,
             string houseNumber,
@@ -48,7 +48,7 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
             CrabHouseNumberId = crabHouseNumberId;
             Address = new CrabAddressListItemAddress
             {
-                Identificator = new Identificator(naamruimte, osloId.ToString(CultureInfo.InvariantCulture), version),
+                Identificator = new Identificator(naamruimte, persistentLocalId.ToString(CultureInfo.InvariantCulture), version),
                 IsComplete = isComplete,
                 Detail = new Uri(detailUrl),
                 Huisnummer = houseNumber,

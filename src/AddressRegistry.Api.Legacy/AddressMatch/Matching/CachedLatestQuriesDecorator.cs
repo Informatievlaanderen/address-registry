@@ -16,8 +16,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
         IEnumerable<MunicipalityLatestItem> GetAllLatestMunicipalities();
         IEnumerable<StreetNameLatestItem> GetLatestStreetNamesBy(params string[] municipalityNames);
         IEnumerable<StreetNameLatestItem> GetAllLatestStreetNames();
-        IEnumerable<AddressDetailItem> GetLatestAddressesBy(string streetNameOsloId, string houseNumber, string boxNumber);
-        StreetNameLatestItem FindLatestStreetNameById(string streetNameOsloId);
+        IEnumerable<AddressDetailItem> GetLatestAddressesBy(string streetNamePersistentLocalId, string houseNumber, string boxNumber);
+        StreetNameLatestItem FindLatestStreetNameById(string streetNamePersistentLocalId);
         IEnumerable<AddressDetailItem> FindLatestAddressesByCrabSubaddressIds(IEnumerable<int> crabSubaddressIds);
         IEnumerable<AddressDetailItem> FindLatestAddressesByCrabHouseNumberIds(IEnumerable<int> crabHouseNumberIds);
         IEnumerable<PostalInfoLatestItem> GetAllPostalInfo();
@@ -46,10 +46,10 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 () => _syndicationContext.PostalInfoLatestItems.ToList(),
                 AllPostalInfoCacheDuration);
 
-        public StreetNameLatestItem FindLatestStreetNameById(string streetNameOsloId) =>
+        public StreetNameLatestItem FindLatestStreetNameById(string streetNamePersistentLocalId) =>
             GetOrAddLatestStreetNames(
-                streetNames => streetNames.SelectMany(kvp => kvp.Value).Single(s => s.OsloId == streetNameOsloId),
-                () => GetLatestStreetNameItems().FirstOrDefault(x => x.OsloId == streetNameOsloId));
+                streetNames => streetNames.SelectMany(kvp => kvp.Value).Single(s => s.PersistentLocalId == streetNamePersistentLocalId),
+                () => GetLatestStreetNameItems().FirstOrDefault(x => x.PersistentLocalId == streetNamePersistentLocalId));
 
         public IEnumerable<MunicipalityLatestItem> GetAllLatestMunicipalities() =>
             GetOrAdd(AllMunicipalitiesCacheKey,
@@ -69,14 +69,14 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             return streetNameLatestItems;
         }
 
-        public IEnumerable<AddressDetailItem> GetLatestAddressesBy(string streetNameOsloId, string houseNumber, string boxNumber)
+        public IEnumerable<AddressDetailItem> GetLatestAddressesBy(string streetNamePersistentLocalId, string houseNumber, string boxNumber)
         {
-            var streetName = FindLatestStreetNameById(streetNameOsloId);
+            var streetName = FindLatestStreetNameById(streetNamePersistentLocalId);
 
             //no caching for addresses
             var query = _legacyContext
                 .AddressDetail
-                .Where(x => x.Complete && !x.Removed && x.OsloId.HasValue)
+                .Where(x => x.Complete && !x.Removed && x.PersistentLocalId.HasValue)
                 .Where(x => x.HouseNumber == houseNumber && x.BoxNumber == boxNumber);
             if (streetName != null)
                 query = query.Where(x => x.StreetNameId == streetName.StreetNameId);
@@ -87,20 +87,20 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
         //no caching for addresses
         public IEnumerable<AddressDetailItem> FindLatestAddressesByCrabSubaddressIds(IEnumerable<int> crabSubaddressIds) =>
             _legacyContext.AddressDetail
-                .Where(x => x.Complete && !x.Removed && x.OsloId.HasValue)
+                .Where(x => x.Complete && !x.Removed && x.PersistentLocalId.HasValue)
                 .Where(detailItem =>
-                    _legacyContext.CrabIdToOsloIds
-                        .Where(osloIdItem => crabSubaddressIds.Contains(osloIdItem.SubaddressId.Value))
+                    _legacyContext.CrabIdToPersistentLocalIds
+                        .Where(id => crabSubaddressIds.Contains(id.SubaddressId.Value))
                         .Select(y => y.AddressId)
                         .Contains(detailItem.AddressId));
 
         //no caching for addresses
         public IEnumerable<AddressDetailItem> FindLatestAddressesByCrabHouseNumberIds(IEnumerable<int> crabHouseNumberIds) =>
             _legacyContext.AddressDetail
-                .Where(x => x.Complete && !x.Removed && x.OsloId.HasValue)
+                .Where(x => x.Complete && !x.Removed && x.PersistentLocalId.HasValue)
                 .Where(detailItem =>
-                    _legacyContext.CrabIdToOsloIds
-                        .Where(osloIdItem => crabHouseNumberIds.Contains(osloIdItem.HouseNumberId.Value))
+                    _legacyContext.CrabIdToPersistentLocalIds
+                        .Where(id => crabHouseNumberIds.Contains(id.HouseNumberId.Value))
                         .Select(y => y.AddressId)
                         .Contains(detailItem.AddressId));
 

@@ -95,8 +95,8 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure.Modules
                     }));
 
             containerBuilder
-                .RegisterType<SqlOsloIdGenerator>()
-                .As<IOsloIdGenerator>()
+                .RegisterType<SqlPersistentLocalIdGenerator>()
+                .As<IPersistentLocalIdGenerator>()
                 .SingleInstance();
 
             containerBuilder.Populate(_services);

@@ -17,7 +17,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting.Mocking
             return mock.Arrange(
             Produce.One(
                 Generate.tblStraatNaam
-                .Select(s => s.WithOsloId(straatnaamId.ToString())
+                .Select(s => s.WithPersistentLocalId(straatnaamId.ToString())
                 .WithStraatNaam(straatnaam)
                 .WithGemeenteId(nisCode)
                 )),
@@ -29,7 +29,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting.Mocking
         {
             return mock.Arrange(
                 Generate.tblStraatNaam
-                .Select(s => s.WithOsloId(straatnaamId.ToString())
+                .Select(s => s.WithPersistentLocalId(straatnaamId.ToString())
                 .WithStraatNaam(straatnaam)
                 .WithGemeenteId(nisCode)),
                 (when, x) => when.StraatnaamExistsForRrStraatcodeAndPostcode(x, rrStraatcode, postcode));
@@ -66,7 +66,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting.Mocking
         {
             return mock.Arrange(Produce.One(Generate.tblStraatNaam
                 .Select(sn => sn.WithStraatNaam(straatNaam)
-                .WithOsloId(straatnaamId)
+                .WithPersistentLocalId(straatnaamId)
                 .WithStraatNaamId(streetNameId)
                 .WithGemeenteId(nisCode))),
                 (when, x) => when.LatestStraatnamenExistForGemeentenaam(x, gemeentenaam));
@@ -81,7 +81,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting.Mocking
                             .WithTblPostKanton(postcode)
                             .WithHuisNummer(huisnummer)
                             .WithBusnummer(busnummer))),
-                (when, x) => when.LatestAdressenExist(x, straatNaam.OsloId, huisnummer, busnummer));
+                (when, x) => when.LatestAdressenExist(x, straatNaam.PersistentLocalId, huisnummer, busnummer));
         }
     }
 }

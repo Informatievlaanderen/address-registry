@@ -27,7 +27,7 @@ namespace AddressRegistry.Projections.Syndication.Migrations
 
                     b.Property<Guid>("BuildingId");
 
-                    b.Property<string>("BuildingUnitOsloId");
+                    b.Property<string>("BuildingUnitPersistentLocalId");
 
                     b.Property<bool>("IsComplete");
 
@@ -179,7 +179,7 @@ namespace AddressRegistry.Projections.Syndication.Migrations
 
                     b.Property<Guid>("AddressId");
 
-                    b.Property<string>("ParcelOsloId");
+                    b.Property<string>("ParcelPersistentLocalId");
 
                     b.HasKey("ParcelId", "AddressId")
                         .HasAnnotation("SqlServer:Clustered", false);
@@ -257,7 +257,7 @@ namespace AddressRegistry.Projections.Syndication.Migrations
 
                     b.Property<string>("NisCode");
 
-                    b.Property<string>("OsloId");
+                    b.Property<string>("PersistentLocalId");
 
                     b.Property<long>("Position");
 
@@ -306,7 +306,7 @@ namespace AddressRegistry.Projections.Syndication.Migrations
 
                     b.Property<string>("NisCode");
 
-                    b.Property<string>("OsloId");
+                    b.Property<string>("PersistentLocalId");
 
                     b.Property<long>("Position");
 
@@ -362,7 +362,7 @@ namespace AddressRegistry.Projections.Syndication.Migrations
 
                     b.Property<string>("NisCode");
 
-                    b.Property<string>("OsloId");
+                    b.Property<string>("PersistentLocalId");
 
                     b.Property<DateTimeOffset?>("Version");
 

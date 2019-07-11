@@ -47,14 +47,14 @@ namespace AddressRegistry.Api.Legacy.Address
         /// <param name="context"></param>
         /// <param name="syndicationContext"></param>
         /// <param name="responseOptions"></param>
-        /// <param name="addressId">Identificator van het adres.</param>
+        /// <param name="persistentLocalId">Identificator van het adres.</param>
         /// <param name="taal">De taal in dewelke het adres wordt teruggegeven.</param>
         /// <param name="cancellationToken"></param>
         /// <response code="200">Als het adres gevonden is.</response>
         /// <response code="404">Als het adres niet gevonden kan worden.</response>
         /// <response code="410">Als het adres verwijderd is.</response>
         /// <response code="500">Als er een interne fout is opgetreden.</response>
-        [HttpGet("{addressId}")]
+        [HttpGet("{persistentLocalId}")]
         [ProducesResponseType(typeof(AddressResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status410Gone)]
@@ -67,14 +67,14 @@ namespace AddressRegistry.Api.Legacy.Address
             [FromServices] LegacyContext context,
             [FromServices] SyndicationContext syndicationContext,
             [FromServices] IOptions<ResponseOptions> responseOptions,
-            [FromRoute] int addressId,
+            [FromRoute] int persistentLocalId,
             [FromRoute] Taal? taal,
             CancellationToken cancellationToken = default)
         {
             var address = await context
                 .AddressDetail
                 .AsNoTracking()
-                .SingleOrDefaultAsync(item => item.OsloId == addressId, cancellationToken);
+                .SingleOrDefaultAsync(item => item.PersistentLocalId == persistentLocalId, cancellationToken);
 
             if (address == null || !address.Complete)
                 throw new ApiException("Onbestaand adres.", StatusCodes.Status404NotFound);
@@ -93,8 +93,8 @@ namespace AddressRegistry.Api.Legacy.Address
                 new GeografischeNaam(defaultMunicipalityName.Value, defaultMunicipalityName.Key));
 
             var straat = new AdresDetailStraatnaam(
-                streetName.OsloId,
-                string.Format(responseOptions.Value.StraatnaamDetailUrl, streetName.OsloId),
+                streetName.PersistentLocalId,
+                string.Format(responseOptions.Value.StraatnaamDetailUrl, streetName.PersistentLocalId),
                 new GeografischeNaam(defaultStreetName.Value, defaultStreetName.Key));
 
             var postInfo = new AdresDetailPostinfo(
@@ -104,7 +104,7 @@ namespace AddressRegistry.Api.Legacy.Address
             return Ok(
                 new AddressResponse(
                     responseOptions.Value.Naamruimte,
-                    address.OsloId.ToString(),
+                    address.PersistentLocalId.ToString(),
                     address.HouseNumber,
                     address.BoxNumber,
                     gemeente,
@@ -154,7 +154,7 @@ namespace AddressRegistry.Api.Legacy.Address
                 .Select(a =>
                 new
                 {
-                    a.OsloId,
+                    a.PersistentLocalId,
                     a.StreetNameId,
                     a.HouseNumber,
                     a.BoxNumber,
@@ -189,7 +189,7 @@ namespace AddressRegistry.Api.Legacy.Address
                     var streetName = streetNames.Single(x => x.StreetNameId == a.StreetNameId);
                     var municipality = municipalities.Single(x => x.NisCode == streetName.NisCode);
                     return new AddressListItemResponse(
-                        a.OsloId,
+                        a.PersistentLocalId,
                         responseOptions.Value.Naamruimte,
                         responseOptions.Value.DetailUrl,
                         a.HouseNumber,
@@ -312,7 +312,7 @@ namespace AddressRegistry.Api.Legacy.Address
             if (string.IsNullOrEmpty(request?.AdresCode?.ObjectId) || !int.TryParse(request.AdresCode.ObjectId, out var addressId))
                 return BadRequest("Valid objectId is required");
 
-            var address = await context.AddressDetail.FirstOrDefaultAsync(x => x.OsloId == addressId, cancellationToken);
+            var address = await context.AddressDetail.FirstOrDefaultAsync(x => x.PersistentLocalId == addressId, cancellationToken);
             if (address == null)
                 return NotFound();
 
@@ -326,7 +326,7 @@ namespace AddressRegistry.Api.Legacy.Address
 
             var response = new AddressRepresentationBosaResponse
             {
-                Identificator = new Identificator(responseOptions.Value.Naamruimte, address.OsloId.ToString(), address.VersionTimestamp.ToBelgianDateTimeOffset())
+                Identificator = new Identificator(responseOptions.Value.Naamruimte, address.PersistentLocalId.ToString(), address.VersionTimestamp.ToBelgianDateTimeOffset())
             };
 
             if (!request.Taal.HasValue || request.Taal.Value == municipality.PrimaryLanguage)

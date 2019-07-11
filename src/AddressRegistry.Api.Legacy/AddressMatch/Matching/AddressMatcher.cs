@@ -34,7 +34,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 {
                     foreach (var houseNumberWithSubaddress in houseNumberWithSubaddresses)
                     {
-                        streetNameWrapper.AddAddresses(_latestQueries.GetLatestAddressesBy(streetNameWrapper.StreetName.OsloId, houseNumberWithSubaddress.HouseNumber, houseNumberWithSubaddress.BoxNumber).ToList());
+                        streetNameWrapper.AddAddresses(_latestQueries.GetLatestAddressesBy(streetNameWrapper.StreetName.PersistentLocalId, houseNumberWithSubaddress.HouseNumber, houseNumberWithSubaddress.BoxNumber).ToList());
                     }
                 }
             }

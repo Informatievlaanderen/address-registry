@@ -6,15 +6,15 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
     using Microsoft.EntityFrameworkCore;
     using System.Data;
 
-    public class SqlOsloIdGenerator : IOsloIdGenerator
+    public class SqlPersistentLocalIdGenerator : IPersistentLocalIdGenerator
     {
         private readonly SequenceContext _context;
 
-        public SqlOsloIdGenerator(SequenceContext context) => _context = context;
+        public SqlPersistentLocalIdGenerator(SequenceContext context) => _context = context;
 
-        public OsloId GenerateNextOsloId()
+        public PersistentLocalId GenerateNextPersistentLocalId()
         {
-            var sqlStatement = $"SELECT NEXT VALUE FOR {Schema.Sequence}.{SequenceContext.AddressOsloIdSequenceName}";
+            var sqlStatement = $"SELECT NEXT VALUE FOR {Schema.Sequence}.{SequenceContext.AddressPersistentLocalIdSequenceName}";
 
             int nextNumber;
             using (var command = _context.Database.GetDbConnection().CreateCommand())
@@ -27,7 +27,7 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
                 command.Connection.Close();
             }
 
-            return new OsloId(nextNumber);
+            return new PersistentLocalId(nextNumber);
         }
     }
 }

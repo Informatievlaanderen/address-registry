@@ -21,7 +21,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
 
         public Guid AddressId { get; }
         public long Position { get; }
-        public int? OsloId { get; }
+        public int? PersistentLocalId { get; }
         public string HouseNumber { get; }
         public string BoxNumber { get; }
         public string ChangeType { get; }
@@ -42,7 +42,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
         public AddressSyndicationQueryResult(
             Guid addressId,
             long position,
-            int? osloId,
+            int? persistentLocalId,
             string changeType,
             Instant recordCreateAt,
             Instant lastChangedOn,
@@ -55,7 +55,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
 
             AddressId = addressId;
             Position = position;
-            OsloId = osloId;
+            PersistentLocalId = persistentLocalId;
 
             ChangeType = changeType;
             RecordCreatedAt = recordCreateAt;
@@ -68,7 +68,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
         public AddressSyndicationQueryResult(
             Guid addressId,
             long position,
-            int? osloId,
+            int? persistentLocalId,
             string changeType,
             Instant recordCreateAt,
             Instant lastChangedOn,
@@ -79,7 +79,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             : this(
                 addressId,
                 position,
-                osloId,
+                persistentLocalId,
                 changeType,
                 recordCreateAt,
                 lastChangedOn,
@@ -95,7 +95,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
         public AddressSyndicationQueryResult(
             Guid addressId,
             long position,
-            int? osloId,
+            int? persistentLocalId,
             string houseNumber,
             string boxNumber,
             Guid? streetNameId,
@@ -114,7 +114,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             : this(
                 addressId,
                 position,
-                osloId,
+                persistentLocalId,
                 changeType,
                 recordCreateAt,
                 lastChangedOn,
@@ -126,7 +126,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
 
             AddressId = addressId;
             Position = position;
-            OsloId = osloId;
+            PersistentLocalId = persistentLocalId;
             HouseNumber = houseNumber;
             BoxNumber = boxNumber;
             StreetNameId = streetNameId;
@@ -147,7 +147,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
         public AddressSyndicationQueryResult(
             Guid addressId,
             long position,
-            int? osloId,
+            int? persistentLocalId,
             string houseNumber,
             string boxNumber,
             Guid? streetNameId,
@@ -167,7 +167,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             : this(
                 addressId,
                 position,
-                osloId,
+                persistentLocalId,
                 houseNumber,
                 boxNumber,
                 streetNameId,
@@ -213,7 +213,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                     return x => new AddressSyndicationQueryResult(
                         x.AddressId.Value,
                         x.Position,
-                        x.OsloId,
+                        x.PersistentLocalId,
                         x.HouseNumber,
                         x.BoxNumber,
                         x.StreetNameId,
@@ -235,7 +235,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                     return x => new AddressSyndicationQueryResult(
                         x.AddressId.Value,
                         x.Position,
-                        x.OsloId,
+                        x.PersistentLocalId,
                         x.ChangeType,
                         x.RecordCreatedAt,
                         x.LastChangedOn,
@@ -248,7 +248,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                     return x => new AddressSyndicationQueryResult(
                         x.AddressId.Value,
                         x.Position,
-                        x.OsloId,
+                        x.PersistentLocalId,
                         x.HouseNumber,
                         x.BoxNumber,
                         x.StreetNameId,
@@ -268,7 +268,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 return x => new AddressSyndicationQueryResult(
                     x.AddressId.Value,
                     x.Position,
-                    x.OsloId,
+                    x.PersistentLocalId,
                     x.ChangeType,
                     x.RecordCreatedAt,
                     x.LastChangedOn,

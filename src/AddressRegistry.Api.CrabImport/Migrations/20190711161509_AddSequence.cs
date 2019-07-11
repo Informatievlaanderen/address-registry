@@ -1,16 +1,15 @@
-using Microsoft.EntityFrameworkCore.Migrations;
-
 namespace AddressRegistry.Api.CrabImport.Migrations
 {
     using AddressRegistry.Infrastructure;
     using Infrastructure;
+    using Microsoft.EntityFrameworkCore.Migrations;
 
-    public partial class AddOsloSequence : Migration
+    public partial class AddSequence : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql($@"
-              CREATE SEQUENCE {Schema.Sequence}.{SequenceContext.AddressOsloIdSequenceName}
+              CREATE SEQUENCE {Schema.Sequence}.{SequenceContext.AddressPersistentLocalIdSequenceName}
                 AS int
                 START WITH 30000000
                 INCREMENT BY 1
@@ -23,7 +22,7 @@ namespace AddressRegistry.Api.CrabImport.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql($"DROP SEQUENCE {Schema.Sequence}.{SequenceContext.AddressOsloIdSequenceName};");
+            migrationBuilder.Sql($"DROP SEQUENCE {Schema.Sequence}.{SequenceContext.AddressPersistentLocalIdSequenceName};");
         }
     }
 }

@@ -24,7 +24,7 @@ namespace AddressRegistry.Projections.Extract.Migrations
                     b.Property<Guid?>("AddressId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("AddressOsloId");
+                    b.Property<int>("AddressPersistentLocalId");
 
                     b.Property<bool>("Complete");
 

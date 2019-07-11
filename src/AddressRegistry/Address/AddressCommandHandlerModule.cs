@@ -15,18 +15,18 @@ namespace AddressRegistry.Address
 
     public sealed class AddressCommandHandlerModule : CommandHandlerModule
     {
-        private readonly IOsloIdGenerator _osloIdGenerator;
+        private readonly IPersistentLocalIdGenerator _persistentLocalIdGenerator;
 
         public AddressCommandHandlerModule(
             Func<IAddresses> getAddresses,
             Func<ConcurrentUnitOfWork> getUnitOfWork,
-            IOsloIdGenerator osloIdGenerator,
+            IPersistentLocalIdGenerator persistentLocalIdGenerator,
             Func<IStreamStore> getStreamStore,
             EventMapping eventMapping,
             EventSerializer eventSerializer,
             AddressProvenanceFactory provenanceFactory)
         {
-            _osloIdGenerator = osloIdGenerator;
+            _persistentLocalIdGenerator = persistentLocalIdGenerator;
 
             For<RegisterAddress>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
@@ -90,30 +90,30 @@ namespace AddressRegistry.Address
                 .AddProvenance(getUnitOfWork, provenanceFactory)
                 .Handle(async (message, ct) => await ImportSubaddressMailCantonFromCrab(getAddresses, message, ct));
 
-            For<AssignOsloIdForCrabHouseNumberId>()
+            For<AssignPersistentLocalIdForCrabHouseNumberId>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
                 //.AddProvenance(getUnitOfWork, provenanceFactory)
-                .Handle(async (message, ct) => await AssignOsloIdForCrabHouseNumberId(getAddresses, message, ct));
+                .Handle(async (message, ct) => await AssignPersistentLocalIdForCrabHouseNumberId(getAddresses, message, ct));
 
-            For<AssignOsloIdForCrabSubaddressId>()
+            For<AssignPersistentLocalIdForCrabSubaddressId>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
                 //.AddProvenance(getUnitOfWork, provenanceFactory)
-                .Handle(async (message, ct) => await AssignOsloIdForCrabSubaddressId(getAddresses, message, ct));
+                .Handle(async (message, ct) => await AssignPersistentLocalIdForCrabSubaddressId(getAddresses, message, ct));
 
-            For<RequestOsloIdForCrabHouseNumberId>()
+            For<RequestPersistentLocalIdForCrabHouseNumberId>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
                 //.AddProvenance(getUnitOfWork, provenanceFactory)
-                .Handle(async (message, ct) => await RequestOsloIdForCrabHouseNumberId(getAddresses, message, ct));
+                .Handle(async (message, ct) => await RequestPersistentLocalIdForCrabHouseNumberId(getAddresses, message, ct));
 
-            For<RequestOsloIdForCrabSubaddressId>()
+            For<RequestPersistentLocalIdForCrabSubaddressId>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
                 //.AddProvenance(getUnitOfWork, provenanceFactory)
-                .Handle(async (message, ct) => await RequestOsloIdForCrabSubaddressId(getAddresses, message, ct));
+                .Handle(async (message, ct) => await RequestPersistentLocalIdForCrabSubaddressId(getAddresses, message, ct));
 
-            For<AssignOsloIdToAddress>()
+            For<AssignPersistentLocalIdToAddress>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
                 .AddProvenance(getUnitOfWork, provenanceFactory)
-                .Handle(async (message, ct) => await AssignOsloIdToAddress(getAddresses, message, ct));
+                .Handle(async (message, ct) => await AssignPersistentLocalIdToAddress(getAddresses, message, ct));
         }
 
         public async Task ImportSubaddressMailCantonFromCrab(Func<IAddresses> getAddresses, CommandMessage<ImportSubaddressMailCantonFromCrab> message, CancellationToken ct)
@@ -200,40 +200,40 @@ namespace AddressRegistry.Address
             ImportHouseNumberStatusFromCrab(address, message.Command);
         }
 
-        public async Task AssignOsloIdForCrabHouseNumberId(Func<IAddresses> getAddresses, CommandMessage<AssignOsloIdForCrabHouseNumberId> message, CancellationToken ct)
+        public async Task AssignPersistentLocalIdForCrabHouseNumberId(Func<IAddresses> getAddresses, CommandMessage<AssignPersistentLocalIdForCrabHouseNumberId> message, CancellationToken ct)
         {
             var addressId = AddressId.CreateFor(message.Command.HouseNumberId);
             var address = await getAddresses().GetAsync(addressId, ct);
 
-            address.AssignOsloId(
-                message.Command.OsloId,
+            address.AssignPersistentLocalId(
+                message.Command.PersistentLocalId,
                 message.Command.AssignmentDate);
         }
 
-        public async Task AssignOsloIdForCrabSubaddressId(Func<IAddresses> getAddresses, CommandMessage<AssignOsloIdForCrabSubaddressId> message, CancellationToken ct)
+        public async Task AssignPersistentLocalIdForCrabSubaddressId(Func<IAddresses> getAddresses, CommandMessage<AssignPersistentLocalIdForCrabSubaddressId> message, CancellationToken ct)
         {
             var addressId = AddressId.CreateFor(message.Command.SubaddressId);
             var address = await getAddresses().GetAsync(addressId, ct);
 
-            address.AssignOsloId(
-                message.Command.OsloId,
+            address.AssignPersistentLocalId(
+                message.Command.PersistentLocalId,
                 message.Command.AssignmentDate);
         }
 
-        public async Task RequestOsloIdForCrabHouseNumberId(Func<IAddresses> getAddresses, CommandMessage<RequestOsloIdForCrabHouseNumberId> message, CancellationToken ct)
+        public async Task RequestPersistentLocalIdForCrabHouseNumberId(Func<IAddresses> getAddresses, CommandMessage<RequestPersistentLocalIdForCrabHouseNumberId> message, CancellationToken ct)
         {
             var addressId = AddressId.CreateFor(message.Command.HouseNumberId);
             var address = await getAddresses().GetAsync(addressId, ct);
 
-            address.RequestOsloId(_osloIdGenerator);
+            address.RequestPersistentLocalId(_persistentLocalIdGenerator);
         }
 
-        public async Task RequestOsloIdForCrabSubaddressId(Func<IAddresses> getAddresses, CommandMessage<RequestOsloIdForCrabSubaddressId> message, CancellationToken ct)
+        public async Task RequestPersistentLocalIdForCrabSubaddressId(Func<IAddresses> getAddresses, CommandMessage<RequestPersistentLocalIdForCrabSubaddressId> message, CancellationToken ct)
         {
             var addressId = AddressId.CreateFor(message.Command.SubaddressId);
             var address = await getAddresses().GetAsync(addressId, ct);
 
-            address.RequestOsloId(_osloIdGenerator);
+            address.RequestPersistentLocalId(_persistentLocalIdGenerator);
         }
 
         public async Task ImportHouseNumberFromCrab(Func<IAddresses> getAddresses, CommandMessage<ImportHouseNumberFromCrab> message, CancellationToken ct)
@@ -257,14 +257,14 @@ namespace AddressRegistry.Address
             ImportHouseNumberFromCrab(address.Value, message.Command);
         }
 
-        public async Task AssignOsloIdToAddress(Func<IAddresses> getAddresses, CommandMessage<AssignOsloIdToAddress> message, CancellationToken ct)
+        public async Task AssignPersistentLocalIdToAddress(Func<IAddresses> getAddresses, CommandMessage<AssignPersistentLocalIdToAddress> message, CancellationToken ct)
         {
             var addresses = getAddresses();
             var address = await addresses.GetAsync(message.Command.AddressId, ct);
 
-            address.AssignOsloId(
-                message.Command.OsloId,
-                new OsloAssignmentDate(Instant.FromDateTimeOffset(DateTimeOffset.Now)));
+            address.AssignPersistentLocalId(
+                message.Command.PersistentLocalId,
+                new PersistentLocalIdAssignmentDate(Instant.FromDateTimeOffset(DateTimeOffset.Now)));
         }
 
         private static void ImportSubaddressMailCantonFromCrab(Address address, ImportSubaddressMailCantonFromCrab message)

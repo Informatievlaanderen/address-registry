@@ -13,7 +13,7 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
         public Guid AddressId { get; set; }
         public long StreamPosition { get; set; }
 
-        public int OsloId { get; set; }
+        public int PersistentLocalId { get; set; }
 
         public Guid StreetNameId { get; set; }
         public string PostalCode { get; set; }
@@ -53,7 +53,7 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
                 AddressId = AddressId,
                 StreamPosition = newStreamPosition,
 
-                OsloId = OsloId,
+                PersistentLocalId = PersistentLocalId,
 
                 Status = Status,
                 OfficiallyAssigned = OfficiallyAssigned,
@@ -94,7 +94,7 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
                 .HasKey(p => new { p.AddressId, p.StreamPosition })
                 .ForSqlServerIsClustered(false);
 
-            b.HasIndex(p => p.OsloId);
+            b.HasIndex(p => p.PersistentLocalId);
 
             b.Property(p => p.StreetNameId);
 

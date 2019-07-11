@@ -45,7 +45,7 @@ namespace AddressRegistry.Tests
 
                 containerBuilder.RegisterInstance(testOutputHelper);
                 containerBuilder.RegisterType<XUnitLogger>().AsImplementedInterfaces();
-                containerBuilder.RegisterType<FakeOsloIdGenerator>().As<IOsloIdGenerator>();
+                containerBuilder.RegisterType<FakePersistentLocalIdGenerator>().As<IPersistentLocalIdGenerator>();
 
                 return containerBuilder.Build();
             });

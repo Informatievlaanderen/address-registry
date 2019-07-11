@@ -44,7 +44,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 int.TryParse(filter.AdresCode?.ObjectId, out var adresId))
             {
                 addressesQuery = addressesQuery
-                    .Where(a => a.OsloId == adresId)
+                    .Where(a => a.PersistentLocalId == adresId)
                     .ToList()
                     .AsQueryable();
 
@@ -92,10 +92,10 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                     filter?.PostCode?.ObjectId,
                     addressesQuery,
                     filteredStreetNames.Select(x => x.StreetNameId))
-                .OrderBy(x => x.OsloId);
+                .OrderBy(x => x.PersistentLocalId);
 
             var municipalities = filteredMunicipalities.Select(x => new { x.NisCode, x.Version }).ToList();
-            var streetNames = filteredStreetNames.Select(x => new { x.StreetNameId, x.OsloId, x.Version, x.NisCode }).ToList();
+            var streetNames = filteredStreetNames.Select(x => new { x.StreetNameId, PersistentLocalId = x.PersistentLocalId, x.Version, x.NisCode }).ToList();
             var count = filteredAddresses.Count();
 
             var addresses = filteredAddresses
@@ -111,7 +111,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                             _responseOptions.GemeenteNaamruimte,
                             _responseOptions.StraatNaamNaamruimte,
                             _responseOptions.Naamruimte,
-                            x.OsloId.Value,
+                            x.PersistentLocalId.Value,
                             AddressMapper.ConvertFromAddressStatus(x.Status),
                             x.HouseNumber,
                             x.BoxNumber,
@@ -120,7 +120,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                             AddressMapper.ConvertFromGeometryMethod(x.PositionMethod),
                             AddressMapper.ConvertFromGeometrySpecification(x.PositionSpecification),
                             x.VersionTimestamp.ToBelgianDateTimeOffset(),
-                            street.OsloId,
+                            street.PersistentLocalId,
                             street.Version.Value,
                             muni.NisCode,
                             muni.Version.Value,
@@ -137,7 +137,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
         }
 
         private IQueryable<AddressDetailItem> FilterAddresses(
-            string osloId,
+            string persistentLocalId,
             DateTimeOffset? version,
             string houseNumber,
             string boxNumber,
@@ -149,10 +149,10 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             var filtered = addresses
                 .Where(x => streetNameIds.Contains(x.StreetNameId));
 
-            if (!string.IsNullOrEmpty(osloId))
+            if (!string.IsNullOrEmpty(persistentLocalId))
             {
-                if (int.TryParse(osloId, out var adresId))
-                    filtered = filtered.Where(x => x.OsloId == adresId);
+                if (int.TryParse(persistentLocalId, out var adresId))
+                    filtered = filtered.Where(x => x.PersistentLocalId == adresId);
                 else
                     return Enumerable.Empty<AddressDetailItem>().AsQueryable();
             }
@@ -180,7 +180,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
 
         // https://github.com/Informatievlaanderen/streetname-registry/blob/550a2398077140993d6e60029a1b831c193fb0ad/src/StreetNameRegistry.Api.Legacy/StreetName/Query/StreetNameBosaQuery.cs#L38
         private IQueryable<StreetNameBosaItem> FilterStreetNames(
-            string osloId,
+            string persistentLocalId,
             DateTimeOffset? version,
             string streetName,
             Taal? language,
@@ -194,8 +194,8 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 municipality => municipality.NisCode,
                 (street, municipality) => street);
 
-            if (!string.IsNullOrEmpty(osloId))
-                filtered = filtered.Where(m => m.OsloId == osloId);
+            if (!string.IsNullOrEmpty(persistentLocalId))
+                filtered = filtered.Where(m => m.PersistentLocalId == persistentLocalId);
 
             if (version.HasValue)
                 filtered = filtered.Where(m => m.Version == version);

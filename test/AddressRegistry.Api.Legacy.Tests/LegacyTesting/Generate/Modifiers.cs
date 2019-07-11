@@ -80,13 +80,13 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting.Generate
                 NisCode = nisCode,
                 NameDutch = original.NameDutch,
                 NameFrench = original.NameFrench,
-                OsloId = original.OsloId,
+                PersistentLocalId = original.PersistentLocalId,
                 IsComplete = original.IsComplete,
                 Version = original.Version,
             };
         }
 
-        public static StreetNameLatestItem WithOsloId(this StreetNameLatestItem original, string osloId)
+        public static StreetNameLatestItem WithPersistentLocalId(this StreetNameLatestItem original, string persistentLocalId)
         {
             return new StreetNameLatestItem
             {
@@ -94,7 +94,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting.Generate
                 NisCode = original.NisCode,
                 NameDutch = original.NameDutch,
                 NameFrench = original.NameFrench,
-                OsloId = osloId,
+                PersistentLocalId = persistentLocalId,
                 IsComplete = original.IsComplete,
                 Version = original.Version,
             };
@@ -108,7 +108,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting.Generate
                 NisCode = original.NisCode,
                 NameDutch = original.NameDutch,
                 NameFrench = original.NameFrench,
-                OsloId = original.OsloId,
+                PersistentLocalId = original.PersistentLocalId,
                 IsComplete = original.IsComplete,
                 Version = original.Version,
             };
@@ -122,7 +122,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting.Generate
                 NisCode = original.NisCode,
                 NameDutch = original.NameDutch,
                 NameFrench = original.NameFrench,
-                OsloId = original.OsloId,
+                PersistentLocalId = original.PersistentLocalId,
                 IsComplete = original.IsComplete,
                 Version = version,
             };
@@ -136,7 +136,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting.Generate
                 NisCode = original.NisCode,
                 NameDutch = straatNaam,
                 NameFrench = original.NameFrench,
-                OsloId = original.OsloId,
+                PersistentLocalId = original.PersistentLocalId,
                 IsComplete = original.IsComplete,
                 Version = original.Version,
             };
@@ -151,7 +151,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting.Generate
                 HouseNumber = original.HouseNumber,
                 BoxNumber = original.BoxNumber,
                 PostalCode = original.PostalCode,
-                OsloId = original.OsloId,
+                PersistentLocalId = original.PersistentLocalId,
                 Complete = original.Complete,
                 Status = original.Status,
                 Position = original.Position,
@@ -161,7 +161,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting.Generate
             };
         }
 
-        public static AddressDetailItem WithOsloId(this AddressDetailItem original, int osloId)
+        public static AddressDetailItem WithPersistentLocalId(this AddressDetailItem original, int persistentLocalId)
         {
             return new AddressDetailItem
             {
@@ -170,7 +170,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting.Generate
                 HouseNumber = original.HouseNumber,
                 BoxNumber = original.BoxNumber,
                 PostalCode = original.PostalCode,
-                OsloId = osloId,
+                PersistentLocalId = persistentLocalId,
                 Complete = original.Complete,
                 Status = original.Status,
                 Position = original.Position,
@@ -189,7 +189,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting.Generate
                 HouseNumber = huisNummer,
                 BoxNumber = original.BoxNumber,
                 PostalCode = original.PostalCode,
-                OsloId = original.OsloId,
+                PersistentLocalId = original.PersistentLocalId,
                 Complete = original.Complete,
                 Status = original.Status,
                 Position = original.Position,
@@ -208,7 +208,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting.Generate
                 HouseNumber = original.HouseNumber,
                 BoxNumber = busNummer,
                 PostalCode = original.PostalCode,
-                OsloId = original.OsloId,
+                PersistentLocalId = original.PersistentLocalId,
                 Complete = original.Complete,
                 Status = original.Status,
                 Position = original.Position,
@@ -227,7 +227,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting.Generate
                 HouseNumber = original.HouseNumber,
                 PostalCode = original.PostalCode,
                 BoxNumber = original.BoxNumber,
-                OsloId = original.OsloId,
+                PersistentLocalId = original.PersistentLocalId,
                 Complete = original.Complete,
                 Status = original.Status,
                 Position = original.Position,
@@ -246,7 +246,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting.Generate
                 HouseNumber = original.HouseNumber,
                 BoxNumber = original.BoxNumber,
                 PostalCode = postcode,
-                OsloId = original.OsloId,
+                PersistentLocalId = original.PersistentLocalId,
                 Complete = original.Complete,
                 Status = original.Status,
                 Position = original.Position,

@@ -70,11 +70,11 @@ namespace AddressRegistry.Projections.Legacy.AddressList
                     ct);
             });
 
-            When<Envelope<AddressOsloIdWasAssigned>>(async (context, message, ct) =>
+            When<Envelope<AddressPersistentLocalIdWasAssigned>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressListItem(
                     message.Message.AddressId,
-                    item => item.OsloId = message.Message.OsloId,
+                    item => item.PersistentLocalId = message.Message.PersistentLocalId,
                     ct);
             });
 

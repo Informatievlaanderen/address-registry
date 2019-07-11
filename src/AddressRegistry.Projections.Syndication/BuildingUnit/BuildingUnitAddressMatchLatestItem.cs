@@ -8,7 +8,7 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
     public class BuildingUnitAddressMatchLatestItem
     {
         public Guid BuildingUnitId { get; set; }
-        public string BuildingUnitOsloId { get; set; }
+        public string BuildingUnitPersistentLocalId { get; set; }
         public Guid AddressId { get; set; }
         public Guid BuildingId { get; set; }
         public bool IsComplete { get; set; }
@@ -28,7 +28,7 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
                 })
                 .ForSqlServerIsClustered(false);
 
-            builder.Property(x => x.BuildingUnitOsloId);
+            builder.Property(x => x.BuildingUnitPersistentLocalId);
             builder.Property(x => x.BuildingId);
             builder.Property(x => x.IsComplete);
 

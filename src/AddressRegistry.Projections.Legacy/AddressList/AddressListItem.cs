@@ -11,7 +11,7 @@ namespace AddressRegistry.Projections.Legacy.AddressList
         public static string VersionTimestampBackingPropertyName = nameof(VersionTimestampAsDateTimeOffset);
 
         public Guid AddressId { get; set; }
-        public int OsloId { get; set; }
+        public int PersistentLocalId { get; set; }
 
         public Guid StreetNameId { get; set; }
         public string PostalCode { get; set; }

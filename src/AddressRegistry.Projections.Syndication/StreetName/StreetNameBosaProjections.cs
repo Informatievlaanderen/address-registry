@@ -14,7 +14,7 @@ namespace AddressRegistry.Projections.Syndication.StreetName
         {
             When(StreetNameEvent.StreetNameBecameComplete, AddSyndicationItemEntry);
             When(StreetNameEvent.StreetNameBecameIncomplete, AddSyndicationItemEntry);
-            When(StreetNameEvent.StreetNameOsloIdWasAssigned, AddSyndicationItemEntry);
+            When(StreetNameEvent.StreetNamePersistentLocalIdentifierWasAssigned, AddSyndicationItemEntry);
 
             When(StreetNameEvent.StreetNameNameWasCleared, AddSyndicationItemEntry);
             When(StreetNameEvent.StreetNameNameWasCorrected, AddSyndicationItemEntry);
@@ -62,7 +62,7 @@ namespace AddressRegistry.Projections.Syndication.StreetName
                     NisCode = entry.Content.Object.NisCode,
                     Version = entry.Content.Object.Identificator?.Versie.Value,
                     Position = long.Parse(entry.FeedEntry.Id),
-                    OsloId = entry.Content.Object.Identificator?.ObjectId,
+                    PersistentLocalId = entry.Content.Object.Identificator?.ObjectId,
                     IsComplete = entry.Content.Object.IsComplete,
                 };
 
@@ -78,7 +78,7 @@ namespace AddressRegistry.Projections.Syndication.StreetName
                 latestItem.NisCode = entry.Content.Object.NisCode;
                 latestItem.Version = entry.Content.Object.Identificator?.Versie.Value;
                 latestItem.Position = long.Parse(entry.FeedEntry.Id);
-                latestItem.OsloId = entry.Content.Object.Identificator?.ObjectId;
+                latestItem.PersistentLocalId = entry.Content.Object.Identificator?.ObjectId;
                 latestItem.IsComplete = entry.Content.Object.IsComplete;
 
                 UpdateNames(latestItem, entry.Content.Object.StreetNames);

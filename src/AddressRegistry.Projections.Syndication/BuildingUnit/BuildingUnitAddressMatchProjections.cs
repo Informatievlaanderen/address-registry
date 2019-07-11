@@ -17,7 +17,7 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
             When(BuildingEvent.BuildingUnitAddressWasDetached, AddSyndicationItemEntry);
             When(BuildingEvent.BuildingUnitBecameComplete, AddSyndicationItemEntry);
             When(BuildingEvent.BuildingUnitBecameIncomplete, AddSyndicationItemEntry);
-            When(BuildingEvent.BuildingUnitOsloIdWasAssigned, AddSyndicationItemEntry);
+            When(BuildingEvent.BuildingUnitPersistentLocalIdentifierWasAssigned, AddSyndicationItemEntry);
             When(BuildingEvent.BuildingUnitPositionWasAppointedByAdministrator, AddSyndicationItemEntry);
             When(BuildingEvent.BuildingUnitPositionWasCorrectedToAppointedByAdministrator, AddSyndicationItemEntry);
             When(BuildingEvent.BuildingUnitPositionWasCorrectedToDerivedFromObject, AddSyndicationItemEntry);
@@ -87,14 +87,14 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
                             {
                                 AddressId = addressId,
                                 BuildingId = entry.Content.Object.Id,
-                                BuildingUnitOsloId = buildingUnit.Identificator.ObjectId,
+                                BuildingUnitPersistentLocalId = buildingUnit.Identificator.ObjectId,
                                 BuildingUnitId = buildingUnit.BuildingUnitId,
                                 IsComplete = buildingUnit.IsComplete,
                             }, ct);
                     }
                     else
                     {
-                        addressItem.BuildingUnitOsloId = buildingUnit.Identificator.ObjectId;
+                        addressItem.BuildingUnitPersistentLocalId = buildingUnit.Identificator.ObjectId;
                         addressItem.IsComplete = buildingUnit.IsComplete;
                     }
                 }

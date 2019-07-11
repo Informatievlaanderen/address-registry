@@ -19,7 +19,7 @@ namespace AddressRegistry.Api.Extract.Extracts
                 .AddressExtract
                 .AsNoTracking()
                 .Where(m => m.Complete)
-                .OrderBy(m => m.AddressOsloId);
+                .OrderBy(m => m.AddressPersistentLocalId);
 
             var cachedMunicipalities = syndicationContext.MunicipalityLatestItems.AsNoTracking().ToList();
             var cachedStreetNames = syndicationContext.StreetNameLatestItems.AsNoTracking().ToList();
@@ -33,7 +33,7 @@ namespace AddressRegistry.Api.Extract.Extracts
                 var streetName = cachedStreetNames.First(x => x.StreetNameId == r.StreetNameId);
                 var municipality = cachedMunicipalities.First(x => x.NisCode == streetName.NisCode);
 
-                item.straatnmid.Value = streetName.OsloId;
+                item.straatnmid.Value = streetName.PersistentLocalId;
                 item.gemeenteid.Value = municipality.NisCode;
 
                 switch (municipality.PrimaryLanguage)

@@ -320,9 +320,9 @@ namespace AddressRegistry.Tests.Bugfixes
                 JsonConvert.DeserializeObject<ImportSubaddressFromCrab>(
                     "{\"subaddressId\":{\"value\":426001},\"houseNumberId\":{\"value\":2343242},\"boxNumber\":{\"value\":\"5\"},\"boxNumberType\":{\"value\":\"2\"},\"lifetime\":{\"beginDateTime\":\"1830-01-01T00:00:00\",\"endDateTime\":null},\"timestamp\":{\"value\":\"2017-10-18T12:11:21.03Z\"},\"operator\":{\"value\":\"VLM\\\\godderisdr\"},\"modification\":2,\"organisation\":0}");
 
-            public AssignOsloIdForCrabSubaddressId Command029 =>
-                JsonConvert.DeserializeObject<AssignOsloIdForCrabSubaddressId>(
-                    "{\"subaddressId\":{\"value\":426001},\"osloId\":{\"value\":\"4298295\"},\"assignmentDate\":{\"value\":\"2017-10-10T14:39:22.2052275Z\"}}");
+            public AssignPersistentLocalIdForCrabSubaddressId Command029 =>
+                JsonConvert.DeserializeObject<AssignPersistentLocalIdForCrabSubaddressId>(
+                    "{\"subaddressId\":{\"value\":426001},\"persistentLocalId\":{\"value\":\"4298295\"},\"assignmentDate\":{\"value\":\"2017-10-10T14:39:22.2052275Z\"}}");
         }
 
         private TestSubaddress_426001Data _ { get; }

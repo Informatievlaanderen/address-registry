@@ -121,14 +121,14 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 }
             });
 
-            When<Envelope<AddressOsloIdWasAssigned>>(async (context, message, ct) =>
+            When<Envelope<AddressPersistentLocalIdWasAssigned>>(async (context, message, ct) =>
             {
                 var item = await context.AddressExtract.FindAsync(message.Message.AddressId, cancellationToken: ct);
                 if (item != null) // in rare cases were we might get this event after an AddressWasRemoved event, we can just ignore it
                     UpdateDbaseRecordField(item, record =>
                     {
-                        record.id.Value = $"{IdUri}/{message.Message.OsloId}";
-                        record.adresid.Value = message.Message.OsloId;
+                        record.id.Value = $"{IdUri}/{message.Message.PersistentLocalId}";
+                        record.adresid.Value = message.Message.PersistentLocalId;
                     });
             });
 

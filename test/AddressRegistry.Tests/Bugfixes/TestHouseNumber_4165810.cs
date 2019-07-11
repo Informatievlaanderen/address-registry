@@ -128,9 +128,9 @@ namespace AddressRegistry.Tests.Bugfixes
                 JsonConvert.DeserializeObject<Address.Commands.Crab.ImportHouseNumberStatusFromCrab>(
                     "{\"houseNumberStatusId\":{\"value\":3659041},\"houseNumberId\":{\"value\":4165810},\"addressStatus\":2,\"lifetime\":{\"beginDateTime\":\"2017-03-03T00:00:00\",\"endDateTime\":\"2017-03-14T00:00:00\"},\"timestamp\":{\"value\":\"2017-03-14T09:00:40.223Z\"},\"operator\":{\"value\":\"VLM\\\\vermandebe\"},\"modification\":1,\"organisation\":null}");
 
-            public AddressRegistry.Address.Commands.Crab.AssignOsloIdForCrabHouseNumberId Command010 =>
-                JsonConvert.DeserializeObject<Address.Commands.Crab.AssignOsloIdForCrabHouseNumberId>(
-                    "{\"houseNumberId\":{\"value\":4165810},\"osloId\":{\"value\":\"3856411\"},\"assignmentDate\":{\"value\":\"2017-10-10T13:32:41.3233537Z\"}}");
+            public AddressRegistry.Address.Commands.Crab.AssignPersistentLocalIdForCrabHouseNumberId Command010 =>
+                JsonConvert.DeserializeObject<Address.Commands.Crab.AssignPersistentLocalIdForCrabHouseNumberId>(
+                    "{\"houseNumberId\":{\"value\":4165810},\"persistentLocalId\":{\"value\":\"3856411\"},\"assignmentDate\":{\"value\":\"2017-10-10T13:32:41.3233537Z\"}}");
         }
         private TestHouseNumber_4165810Data _ { get; }
 
@@ -234,7 +234,7 @@ namespace AddressRegistry.Tests.Bugfixes
                 .Given(Command009())
                 .When(_.Command010)
                 .Then(_.Id,
-                    new AddressOsloIdWasAssigned(_.AddressId, new OsloId(_.Command010.OsloId), new OsloAssignmentDate(_.Command010.AssignmentDate))
+                    new AddressPersistentLocalIdWasAssigned(_.AddressId, new PersistentLocalId(_.Command010.PersistentLocalId), new PersistentLocalIdAssignmentDate(_.Command010.AssignmentDate))
                     );
         }
 

@@ -14,8 +14,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
         {
             private IList<AddressDetailItem> _addresses;
 
-            public static readonly IEqualityComparer<StreetNameWrapper> Comparer = new PropertyEqualityComparer<StreetNameWrapper, string>(s => s.StreetName.OsloId);
-            public static readonly IEqualityComparer<AddressDetailItem> AddressComparer = new PropertyEqualityComparer<AddressDetailItem, int>(a => a.OsloId.Value);
+            public static readonly IEqualityComparer<StreetNameWrapper> Comparer = new PropertyEqualityComparer<StreetNameWrapper, string>(s => s.StreetName.PersistentLocalId);
+            public static readonly IEqualityComparer<AddressDetailItem> AddressComparer = new PropertyEqualityComparer<AddressDetailItem, int>(a => a.PersistentLocalId.Value);
 
             public StreetNameWrapper()
             {

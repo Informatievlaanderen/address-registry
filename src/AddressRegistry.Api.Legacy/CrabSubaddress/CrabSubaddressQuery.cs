@@ -4,21 +4,21 @@ namespace AddressRegistry.Api.Legacy.CrabSubaddress
     using Be.Vlaanderen.Basisregisters.Api.Search.Filtering;
     using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
     using Projections.Legacy;
-    using Projections.Legacy.CrabIdToOsloId;
     using System.Collections.Generic;
     using System.Linq;
+    using Projections.Legacy.CrabIdToPersistentLocalId;
 
 
-    public class CrabSubaddressQuery : Query<CrabIdToOsloIdItem, CrabSubaddressAddressFilter>
+    public class CrabSubaddressQuery : Query<CrabIdToPersistentLocalIdItem, CrabSubaddressAddressFilter>
     {
         private readonly LegacyContext _context;
 
         public CrabSubaddressQuery(LegacyContext context) => _context = context;
 
-        protected override IQueryable<CrabIdToOsloIdItem> Filter(FilteringHeader<CrabSubaddressAddressFilter> filtering)
+        protected override IQueryable<CrabIdToPersistentLocalIdItem> Filter(FilteringHeader<CrabSubaddressAddressFilter> filtering)
         {
-            var query = _context.CrabIdToOsloIds
-                .Where(x => !x.IsRemoved && x.SubaddressId.HasValue && x.OsloId.HasValue);
+            var query = _context.CrabIdToPersistentLocalIds
+                .Where(x => !x.IsRemoved && x.SubaddressId.HasValue && x.PersistentLocalId.HasValue);
 
             if (filtering.ShouldFilter)
                 query = query.Where(x => x.SubaddressId == filtering.Filter.CrabSubaddressId);
@@ -33,10 +33,10 @@ namespace AddressRegistry.Api.Legacy.CrabSubaddress
     {
         public IEnumerable<string> SortableFields { get; } = new[]
         {
-            nameof(CrabIdToOsloIdItem.SubaddressId),
+            nameof(CrabIdToPersistentLocalIdItem.SubaddressId),
         };
 
-        public SortingHeader DefaultSortingHeader { get; } = new SortingHeader(nameof(CrabIdToOsloIdItem.SubaddressId), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new SortingHeader(nameof(CrabIdToPersistentLocalIdItem.SubaddressId), SortOrder.Ascending);
     }
 
     public class CrabSubaddressAddressFilter

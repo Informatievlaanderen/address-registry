@@ -14,14 +14,14 @@ namespace AddressRegistry.Projections.LastChangedList
         public LastChangedListProjections()
             : base(SupportedAcceptTypes)
         {
-            When<Envelope<AddressOsloIdWasAssigned>>(async (context, message, ct) =>
+            When<Envelope<AddressPersistentLocalIdWasAssigned>>(async (context, message, ct) =>
             {
                 var attachedRecords = await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
 
                 foreach (var record in attachedRecords)
                 {
-                    record.CacheKey = string.Format(record.CacheKey, message.Message.OsloId);
-                    record.Uri = string.Format(record.Uri, message.Message.OsloId);
+                    record.CacheKey = string.Format(record.CacheKey, message.Message.PersistentLocalId);
+                    record.Uri = string.Format(record.Uri, message.Message.PersistentLocalId);
                 }
             });
 

@@ -23,7 +23,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using AddressRegistry.Projections.Legacy.AddressList;
     using AddressRegistry.Projections.Legacy.AddressSyndication;
     using AddressRegistry.Projections.Legacy.AddressVersion;
-    using AddressRegistry.Projections.Legacy.CrabIdToOsloId;
+    using AddressRegistry.Projections.Legacy.CrabIdToPersistentLocalId;
     using NetTopologySuite.IO;
 
     public class ApiModule : Module
@@ -117,7 +117,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .RegisterProjections<AddressListProjections, LegacyContext>()
                 .RegisterProjections<AddressSyndicationProjections, LegacyContext>(() => new AddressSyndicationProjections(WKBReaderFactory.Create()))
                 .RegisterProjections<AddressVersionProjections, LegacyContext>(() => new AddressVersionProjections(WKBReaderFactory.Create()))
-                .RegisterProjections<CrabIdToOsloIdProjections, LegacyContext>();
+                .RegisterProjections<CrabIdToPersistentLocalIdProjections, LegacyContext>();
         }
     }
 }

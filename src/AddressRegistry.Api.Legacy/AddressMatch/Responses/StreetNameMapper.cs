@@ -36,8 +36,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
                 },
                 Straatnaam = new AdresMatchItemStraatnaam
                 {
-                    ObjectId = source.OsloId,
-                    Detail = string.Format(_responseOptions.StraatnaamDetailUrl, source.OsloId),
+                    ObjectId = source.PersistentLocalId,
+                    Detail = string.Format(_responseOptions.StraatnaamDetailUrl, source.PersistentLocalId),
                     Straatnaam = new Straatnaam(new GeografischeNaam(name.Value, name.Key)),
                 },
                 HomoniemToevoeging = homonym == null ? null : new HomoniemToevoeging(new GeografischeNaam(homonym.Value.Value, homonym.Value.Key))

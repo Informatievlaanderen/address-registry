@@ -11,7 +11,7 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
         BuildingUnitAddressWasDetached,
         BuildingUnitBecameComplete,
         BuildingUnitBecameIncomplete,
-        BuildingUnitOsloIdWasAssigned,
+        BuildingUnitPersistentLocalIdentifierWasAssigned,
         BuildingUnitPositionWasAppointedByAdministrator,
         BuildingUnitPositionWasCorrectedToAppointedByAdministrator,
         BuildingUnitPositionWasCorrectedToDerivedFromObject,

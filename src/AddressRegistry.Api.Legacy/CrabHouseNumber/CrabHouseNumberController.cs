@@ -79,7 +79,7 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
                     var municipality = municipalities.SingleOrDefault(x => x.NisCode == streetName.NisCode);
                     return new CrabHouseNumberAddressListItem(
                         a.HouseNumberId.Value,
-                        a.OsloId.Value,
+                        a.PersistentLocalId.Value,
                         responseOptions.Value.Naamruimte,
                         responseOptions.Value.DetailUrl,
                         a.HouseNumber,

@@ -300,7 +300,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     ct);
             });
 
-            When<Envelope<AddressOsloIdWasAssigned>>(async (context, message, ct) =>
+            When<Envelope<AddressPersistentLocalIdWasAssigned>>(async (context, message, ct) =>
             {
                 var addressSyndicationItem = await context.LatestPosition(message.Message.AddressId, ct);
 
@@ -314,7 +314,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     message.Position,
                     message.EventName,
                     Instant.FromDateTimeUtc(message.CreatedUtc.ToUniversalTime()),
-                    x => x.OsloId = message.Message.OsloId);
+                    x => x.PersistentLocalId = message.Message.PersistentLocalId);
 
                 newAddressSyndicationItem.SetEventData(message.Message);
 

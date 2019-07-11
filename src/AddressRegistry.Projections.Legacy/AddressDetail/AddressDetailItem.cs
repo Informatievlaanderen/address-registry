@@ -12,7 +12,7 @@ namespace AddressRegistry.Projections.Legacy.AddressDetail
         public static string VersionTimestampBackingPropertyName = nameof(VersionTimestampAsDateTimeOffset);
 
         public Guid AddressId { get; set; }
-        public int? OsloId { get; set; }
+        public int? PersistentLocalId { get; set; }
 
         public Guid StreetNameId { get; set; }
         public string PostalCode { get; set; }
@@ -47,7 +47,7 @@ namespace AddressRegistry.Projections.Legacy.AddressDetail
                 .HasKey(p => p.AddressId)
                 .ForSqlServerIsClustered(false);
 
-            b.HasIndex(p => p.OsloId);
+            b.HasIndex(p => p.PersistentLocalId);
 
             b.Property(AddressDetailItem.VersionTimestampBackingPropertyName)
                 .HasColumnName("VersionTimestamp");

@@ -31,7 +31,7 @@ namespace AddressRegistry.Projections.Syndication.PostalInfo
                     PostalCode = entry.Content.Object.PostalCode,
                     Version = entry.Content.Object.Identificator?.Versie.Value,
                     Position = long.Parse(entry.FeedEntry.Id),
-                    NisCode = entry.Content.Object.MunicipalityOsloId,
+                    NisCode = entry.Content.Object.MunicipalityNisCode,
                 };
 
                 UpdateNames(latestItem, entry.Content.Object.PostalNames);
@@ -46,7 +46,7 @@ namespace AddressRegistry.Projections.Syndication.PostalInfo
 
                 latestItem.Version = entry.Content.Object.Identificator?.Versie.Value;
                 latestItem.Position = long.Parse(entry.FeedEntry.Id);
-                latestItem.NisCode = entry.Content.Object.MunicipalityOsloId;
+                latestItem.NisCode = entry.Content.Object.MunicipalityNisCode;
 
                 UpdateNames(latestItem, entry.Content.Object.PostalNames);
             }

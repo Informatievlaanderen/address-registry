@@ -176,19 +176,19 @@ namespace AddressRegistry.Tests.ProjectionTests
 
         [Theory]
         [DefaultData]
-        public async Task AddressOsloIdWasAssignedSetsOsloId(
+        public async Task AddressPersistentLocalIdWasAssignedSetsPersistentLocalId(
             AddressWasRegistered addressWasRegistered,
-            AddressOsloIdWasAssigned addressOsloIdWasAssigned)
+            AddressPersistentLocalIdWasAssigned addressPersistentLocalIdWasAssigned)
         {
             await Assert(
                 Given(addressWasRegistered,
-                        addressOsloIdWasAssigned)
+                        addressPersistentLocalIdWasAssigned)
                     .Expect(ctx => ctx.AddressDetail, new AddressDetailItem
                     {
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        OsloId = addressOsloIdWasAssigned.OsloId
+                        PersistentLocalId = addressPersistentLocalIdWasAssigned.PersistentLocalId
                     }));
         }
 
@@ -613,21 +613,21 @@ namespace AddressRegistry.Tests.ProjectionTests
 
         [Theory]
         [DefaultData]
-        public async Task AddressOsloIdWasAssignedAfterRemoveIsSet(
+        public async Task AddressPersistentLocalIdWasAssignedAfterRemoveIsSet(
             AddressWasRegistered addressWasRegistered,
             AddressWasRemoved addressWasRemoved,
-            AddressOsloIdWasAssigned addressOsloIdWasAssigned)
+            AddressPersistentLocalIdWasAssigned addressPersistentLocalIdWasAssigned)
         {
             await Assert(
                 Given(addressWasRegistered,
                         addressWasRemoved,
-                        addressOsloIdWasAssigned)
+                        addressPersistentLocalIdWasAssigned)
                     .Expect(ctx => ctx.AddressDetail, new AddressDetailItem
                     {
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        OsloId = addressOsloIdWasAssigned.OsloId,
+                        PersistentLocalId = addressPersistentLocalIdWasAssigned.PersistentLocalId,
                         Removed = true,
                     }));
         }

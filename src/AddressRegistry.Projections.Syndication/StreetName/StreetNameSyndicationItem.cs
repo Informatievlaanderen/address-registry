@@ -8,7 +8,7 @@ namespace AddressRegistry.Projections.Syndication.StreetName
     public class StreetNameSyndicationItem
     {
         public Guid StreetNameId { get; set; }
-        public string OsloId { get; set; }
+        public string PersistentLocalId { get; set; }
         public string NisCode { get; set; }
 
         public string NameDutch { get; set; }
@@ -36,7 +36,7 @@ namespace AddressRegistry.Projections.Syndication.StreetName
                 .ForSqlServerIsClustered(false);
 
             builder.Property(x => x.NisCode);
-            builder.Property(x => x.OsloId);
+            builder.Property(x => x.PersistentLocalId);
 
             builder.Property(x => x.NameDutch);
             builder.Property(x => x.NameFrench);

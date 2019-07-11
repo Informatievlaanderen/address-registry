@@ -29,7 +29,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting.Mocking
             Moq.Setup(m => m.GetAllLatestStreetNames()).Returns(straatnamen.AsQueryable());
             foreach (StreetNameLatestItem straatnaam in straatnamen)
             {
-                Moq.Setup(m => m.FindLatestStreetNameById(straatnaam.OsloId)).Returns(straatnaam);
+                Moq.Setup(m => m.FindLatestStreetNameById(straatnaam.PersistentLocalId)).Returns(straatnaam);
             }
 
             return this;

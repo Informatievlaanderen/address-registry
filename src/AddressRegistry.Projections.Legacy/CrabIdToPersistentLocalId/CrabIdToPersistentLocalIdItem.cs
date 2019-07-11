@@ -1,4 +1,4 @@
-namespace AddressRegistry.Projections.Legacy.CrabIdToOsloId
+namespace AddressRegistry.Projections.Legacy.CrabIdToPersistentLocalId
 {
     using System;
     using Infrastructure;
@@ -6,12 +6,12 @@ namespace AddressRegistry.Projections.Legacy.CrabIdToOsloId
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using NodaTime;
 
-    public class CrabIdToOsloIdItem
+    public class CrabIdToPersistentLocalIdItem
     {
         public static string VersionTimestampBackingPropertyName = nameof(VersionTimestampAsDateTimeOffset);
 
         public Guid AddressId { get; set; }
-        public int? OsloId { get; set; }
+        public int? PersistentLocalId { get; set; }
         public int? HouseNumberId { get; set; }
         public int? SubaddressId { get; set; }
         public string HouseNumber { get; set; }
@@ -30,17 +30,17 @@ namespace AddressRegistry.Projections.Legacy.CrabIdToOsloId
         }
     }
 
-    public class CrabIdToOsloIdItemConfiguration : IEntityTypeConfiguration<CrabIdToOsloIdItem>
+    public class CrabIdToPersistentLocalIdItemConfiguration : IEntityTypeConfiguration<CrabIdToPersistentLocalIdItem>
     {
-        public const string TableName = "CrabIdToOsloIds";
+        public const string TableName = "CrabIdToPersistentLocalIds";
 
-        public void Configure(EntityTypeBuilder<CrabIdToOsloIdItem> b)
+        public void Configure(EntityTypeBuilder<CrabIdToPersistentLocalIdItem> b)
         {
             b.ToTable(TableName, Schema.Legacy)
                 .HasKey(p => p.AddressId)
                 .ForSqlServerIsClustered(false);
 
-            b.Property(p => p.OsloId);
+            b.Property(p => p.PersistentLocalId);
             b.Property(p => p.HouseNumberId);
             b.Property(p => p.SubaddressId);
             b.Property(p => p.HouseNumber);
@@ -50,12 +50,12 @@ namespace AddressRegistry.Projections.Legacy.CrabIdToOsloId
             b.Property(p => p.IsRemoved);
             b.Property(p => p.IsComplete);
 
-            b.Property(CrabIdToOsloIdItem.VersionTimestampBackingPropertyName)
+            b.Property(CrabIdToPersistentLocalIdItem.VersionTimestampBackingPropertyName)
                 .HasColumnName("VersionTimestamp");
 
             b.Ignore(x => x.VersionTimestamp);
 
-            b.HasIndex(p => p.OsloId).IsUnique();
+            b.HasIndex(p => p.PersistentLocalId).IsUnique();
             b.HasIndex(p => p.HouseNumberId);
             b.HasIndex(p => p.SubaddressId);
             b.HasIndex(p => p.IsRemoved);

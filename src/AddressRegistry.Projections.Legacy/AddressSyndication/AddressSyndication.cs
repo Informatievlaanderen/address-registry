@@ -13,7 +13,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
         public long Position { get; set; }
 
         public Guid? AddressId { get; set; }
-        public int? OsloId { get; set; }
+        public int? PersistentLocalId { get; set; }
         public string ChangeType { get; set; }
 
         public Guid? StreetNameId { get; set; }
@@ -64,7 +64,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                 LastChangedOn = lastChangedOn,
 
                 AddressId = AddressId,
-                OsloId = OsloId,
+                PersistentLocalId = PersistentLocalId,
                 StreetNameId = StreetNameId,
                 PostalCode = PostalCode,
                 HouseNumber = HouseNumber,
@@ -132,7 +132,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             b.Ignore(x => x.LastChangedOn);
 
             b.HasIndex(x => x.AddressId);
-            b.HasIndex(x => x.OsloId);
+            b.HasIndex(x => x.PersistentLocalId);
         }
     }
 }

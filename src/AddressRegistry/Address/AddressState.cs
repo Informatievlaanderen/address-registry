@@ -35,7 +35,7 @@ namespace AddressRegistry.Address
         private AddressGeometry _geometry;
         private bool _isComplete;
         private bool? _officiallyAssigned;
-        private OsloId _osloId;
+        private PersistentLocalId _persistentLocalId;
         private PostalCode _postalCode;
         private AddressStatus? _previousStatus;
         private AddressStatus? _status;
@@ -91,7 +91,7 @@ namespace AddressRegistry.Address
             Register<AddressStreetNameWasChanged>(When);
             Register<AddressStreetNameWasCorrected>(When);
 
-            Register<AddressOsloIdWasAssigned>(When);
+            Register<AddressPersistentLocalIdWasAssigned>(When);
 
             Register<AddressSubaddressWasImportedFromCrab>(When);
             Register<AddressHouseNumberWasImportedFromCrab>(When);
@@ -272,9 +272,9 @@ namespace AddressRegistry.Address
             IsRemoved = true;
         }
 
-        private void When(AddressOsloIdWasAssigned @event)
+        private void When(AddressPersistentLocalIdWasAssigned @event)
         {
-            _osloId = new OsloId(@event.OsloId);
+            _persistentLocalId = new PersistentLocalId(@event.PersistentLocalId);
         }
 
         #region CRAB

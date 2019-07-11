@@ -6,26 +6,26 @@ namespace AddressRegistry.Address.Commands.Crab
     using System;
     using System.Collections.Generic;
 
-    public class AssignOsloIdForCrabHouseNumberId
+    public class AssignPersistentLocalIdForCrabHouseNumberId
     {
         private static readonly Guid Namespace = new Guid("8a3f242c-0166-4f86-9b66-9aa3be98c9ba");
 
         public CrabHouseNumberId HouseNumberId { get; }
-        public OsloId OsloId { get; }
-        public OsloAssignmentDate AssignmentDate { get; }
+        public PersistentLocalId PersistentLocalId { get; }
+        public PersistentLocalIdAssignmentDate AssignmentDate { get; }
 
-        public AssignOsloIdForCrabHouseNumberId(
+        public AssignPersistentLocalIdForCrabHouseNumberId(
             CrabHouseNumberId houseNumberId,
-            OsloId osloId,
-            OsloAssignmentDate assignmentDate)
+            PersistentLocalId persistentLocalId,
+            PersistentLocalIdAssignmentDate assignmentDate)
         {
             HouseNumberId = houseNumberId;
-            OsloId = osloId;
+            PersistentLocalId = persistentLocalId;
             AssignmentDate = assignmentDate;
         }
 
         public Guid CreateCommandId() =>
-            Deterministic.Create(Namespace, $"AssignOsloId-{ToString()}");
+            Deterministic.Create(Namespace, $"AssignPersistentLocalId-{ToString()}");
 
         public override string ToString() =>
             ToStringBuilder.ToString(IdentityFields());
@@ -33,7 +33,7 @@ namespace AddressRegistry.Address.Commands.Crab
         private IEnumerable<object> IdentityFields()
         {
             yield return HouseNumberId;
-            yield return OsloId;
+            yield return PersistentLocalId;
             yield return AssignmentDate;
         }
     }

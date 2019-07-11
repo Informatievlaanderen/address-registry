@@ -8,7 +8,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
     public class AddressExtractItem
     {
         public Guid? AddressId { get; set; }
-        public int AddressOsloId { get; set; }
+        public int AddressPersistentLocalId { get; set; }
         public bool Complete { get; set; }
         public byte[] DbaseRecord { get; set; }
         public byte[] ShapeRecordContent { get; set; }

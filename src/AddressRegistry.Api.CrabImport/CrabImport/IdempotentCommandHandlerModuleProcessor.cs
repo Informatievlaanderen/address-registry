@@ -23,7 +23,7 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
         public IdempotentCommandHandlerModuleProcessor(
             Func<IAddresses> getAddresses,
             ConcurrentUnitOfWork concurrentUnitOfWork,
-            IOsloIdGenerator osloIdGenerator,
+            IPersistentLocalIdGenerator persistentLocalIdGenerator,
             Func<IStreamStore> getStreamStore,
             EventMapping eventMapping,
             EventSerializer eventSerializer,
@@ -36,7 +36,7 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
             _addressCommandHandlerModule = new AddressCommandHandlerModule(
                 _getAddresses,
                 () => concurrentUnitOfWork,
-                osloIdGenerator,
+                persistentLocalIdGenerator,
                 getStreamStore,
                 eventMapping,
                 eventSerializer,
@@ -105,25 +105,25 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
                     AddProvenancePipe.AddProvenance(() => _concurrentUnitOfWork, commandSubaddressMailCantonMessage, _provenanceFactory, currentPosition);
                     return commandSubaddressMailCantonMessage;
 
-                case AssignOsloIdForCrabHouseNumberId command:
-                    var commandAssignOsloIdForCrabHouseNumberId = new CommandMessage<AssignOsloIdForCrabHouseNumberId>(command.CreateCommandId(), command, metadata);
-                    await _addressCommandHandlerModule.AssignOsloIdForCrabHouseNumberId(_getAddresses, commandAssignOsloIdForCrabHouseNumberId, cancellationToken);
-                    return commandAssignOsloIdForCrabHouseNumberId;
+                case AssignPersistentLocalIdForCrabHouseNumberId command:
+                    var commandAssignPersistentLocalIdForCrabHouseNumberId = new CommandMessage<AssignPersistentLocalIdForCrabHouseNumberId>(command.CreateCommandId(), command, metadata);
+                    await _addressCommandHandlerModule.AssignPersistentLocalIdForCrabHouseNumberId(_getAddresses, commandAssignPersistentLocalIdForCrabHouseNumberId, cancellationToken);
+                    return commandAssignPersistentLocalIdForCrabHouseNumberId;
 
-                case AssignOsloIdForCrabSubaddressId command:
-                    var commandAssignOsloIdForCrabSubaddressId = new CommandMessage<AssignOsloIdForCrabSubaddressId>(command.CreateCommandId(), command, metadata);
-                    await _addressCommandHandlerModule.AssignOsloIdForCrabSubaddressId(_getAddresses, commandAssignOsloIdForCrabSubaddressId, cancellationToken);
-                    return commandAssignOsloIdForCrabSubaddressId;
+                case AssignPersistentLocalIdForCrabSubaddressId command:
+                    var commandAssignPersistentLocalIdForCrabSubaddressId = new CommandMessage<AssignPersistentLocalIdForCrabSubaddressId>(command.CreateCommandId(), command, metadata);
+                    await _addressCommandHandlerModule.AssignPersistentLocalIdForCrabSubaddressId(_getAddresses, commandAssignPersistentLocalIdForCrabSubaddressId, cancellationToken);
+                    return commandAssignPersistentLocalIdForCrabSubaddressId;
 
-                case RequestOsloIdForCrabHouseNumberId command:
-                    var commandRequestOsloIdForCrabHouseNumberId = new CommandMessage<RequestOsloIdForCrabHouseNumberId>(command.CreateCommandId(), command, metadata);
-                    await _addressCommandHandlerModule.RequestOsloIdForCrabHouseNumberId(_getAddresses, commandRequestOsloIdForCrabHouseNumberId, cancellationToken);
-                    return commandRequestOsloIdForCrabHouseNumberId;
+                case RequestPersistentLocalIdForCrabHouseNumberId command:
+                    var commandRequestPersistentLocalIdForCrabHouseNumberId = new CommandMessage<RequestPersistentLocalIdForCrabHouseNumberId>(command.CreateCommandId(), command, metadata);
+                    await _addressCommandHandlerModule.RequestPersistentLocalIdForCrabHouseNumberId(_getAddresses, commandRequestPersistentLocalIdForCrabHouseNumberId, cancellationToken);
+                    return commandRequestPersistentLocalIdForCrabHouseNumberId;
 
-                case RequestOsloIdForCrabSubaddressId command:
-                    var commandRequestOsloIdForCrabSubaddressId = new CommandMessage<RequestOsloIdForCrabSubaddressId>(command.CreateCommandId(), command, metadata);
-                    await _addressCommandHandlerModule.RequestOsloIdForCrabSubaddressId(_getAddresses, commandRequestOsloIdForCrabSubaddressId, cancellationToken);
-                    return commandRequestOsloIdForCrabSubaddressId;
+                case RequestPersistentLocalIdForCrabSubaddressId command:
+                    var commandRequestPersistentLocalIdForCrabSubaddressId = new CommandMessage<RequestPersistentLocalIdForCrabSubaddressId>(command.CreateCommandId(), command, metadata);
+                    await _addressCommandHandlerModule.RequestPersistentLocalIdForCrabSubaddressId(_getAddresses, commandRequestPersistentLocalIdForCrabSubaddressId, cancellationToken);
+                    return commandRequestPersistentLocalIdForCrabSubaddressId;
 
                 default:
                     throw new NotImplementedException("Command to import is not recognized");

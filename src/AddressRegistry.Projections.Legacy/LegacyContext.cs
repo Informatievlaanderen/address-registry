@@ -7,7 +7,7 @@ namespace AddressRegistry.Projections.Legacy
     using AddressMatch;
     using AddressSyndication;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
-    using CrabIdToOsloId;
+    using CrabIdToPersistentLocalId;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Design;
@@ -17,7 +17,7 @@ namespace AddressRegistry.Projections.Legacy
     {
         public override string ProjectionStateSchema => Schema.Legacy;
 
-        public DbSet<CrabIdToOsloIdItem> CrabIdToOsloIds { get; set; }
+        public DbSet<CrabIdToPersistentLocalIdItem> CrabIdToPersistentLocalIds { get; set; }
 
         public DbSet<AddressVersion.AddressVersion> AddressVersions { get; set; }
         public DbSet<AddressDetailItem> AddressDetail { get; set; }

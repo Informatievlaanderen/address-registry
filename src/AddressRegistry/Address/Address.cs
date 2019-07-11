@@ -279,18 +279,18 @@ namespace AddressRegistry.Address
             ApplyChange(legacyEvent);
         }
 
-        public void AssignOsloId(
-            OsloId osloId,
-            OsloAssignmentDate assignmentDate)
+        public void AssignPersistentLocalId(
+            PersistentLocalId persistentLocalId,
+            PersistentLocalIdAssignmentDate assignmentDate)
         {
-            if (_osloId == null)
-                ApplyChange(new AddressOsloIdWasAssigned(_addressId, osloId, assignmentDate));
+            if (_persistentLocalId == null)
+                ApplyChange(new AddressPersistentLocalIdWasAssigned(_addressId, persistentLocalId, assignmentDate));
         }
 
-        public void RequestOsloId(IOsloIdGenerator osloIdGenerator)
+        public void RequestPersistentLocalId(IPersistentLocalIdGenerator persistentLocalIdGenerator)
         {
-            if (_osloId == null)
-                AssignOsloId(osloIdGenerator.GenerateNextOsloId(), new OsloAssignmentDate(Instant.FromDateTimeOffset(DateTimeOffset.Now)));
+            if (_persistentLocalId == null)
+                AssignPersistentLocalId(persistentLocalIdGenerator.GenerateNextPersistentLocalId(), new PersistentLocalIdAssignmentDate(Instant.FromDateTimeOffset(DateTimeOffset.Now)));
         }
 
         private void EvaluatePositionChange()

@@ -78,7 +78,7 @@ namespace AddressRegistry.Api.Legacy.CrabSubaddress
                     var municipality = municipalities.SingleOrDefault(x => x.NisCode == streetName.NisCode);
                     return new CrabSubAddressListItem(
                         a.SubaddressId.Value,
-                        a.OsloId.Value,
+                        a.PersistentLocalId.Value,
                         responseOptions.Value.Naamruimte,
                         responseOptions.Value.DetailUrl,
                         a.HouseNumber,

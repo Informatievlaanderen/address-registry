@@ -55,12 +55,12 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
                         });
             });
 
-            When<Envelope<AddressOsloIdWasAssigned>>(async (context, message, ct) =>
+            When<Envelope<AddressPersistentLocalIdWasAssigned>>(async (context, message, ct) =>
             {
                 var entities = await context.AllVersions(message.Message.AddressId, ct);
 
                 foreach (var entity in entities)
-                    entity.OsloId = message.Message.OsloId;
+                    entity.PersistentLocalId = message.Message.PersistentLocalId;
             });
 
             When<Envelope<AddressBecameComplete>>(async (context, message, ct) =>

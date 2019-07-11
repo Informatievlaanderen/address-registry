@@ -16,7 +16,7 @@ namespace AddressRegistry.Projections.Syndication.StreetName
         StreetNameNameWasCorrectedToCleared,
         StreetNameWasNamed,
 
-        StreetNameOsloIdWasAssigned,
+        StreetNamePersistentLocalIdentifierWasAssigned,
 
         StreetNamePrimaryLanguageWasCleared,
         StreetNamePrimaryLanguageWasCorrected,

@@ -1,24 +1,24 @@
-namespace AddressRegistry.Projections.Legacy.CrabIdToOsloId
+namespace AddressRegistry.Projections.Legacy.CrabIdToPersistentLocalId
 {
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Address.Events;
     using Address.Events.Crab;
     using Be.Vlaanderen.Basisregisters.Crab;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using NodaTime;
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
 
-    public class CrabIdToOsloIdProjections : ConnectedProjection<LegacyContext>
+    public class CrabIdToPersistentLocalIdProjections : ConnectedProjection<LegacyContext>
     {
-        public CrabIdToOsloIdProjections()
+        public CrabIdToPersistentLocalIdProjections()
         {
             When<Envelope<AddressWasRegistered>>(async (context, message, ct) =>
             {
                 await context
-                    .CrabIdToOsloIds
-                    .AddAsync(new CrabIdToOsloIdItem
+                    .CrabIdToPersistentLocalIds
+                    .AddAsync(new CrabIdToPersistentLocalIdItem
                     {
                         AddressId = message.Message.AddressId,
                         StreetNameId = message.Message.StreetNameId,
@@ -28,96 +28,96 @@ namespace AddressRegistry.Projections.Legacy.CrabIdToOsloId
 
             When<Envelope<AddressHouseNumberWasChanged>>(async (context, message, ct) =>
             {
-                var item = await context.CrabIdToOsloIds.FindAsync(message.Message.AddressId, cancellationToken: ct);
+                var item = await context.CrabIdToPersistentLocalIds.FindAsync(message.Message.AddressId, cancellationToken: ct);
                 item.HouseNumber = message.Message.HouseNumber;
                 UpdateVersion(item, message.Message.Provenance.Timestamp);
             });
 
             When<Envelope<AddressHouseNumberWasCorrected>>(async (context, message, ct) =>
             {
-                var item = await context.CrabIdToOsloIds.FindAsync(message.Message.AddressId, cancellationToken: ct);
+                var item = await context.CrabIdToPersistentLocalIds.FindAsync(message.Message.AddressId, cancellationToken: ct);
                 item.HouseNumber = message.Message.HouseNumber;
                 UpdateVersion(item, message.Message.Provenance.Timestamp);
             });
 
             When<Envelope<AddressBoxNumberWasChanged>>(async (context, message, ct) =>
             {
-                var item = await context.CrabIdToOsloIds.FindAsync(message.Message.AddressId, cancellationToken: ct);
+                var item = await context.CrabIdToPersistentLocalIds.FindAsync(message.Message.AddressId, cancellationToken: ct);
                 item.BoxNumber = message.Message.BoxNumber;
                 UpdateVersion(item, message.Message.Provenance.Timestamp);
             });
 
             When<Envelope<AddressBoxNumberWasCorrected>>(async (context, message, ct) =>
             {
-                var item = await context.CrabIdToOsloIds.FindAsync(message.Message.AddressId, cancellationToken: ct);
+                var item = await context.CrabIdToPersistentLocalIds.FindAsync(message.Message.AddressId, cancellationToken: ct);
                 item.BoxNumber = message.Message.BoxNumber;
                 UpdateVersion(item, message.Message.Provenance.Timestamp);
             });
 
             When<Envelope<AddressBoxNumberWasRemoved>>(async (context, message, ct) =>
             {
-                var item = await context.CrabIdToOsloIds.FindAsync(message.Message.AddressId, cancellationToken: ct);
+                var item = await context.CrabIdToPersistentLocalIds.FindAsync(message.Message.AddressId, cancellationToken: ct);
                 item.BoxNumber = null;
                 UpdateVersion(item, message.Message.Provenance.Timestamp);
             });
 
             When<Envelope<AddressStreetNameWasChanged>>(async (context, message, ct) =>
             {
-                var item = await context.CrabIdToOsloIds.FindAsync(message.Message.AddressId, cancellationToken: ct);
+                var item = await context.CrabIdToPersistentLocalIds.FindAsync(message.Message.AddressId, cancellationToken: ct);
                 item.StreetNameId = message.Message.StreetNameId;
                 UpdateVersion(item, message.Message.Provenance.Timestamp);
             });
 
             When<Envelope<AddressStreetNameWasCorrected>>(async (context, message, ct) =>
             {
-                var item = await context.CrabIdToOsloIds.FindAsync(message.Message.AddressId, cancellationToken: ct);
+                var item = await context.CrabIdToPersistentLocalIds.FindAsync(message.Message.AddressId, cancellationToken: ct);
                 item.StreetNameId = message.Message.StreetNameId;
                 UpdateVersion(item, message.Message.Provenance.Timestamp);
             });
 
             When<Envelope<AddressPostalCodeWasChanged>>(async (context, message, ct) =>
             {
-                var item = await context.CrabIdToOsloIds.FindAsync(message.Message.AddressId, cancellationToken: ct);
+                var item = await context.CrabIdToPersistentLocalIds.FindAsync(message.Message.AddressId, cancellationToken: ct);
                 item.PostalCode = message.Message.PostalCode;
             });
 
             When<Envelope<AddressPostalCodeWasCorrected>>(async (context, message, ct) =>
             {
-                var item = await context.CrabIdToOsloIds.FindAsync(message.Message.AddressId, cancellationToken: ct);
+                var item = await context.CrabIdToPersistentLocalIds.FindAsync(message.Message.AddressId, cancellationToken: ct);
                 item.PostalCode = message.Message.PostalCode;
                 UpdateVersion(item, message.Message.Provenance.Timestamp);
             });
 
             When<Envelope<AddressPostalCodeWasRemoved>>(async (context, message, ct) =>
             {
-                var item = await context.CrabIdToOsloIds.FindAsync(message.Message.AddressId, cancellationToken: ct);
+                var item = await context.CrabIdToPersistentLocalIds.FindAsync(message.Message.AddressId, cancellationToken: ct);
                 item.PostalCode = null;
                 UpdateVersion(item, message.Message.Provenance.Timestamp);
             });
 
-            When<Envelope<AddressOsloIdWasAssigned>>(async (context, message, ct) =>
+            When<Envelope<AddressPersistentLocalIdWasAssigned>>(async (context, message, ct) =>
             {
-                var item = await context.CrabIdToOsloIds.FindAsync(message.Message.AddressId, cancellationToken: ct);
-                item.OsloId = message.Message.OsloId;
+                var item = await context.CrabIdToPersistentLocalIds.FindAsync(message.Message.AddressId, cancellationToken: ct);
+                item.PersistentLocalId = message.Message.PersistentLocalId;
             });
 
             When<Envelope<AddressBecameComplete>>(async (context, message, ct) =>
             {
-                var item = await context.CrabIdToOsloIds.FindAsync(message.Message.AddressId, cancellationToken: ct);
+                var item = await context.CrabIdToPersistentLocalIds.FindAsync(message.Message.AddressId, cancellationToken: ct);
                 item.IsComplete = true;
                 UpdateVersion(item, message.Message.Provenance.Timestamp);
             });
 
             When<Envelope<AddressBecameIncomplete>>(async (context, message, ct) =>
             {
-                var item = await context.CrabIdToOsloIds.FindAsync(message.Message.AddressId, cancellationToken: ct);
+                var item = await context.CrabIdToPersistentLocalIds.FindAsync(message.Message.AddressId, cancellationToken: ct);
                 item.IsComplete = false;
                 UpdateVersion(item, message.Message.Provenance.Timestamp);
             });
 
             When<Envelope<AddressWasRemoved>>(async (context, message, ct) =>
             {
-                var item = await context.CrabIdToOsloIds.FindAsync(message.Message.AddressId, cancellationToken: ct);
+                var item = await context.CrabIdToPersistentLocalIds.FindAsync(message.Message.AddressId, cancellationToken: ct);
                 item.IsRemoved = true;
                 UpdateVersion(item, message.Message.Provenance.Timestamp);
             });
@@ -125,7 +125,7 @@ namespace AddressRegistry.Projections.Legacy.CrabIdToOsloId
             When<Envelope<AddressHouseNumberWasImportedFromCrab>>(async (context, message, ct) =>
             {
                 var addressId = (Guid)AddressId.CreateFor(new CrabHouseNumberId(message.Message.HouseNumberId));
-                var item = await context.CrabIdToOsloIds.FindAsync(addressId, cancellationToken: ct);
+                var item = await context.CrabIdToPersistentLocalIds.FindAsync(addressId, cancellationToken: ct);
 
                 if (item != null)
                     item.HouseNumberId = message.Message.HouseNumberId;
@@ -134,7 +134,7 @@ namespace AddressRegistry.Projections.Legacy.CrabIdToOsloId
             When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) =>
             {
                 var addressId = (Guid)AddressId.CreateFor(new CrabSubaddressId(message.Message.SubaddressId));
-                var item = await context.CrabIdToOsloIds.FindAsync(addressId, cancellationToken: ct);
+                var item = await context.CrabIdToPersistentLocalIds.FindAsync(addressId, cancellationToken: ct);
 
                 item.SubaddressId = message.Message.SubaddressId;
             });
@@ -250,11 +250,11 @@ namespace AddressRegistry.Projections.Legacy.CrabIdToOsloId
 
         private static async Task FindAndUpdateVersion(LegacyContext context, Guid addressId, Instant version, CancellationToken ct)
         {
-            var item = await context.CrabIdToOsloIds.FindAsync(addressId, cancellationToken: ct);
+            var item = await context.CrabIdToPersistentLocalIds.FindAsync(addressId, cancellationToken: ct);
             UpdateVersion(item, version);
         }
 
-        private static void UpdateVersion(CrabIdToOsloIdItem item, Instant timestamp)
+        private static void UpdateVersion(CrabIdToPersistentLocalIdItem item, Instant timestamp)
         {
             item.VersionTimestamp = timestamp;
         }

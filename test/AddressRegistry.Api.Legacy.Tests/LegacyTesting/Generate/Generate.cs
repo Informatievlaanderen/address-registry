@@ -42,7 +42,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting.Generate
             new Generator<StreetNameLatestItem>(r => new StreetNameLatestItem
             {
                 StreetNameId = Guid.NewGuid(),
-                OsloId = Id.Generate(r).ToString(),
+                PersistentLocalId = Id.Generate(r).ToString(),
                 NisCode = NISCode.Generate(r),
                 NameDutch = Straatnaam.Generate(r),
                 IsComplete = true
@@ -61,7 +61,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting.Generate
                 PositionMethod = GeometryMethod.AppointedByAdministrator,
                 PositionSpecification = GeometrySpecification.BuildingUnit,
                 PostalCode = Postcode.Generate(r),
-                OsloId = Id.Generate(r),
+                PersistentLocalId = Id.Generate(r),
                 Complete = true,
                 OfficiallyAssigned = true,
             };

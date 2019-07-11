@@ -5,29 +5,29 @@ namespace AddressRegistry.Address.Commands
     using System;
     using System.Collections.Generic;
 
-    public class AssignOsloIdToAddress
+    public class AssignPersistentLocalIdToAddress
     {
         private static readonly Guid Namespace = new Guid("213d9961-c1fc-4e3a-b512-29d0221b34ab");
 
         public AddressId AddressId { get; }
-        public OsloId OsloId { get; }
+        public PersistentLocalId PersistentLocalId { get; }
 
-        public AssignOsloIdToAddress(
+        public AssignPersistentLocalIdToAddress(
             AddressId addressId,
-            OsloId osloId)
+            PersistentLocalId persistentLocalId)
         {
             AddressId = addressId;
-            OsloId = osloId;
+            PersistentLocalId = persistentLocalId;
         }
 
-        public Guid CreateCommandId() => Deterministic.Create(Namespace, $"AssignOsloIdToAddress-{ToString()}");
+        public Guid CreateCommandId() => Deterministic.Create(Namespace, $"AssignPersistentLocalIdToAddress-{ToString()}");
 
         public override string ToString() => ToStringBuilder.ToString(IdentityFields());
 
         private IEnumerable<object> IdentityFields()
         {
             yield return AddressId;
-            yield return OsloId;
+            yield return PersistentLocalId;
         }
     }
 }

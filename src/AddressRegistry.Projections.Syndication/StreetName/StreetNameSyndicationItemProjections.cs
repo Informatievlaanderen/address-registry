@@ -13,7 +13,7 @@ namespace AddressRegistry.Projections.Syndication.StreetName
         {
             When(StreetNameEvent.StreetNameBecameComplete, AddSyndicationItemEntry);
             When(StreetNameEvent.StreetNameBecameIncomplete, AddSyndicationItemEntry);
-            When(StreetNameEvent.StreetNameOsloIdWasAssigned, AddSyndicationItemEntry);
+            When(StreetNameEvent.StreetNamePersistentLocalIdentifierWasAssigned, AddSyndicationItemEntry);
 
             When(StreetNameEvent.StreetNameNameWasCleared, AddSyndicationItemEntry);
             When(StreetNameEvent.StreetNameNameWasCorrected, AddSyndicationItemEntry);
@@ -55,7 +55,7 @@ namespace AddressRegistry.Projections.Syndication.StreetName
                 NisCode = entry.Content.Object.NisCode,
                 Version = entry.Content.Object.Identificator?.Versie.Value,
                 Position = long.Parse(entry.FeedEntry.Id),
-                OsloId = entry.Content.Object.Identificator?.ObjectId,
+                PersistentLocalId = entry.Content.Object.Identificator?.ObjectId,
             };
 
             UpdateNames(latestItem, entry.Content.Object.StreetNames);

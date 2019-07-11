@@ -318,13 +318,13 @@ namespace AddressRegistry.Tests.ProjectionTests
 
         [Theory]
         [DefaultData]
-        public async Task AddressOsloIdWasAssignedSetsOsloIdForAllVersionsRecords(
+        public async Task AddressPersistentLocalIdWasAssignedSetsPersitentLocalIdForAllVersionsRecords(
             AddressWasRegistered addressWasRegistered,
-            AddressOsloIdWasAssigned addressOsloIdWasAssigned)
+            AddressPersistentLocalIdWasAssigned addressPersistentLocalIdWasAssigned)
         {
             await Assert(
                 Given(addressWasRegistered,
-                        addressOsloIdWasAssigned)
+                        addressPersistentLocalIdWasAssigned)
                     .Expect(ctx => ctx.AddressVersions,
                         new AddressVersion
                         {
@@ -332,7 +332,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             StreetNameId = addressWasRegistered.StreetNameId,
 
                             HouseNumber = addressWasRegistered.HouseNumber,
-                            OsloId = addressOsloIdWasAssigned.OsloId
+                            PersistentLocalId = addressPersistentLocalIdWasAssigned.PersistentLocalId
                         }));
         }
 

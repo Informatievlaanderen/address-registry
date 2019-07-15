@@ -1,3 +1,13 @@
+## [1.6.1](https://github.com/informatievlaanderen/address-registry/compare/v1.6.0...v1.6.1) (2019-07-15)
+
+
+### Bug Fixes
+
+* allow parallel generation of oslo id ([54d5222](https://github.com/informatievlaanderen/address-registry/commit/54d5222))
+* correct timestamp on deletes with timestamp before create ([8a2a044](https://github.com/informatievlaanderen/address-registry/commit/8a2a044))
+* exclude subaddresses with no housenubers ([30ec38a](https://github.com/informatievlaanderen/address-registry/commit/30ec38a))
+* remove slow paging from housnumberid query ([f8c92f6](https://github.com/informatievlaanderen/address-registry/commit/f8c92f6))
+
 # [1.6.0](https://github.com/informatievlaanderen/address-registry/compare/v1.5.2...v1.6.0) (2019-07-11)
 
 

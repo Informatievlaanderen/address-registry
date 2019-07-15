@@ -1,3 +1,10 @@
+## [1.6.2](https://github.com/informatievlaanderen/address-registry/compare/v1.6.1...v1.6.2) (2019-07-15)
+
+
+### Bug Fixes
+
+* remove oslo references for importers ([fcb0c02](https://github.com/informatievlaanderen/address-registry/commit/fcb0c02))
+
 ## [1.6.1](https://github.com/informatievlaanderen/address-registry/compare/v1.6.0...v1.6.1) (2019-07-15)
 
 

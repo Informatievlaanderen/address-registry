@@ -17,14 +17,14 @@ namespace AddressRegistry.Importer.HouseNumber
 
     internal class HouseNumberCommandGenerator : ICommandGenerator<int>
     {
-        private readonly Lazy<ILookup<int, AssignOsloIdForCrabHouseNumberId>> _osloIdCommands;
+        private readonly Lazy<ILookup<int, AssignPersistentLocalIdForCrabHouseNumberId>> _persistentLocalIdCommands;
 
         public string Name => GetType().Name;
 
         public HouseNumberCommandGenerator(string vbrConnectionString)
         {
-            _osloIdCommands = new Lazy<ILookup<int, AssignOsloIdForCrabHouseNumberId>>(() =>
-                GetOsloCommandsToPost(vbrConnectionString).ToLookup(x => (int) x.HouseNumberId, x => x));
+            _persistentLocalIdCommands = new Lazy<ILookup<int, AssignPersistentLocalIdForCrabHouseNumberId>>(() =>
+                GetCommandsToPost(vbrConnectionString).ToLookup(x => (int) x.HouseNumberId, x => x));
         }
 
         public IEnumerable<int> GetChangedKeys(
@@ -39,7 +39,7 @@ namespace AddressRegistry.Importer.HouseNumber
             var crabCommands = CreateCommandsInOrder(key, from, until);
 
             MapLogging.Log("*");
-            crabCommands.Add(_osloIdCommands.Value[key].Single());
+            crabCommands.Add(_persistentLocalIdCommands.Value[key].Single());
 
             return crabCommands;
         }
@@ -51,7 +51,7 @@ namespace AddressRegistry.Importer.HouseNumber
         {
             var crabCommands = CreateCommandsInOrder(key, from, until);
 
-            crabCommands.Add(new RequestOsloIdForCrabHouseNumberId(new CrabHouseNumberId(key)));
+            crabCommands.Add(new RequestPersistentLocalIdForCrabHouseNumberId(new CrabHouseNumberId(key)));
 
             return crabCommands;
         }
@@ -150,7 +150,7 @@ namespace AddressRegistry.Importer.HouseNumber
                 return query(context);
         }
 
-        private static IEnumerable<AssignOsloIdForCrabHouseNumberId> GetOsloCommandsToPost(string connectionString)
+        private static IEnumerable<AssignPersistentLocalIdForCrabHouseNumberId> GetCommandsToPost(string connectionString)
         {
             using (var connection = new SqlConnection(connectionString))
             {
@@ -161,10 +161,10 @@ namespace AddressRegistry.Importer.HouseNumber
                         "INNER JOIN crab.AdresObjectID o ON m.AdresIDInternal = o.AdresIDInternal " +
                         "ORDER BY m.CrabHuisnummerID")
                     .Select(mapping =>
-                        new AssignOsloIdForCrabHouseNumberId(
+                        new AssignPersistentLocalIdForCrabHouseNumberId(
                             new CrabHouseNumberId(mapping.CrabHuisnummerId),
-                            new OsloId(Convert.ToInt32(mapping.ObjectId)),
-                            new OsloAssignmentDate(Instant.FromDateTimeOffset(mapping.MappingCreatedTimestamp))));
+                            new PersistentLocalId(Convert.ToInt32(mapping.ObjectId)),
+                            new PersistentLocalIdAssignmentDate(Instant.FromDateTimeOffset(mapping.MappingCreatedTimestamp))));
             }
         }
 

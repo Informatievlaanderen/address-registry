@@ -17,14 +17,14 @@ namespace AddressRegistry.Importer.Subaddress
 
     public class SubaddressCommandGenerator : ICommandGenerator<int>
     {
-        private readonly Lazy<ILookup<int, AssignOsloIdForCrabSubaddressId>> _osloIdCommands;
+        private readonly Lazy<ILookup<int, AssignPersistentLocalIdForCrabSubaddressId>> _persistentLocalIdCommands;
 
         public string Name => GetType().Name;
 
         public SubaddressCommandGenerator(string vbrConnectionString)
         {
-            _osloIdCommands = new Lazy<ILookup<int, AssignOsloIdForCrabSubaddressId>>(() =>
-                GetOsloCommandsToPost(vbrConnectionString).ToLookup(x => (int)x.SubaddressId, x => x));
+            _persistentLocalIdCommands = new Lazy<ILookup<int, AssignPersistentLocalIdForCrabSubaddressId>>(() =>
+                GetCommandsToPost(vbrConnectionString).ToLookup(x => (int)x.SubaddressId, x => x));
         }
 
         public IEnumerable<int> GetChangedKeys(
@@ -39,7 +39,7 @@ namespace AddressRegistry.Importer.Subaddress
             var crabCommands = CreateCommandsInOrder(ImportMode.Init, key, from, until);
 
             MapLogging.Log("*");
-            crabCommands.Add(_osloIdCommands.Value[key].Single());
+            crabCommands.Add(_persistentLocalIdCommands.Value[key].Single());
 
             return crabCommands;
         }
@@ -51,7 +51,7 @@ namespace AddressRegistry.Importer.Subaddress
         {
             var crabCommands = CreateCommandsInOrder(ImportMode.Update, key, from, until);
 
-            crabCommands.Add(new RequestOsloIdForCrabSubaddressId(new CrabSubaddressId(key)));
+            crabCommands.Add(new RequestPersistentLocalIdForCrabSubaddressId(new CrabSubaddressId(key)));
 
             return crabCommands;
         }
@@ -190,7 +190,7 @@ namespace AddressRegistry.Importer.Subaddress
             return commands;
         }
 
-        protected IEnumerable<AssignOsloIdForCrabSubaddressId> GetOsloCommandsToPost(string connectionString)
+        protected IEnumerable<AssignPersistentLocalIdForCrabSubaddressId> GetCommandsToPost(string connectionString)
         {
             using (var connection = new SqlConnection(connectionString))
             {
@@ -200,10 +200,10 @@ namespace AddressRegistry.Importer.Subaddress
                         "FROM crab.AdresMappingToSubadres m " +
                         "INNER JOIN crab.AdresObjectID o ON m.AdresIDInternal = o.AdresIDInternal " +
                         "ORDER BY m.CrabSubadresID")
-                    .Select(crab2VbrMapping => new AssignOsloIdForCrabSubaddressId(
+                    .Select(crab2VbrMapping => new AssignPersistentLocalIdForCrabSubaddressId(
                         new CrabSubaddressId(crab2VbrMapping.CrabSubadresId),
-                        new OsloId(Convert.ToInt32(crab2VbrMapping.ObjectId)),
-                        new OsloAssignmentDate(Instant.FromDateTimeOffset(crab2VbrMapping.MappingCreatedTimestamp))));
+                        new PersistentLocalId(Convert.ToInt32(crab2VbrMapping.ObjectId)),
+                        new PersistentLocalIdAssignmentDate(Instant.FromDateTimeOffset(crab2VbrMapping.MappingCreatedTimestamp))));
             }
         }
 

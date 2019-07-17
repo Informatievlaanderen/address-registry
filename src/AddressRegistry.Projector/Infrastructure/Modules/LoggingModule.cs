@@ -25,7 +25,6 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                     fileSizeLimitBytes: 104857600,
                     rollOnFileSizeLimit: true,
                     rollingInterval: RollingInterval.Day)
-                .WriteTo.Console()
                 .Enrich.FromLogContext()
                 .Enrich.WithMachineName()
                 .Enrich.WithThreadId()

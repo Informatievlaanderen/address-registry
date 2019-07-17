@@ -1,3 +1,11 @@
+## [1.6.3](https://github.com/informatievlaanderen/address-registry/compare/v1.6.2...v1.6.3) (2019-07-17)
+
+
+### Bug Fixes
+
+* do not hardcode logging to console ([32d5417](https://github.com/informatievlaanderen/address-registry/commit/32d5417))
+* do not hardcode logging to console ([7ee8776](https://github.com/informatievlaanderen/address-registry/commit/7ee8776))
+
 ## [1.6.2](https://github.com/informatievlaanderen/address-registry/compare/v1.6.1...v1.6.2) (2019-07-15)
 
 

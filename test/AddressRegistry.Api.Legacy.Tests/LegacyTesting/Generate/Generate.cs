@@ -57,7 +57,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting.Generate
                 HouseNumber = Huisnummer.Generate(r),
                 BoxNumber = Busnummer.Generate(r),
                 Status = AddressStatus.Current,
-                Position = DbGeometry.Generate(r),
+                Position = DbGeometry.Generate(r).AsBinary(),
                 PositionMethod = GeometryMethod.AppointedByAdministrator,
                 PositionSpecification = GeometrySpecification.BuildingUnit,
                 PostalCode = Postcode.Generate(r),

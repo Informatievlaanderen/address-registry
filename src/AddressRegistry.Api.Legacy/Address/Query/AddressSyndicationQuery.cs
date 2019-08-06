@@ -27,7 +27,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
         public string ChangeType { get; }
         public Guid? StreetNameId { get; }
         public string PostalCode { get; set; }
-        public IPoint PointPosition { get; set; }
+        public byte[] PointPosition { get; set; }
         public GeometryMethod? GeometryMethod { get; set; }
         public GeometrySpecification? GeometrySpecification { get; set; }
         public Instant RecordCreatedAt { get; }
@@ -100,7 +100,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             string boxNumber,
             Guid? streetNameId,
             string postalCode,
-            IPoint pointPosition,
+            byte[] pointPosition,
             GeometryMethod? geometryMethod,
             GeometrySpecification? geometrySpecification,
             string changeType,
@@ -152,7 +152,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             string boxNumber,
             Guid? streetNameId,
             string postalCode,
-            IPoint pointPosition,
+            byte[] pointPosition,
             GeometryMethod? geometryMethod,
             GeometrySpecification? geometrySpecification,
             string changeType,

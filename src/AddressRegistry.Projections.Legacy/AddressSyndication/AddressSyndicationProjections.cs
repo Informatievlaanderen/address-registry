@@ -4,7 +4,6 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
-    using GeoAPI.Geometries;
     using NetTopologySuite.IO;
     using NodaTime;
 
@@ -132,7 +131,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     {
                         x.PositionMethod = message.Message.GeometryMethod;
                         x.PositionSpecification = message.Message.GeometrySpecification;
-                        x.PointPosition = (IPoint) wkbReader.Read(message.Message.ExtendedWkbGeometry.ToByteArray());
+                        x.PointPosition = message.Message.ExtendedWkbGeometry.ToByteArray();
                     },
                     ct);
             });
@@ -268,7 +267,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     {
                         x.PositionMethod = message.Message.GeometryMethod;
                         x.PositionSpecification = message.Message.GeometrySpecification;
-                        x.PointPosition = (IPoint)wkbReader.Read(message.Message.ExtendedWkbGeometry.ToByteArray());
+                        x.PointPosition = message.Message.ExtendedWkbGeometry.ToByteArray();
                     },
                     ct);
             });

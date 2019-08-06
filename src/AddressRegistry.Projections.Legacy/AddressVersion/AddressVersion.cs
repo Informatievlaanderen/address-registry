@@ -2,7 +2,6 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
 {
     using System;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using GeoAPI.Geometries;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -23,7 +22,7 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
         public AddressStatus? Status { get; set; }
         public bool? OfficiallyAssigned { get; set; }
 
-        public IPoint Position { get; set; }
+        public byte[] Position { get; set; }
         public GeometryMethod? PositionMethod { get; set; }
         public GeometrySpecification? PositionSpecification { get; set; }
 
@@ -102,8 +101,7 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
             b.Property(p => p.HouseNumber);
             b.Property(p => p.BoxNumber);
             b.Property(p => p.OfficiallyAssigned);
-            b.Property(p => p.Position)
-                .HasColumnType("sys.geometry");
+            b.Property(p => p.Position);
             b.Property(p => p.PositionSpecification);
             b.Property(p => p.PositionMethod);
             b.Property(p => p.Complete);

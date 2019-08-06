@@ -1,10 +1,10 @@
 namespace AddressRegistry.Api.Legacy.Address
 {
     using System.Collections.Generic;
+    using AddressRegistry.Address;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
-    using GeoAPI.Geometries;
     using Projections.Syndication.Municipality;
     using Projections.Syndication.StreetName;
 
@@ -36,12 +36,13 @@ namespace AddressRegistry.Api.Legacy.Address
                 defaultMunicipalityName.Key);
         }
 
-        public static Point GetAddressPoint(IPoint point)
+        public static Point GetAddressPoint(byte[] point)
         {
+            var geometry = WKBReaderFactory.Create().Read(point);
             return new Point
             {
-                XmlPoint = new GmlPoint { Pos = $"{point.Coordinate.X} {point.Coordinate.Y}" },
-                JsonPoint = new GeoJSONPoint { Coordinates = new[] { point.Coordinate.X, point.Coordinate.Y } }
+                XmlPoint = new GmlPoint { Pos = $"{geometry.Coordinate.X} {geometry.Coordinate.Y}" },
+                JsonPoint = new GeoJSONPoint { Coordinates = new[] { geometry.Coordinate.X, geometry.Coordinate.Y } }
             };
         }
 

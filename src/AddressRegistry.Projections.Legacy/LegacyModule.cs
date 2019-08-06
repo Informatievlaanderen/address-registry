@@ -26,7 +26,7 @@ namespace AddressRegistry.Projections.Legacy
                     {
                         sqlServerOptions.EnableRetryOnFailure();
                         sqlServerOptions.MigrationsHistoryTable(MigrationTables.Legacy, Schema.Legacy);
-                        sqlServerOptions.UseNetTopologySuite();
+                        //sqlServerOptions.UseNetTopologySuite();
                     }));
 
             logger.LogInformation(

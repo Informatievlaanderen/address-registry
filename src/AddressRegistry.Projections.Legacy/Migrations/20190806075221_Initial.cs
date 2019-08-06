@@ -16,7 +16,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                 columns: table => new
                 {
                     AddressId = table.Column<Guid>(nullable: false),
-                    OsloId = table.Column<int>(nullable: true),
+                    PersistentLocalId = table.Column<int>(nullable: true),
                     StreetNameId = table.Column<Guid>(nullable: false),
                     PostalCode = table.Column<string>(nullable: true),
                     HouseNumber = table.Column<string>(nullable: true),
@@ -42,7 +42,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                 columns: table => new
                 {
                     AddressId = table.Column<Guid>(nullable: false),
-                    OsloId = table.Column<int>(nullable: false),
+                    PersistentLocalId = table.Column<int>(nullable: false),
                     StreetNameId = table.Column<Guid>(nullable: false),
                     PostalCode = table.Column<string>(nullable: true),
                     HouseNumber = table.Column<string>(nullable: true),
@@ -64,21 +64,26 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                 {
                     Position = table.Column<long>(nullable: false),
                     AddressId = table.Column<Guid>(nullable: false),
-                    OsloId = table.Column<int>(nullable: true),
+                    PersistentLocalId = table.Column<int>(nullable: true),
                     ChangeType = table.Column<string>(nullable: true),
                     StreetNameId = table.Column<Guid>(nullable: true),
                     PostalCode = table.Column<string>(nullable: true),
                     HouseNumber = table.Column<string>(nullable: true),
                     BoxNumber = table.Column<string>(nullable: true),
+                    PointPosition = table.Column<byte[]>(nullable: true),
+                    PositionMethod = table.Column<int>(nullable: true),
+                    PositionSpecification = table.Column<int>(nullable: true),
                     Status = table.Column<int>(nullable: true),
                     IsComplete = table.Column<bool>(nullable: false),
+                    IsOfficiallyAssigned = table.Column<bool>(nullable: false),
                     RecordCreatedAt = table.Column<DateTimeOffset>(nullable: false),
                     LastChangedOn = table.Column<DateTimeOffset>(nullable: false),
                     Application = table.Column<int>(nullable: true),
                     Modification = table.Column<int>(nullable: true),
                     Operator = table.Column<string>(nullable: true),
                     Organisation = table.Column<int>(nullable: true),
-                    Plan = table.Column<int>(nullable: true)
+                    Reason = table.Column<string>(nullable: true),
+                    EventDataAsXml = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -93,7 +98,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                 {
                     AddressId = table.Column<Guid>(nullable: false),
                     StreamPosition = table.Column<long>(nullable: false),
-                    OsloId = table.Column<int>(nullable: false),
+                    PersistentLocalId = table.Column<int>(nullable: false),
                     StreetNameId = table.Column<Guid>(nullable: false),
                     PostalCode = table.Column<string>(nullable: true),
                     HouseNumber = table.Column<string>(nullable: true),
@@ -110,7 +115,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                     Modification = table.Column<int>(nullable: true),
                     Operator = table.Column<string>(nullable: true),
                     Organisation = table.Column<int>(nullable: true),
-                    Plan = table.Column<int>(nullable: true)
+                    Reason = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -119,12 +124,12 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CrabIdToOsloIds",
+                name: "CrabIdToPersistentLocalIds",
                 schema: "AddressRegistryLegacy",
                 columns: table => new
                 {
                     AddressId = table.Column<Guid>(nullable: false),
-                    OsloId = table.Column<int>(nullable: true),
+                    PersistentLocalId = table.Column<int>(nullable: true),
                     HouseNumberId = table.Column<int>(nullable: true),
                     SubaddressId = table.Column<int>(nullable: true),
                     HouseNumber = table.Column<string>(nullable: true),
@@ -137,7 +142,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CrabIdToOsloIds", x => x.AddressId)
+                    table.PrimaryKey("PK_CrabIdToPersistentLocalIds", x => x.AddressId)
                         .Annotation("SqlServer:Clustered", false);
                 });
 
@@ -156,10 +161,10 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AddressDetails_OsloId",
+                name: "IX_AddressDetails_PersistentLocalId",
                 schema: "AddressRegistryLegacy",
                 table: "AddressDetails",
-                column: "OsloId");
+                column: "PersistentLocalId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AddressList_BoxNumber",
@@ -192,41 +197,41 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                 column: "AddressId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AddressSyndication_OsloId",
+                name: "IX_AddressSyndication_PersistentLocalId",
                 schema: "AddressRegistryLegacy",
                 table: "AddressSyndication",
-                column: "OsloId");
+                column: "PersistentLocalId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AddressVersions_OsloId",
+                name: "IX_AddressVersions_PersistentLocalId",
                 schema: "AddressRegistryLegacy",
                 table: "AddressVersions",
-                column: "OsloId");
+                column: "PersistentLocalId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CrabIdToOsloIds_HouseNumberId",
+                name: "IX_CrabIdToPersistentLocalIds_HouseNumberId",
                 schema: "AddressRegistryLegacy",
-                table: "CrabIdToOsloIds",
+                table: "CrabIdToPersistentLocalIds",
                 column: "HouseNumberId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CrabIdToOsloIds_IsRemoved",
+                name: "IX_CrabIdToPersistentLocalIds_IsRemoved",
                 schema: "AddressRegistryLegacy",
-                table: "CrabIdToOsloIds",
+                table: "CrabIdToPersistentLocalIds",
                 column: "IsRemoved");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CrabIdToOsloIds_OsloId",
+                name: "IX_CrabIdToPersistentLocalIds_PersistentLocalId",
                 schema: "AddressRegistryLegacy",
-                table: "CrabIdToOsloIds",
-                column: "OsloId",
+                table: "CrabIdToPersistentLocalIds",
+                column: "PersistentLocalId",
                 unique: true,
-                filter: "[OsloId] IS NOT NULL");
+                filter: "[PersistentLocalId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CrabIdToOsloIds_SubaddressId",
+                name: "IX_CrabIdToPersistentLocalIds_SubaddressId",
                 schema: "AddressRegistryLegacy",
-                table: "CrabIdToOsloIds",
+                table: "CrabIdToPersistentLocalIds",
                 column: "SubaddressId");
         }
 
@@ -249,7 +254,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                 schema: "AddressRegistryLegacy");
 
             migrationBuilder.DropTable(
-                name: "CrabIdToOsloIds",
+                name: "CrabIdToPersistentLocalIds",
                 schema: "AddressRegistryLegacy");
 
             migrationBuilder.DropTable(

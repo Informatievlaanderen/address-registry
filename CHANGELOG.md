@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/informatievlaanderen/address-registry/compare/v1.6.3...v1.7.0) (2019-08-06)
+
+
+### Features
+
+* change Point to ByteArray in legacy to prevent memory leak ([73286d4](https://github.com/informatievlaanderen/address-registry/commit/73286d4))
+
 ## [1.6.3](https://github.com/informatievlaanderen/address-registry/compare/v1.6.2...v1.6.3) (2019-07-17)
 
 

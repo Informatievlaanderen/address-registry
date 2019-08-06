@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AddressRegistry.Projections.Legacy.Migrations
 {
     [DbContext(typeof(LegacyContext))]
-    [Migration("20190523092534_AddEventDataToSync")]
-    partial class AddEventDataToSync
+    [Migration("20190806075254_AddAddressMatchTables")]
+    partial class AddAddressMatchTables
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -34,7 +34,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
 
                     b.Property<bool?>("OfficiallyAssigned");
 
-                    b.Property<int?>("OsloId");
+                    b.Property<int?>("PersistentLocalId");
 
                     b.Property<byte[]>("Position");
 
@@ -56,7 +56,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                     b.HasKey("AddressId")
                         .HasAnnotation("SqlServer:Clustered", false);
 
-                    b.HasIndex("OsloId");
+                    b.HasIndex("PersistentLocalId");
 
                     b.ToTable("AddressDetails","AddressRegistryLegacy");
                 });
@@ -72,7 +72,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
 
                     b.Property<string>("HouseNumber");
 
-                    b.Property<int>("OsloId");
+                    b.Property<int>("PersistentLocalId");
 
                     b.Property<string>("PostalCode");
 
@@ -116,6 +116,8 @@ namespace AddressRegistry.Projections.Legacy.Migrations
 
                     b.Property<bool>("IsComplete");
 
+                    b.Property<bool>("IsOfficiallyAssigned");
+
                     b.Property<DateTimeOffset>("LastChangedOnAsDateTimeOffset")
                         .HasColumnName("LastChangedOn");
 
@@ -125,11 +127,17 @@ namespace AddressRegistry.Projections.Legacy.Migrations
 
                     b.Property<int?>("Organisation");
 
-                    b.Property<int?>("OsloId");
+                    b.Property<int?>("PersistentLocalId");
 
-                    b.Property<int?>("Plan");
+                    b.Property<byte[]>("PointPosition");
+
+                    b.Property<int?>("PositionMethod");
+
+                    b.Property<int?>("PositionSpecification");
 
                     b.Property<string>("PostalCode");
+
+                    b.Property<string>("Reason");
 
                     b.Property<DateTimeOffset>("RecordCreatedAtAsDateTimeOffset")
                         .HasColumnName("RecordCreatedAt");
@@ -143,7 +151,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
 
                     b.HasIndex("AddressId");
 
-                    b.HasIndex("OsloId");
+                    b.HasIndex("PersistentLocalId");
 
                     b.ToTable("AddressSyndication","AddressRegistryLegacy");
                 });
@@ -170,9 +178,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
 
                     b.Property<int?>("Organisation");
 
-                    b.Property<int>("OsloId");
-
-                    b.Property<int?>("Plan");
+                    b.Property<int>("PersistentLocalId");
 
                     b.Property<byte[]>("Position");
 
@@ -181,6 +187,8 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                     b.Property<int?>("PositionSpecification");
 
                     b.Property<string>("PostalCode");
+
+                    b.Property<string>("Reason");
 
                     b.Property<bool>("Removed");
 
@@ -194,12 +202,12 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                     b.HasKey("AddressId", "StreamPosition")
                         .HasAnnotation("SqlServer:Clustered", false);
 
-                    b.HasIndex("OsloId");
+                    b.HasIndex("PersistentLocalId");
 
                     b.ToTable("AddressVersions","AddressRegistryLegacy");
                 });
 
-            modelBuilder.Entity("AddressRegistry.Projections.Legacy.CrabIdToOsloId.CrabIdToOsloIdItem", b =>
+            modelBuilder.Entity("AddressRegistry.Projections.Legacy.CrabIdToPersistentLocalId.CrabIdToPersistentLocalIdItem", b =>
                 {
                     b.Property<Guid>("AddressId")
                         .ValueGeneratedOnAdd();
@@ -214,7 +222,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
 
                     b.Property<bool>("IsRemoved");
 
-                    b.Property<int?>("OsloId");
+                    b.Property<int?>("PersistentLocalId");
 
                     b.Property<string>("PostalCode");
 
@@ -232,13 +240,13 @@ namespace AddressRegistry.Projections.Legacy.Migrations
 
                     b.HasIndex("IsRemoved");
 
-                    b.HasIndex("OsloId")
+                    b.HasIndex("PersistentLocalId")
                         .IsUnique()
-                        .HasFilter("[OsloId] IS NOT NULL");
+                        .HasFilter("[PersistentLocalId] IS NOT NULL");
 
                     b.HasIndex("SubaddressId");
 
-                    b.ToTable("CrabIdToOsloIds","AddressRegistryLegacy");
+                    b.ToTable("CrabIdToPersistentLocalIds","AddressRegistryLegacy");
                 });
 
             modelBuilder.Entity("Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.ProjectionStates.ProjectionStateItem", b =>

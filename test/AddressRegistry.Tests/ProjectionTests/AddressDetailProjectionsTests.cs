@@ -214,7 +214,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             AddressId = addressWasRegistered.AddressId,
                             StreetNameId = addressWasRegistered.StreetNameId,
                             HouseNumber = addressWasRegistered.HouseNumber,
-                            Position = (IPoint)_wkbReader.Read(addressPositionWasCorrected.ExtendedWkbGeometry.ToByteArray()),
+                            Position = addressPositionWasCorrected.ExtendedWkbGeometry.ToByteArray(),
                             PositionMethod = addressPositionWasCorrected.GeometryMethod,
                             PositionSpecification = addressPositionWasCorrected.GeometrySpecification
                         }));
@@ -472,7 +472,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             AddressId = addressWasRegistered.AddressId,
                             StreetNameId = addressWasRegistered.StreetNameId,
                             HouseNumber = addressWasRegistered.HouseNumber,
-                            Position = (IPoint)_wkbReader.Read(addressWasPositioned.ExtendedWkbGeometry.ToByteArray()),
+                            Position = addressWasPositioned.ExtendedWkbGeometry.ToByteArray(),
                             PositionMethod = addressWasPositioned.GeometryMethod,
                             PositionSpecification = addressWasPositioned.GeometrySpecification
                         }));
@@ -734,7 +734,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             AddressId = addressWasRegistered.AddressId,
                             StreetNameId = addressWasRegistered.StreetNameId,
                             HouseNumber = addressWasRegistered.HouseNumber,
-                            Position = (IPoint)_wkbReader.Read(addressWasPositioned.ExtendedWkbGeometry.ToByteArray()),
+                            Position = addressWasPositioned.ExtendedWkbGeometry.ToByteArray(),
                             PositionMethod = addressWasPositioned.GeometryMethod,
                             PositionSpecification = addressWasPositioned.GeometrySpecification,
                             Removed = true,

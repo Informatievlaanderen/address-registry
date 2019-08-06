@@ -2,7 +2,6 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
 {
     using System;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using GeoAPI.Geometries;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -21,7 +20,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
         public string HouseNumber { get; set; }
         public string BoxNumber { get; set; }
 
-        public IPoint PointPosition { get; set; }
+        public byte[] PointPosition { get; set; }
         public GeometryMethod? PositionMethod { get; set; }
         public GeometrySpecification? PositionSpecification { get; set; }
 
@@ -113,8 +112,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             b.Property(x => x.IsOfficiallyAssigned);
             b.Property(x => x.IsComplete);
 
-            b.Property(x => x.PointPosition)
-                .HasColumnType("sys.geometry");
+            b.Property(x => x.PointPosition);
             b.Property(x => x.PositionMethod);
             b.Property(x => x.PositionSpecification);
 

@@ -10,6 +10,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
     using NodaTime;
     using System;
     using System.Text;
+    using Address.Events.Crab;
 
     public class AddressExtractProjection : ConnectedProjection<ExtractContext>
     {
@@ -324,6 +325,14 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 UpdateDbaseRecordField(item, record => record.busnr.Value = null);
                 UpdateVersie(item, message.Message.Provenance.Timestamp);
             });
+
+            When<Envelope<AddressHouseNumberWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressHouseNumberStatusWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressHouseNumberPositionWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressHouseNumberMailCantonWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressSubaddressPositionWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressSubaddressStatusWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
         }
 
         private void UpdateDbaseRecordField(AddressExtractItem item, Action<AddressDbaseRecord> update)
@@ -393,5 +402,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                     throw new NotImplementedException();
             }
         }
+
+        private static void DoNothing() { }
     }
 }

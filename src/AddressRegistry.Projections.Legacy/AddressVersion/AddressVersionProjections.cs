@@ -10,6 +10,7 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Address.Events.Crab;
     using NetTopologySuite.IO;
 
     public static class AddressVersionsQueries
@@ -197,6 +198,24 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
                     ct);
             });
 
+            When<Envelope<AddressStreetNameWasChanged>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressVersion(
+                    message.Message.AddressId,
+                    message,
+                    item => item.StreetNameId = message.Message.StreetNameId,
+                    ct);
+            });
+
+            When<Envelope<AddressStreetNameWasCorrected>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressVersion(
+                    message.Message.AddressId,
+                    message,
+                    item => item.StreetNameId = message.Message.StreetNameId,
+                    ct);
+            });
+
             When<Envelope<AddressWasCorrectedToCurrent>>(async (context, message, ct) =>
             {
                 await context.CreateNewAddressVersion(
@@ -318,6 +337,16 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
                     item => item.BoxNumber = null,
                     ct);
             });
+
+            When<Envelope<AddressHouseNumberWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressHouseNumberStatusWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressHouseNumberPositionWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressHouseNumberMailCantonWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressSubaddressPositionWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressSubaddressStatusWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
         }
+
+        private static void DoNothing() { }
     }
 }

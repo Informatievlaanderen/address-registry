@@ -20,6 +20,13 @@ namespace AddressRegistry.Projections.Syndication.Municipality
             When(MunicipalityEvent.MunicipalityNameWasCorrectedToCleared, AddSyndicationItemEntry);
             When(MunicipalityEvent.MunicipalityOfficialLanguageWasAdded, AddSyndicationItemEntry);
             When(MunicipalityEvent.MunicipalityOfficialLanguageWasRemoved, AddSyndicationItemEntry);
+
+            When(MunicipalityEvent.MunicipalityBecameCurrent, DoNothing);
+            When(MunicipalityEvent.MunicipalityWasCorrectedToCurrent, DoNothing);
+            When(MunicipalityEvent.MunicipalityWasRetired, DoNothing);
+            When(MunicipalityEvent.MunicipalityWasCorrectedToRetired, DoNothing);
+            When(MunicipalityEvent.MunicipalityFacilitiesLanguageWasAdded, DoNothing);
+            When(MunicipalityEvent.MunicipalityFacilitiesLanguageWasRemoved, DoNothing);
         }
 
         private static async Task AddSyndicationItemEntry(AtomEntry<SyndicationItem<Municipality>> entry, SyndicationContext context, CancellationToken ct)
@@ -65,5 +72,7 @@ namespace AddressRegistry.Projections.Syndication.Municipality
                 }
             }
         }
+
+        private static Task DoNothing(AtomEntry<SyndicationItem<Municipality>> entry, SyndicationContext context, CancellationToken ct) => Task.CompletedTask;
     }
 }

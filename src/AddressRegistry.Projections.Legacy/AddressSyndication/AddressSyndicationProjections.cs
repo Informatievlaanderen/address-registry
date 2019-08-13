@@ -1,6 +1,7 @@
 namespace AddressRegistry.Projections.Legacy.AddressSyndication
 {
     using Address.Events;
+    using Address.Events.Crab;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
@@ -231,6 +232,15 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     ct);
             });
 
+            When<Envelope<AddressWasCorrectedToNotOfficiallyAssigned>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressId,
+                    message,
+                    x => x.IsOfficiallyAssigned = false,
+                    ct);
+            });
+
             When<Envelope<AddressWasCorrectedToProposed>>(async (context, message, ct) =>
             {
                 await context.CreateNewAddressSyndicationItem(
@@ -321,6 +331,17 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     .AddressSyndication
                     .AddAsync(newAddressSyndicationItem, ct);
             });
+
+            When<Envelope<AddressHouseNumberWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressHouseNumberStatusWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressHouseNumberPositionWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressHouseNumberMailCantonWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressSubaddressPositionWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressSubaddressStatusWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+
         }
+
+        private static void DoNothing() { }
     }
 }

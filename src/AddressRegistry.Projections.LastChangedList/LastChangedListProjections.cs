@@ -1,6 +1,7 @@
 namespace AddressRegistry.Projections.LastChangedList
 {
     using Address.Events;
+    using Address.Events.Crab;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
 
@@ -174,6 +175,17 @@ namespace AddressRegistry.Projections.LastChangedList
             {
                 await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
             });
+
+            When<Envelope<AddressHouseNumberWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressHouseNumberStatusWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressHouseNumberPositionWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressHouseNumberMailCantonWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressSubaddressPositionWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressSubaddressStatusWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+
         }
+
+        private static void DoNothing() { }
     }
 }

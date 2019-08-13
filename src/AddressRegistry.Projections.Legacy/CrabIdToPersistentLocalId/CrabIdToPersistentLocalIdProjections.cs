@@ -225,6 +225,13 @@ namespace AddressRegistry.Projections.Legacy.CrabIdToPersistentLocalId
                     message.Message.Provenance.Timestamp,
                     ct);
             });
+            When<Envelope<AddressWasOfficiallyAssigned>>(async (context, message, ct) =>
+            {
+                await FindAndUpdateVersion(context,
+                    message.Message.AddressId,
+                    message.Message.Provenance.Timestamp,
+                    ct);
+            });
             When<Envelope<AddressWasPositioned>>(async (context, message, ct) =>
             {
                 await FindAndUpdateVersion(context,
@@ -246,6 +253,12 @@ namespace AddressRegistry.Projections.Legacy.CrabIdToPersistentLocalId
                     message.Message.Provenance.Timestamp,
                     ct);
             });
+
+            When<Envelope<AddressHouseNumberStatusWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressHouseNumberPositionWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressHouseNumberMailCantonWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressSubaddressPositionWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressSubaddressStatusWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
         }
 
         private static async Task FindAndUpdateVersion(LegacyContext context, Guid addressId, Instant version, CancellationToken ct)
@@ -258,5 +271,7 @@ namespace AddressRegistry.Projections.Legacy.CrabIdToPersistentLocalId
         {
             item.VersionTimestamp = timestamp;
         }
+
+        private static void DoNothing() { }
     }
 }

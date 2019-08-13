@@ -18,16 +18,7 @@ namespace AddressRegistry.Projections.Syndication.StreetName
 
         StreetNamePersistentLocalIdentifierWasAssigned,
 
-        StreetNamePrimaryLanguageWasCleared,
-        StreetNamePrimaryLanguageWasCorrected,
-        StreetNamePrimaryLanguageWasCorrectedToCleared,
-        StreetNamePrimaryLanguageWasDefined,
-
-        StreetNameSecondaryLanguageWasCleared,
-        StreetNameSecondaryLanguageWasCorrected,
-        StreetNameSecondaryLanguageWasCorrectedToCleared,
-        StreetNameSecondaryLanguageWasDefined,
-
+        StreetNameStatusWasRemoved,
         StreetNameStatusWasCorrectedToRemoved,
         StreetNameWasCorrectedToCurrent,
         StreetNameWasCorrectedToProposed,

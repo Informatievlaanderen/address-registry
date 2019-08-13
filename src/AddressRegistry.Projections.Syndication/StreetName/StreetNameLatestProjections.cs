@@ -25,16 +25,6 @@ namespace AddressRegistry.Projections.Syndication.StreetName
             When(StreetNameEvent.StreetNameHomonymAdditionWasCorrectedToCleared, AddSyndicationItemEntry);
             When(StreetNameEvent.StreetNameHomonymAdditionWasDefined, AddSyndicationItemEntry);
 
-            When(StreetNameEvent.StreetNamePrimaryLanguageWasCleared, AddSyndicationItemEntry);
-            When(StreetNameEvent.StreetNamePrimaryLanguageWasCorrected, AddSyndicationItemEntry);
-            When(StreetNameEvent.StreetNamePrimaryLanguageWasCorrectedToCleared, AddSyndicationItemEntry);
-            When(StreetNameEvent.StreetNamePrimaryLanguageWasDefined, AddSyndicationItemEntry);
-
-            When(StreetNameEvent.StreetNameSecondaryLanguageWasCleared, AddSyndicationItemEntry);
-            When(StreetNameEvent.StreetNameSecondaryLanguageWasCorrected, AddSyndicationItemEntry);
-            When(StreetNameEvent.StreetNameSecondaryLanguageWasCorrectedToCleared, AddSyndicationItemEntry);
-            When(StreetNameEvent.StreetNameSecondaryLanguageWasDefined, AddSyndicationItemEntry);
-
             When(StreetNameEvent.StreetNameWasCorrectedToProposed, AddSyndicationItemEntry);
             When(StreetNameEvent.StreetNameWasProposed, AddSyndicationItemEntry);
             When(StreetNameEvent.StreetNameWasCorrectedToRetired, AddSyndicationItemEntry);
@@ -42,6 +32,7 @@ namespace AddressRegistry.Projections.Syndication.StreetName
             When(StreetNameEvent.StreetNameBecameCurrent, AddSyndicationItemEntry);
             When(StreetNameEvent.StreetNameWasCorrectedToCurrent, AddSyndicationItemEntry);
             When(StreetNameEvent.StreetNameStatusWasCorrectedToRemoved, AddSyndicationItemEntry);
+            When(StreetNameEvent.StreetNameStatusWasRemoved, AddSyndicationItemEntry);
 
             When(StreetNameEvent.StreetNameWasRegistered, AddSyndicationItemEntry);
             When(StreetNameEvent.StreetNameWasRemoved, AddSyndicationItemEntry);

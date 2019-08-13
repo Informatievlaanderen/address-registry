@@ -1,6 +1,7 @@
 namespace AddressRegistry.Projections.Legacy.AddressList
 {
     using Address.Events;
+    using Address.Events.Crab;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using NodaTime;
@@ -114,6 +115,30 @@ namespace AddressRegistry.Projections.Legacy.AddressList
                     ct);
             });
 
+            When<Envelope<AddressStreetNameWasChanged>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateAddressListItem(
+                    message.Message.AddressId,
+                    item =>
+                    {
+                        item.StreetNameId = message.Message.StreetNameId;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressStreetNameWasCorrected>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateAddressListItem(
+                    message.Message.AddressId,
+                    item =>
+                    {
+                        item.StreetNameId = message.Message.StreetNameId;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+            });
+
             When<Envelope<AddressWasRemoved>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressListItem(
@@ -137,7 +162,6 @@ namespace AddressRegistry.Projections.Legacy.AddressList
                     },
                     ct);
             });
-
             When<Envelope<AddressBoxNumberWasCorrected>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressListItem(
@@ -149,7 +173,6 @@ namespace AddressRegistry.Projections.Legacy.AddressList
                     },
                     ct);
             });
-
             When<Envelope<AddressBoxNumberWasRemoved>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressListItem(
@@ -161,9 +184,38 @@ namespace AddressRegistry.Projections.Legacy.AddressList
                     },
                     ct);
             });
+
+            When<Envelope<AddressBecameCurrent>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressWasCorrectedToCurrent>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressWasProposed>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressWasCorrectedToProposed>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressWasRetired>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressWasCorrectedToRetired>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressStatusWasRemoved>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressStatusWasCorrectedToRemoved>>(async (context, message, ct) => DoNothing());
+
+            When<Envelope<AddressWasPositioned>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressPositionWasCorrected>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressPositionWasRemoved>>(async (context, message, ct) => DoNothing());
+
+            When<Envelope<AddressWasOfficiallyAssigned>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressWasCorrectedToOfficiallyAssigned>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressBecameNotOfficiallyAssigned>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressWasCorrectedToNotOfficiallyAssigned>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressOfficialAssignmentWasRemoved>>(async (context, message, ct) => DoNothing());
+
+            When<Envelope<AddressHouseNumberWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressHouseNumberStatusWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressHouseNumberPositionWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressHouseNumberMailCantonWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressSubaddressPositionWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressSubaddressStatusWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
         }
 
         private static void UpdateVersionTimestamp(AddressListItem addressListItem, Instant timestamp)
             => addressListItem.VersionTimestamp = timestamp;
+
+        private static void DoNothing() { }
     }
 }

@@ -13,5 +13,9 @@ namespace AddressRegistry.Projections.Syndication.Municipality
         MunicipalityOfficialLanguageWasRemoved,
         MunicipalityFacilitiesLanguageWasAdded,
         MunicipalityFacilitiesLanguageWasRemoved,
+        MunicipalityBecameCurrent,
+        MunicipalityWasCorrectedToCurrent,
+        MunicipalityWasRetired,
+        MunicipalityWasCorrectedToRetired,
     }
 }

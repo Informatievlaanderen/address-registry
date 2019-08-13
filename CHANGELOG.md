@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/informatievlaanderen/address-registry/compare/v1.7.1...v1.8.0) (2019-08-13)
+
+
+### Features
+
+* add missing event handlers where nothing was expected [#23](https://github.com/informatievlaanderen/address-registry/issues/23) ([0970d3e](https://github.com/informatievlaanderen/address-registry/commit/0970d3e))
+
 ## [1.7.1](https://github.com/informatievlaanderen/address-registry/compare/v1.7.0...v1.7.1) (2019-08-09)
 
 # [1.7.0](https://github.com/informatievlaanderen/address-registry/compare/v1.6.3...v1.7.0) (2019-08-06)

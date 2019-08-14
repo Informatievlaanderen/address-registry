@@ -1,3 +1,10 @@
+# [1.9.0](https://github.com/informatievlaanderen/address-registry/compare/v1.8.0...v1.9.0) (2019-08-14)
+
+
+### Features
+
+* add missing sync building handlers when nothing was expected [#23](https://github.com/informatievlaanderen/address-registry/issues/23) ([b513c30](https://github.com/informatievlaanderen/address-registry/commit/b513c30))
+
 # [1.8.0](https://github.com/informatievlaanderen/address-registry/compare/v1.7.1...v1.8.0) (2019-08-13)
 
 

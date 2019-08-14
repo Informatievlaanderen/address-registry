@@ -13,6 +13,28 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
             When(BuildingEvent.BuildingWasRegistered, AddSyndicationItemEntry);
             When(BuildingEvent.BuildingBecameComplete, AddSyndicationItemEntry);
             When(BuildingEvent.BuildingBecameIncomplete, AddSyndicationItemEntry);
+            When(BuildingEvent.BuildingWasRemoved, RemoveBuilding);
+
+            When(BuildingEvent.BuildingBecameUnderConstruction, DoNothing);
+            When(BuildingEvent.BuildingGeometryWasRemoved, DoNothing);
+            When(BuildingEvent.BuildingMeasurementByGrbWasCorrected, DoNothing);
+            When(BuildingEvent.BuildingOutlineWasCorrected, DoNothing);
+            When(BuildingEvent.BuildingPersistentLocalIdWasAssigned, DoNothing);
+            When(BuildingEvent.BuildingStatusWasCorrectedToRemoved, DoNothing);
+            When(BuildingEvent.BuildingStatusWasRemoved, DoNothing);
+            When(BuildingEvent.BuildingWasCorrectedToNotRealized, DoNothing);
+            When(BuildingEvent.BuildingWasCorrectedToPlanned, DoNothing);
+            When(BuildingEvent.BuildingWasCorrectedToRealized, DoNothing);
+            When(BuildingEvent.BuildingWasCorrectedToRetired, DoNothing);
+            When(BuildingEvent.BuildingWasCorrectedToUnderConstruction, DoNothing);
+            When(BuildingEvent.BuildingWasMeasuredByGrb, DoNothing);
+            When(BuildingEvent.BuildingWasNotRealized, DoNothing);
+            When(BuildingEvent.BuildingWasOutlined, DoNothing);
+            When(BuildingEvent.BuildingWasPlanned, DoNothing);
+            When(BuildingEvent.BuildingWasRealized, DoNothing);
+            When(BuildingEvent.BuildingWasRetired, DoNothing);
+
+            //BuildingUnit
             When(BuildingEvent.BuildingUnitAddressWasAttached, AddSyndicationItemEntry);
             When(BuildingEvent.BuildingUnitAddressWasDetached, AddSyndicationItemEntry);
             When(BuildingEvent.BuildingUnitBecameComplete, AddSyndicationItemEntry);
@@ -40,7 +62,9 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
             When(BuildingEvent.BuildingUnitWasRetired, AddSyndicationItemEntry);
             When(BuildingEvent.BuildingUnitWasRetiredByParent, AddSyndicationItemEntry);
             When(BuildingEvent.CommonBuildingUnitWasAdded, AddSyndicationItemEntry);
-            When(BuildingEvent.BuildingWasRemoved, RemoveBuilding);
+
+            When(BuildingEvent.BuildingUnitPersistentLocalIdentifierWasDuplicated, AddSyndicationItemEntry);
+            When(BuildingEvent.BuildingUnitPersistentLocalIdentifierWasRemoved, AddSyndicationItemEntry);
         }
 
         private static async Task RemoveBuilding(AtomEntry<SyndicationItem<Building>> entry, SyndicationContext context, CancellationToken ct)
@@ -102,5 +126,7 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
                 context.BuildingUnitAddressMatchLatestItems.RemoveRange(addressItemsToRemove);
             }
         }
+
+        private static Task DoNothing(AtomEntry<SyndicationItem<Building>> entry, SyndicationContext context, CancellationToken ct) => Task.CompletedTask;
     }
 }

@@ -5,6 +5,6 @@ namespace AddressRegistry
 
     public class BoxNumber : StringValueObject<BoxNumber>
     {
-        public BoxNumber([JsonProperty("value")] string boxNumber) : base(boxNumber) { }
+        public BoxNumber([JsonProperty("value")] string boxNumber) : base(boxNumber.RemoveUnicodeControlCharacters()) { }
     }
 }

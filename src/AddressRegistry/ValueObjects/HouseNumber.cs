@@ -5,6 +5,6 @@ namespace AddressRegistry
 
     public class HouseNumber : StringValueObject<HouseNumber>
     {
-        public HouseNumber([JsonProperty("value")] string houseNumber) : base(houseNumber) { }
+        public HouseNumber([JsonProperty("value")] string houseNumber) : base(houseNumber.RemoveUnicodeControlCharacters()) { }
     }
 }

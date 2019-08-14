@@ -1,3 +1,10 @@
+## [1.9.1](https://github.com/informatievlaanderen/address-registry/compare/v1.9.0...v1.9.1) (2019-08-14)
+
+
+### Bug Fixes
+
+* remove Unicode control characters in domain for Box/HouseNumber ([249690e](https://github.com/informatievlaanderen/address-registry/commit/249690e))
+
 # [1.9.0](https://github.com/informatievlaanderen/address-registry/compare/v1.8.0...v1.9.0) (2019-08-14)
 
 

@@ -20,7 +20,7 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
             var query = _context.CrabIdToPersistentLocalIds
                 .Where(x => !x.IsRemoved && x.HouseNumberId.HasValue && x.PersistentLocalId.HasValue);
 
-            if (filtering.ShouldFilter)
+            if (filtering.ShouldFilter && filtering.Filter.CrabHouseNumberId.HasValue)
                 query = query.Where(x => x.HouseNumberId == filtering.Filter.CrabHouseNumberId);
 
             return query;

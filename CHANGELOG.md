@@ -1,3 +1,10 @@
+## [1.10.1](https://github.com/informatievlaanderen/address-registry/compare/v1.10.0...v1.10.1) (2019-08-19)
+
+
+### Bug Fixes
+
+* filter null value on crab endpoints now acts accordingly ([ed98e58](https://github.com/informatievlaanderen/address-registry/commit/ed98e58))
+
 # [1.10.0](https://github.com/informatievlaanderen/address-registry/compare/v1.9.1...v1.10.0) (2019-08-19)
 
 

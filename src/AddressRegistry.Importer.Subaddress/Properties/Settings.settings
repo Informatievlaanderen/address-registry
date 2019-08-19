@@ -35,5 +35,8 @@
     <Setting Name="ImportBatchStatusEndpoint" Type="System.String" Scope="Application">
       <Value Profile="(Default)">v1/crabimport/batch</Value>
     </Setting>
+    <Setting Name="WaitForUserInput" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

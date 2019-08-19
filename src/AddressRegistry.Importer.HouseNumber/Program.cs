@@ -18,13 +18,12 @@ namespace AddressRegistry.Importer.HouseNumber
 
         private static void Main(string[] args)
         {
+            var settings = new SettingsBasedConfig();
             try
             {
                 var options = new ImportOptions(
                     args,
-                    errors => WaitForExit("Could not parse commandline options."));
-
-                var settings = new SettingsBasedConfig();
+                    errors => WaitForExit(settings.WaitForUserInput, "Could not parse commandline options."));
 
                 var generator = new HouseNumberCommandGenerator(ConfigurationManager.ConnectionStrings["Crab2Vbr"].ConnectionString);
 
@@ -46,20 +45,20 @@ namespace AddressRegistry.Importer.HouseNumber
                     .UseDefaultSerializerSettingsForCrabImports()
                     .ConfigureImportFeedFromAssembly(Assembly.GetExecutingAssembly())
                     .Build();
-;
-                WaitForStart();
+                ;
+                WaitForStart(settings.WaitForUserInput);
 
                 commandProcessor.Run(options, settings);
 
-                WaitForExit();
+                WaitForExit(settings.WaitForUserInput);
             }
             catch (Exception exception)
             {
-                WaitForExit("General error occurred", exception);
+                WaitForExit(settings.WaitForUserInput, "General error occurred", exception);
             }
         }
 
-        private static void WaitForExit(string errorMessage = null, Exception exception = null)
+        private static void WaitForExit(bool waitForUserInput, string errorMessage = null, Exception exception = null)
         {
             if (!string.IsNullOrEmpty(errorMessage))
                 Console.Error.WriteLine(errorMessage);
@@ -76,8 +75,11 @@ namespace AddressRegistry.Importer.HouseNumber
                 Console.WriteLine(summary);
             }
 
-            Console.WriteLine("Done! Press ENTER key to exit...");
-            ConsoleExtensions.WaitFor(ConsoleKey.Enter);
+            if (waitForUserInput)
+            {
+                Console.WriteLine("Done! Press ENTER key to exit...");
+                ConsoleExtensions.WaitFor(ConsoleKey.Enter);
+            }
 
             if (!string.IsNullOrEmpty(errorMessage))
                 Environment.Exit(1);
@@ -85,10 +87,16 @@ namespace AddressRegistry.Importer.HouseNumber
             Environment.Exit(0);
         }
 
-        private static void WaitForStart()
+        private static void WaitForStart(bool waitForUserInput)
         {
-            Console.WriteLine("Press ENTER key to start the CRAB Import...");
-            ConsoleExtensions.WaitFor(ConsoleKey.Enter);
+            if (waitForUserInput)
+            {
+                Console.WriteLine("Press ENTER key to start the CRAB Import...");
+                ConsoleExtensions.WaitFor(ConsoleKey.Enter);
+            }
+            else
+                Console.WriteLine("Starting CRAB Import...");
+
             _stopwatch = Stopwatch.StartNew();
         }
     }

@@ -1,3 +1,10 @@
+# [1.10.0](https://github.com/informatievlaanderen/address-registry/compare/v1.9.1...v1.10.0) (2019-08-19)
+
+
+### Features
+
+* add wait for user input to importers ([fd88bcc](https://github.com/informatievlaanderen/address-registry/commit/fd88bcc))
+
 ## [1.9.1](https://github.com/informatievlaanderen/address-registry/compare/v1.9.0...v1.9.1) (2019-08-14)
 
 

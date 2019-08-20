@@ -50,7 +50,7 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
             {
                 Identificator = new Identificator(naamruimte, persistentLocalId.ToString(CultureInfo.InvariantCulture), version),
                 IsComplete = isComplete,
-                Detail = new Uri(detailUrl),
+                Detail = new Uri(string.Format(detailUrl, persistentLocalId)),
                 Huisnummer = houseNumber,
                 VolledigAdres = volledigAdres,
             };

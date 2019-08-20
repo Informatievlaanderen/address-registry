@@ -1,3 +1,10 @@
+## [1.10.2](https://github.com/informatievlaanderen/address-registry/compare/v1.10.1...v1.10.2) (2019-08-20)
+
+
+### Bug Fixes
+
+* detail url for crab endpoints are now correctly formatted ([b1e4441](https://github.com/informatievlaanderen/address-registry/commit/b1e4441))
+
 ## [1.10.1](https://github.com/informatievlaanderen/address-registry/compare/v1.10.0...v1.10.1) (2019-08-19)
 
 

@@ -1,3 +1,11 @@
+## [1.10.3](https://github.com/informatievlaanderen/address-registry/compare/v1.10.2...v1.10.3) (2019-08-22)
+
+
+### Bug Fixes
+
+* bosa exact filter takes exact name into account ([b62d607](https://github.com/informatievlaanderen/address-registry/commit/b62d607))
+* return empty response when request has invalid data GR-856 ([035a6ae](https://github.com/informatievlaanderen/address-registry/commit/035a6ae))
+
 ## [1.10.2](https://github.com/informatievlaanderen/address-registry/compare/v1.10.1...v1.10.2) (2019-08-20)
 
 

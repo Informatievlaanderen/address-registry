@@ -242,10 +242,10 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                         i.NameGermanSearch.Contains(searchValue) ||
                         i.NameEnglishSearch.Contains(searchValue))
                     : query.Where(i =>
-                        i.NameDutchSearch.Equals(searchValue) ||
-                        i.NameFrenchSearch.Equals(searchValue) ||
-                        i.NameGermanSearch.Equals(searchValue) ||
-                        i.NameEnglishSearch.Equals(searchValue));
+                        i.NameDutch.Equals(searchValue) ||
+                        i.NameFrench.Equals(searchValue) ||
+                        i.NameGerman.Equals(searchValue) ||
+                        i.NameEnglish.Equals(searchValue));
             }
 
             switch (language.Value)
@@ -254,22 +254,22 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 case Taal.NL:
                     return isContainsFilter
                         ? query.Where(i => i.NameDutchSearch.Contains(searchValue))
-                        : query.Where(i => i.NameDutchSearch.Equals(searchValue));
+                        : query.Where(i => i.NameDutch.Equals(searchValue));
 
                 case Taal.FR:
                     return isContainsFilter
                         ? query.Where(i => i.NameFrenchSearch.Contains(searchValue))
-                        : query.Where(i => i.NameFrenchSearch.Equals(searchValue));
+                        : query.Where(i => i.NameFrench.Equals(searchValue));
 
                 case Taal.DE:
                     return isContainsFilter
                         ? query.Where(i => i.NameGermanSearch.Contains(searchValue))
-                        : query.Where(i => i.NameGermanSearch.Equals(searchValue));
+                        : query.Where(i => i.NameGerman.Equals(searchValue));
 
                 case Taal.EN:
                     return isContainsFilter
                         ? query.Where(i => i.NameEnglishSearch.Contains(searchValue))
-                        : query.Where(i => i.NameEnglishSearch.Equals(searchValue));
+                        : query.Where(i => i.NameEnglish.Equals(searchValue));
             }
         }
 
@@ -342,10 +342,10 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                         i.NameGermanSearch.Contains(searchValue) ||
                         i.NameEnglishSearch.Contains(searchValue))
                     : query.Where(i =>
-                        i.NameDutchSearch.Equals(searchValue) ||
-                        i.NameFrenchSearch.Equals(searchValue) ||
-                        i.NameGermanSearch.Equals(searchValue) ||
-                        i.NameEnglishSearch.Equals(searchValue));
+                        i.NameDutch.Equals(searchValue) ||
+                        i.NameFrench.Equals(searchValue) ||
+                        i.NameGerman.Equals(searchValue) ||
+                        i.NameEnglish.Equals(searchValue));
             }
 
             switch (language.Value)
@@ -354,22 +354,22 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 case Taal.NL:
                     return isContainsFilter
                         ? query.Where(i => i.NameDutchSearch.Contains(searchValue))
-                        : query.Where(i => i.NameDutchSearch.Equals(searchValue));
+                        : query.Where(i => i.NameDutch.Equals(searchValue));
 
                 case Taal.FR:
                     return isContainsFilter
                         ? query.Where(i => i.NameFrenchSearch.Contains(searchValue))
-                        : query.Where(i => i.NameFrenchSearch.Equals(searchValue));
+                        : query.Where(i => i.NameFrench.Equals(searchValue));
 
                 case Taal.DE:
                     return isContainsFilter
                         ? query.Where(i => i.NameGermanSearch.Contains(searchValue))
-                        : query.Where(i => i.NameGermanSearch.Equals(searchValue));
+                        : query.Where(i => i.NameGerman.Equals(searchValue));
 
                 case Taal.EN:
                     return isContainsFilter
                         ? query.Where(i => i.NameEnglishSearch.Contains(searchValue))
-                        : query.Where(i => i.NameEnglishSearch.Equals(searchValue));
+                        : query.Where(i => i.NameEnglish.Equals(searchValue));
             }
         }
     }

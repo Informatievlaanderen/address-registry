@@ -276,6 +276,9 @@ namespace AddressRegistry.Api.Legacy.Address
             [FromBody] BosaAddressRequest addressRequest,
             CancellationToken cancellationToken = default)
         {
+            if (Request.ContentLength.HasValue && Request.ContentLength > 0 && addressRequest == null)
+                return Ok(new AddressBosaResponse());
+
             var query = new AddressBosaQuery(context, syndicationContext, responseOptions.Value);
 
             return Ok(await query.Filter(addressRequest));
@@ -309,6 +312,9 @@ namespace AddressRegistry.Api.Legacy.Address
             [FromBody] BosaAddressRepresentationRequest request,
             CancellationToken cancellationToken = default)
         {
+            if (Request.ContentLength.HasValue && Request.ContentLength > 0 && request == null)
+                return Ok(new AddressRepresentationBosaResponse());
+
             if (string.IsNullOrEmpty(request?.AdresCode?.ObjectId) || !int.TryParse(request.AdresCode.ObjectId, out var addressId))
                 return BadRequest("Valid objectId is required");
 

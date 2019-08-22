@@ -1,3 +1,10 @@
+# [1.11.0](https://github.com/informatievlaanderen/address-registry/compare/v1.10.3...v1.11.0) (2019-08-22)
+
+
+### Features
+
+* extract datavlaanderen namespace to settings ([efb4ebc](https://github.com/informatievlaanderen/address-registry/commit/efb4ebc))
+
 ## [1.10.3](https://github.com/informatievlaanderen/address-registry/compare/v1.10.2...v1.10.3) (2019-08-22)
 
 

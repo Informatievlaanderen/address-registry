@@ -11,6 +11,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
     using System;
     using System.Text;
     using Address.Events.Crab;
+    using Microsoft.Extensions.Options;
 
     public class AddressExtractProjection : ConnectedProjection<ExtractContext>
     {
@@ -33,12 +34,9 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
         private readonly string GeomSpecLot = "Lot";
         private readonly string GeomSpecEntry = "Ingang";
         private readonly string GeomSpecBuildingUnit = "Gebouweenheid";
-
-        private const string IdUri = "https://data.vlaanderen.be/id/adres";
-
         private readonly Encoding _encoding;
 
-        public AddressExtractProjection(Encoding encoding, WKBReader wkbReader)
+        public AddressExtractProjection(IOptions<ExtractConfig> extractConfig, Encoding encoding, WKBReader wkbReader)
         {
             _encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
 
@@ -128,7 +126,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 if (item != null) // in rare cases were we might get this event after an AddressWasRemoved event, we can just ignore it
                     UpdateDbaseRecordField(item, record =>
                     {
-                        record.id.Value = $"{IdUri}/{message.Message.PersistentLocalId}";
+                        record.id.Value = $"{extractConfig.Value.DataVlaanderenNamespace}/{message.Message.PersistentLocalId}";
                         record.adresid.Value = message.Message.PersistentLocalId;
                     });
             });

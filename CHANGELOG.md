@@ -1,3 +1,10 @@
+# [1.12.0](https://github.com/informatievlaanderen/address-registry/compare/v1.11.0...v1.12.0) (2019-08-26)
+
+
+### Features
+
+* bump to .net 2.2.6 ([591f32d](https://github.com/informatievlaanderen/address-registry/commit/591f32d))
+
 # [1.11.0](https://github.com/informatievlaanderen/address-registry/compare/v1.10.3...v1.11.0) (2019-08-22)
 
 

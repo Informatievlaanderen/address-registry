@@ -1,3 +1,10 @@
+## [1.12.2](https://github.com/informatievlaanderen/address-registry/compare/v1.12.1...v1.12.2) (2019-08-26)
+
+
+### Bug Fixes
+
+* use fixed datadog tracing ([ae52bd5](https://github.com/informatievlaanderen/address-registry/commit/ae52bd5))
+
 ## [1.12.1](https://github.com/informatievlaanderen/address-registry/compare/v1.12.0...v1.12.1) (2019-08-26)
 
 

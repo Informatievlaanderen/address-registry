@@ -156,7 +156,16 @@ namespace AddressRegistry.Projector.Infrastructure
                     Api =
                     {
                         VersionProvider = apiVersionProvider,
-                        Info = groupName => $"Basisregisters.Vlaanderen - Address Information Registry API {groupName}"
+                        Info = groupName => $"Basisregisters.Vlaanderen - Address Information Registry API {groupName}",
+                        CSharpClientOptions =
+                        {
+                            ClassName = "AddressRegistryProjector",
+                            Namespace = "Be.Vlaanderen.Basisregisters"
+                        },
+                        TypeScriptClientOptions =
+                        {
+                            ClassName = "AddressRegistryProjector"
+                        }
                     },
                     Server =
                     {

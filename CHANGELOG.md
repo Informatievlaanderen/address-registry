@@ -1,3 +1,10 @@
+## [1.12.1](https://github.com/informatievlaanderen/address-registry/compare/v1.12.0...v1.12.1) (2019-08-26)
+
+
+### Bug Fixes
+
+* fix swagger ([6d6c258](https://github.com/informatievlaanderen/address-registry/commit/6d6c258))
+
 # [1.12.0](https://github.com/informatievlaanderen/address-registry/compare/v1.11.0...v1.12.0) (2019-08-26)
 
 

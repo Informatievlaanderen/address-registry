@@ -1,3 +1,10 @@
+## [1.12.4](https://github.com/informatievlaanderen/address-registry/compare/v1.12.3...v1.12.4) (2019-08-27)
+
+
+### Bug Fixes
+
+* make datadog tracing check more for nulls ([dec2e9c](https://github.com/informatievlaanderen/address-registry/commit/dec2e9c))
+
 ## [1.12.3](https://github.com/informatievlaanderen/address-registry/compare/v1.12.2...v1.12.3) (2019-08-27)
 
 

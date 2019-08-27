@@ -4,14 +4,16 @@ using AddressRegistry.Projections.Extract;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AddressRegistry.Projections.Extract.Migrations
 {
     [DbContext(typeof(ExtractContext))]
-    partial class ExtractContextModelSnapshot : ModelSnapshot
+    [Migration("20190827123248_DesiredState")]
+    partial class DesiredState
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

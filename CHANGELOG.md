@@ -1,3 +1,10 @@
+## [1.12.3](https://github.com/informatievlaanderen/address-registry/compare/v1.12.2...v1.12.3) (2019-08-27)
+
+
+### Bug Fixes
+
+* use new desiredstate columns for projections ([8fde1c0](https://github.com/informatievlaanderen/address-registry/commit/8fde1c0))
+
 ## [1.12.2](https://github.com/informatievlaanderen/address-registry/compare/v1.12.1...v1.12.2) (2019-08-26)
 
 

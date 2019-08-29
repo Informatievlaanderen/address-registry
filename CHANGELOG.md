@@ -1,3 +1,10 @@
+## [1.12.5](https://github.com/informatievlaanderen/address-registry/compare/v1.12.4...v1.12.5) (2019-08-29)
+
+
+### Bug Fixes
+
+* use columnstore for legacy syndication ([9f6cea1](https://github.com/informatievlaanderen/address-registry/commit/9f6cea1))
+
 ## [1.12.4](https://github.com/informatievlaanderen/address-registry/compare/v1.12.3...v1.12.4) (2019-08-27)
 
 

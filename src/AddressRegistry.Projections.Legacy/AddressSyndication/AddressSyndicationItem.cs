@@ -2,6 +2,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
 {
     using System;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -99,6 +100,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                 .ForSqlServerIsClustered();
 
             b.Property(x => x.Position).ValueGeneratedNever();
+            b.HasIndex(x => x.Position).IsColumnStore($"CI_{TableName}_Position");
 
             b.Property(x => x.AddressId).IsRequired();
             b.Property(x => x.ChangeType);

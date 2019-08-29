@@ -2,6 +2,7 @@ namespace AddressRegistry.Projections.Legacy
 {
     using System;
     using Autofac;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
@@ -27,7 +28,8 @@ namespace AddressRegistry.Projections.Legacy
                         sqlServerOptions.EnableRetryOnFailure();
                         sqlServerOptions.MigrationsHistoryTable(MigrationTables.Legacy, Schema.Legacy);
                         //sqlServerOptions.UseNetTopologySuite();
-                    }));
+                    })
+                    .UseExtendedSqlServerMigrations());
 
             logger.LogInformation(
                 "Added {Context} to services:" +

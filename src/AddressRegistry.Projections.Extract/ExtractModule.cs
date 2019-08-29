@@ -4,6 +4,7 @@ namespace AddressRegistry.Projections.Extract
     using System.Data.SqlClient;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
     using Autofac;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
@@ -52,7 +53,8 @@ namespace AddressRegistry.Projections.Extract
                     {
                         sqlServerOptions.EnableRetryOnFailure();
                         sqlServerOptions.MigrationsHistoryTable(MigrationTables.Extract, Schema.Extract);
-                    }));
+                    })
+                    .UseExtendedSqlServerMigrations());
         }
 
         private static void RunInMemoryDb(IServiceCollection services, ILoggerFactory loggerFactory,

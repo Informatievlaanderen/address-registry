@@ -7,6 +7,7 @@ namespace AddressRegistry.Projections.Legacy
     using AddressMatch;
     using AddressSyndication;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
     using CrabIdToPersistentLocalId;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
@@ -57,7 +58,8 @@ namespace AddressRegistry.Projections.Legacy
                     sqlServerOptions.EnableRetryOnFailure();
                     sqlServerOptions.MigrationsHistoryTable(MigrationTables.Legacy, Schema.Legacy);
                     //sqlServerOptions.UseNetTopologySuite();
-                });
+                })
+                .UseExtendedSqlServerMigrations();
 
             return new LegacyContext(builder.Options);
         }

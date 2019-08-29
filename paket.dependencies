@@ -57,13 +57,13 @@ nuget Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore ~> 3.2
 nuget Be.Vlaanderen.Basisregisters.EventHandling ~> 1.1
 nuget Be.Vlaanderen.Basisregisters.EventHandling.Autofac ~> 1.1
 
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList ~> 4.3
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore ~> 4.3
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac ~> 4.3
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner ~> 4.3
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing ~> 4.3
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit ~> 4.3
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication ~> 4.3
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList ~> 4.4
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore ~> 4.4
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac ~> 4.4
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner ~> 4.4
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing ~> 4.4
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit ~> 4.4
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication ~> 4.4
 
 nuget Be.Vlaanderen.Basisregisters.Projector ~> 3.3
 
@@ -96,7 +96,7 @@ nuget Microsoft.EntityFrameworkCore.InMemory 2.2.6
 nuget xunit 2.4.1
 nuget xunit.runner.visualstudio 2.4.1
 nuget xunit.categories 2.0.4
-nuget FluentAssertions 5.8.0
+nuget FluentAssertions 5.9.0
 nuget Moq 4.12.0
 nuget AutoFixture.Xunit2 4.11.0
 nuget Serilog.Sinks.XUnit 1.0.21

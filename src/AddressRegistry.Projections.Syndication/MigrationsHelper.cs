@@ -4,6 +4,7 @@ namespace AddressRegistry.Projections.Syndication
     using System.Data.SqlClient;
     using System.Threading;
     using System.Threading.Tasks;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
@@ -48,7 +49,8 @@ namespace AddressRegistry.Projections.Syndication
                     {
                         sqlServerOptions.EnableRetryOnFailure();
                         sqlServerOptions.MigrationsHistoryTable(MigrationTables.Syndication, Schema.Syndication);
-                    });
+                    })
+                .UseExtendedSqlServerMigrations();
 
             if (loggerFactory != null)
                 migratorOptions = migratorOptions.UseLoggerFactory(loggerFactory);

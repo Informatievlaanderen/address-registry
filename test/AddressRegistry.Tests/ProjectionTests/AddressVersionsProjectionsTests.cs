@@ -1082,6 +1082,6 @@ namespace AddressRegistry.Tests.ProjectionTests
 
         protected override LegacyContext CreateContext(DbContextOptions<LegacyContext> options) => new LegacyContext(options);
 
-        protected override AddressVersionProjections CreateProjection() => new AddressVersionProjections(_wkbReader);
+        protected override AddressVersionProjections CreateProjection() => new AddressVersionProjections();
     }
 }

@@ -8,7 +8,7 @@ namespace AddressRegistry.Projections.Legacy.CrabIdToPersistentLocalId
 
     public class CrabIdToPersistentLocalIdItem
     {
-        public static string VersionTimestampBackingPropertyName = nameof(VersionTimestampAsDateTimeOffset);
+        public const string VersionTimestampBackingPropertyName = nameof(VersionTimestampAsDateTimeOffset);
 
         public Guid AddressId { get; set; }
         public int? PersistentLocalId { get; set; }
@@ -32,7 +32,7 @@ namespace AddressRegistry.Projections.Legacy.CrabIdToPersistentLocalId
 
     public class CrabIdToPersistentLocalIdItemConfiguration : IEntityTypeConfiguration<CrabIdToPersistentLocalIdItem>
     {
-        public const string TableName = "CrabIdToPersistentLocalIds";
+        private const string TableName = "CrabIdToPersistentLocalIds";
 
         public void Configure(EntityTypeBuilder<CrabIdToPersistentLocalIdItem> b)
         {

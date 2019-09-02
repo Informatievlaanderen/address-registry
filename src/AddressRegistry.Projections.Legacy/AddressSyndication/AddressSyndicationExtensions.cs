@@ -23,7 +23,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             Action<AddressSyndicationItem> applyEventInfoOn,
             CancellationToken ct) where T : IHasProvenance
         {
-            var addressSyndicationItem = await context.LatestPosition(addressId, ct);
+            var addressSyndicationItem = await context.AddressSyndication.LatestPosition(addressId, ct);
 
             if (addressSyndicationItem == null)
                 throw DatabaseItemNotFound(addressId);
@@ -45,17 +45,15 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
         }
 
         public static async Task<AddressSyndicationItem> LatestPosition(
-            this LegacyContext context,
+            this DbSet<AddressSyndicationItem> addressSyndicationItems,
             Guid addressId,
             CancellationToken ct)
-            => context
-                   .AddressSyndication
+            => addressSyndicationItems
                    .Local
                    .Where(x => x.AddressId == addressId)
                    .OrderByDescending(x => x.Position)
                    .FirstOrDefault()
-               ?? await context
-                   .AddressSyndication
+               ?? await addressSyndicationItems
                    .Where(x => x.AddressId == addressId)
                    .OrderByDescending(x => x.Position)
                    .FirstOrDefaultAsync(ct);
@@ -75,9 +73,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             using (var stringWriter = new StringWriterWithEncoding(Encoding.UTF8))
             {
                 using (var xmlWriter = new XmlTextWriter(stringWriter) { Formatting = Formatting.None })
-                {
                     xmlElement.WriteTo(xmlWriter);
-                }
 
                 syndicationItem.EventDataAsXml = stringWriter.GetStringBuilder().ToString();
             }

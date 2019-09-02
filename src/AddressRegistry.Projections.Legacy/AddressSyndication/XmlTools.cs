@@ -11,7 +11,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
 
     public static class XmlTools
     {
-        private static readonly Type[] WriteTypes = new[] {
+        private static readonly Type[] WriteTypes = {
             typeof(string),
             typeof(DateTime),
             typeof(Enum),
@@ -28,16 +28,14 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
         /// <summary>
         /// Preferred way to exclude properties
         /// </summary>
-        private static readonly Type[] ExcludeTypes = new[]
-        {
+        private static readonly Type[] ExcludeTypes = {
             typeof(Application)
         };
 
         /// <summary>
         /// Alternative way if property is a primitive type or included in WriteTypes.
         /// </summary>
-        private static readonly string[] ExcludePropertyNames = new[]
-        {
+        private static readonly string[] ExcludePropertyNames = {
             "Operator"
         };
 
@@ -56,7 +54,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
 
             if (string.IsNullOrEmpty(element))
             {
-                string name = input.GetType().Name;
+                var name = input.GetType().Name;
                 element = name.Contains("AnonymousType")
                     ? "Object"
                     : arrayIndex != null
@@ -85,25 +83,26 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             return ret;
         }
 
-        private static readonly Type[] FlatternTypes = new[] {
+        private static readonly Type[] FlatternTypes = {
             typeof(string)
         };
 
-        public static bool IsEnumerable(this Type type) => typeof(IEnumerable).IsAssignableFrom(type) && !FlatternTypes.Contains(type);
+        private static bool IsEnumerable(this Type type) => typeof(IEnumerable).IsAssignableFrom(type) && !FlatternTypes.Contains(type);
 
         private static XElement GetEnumerableElements(PropertyInfo info, IEnumerable input)
         {
             var name = XmlConvert.EncodeName(info.Name);
 
-            XElement rootElement = new XElement(name);
+            var rootElement = new XElement(name);
 
-            int i = 0;
+            var i = 0;
             foreach (var v in input)
             {
-                XElement childElement = v.GetType().IsSimpleType() || v.GetType().IsEnum ? new XElement(name + "_" + i, v) : ToXml(v, null, i, name);
+                var childElement = v.GetType().IsSimpleType() || v.GetType().IsEnum ? new XElement(name + "_" + i, v) : ToXml(v, null, i, name);
                 rootElement.Add(childElement);
                 i++;
             }
+
             return rootElement;
         }
     }

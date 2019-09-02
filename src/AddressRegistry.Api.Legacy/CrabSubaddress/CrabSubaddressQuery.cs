@@ -8,7 +8,6 @@ namespace AddressRegistry.Api.Legacy.CrabSubaddress
     using System.Linq;
     using Projections.Legacy.CrabIdToPersistentLocalId;
 
-
     public class CrabSubaddressQuery : Query<CrabIdToPersistentLocalIdItem, CrabSubaddressAddressFilter>
     {
         private readonly LegacyContext _context;
@@ -29,7 +28,7 @@ namespace AddressRegistry.Api.Legacy.CrabSubaddress
         protected override ISorting Sorting => new CrabSubaddressAddressSorting();
     }
 
-    internal class CrabSubaddressAddressSorting : ISorting
+    public class CrabSubaddressAddressSorting : ISorting
     {
         public IEnumerable<string> SortableFields { get; } = new[]
         {

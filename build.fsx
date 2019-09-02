@@ -45,11 +45,16 @@ open ``Build-generic``
 // Push
 // Executes `docker push` to push the built images to the registry.
 
+let product = "Basisregisters Vlaanderen"
+let copyright = "Copyright (c) Vlaamse overheid"
+let company = "Vlaamse overheid"
+
 let dockerRepository = "addressregistry"
 let assemblyVersionNumber = (sprintf "2.%s")
 let nugetVersionNumber = (sprintf "%s")
 
 let build = buildSolution assemblyVersionNumber
+let setVersions = (setSolutionVersions assemblyVersionNumber product copyright company)
 let test = testSolution
 let publish = publish assemblyVersionNumber
 let pack = pack nugetVersionNumber
@@ -60,7 +65,9 @@ let push = push dockerRepository
 
 Target "Restore_Solution" (fun _ -> restore "AddressRegistry")
 
-Target "Build_Solution" (fun _ -> build "AddressRegistry")
+Target "Build_Solution" (fun _ ->
+  setVersions "SolutionInfo.cs"
+  build "AddressRegistry")
 
 Target "Test_Solution" (fun _ -> test "AddressRegistry")
 

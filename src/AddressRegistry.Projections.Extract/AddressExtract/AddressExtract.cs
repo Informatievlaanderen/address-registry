@@ -23,7 +23,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
 
     public class AddressExtractItemConfiguration : IEntityTypeConfiguration<AddressExtractItem>
     {
-        public const string TableName = "Address";
+        private const string TableName = "Address";
 
         public void Configure(EntityTypeBuilder<AddressExtractItem> builder)
         {

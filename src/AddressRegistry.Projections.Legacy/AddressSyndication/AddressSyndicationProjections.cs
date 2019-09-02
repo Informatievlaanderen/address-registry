@@ -10,7 +10,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
 
     public class AddressSyndicationProjections : ConnectedProjection<LegacyContext>
     {
-        public AddressSyndicationProjections(WKBReader wkbReader)
+        public AddressSyndicationProjections()
         {
             When<Envelope<AddressWasRegistered>>(async (context, message, ct) =>
             {
@@ -311,7 +311,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
 
             When<Envelope<AddressPersistentLocalIdWasAssigned>>(async (context, message, ct) =>
             {
-                var addressSyndicationItem = await context.LatestPosition(message.Message.AddressId, ct);
+                var addressSyndicationItem = await context.AddressSyndication.LatestPosition(message.Message.AddressId, ct);
 
                 if (addressSyndicationItem == null)
                     throw AddressSyndicationExtensions.DatabaseItemNotFound(message.Message.AddressId);

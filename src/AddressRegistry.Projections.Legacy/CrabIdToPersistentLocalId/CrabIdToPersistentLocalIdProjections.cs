@@ -143,28 +143,32 @@ namespace AddressRegistry.Projections.Legacy.CrabIdToPersistentLocalId
 
             When<Envelope<AddressBecameCurrent>>(async (context, message, ct) =>
             {
-                await FindAndUpdateVersion(context,
+                await FindAndUpdateVersion(
+                    context,
                     message.Message.AddressId,
                     message.Message.Provenance.Timestamp,
                     ct);
             });
             When<Envelope<AddressBecameNotOfficiallyAssigned>>(async (context, message, ct) =>
             {
-                await FindAndUpdateVersion(context,
+                await FindAndUpdateVersion(
+                    context,
                     message.Message.AddressId,
                     message.Message.Provenance.Timestamp,
                     ct);
             });
             When<Envelope<AddressOfficialAssignmentWasRemoved>>(async (context, message, ct) =>
             {
-                await FindAndUpdateVersion(context,
+                await FindAndUpdateVersion(
+                    context,
                     message.Message.AddressId,
                     message.Message.Provenance.Timestamp,
                     ct);
             });
             When<Envelope<AddressPositionWasCorrected>>(async (context, message, ct) =>
             {
-                await FindAndUpdateVersion(context,
+                await FindAndUpdateVersion(
+                    context,
                     message.Message.AddressId,
                     message.Message.Provenance.Timestamp,
                     ct);
@@ -178,77 +182,88 @@ namespace AddressRegistry.Projections.Legacy.CrabIdToPersistentLocalId
             });
             When<Envelope<AddressStatusWasCorrectedToRemoved>>(async (context, message, ct) =>
             {
-                await FindAndUpdateVersion(context,
+                await FindAndUpdateVersion(
+                    context,
                     message.Message.AddressId,
                     message.Message.Provenance.Timestamp,
                     ct);
             });
             When<Envelope<AddressStatusWasRemoved>>(async (context, message, ct) =>
             {
-                await FindAndUpdateVersion(context,
+                await FindAndUpdateVersion(
+                    context,
                     message.Message.AddressId,
                     message.Message.Provenance.Timestamp,
                     ct);
             });
             When<Envelope<AddressWasCorrectedToCurrent>>(async (context, message, ct) =>
             {
-                await FindAndUpdateVersion(context,
+                await FindAndUpdateVersion(
+                    context,
                     message.Message.AddressId,
                     message.Message.Provenance.Timestamp,
                     ct);
             });
             When<Envelope<AddressWasCorrectedToNotOfficiallyAssigned>>(async (context, message, ct) =>
             {
-                await FindAndUpdateVersion(context,
+                await FindAndUpdateVersion(
+                    context,
                     message.Message.AddressId,
                     message.Message.Provenance.Timestamp,
                     ct);
             });
             When<Envelope<AddressWasCorrectedToOfficiallyAssigned>>(async (context, message, ct) =>
             {
-                await FindAndUpdateVersion(context,
+                await FindAndUpdateVersion(
+                    context,
                     message.Message.AddressId,
                     message.Message.Provenance.Timestamp,
                     ct);
             });
             When<Envelope<AddressWasCorrectedToProposed>>(async (context, message, ct) =>
             {
-                await FindAndUpdateVersion(context,
+                await FindAndUpdateVersion(
+                    context,
                     message.Message.AddressId,
                     message.Message.Provenance.Timestamp,
                     ct);
             });
             When<Envelope<AddressWasCorrectedToRetired>>(async (context, message, ct) =>
             {
-                await FindAndUpdateVersion(context,
+                await FindAndUpdateVersion(
+                    context,
                     message.Message.AddressId,
                     message.Message.Provenance.Timestamp,
                     ct);
             });
             When<Envelope<AddressWasOfficiallyAssigned>>(async (context, message, ct) =>
             {
-                await FindAndUpdateVersion(context,
+                await FindAndUpdateVersion(
+                    context,
                     message.Message.AddressId,
                     message.Message.Provenance.Timestamp,
                     ct);
             });
             When<Envelope<AddressWasPositioned>>(async (context, message, ct) =>
             {
-                await FindAndUpdateVersion(context,
+                await FindAndUpdateVersion(
+                    context,
                     message.Message.AddressId,
                     message.Message.Provenance.Timestamp,
                     ct);
             });
             When<Envelope<AddressWasProposed>>(async (context, message, ct) =>
             {
-                await FindAndUpdateVersion(context,
+                await FindAndUpdateVersion(
+                    context,
                     message.Message.AddressId,
                     message.Message.Provenance.Timestamp,
                     ct);
             });
             When<Envelope<AddressWasRetired>>(async (context, message, ct) =>
             {
-                await FindAndUpdateVersion(context,
+                await FindAndUpdateVersion(
+                    context,
                     message.Message.AddressId,
                     message.Message.Provenance.Timestamp,
                     ct);
@@ -267,10 +282,7 @@ namespace AddressRegistry.Projections.Legacy.CrabIdToPersistentLocalId
             UpdateVersion(item, version);
         }
 
-        private static void UpdateVersion(CrabIdToPersistentLocalIdItem item, Instant timestamp)
-        {
-            item.VersionTimestamp = timestamp;
-        }
+        private static void UpdateVersion(CrabIdToPersistentLocalIdItem item, Instant timestamp) => item.VersionTimestamp = timestamp;
 
         private static void DoNothing() { }
     }

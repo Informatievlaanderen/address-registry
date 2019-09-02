@@ -1,10 +1,9 @@
 namespace AddressRegistry.Api.Extract.Infrastructure
 {
-    using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Net.Http.Headers;
     using System.Reflection;
-    using System.Threading;
+    using Be.Vlaanderen.Basisregisters.Api;
 
     [ApiVersionNeutral]
     [Route("")]
@@ -12,11 +11,9 @@ namespace AddressRegistry.Api.Extract.Infrastructure
     {
         [HttpGet]
         [ApiExplorerSettings(IgnoreApi = true)]
-        public IActionResult Get(
-            [FromServices] IHostingEnvironment hostingEnvironment,
-            CancellationToken cancellationToken = default)
+        public IActionResult Get()
             => Request.Headers[HeaderNames.Accept].ToString().Contains("text/html")
                 ? (IActionResult)new RedirectResult("/docs")
-                : new OkObjectResult($"Welcome to the Basisregisters Vlaanderen Address Api v{Assembly.GetEntryAssembly().GetName().Version}.");
+                : new OkObjectResult($"Welcome to the Basisregisters Vlaanderen Address Extract Api {Assembly.GetEntryAssembly().GetVersionText()}.");
     }
 }

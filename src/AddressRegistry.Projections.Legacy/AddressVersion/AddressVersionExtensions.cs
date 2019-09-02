@@ -18,7 +18,9 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
             Action<AddressVersion> applyEventInfoOn,
             CancellationToken ct) where T : IHasProvenance
         {
-            var addressVersion = await context.LatestPosition(addressId, ct);
+            var addressVersion = await context
+                .AddressVersions
+                .LatestPosition(addressId, ct);
 
             if (addressVersion == null)
                 throw DatabaseItemNotFound(addressId);
@@ -36,23 +38,21 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
                 .AddAsync(newAddressVersion, ct);
         }
 
-        public static async Task<AddressVersion> LatestPosition(
-            this LegacyContext context,
+        private static async Task<AddressVersion> LatestPosition(
+            this DbSet<AddressVersion> addressVersions,
             Guid addressId,
             CancellationToken ct)
-            => context
-                   .AddressVersions
+            => addressVersions
                    .Local
                    .Where(x => x.AddressId == addressId)
                    .OrderByDescending(x => x.StreamPosition)
                    .FirstOrDefault()
-               ?? await context
-                   .AddressVersions
+               ?? await addressVersions
                    .Where(x => x.AddressId == addressId)
                    .OrderByDescending(x => x.StreamPosition)
                    .FirstOrDefaultAsync(ct);
 
-        public static void ApplyProvenance(
+        private static void ApplyProvenance(
             this AddressVersion addressVersion,
             ProvenanceData provenance)
         {

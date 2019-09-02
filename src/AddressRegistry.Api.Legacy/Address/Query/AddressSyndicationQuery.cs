@@ -12,7 +12,6 @@ namespace AddressRegistry.Api.Legacy.Address.Query
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
-    using GeoAPI.Geometries;
 
     public class AddressSyndicationQueryResult
     {

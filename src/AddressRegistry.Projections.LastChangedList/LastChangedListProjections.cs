@@ -183,7 +183,6 @@ namespace AddressRegistry.Projections.LastChangedList
             When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
             When<Envelope<AddressSubaddressPositionWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
             When<Envelope<AddressSubaddressStatusWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-
         }
 
         private static void DoNothing() { }

@@ -11,22 +11,19 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
     using System.Threading;
     using System.Threading.Tasks;
     using Address.Events.Crab;
-    using NetTopologySuite.IO;
 
     public static class AddressVersionsQueries
     {
         public static async Task<IEnumerable<AddressVersion>> AllVersions(
-            this LegacyContext context,
+            this DbSet<AddressVersion> addressVersions,
             Guid addressId,
             CancellationToken ct)
         {
-            var sqlEntities = await context
-                .AddressVersions
+            var sqlEntities = await addressVersions
                 .Where(x => x.AddressId == addressId)
                 .ToListAsync(ct);
 
-            var localEntities = context
-                .AddressVersions
+            var localEntities = addressVersions
                 .Local
                 .Where(x => x.AddressId == addressId)
                 .ToList();
@@ -39,7 +36,7 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
 
     public class AddressVersionProjections : ConnectedProjection<LegacyContext>
     {
-        public AddressVersionProjections(WKBReader wkbReader)
+        public AddressVersionProjections()
         {
             When<Envelope<AddressWasRegistered>>(async (context, message, ct) =>
             {
@@ -57,7 +54,7 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
 
             When<Envelope<AddressPersistentLocalIdWasAssigned>>(async (context, message, ct) =>
             {
-                var entities = await context.AllVersions(message.Message.AddressId, ct);
+                var entities = await context.AddressVersions.AllVersions(message.Message.AddressId, ct);
 
                 foreach (var entity in entities)
                     entity.PersistentLocalId = message.Message.PersistentLocalId;

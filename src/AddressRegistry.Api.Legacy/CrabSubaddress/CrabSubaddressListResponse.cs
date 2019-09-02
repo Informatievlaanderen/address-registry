@@ -7,7 +7,6 @@ namespace AddressRegistry.Api.Legacy.CrabSubaddress
     using System.Collections.Generic;
     using System.Globalization;
     using System.Runtime.Serialization;
-    using Address.Responses;
     using Infrastructure.Options;
     using Microsoft.Extensions.Options;
     using Swashbuckle.AspNetCore.Filters;

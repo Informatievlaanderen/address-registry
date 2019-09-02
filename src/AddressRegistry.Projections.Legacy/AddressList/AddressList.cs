@@ -8,7 +8,7 @@ namespace AddressRegistry.Projections.Legacy.AddressList
 
     public class AddressListItem
     {
-        public static string VersionTimestampBackingPropertyName = nameof(VersionTimestampAsDateTimeOffset);
+        public const string VersionTimestampBackingPropertyName = nameof(VersionTimestampAsDateTimeOffset);
 
         public Guid AddressId { get; set; }
         public int PersistentLocalId { get; set; }
@@ -32,7 +32,7 @@ namespace AddressRegistry.Projections.Legacy.AddressList
 
     public class AddressListItemConfiguration : IEntityTypeConfiguration<AddressListItem>
     {
-        public const string TableName = "AddressList";
+        private const string TableName = "AddressList";
 
         public void Configure(EntityTypeBuilder<AddressListItem> b)
         {

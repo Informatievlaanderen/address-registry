@@ -85,7 +85,7 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
 
     public class AddressHistItemConfiguration : IEntityTypeConfiguration<AddressVersion>
     {
-        public const string TableName = "AddressVersions";
+        private const string TableName = "AddressVersions";
 
         public void Configure(EntityTypeBuilder<AddressVersion> b)
         {

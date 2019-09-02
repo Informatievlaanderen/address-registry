@@ -116,8 +116,8 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                     _loggerFactory)
                 .RegisterProjections<AddressDetailProjections, LegacyContext>(() => new AddressDetailProjections(WKBReaderFactory.Create()))
                 .RegisterProjections<AddressListProjections, LegacyContext>()
-                .RegisterProjections<AddressSyndicationProjections, LegacyContext>(() => new AddressSyndicationProjections(WKBReaderFactory.Create()))
-                .RegisterProjections<AddressVersionProjections, LegacyContext>(() => new AddressVersionProjections(WKBReaderFactory.Create()))
+                .RegisterProjections<AddressSyndicationProjections, LegacyContext>(() => new AddressSyndicationProjections())
+                .RegisterProjections<AddressVersionProjections, LegacyContext>(() => new AddressVersionProjections())
                 .RegisterProjections<CrabIdToPersistentLocalIdProjections, LegacyContext>();
         }
     }

@@ -20,7 +20,7 @@ namespace AddressRegistry.Projections.Syndication
     using Parcel;
     using PostalInfo;
 
-    class Program
+    public class Program
     {
         private static readonly AutoResetEvent Closing = new AutoResetEvent(false);
         private static readonly CancellationTokenSource CancellationTokenSource = new CancellationTokenSource();
@@ -67,7 +67,7 @@ namespace AddressRegistry.Projections.Syndication
             }
             catch (Exception e)
             {
-                Console.Error.WriteLine(e.ToString());
+                Log.Fatal(e, "Encountered a fatal exception, exiting program.");
                 Log.CloseAndFlush();
 
                 // Allow some time for flushing before shutdown.

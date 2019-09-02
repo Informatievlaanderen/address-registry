@@ -32,8 +32,6 @@ namespace AddressRegistry.Projections.Syndication
             ct.Register(() => Closing.Set());
             Console.CancelKeyPress += (sender, eventArgs) => CancellationTokenSource.Cancel();
 
-            Console.WriteLine("Starting AddressRegistry.Projections.Syndication");
-
             AppDomain.CurrentDomain.FirstChanceException += (sender, eventArgs) =>
                 Log.Debug(
                     eventArgs.Exception,
@@ -53,6 +51,8 @@ namespace AddressRegistry.Projections.Syndication
 
             var container = ConfigureServices(configuration);
 
+            Log.Information("Starting AddressRegistry.Projections.Syndication");
+            
             try
             {
                 await MigrationsHelper.RunAsync(
@@ -62,7 +62,7 @@ namespace AddressRegistry.Projections.Syndication
 
                 await Task.WhenAll(StartRunners(configuration, container, ct));
 
-                Console.WriteLine("Running... Press CTRL + C to exit.");
+                Log.Information("Running... Press CTRL + C to exit.");
                 Closing.WaitOne();
             }
             catch (Exception e)
@@ -75,7 +75,7 @@ namespace AddressRegistry.Projections.Syndication
                 throw;
             }
 
-            Console.WriteLine("Stopping...");
+            Log.Information("Stopping...");
             Closing.Close();
         }
 

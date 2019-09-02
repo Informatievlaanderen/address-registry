@@ -8,6 +8,7 @@ namespace AddressRegistry.Projections.Syndication
     {
         [DataMember]
         public XmlElement Event { get; set; }
+
         [DataMember]
         public TObject Object { get; set; }
     }

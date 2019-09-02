@@ -36,7 +36,7 @@ namespace AddressRegistry.Projections.Syndication.StreetName
 
         public void Configure(EntityTypeBuilder<StreetNameBosaItem> builder)
         {
-            builder.ToTable(TableName, Schema.Legacy)
+            builder.ToTable(TableName, Schema.Syndication)
                 .HasKey(x => x.StreetNameId)
                 .ForSqlServerIsClustered(false);
 

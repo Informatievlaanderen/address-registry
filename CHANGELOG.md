@@ -1,3 +1,10 @@
+## [1.12.9](https://github.com/informatievlaanderen/address-registry/compare/v1.12.8...v1.12.9) (2019-09-02)
+
+
+### Bug Fixes
+
+* do not log to console write ([cb851db](https://github.com/informatievlaanderen/address-registry/commit/cb851db))
+
 ## [1.12.8](https://github.com/informatievlaanderen/address-registry/compare/v1.12.7...v1.12.8) (2019-09-02)
 
 

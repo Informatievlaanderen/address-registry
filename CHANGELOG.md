@@ -1,3 +1,10 @@
+## [1.12.8](https://github.com/informatievlaanderen/address-registry/compare/v1.12.7...v1.12.8) (2019-09-02)
+
+
+### Bug Fixes
+
+* properly report errors ([9d56cc6](https://github.com/informatievlaanderen/address-registry/commit/9d56cc6))
+
 ## [1.12.7](https://github.com/informatievlaanderen/address-registry/compare/v1.12.6...v1.12.7) (2019-09-02)
 
 

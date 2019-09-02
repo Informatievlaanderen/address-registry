@@ -1,3 +1,10 @@
+## [1.12.6](https://github.com/informatievlaanderen/address-registry/compare/v1.12.5...v1.12.6) (2019-09-02)
+
+
+### Bug Fixes
+
+* correct bosa syndication schema ([86c20ba](https://github.com/informatievlaanderen/address-registry/commit/86c20ba))
+
 ## [1.12.5](https://github.com/informatievlaanderen/address-registry/compare/v1.12.4...v1.12.5) (2019-08-29)
 
 

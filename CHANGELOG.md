@@ -1,3 +1,10 @@
+## [1.12.12](https://github.com/informatievlaanderen/address-registry/compare/v1.12.11...v1.12.12) (2019-09-03)
+
+
+### Bug Fixes
+
+* update problemdetails for xml response GR-829 ([aa28855](https://github.com/informatievlaanderen/address-registry/commit/aa28855))
+
 ## [1.12.11](https://github.com/informatievlaanderen/address-registry/compare/v1.12.10...v1.12.11) (2019-09-03)
 
 

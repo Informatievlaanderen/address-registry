@@ -1,3 +1,10 @@
+## [1.12.11](https://github.com/informatievlaanderen/address-registry/compare/v1.12.10...v1.12.11) (2019-09-03)
+
+
+### Bug Fixes
+
+* syndication muni in wrong schema ([261e4f2](https://github.com/informatievlaanderen/address-registry/commit/261e4f2))
+
 ## [1.12.10](https://github.com/informatievlaanderen/address-registry/compare/v1.12.9...v1.12.10) (2019-09-03)
 
 

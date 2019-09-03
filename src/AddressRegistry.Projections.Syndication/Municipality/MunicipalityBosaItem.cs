@@ -31,7 +31,7 @@ namespace AddressRegistry.Projections.Syndication.Municipality
 
         public void Configure(EntityTypeBuilder<MunicipalityBosaItem> builder)
         {
-            builder.ToTable(TableName, Schema.Legacy)
+            builder.ToTable(TableName, Schema.Syndication)
                 .HasKey(x => x.MunicipalityId)
                 .ForSqlServerIsClustered(false);
 

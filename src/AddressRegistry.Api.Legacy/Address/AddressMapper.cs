@@ -39,6 +39,7 @@ namespace AddressRegistry.Api.Legacy.Address
         public static Point GetAddressPoint(byte[] point)
         {
             var geometry = WKBReaderFactory.Create().Read(point);
+
             return new Point
             {
                 XmlPoint = new GmlPoint { Pos = $"{geometry.Coordinate.X} {geometry.Coordinate.Y}" },

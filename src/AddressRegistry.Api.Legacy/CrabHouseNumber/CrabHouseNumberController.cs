@@ -92,7 +92,7 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
             {
                 Addresses = addressListItemResponses,
                 TotaalAantal = pagedAddresses.PaginationInfo.TotalItems,
-                Volgende = AddressController.BuildVolgendeUri(pagedAddresses.PaginationInfo, responseOptions.Value.CrabHuisnummersVolgendeUrl)
+                Volgende = pagedAddresses.PaginationInfo.BuildNextUri(responseOptions.Value.CrabHuisnummersVolgendeUrl)
             });
         }
     }

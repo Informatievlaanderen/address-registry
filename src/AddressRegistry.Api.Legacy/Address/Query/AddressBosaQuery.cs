@@ -40,8 +40,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             var streetNamesQuery = _syndicationContext.StreetNameBosaItems.AsNoTracking().Where(x => x.IsComplete);
             var municipalitiesQuery = _syndicationContext.MunicipalityBosaItems.AsNoTracking();
 
-            if (filter?.IsOnlyAdresIdRequested == true &&
-                int.TryParse(filter.AdresCode?.ObjectId, out var adresId))
+            if (filter?.IsOnlyAdresIdRequested == true && int.TryParse(filter.AdresCode?.ObjectId, out var adresId))
             {
                 addressesQuery = addressesQuery
                     .Where(a => a.PersistentLocalId == adresId)

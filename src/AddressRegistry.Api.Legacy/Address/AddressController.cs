@@ -203,7 +203,7 @@ namespace AddressRegistry.Api.Legacy.Address
             {
                 Adressen = addressListItemResponses,
                 TotaalAantal = pagedAddresses.PaginationInfo.TotalItems,
-                Volgende = BuildVolgendeUri(pagedAddresses.PaginationInfo, responseOptions.Value.VolgendeUrl)
+                Volgende = pagedAddresses.PaginationInfo.BuildNextUri(responseOptions.Value.VolgendeUrl)
             });
         }
 
@@ -373,7 +373,7 @@ namespace AddressRegistry.Api.Legacy.Address
                     new Uri(syndicationConfiguration["Self"]),
                     syndicationConfiguration.GetSection("Related").GetChildren().Select(c => c.Value).ToArray());
 
-                var nextUri = BuildVolgendeUri(pagedAddresses.PaginationInfo, syndicationConfiguration["NextUri"]);
+                var nextUri = pagedAddresses.PaginationInfo.BuildNextUri(syndicationConfiguration["NextUri"]);
                 if (nextUri != null)
                     await writer.Write(new SyndicationLink(nextUri, "next"));
 
@@ -384,16 +384,6 @@ namespace AddressRegistry.Api.Legacy.Address
             }
 
             return sw.ToString();
-        }
-
-        internal static Uri BuildVolgendeUri(PaginationInfo paginationInfo, string volgendeUrlBase)
-        {
-            var offset = paginationInfo.Offset;
-            var limit = paginationInfo.Limit;
-
-            return offset + limit < paginationInfo.TotalItems
-                ? new Uri(string.Format(volgendeUrlBase, offset + limit, limit))
-                : null;
         }
     }
 }

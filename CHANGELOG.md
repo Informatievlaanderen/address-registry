@@ -1,3 +1,10 @@
+## [1.12.10](https://github.com/informatievlaanderen/address-registry/compare/v1.12.9...v1.12.10) (2019-09-03)
+
+
+### Bug Fixes
+
+* syndications use wrong parcel and buildingUnit names ([ac6a2c7](https://github.com/informatievlaanderen/address-registry/commit/ac6a2c7))
+
 ## [1.12.9](https://github.com/informatievlaanderen/address-registry/compare/v1.12.8...v1.12.9) (2019-09-02)
 
 

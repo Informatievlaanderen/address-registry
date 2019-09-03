@@ -52,7 +52,7 @@ namespace AddressRegistry.Projections.Syndication
             var container = ConfigureServices(configuration);
 
             Log.Information("Starting AddressRegistry.Projections.Syndication");
-            
+
             try
             {
                 await MigrationsHelper.RunAsync(
@@ -95,20 +95,6 @@ namespace AddressRegistry.Projections.Syndication
                 new MunicipalityLatestProjections(),
                 new MunicipalityBosaProjections());
 
-            var streetNameRunner = new FeedProjectionRunner<StreetNameEvent, SyndicationItem<StreetName.StreetName>, SyndicationContext>(
-                "streetname",
-                configuration.GetValue<Uri>("SyndicationFeeds:StreetName"),
-                configuration.GetValue<string>("SyndicationFeeds:StreetNameAuthUserName"),
-                configuration.GetValue<string>("SyndicationFeeds:StreetNameAuthPassword"),
-                configuration.GetValue<int>("SyndicationFeeds:StreetNamePollingInMilliseconds"),
-                false,
-                true,
-                container.GetService<ILogger<Program>>(),
-                container.GetService<IRegistryAtomFeedReader>(),
-                new StreetNameSyndicationItemProjections(),
-                new StreetNameLatestProjections(),
-                new StreetNameBosaProjections());
-
             var postalInfoRunner = new FeedProjectionRunner<PostalInfoEvent, SyndicationItem<PostalInfo.PostalInfo>, SyndicationContext>(
                 "postalInfo",
                 configuration.GetValue<Uri>("SyndicationFeeds:PostalInfo"),
@@ -121,8 +107,22 @@ namespace AddressRegistry.Projections.Syndication
                 container.GetService<IRegistryAtomFeedReader>(),
                 new PostalInfoLatestProjections());
 
+            var streetNameRunner = new FeedProjectionRunner<StreetNameEvent, SyndicationItem<StreetName.StreetName>, SyndicationContext>(
+                "streetName",
+                configuration.GetValue<Uri>("SyndicationFeeds:StreetName"),
+                configuration.GetValue<string>("SyndicationFeeds:StreetNameAuthUserName"),
+                configuration.GetValue<string>("SyndicationFeeds:StreetNameAuthPassword"),
+                configuration.GetValue<int>("SyndicationFeeds:StreetNamePollingInMilliseconds"),
+                false,
+                true,
+                container.GetService<ILogger<Program>>(),
+                container.GetService<IRegistryAtomFeedReader>(),
+                new StreetNameSyndicationItemProjections(),
+                new StreetNameLatestProjections(),
+                new StreetNameBosaProjections());
+
             var parcelRunner = new FeedProjectionRunner<ParcelEvent, SyndicationItem<Parcel.Parcel>, SyndicationContext>(
-                "perceel",
+                "parcel",
                 configuration.GetValue<Uri>("SyndicationFeeds:Parcel"),
                 configuration.GetValue<string>("SyndicationFeeds:ParcelAuthUserName"),
                 configuration.GetValue<string>("SyndicationFeeds:ParcelAuthPassword"),
@@ -134,7 +134,7 @@ namespace AddressRegistry.Projections.Syndication
                 new ParcelAddressMatchProjections());
 
             var buildingUnitRunner = new FeedProjectionRunner<BuildingEvent, SyndicationItem<Building>, SyndicationContext>(
-                "gebouweenheid",
+                "buildingUnit",
                 configuration.GetValue<Uri>("SyndicationFeeds:Building"),
                 configuration.GetValue<string>("SyndicationFeeds:BuildingAuthUserName"),
                 configuration.GetValue<string>("SyndicationFeeds:BuildingAuthPassword"),
@@ -149,11 +149,11 @@ namespace AddressRegistry.Projections.Syndication
                 container.GetService<Func<Owned<SyndicationContext>>>(),
                 ct);
 
-            yield return streetNameRunner.CatchUpAsync(
+            yield return postalInfoRunner.CatchUpAsync(
                 container.GetService<Func<Owned<SyndicationContext>>>(),
                 ct);
 
-            yield return postalInfoRunner.CatchUpAsync(
+            yield return streetNameRunner.CatchUpAsync(
                 container.GetService<Func<Owned<SyndicationContext>>>(),
                 ct);
 

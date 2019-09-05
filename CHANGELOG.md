@@ -1,3 +1,10 @@
+## [1.12.14](https://github.com/informatievlaanderen/address-registry/compare/v1.12.13...v1.12.14) (2019-09-05)
+
+
+### Bug Fixes
+
+* initial jira version ([0c75478](https://github.com/informatievlaanderen/address-registry/commit/0c75478))
+
 ## [1.12.13](https://github.com/informatievlaanderen/address-registry/compare/v1.12.12...v1.12.13) (2019-09-03)
 
 

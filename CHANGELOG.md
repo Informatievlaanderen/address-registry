@@ -1,3 +1,11 @@
+## [1.12.15](https://github.com/informatievlaanderen/address-registry/compare/v1.12.14...v1.12.15) (2019-09-06)
+
+
+### Bug Fixes
+
+* add tracing to legacycontext ([9a12b3c](https://github.com/informatievlaanderen/address-registry/commit/9a12b3c))
+* use correct extractmodule in api ([1c6c98e](https://github.com/informatievlaanderen/address-registry/commit/1c6c98e))
+
 ## [1.12.14](https://github.com/informatievlaanderen/address-registry/compare/v1.12.13...v1.12.14) (2019-09-05)
 
 

@@ -2,7 +2,6 @@ namespace AddressRegistry.Api.Extract.Extracts
 {
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
-    using Be.Vlaanderen.Basisregisters.BasicApiProblem;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Newtonsoft.Json.Converters;
@@ -21,7 +20,7 @@ namespace AddressRegistry.Api.Extract.Extracts
     [ApiExplorerSettings(GroupName = "Extract")]
     public class ExtractController : ApiController
     {
-        public static readonly string ZipName = "adressen";
+        public const string ZipName = "adressen";
 
         /// <summary>
         /// Vraag een dump van het volledige register op.

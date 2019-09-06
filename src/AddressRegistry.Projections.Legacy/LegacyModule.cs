@@ -1,7 +1,9 @@
 namespace AddressRegistry.Projections.Legacy
 {
     using System;
+    using System.Data.SqlClient;
     using Autofac;
+    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication;
     using Infrastructure;
@@ -20,16 +22,11 @@ namespace AddressRegistry.Projections.Legacy
             var logger = loggerFactory.CreateLogger<LegacyModule>();
             var connectionString = configuration.GetConnectionString("LegacyProjections");
 
-            services
-                .AddDbContext<LegacyContext>(options => options
-                    .UseLoggerFactory(loggerFactory)
-                    .UseSqlServer(connectionString, sqlServerOptions =>
-                    {
-                        sqlServerOptions.EnableRetryOnFailure();
-                        sqlServerOptions.MigrationsHistoryTable(MigrationTables.Legacy, Schema.Legacy);
-                        //sqlServerOptions.UseNetTopologySuite();
-                    })
-                    .UseExtendedSqlServerMigrations());
+            var hasConnectionString = !string.IsNullOrWhiteSpace(connectionString);
+            if (hasConnectionString)
+                RunOnSqlServer(configuration, services, loggerFactory, connectionString);
+            else
+                RunInMemoryDb(services, loggerFactory, logger);
 
             logger.LogInformation(
                 "Added {Context} to services:" +
@@ -38,6 +35,39 @@ namespace AddressRegistry.Projections.Legacy
                 Environment.NewLine +
                 "\tTableName: {TableName}",
                 nameof(LegacyContext), Schema.Legacy, MigrationTables.Legacy);
+        }
+
+        private static void RunOnSqlServer(
+            IConfiguration configuration,
+            IServiceCollection services,
+            ILoggerFactory loggerFactory,
+            string backofficeProjectionsConnectionString)
+        {
+            services
+                .AddScoped(s => new TraceDbConnection(
+                    new SqlConnection(backofficeProjectionsConnectionString),
+                    configuration["DataDog:ServiceName"]))
+                .AddDbContext<LegacyContext>((provider, options) => options
+                    .UseLoggerFactory(loggerFactory)
+                    .UseSqlServer(provider.GetRequiredService<TraceDbConnection>(), sqlServerOptions =>
+                    {
+                        sqlServerOptions.EnableRetryOnFailure();
+                        sqlServerOptions.MigrationsHistoryTable(MigrationTables.Extract, Schema.Extract);
+                    })
+                    .UseExtendedSqlServerMigrations());
+        }
+
+        private static void RunInMemoryDb(
+            IServiceCollection services,
+            ILoggerFactory loggerFactory,
+            ILogger<LegacyModule> logger)
+        {
+            services
+                .AddDbContext<LegacyContext>(options => options
+                    .UseLoggerFactory(loggerFactory)
+                    .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { }));
+
+            logger.LogWarning("Running InMemory for {Context}!", nameof(LegacyContext));
         }
 
         protected override void Load(ContainerBuilder builder)

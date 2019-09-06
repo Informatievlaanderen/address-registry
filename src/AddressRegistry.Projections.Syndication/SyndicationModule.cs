@@ -32,6 +32,14 @@ namespace AddressRegistry.Projections.Syndication
                 RunInMemoryDb(services, loggerFactory, logger);
 
             RegisterHttpClient(configuration, services);
+
+            logger.LogInformation(
+                "Added {Context} to services:" +
+                Environment.NewLine +
+                "\tSchema: {Schema}" +
+                Environment.NewLine +
+                "\tTableName: {TableName}",
+                nameof(SyndicationContext), Schema.Syndication, MigrationTables.Syndication);
         }
 
         private static void RunOnSqlServer(

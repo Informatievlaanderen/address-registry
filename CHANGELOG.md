@@ -1,3 +1,10 @@
+# [1.13.0](https://github.com/informatievlaanderen/address-registry/compare/v1.12.15...v1.13.0) (2019-09-12)
+
+
+### Features
+
+* keep track of how many times lastchanged has errored ([1991955](https://github.com/informatievlaanderen/address-registry/commit/1991955))
+
 ## [1.12.15](https://github.com/informatievlaanderen/address-registry/compare/v1.12.14...v1.12.15) (2019-09-06)
 
 

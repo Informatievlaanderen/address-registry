@@ -57,13 +57,13 @@ nuget Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore ~> 3.2
 nuget Be.Vlaanderen.Basisregisters.EventHandling ~> 1.1
 nuget Be.Vlaanderen.Basisregisters.EventHandling.Autofac ~> 1.1
 
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList ~> 4.4
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore ~> 4.4
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac ~> 4.4
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner ~> 4.4
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing ~> 4.4
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit ~> 4.4
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication ~> 4.4
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList ~> 4.5
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore ~> 4.5
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac ~> 4.5
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner ~> 4.5
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing ~> 4.5
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit ~> 4.5
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication ~> 4.5
 
 nuget Be.Vlaanderen.Basisregisters.Projector ~> 3.3
 

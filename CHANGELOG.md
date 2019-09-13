@@ -1,3 +1,10 @@
+## [1.13.1](https://github.com/informatievlaanderen/address-registry/compare/v1.13.0...v1.13.1) (2019-09-13)
+
+
+### Bug Fixes
+
+* update redis lastchangedlist to log time of lasterror ([cdc2a39](https://github.com/informatievlaanderen/address-registry/commit/cdc2a39))
+
 # [1.13.0](https://github.com/informatievlaanderen/address-registry/compare/v1.12.15...v1.13.0) (2019-09-12)
 
 

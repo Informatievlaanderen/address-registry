@@ -1,3 +1,10 @@
+## [1.13.3](https://github.com/informatievlaanderen/address-registry/compare/v1.13.2...v1.13.3) (2019-09-13)
+
+
+### Bug Fixes
+
+* add municipality bosa syndication index ([c7dc77a](https://github.com/informatievlaanderen/address-registry/commit/c7dc77a))
+
 ## [1.13.2](https://github.com/informatievlaanderen/address-registry/compare/v1.13.1...v1.13.2) (2019-09-13)
 
 

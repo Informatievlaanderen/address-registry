@@ -102,8 +102,8 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                     .ToList()
                     .Select(x =>
                     {
-                        var street = streetNames.First(y => y.StreetNameId == x.StreetNameId);
-                        var muni = municipalities.First(y => y.NisCode == street.NisCode);
+                        var streetName = streetNames.First(y => y.StreetNameId == x.StreetNameId);
+                        var municipality = municipalities.First(y => y.NisCode == streetName.NisCode);
 
                         return new AddressBosaResponseItem(
                             _responseOptions.PostInfoNaamruimte,
@@ -119,10 +119,10 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                             AddressMapper.ConvertFromGeometryMethod(x.PositionMethod),
                             AddressMapper.ConvertFromGeometrySpecification(x.PositionSpecification),
                             x.VersionTimestamp.ToBelgianDateTimeOffset(),
-                            street.PersistentLocalId,
-                            street.Version.Value,
-                            muni.NisCode,
-                            muni.Version.Value,
+                            streetName.PersistentLocalId,
+                            streetName.Version.Value,
+                            municipality.NisCode,
+                            municipality.Version.Value,
                             x.PostalCode,
                             new DateTimeOffset(1830, 1, 1, 0, 0, 0, new TimeSpan()));
                     })
@@ -135,7 +135,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             };
         }
 
-        private IQueryable<AddressDetailItem> FilterAddresses(
+        private static IQueryable<AddressDetailItem> FilterAddresses(
             string persistentLocalId,
             DateTimeOffset? version,
             string houseNumber,
@@ -178,7 +178,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
         }
 
         // https://github.com/Informatievlaanderen/streetname-registry/blob/550a2398077140993d6e60029a1b831c193fb0ad/src/StreetNameRegistry.Api.Legacy/StreetName/Query/StreetNameBosaQuery.cs#L38
-        private IQueryable<StreetNameBosaItem> FilterStreetNames(
+        private static IQueryable<StreetNameBosaItem> FilterStreetNames(
             string persistentLocalId,
             DateTimeOffset? version,
             string streetName,
@@ -230,7 +230,11 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             }
         }
 
-        private static IQueryable<StreetNameBosaItem> CompareStreetNameByCompareType(IQueryable<StreetNameBosaItem> query, string searchValue, Taal? language, bool isContainsFilter)
+        private static IQueryable<StreetNameBosaItem> CompareStreetNameByCompareType(
+            IQueryable<StreetNameBosaItem> query,
+            string searchValue,
+            Taal? language,
+            bool isContainsFilter)
         {
             if (!language.HasValue)
             {
@@ -273,7 +277,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
         }
 
         // https://github.com/Informatievlaanderen/municipality-registry/blob/054e52fffe13bb4a09f80bf36d221d34ab0aacaa/src/MunicipalityRegistry.Api.Legacy/Municipality/Query/MunicipalityBosaQuery.cs#L83
-        private IQueryable<MunicipalityBosaItem> FilterMunicipalities(
+        private static IQueryable<MunicipalityBosaItem> FilterMunicipalities(
             string nisCode,
             DateTimeOffset? version,
             string municipalityName,

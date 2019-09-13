@@ -46,7 +46,11 @@ namespace AddressRegistry.Projections.Legacy.AddressDetail
                 .HasKey(p => p.AddressId)
                 .ForSqlServerIsClustered(false);
 
-            b.HasIndex(p => p.PersistentLocalId);
+            b.HasIndex(p => p.PersistentLocalId)
+                .ForSqlServerIsClustered();
+
+            // This speeds up AddressBosaQuery's huge StreetNameId IN (...) AND Complete = 1 query
+            b.HasIndex(p => new { p.StreetNameId, p.Complete });
 
             b.Property(AddressDetailItem.VersionTimestampBackingPropertyName)
                 .HasColumnName("VersionTimestamp");

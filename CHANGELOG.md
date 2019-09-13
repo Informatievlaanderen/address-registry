@@ -1,3 +1,10 @@
+## [1.13.2](https://github.com/informatievlaanderen/address-registry/compare/v1.13.1...v1.13.2) (2019-09-13)
+
+
+### Bug Fixes
+
+* tune bosa address query for performance ([9fa52db](https://github.com/informatievlaanderen/address-registry/commit/9fa52db))
+
 ## [1.13.1](https://github.com/informatievlaanderen/address-registry/compare/v1.13.0...v1.13.1) (2019-09-13)
 
 

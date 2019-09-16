@@ -1,3 +1,10 @@
+## [1.14.2](https://github.com/informatievlaanderen/address-registry/compare/v1.14.1...v1.14.2) (2019-09-16)
+
+
+### Bug Fixes
+
+* bosa default searchtype muni & street is now contains GR-869 ([311afb6](https://github.com/informatievlaanderen/address-registry/commit/311afb6))
+
 ## [1.14.1](https://github.com/informatievlaanderen/address-registry/compare/v1.14.0...v1.14.1) (2019-09-16)
 
 

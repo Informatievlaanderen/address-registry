@@ -1,3 +1,11 @@
+## [1.13.4](https://github.com/informatievlaanderen/address-registry/compare/v1.13.3...v1.13.4) (2019-09-16)
+
+
+### Bug Fixes
+
+* bosa exactsearch on street & muni GR-871 ([5bcf4f6](https://github.com/informatievlaanderen/address-registry/commit/5bcf4f6))
+* empty collection instead of null GR-865 ([458c809](https://github.com/informatievlaanderen/address-registry/commit/458c809))
+
 ## [1.13.3](https://github.com/informatievlaanderen/address-registry/compare/v1.13.2...v1.13.3) (2019-09-13)
 
 

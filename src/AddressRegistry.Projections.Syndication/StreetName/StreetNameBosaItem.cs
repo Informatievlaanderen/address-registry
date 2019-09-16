@@ -64,6 +64,7 @@ namespace AddressRegistry.Projections.Syndication.StreetName
 
             builder.HasIndex(x => x.NisCode);
             builder.HasIndex(x => x.IsComplete);
+            builder.HasIndex(x => x.Version);
 
             builder.HasIndex(x => x.NameDutchSearch);
             builder.HasIndex(x => x.NameFrenchSearch);

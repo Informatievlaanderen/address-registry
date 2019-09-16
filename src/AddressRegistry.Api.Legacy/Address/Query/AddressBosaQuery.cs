@@ -106,6 +106,10 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                     {
                         var streetName = streetNames.First(y => y.StreetNameId == x.StreetNameId);
                         var municipality = municipalities.First(y => y.NisCode == streetName.NisCode);
+                        var postalCode = _syndicationContext
+                            .PostalInfoLatestItems
+                            .AsNoTracking()
+                            .First(y => y.PostalCode == x.PostalCode);
 
                         return new AddressBosaResponseItem(
                             _responseOptions.PostInfoNaamruimte,
@@ -126,7 +130,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                             municipality.NisCode,
                             municipality.Version.Value,
                             x.PostalCode,
-                            new DateTimeOffset(1830, 1, 1, 0, 0, 0, new TimeSpan()));
+                            postalCode.Version.Value);
                     })
                     .ToList();
 

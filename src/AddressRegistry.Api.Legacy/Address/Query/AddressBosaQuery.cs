@@ -79,7 +79,9 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 filter?.Straatnaam?.Taal,
                 filter?.Straatnaam?.SearchType,
                 streetNamesQuery,
-                filteredMunicipalities).ToList();
+                filteredMunicipalities)
+                    .Select(x => new { x.StreetNameId, x.PersistentLocalId, x.Version, x.NisCode })
+                    .ToList();
 
             var filteredAddresses =
                 FilterAddresses(
@@ -94,7 +96,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 .OrderBy(x => x.PersistentLocalId);
 
             var municipalities = filteredMunicipalities.Select(x => new { x.NisCode, x.Version }).ToList();
-            var streetNames = filteredStreetNames.Select(x => new { x.StreetNameId, PersistentLocalId = x.PersistentLocalId, x.Version, x.NisCode }).ToList();
+            var streetNames = filteredStreetNames.ToList();
             var count = filteredAddresses.Count();
 
             var addresses = filteredAddresses

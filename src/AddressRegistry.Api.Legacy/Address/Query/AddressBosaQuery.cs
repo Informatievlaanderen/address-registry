@@ -202,7 +202,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             if (!string.IsNullOrEmpty(streetName))
                 filtered = CompareStreetNameByCompareType(
                     streetNames,
-                    streetName.SanitizeForBosaSearch(),
+                    streetName,
                     language,
                     searchType == BosaSearchType.Bevat);
             else if (language.HasValue)
@@ -302,7 +302,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             }
 
             filtered = CompareMunicipalityByCompareType(filtered,
-                municipalityName.SanitizeForBosaSearch(),
+                municipalityName,
                 language,
                 searchType == BosaSearchType.Bevat);
 

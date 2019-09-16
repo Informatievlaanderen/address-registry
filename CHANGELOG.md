@@ -1,3 +1,10 @@
+## [1.14.1](https://github.com/informatievlaanderen/address-registry/compare/v1.14.0...v1.14.1) (2019-09-16)
+
+
+### Performance Improvements
+
+* bosa get only relevant data when ToList streetnames ([bbc925f](https://github.com/informatievlaanderen/address-registry/commit/bbc925f))
+
 # [1.14.0](https://github.com/informatievlaanderen/address-registry/compare/v1.13.4...v1.14.0) (2019-09-16)
 
 

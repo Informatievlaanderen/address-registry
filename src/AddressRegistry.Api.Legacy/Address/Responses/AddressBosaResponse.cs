@@ -23,6 +23,11 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         /// </summary>
         [Required]
         public long TotaalAantal { get; set; }
+
+        public AddressBosaResponse()
+        {
+            Adressen = new List<AddressBosaResponseItem>();
+        }
     }
 
     public class AddressBosaResponseItem

@@ -1,3 +1,10 @@
+# [1.14.0](https://github.com/informatievlaanderen/address-registry/compare/v1.13.4...v1.14.0) (2019-09-16)
+
+
+### Features
+
+* add version indexes for bosa ([d061b1b](https://github.com/informatievlaanderen/address-registry/commit/d061b1b))
+
 ## [1.13.4](https://github.com/informatievlaanderen/address-registry/compare/v1.13.3...v1.13.4) (2019-09-16)
 
 

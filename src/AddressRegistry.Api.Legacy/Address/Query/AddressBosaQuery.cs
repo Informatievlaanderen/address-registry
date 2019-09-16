@@ -69,7 +69,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 filter?.GemeenteCode?.VersieId,
                 filter?.Gemeentenaam?.Spelling,
                 filter?.Gemeentenaam?.Taal,
-                filter?.Gemeentenaam?.SearchType,
+                filter?.Gemeentenaam?.SearchType ?? BosaSearchType.Bevat,
                 municipalitiesQuery);
 
             var filteredStreetNames = FilterStreetNames(
@@ -77,7 +77,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 filter?.StraatnaamCode?.VersieId,
                 filter?.Straatnaam?.Spelling,
                 filter?.Straatnaam?.Taal,
-                filter?.Straatnaam?.SearchType,
+                filter?.Straatnaam?.SearchType ?? BosaSearchType.Bevat,
                 streetNamesQuery,
                 filteredMunicipalities)
                     .Select(x => new { x.StreetNameId, x.PersistentLocalId, x.Version, x.NisCode })
@@ -185,7 +185,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             DateTimeOffset? version,
             string streetName,
             Taal? language,
-            BosaSearchType? searchType,
+            BosaSearchType searchType,
             IQueryable<StreetNameBosaItem> streetNames,
             IQueryable<MunicipalityBosaItem> filteredMunicipalities)
         {
@@ -284,7 +284,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             DateTimeOffset? version,
             string municipalityName,
             Taal? language,
-            BosaSearchType? searchType,
+            BosaSearchType searchType,
             IQueryable<MunicipalityBosaItem> municipalities)
         {
             var filtered = municipalities.Where(x => x.IsFlemishRegion);

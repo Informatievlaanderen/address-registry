@@ -1,3 +1,11 @@
+## [1.14.3](https://github.com/informatievlaanderen/address-registry/compare/v1.14.2...v1.14.3) (2019-09-16)
+
+
+### Bug Fixes
+
+* bosa null busnummer is now hidden GR-867 ([c9775d2](https://github.com/informatievlaanderen/address-registry/commit/c9775d2))
+* postinfo version bosa now uses syndication table GR-868 ([1a89a2b](https://github.com/informatievlaanderen/address-registry/commit/1a89a2b))
+
 ## [1.14.2](https://github.com/informatievlaanderen/address-registry/compare/v1.14.1...v1.14.2) (2019-09-16)
 
 

@@ -21,6 +21,7 @@ Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql
 
 Dapper
 CsvHelper
+System.Data.SqlClient
 
 SourceLink.Embed.AllSourceFiles
 SourceLink.Copy.PdbFiles

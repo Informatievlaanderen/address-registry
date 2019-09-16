@@ -15,7 +15,7 @@ namespace AddressRegistry.Importer.AddressMatch
     using System.Text;
     using System.Threading.Tasks;
 
-    class Program
+    public static class Program
     {
         private const string ImportUrlKey = "ImportUrl";
         private const string HttpFormFileName = "file";
@@ -23,12 +23,12 @@ namespace AddressRegistry.Importer.AddressMatch
         private static string _crabConnectionString;
 
         private static readonly Configuration CsvConfiguration = new Configuration { Encoding = Encoding.UTF8, Delimiter = ";" };
-        private static readonly string RRStreetNamesPath = "RRStreetNames.csv";
-        private static readonly string KadStreetNamesPath = "KadStreetNames.csv";
-        private static readonly string RRAddressesPath = "RRAddresses.csv";
-        private static readonly string ImportAddressMatchZipPath = "importAddressMatch.zip";
+        private const string RrStreetNamesPath = "RRStreetNames.csv";
+        private const string KadStreetNamesPath = "KadStreetNames.csv";
+        private const string RrAddressesPath = "RRAddresses.csv";
+        private const string ImportAddressMatchZipPath = "importAddressMatch.zip";
 
-        static async Task Main(string[] args)
+        public static async Task Main(string[] args)
         {
             Console.WriteLine("Starting AddressRegistry.Importer.AddressMatch");
 
@@ -51,21 +51,21 @@ namespace AddressRegistry.Importer.AddressMatch
 
             _crabConnectionString = configuration.GetConnectionString("CRAB");
 
-            WriteCsvFile(ExtractRRStreetNames(), RRStreetNamesPath);
+            WriteCsvFile(ExtractRrStreetNames(), RrStreetNamesPath);
             WriteCsvFile(ExtractKadStreetNames(), KadStreetNamesPath);
-            WriteCsvFile(ExtractRRAddress(), RRAddressesPath);
+            WriteCsvFile(ExtractRrAddress(), RrAddressesPath);
 
-            Console.WriteLine($"Creating Zip");
+            Console.WriteLine("Creating Zip");
 
-            CreateZip(new[] { RRStreetNamesPath, KadStreetNamesPath, RRAddressesPath });
+            CreateZip(new[] { RrStreetNamesPath, KadStreetNamesPath, RrAddressesPath });
 
-            Console.WriteLine($"Sending Zip");
+            Console.WriteLine("Sending Zip");
 
             await SendZip(configuration.GetValue<string>(ImportUrlKey));
 
-            Console.WriteLine($"Cleaning up");
+            Console.WriteLine("Cleaning up");
 
-            CleanUpFiles(new[] { RRStreetNamesPath, KadStreetNamesPath, RRAddressesPath, ImportAddressMatchZipPath });
+            CleanUpFiles(new[] { RrStreetNamesPath, KadStreetNamesPath, RrAddressesPath, ImportAddressMatchZipPath });
         }
 
         private static async Task SendZip(string importUrl)
@@ -116,11 +116,11 @@ namespace AddressRegistry.Importer.AddressMatch
             }
         }
 
-        static IList<RRStreetName> ExtractRRStreetNames()
+        private static IList<RrStreetName> ExtractRrStreetNames()
         {
             using (var connection = new SqlConnection(_crabConnectionString))
             {
-                var streetNames = connection.Query<RRStreetName>(@"
+                var streetNames = connection.Query<RrStreetName>(@"
                     select s.StraatnaamId as StreetNameId, s.straatNaam as StreetName, ss.straatCode as StreetCode, pk.postKantonCode as PostalCode from odb.tblStraatNaam s
                     inner join odb.tblSubStraat_straatNaam ss_s on s.straatNaamId = ss_s.straatNaamId
                     inner join odb.tblSubStraat ss on ss.subStraatId = ss_s.subStraatId
@@ -132,7 +132,7 @@ namespace AddressRegistry.Importer.AddressMatch
             }
         }
 
-        static IList<KadStreetName> ExtractKadStreetNames()
+        private static IList<KadStreetName> ExtractKadStreetNames()
         {
             using (var connection = new SqlConnection(_crabConnectionString))
             {
@@ -148,11 +148,11 @@ namespace AddressRegistry.Importer.AddressMatch
             }
         }
 
-        static IList<RRAddress> ExtractRRAddress()
+        private static IList<RrAddress> ExtractRrAddress()
         {
             using (var connection = new SqlConnection(_crabConnectionString))
             {
-                var streetNames = connection.Query<RRAddress>(@"
+                var streetNames = connection.Query<RrAddress>(@"
                     select arra.adresid as AddressId, arra.aardadres as AddressType, rra.rrHuisNummer as RRHouseNumber, rra.rrIndex as RRIndex, ss.straatCode as StreetCode, pk.postKantonCode as PostalCode from odb.tblRrAdres rra
                     inner join odb.tblAdres_RrAdres arra on arra.rrAdresId = rra.rrAdresId
                     inner join odb.tblSubStraat ss on ss.subStraatId = rra.subStraatId
@@ -165,7 +165,7 @@ namespace AddressRegistry.Importer.AddressMatch
         }
     }
 
-    class RRStreetName
+    public class RrStreetName
     {
         public int StreetNameId { get; set; }
         public string StreetName { get; set; }
@@ -173,14 +173,14 @@ namespace AddressRegistry.Importer.AddressMatch
         public string PostalCode { get; set; }
     }
 
-    class KadStreetName
+    public class KadStreetName
     {
         public int StreetNameId { get; set; }
         public string KadStreetNameCode { get; set; }
         public string NisCode { get; set; }
     }
 
-    class RRAddress
+    public class RrAddress
     {
         public int AddressId { get; set; }
         public string AddressType { get; set; }

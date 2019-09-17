@@ -67,9 +67,9 @@ nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication ~> 4.5
 
 nuget Be.Vlaanderen.Basisregisters.Projector ~> 3.3
 
-nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac ~> 3.7
-nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.AspNetCore ~> 3.7
-nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.SqlStreamStore ~> 3.7
+nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac ~> 3.9
+nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.AspNetCore ~> 3.9
+nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.SqlStreamStore ~> 3.9
 
 nuget Be.Vlaanderen.Basisregisters.Crab ~> 1.1
 

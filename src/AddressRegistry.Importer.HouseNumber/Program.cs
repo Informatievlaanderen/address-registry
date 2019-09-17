@@ -45,7 +45,7 @@ namespace AddressRegistry.Importer.HouseNumber
                     .UseDefaultSerializerSettingsForCrabImports()
                     .ConfigureImportFeedFromAssembly(Assembly.GetExecutingAssembly())
                     .Build();
-                ;
+
                 WaitForStart(settings.WaitForUserInput);
 
                 commandProcessor.Run(options, settings);

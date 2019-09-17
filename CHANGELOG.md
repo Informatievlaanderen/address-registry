@@ -1,3 +1,10 @@
+## [1.14.4](https://github.com/informatievlaanderen/address-registry/compare/v1.14.3...v1.14.4) (2019-09-17)
+
+
+### Bug Fixes
+
+* fix contains search ([f7c70f3](https://github.com/informatievlaanderen/address-registry/commit/f7c70f3))
+
 ## [1.14.3](https://github.com/informatievlaanderen/address-registry/compare/v1.14.2...v1.14.3) (2019-09-16)
 
 

@@ -1,3 +1,11 @@
+## [1.14.5](https://github.com/informatievlaanderen/address-registry/compare/v1.14.4...v1.14.5) (2019-09-17)
+
+
+### Bug Fixes
+
+* add sqlclient to addressmatch import ([058e59e](https://github.com/informatievlaanderen/address-registry/commit/058e59e))
+* use generic dbtraceconnection ([44954d4](https://github.com/informatievlaanderen/address-registry/commit/44954d4))
+
 ## [1.14.4](https://github.com/informatievlaanderen/address-registry/compare/v1.14.3...v1.14.4) (2019-09-17)
 
 

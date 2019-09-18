@@ -1,7 +1,6 @@
 namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting.Generate
 {
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
-    using GeoAPI.Geometries;
     using NetTopologySuite.Geometries;
     using Projections.Legacy.AddressDetail;
     using Projections.Syndication.Municipality;
@@ -78,7 +77,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting.Generate
         public static Generator<string> Busnummer = Produce.NumericString(2);
         public static Generator<string> Huisnummer = Produce.NumericString(2);
         public static Generator<string> Postcode = Produce.NumericString(4);
-        public static Generator<IPoint> DbGeometry = new Generator<IPoint>(r =>
+        public static Generator<Point> DbGeometry = new Generator<Point>(r =>
         {
             //pick a random point on planet earth
             int longitude = r.Next(-180, 181);

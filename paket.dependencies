@@ -31,7 +31,7 @@ nuget AsyncEnumerator 2.2.2
 nuget Dapper 2.0.4
 nuget CsvHelper 12.1.2
 
-nuget NetTopologySuite 1.15.3
+nuget NetTopologySuite 2.0.0
 
 nuget Microsoft.EntityFrameworkCore.Design 2.2.6
 nuget Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite 2.2.6
@@ -73,13 +73,13 @@ nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.SqlStreamStore ~> 3.9
 
 nuget Be.Vlaanderen.Basisregisters.Crab ~> 1.1
 
-nuget Be.Vlaanderen.Basisregisters.GrAr.Common ~> 11.1
-nuget Be.Vlaanderen.Basisregisters.GrAr.Import ~> 11.1
-nuget Be.Vlaanderen.Basisregisters.GrAr.Legacy ~> 11.1
-nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance ~> 11.1
-nuget Be.Vlaanderen.Basisregisters.GrAr.Extracts ~> 11.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Common ~> 12.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Import ~> 12.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Legacy ~> 12.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance ~> 12.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Extracts ~> 12.1
 
-nuget Be.Vlaanderen.Basisregisters.Shaperon ~> 4.2
+nuget Be.Vlaanderen.Basisregisters.Shaperon ~> 6.0
 
 // .NET CLASSIC STUFF
 nuget EntityFramework 6.2.0

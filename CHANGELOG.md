@@ -1,3 +1,10 @@
+## [1.14.6](https://github.com/informatievlaanderen/address-registry/compare/v1.14.5...v1.14.6) (2019-09-18)
+
+
+### Bug Fixes
+
+* add missing connection string ([e1d99ee](https://github.com/informatievlaanderen/address-registry/commit/e1d99ee))
+
 ## [1.14.5](https://github.com/informatievlaanderen/address-registry/compare/v1.14.4...v1.14.5) (2019-09-17)
 
 

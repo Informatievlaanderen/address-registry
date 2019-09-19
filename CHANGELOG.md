@@ -1,3 +1,10 @@
+# [1.15.0](https://github.com/informatievlaanderen/address-registry/compare/v1.14.6...v1.15.0) (2019-09-19)
+
+
+### Features
+
+* upgrade NTS and Shaperon packages ([74115c3](https://github.com/informatievlaanderen/address-registry/commit/74115c3))
+
 ## [1.14.6](https://github.com/informatievlaanderen/address-registry/compare/v1.14.5...v1.14.6) (2019-09-18)
 
 

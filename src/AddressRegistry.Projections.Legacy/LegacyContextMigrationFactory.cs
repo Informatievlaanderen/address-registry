@@ -3,13 +3,11 @@ namespace AddressRegistry.Projections.Legacy
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Infrastructure;
 
     public class LegacyContextMigrationFactory : RunnerDbContextMigrationFactory<LegacyContext>
     {
         public LegacyContextMigrationFactory()
-            : base("LegacyProjectionsAdmin", HistoryConfiguration)
-        { }
+            : base("LegacyProjectionsAdmin", HistoryConfiguration) { }
 
         private static MigrationHistoryConfiguration HistoryConfiguration =>
             new MigrationHistoryConfiguration

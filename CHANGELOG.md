@@ -1,3 +1,12 @@
+## [1.15.1](https://github.com/informatievlaanderen/address-registry/compare/v1.15.0...v1.15.1) (2019-09-19)
+
+
+### Bug Fixes
+
+* clean up EF NTS refs which causes crash ([7923c55](https://github.com/informatievlaanderen/address-registry/commit/7923c55))
+* remove old nts types ([4257b17](https://github.com/informatievlaanderen/address-registry/commit/4257b17))
+* update dependencies for build ([3662cc4](https://github.com/informatievlaanderen/address-registry/commit/3662cc4))
+
 # [1.15.0](https://github.com/informatievlaanderen/address-registry/compare/v1.14.6...v1.15.0) (2019-09-19)
 
 

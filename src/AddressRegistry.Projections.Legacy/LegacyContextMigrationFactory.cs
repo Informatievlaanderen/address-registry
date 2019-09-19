@@ -20,8 +20,5 @@ namespace AddressRegistry.Projections.Legacy
 
         protected override LegacyContext CreateContext(DbContextOptions<LegacyContext> migrationContextOptions)
             => new LegacyContext(migrationContextOptions);
-
-        protected override void ConfigureSqlServerOptions(SqlServerDbContextOptionsBuilder sqlServerOptions)
-            => sqlServerOptions.UseNetTopologySuite();
     }
 }

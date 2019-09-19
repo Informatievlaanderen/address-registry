@@ -1,5 +1,4 @@
 Microsoft.SyndicationFeed.ReaderWriter
-Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite
 
 Be.Vlaanderen.Basisregisters.EventHandling.Autofac
 Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql

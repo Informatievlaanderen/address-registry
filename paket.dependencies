@@ -34,7 +34,6 @@ nuget CsvHelper 12.1.2
 nuget NetTopologySuite 1.15.3
 
 nuget Microsoft.EntityFrameworkCore.Design 2.2.6
-nuget Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite 2.2.6
 
 // VBR STUFF
 nuget Be.Vlaanderen.Basisregisters.Build.Pipeline ~> 1.11

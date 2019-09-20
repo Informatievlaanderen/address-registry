@@ -1,3 +1,10 @@
+## [1.15.2](https://github.com/informatievlaanderen/address-registry/compare/v1.15.1...v1.15.2) (2019-09-20)
+
+
+### Bug Fixes
+
+* CRAB endpoints return deleted addresses GR-886 ([948292a](https://github.com/informatievlaanderen/address-registry/commit/948292a))
+
 ## [1.15.1](https://github.com/informatievlaanderen/address-registry/compare/v1.15.0...v1.15.1) (2019-09-19)
 
 

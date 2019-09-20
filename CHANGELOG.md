@@ -1,3 +1,10 @@
+## [1.15.3](https://github.com/informatievlaanderen/address-registry/compare/v1.15.2...v1.15.3) (2019-09-20)
+
+
+### Bug Fixes
+
+* hide busnummer from housenumber endpoint GR-887 ([356f591](https://github.com/informatievlaanderen/address-registry/commit/356f591))
+
 ## [1.15.2](https://github.com/informatievlaanderen/address-registry/compare/v1.15.1...v1.15.2) (2019-09-20)
 
 

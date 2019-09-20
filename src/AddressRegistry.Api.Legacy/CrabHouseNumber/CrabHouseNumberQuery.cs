@@ -17,7 +17,7 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
         protected override IQueryable<CrabIdToPersistentLocalIdItem> Filter(FilteringHeader<CrabHouseNumberAddressFilter> filtering)
         {
             var query = _context.CrabIdToPersistentLocalIds
-                .Where(x => !x.IsRemoved && x.HouseNumberId.HasValue && x.PersistentLocalId.HasValue);
+                .Where(x => x.HouseNumberId.HasValue && x.PersistentLocalId.HasValue);
 
             if (filtering.ShouldFilter && filtering.Filter.CrabHouseNumberId.HasValue)
                 query = query.Where(x => x.HouseNumberId == filtering.Filter.CrabHouseNumberId);

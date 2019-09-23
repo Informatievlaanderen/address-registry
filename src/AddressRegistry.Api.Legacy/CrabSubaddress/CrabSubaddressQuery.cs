@@ -19,10 +19,10 @@ namespace AddressRegistry.Api.Legacy.CrabSubaddress
             var query = _context.CrabIdToPersistentLocalIds
                 .Where(x => x.SubaddressId.HasValue && x.PersistentLocalId.HasValue);
 
-            var parsed = int.TryParse(filtering.Filter.CrabSubaddressId, out var objectId);
+            var parsed = int.TryParse(filtering.Filter?.CrabSubaddressId, out var objectId);
             if (filtering.ShouldFilter && parsed)
                 query = query.Where(x => x.SubaddressId == objectId);
-            else if (!parsed && !string.IsNullOrEmpty(filtering.Filter.CrabSubaddressId))
+            else if (!parsed && !string.IsNullOrEmpty(filtering.Filter?.CrabSubaddressId))
                 return new List<CrabIdToPersistentLocalIdItem>().AsQueryable();
 
             return query;

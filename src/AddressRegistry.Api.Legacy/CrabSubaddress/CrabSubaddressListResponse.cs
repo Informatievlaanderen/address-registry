@@ -33,7 +33,7 @@ namespace AddressRegistry.Api.Legacy.CrabSubaddress
         public Uri Volgende { get; set; }
     }
 
-    [DataContract(Name = "CrabSubadresCollectieItem", Namespace = "")]
+    [DataContract(Name = "CrabSubadres", Namespace = "")]
     public class CrabSubAddressListItem
     {
         public CrabSubAddressListItem(

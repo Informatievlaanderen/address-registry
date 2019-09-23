@@ -1,3 +1,10 @@
+## [1.15.6](https://github.com/informatievlaanderen/address-registry/compare/v1.15.5...v1.15.6) (2019-09-23)
+
+
+### Bug Fixes
+
+* tweak logging ([a614b9d](https://github.com/informatievlaanderen/address-registry/commit/a614b9d))
+
 ## [1.15.5](https://github.com/informatievlaanderen/address-registry/compare/v1.15.4...v1.15.5) (2019-09-23)
 
 

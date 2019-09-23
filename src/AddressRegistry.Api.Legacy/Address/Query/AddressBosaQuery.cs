@@ -6,9 +6,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Bosa;
     using Infrastructure.Options;
     using Microsoft.EntityFrameworkCore;
-    using Projections.Legacy;
     using Projections.Legacy.AddressDetail;
-    using Projections.Syndication;
     using Projections.Syndication.Municipality;
     using Projections.Syndication.StreetName;
     using Requests;
@@ -20,25 +18,22 @@ namespace AddressRegistry.Api.Legacy.Address.Query
 
     public class AddressBosaQuery
     {
-        private readonly LegacyContext _legacyContext;
-        private readonly SyndicationContext _syndicationContext;
+        private readonly AddressBosaContext _context;
         private readonly ResponseOptions _responseOptions;
 
         public AddressBosaQuery(
-            LegacyContext legacyContext,
-            SyndicationContext syndicationContext,
+            AddressBosaContext context,
             ResponseOptions responseOptions)
         {
-            _legacyContext = legacyContext;
-            _syndicationContext = syndicationContext;
+            _context = context;
             _responseOptions = responseOptions;
         }
 
         public async Task<AddressBosaResponse> Filter(BosaAddressRequest filter)
         {
-            var addressesQuery = _legacyContext.AddressDetail.AsNoTracking().Where(x => x.Complete);
-            var streetNamesQuery = _syndicationContext.StreetNameBosaItems.AsNoTracking().Where(x => x.IsComplete);
-            var municipalitiesQuery = _syndicationContext.MunicipalityBosaItems.AsNoTracking();
+            var addressesQuery = _context.AddressDetail.AsNoTracking().Where(x => x.Complete);
+            var streetNamesQuery = _context.StreetNameBosaItems.AsNoTracking().Where(x => x.IsComplete);
+            var municipalitiesQuery = _context.MunicipalityBosaItems.AsNoTracking();
 
             if (filter?.IsOnlyAdresIdRequested == true && int.TryParse(filter.AdresCode?.ObjectId, out var adresId))
             {
@@ -79,9 +74,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 filter?.Straatnaam?.Taal,
                 filter?.Straatnaam?.SearchType ?? BosaSearchType.Bevat,
                 streetNamesQuery,
-                filteredMunicipalities)
-                    .Select(x => new { x.StreetNameId, x.PersistentLocalId, x.Version, x.NisCode })
-                    .ToList();
+                filteredMunicipalities);
 
             var filteredAddresses =
                 FilterAddresses(
@@ -92,11 +85,11 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                     filter?.AdresStatus,
                     filter?.PostCode?.ObjectId,
                     addressesQuery,
-                    filteredStreetNames.Select(x => x.StreetNameId))
+                    filteredStreetNames)
                 .OrderBy(x => x.PersistentLocalId);
 
             var municipalities = filteredMunicipalities.Select(x => new { x.NisCode, x.Version }).ToList();
-            var streetNames = filteredStreetNames.ToList();
+            var streetNames = filteredStreetNames.Select(x => new { x.StreetNameId, x.PersistentLocalId, x.Version, x.NisCode }).ToList();
             var count = filteredAddresses.Count();
 
             var addresses = filteredAddresses
@@ -106,7 +99,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                     {
                         var streetName = streetNames.First(y => y.StreetNameId == x.StreetNameId);
                         var municipality = municipalities.First(y => y.NisCode == streetName.NisCode);
-                        var postalCode = _syndicationContext
+                        var postalCode = _context
                             .PostalInfoLatestItems
                             .AsNoTracking()
                             .First(y => y.PostalCode == x.PostalCode);
@@ -149,10 +142,10 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             AdresStatus? status,
             string postalCode,
             IQueryable<AddressDetailItem> addresses,
-            IEnumerable<Guid> streetNameIds)
+            IQueryable<StreetNameBosaItem> streetNames)
         {
             var filtered = addresses
-                .Where(x => streetNameIds.Contains(x.StreetNameId));
+                .Where(x => streetNames.Select(y => y.StreetNameId).Contains(x.StreetNameId));
 
             if (!string.IsNullOrEmpty(persistentLocalId))
             {

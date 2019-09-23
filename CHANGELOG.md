@@ -1,3 +1,10 @@
+## [1.15.5](https://github.com/informatievlaanderen/address-registry/compare/v1.15.4...v1.15.5) (2019-09-23)
+
+
+### Bug Fixes
+
+* returns empty list when query parameter is incorrect GR-889 ([602186d](https://github.com/informatievlaanderen/address-registry/commit/602186d))
+
 ## [1.15.4](https://github.com/informatievlaanderen/address-registry/compare/v1.15.3...v1.15.4) (2019-09-23)
 
 

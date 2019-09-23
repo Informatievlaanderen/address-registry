@@ -1,3 +1,11 @@
+## [1.15.7](https://github.com/informatievlaanderen/address-registry/compare/v1.15.6...v1.15.7) (2019-09-23)
+
+
+### Bug Fixes
+
+* correct bosa xml names to be consistent with prd GR-893 ([ca4a96a](https://github.com/informatievlaanderen/address-registry/commit/ca4a96a))
+* fix crash when no filter was applied GR-890 ([572f753](https://github.com/informatievlaanderen/address-registry/commit/572f753))
+
 ## [1.15.6](https://github.com/informatievlaanderen/address-registry/compare/v1.15.5...v1.15.6) (2019-09-23)
 
 

@@ -19,8 +19,11 @@ namespace AddressRegistry.Api.Legacy.CrabSubaddress
             var query = _context.CrabIdToPersistentLocalIds
                 .Where(x => x.SubaddressId.HasValue && x.PersistentLocalId.HasValue);
 
-            if (filtering.ShouldFilter && filtering.Filter.CrabSubaddressId.HasValue)
-                query = query.Where(x => x.SubaddressId == filtering.Filter.CrabSubaddressId);
+            var parsed = int.TryParse(filtering.Filter.CrabSubaddressId, out var objectId);
+            if (filtering.ShouldFilter && parsed)
+                query = query.Where(x => x.SubaddressId == objectId);
+            else if (!parsed && !string.IsNullOrEmpty(filtering.Filter.CrabSubaddressId))
+                return new List<CrabIdToPersistentLocalIdItem>().AsQueryable();
 
             return query;
         }
@@ -40,6 +43,6 @@ namespace AddressRegistry.Api.Legacy.CrabSubaddress
 
     public class CrabSubaddressAddressFilter
     {
-        public int? CrabSubaddressId { get; set; }
+        public string CrabSubaddressId { get; set; }
     }
 }

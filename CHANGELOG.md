@@ -1,3 +1,10 @@
+## [1.15.4](https://github.com/informatievlaanderen/address-registry/compare/v1.15.3...v1.15.4) (2019-09-23)
+
+
+### Bug Fixes
+
+* create new context for complex bosa queries GR-870 ([87dd7da](https://github.com/informatievlaanderen/address-registry/commit/87dd7da))
+
 ## [1.15.3](https://github.com/informatievlaanderen/address-registry/compare/v1.15.2...v1.15.3) (2019-09-20)
 
 

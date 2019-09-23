@@ -32,7 +32,7 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
         public Uri Volgende { get; set; }
     }
 
-    [DataContract(Name = "CrabHuisnummerCollectieItem", Namespace = "")]
+    [DataContract(Name = "CrabHuisnummer", Namespace = "")]
     public class CrabHouseNumberAddressListItem
     {
         public CrabHouseNumberAddressListItem(

@@ -270,8 +270,7 @@ namespace AddressRegistry.Api.Legacy.Address
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(BadRequestResponseExamples), jsonConverter: typeof(StringEnumConverter))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples), jsonConverter: typeof(StringEnumConverter))]
         public async Task<IActionResult> Post(
-            [FromServices] LegacyContext context,
-            [FromServices] SyndicationContext syndicationContext,
+            [FromServices] AddressBosaContext context,
             [FromServices] IOptions<ResponseOptions> responseOptions,
             [FromBody] BosaAddressRequest addressRequest,
             CancellationToken cancellationToken = default)
@@ -279,7 +278,7 @@ namespace AddressRegistry.Api.Legacy.Address
             if (Request.ContentLength.HasValue && Request.ContentLength > 0 && addressRequest == null)
                 return Ok(new AddressBosaResponse());
 
-            var query = new AddressBosaQuery(context, syndicationContext, responseOptions.Value);
+            var query = new AddressBosaQuery(context, responseOptions.Value);
 
             return Ok(await query.Filter(addressRequest));
         }

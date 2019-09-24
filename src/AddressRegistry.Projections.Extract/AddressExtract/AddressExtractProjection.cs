@@ -141,14 +141,14 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                         record.posgeommet.Value = Map(message.Message.GeometryMethod);
                         record.posspec.Value = Map(message.Message.GeometrySpecification);
                     });
-                    var pointShapeContent = new PointShapeContent(new PointM(wkbReader.Read(message.Message.ExtendedWkbGeometry.ToByteArray()).Coordinate));
+                    var coordinate = wkbReader.Read(message.Message.ExtendedWkbGeometry.ToByteArray()).Coordinate;
+                    var pointShapeContent = new PointShapeContent(new Point(coordinate.X, coordinate.Y));
                     item.ShapeRecordContent = pointShapeContent.ToBytes();
                     item.ShapeRecordContentLength = pointShapeContent.ContentLength.ToInt32();
-                    var env = EnvelopePartialRecord.From(pointShapeContent.Shape.EnvelopeInternal);
-                    item.MinimumX = env.MinimumX;
-                    item.MaximumX = env.MaximumX;
-                    item.MinimumY = env.MinimumY;
-                    item.MaximumY = env.MaximumY;
+                    item.MinimumX = pointShapeContent.Shape.X;
+                    item.MaximumX = pointShapeContent.Shape.X;
+                    item.MinimumY = pointShapeContent.Shape.Y;
+                    item.MaximumY = pointShapeContent.Shape.Y;
 
                     UpdateVersie(item, message.Message.Provenance.Timestamp);
                 }
@@ -271,14 +271,14 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                         record.posgeommet.Value = Map(message.Message.GeometryMethod);
                         record.posspec.Value = Map(message.Message.GeometrySpecification);
                     });
-                    var pointShapeContent = new PointShapeContent(new PointM(wkbReader.Read(message.Message.ExtendedWkbGeometry.ToByteArray()).Coordinate));
+                    var coordinate = wkbReader.Read(message.Message.ExtendedWkbGeometry.ToByteArray()).Coordinate;
+                    var pointShapeContent = new PointShapeContent(new Point(coordinate.X, coordinate.Y));
                     item.ShapeRecordContent = pointShapeContent.ToBytes();
                     item.ShapeRecordContentLength = pointShapeContent.ContentLength.ToInt32();
-                    var env = EnvelopePartialRecord.From(pointShapeContent.Shape.EnvelopeInternal);
-                    item.MinimumX = env.MinimumX;
-                    item.MaximumX = env.MaximumX;
-                    item.MinimumY = env.MinimumY;
-                    item.MaximumY = env.MaximumY;
+                    item.MinimumX = pointShapeContent.Shape.X;
+                    item.MaximumX = pointShapeContent.Shape.X;
+                    item.MinimumY = pointShapeContent.Shape.Y;
+                    item.MaximumY = pointShapeContent.Shape.Y;
 
                     UpdateVersie(item, message.Message.Provenance.Timestamp);
                 }

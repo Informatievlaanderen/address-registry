@@ -6,9 +6,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Bosa;
     using Infrastructure.Options;
     using Microsoft.EntityFrameworkCore;
-    using Projections.Legacy;
     using Projections.Legacy.AddressDetail;
-    using Projections.Syndication;
     using Projections.Syndication.Municipality;
     using Projections.Syndication.StreetName;
     using Requests;
@@ -20,25 +18,22 @@ namespace AddressRegistry.Api.Legacy.Address.Query
 
     public class AddressBosaQuery
     {
-        private readonly LegacyContext _legacyContext;
-        private readonly SyndicationContext _syndicationContext;
+        private readonly AddressBosaContext _context;
         private readonly ResponseOptions _responseOptions;
 
         public AddressBosaQuery(
-            LegacyContext legacyContext,
-            SyndicationContext syndicationContext,
+            AddressBosaContext context,
             ResponseOptions responseOptions)
         {
-            _legacyContext = legacyContext;
-            _syndicationContext = syndicationContext;
+            _context = context;
             _responseOptions = responseOptions;
         }
 
         public async Task<AddressBosaResponse> Filter(BosaAddressRequest filter)
         {
-            var addressesQuery = _legacyContext.AddressDetail.AsNoTracking().Where(x => x.Complete);
-            var streetNamesQuery = _syndicationContext.StreetNameBosaItems.AsNoTracking().Where(x => x.IsComplete);
-            var municipalitiesQuery = _syndicationContext.MunicipalityBosaItems.AsNoTracking();
+            var addressesQuery = _context.AddressDetail.AsNoTracking().Where(x => x.Complete);
+            var streetNamesQuery = _context.StreetNameBosaItems.AsNoTracking().Where(x => x.IsComplete);
+            var municipalitiesQuery = _context.MunicipalityBosaItems.AsNoTracking();
 
             if (filter?.IsOnlyAdresIdRequested == true && int.TryParse(filter.AdresCode?.ObjectId, out var adresId))
             {
@@ -69,7 +64,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 filter?.GemeenteCode?.VersieId,
                 filter?.Gemeentenaam?.Spelling,
                 filter?.Gemeentenaam?.Taal,
-                filter?.Gemeentenaam?.SearchType,
+                filter?.Gemeentenaam?.SearchType ?? BosaSearchType.Bevat,
                 municipalitiesQuery);
 
             var filteredStreetNames = FilterStreetNames(
@@ -77,9 +72,9 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 filter?.StraatnaamCode?.VersieId,
                 filter?.Straatnaam?.Spelling,
                 filter?.Straatnaam?.Taal,
-                filter?.Straatnaam?.SearchType,
+                filter?.Straatnaam?.SearchType ?? BosaSearchType.Bevat,
                 streetNamesQuery,
-                filteredMunicipalities).ToList();
+                filteredMunicipalities);
 
             var filteredAddresses =
                 FilterAddresses(
@@ -90,11 +85,11 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                     filter?.AdresStatus,
                     filter?.PostCode?.ObjectId,
                     addressesQuery,
-                    filteredStreetNames.Select(x => x.StreetNameId))
+                    filteredStreetNames)
                 .OrderBy(x => x.PersistentLocalId);
 
             var municipalities = filteredMunicipalities.Select(x => new { x.NisCode, x.Version }).ToList();
-            var streetNames = filteredStreetNames.Select(x => new { x.StreetNameId, PersistentLocalId = x.PersistentLocalId, x.Version, x.NisCode }).ToList();
+            var streetNames = filteredStreetNames.Select(x => new { x.StreetNameId, x.PersistentLocalId, x.Version, x.NisCode }).ToList();
             var count = filteredAddresses.Count();
 
             var addresses = filteredAddresses
@@ -104,6 +99,10 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                     {
                         var streetName = streetNames.First(y => y.StreetNameId == x.StreetNameId);
                         var municipality = municipalities.First(y => y.NisCode == streetName.NisCode);
+                        var postalCode = _context
+                            .PostalInfoLatestItems
+                            .AsNoTracking()
+                            .First(y => y.PostalCode == x.PostalCode);
 
                         return new AddressBosaResponseItem(
                             _responseOptions.PostInfoNaamruimte,
@@ -124,7 +123,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                             municipality.NisCode,
                             municipality.Version.Value,
                             x.PostalCode,
-                            new DateTimeOffset(1830, 1, 1, 0, 0, 0, new TimeSpan()));
+                            postalCode.Version.Value);
                     })
                     .ToList();
 
@@ -143,10 +142,10 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             AdresStatus? status,
             string postalCode,
             IQueryable<AddressDetailItem> addresses,
-            IEnumerable<Guid> streetNameIds)
+            IQueryable<StreetNameBosaItem> streetNames)
         {
             var filtered = addresses
-                .Where(x => streetNameIds.Contains(x.StreetNameId));
+                .Where(x => streetNames.Select(y => y.StreetNameId).Contains(x.StreetNameId));
 
             if (!string.IsNullOrEmpty(persistentLocalId))
             {
@@ -183,7 +182,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             DateTimeOffset? version,
             string streetName,
             Taal? language,
-            BosaSearchType? searchType,
+            BosaSearchType searchType,
             IQueryable<StreetNameBosaItem> streetNames,
             IQueryable<MunicipalityBosaItem> filteredMunicipalities)
         {
@@ -202,7 +201,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             if (!string.IsNullOrEmpty(streetName))
                 filtered = CompareStreetNameByCompareType(
                     streetNames,
-                    streetName.SanitizeForBosaSearch(),
+                    streetName,
                     language,
                     searchType == BosaSearchType.Bevat);
             else if (language.HasValue)
@@ -236,14 +235,15 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             Taal? language,
             bool isContainsFilter)
         {
+            var containsValue = searchValue.SanitizeForBosaSearch();
             if (!language.HasValue)
             {
                 return isContainsFilter
                     ? query.Where(i =>
-                        i.NameDutchSearch.Contains(searchValue) ||
-                        i.NameFrenchSearch.Contains(searchValue) ||
-                        i.NameGermanSearch.Contains(searchValue) ||
-                        i.NameEnglishSearch.Contains(searchValue))
+                        i.NameDutchSearch.Contains(containsValue) ||
+                        i.NameFrenchSearch.Contains(containsValue) ||
+                        i.NameGermanSearch.Contains(containsValue) ||
+                        i.NameEnglishSearch.Contains(containsValue))
                     : query.Where(i =>
                         i.NameDutch.Equals(searchValue) ||
                         i.NameFrench.Equals(searchValue) ||
@@ -256,22 +256,22 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 default:
                 case Taal.NL:
                     return isContainsFilter
-                        ? query.Where(i => i.NameDutchSearch.Contains(searchValue))
+                        ? query.Where(i => i.NameDutchSearch.Contains(containsValue))
                         : query.Where(i => i.NameDutch.Equals(searchValue));
 
                 case Taal.FR:
                     return isContainsFilter
-                        ? query.Where(i => i.NameFrenchSearch.Contains(searchValue))
+                        ? query.Where(i => i.NameFrenchSearch.Contains(containsValue))
                         : query.Where(i => i.NameFrench.Equals(searchValue));
 
                 case Taal.DE:
                     return isContainsFilter
-                        ? query.Where(i => i.NameGermanSearch.Contains(searchValue))
+                        ? query.Where(i => i.NameGermanSearch.Contains(containsValue))
                         : query.Where(i => i.NameGerman.Equals(searchValue));
 
                 case Taal.EN:
                     return isContainsFilter
-                        ? query.Where(i => i.NameEnglishSearch.Contains(searchValue))
+                        ? query.Where(i => i.NameEnglishSearch.Contains(containsValue))
                         : query.Where(i => i.NameEnglish.Equals(searchValue));
             }
         }
@@ -282,7 +282,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             DateTimeOffset? version,
             string municipalityName,
             Taal? language,
-            BosaSearchType? searchType,
+            BosaSearchType searchType,
             IQueryable<MunicipalityBosaItem> municipalities)
         {
             var filtered = municipalities.Where(x => x.IsFlemishRegion);
@@ -302,7 +302,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             }
 
             filtered = CompareMunicipalityByCompareType(filtered,
-                municipalityName.SanitizeForBosaSearch(),
+                municipalityName,
                 language,
                 searchType == BosaSearchType.Bevat);
 
@@ -336,14 +336,15 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             Taal? language,
             bool isContainsFilter)
         {
+            var containsValue = searchValue.SanitizeForBosaSearch();
             if (!language.HasValue)
             {
                 return isContainsFilter
                     ? query.Where(i =>
-                        i.NameDutchSearch.Contains(searchValue) ||
-                        i.NameFrenchSearch.Contains(searchValue) ||
-                        i.NameGermanSearch.Contains(searchValue) ||
-                        i.NameEnglishSearch.Contains(searchValue))
+                        i.NameDutchSearch.Contains(containsValue) ||
+                        i.NameFrenchSearch.Contains(containsValue) ||
+                        i.NameGermanSearch.Contains(containsValue) ||
+                        i.NameEnglishSearch.Contains(containsValue))
                     : query.Where(i =>
                         i.NameDutch.Equals(searchValue) ||
                         i.NameFrench.Equals(searchValue) ||
@@ -356,22 +357,22 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 default:
                 case Taal.NL:
                     return isContainsFilter
-                        ? query.Where(i => i.NameDutchSearch.Contains(searchValue))
+                        ? query.Where(i => i.NameDutchSearch.Contains(containsValue))
                         : query.Where(i => i.NameDutch.Equals(searchValue));
 
                 case Taal.FR:
                     return isContainsFilter
-                        ? query.Where(i => i.NameFrenchSearch.Contains(searchValue))
+                        ? query.Where(i => i.NameFrenchSearch.Contains(containsValue))
                         : query.Where(i => i.NameFrench.Equals(searchValue));
 
                 case Taal.DE:
                     return isContainsFilter
-                        ? query.Where(i => i.NameGermanSearch.Contains(searchValue))
+                        ? query.Where(i => i.NameGermanSearch.Contains(containsValue))
                         : query.Where(i => i.NameGerman.Equals(searchValue));
 
                 case Taal.EN:
                     return isContainsFilter
-                        ? query.Where(i => i.NameEnglishSearch.Contains(searchValue))
+                        ? query.Where(i => i.NameEnglishSearch.Contains(containsValue))
                         : query.Where(i => i.NameEnglish.Equals(searchValue));
             }
         }

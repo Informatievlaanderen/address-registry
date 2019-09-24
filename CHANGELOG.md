@@ -1,3 +1,121 @@
+## [1.15.7](https://github.com/informatievlaanderen/address-registry/compare/v1.15.6...v1.15.7) (2019-09-23)
+
+
+### Bug Fixes
+
+* correct bosa xml names to be consistent with prd GR-893 ([ca4a96a](https://github.com/informatievlaanderen/address-registry/commit/ca4a96a))
+* fix crash when no filter was applied GR-890 ([572f753](https://github.com/informatievlaanderen/address-registry/commit/572f753))
+
+## [1.15.6](https://github.com/informatievlaanderen/address-registry/compare/v1.15.5...v1.15.6) (2019-09-23)
+
+
+### Bug Fixes
+
+* tweak logging ([a614b9d](https://github.com/informatievlaanderen/address-registry/commit/a614b9d))
+
+## [1.15.5](https://github.com/informatievlaanderen/address-registry/compare/v1.15.4...v1.15.5) (2019-09-23)
+
+
+### Bug Fixes
+
+* returns empty list when query parameter is incorrect GR-889 ([602186d](https://github.com/informatievlaanderen/address-registry/commit/602186d))
+
+## [1.15.4](https://github.com/informatievlaanderen/address-registry/compare/v1.15.3...v1.15.4) (2019-09-23)
+
+
+### Bug Fixes
+
+* create new context for complex bosa queries GR-870 ([87dd7da](https://github.com/informatievlaanderen/address-registry/commit/87dd7da))
+
+## [1.15.3](https://github.com/informatievlaanderen/address-registry/compare/v1.15.2...v1.15.3) (2019-09-20)
+
+
+### Bug Fixes
+
+* hide busnummer from housenumber endpoint GR-887 ([356f591](https://github.com/informatievlaanderen/address-registry/commit/356f591))
+
+## [1.15.2](https://github.com/informatievlaanderen/address-registry/compare/v1.15.1...v1.15.2) (2019-09-20)
+
+
+### Bug Fixes
+
+* CRAB endpoints return deleted addresses GR-886 ([948292a](https://github.com/informatievlaanderen/address-registry/commit/948292a))
+
+## [1.15.1](https://github.com/informatievlaanderen/address-registry/compare/v1.15.0...v1.15.1) (2019-09-19)
+
+
+### Bug Fixes
+
+* clean up EF NTS refs which causes crash ([7923c55](https://github.com/informatievlaanderen/address-registry/commit/7923c55))
+* remove old nts types ([4257b17](https://github.com/informatievlaanderen/address-registry/commit/4257b17))
+* update dependencies for build ([3662cc4](https://github.com/informatievlaanderen/address-registry/commit/3662cc4))
+
+# [1.15.0](https://github.com/informatievlaanderen/address-registry/compare/v1.14.6...v1.15.0) (2019-09-19)
+
+
+### Features
+
+* upgrade NTS and Shaperon packages ([74115c3](https://github.com/informatievlaanderen/address-registry/commit/74115c3))
+
+## [1.14.6](https://github.com/informatievlaanderen/address-registry/compare/v1.14.5...v1.14.6) (2019-09-18)
+
+
+### Bug Fixes
+
+* add missing connection string ([e1d99ee](https://github.com/informatievlaanderen/address-registry/commit/e1d99ee))
+
+## [1.14.5](https://github.com/informatievlaanderen/address-registry/compare/v1.14.4...v1.14.5) (2019-09-17)
+
+
+### Bug Fixes
+
+* add sqlclient to addressmatch import ([058e59e](https://github.com/informatievlaanderen/address-registry/commit/058e59e))
+* use generic dbtraceconnection ([44954d4](https://github.com/informatievlaanderen/address-registry/commit/44954d4))
+
+## [1.14.4](https://github.com/informatievlaanderen/address-registry/compare/v1.14.3...v1.14.4) (2019-09-17)
+
+
+### Bug Fixes
+
+* fix contains search ([f7c70f3](https://github.com/informatievlaanderen/address-registry/commit/f7c70f3))
+
+## [1.14.3](https://github.com/informatievlaanderen/address-registry/compare/v1.14.2...v1.14.3) (2019-09-16)
+
+
+### Bug Fixes
+
+* bosa null busnummer is now hidden GR-867 ([c9775d2](https://github.com/informatievlaanderen/address-registry/commit/c9775d2))
+* postinfo version bosa now uses syndication table GR-868 ([1a89a2b](https://github.com/informatievlaanderen/address-registry/commit/1a89a2b))
+
+## [1.14.2](https://github.com/informatievlaanderen/address-registry/compare/v1.14.1...v1.14.2) (2019-09-16)
+
+
+### Bug Fixes
+
+* bosa default searchtype muni & street is now contains GR-869 ([311afb6](https://github.com/informatievlaanderen/address-registry/commit/311afb6))
+
+## [1.14.1](https://github.com/informatievlaanderen/address-registry/compare/v1.14.0...v1.14.1) (2019-09-16)
+
+
+### Performance Improvements
+
+* bosa get only relevant data when ToList streetnames ([bbc925f](https://github.com/informatievlaanderen/address-registry/commit/bbc925f))
+
+# [1.14.0](https://github.com/informatievlaanderen/address-registry/compare/v1.13.4...v1.14.0) (2019-09-16)
+
+
+### Features
+
+* add version indexes for bosa ([d061b1b](https://github.com/informatievlaanderen/address-registry/commit/d061b1b))
+
+## [1.13.4](https://github.com/informatievlaanderen/address-registry/compare/v1.13.3...v1.13.4) (2019-09-16)
+
+
+### Bug Fixes
+
+* bosa exactsearch on street & muni GR-871 ([5bcf4f6](https://github.com/informatievlaanderen/address-registry/commit/5bcf4f6))
+* empty collection instead of null GR-865 ([458c809](https://github.com/informatievlaanderen/address-registry/commit/458c809))
+
 ## [1.13.3](https://github.com/informatievlaanderen/address-registry/compare/v1.13.2...v1.13.3) (2019-09-13)
 
 

@@ -8,66 +8,75 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
     using Swashbuckle.AspNetCore.Filters;
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
+    using System.Runtime.Serialization;
 
+    [DataContract]
     public class AddressBosaResponse
     {
         /// <summary>
         /// Collection of municipality instances (count lower or equal to Limit)
         /// </summary>
-        [Required]
+        [DataMember(Name = "Adressen")]
         public List<AddressBosaResponseItem> Adressen { get; set; }
 
         /// <summary>
         /// The total number of municipalities matching the request
         /// </summary>
-        [Required]
+        [DataMember(Name = "TotaalAantal")]
         public long TotaalAantal { get; set; }
+
+        public AddressBosaResponse()
+        {
+            Adressen = new List<AddressBosaResponseItem>();
+        }
     }
 
+    [DataContract]
     public class AddressBosaResponseItem
     {
         /// <summary>
         /// The identifier of the street name
         /// </summary>
-        [Required]
+        [DataMember(Name = "Identificator")]
         public Identificator Identificator { get; set; }
 
-        [Required]
+        [DataMember(Name = "AdresStatus")]
         public AdresStatus AdresStatus { get; set; }
 
-        [Required]
+        [DataMember(Name = "Huisnummer")]
         public string Huisnummer { get; set; }
 
+        [DataMember(Name = "Busnummer", EmitDefaultValue = false)]
         public string Busnummer { get; set; }
 
         /// <summary>
         /// The address position (a point with Lambert-72 coordinates)
         /// </summary>
-        [Required]
+        [DataMember(Name = "AdresPositie")]
         public Point AdresPositie { get; set; }
 
         /// <summary>
         /// The method used to provide the position
         /// </summary>
-        [Required]
+        [DataMember(Name = "PositieGeometrieMethode")]
         public PositieGeometrieMethode PositieGeometrieMethode { get; set; }
 
         /// <summary>
         /// The specification of the object represented by the position
         /// </summary>
-        [Required]
+        [DataMember(Name = "PositieSpecificatie")]
         public PositieSpecificatie PositieSpecificatie { get; set; }
 
+        [DataMember(Name = "IsOfficieelToegekend")]
         public bool IsOfficieelToegekend { get; set; }
 
-        [Required]
+        [DataMember(Name = "HeeftStraatnaam")]
         public Identificator HeeftStraatnaam { get; set; }
 
-        [Required]
+        [DataMember(Name = "HeeftGemeente")]
         public Identificator HeeftGemeente { get; set; }
 
-        [Required]
+        [DataMember(Name = "HeeftPostInfo")]
         public Identificator HeeftPostInfo { get; set; }
 
         public AddressBosaResponseItem(

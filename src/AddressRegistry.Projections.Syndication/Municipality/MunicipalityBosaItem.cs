@@ -53,6 +53,8 @@ namespace AddressRegistry.Projections.Syndication.Municipality
             builder.HasIndex(x => x.NisCode).ForSqlServerIsClustered();
             builder.HasIndex(x => x.IsFlemishRegion);
 
+            builder.HasIndex(x => x.Version);
+
             builder.HasIndex(x => x.NameDutchSearch);
             builder.HasIndex(x => x.NameFrenchSearch);
             builder.HasIndex(x => x.NameEnglishSearch);

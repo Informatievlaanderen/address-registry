@@ -32,7 +32,7 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
         public Uri Volgende { get; set; }
     }
 
-    [DataContract(Name = "CrabHuisnummerCollectieItem", Namespace = "")]
+    [DataContract(Name = "CrabHuisnummer", Namespace = "")]
     public class CrabHouseNumberAddressListItem
     {
         public CrabHouseNumberAddressListItem(
@@ -99,7 +99,7 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
         /// <summary>
         /// Het nummer van de bus.
         /// </summary>
-        [DataMember(Name = "Busnummer", Order = 5)]
+        [DataMember(Name = "Busnummer", Order = 5, EmitDefaultValue = false)]
         public string Busnummer { get; set; }
 
         /// <summary>

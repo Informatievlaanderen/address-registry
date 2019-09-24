@@ -10,7 +10,6 @@ namespace AddressRegistry.Tests.ProjectionTests
     using Projections.Legacy.AddressVersion;
     using System.Threading.Tasks;
     using Address;
-    using GeoAPI.Geometries;
     using NetTopologySuite.IO;
     using Xunit;
     using Xunit.Abstractions;

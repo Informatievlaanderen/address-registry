@@ -10,7 +10,6 @@ namespace AddressRegistry.Tests.ProjectionTests
     using System.Threading.Tasks;
     using Address;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using GeoAPI.Geometries;
     using NetTopologySuite.IO;
     using Xunit;
     using Xunit.Abstractions;

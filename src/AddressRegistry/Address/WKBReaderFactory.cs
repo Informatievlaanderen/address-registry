@@ -1,6 +1,5 @@
 namespace AddressRegistry.Address
 {
-    using GeoAPI.Geometries;
     using NetTopologySuite;
     using NetTopologySuite.Geometries;
     using NetTopologySuite.Geometries.Implementation;

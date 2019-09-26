@@ -1,3 +1,10 @@
+## [1.16.2](https://github.com/informatievlaanderen/address-registry/compare/v1.16.1...v1.16.2) (2019-09-26)
+
+
+### Bug Fixes
+
+* correct adres list item xml name GR-902 ([ff25c20](https://github.com/informatievlaanderen/address-registry/commit/ff25c20))
+
 ## [1.16.1](https://github.com/informatievlaanderen/address-registry/compare/v1.16.0...v1.16.1) (2019-09-26)
 
 

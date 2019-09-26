@@ -5,7 +5,6 @@ namespace AddressRegistry.Projector.Infrastructure
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
-    using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
     using Configuration;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -21,6 +20,7 @@ namespace AddressRegistry.Projector.Infrastructure
     using System;
     using System.Linq;
     using System.Reflection;
+    using Be.Vlaanderen.Basisregisters.Projector;
 
     /// <summary>Represents the startup process for the application.</summary>
     public class Startup

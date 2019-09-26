@@ -1,3 +1,10 @@
+## [1.16.1](https://github.com/informatievlaanderen/address-registry/compare/v1.16.0...v1.16.1) (2019-09-26)
+
+
+### Bug Fixes
+
+* update asset to fix importer ([55ac69c](https://github.com/informatievlaanderen/address-registry/commit/55ac69c))
+
 # [1.16.0](https://github.com/informatievlaanderen/address-registry/compare/v1.15.7...v1.16.0) (2019-09-26)
 
 

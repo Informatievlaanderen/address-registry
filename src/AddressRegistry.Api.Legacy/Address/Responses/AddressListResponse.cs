@@ -31,7 +31,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         public Uri Volgende { get; set; }
     }
 
-    [DataContract(Name = "AdresCollectieItem", Namespace = "")]
+    [DataContract(Name = "Adres", Namespace = "")]
     public class AddressListItemResponse
     {
         /// <summary>

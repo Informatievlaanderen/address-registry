@@ -176,10 +176,16 @@ namespace AddressRegistry.Projector.Infrastructure
                     {
                         AfterMiddleware = x => x.UseMiddleware<AddNoCacheHeadersMiddleware>()
                     }
-                });
+                })
 
-            var projectionsManager = serviceProvider.GetRequiredService<IConnectedProjectionsManager>();
-            projectionsManager.Start();
+                .UseProjectionsManager(new ProjectionsManagerOptions
+                {
+                    Common =
+                    {
+                        ServiceProvider = serviceProvider,
+                        ApplicationLifetime = appLifetime
+                    }
+                });
         }
 
         private static string GetApiLeadingText(ApiVersionDescription description)

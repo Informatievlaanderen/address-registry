@@ -1,3 +1,15 @@
+# [1.16.0](https://github.com/informatievlaanderen/address-registry/compare/v1.15.7...v1.16.0) (2019-09-26)
+
+
+### Bug Fixes
+
+* fix using ([a5b10b4](https://github.com/informatievlaanderen/address-registry/commit/a5b10b4))
+
+
+### Features
+
+* upgrade projector and resume projections on startup ([581b07a](https://github.com/informatievlaanderen/address-registry/commit/581b07a))
+
 ## [1.15.7](https://github.com/informatievlaanderen/address-registry/compare/v1.15.6...v1.15.7) (2019-09-23)
 
 

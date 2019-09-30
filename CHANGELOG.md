@@ -1,3 +1,10 @@
+## [1.16.3](https://github.com/informatievlaanderen/address-registry/compare/v1.16.2...v1.16.3) (2019-09-30)
+
+
+### Bug Fixes
+
+* added binaries and config bindings for importers ([8975628](https://github.com/informatievlaanderen/address-registry/commit/8975628))
+
 ## [1.16.2](https://github.com/informatievlaanderen/address-registry/compare/v1.16.1...v1.16.2) (2019-09-26)
 
 

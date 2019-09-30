@@ -1,3 +1,10 @@
+## [1.16.4](https://github.com/informatievlaanderen/address-registry/compare/v1.16.3...v1.16.4) (2019-09-30)
+
+
+### Bug Fixes
+
+* check removed before completeness GR-900 ([097ab4c](https://github.com/informatievlaanderen/address-registry/commit/097ab4c))
+
 ## [1.16.3](https://github.com/informatievlaanderen/address-registry/compare/v1.16.2...v1.16.3) (2019-09-30)
 
 

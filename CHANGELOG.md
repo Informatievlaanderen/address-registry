@@ -1,3 +1,10 @@
+## [1.16.5](https://github.com/informatievlaanderen/address-registry/compare/v1.16.4...v1.16.5) (2019-10-01)
+
+
+### Bug Fixes
+
+* crab subaddress now returns boxnumber in complete address GR-907 ([0340dc7](https://github.com/informatievlaanderen/address-registry/commit/0340dc7))
+
 ## [1.16.4](https://github.com/informatievlaanderen/address-registry/compare/v1.16.3...v1.16.4) (2019-09-30)
 
 

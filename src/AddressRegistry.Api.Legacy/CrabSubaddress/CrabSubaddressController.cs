@@ -83,7 +83,7 @@ namespace AddressRegistry.Api.Legacy.CrabSubaddress
                         responseOptions.Value.DetailUrl,
                         a.HouseNumber,
                         a.BoxNumber,
-                        AddressMapper.GetVolledigAdres(a.HouseNumber, "", a.PostalCode, streetName, municipality),
+                        AddressMapper.GetVolledigAdres(a.HouseNumber, a.BoxNumber, a.PostalCode, streetName, municipality),
                         a.VersionTimestamp.ToBelgianDateTimeOffset(),
                         a.IsComplete);
                 })

@@ -5,7 +5,6 @@ namespace AddressRegistry.Projector.Infrastructure
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
-    using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
     using Configuration;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -21,6 +20,7 @@ namespace AddressRegistry.Projector.Infrastructure
     using System;
     using System.Linq;
     using System.Reflection;
+    using Be.Vlaanderen.Basisregisters.Projector;
 
     /// <summary>Represents the startup process for the application.</summary>
     public class Startup
@@ -176,10 +176,16 @@ namespace AddressRegistry.Projector.Infrastructure
                     {
                         AfterMiddleware = x => x.UseMiddleware<AddNoCacheHeadersMiddleware>()
                     }
-                });
+                })
 
-            var projectionsManager = serviceProvider.GetRequiredService<IConnectedProjectionsManager>();
-            projectionsManager.Start();
+                .UseProjectionsManager(new ProjectionsManagerOptions
+                {
+                    Common =
+                    {
+                        ServiceProvider = serviceProvider,
+                        ApplicationLifetime = appLifetime
+                    }
+                });
         }
 
         private static string GetApiLeadingText(ApiVersionDescription description)

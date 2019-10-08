@@ -76,11 +76,11 @@ namespace AddressRegistry.Api.Legacy.Address
                 .AsNoTracking()
                 .SingleOrDefaultAsync(item => item.PersistentLocalId == persistentLocalId, cancellationToken);
 
+            if (address != null && address.Removed)
+                throw new ApiException("Adres werd verwijderd.", StatusCodes.Status410Gone);
+
             if (address == null || !address.Complete)
                 throw new ApiException("Onbestaand adres.", StatusCodes.Status404NotFound);
-
-            if (address.Removed)
-                throw new ApiException("Adres werd verwijderd.", StatusCodes.Status410Gone);
 
             var streetName = await syndicationContext.StreetNameLatestItems.FindAsync(new object[] { address.StreetNameId }, cancellationToken);
             var municipality = await syndicationContext.MunicipalityLatestItems.FirstAsync(m => m.NisCode == streetName.NisCode, cancellationToken);

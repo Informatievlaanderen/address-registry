@@ -1,3 +1,50 @@
+## [1.16.5](https://github.com/informatievlaanderen/address-registry/compare/v1.16.4...v1.16.5) (2019-10-01)
+
+
+### Bug Fixes
+
+* crab subaddress now returns boxnumber in complete address GR-907 ([0340dc7](https://github.com/informatievlaanderen/address-registry/commit/0340dc7))
+
+## [1.16.4](https://github.com/informatievlaanderen/address-registry/compare/v1.16.3...v1.16.4) (2019-09-30)
+
+
+### Bug Fixes
+
+* check removed before completeness GR-900 ([097ab4c](https://github.com/informatievlaanderen/address-registry/commit/097ab4c))
+
+## [1.16.3](https://github.com/informatievlaanderen/address-registry/compare/v1.16.2...v1.16.3) (2019-09-30)
+
+
+### Bug Fixes
+
+* added binaries and config bindings for importers ([8975628](https://github.com/informatievlaanderen/address-registry/commit/8975628))
+
+## [1.16.2](https://github.com/informatievlaanderen/address-registry/compare/v1.16.1...v1.16.2) (2019-09-26)
+
+
+### Bug Fixes
+
+* correct adres list item xml name GR-902 ([ff25c20](https://github.com/informatievlaanderen/address-registry/commit/ff25c20))
+
+## [1.16.1](https://github.com/informatievlaanderen/address-registry/compare/v1.16.0...v1.16.1) (2019-09-26)
+
+
+### Bug Fixes
+
+* update asset to fix importer ([55ac69c](https://github.com/informatievlaanderen/address-registry/commit/55ac69c))
+
+# [1.16.0](https://github.com/informatievlaanderen/address-registry/compare/v1.15.7...v1.16.0) (2019-09-26)
+
+
+### Bug Fixes
+
+* fix using ([a5b10b4](https://github.com/informatievlaanderen/address-registry/commit/a5b10b4))
+
+
+### Features
+
+* upgrade projector and resume projections on startup ([581b07a](https://github.com/informatievlaanderen/address-registry/commit/581b07a))
+
 ## [1.15.7](https://github.com/informatievlaanderen/address-registry/compare/v1.15.6...v1.15.7) (2019-09-23)
 
 

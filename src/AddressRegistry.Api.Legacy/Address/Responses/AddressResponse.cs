@@ -150,6 +150,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             var gemeente = new AdresDetailGemeente("9000", string.Format(_responseOptions.GemeenteDetailUrl, "9000"), new GeografischeNaam("Gent", Taal.NL));
             var straat = new AdresDetailStraatnaam("748", string.Format(_responseOptions.StraatnaamDetailUrl, "748"), new GeografischeNaam("Teststraat", Taal.NL));
             var postInfo = new AdresDetailPostinfo("9000", string.Format(_responseOptions.PostInfoDetailUrl, "9000"));
+            var homoniem = new HomoniemToevoeging(new GeografischeNaam("UK", Taal.NL));
 
             return new AddressResponse(
                 _responseOptions.Naamruimte,
@@ -158,6 +159,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
                 "5B",
                 gemeente,
                 straat,
+                homoniem,
                 postInfo,
                 point,
                 PositieGeometrieMethode.AangeduidDoorBeheerder,

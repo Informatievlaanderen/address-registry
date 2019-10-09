@@ -1,3 +1,13 @@
+## [1.16.6](https://github.com/informatievlaanderen/address-registry/compare/v1.16.5...v1.16.6) (2019-10-09)
+
+
+### Bug Fixes
+
+* add homonym addition if present GR-912 ([e466e95](https://github.com/informatievlaanderen/address-registry/commit/e466e95))
+* correct address example ([9c2345b](https://github.com/informatievlaanderen/address-registry/commit/9c2345b))
+* if no homonymaddition don't show in json instead of null GR-909 ([83fe469](https://github.com/informatievlaanderen/address-registry/commit/83fe469))
+* when no boxnumber then don't show in json instead of null GR-910 ([f777841](https://github.com/informatievlaanderen/address-registry/commit/f777841))
+
 ## [1.16.5](https://github.com/informatievlaanderen/address-registry/compare/v1.16.4...v1.16.5) (2019-10-01)
 
 

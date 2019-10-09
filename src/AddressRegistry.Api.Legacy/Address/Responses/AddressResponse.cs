@@ -41,7 +41,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         /// <summary>
         /// Homoniem toevoeging aan de straatnaam.
         /// </summary>
-        [DataMember(Name = "HomoniemToevoeging", Order = 5)]
+        [DataMember(Name = "HomoniemToevoeging", Order = 5, EmitDefaultValue = false)]
         public HomoniemToevoeging HomoniemToevoeging { get; set; }
 
         /// <summary>

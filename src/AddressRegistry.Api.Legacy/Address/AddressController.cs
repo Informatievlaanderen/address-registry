@@ -86,6 +86,7 @@ namespace AddressRegistry.Api.Legacy.Address
             var municipality = await syndicationContext.MunicipalityLatestItems.FirstAsync(m => m.NisCode == streetName.NisCode, cancellationToken);
             var defaultMunicipalityName = AddressMapper.GetDefaultMunicipalityName(municipality);
             var defaultStreetName = AddressMapper.GetDefaultStreetNameName(streetName, municipality.PrimaryLanguage);
+            var defaultHomonymAddition = AddressMapper.GetDefaultHomonymAddition(streetName, municipality.PrimaryLanguage);
 
             var gemeente = new AdresDetailGemeente(
                 municipality.NisCode,
@@ -101,6 +102,10 @@ namespace AddressRegistry.Api.Legacy.Address
                 address.PostalCode,
                 string.Format(responseOptions.Value.PostInfoDetailUrl, address.PostalCode));
 
+            var homoniemToevoeging = defaultHomonymAddition == null
+                ? null
+                : new HomoniemToevoeging(new GeografischeNaam(defaultHomonymAddition.Value.Value, defaultHomonymAddition.Value.Key));
+
             return Ok(
                 new AddressResponse(
                     responseOptions.Value.Naamruimte,
@@ -109,6 +114,7 @@ namespace AddressRegistry.Api.Legacy.Address
                     address.BoxNumber,
                     gemeente,
                     straat,
+                    homoniemToevoeging,
                     postInfo,
                     AddressMapper.GetAddressPoint(address.Position),
                     AddressMapper.ConvertFromGeometryMethod(address.PositionMethod),

@@ -99,6 +99,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             string busnummer,
             AdresDetailGemeente gemeente,
             AdresDetailStraatnaam straatnaam,
+            HomoniemToevoeging homoniemToevoeging,
             AdresDetailPostinfo postInfo,
             Point adresPositie,
             PositieGeometrieMethode positieGeometrieMethode,
@@ -118,6 +119,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             Postinfo = postInfo;
             Gemeente = gemeente;
             Straatnaam = straatnaam;
+            HomoniemToevoeging = homoniemToevoeging;
             AdresPositie = adresPositie;
 
             VolledigAdres = new VolledigAdres(

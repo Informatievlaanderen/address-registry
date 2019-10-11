@@ -1,3 +1,12 @@
+## [1.16.7](https://github.com/informatievlaanderen/address-registry/compare/v1.16.6...v1.16.7) (2019-10-11)
+
+
+### Bug Fixes
+
+* push to correct docker repo ([63be6bb](https://github.com/informatievlaanderen/address-registry/commit/63be6bb))
+* trigger build ([b103932](https://github.com/informatievlaanderen/address-registry/commit/b103932))
+* when no boxnumber present in list then don't show GR-914 ([a241b3b](https://github.com/informatievlaanderen/address-registry/commit/a241b3b))
+
 ## [1.16.6](https://github.com/informatievlaanderen/address-registry/compare/v1.16.5...v1.16.6) (2019-10-09)
 
 

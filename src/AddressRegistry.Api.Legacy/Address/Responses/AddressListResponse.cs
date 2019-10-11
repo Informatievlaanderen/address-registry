@@ -55,7 +55,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         /// <summary>
         /// Het busnummer.
         /// </summary>
-        [DataMember(Name = "Busnummer", Order = 4)]
+        [DataMember(Name = "Busnummer", Order = 4, EmitDefaultValue = false)]
         public string Busnummer { get; set; }
 
         /// <summary>

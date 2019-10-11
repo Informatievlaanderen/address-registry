@@ -103,24 +103,24 @@ jobs:
             eval $(AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID     AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY     aws ecr get-login --no-include-email --region eu-west-1 | sed 's|https://||')
             eval $(AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_PRD AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_PRD aws ecr get-login --no-include-email --region eu-west-1 | sed 's|https://||')
 
-            docker pull $BUILD_DOCKER_REGISTRY/addressregistry/api-legacy:$SEMVER
-            docker tag  $BUILD_DOCKER_REGISTRY/addressregistry/api-legacy:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/api-legacy:$SEMVER
+            docker pull $BUILD_DOCKER_REGISTRY/address-registry/api-legacy:$SEMVER
+            docker tag  $BUILD_DOCKER_REGISTRY/address-registry/api-legacy:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/api-legacy:$SEMVER
             docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/api-legacy:$SEMVER
 
-            docker pull $BUILD_DOCKER_REGISTRY/addressregistry/api-crab-import:$SEMVER
-            docker tag  $BUILD_DOCKER_REGISTRY/addressregistry/api-crab-import:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/api-crab-import:$SEMVER
+            docker pull $BUILD_DOCKER_REGISTRY/address-registry/api-crab-import:$SEMVER
+            docker tag  $BUILD_DOCKER_REGISTRY/address-registry/api-crab-import:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/api-crab-import:$SEMVER
             docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/api-crab-import:$SEMVER
 
-            docker pull $BUILD_DOCKER_REGISTRY/addressregistry/api-extract:$SEMVER
-            docker tag  $BUILD_DOCKER_REGISTRY/addressregistry/api-extract:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/api-extract:$SEMVER
+            docker pull $BUILD_DOCKER_REGISTRY/address-registry/api-extract:$SEMVER
+            docker tag  $BUILD_DOCKER_REGISTRY/address-registry/api-extract:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/api-extract:$SEMVER
             docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/api-extract:$SEMVER
 
-            docker pull $BUILD_DOCKER_REGISTRY/addressregistry/projections:$SEMVER
-            docker tag  $BUILD_DOCKER_REGISTRY/addressregistry/projections:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/projector:$SEMVER
+            docker pull $BUILD_DOCKER_REGISTRY/address-registry/projections:$SEMVER
+            docker tag  $BUILD_DOCKER_REGISTRY/address-registry/projections:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/projector:$SEMVER
             docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/projector:$SEMVER
 
-            docker pull $BUILD_DOCKER_REGISTRY/addressregistry/projections-syndication:$SEMVER
-            docker tag  $BUILD_DOCKER_REGISTRY/addressregistry/projections-syndication:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/projections-syndication:$SEMVER
+            docker pull $BUILD_DOCKER_REGISTRY/address-registry/projections-syndication:$SEMVER
+            docker tag  $BUILD_DOCKER_REGISTRY/address-registry/projections-syndication:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/projections-syndication:$SEMVER
             docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/projections-syndication:$SEMVER
 
 workflows:

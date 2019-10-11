@@ -91,8 +91,8 @@ Target "Pack_Solution" (fun _ ->
     "AddressRegistry.Api.CrabImport"
   ] |> List.iter pack)
 
-Target "Containerize_Projector" (fun _ -> containerize "AddressRegistry.Projector" "projections")
-Target "PushContainer_Projector" (fun _ -> push "projections")
+Target "Containerize_Projector" (fun _ -> containerize "AddressRegistry.Projector" "projector")
+Target "PushContainer_Projector" (fun _ -> push "projector")
 
 Target "Containerize_ApiLegacy" (fun _ -> containerize "AddressRegistry.Api.Legacy" "api-legacy")
 Target "PushContainer_ApiLegacy" (fun _ -> push "api-legacy")
@@ -102,15 +102,6 @@ Target "PushContainer_ApiExtract" (fun _ -> push "api-extract")
 
 Target "Containerize_ApiCrabImport" (fun _ -> containerize "AddressRegistry.Api.CrabImport" "api-crab-import")
 Target "PushContainer_ApiCrabImport" (fun _ -> push "api-crab-import")
-
-Target "Containerize_ProjectionsLegacy" (fun _ -> containerize "AddressRegistry.Projections.Legacy" "projections-legacy")
-Target "PushContainer_ProjectionsLegacy" (fun _ -> push "projections-legacy")
-
-Target "Containerize_ProjectionsExtract" (fun _ -> containerize "AddressRegistry.Projections.Extract" "projections-extract")
-Target "PushContainer_ProjectionsExtract" (fun _ -> push "projections-extract")
-
-Target "Containerize_ProjectionsRedis" (fun _ -> containerize "AddressRegistry.Projections.LastChangedList" "projections-redis")
-Target "PushContainer_ProjectionsRedis" (fun _ -> push "projections-redis")
 
 Target "Containerize_ProjectionsSyndication" (fun _ -> containerize "AddressRegistry.Projections.Syndication" "projections-syndication")
 Target "PushContainer_ProjectionsSyndication" (fun _ -> push "projections-syndication")

@@ -115,8 +115,8 @@ jobs:
             docker tag  $BUILD_DOCKER_REGISTRY/address-registry/api-extract:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/api-extract:$SEMVER
             docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/api-extract:$SEMVER
 
-            docker pull $BUILD_DOCKER_REGISTRY/address-registry/projections:$SEMVER
-            docker tag  $BUILD_DOCKER_REGISTRY/address-registry/projections:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/projector:$SEMVER
+            docker pull $BUILD_DOCKER_REGISTRY/address-registry/projector:$SEMVER
+            docker tag  $BUILD_DOCKER_REGISTRY/address-registry/projector:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/projector:$SEMVER
             docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/projector:$SEMVER
 
             docker pull $BUILD_DOCKER_REGISTRY/address-registry/projections-syndication:$SEMVER

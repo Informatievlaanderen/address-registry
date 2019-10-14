@@ -31,7 +31,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
 
         public async Task<AddressBosaResponse> Filter(BosaAddressRequest filter)
         {
-            var addressesQuery = _context.AddressDetail.AsNoTracking().Where(x => x.Complete);
+            var addressesQuery = _context.AddressDetail.AsNoTracking().Where(x => x.Complete && !x.Removed);
             var streetNamesQuery = _context.StreetNameBosaItems.AsNoTracking().Where(x => x.IsComplete);
             var municipalitiesQuery = _context.MunicipalityBosaItems.AsNoTracking();
 
@@ -171,7 +171,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 filtered = filtered.Where(x => x.PostalCode == postalCode);
 
             if (version.HasValue)
-                filtered = filtered.Where(x => x.VersionTimestamp.ToBelgianDateTimeOffset() == version);
+                filtered = filtered.Where(x => x.VersionTimestampAsDateTimeOffset == version);
 
             return filtered;
         }

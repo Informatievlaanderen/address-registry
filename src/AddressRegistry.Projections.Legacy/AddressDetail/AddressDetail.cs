@@ -8,8 +8,6 @@ namespace AddressRegistry.Projections.Legacy.AddressDetail
 
     public class AddressDetailItem
     {
-        public static string VersionTimestampBackingPropertyName = nameof(VersionTimestampAsDateTimeOffset);
-
         public Guid AddressId { get; set; }
         public int? PersistentLocalId { get; set; }
 
@@ -27,7 +25,7 @@ namespace AddressRegistry.Projections.Legacy.AddressDetail
         public bool Complete { get; set; }
         public bool Removed { get; set; }
 
-        private DateTimeOffset VersionTimestampAsDateTimeOffset { get; set; }
+        public DateTimeOffset VersionTimestampAsDateTimeOffset { get; private set; }
 
         public Instant VersionTimestamp
         {
@@ -52,7 +50,7 @@ namespace AddressRegistry.Projections.Legacy.AddressDetail
             // This speeds up AddressBosaQuery's huge StreetNameId IN (...) AND Complete = 1 query
             b.HasIndex(p => new { p.StreetNameId, p.Complete });
 
-            b.Property(AddressDetailItem.VersionTimestampBackingPropertyName)
+            b.Property(p => p.VersionTimestampAsDateTimeOffset)
                 .HasColumnName("VersionTimestamp");
 
             b.Ignore(x => x.VersionTimestamp);
@@ -68,6 +66,14 @@ namespace AddressRegistry.Projections.Legacy.AddressDetail
             b.Property(p => p.Complete);
             b.Property(p => p.Status);
             b.Property(p => p.Removed);
+
+            b.HasIndex(p => p.HouseNumber);
+            b.HasIndex(p => p.BoxNumber);
+            b.HasIndex(p => p.Status);
+            b.HasIndex(p => p.PostalCode);
+            b.HasIndex(p => p.VersionTimestampAsDateTimeOffset);
+
+            b.HasIndex(p => new { p.Removed, p.Complete });
         }
     }
 }

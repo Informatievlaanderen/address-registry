@@ -1,3 +1,10 @@
+## [1.16.8](https://github.com/informatievlaanderen/address-registry/compare/v1.16.7...v1.16.8) (2019-10-14)
+
+
+### Performance Improvements
+
+* add index on streetname in address list ([00a3929](https://github.com/informatievlaanderen/address-registry/commit/00a3929))
+
 ## [1.16.7](https://github.com/informatievlaanderen/address-registry/compare/v1.16.6...v1.16.7) (2019-10-11)
 
 

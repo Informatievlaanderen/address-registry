@@ -1,3 +1,10 @@
+## [1.16.9](https://github.com/informatievlaanderen/address-registry/compare/v1.16.8...v1.16.9) (2019-10-14)
+
+
+### Bug Fixes
+
+* bosa removed addresses no longer show up ([316315a](https://github.com/informatievlaanderen/address-registry/commit/316315a))
+
 ## [1.16.8](https://github.com/informatievlaanderen/address-registry/compare/v1.16.7...v1.16.8) (2019-10-14)
 
 

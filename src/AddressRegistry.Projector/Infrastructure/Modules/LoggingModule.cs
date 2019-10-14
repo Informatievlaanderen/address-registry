@@ -19,12 +19,6 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
 
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)
-                .WriteTo.File(
-                    "tracing.log",
-                    retainedFileCountLimit: 20,
-                    fileSizeLimitBytes: 104857600,
-                    rollOnFileSizeLimit: true,
-                    rollingInterval: RollingInterval.Day)
                 .Enrich.FromLogContext()
                 .Enrich.WithMachineName()
                 .Enrich.WithThreadId()

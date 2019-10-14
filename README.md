@@ -17,7 +17,21 @@
 
 ### Getting started
 
-TODO: More to come :)
+#### Initialisation
+
+To fill up the database for the first time:
+
+* Run `AddressRegistry.Api.CrabImport` (`AddressRegistry.sln`)
+* Run `AddressRegistry.Importer.HouseNumber` (`AddressRegistryImporter.sln`) with `init -c -l Trace` as flags.
+* Run `AddressRegistry.Importer.Subaddress` (`AddressRegistryImporter.sln`) with `init -c -l Trace` as flags.
+* Run `AddressRegistry.Importer.AddressMatch` (`AddressRegistryImporter.sln`) with `init -c -l Trace` as flags.
+
+#### Projections
+
+To start the projections for the first time:
+
+* Run `AddressRegistry.Projector`
+* Send a `POST` to `http://localhost:5006/v1/projections/start/all`
 
 ### Generating documentation
 

@@ -57,6 +57,7 @@ namespace AddressRegistry.Projections.Legacy.AddressList
             b.HasIndex(p => p.HouseNumber);
             b.HasIndex(p => p.PostalCode);
             b.HasIndex(p => new { p.Complete, p.Removed });
+            b.HasIndex(p => p.StreetNameId);
         }
     }
 }

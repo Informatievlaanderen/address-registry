@@ -51,7 +51,8 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        Complete = true
+                        Complete = true,
+                        VersionTimestamp = addressBecameComplete.Provenance.Timestamp
                     }));
         }
 
@@ -69,7 +70,8 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        Status = AddressStatus.Current
+                        Status = AddressStatus.Current,
+                        VersionTimestamp = addressBecameCurrent.Provenance.Timestamp
                     }));
         }
 
@@ -89,7 +91,8 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        Complete = false
+                        Complete = false,
+                        VersionTimestamp = addressBecameIncomplete.Provenance.Timestamp
                     }));
         }
 
@@ -109,7 +112,8 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        OfficiallyAssigned = false
+                        OfficiallyAssigned = false,
+                        VersionTimestamp = addressBecameNotOfficiallyAssigned.Provenance.Timestamp
                     }));
         }
 
@@ -130,6 +134,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressHouseNumberWasChanged.HouseNumber,
+                        VersionTimestamp = addressHouseNumberWasChanged.Provenance.Timestamp
                     }));
         }
 
@@ -149,7 +154,8 @@ namespace AddressRegistry.Tests.ProjectionTests
                     {
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
-                        HouseNumber = addressHouseNumberWasCorrected.HouseNumber
+                        HouseNumber = addressHouseNumberWasCorrected.HouseNumber,
+                        VersionTimestamp = addressHouseNumberWasCorrected.Provenance.Timestamp
                     }));
         }
 
@@ -169,7 +175,8 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        OfficiallyAssigned = null
+                        OfficiallyAssigned = null,
+                        VersionTimestamp = addressOfficialAssignmentWasRemoved.Provenance.Timestamp
                     }));
         }
 
@@ -215,7 +222,8 @@ namespace AddressRegistry.Tests.ProjectionTests
                             HouseNumber = addressWasRegistered.HouseNumber,
                             Position = addressPositionWasCorrected.ExtendedWkbGeometry.ToByteArray(),
                             PositionMethod = addressPositionWasCorrected.GeometryMethod,
-                            PositionSpecification = addressPositionWasCorrected.GeometrySpecification
+                            PositionSpecification = addressPositionWasCorrected.GeometrySpecification,
+                            VersionTimestamp = addressPositionWasCorrected.Provenance.Timestamp
                         }));
         }
 
@@ -244,6 +252,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                         Position = null,
                         PositionSpecification = null,
                         PositionMethod = null,
+                        VersionTimestamp = addressPositionWasRemoved.Provenance.Timestamp
                     }));
         }
 
@@ -261,7 +270,8 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        PostalCode = addressPostalCodeWasChanged.PostalCode
+                        PostalCode = addressPostalCodeWasChanged.PostalCode,
+                        VersionTimestamp = addressPostalCodeWasChanged.Provenance.Timestamp
                     }));
         }
         [Theory]
@@ -278,7 +288,8 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        PostalCode = addressPostalCodeWasCorrected.PostalCode
+                        PostalCode = addressPostalCodeWasCorrected.PostalCode,
+                        VersionTimestamp = addressPostalCodeWasCorrected.Provenance.Timestamp
                     }));
         }
 
@@ -298,7 +309,8 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        PostalCode = null
+                        PostalCode = null,
+                        VersionTimestamp = addressPostalCodeWasRemoved.Provenance.Timestamp
                     }));
         }
 
@@ -318,7 +330,8 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        Status = null
+                        Status = null,
+                        VersionTimestamp = addressStatusWasCorrectedToRemoved.Provenance.Timestamp
                     }));
         }
 
@@ -338,7 +351,8 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        Status = null
+                        Status = null,
+                        VersionTimestamp = addressStatusWasRemoved.Provenance.Timestamp
                     }));
         }
 
@@ -356,7 +370,8 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        Status = AddressStatus.Current
+                        Status = AddressStatus.Current,
+                        VersionTimestamp = addressWasCorrectedToCurrent.Provenance.Timestamp
                     }));
         }
 
@@ -374,7 +389,8 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        OfficiallyAssigned = false
+                        OfficiallyAssigned = false,
+                        VersionTimestamp = addressWasCorrectedToNotOfficiallyAssigned.Provenance.Timestamp
                     }));
         }
 
@@ -392,7 +408,8 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        OfficiallyAssigned = true
+                        OfficiallyAssigned = true,
+                        VersionTimestamp = addressWasCorrectedToOfficiallyAssigned.Provenance.Timestamp
                     }));
         }
 
@@ -410,7 +427,8 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        Status = AddressStatus.Proposed
+                        Status = AddressStatus.Proposed,
+                        VersionTimestamp = addressWasCorrectedToProposed.Provenance.Timestamp
                     }));
         }
 
@@ -428,7 +446,8 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        Status = AddressStatus.Retired
+                        Status = AddressStatus.Retired,
+                        VersionTimestamp = addressWasCorrectedToRetired.Provenance.Timestamp
                     }));
         }
 
@@ -446,7 +465,8 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        OfficiallyAssigned = true
+                        OfficiallyAssigned = true,
+                        VersionTimestamp = addressWasOfficiallyAssigned.Provenance.Timestamp
                     }));
         }
 
@@ -473,7 +493,8 @@ namespace AddressRegistry.Tests.ProjectionTests
                             HouseNumber = addressWasRegistered.HouseNumber,
                             Position = addressWasPositioned.ExtendedWkbGeometry.ToByteArray(),
                             PositionMethod = addressWasPositioned.GeometryMethod,
-                            PositionSpecification = addressWasPositioned.GeometrySpecification
+                            PositionSpecification = addressWasPositioned.GeometrySpecification,
+                            VersionTimestamp = addressWasPositioned.Provenance.Timestamp
                         }));
         }
 
@@ -491,7 +512,8 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        Status = AddressStatus.Proposed
+                        Status = AddressStatus.Proposed,
+                        VersionTimestamp = addressWasProposed.Provenance.Timestamp
                     }));
         }
 
@@ -510,6 +532,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
                         Removed = true,
+                        VersionTimestamp = addressWasRemoved.Provenance.Timestamp
                     }));
         }
 
@@ -527,7 +550,8 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        Status = AddressStatus.Retired
+                        Status = AddressStatus.Retired,
+                        VersionTimestamp = addressWasRetired.Provenance.Timestamp
                     }));
         }
 
@@ -545,7 +569,8 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        BoxNumber = addressBoxNumberWasChanged.BoxNumber
+                        BoxNumber = addressBoxNumberWasChanged.BoxNumber,
+                        VersionTimestamp = addressBoxNumberWasChanged.Provenance.Timestamp
                     }));
         }
 
@@ -563,7 +588,8 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        BoxNumber = addressBoxNumberWasCorrected.BoxNumber
+                        BoxNumber = addressBoxNumberWasCorrected.BoxNumber,
+                        VersionTimestamp = addressBoxNumberWasCorrected.Provenance.Timestamp
                     }));
         }
 
@@ -583,7 +609,8 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        BoxNumber = null
+                        BoxNumber = null,
+                        VersionTimestamp = addressBoxNumberWasRemoved.Provenance.Timestamp
                     }));
         }
 
@@ -607,6 +634,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                         PositionMethod = null,
                         PositionSpecification = null,
                         Removed = true,
+                        VersionTimestamp = addressPositionWasRemoved.Provenance.Timestamp
                     }));
         }
 
@@ -628,6 +656,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                         HouseNumber = addressWasRegistered.HouseNumber,
                         PersistentLocalId = addressPersistentLocalIdWasAssigned.PersistentLocalId,
                         Removed = true,
+                        VersionTimestamp = addressWasRemoved.Provenance.Timestamp
                     }));
         }
 
@@ -649,6 +678,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                         HouseNumber = addressWasRegistered.HouseNumber,
                         PostalCode = null,
                         Removed = true,
+                        VersionTimestamp = addressPostalCodeWasRemoved.Provenance.Timestamp
                     }));
         }
 
@@ -670,6 +700,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                         HouseNumber = addressWasRegistered.HouseNumber,
                         Status = null,
                         Removed = true,
+                        VersionTimestamp = addressStatusWasRemoved.Provenance.Timestamp
                     }));
         }
 
@@ -691,6 +722,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                         HouseNumber = addressWasRegistered.HouseNumber,
                         OfficiallyAssigned = null,
                         Removed = true,
+                        VersionTimestamp = addressOfficialAssignmentWasRemoved.Provenance.Timestamp
                     }));
         }
 
@@ -712,6 +744,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                         HouseNumber = addressWasRegistered.HouseNumber,
                         Complete = false,
                         Removed = true,
+                        VersionTimestamp = addressBecameIncomplete.Provenance.Timestamp
                     }));
         }
 
@@ -737,6 +770,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                             PositionMethod = addressWasPositioned.GeometryMethod,
                             PositionSpecification = addressWasPositioned.GeometrySpecification,
                             Removed = true,
+                            VersionTimestamp = addressWasPositioned.Provenance.Timestamp
                         }));
         }
 

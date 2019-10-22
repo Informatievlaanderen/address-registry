@@ -1,3 +1,10 @@
+## [1.16.11](https://github.com/informatievlaanderen/address-registry/compare/v1.16.10...v1.16.11) (2019-10-22)
+
+
+### Bug Fixes
+
+* change description for officiallyAssigned GR-929 ([3aa2001](https://github.com/informatievlaanderen/address-registry/commit/3aa2001))
+
 ## [1.16.10](https://github.com/informatievlaanderen/address-registry/compare/v1.16.9...v1.16.10) (2019-10-22)
 
 

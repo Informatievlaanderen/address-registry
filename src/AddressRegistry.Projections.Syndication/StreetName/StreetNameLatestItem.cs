@@ -12,9 +12,13 @@ namespace AddressRegistry.Projections.Syndication.StreetName
         public string NisCode { get; set; }
 
         public string NameDutch { get; set; }
+        public string NameDutchSearch { get; set; }
         public string NameFrench { get; set; }
+        public string NameFrenchSearch { get; set; }
         public string NameGerman { get; set; }
+        public string NameGermanSearch { get; set; }
         public string NameEnglish { get; set; }
+        public string NameEnglishSearch { get; set; }
 
         public string HomonymAdditionDutch { get; set; }
         public string HomonymAdditionFrench { get; set; }
@@ -46,9 +50,13 @@ namespace AddressRegistry.Projections.Syndication.StreetName
             builder.Property(x => x.PersistentLocalId);
 
             builder.Property(x => x.NameDutch);
+            builder.Property(x => x.NameDutchSearch);
             builder.Property(x => x.NameFrench);
+            builder.Property(x => x.NameFrenchSearch);
             builder.Property(x => x.NameGerman);
+            builder.Property(x => x.NameGermanSearch);
             builder.Property(x => x.NameEnglish);
+            builder.Property(x => x.NameEnglishSearch);
 
             builder.Property(x => x.HomonymAdditionDutch);
             builder.Property(x => x.HomonymAdditionFrench);
@@ -66,6 +74,11 @@ namespace AddressRegistry.Projections.Syndication.StreetName
             builder.HasIndex(x => x.NameFrench);
             builder.HasIndex(x => x.NameEnglish);
             builder.HasIndex(x => x.NameGerman);
+
+            builder.HasIndex(x => x.NameDutchSearch);
+            builder.HasIndex(x => x.NameFrenchSearch);
+            builder.HasIndex(x => x.NameEnglishSearch);
+            builder.HasIndex(x => x.NameGermanSearch);
 
             builder.HasIndex(x => x.HomonymAdditionDutch);
             builder.HasIndex(x => x.HomonymAdditionFrench);

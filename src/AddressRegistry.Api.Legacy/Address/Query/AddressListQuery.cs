@@ -71,10 +71,10 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             if (!string.IsNullOrEmpty(filtering.Filter.StreetName))
             {
                 streetnames = streetnames.Where(s =>
-                    s.NameDutch == filtering.Filter.StreetName ||
-                    s.NameFrench == filtering.Filter.StreetName ||
-                    s.NameGerman == filtering.Filter.StreetName ||
-                    s.NameEnglish == filtering.Filter.StreetName);
+                    s.NameDutchSearch == filtering.Filter.StreetName ||
+                    s.NameFrenchSearch == filtering.Filter.StreetName ||
+                    s.NameGermanSearch == filtering.Filter.StreetName ||
+                    s.NameEnglishSearch == filtering.Filter.StreetName);
 
                 filterStreet = true;
             }

@@ -1,3 +1,10 @@
+## [1.16.10](https://github.com/informatievlaanderen/address-registry/compare/v1.16.9...v1.16.10) (2019-10-22)
+
+
+### Bug Fixes
+
+* search streetname ignore diacritics GR-919 ([6327363](https://github.com/informatievlaanderen/address-registry/commit/6327363))
+
 ## [1.16.9](https://github.com/informatievlaanderen/address-registry/compare/v1.16.8...v1.16.9) (2019-10-14)
 
 

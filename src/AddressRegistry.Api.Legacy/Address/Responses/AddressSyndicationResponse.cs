@@ -189,7 +189,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         public bool IsComplete { get; set; }
 
         /// <summary>
-        /// False wanneer het bestaan van het adres niet geweten is ten tijde van administratieve procedures, maar pas na plaatselijke observatie.
+        /// False wanneer het bestaan van het adres niet geweten is ten tijde van administratieve procedures, maar pas na observatie op het terrein.
         /// </summary>
         [DataMember(Name = "OfficieelToegekend", Order = 12)]
         public bool IsOfficiallyAssigned { get; set; }

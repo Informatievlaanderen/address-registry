@@ -87,7 +87,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         public AdresStatus AdresStatus { get; set; }
 
         /// <summary>
-        /// False wanneer het bestaan van het adres niet geweten is ten tijde van administratieve procedures, maar pas na plaatselijke observatie.
+        /// False wanneer het bestaan van het adres niet geweten is ten tijde van administratieve procedures, maar pas na observatie op het terrein.
         /// </summary>
         [DataMember(Name = "OfficieelToegekend", Order = 13)]
         public bool OfficieelToegekend { get; set; }

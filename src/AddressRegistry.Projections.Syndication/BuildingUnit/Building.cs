@@ -45,7 +45,7 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
         public Guid BuildingUnitId { get; set; }
 
         [DataMember(Name = "Identificator", Order = 2)]
-        public GebouwEenheidIdentificator Identificator { get; set; }
+        public GebouweenheidIdentificator Identificator { get; set; }
 
         [DataMember(Name = "GebouweenheidStatus", Order = 3)]
         public GebouweenheidStatus? Status { get; set; }

@@ -42,7 +42,7 @@ namespace AddressRegistry.Projections.Syndication.Municipality
                 {
                     MunicipalityId = entry.Content.Object.Id,
                     NisCode = entry.Content.Object.Identificator?.ObjectId,
-                    Version = entry.Content.Object.Identificator?.Versie.Value,
+                    Version = entry.Content.Object.Identificator?.Versie,
                     Position = long.Parse(entry.FeedEntry.Id),
                     PrimaryLanguage = entry.Content.Object.OfficialLanguages.FirstOrDefault()
                 };
@@ -56,7 +56,7 @@ namespace AddressRegistry.Projections.Syndication.Municipality
             else
             {
                 municipalityLatestItem.NisCode = entry.Content.Object.Identificator?.ObjectId;
-                municipalityLatestItem.Version = entry.Content.Object.Identificator?.Versie.Value;
+                municipalityLatestItem.Version = entry.Content.Object.Identificator?.Versie;
                 municipalityLatestItem.Position = long.Parse(entry.FeedEntry.Id);
                 municipalityLatestItem.PrimaryLanguage = entry.Content.Object.OfficialLanguages.FirstOrDefault();
 

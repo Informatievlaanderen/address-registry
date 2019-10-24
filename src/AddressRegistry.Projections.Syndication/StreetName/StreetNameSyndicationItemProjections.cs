@@ -44,7 +44,7 @@ namespace AddressRegistry.Projections.Syndication.StreetName
             {
                 StreetNameId = entry.Content.Object.StreetNameId,
                 NisCode = entry.Content.Object.NisCode,
-                Version = entry.Content.Object.Identificator?.Versie.Value,
+                Version = entry.Content.Object.Identificator?.Versie,
                 Position = long.Parse(entry.FeedEntry.Id),
                 PersistentLocalId = entry.Content.Object.Identificator?.ObjectId,
             };

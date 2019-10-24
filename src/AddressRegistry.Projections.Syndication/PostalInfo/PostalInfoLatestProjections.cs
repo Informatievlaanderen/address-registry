@@ -29,7 +29,7 @@ namespace AddressRegistry.Projections.Syndication.PostalInfo
                 latestItem = new PostalInfoLatestItem
                 {
                     PostalCode = entry.Content.Object.PostalCode,
-                    Version = entry.Content.Object.Identificator?.Versie.Value,
+                    Version = entry.Content.Object.Identificator?.Versie,
                     Position = long.Parse(entry.FeedEntry.Id),
                     NisCode = entry.Content.Object.MunicipalityNisCode,
                 };
@@ -44,7 +44,7 @@ namespace AddressRegistry.Projections.Syndication.PostalInfo
             {
                 await context.Entry(latestItem).Collection(x => x.PostalNames).LoadAsync(ct);
 
-                latestItem.Version = entry.Content.Object.Identificator?.Versie.Value;
+                latestItem.Version = entry.Content.Object.Identificator?.Versie;
                 latestItem.Position = long.Parse(entry.FeedEntry.Id);
                 latestItem.NisCode = entry.Content.Object.MunicipalityNisCode;
 

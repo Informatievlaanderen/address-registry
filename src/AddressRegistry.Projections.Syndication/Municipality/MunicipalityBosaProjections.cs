@@ -42,7 +42,7 @@ namespace AddressRegistry.Projections.Syndication.Municipality
                 {
                     MunicipalityId = entry.Content.Object.Id,
                     NisCode = entry.Content.Object.Identificator?.ObjectId,
-                    Version = entry.Content.Object.Identificator?.Versie.Value,
+                    Version = entry.Content.Object.Identificator?.Versie,
                     Position = long.Parse(entry.FeedEntry.Id),
                     PrimaryLanguage = entry.Content.Object.OfficialLanguages.FirstOrDefault(),
                     IsFlemishRegion = RegionFilter.IsFlemishRegion(entry.Content.Object.Identificator?.ObjectId)
@@ -57,7 +57,7 @@ namespace AddressRegistry.Projections.Syndication.Municipality
             else
             {
                 municipalityItem.NisCode = entry.Content.Object.Identificator?.ObjectId;
-                municipalityItem.Version = entry.Content.Object.Identificator?.Versie.Value;
+                municipalityItem.Version = entry.Content.Object.Identificator?.Versie;
                 municipalityItem.Position = long.Parse(entry.FeedEntry.Id);
                 municipalityItem.PrimaryLanguage = entry.Content.Object.OfficialLanguages.FirstOrDefault();
                 municipalityItem.IsFlemishRegion = RegionFilter.IsFlemishRegion(entry.Content.Object.Identificator?.ObjectId);

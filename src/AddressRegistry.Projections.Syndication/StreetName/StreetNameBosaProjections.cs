@@ -51,7 +51,7 @@ namespace AddressRegistry.Projections.Syndication.StreetName
                 {
                     StreetNameId = entry.Content.Object.StreetNameId,
                     NisCode = entry.Content.Object.NisCode,
-                    Version = entry.Content.Object.Identificator?.Versie.Value,
+                    Version = entry.Content.Object.Identificator?.Versie,
                     Position = long.Parse(entry.FeedEntry.Id),
                     PersistentLocalId = entry.Content.Object.Identificator?.ObjectId,
                     IsComplete = entry.Content.Object.IsComplete,
@@ -67,7 +67,7 @@ namespace AddressRegistry.Projections.Syndication.StreetName
             else
             {
                 latestItem.NisCode = entry.Content.Object.NisCode;
-                latestItem.Version = entry.Content.Object.Identificator?.Versie.Value;
+                latestItem.Version = entry.Content.Object.Identificator?.Versie;
                 latestItem.Position = long.Parse(entry.FeedEntry.Id);
                 latestItem.PersistentLocalId = entry.Content.Object.Identificator?.ObjectId;
                 latestItem.IsComplete = entry.Content.Object.IsComplete;

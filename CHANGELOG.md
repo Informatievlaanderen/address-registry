@@ -1,3 +1,10 @@
+## [1.16.12](https://github.com/informatievlaanderen/address-registry/compare/v1.16.11...v1.16.12) (2019-10-24)
+
+
+### Bug Fixes
+
+* upgrade grar common ([7bda405](https://github.com/informatievlaanderen/address-registry/commit/7bda405))
+
 ## [1.16.11](https://github.com/informatievlaanderen/address-registry/compare/v1.16.10...v1.16.11) (2019-10-22)
 
 

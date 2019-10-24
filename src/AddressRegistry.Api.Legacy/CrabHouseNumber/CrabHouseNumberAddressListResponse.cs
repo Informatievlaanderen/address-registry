@@ -48,7 +48,7 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
             CrabHouseNumberId = crabHouseNumberId;
             Address = new CrabAddressListItemAddress
             {
-                Identificator = new Identificator(naamruimte, persistentLocalId.ToString(CultureInfo.InvariantCulture), version),
+                Identificator = new AdresIdentificator(naamruimte, persistentLocalId.ToString(CultureInfo.InvariantCulture), version),
                 IsComplete = isComplete,
                 Detail = new Uri(string.Format(detailUrl, persistentLocalId)),
                 Huisnummer = houseNumber,
@@ -82,7 +82,7 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
         /// De identificator van het adres.
         /// </summary>
         [DataMember(Name = "Identificator", Order = 2)]
-        public Identificator Identificator { get; set; }
+        public AdresIdentificator Identificator { get; set; }
 
         /// <summary>
         /// De URL die naar de details van de meeste recente versie van een enkele straatnaam leidt.

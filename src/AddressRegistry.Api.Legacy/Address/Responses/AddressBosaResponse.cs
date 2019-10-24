@@ -35,10 +35,10 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
     public class AddressBosaResponseItem
     {
         /// <summary>
-        /// The identifier of the street name
+        /// The identifier of the address
         /// </summary>
         [DataMember(Name = "Identificator")]
-        public Identificator Identificator { get; set; }
+        public AdresIdentificator Identificator { get; set; }
 
         [DataMember(Name = "AdresStatus")]
         public AdresStatus AdresStatus { get; set; }
@@ -71,13 +71,13 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         public bool IsOfficieelToegekend { get; set; }
 
         [DataMember(Name = "HeeftStraatnaam")]
-        public Identificator HeeftStraatnaam { get; set; }
+        public StraatnaamIdentificator HeeftStraatnaam { get; set; }
 
         [DataMember(Name = "HeeftGemeente")]
-        public Identificator HeeftGemeente { get; set; }
+        public GemeenteIdentificator HeeftGemeente { get; set; }
 
         [DataMember(Name = "HeeftPostInfo")]
-        public Identificator HeeftPostInfo { get; set; }
+        public PostinfoIdentificator HeeftPostInfo { get; set; }
 
         public AddressBosaResponseItem(
             string postinfoNamespace,
@@ -100,7 +100,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             string postalCode,
             DateTimeOffset postinfoVersion)
         {
-            Identificator = new Identificator(addressNamespace, persistentLocalId.ToString(), version);
+            Identificator = new AdresIdentificator(addressNamespace, persistentLocalId.ToString(), version);
             AdresStatus = status;
             Huisnummer = houseNumber;
             Busnummer = boxNumber;
@@ -108,9 +108,9 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             AdresPositie = addressPosition;
             PositieGeometrieMethode = positionGeometryMethod;
             PositieSpecificatie = positionSpecification;
-            HeeftPostInfo = new Identificator(postinfoNamespace, postalCode, postinfoVersion);
-            HeeftGemeente = new Identificator(municipalityNamespace, gemeenteId, gemeenteVersion);
-            HeeftStraatnaam = new Identificator(streetNameNamespace, straatnaamId, straatnaamVersion);
+            HeeftPostInfo = new PostinfoIdentificator(postinfoNamespace, postalCode, postinfoVersion);
+            HeeftGemeente = new GemeenteIdentificator(municipalityNamespace, gemeenteId, gemeenteVersion);
+            HeeftStraatnaam = new StraatnaamIdentificator(streetNameNamespace, straatnaamId, straatnaamVersion);
         }
     }
 

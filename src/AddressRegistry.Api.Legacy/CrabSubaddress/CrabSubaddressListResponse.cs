@@ -50,7 +50,7 @@ namespace AddressRegistry.Api.Legacy.CrabSubaddress
             CrabSubadresId = crabSubadresId;
             Address = new CrabAddressListItemAddress
             {
-                Identificator = new Identificator(naamruimte, persistentLocalId.ToString(CultureInfo.InvariantCulture), version),
+                Identificator = new AdresIdentificator(naamruimte, persistentLocalId.ToString(CultureInfo.InvariantCulture), version),
                 IsComplete = isComplete,
                 Detail = new Uri(string.Format(detailUrl, persistentLocalId)),
                 Huisnummer = houseNumber,

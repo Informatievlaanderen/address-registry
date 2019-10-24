@@ -18,7 +18,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         /// De identificator van het adres.
         /// </summary>
         [DataMember(Name = "Identificator", Order = 1)]
-        public Identificator Identificator { get; set; }
+        public AdresIdentificator Identificator { get; set; }
 
         /// <summary>
         /// De gemeente die deel uitmaakt van het adres.
@@ -109,7 +109,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             bool? officieelToegekend,
             DateTimeOffset version)
         {
-            Identificator = new Identificator(naamruimte, objectId, version);
+            Identificator = new AdresIdentificator(naamruimte, objectId, version);
             Huisnummer = huisnummer;
             Busnummer = busnummer;
             PositieGeometrieMethode = positieGeometrieMethode;

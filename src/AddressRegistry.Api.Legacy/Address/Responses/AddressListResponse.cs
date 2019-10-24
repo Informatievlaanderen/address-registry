@@ -35,13 +35,13 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
     public class AddressListItemResponse
     {
         /// <summary>
-        /// De identificator van de straatnaam.
+        /// De identificator van het adres.
         /// </summary>
         [DataMember(Name = "Identificator", Order = 1)]
-        public Identificator Identificator { get; set; }
+        public AdresIdentificator Identificator { get; set; }
 
         /// <summary>
-        /// De URL die naar de details van de meeste recente versie van een enkele straatnaam leidt.
+        /// De URL die naar de details van de meeste recente versie van een enkel adres leidt.
         /// </summary>
         [DataMember(Name = "Detail", Order = 2)]
         public Uri Detail { get; set; }
@@ -73,7 +73,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             VolledigAdres volledigAdres,
             DateTimeOffset version)
         {
-            Identificator = new Identificator(naamruimte, id.ToString(), version);
+            Identificator = new AdresIdentificator(naamruimte, id.ToString(), version);
             Detail = new Uri(string.Format(detail, id));
             Huisnummer = huisnummer;
             Busnummer = busnummer;

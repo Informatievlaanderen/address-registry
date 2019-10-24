@@ -43,7 +43,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         /// <summary>
         /// the identifier of the address
         /// </summary>
-        public Identificator Identificator { get; set; }
+        public AdresIdentificator Identificator { get; set; }
 
         /// <summary>
         /// URL returning the details of the latest version of the address
@@ -261,7 +261,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
                 {
                     new AdresMatchItem
                     {
-                        Identificator = new Identificator(_options.Naamruimte, "36416228", DateTimeOffset.Now),
+                        Identificator = new AdresIdentificator(_options.Naamruimte, "36416228", DateTimeOffset.Now),
                         Detail = string.Format(_options.DetailUrl, "36416228"),
                         Gemeente = new AdresMatchItemGemeente
                         {

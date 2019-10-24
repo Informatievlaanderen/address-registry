@@ -13,7 +13,7 @@ namespace AddressRegistry.Projections.Syndication.Municipality
         public Guid Id { get; set; }
 
         [DataMember(Name = "Identificator", Order = 2)]
-        public Identificator Identificator { get; set; }
+        public GemeenteIdentificator Identificator { get; set; }
 
         [DataMember(Name = "OfficieleTalen", Order = 3)]
         public List<Taal> OfficialLanguages { get; set; }

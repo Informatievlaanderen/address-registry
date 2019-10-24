@@ -11,10 +11,10 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
     public class AddressRepresentationBosaResponse
     {
         /// <summary>
-        /// the identifier of the street name
+        /// the identifier of the address
         /// </summary>
         [Required]
-        public Identificator Identificator { get; set; }
+        public AdresIdentificator Identificator { get; set; }
 
         /// <summary>
         /// address representations
@@ -67,7 +67,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         public object GetExamples()
             => new AddressRepresentationBosaResponse
             {
-                Identificator = new Identificator(_responseOptions.Naamruimte, "12345", DateTimeOffset.Now),
+                Identificator = new AdresIdentificator(_responseOptions.Naamruimte, "12345", DateTimeOffset.Now),
                 AdresVoorstellingen = new List<BosaAddressRepresentation>
                 {
                     new BosaAddressRepresentation(Taal.NL, "5", "1", "Teststraat 5 bus 1, 9000 Gent", "Gent", "Teststraat", "9000"),

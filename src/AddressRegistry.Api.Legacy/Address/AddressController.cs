@@ -337,7 +337,7 @@ namespace AddressRegistry.Api.Legacy.Address
 
             var response = new AddressRepresentationBosaResponse
             {
-                Identificator = new Identificator(responseOptions.Value.Naamruimte, address.PersistentLocalId.ToString(), address.VersionTimestamp.ToBelgianDateTimeOffset())
+                Identificator = new AdresIdentificator(responseOptions.Value.Naamruimte, address.PersistentLocalId.ToString(), address.VersionTimestamp.ToBelgianDateTimeOffset())
             };
 
             if (!request.Taal.HasValue || request.Taal.Value == municipality.PrimaryLanguage)

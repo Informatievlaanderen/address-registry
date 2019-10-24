@@ -13,7 +13,7 @@ namespace AddressRegistry.Projections.Syndication.Parcel
         public Guid Id { get; set; }
 
         [DataMember(Name = "Identificator", Order = 2)]
-        public Identificator Identificator { get; set; }
+        public PerceelIdentificator Identificator { get; set; }
 
         [DataMember(Name = "PerceelStatus", Order = 3)]
         public PerceelStatus? Status { get; set; }

@@ -19,7 +19,7 @@ namespace AddressRegistry.Projections.Syndication.StreetName
         /// De identificator van de straatnaam.
         /// </summary>
         [DataMember(Name = "Identificator", Order = 2)]
-        public Identificator Identificator { get; set; }
+        public StraatnaamIdentificator Identificator { get; set; }
 
         /// <summary>
         /// De officiële namen van de straatnaam.

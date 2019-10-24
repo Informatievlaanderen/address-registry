@@ -132,7 +132,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         /// De identificator van het adres.
         /// </summary>
         [DataMember(Name = "Identificator", Order = 2)]
-        public Identificator Identificator { get; set; }
+        public AdresIdentificator Identificator { get; set; }
 
         /// <summary>
         /// De id van de straatnaam.
@@ -219,7 +219,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             string reason)
         {
             AddressId = addressId;
-            Identificator = new Identificator(naamruimte, persistentLocalId.HasValue ? persistentLocalId.ToString() : string.Empty, version);
+            Identificator = new AdresIdentificator(naamruimte, persistentLocalId.HasValue ? persistentLocalId.ToString() : string.Empty, version);
             SteetnameId = streetNameId;
             PostalCode = postalCode;
             Point = point == null ? null : new SyndicationPoint { XmlPoint = point.XmlPoint };

@@ -33,7 +33,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
 
             return new AdresMatchItem
             {
-                Identificator = new Identificator(_responseOptions.Naamruimte, source.PersistentLocalId.ToString(), source.VersionTimestamp.ToBelgianDateTimeOffset()),
+                Identificator = new AdresIdentificator(_responseOptions.Naamruimte, source.PersistentLocalId.ToString(), source.VersionTimestamp.ToBelgianDateTimeOffset()),
                 Detail = string.Format(_responseOptions.DetailUrl, source.PersistentLocalId.Value.ToString()),
                 Gemeente = new AdresMatchItemGemeente
                 {

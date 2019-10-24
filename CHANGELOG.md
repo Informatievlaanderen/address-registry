@@ -1,3 +1,5 @@
+## [1.16.13](https://github.com/informatievlaanderen/address-registry/compare/v1.16.12...v1.16.13) (2019-10-24)
+
 ## [1.16.12](https://github.com/informatievlaanderen/address-registry/compare/v1.16.11...v1.16.12) (2019-10-24)
 
 

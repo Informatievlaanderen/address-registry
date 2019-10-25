@@ -9,6 +9,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
     using Projections.Syndication;
     using System.Collections.Generic;
     using System.Linq;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
 
     public class AddressListQuery : Query<AddressListItem, AddressFilter>
     {
@@ -57,11 +58,12 @@ namespace AddressRegistry.Api.Legacy.Address.Query
 
             if (!string.IsNullOrEmpty(filtering.Filter.MunicipalityName))
             {
+                var searchName = filtering.Filter.MunicipalityName.RemoveDiacritics();
                 var nisCodes = municipalities.Where(m =>
-                    m.NameDutchSearch == filtering.Filter.MunicipalityName ||
-                    m.NameFrenchSearch == filtering.Filter.MunicipalityName ||
-                    m.NameGermanSearch == filtering.Filter.MunicipalityName ||
-                    m.NameEnglishSearch == filtering.Filter.MunicipalityName)
+                    m.NameDutchSearch == searchName ||
+                    m.NameFrenchSearch == searchName ||
+                    m.NameGermanSearch == searchName ||
+                    m.NameEnglishSearch == searchName)
                     .Select(m => m.NisCode);
 
                 streetnames = streetnames.Where(s => nisCodes.Contains(s.NisCode));
@@ -70,11 +72,12 @@ namespace AddressRegistry.Api.Legacy.Address.Query
 
             if (!string.IsNullOrEmpty(filtering.Filter.StreetName))
             {
+                var searchName = filtering.Filter.MunicipalityName.RemoveDiacritics();
                 streetnames = streetnames.Where(s =>
-                    s.NameDutchSearch == filtering.Filter.StreetName ||
-                    s.NameFrenchSearch == filtering.Filter.StreetName ||
-                    s.NameGermanSearch == filtering.Filter.StreetName ||
-                    s.NameEnglishSearch == filtering.Filter.StreetName);
+                    s.NameDutchSearch == searchName ||
+                    s.NameFrenchSearch == searchName ||
+                    s.NameGermanSearch == searchName ||
+                    s.NameEnglishSearch == searchName);
 
                 filterStreet = true;
             }

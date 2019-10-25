@@ -1,3 +1,10 @@
+## [1.16.15](https://github.com/informatievlaanderen/address-registry/compare/v1.16.14...v1.16.15) (2019-10-25)
+
+
+### Bug Fixes
+
+* filter street/muni name now with or wo diacritics GR-917 ([5ab003c](https://github.com/informatievlaanderen/address-registry/commit/5ab003c))
+
 ## [1.16.14](https://github.com/informatievlaanderen/address-registry/compare/v1.16.13...v1.16.14) (2019-10-24)
 
 

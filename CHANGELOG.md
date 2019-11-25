@@ -1,3 +1,10 @@
+# [1.17.0](https://github.com/informatievlaanderen/address-registry/compare/v1.16.16...v1.17.0) (2019-11-25)
+
+
+### Features
+
+* add view to count valid addresses efficiently ([fa35a29](https://github.com/informatievlaanderen/address-registry/commit/fa35a29))
+
 ## [1.16.16](https://github.com/informatievlaanderen/address-registry/compare/v1.16.15...v1.16.16) (2019-11-18)
 
 

@@ -32,7 +32,7 @@ namespace AddressRegistry.Projections.Legacy.AddressList
 
     public class AddressListItemConfiguration : IEntityTypeConfiguration<AddressListItem>
     {
-        private const string TableName = "AddressList";
+        internal const string TableName = "AddressList";
 
         public void Configure(EntityTypeBuilder<AddressListItem> b)
         {

@@ -33,6 +33,7 @@ namespace AddressRegistry.Api.Legacy.Address
     using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
+    using Be.Vlaanderen.Basisregisters.Api.Search;
     using Projections.Legacy.AddressList;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
@@ -161,8 +162,7 @@ namespace AddressRegistry.Api.Legacy.Address
                     pagination,
                     filtering.ShouldFilter ? null : (Func<IQueryable<AddressListItem>, long>) Count);
 
-            Response.AddPaginationResponse(pagedAddresses.PaginationInfo);
-            Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);
+            Response.AddPagedQueryResultHeaders(pagedAddresses);
 
             var addresses = await pagedAddresses.Items
                 .Select(a =>
@@ -251,10 +251,9 @@ namespace AddressRegistry.Api.Legacy.Address
                 context,
                 filtering.Filter?.ContainsEvent ?? false,
                 filtering.Filter?.ContainsObject ?? false)
-                .Fetch(filtering, sorting, pagination);
+                .Fetch(filtering, sorting, pagination, items => 0);
 
-            Response.AddPaginationResponse(pagedAddresses.PaginationInfo);
-            Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);
+            Response.AddPagedQueryResultHeaders(pagedAddresses);
 
             return new ContentResult
             {

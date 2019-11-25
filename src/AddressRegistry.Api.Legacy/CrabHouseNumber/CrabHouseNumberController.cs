@@ -16,6 +16,7 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
     using System.Threading;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
+    using Be.Vlaanderen.Basisregisters.Api.Search;
     using Microsoft.AspNetCore.Http;
     using Newtonsoft.Json.Converters;
     using Swashbuckle.AspNetCore.Filters;
@@ -44,8 +45,7 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
             var pagedAddresses = new CrabHouseNumberQuery(context)
                 .Fetch(filtering, sorting, pagination);
 
-            Response.AddPaginationResponse(pagedAddresses.PaginationInfo);
-            Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);
+            Response.AddPagedQueryResultHeaders(pagedAddresses);
 
             var addresses = await pagedAddresses
                 .Items

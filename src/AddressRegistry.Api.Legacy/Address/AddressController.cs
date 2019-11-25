@@ -33,6 +33,7 @@ namespace AddressRegistry.Api.Legacy.Address
     using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
+    using Projections.Legacy.AddressList;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
     [ApiVersion("1.0")]
@@ -151,7 +152,14 @@ namespace AddressRegistry.Api.Legacy.Address
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
-            var pagedAddresses = new AddressListQuery(context, syndicationContext).Fetch(filtering, sorting, pagination);
+            long Count(IQueryable<AddressListItem> items) => context.AddressListViewCount.Single().Count;
+
+            var pagedAddresses = new AddressListQuery(context, syndicationContext)
+                .Fetch(
+                    filtering,
+                    sorting,
+                    pagination,
+                    filtering.ShouldFilter ? null : (Func<IQueryable<AddressListItem>, long>) Count);
 
             Response.AddPaginationResponse(pagedAddresses.PaginationInfo);
             Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);

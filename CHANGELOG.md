@@ -1,3 +1,10 @@
+## [1.17.2](https://github.com/informatievlaanderen/address-registry/compare/v1.17.1...v1.17.2) (2019-11-28)
+
+
+### Bug Fixes
+
+* correct postinfo typo detail address in legacy api ([b8be89a](https://github.com/informatievlaanderen/address-registry/commit/b8be89a))
+
 ## [1.17.1](https://github.com/informatievlaanderen/address-registry/compare/v1.17.0...v1.17.1) (2019-11-25)
 
 # [1.17.0](https://github.com/informatievlaanderen/address-registry/compare/v1.16.16...v1.17.0) (2019-11-25)

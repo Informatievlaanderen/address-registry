@@ -128,17 +128,9 @@ workflows:
   build_and_push_to_production:
     jobs:
       - build
-      - hold:
-          type: approval
-          requires:
-            - build
-          filters:
-            branches:
-              only:
-                - master
       - push_to_production:
           requires:
-            - hold
+            - build
           filters:
             branches:
               only:

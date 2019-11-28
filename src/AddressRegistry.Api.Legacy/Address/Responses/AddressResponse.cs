@@ -29,7 +29,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         /// <summary>
         /// Een PostInfo object dat deel uitmaakt van het adres.
         /// </summary>
-        [DataMember(Name = "PostInfo", Order = 3)]
+        [DataMember(Name = "Postinfo", Order = 3)]
         public AdresDetailPostinfo Postinfo { get; set; }
 
         /// <summary>

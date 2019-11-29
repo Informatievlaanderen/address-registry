@@ -20,7 +20,7 @@ namespace AddressRegistry.Api.Extract.Extracts
     [ApiExplorerSettings(GroupName = "Extract")]
     public class ExtractController : ApiController
     {
-        public const string ZipName = "adressen";
+        public const string ZipName = "Adres";
 
         /// <summary>
         /// Vraag een dump van het volledige register op.

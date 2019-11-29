@@ -8,7 +8,7 @@ namespace AddressRegistry.Projections.Extract
 
         public DbaseString id { get; }
         public DbaseInt32 adresid { get; }
-        public DbaseDateTime versie { get; }
+        public DbaseString versieid { get; }
         public DbaseString posspec { get; }
         public DbaseString posgeommet { get; }
         public DbaseString straatnmid { get; }
@@ -25,16 +25,16 @@ namespace AddressRegistry.Projections.Extract
         {
             id = new DbaseString(Schema.id);
             adresid = new DbaseInt32(Schema.adresid);
-            versie = new DbaseDateTime(Schema.versie);
+            versieid = new DbaseString(Schema.versieid);
             posspec = new DbaseString(Schema.posspec);
             posgeommet = new DbaseString(Schema.posgeommet);
-            straatnmid = new DbaseString(Schema.straatnmid); // TODO: waiting for interregistry-communication
-            straatnm = new DbaseString(Schema.straatnm); // TODO: waiting for interregistry-communication
+            straatnmid = new DbaseString(Schema.straatnmid);
+            straatnm = new DbaseString(Schema.straatnm);
             huisnr = new DbaseString(Schema.huisnr);
             busnr = new DbaseString(Schema.busnr);
             postcode = new DbaseString(Schema.postcode);
-            gemeenteid = new DbaseString(Schema.gemeenteid); // TODO: waiting for interregistry-communication
-            gemeentenm = new DbaseString(Schema.gemeentenm); // TODO: waiting for interregistry-communication
+            gemeenteid = new DbaseString(Schema.gemeenteid);
+            gemeentenm = new DbaseString(Schema.gemeentenm);
             status = new DbaseString(Schema.status);
             offtoegknd = new DbaseBoolean(Schema.offtoegknd);
 
@@ -42,7 +42,7 @@ namespace AddressRegistry.Projections.Extract
             {
                 id,
                 adresid,
-                versie,
+                versieid,
                 posspec,
                 posgeommet,
                 straatnmid,

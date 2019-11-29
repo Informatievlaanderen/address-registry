@@ -11,6 +11,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
     using System;
     using System.Text;
     using Address.Events.Crab;
+    using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
     using Microsoft.Extensions.Options;
 
     public class AddressExtractProjection : ConnectedProjection<ExtractContext>
@@ -47,7 +48,11 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                     AddressId = message.Message.AddressId,
                     StreetNameId = message.Message.StreetNameId,
                     Complete = false,
-                    DbaseRecord = new AddressDbaseRecord() { huisnr = { Value = message.Message.HouseNumber } }.ToBytes(_encoding),
+                    DbaseRecord = new AddressDbaseRecord
+                    {
+                        huisnr = { Value = message.Message.HouseNumber },
+                        versieid = { Value = message.Message.Provenance.Timestamp.ToBelgianDateTimeOffset().FromDateTimeOffset() }
+                    }.ToBytes(_encoding),
                 }, cancellationToken: ct);
             });
 
@@ -293,7 +298,8 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
 
             When<Envelope<AddressWasRemoved>>(async (context, message, ct) =>
             {
-                context.AddressExtract.Remove(await context.AddressExtract.FindAsync(message.Message.AddressId));
+                var address = await context.AddressExtract.FindAsync(message.Message.AddressId, cancellationToken: ct);
+                context.AddressExtract.Remove(address);
             });
 
             When<Envelope<AddressWasRetired>>(async (context, message, ct) =>
@@ -342,7 +348,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
         }
 
         private void UpdateVersie(AddressExtractItem address, Instant timestamp)
-            => UpdateDbaseRecordField(address, record => record.versie.Value = timestamp.ToBelgianDateTimeOffset().DateTime);
+            => UpdateDbaseRecordField(address, record => record.versieid.SetValue(timestamp.ToBelgianDateTimeOffset()));
 
         private static string Map(GeometryMethod geometryMethod)
         {

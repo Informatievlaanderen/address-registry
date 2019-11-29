@@ -6,7 +6,7 @@ namespace AddressRegistry.Projections.Extract
     {
         public DbaseField id => Fields[0];
         public DbaseField adresid => Fields[1];
-        public DbaseField versie => Fields[2];
+        public DbaseField versieid => Fields[2];
         public DbaseField posspec => Fields[3];
         public DbaseField posgeommet => Fields[4];
         public DbaseField straatnmid => Fields[5];
@@ -23,7 +23,7 @@ namespace AddressRegistry.Projections.Extract
         {
             DbaseField.CreateStringField(new DbaseFieldName(nameof(id)), new DbaseFieldLength(50)),
             DbaseField.CreateInt32Field(new DbaseFieldName(nameof(adresid)), new DbaseFieldLength(10)),
-            DbaseField.CreateDateTimeField(new DbaseFieldName(nameof(versie))),
+            DbaseField.CreateStringField(new DbaseFieldName(nameof(versieid)), new DbaseFieldLength(25)),
             DbaseField.CreateStringField(new DbaseFieldName(nameof(posspec)), new DbaseFieldLength(20)),
             DbaseField.CreateStringField(new DbaseFieldName(nameof(posgeommet)), new DbaseFieldLength(30)),
             DbaseField.CreateStringField(new DbaseFieldName(nameof(straatnmid)), new DbaseFieldLength(10)),

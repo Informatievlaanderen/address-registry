@@ -144,7 +144,7 @@ namespace AddressRegistry.Api.Legacy.Address
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples), jsonConverter: typeof(StringEnumConverter))]
         public async Task<IActionResult> List(
             [FromServices] LegacyContext context,
-            [FromServices] SyndicationContext syndicationContext,
+            [FromServices] AddressQueryContext queryContext,
             [FromServices] IOptions<ResponseOptions> responseOptions,
             Taal? taal,
             CancellationToken cancellationToken = default)
@@ -155,7 +155,7 @@ namespace AddressRegistry.Api.Legacy.Address
 
             long Count(IQueryable<AddressListItem> items) => context.AddressListViewCount.Single().Count;
 
-            var pagedAddresses = new AddressListQuery(context, syndicationContext)
+            var pagedAddresses = new AddressListQuery(queryContext)
                 .Fetch(
                     filtering,
                     sorting,
@@ -182,7 +182,7 @@ namespace AddressRegistry.Api.Legacy.Address
                 .Distinct()
                 .ToList();
 
-            var streetNames = await syndicationContext
+            var streetNames = await queryContext
                 .StreetNameLatestItems
                 .Where(x => streetNameIds.Contains(x.StreetNameId))
                 .ToListAsync(cancellationToken);
@@ -192,7 +192,7 @@ namespace AddressRegistry.Api.Legacy.Address
                 .Distinct()
                 .ToList();
 
-            var municipalities = await syndicationContext
+            var municipalities = await queryContext
                 .MunicipalityLatestItems
                 .Where(x => nisCodes.Contains(x.NisCode))
                 .ToListAsync(cancellationToken);

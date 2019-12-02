@@ -3,27 +3,21 @@ namespace AddressRegistry.Api.Legacy.Address.Query
     using Be.Vlaanderen.Basisregisters.Api.Search;
     using Be.Vlaanderen.Basisregisters.Api.Search.Filtering;
     using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
-    using Microsoft.EntityFrameworkCore;
-    using Projections.Legacy;
     using Projections.Legacy.AddressList;
-    using Projections.Syndication;
     using System.Collections.Generic;
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Microsoft.EntityFrameworkCore;
 
     public class AddressListQuery : Query<AddressListItem, AddressFilter>
     {
-        private readonly LegacyContext _context;
-        private readonly SyndicationContext _syndicationContext;
+        private readonly AddressQueryContext _context;
 
         protected override ISorting Sorting => new AddressSorting();
 
-        public AddressListQuery(
-            LegacyContext context,
-            SyndicationContext syndicationContext)
+        public AddressListQuery(AddressQueryContext context)
         {
             _context = context;
-            _syndicationContext = syndicationContext;
         }
 
         protected override IQueryable<AddressListItem> Filter(FilteringHeader<AddressFilter> filtering)
@@ -33,11 +27,11 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 .AsNoTracking()
                 .Where(a => a.Complete && !a.Removed);
 
-            var municipalities = _syndicationContext
+            var municipalities = _context
                 .MunicipalityLatestItems
                 .AsNoTracking();
 
-            var streetnames = _syndicationContext
+            var streetnames = _context
                 .StreetNameLatestItems
                 .AsNoTracking()
                 .Where(x => x.IsComplete);

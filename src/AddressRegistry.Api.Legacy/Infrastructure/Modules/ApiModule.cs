@@ -40,6 +40,7 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
                 RunInMemoryDb(services, loggerFactory, logger);
 
             logger.LogInformation("Added {Context} to services:", nameof(AddressBosaContext));
+            logger.LogInformation("Added {Context} to services:", nameof(AddressQueryContext));
         }
 
         protected override void Load(ContainerBuilder containerBuilder)
@@ -69,6 +70,13 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
                 .AddDbContext<AddressBosaContext>((provider, options) => options
                     .UseLoggerFactory(loggerFactory)
                     .UseSqlServer(provider.GetRequiredService<TraceDbConnection<AddressBosaContext>>(),
+                        sqlServerOptions => { sqlServerOptions.EnableRetryOnFailure(); }))
+                .AddScoped(s => new TraceDbConnection<AddressQueryContext>(
+                    new SqlConnection(backofficeProjectionsConnectionString),
+                    configuration["DataDog:ServiceName"]))
+                .AddDbContext<AddressQueryContext>((provider, options) => options
+                    .UseLoggerFactory(loggerFactory)
+                    .UseSqlServer(provider.GetRequiredService<TraceDbConnection<AddressQueryContext>>(),
                         sqlServerOptions => { sqlServerOptions.EnableRetryOnFailure(); }));
         }
 
@@ -80,9 +88,13 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
             services
                 .AddDbContext<AddressBosaContext>(options => options
                     .UseLoggerFactory(loggerFactory)
+                    .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { }))
+                .AddDbContext<AddressQueryContext>(options => options
+                    .UseLoggerFactory(loggerFactory)
                     .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { }));
 
             logger.LogWarning("Running InMemory for {Context}!", nameof(AddressBosaContext));
+            logger.LogWarning("Running InMemory for {Context}!", nameof(AddressQueryContext));
         }
     }
 }

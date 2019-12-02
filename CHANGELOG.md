@@ -1,3 +1,10 @@
+## [1.17.4](https://github.com/informatievlaanderen/address-registry/compare/v1.17.3...v1.17.4) (2019-12-02)
+
+
+### Bug Fixes
+
+* create new context to filter efficiently in legacy api ([01bfe7d](https://github.com/informatievlaanderen/address-registry/commit/01bfe7d))
+
 ## [1.17.3](https://github.com/informatievlaanderen/address-registry/compare/v1.17.2...v1.17.3) (2019-11-29)
 
 ## [1.17.2](https://github.com/informatievlaanderen/address-registry/compare/v1.17.1...v1.17.2) (2019-11-28)

@@ -66,7 +66,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
 
             if (!string.IsNullOrEmpty(filtering.Filter.StreetName))
             {
-                var searchName = filtering.Filter.MunicipalityName.RemoveDiacritics();
+                var searchName = filtering.Filter.StreetName.RemoveDiacritics();
                 streetnames = streetnames.Where(s =>
                     s.NameDutchSearch == searchName ||
                     s.NameFrenchSearch == searchName ||

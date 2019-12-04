@@ -1,3 +1,10 @@
+## [1.17.5](https://github.com/informatievlaanderen/address-registry/compare/v1.17.4...v1.17.5) (2019-12-04)
+
+
+### Bug Fixes
+
+* streetname filter is now correctly applied on legacy api ([a17aabf](https://github.com/informatievlaanderen/address-registry/commit/a17aabf))
+
 ## [1.17.4](https://github.com/informatievlaanderen/address-registry/compare/v1.17.3...v1.17.4) (2019-12-02)
 
 

@@ -1,3 +1,10 @@
+## [1.17.6](https://github.com/informatievlaanderen/address-registry/compare/v1.17.5...v1.17.6) (2019-12-09)
+
+
+### Bug Fixes
+
+* bosa search contains now uses Like function ([3379e7e](https://github.com/informatievlaanderen/address-registry/commit/3379e7e))
+
 ## [1.17.5](https://github.com/informatievlaanderen/address-registry/compare/v1.17.4...v1.17.5) (2019-12-04)
 
 

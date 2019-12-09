@@ -240,10 +240,10 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             {
                 return isContainsFilter
                     ? query.Where(i =>
-                        i.NameDutchSearch.Contains(containsValue) ||
-                        i.NameFrenchSearch.Contains(containsValue) ||
-                        i.NameGermanSearch.Contains(containsValue) ||
-                        i.NameEnglishSearch.Contains(containsValue))
+                        EF.Functions.Like(i.NameDutchSearch, $"%{containsValue}%") ||
+                        EF.Functions.Like(i.NameFrenchSearch, $"%{containsValue}%") ||
+                        EF.Functions.Like(i.NameEnglishSearch, $"%{containsValue}%") ||
+                        EF.Functions.Like(i.NameGermanSearch, $"%{containsValue}%"))
                     : query.Where(i =>
                         i.NameDutch.Equals(searchValue) ||
                         i.NameFrench.Equals(searchValue) ||
@@ -256,22 +256,22 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 default:
                 case Taal.NL:
                     return isContainsFilter
-                        ? query.Where(i => i.NameDutchSearch.Contains(containsValue))
+                        ? query.Where(i => EF.Functions.Like(i.NameDutchSearch, $"%{containsValue}%"))
                         : query.Where(i => i.NameDutch.Equals(searchValue));
 
                 case Taal.FR:
                     return isContainsFilter
-                        ? query.Where(i => i.NameFrenchSearch.Contains(containsValue))
+                        ? query.Where(i => EF.Functions.Like(i.NameFrenchSearch, $"%{containsValue}%"))
                         : query.Where(i => i.NameFrench.Equals(searchValue));
 
                 case Taal.DE:
                     return isContainsFilter
-                        ? query.Where(i => i.NameGermanSearch.Contains(containsValue))
+                        ? query.Where(i => EF.Functions.Like(i.NameGermanSearch, $"%{containsValue}%"))
                         : query.Where(i => i.NameGerman.Equals(searchValue));
 
                 case Taal.EN:
                     return isContainsFilter
-                        ? query.Where(i => i.NameEnglishSearch.Contains(containsValue))
+                        ? query.Where(i => EF.Functions.Like(i.NameEnglishSearch, $"%{containsValue}%"))
                         : query.Where(i => i.NameEnglish.Equals(searchValue));
             }
         }
@@ -341,10 +341,10 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             {
                 return isContainsFilter
                     ? query.Where(i =>
-                        i.NameDutchSearch.Contains(containsValue) ||
-                        i.NameFrenchSearch.Contains(containsValue) ||
-                        i.NameGermanSearch.Contains(containsValue) ||
-                        i.NameEnglishSearch.Contains(containsValue))
+                        EF.Functions.Like(i.NameDutchSearch, $"%{containsValue}%") ||
+                        EF.Functions.Like(i.NameFrenchSearch, $"%{containsValue}%") ||
+                        EF.Functions.Like(i.NameGermanSearch, $"%{containsValue}%") ||
+                        EF.Functions.Like(i.NameEnglishSearch, $"%{containsValue}%"))
                     : query.Where(i =>
                         i.NameDutch.Equals(searchValue) ||
                         i.NameFrench.Equals(searchValue) ||
@@ -357,22 +357,22 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 default:
                 case Taal.NL:
                     return isContainsFilter
-                        ? query.Where(i => i.NameDutchSearch.Contains(containsValue))
+                        ? query.Where(i => EF.Functions.Like(i.NameDutchSearch, $"%{containsValue}%"))
                         : query.Where(i => i.NameDutch.Equals(searchValue));
 
                 case Taal.FR:
                     return isContainsFilter
-                        ? query.Where(i => i.NameFrenchSearch.Contains(containsValue))
+                        ? query.Where(i => EF.Functions.Like(i.NameFrenchSearch, $"%{containsValue}%"))
                         : query.Where(i => i.NameFrench.Equals(searchValue));
 
                 case Taal.DE:
                     return isContainsFilter
-                        ? query.Where(i => i.NameGermanSearch.Contains(containsValue))
+                        ? query.Where(i => EF.Functions.Like(i.NameGermanSearch, $"%{containsValue}%"))
                         : query.Where(i => i.NameGerman.Equals(searchValue));
 
                 case Taal.EN:
                     return isContainsFilter
-                        ? query.Where(i => i.NameEnglishSearch.Contains(containsValue))
+                        ? query.Where(i => EF.Functions.Like(i.NameEnglishSearch, $"%{containsValue}%"))
                         : query.Where(i => i.NameEnglish.Equals(searchValue));
             }
         }

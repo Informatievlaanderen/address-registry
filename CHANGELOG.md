@@ -1,3 +1,10 @@
+## [1.17.7](https://github.com/informatievlaanderen/address-registry/compare/v1.17.6...v1.17.7) (2019-12-10)
+
+
+### Performance Improvements
+
+* increase performance bosa query with only muni filter ([9f5e2ce](https://github.com/informatievlaanderen/address-registry/commit/9f5e2ce))
+
 ## [1.17.6](https://github.com/informatievlaanderen/address-registry/compare/v1.17.5...v1.17.6) (2019-12-09)
 
 

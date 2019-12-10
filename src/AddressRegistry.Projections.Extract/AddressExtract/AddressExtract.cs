@@ -44,6 +44,8 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
 
             builder.HasIndex(p => p.StreetNameId);
             builder.HasIndex(p => p.NisCode);
+            builder.HasIndex(p => p.Complete);
+            builder.HasIndex(p => p.AddressPersistentLocalId);
         }
     }
 }

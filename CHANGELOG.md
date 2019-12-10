@@ -1,3 +1,10 @@
+## [1.17.8](https://github.com/informatievlaanderen/address-registry/compare/v1.17.7...v1.17.8) (2019-12-10)
+
+
+### Performance Improvements
+
+* extract: add indexes on Id and Complete ([e2b1e01](https://github.com/informatievlaanderen/address-registry/commit/e2b1e01))
+
 ## [1.17.7](https://github.com/informatievlaanderen/address-registry/compare/v1.17.6...v1.17.7) (2019-12-10)
 
 

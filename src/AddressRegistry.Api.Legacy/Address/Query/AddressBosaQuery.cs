@@ -144,13 +144,15 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             IQueryable<AddressDetailItem> addresses,
             IQueryable<StreetNameBosaItem> streetNames)
         {
-            var filtered = addresses
-                .Where(x => streetNames.Select(y => y.StreetNameId).Contains(x.StreetNameId));
+            var filtered = addresses.Join(streetNames,
+                address => address.StreetNameId,
+                streetName => streetName.StreetNameId,
+                (address, street) => address);
 
             if (!string.IsNullOrEmpty(persistentLocalId))
             {
-                if (int.TryParse(persistentLocalId, out var adresId))
-                    filtered = filtered.Where(x => x.PersistentLocalId == adresId);
+                if (int.TryParse(persistentLocalId, out var addressId))
+                    filtered = filtered.Where(x => x.PersistentLocalId == addressId);
                 else
                     return Enumerable.Empty<AddressDetailItem>().AsQueryable();
             }

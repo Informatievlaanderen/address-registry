@@ -1,6 +1,7 @@
 namespace AddressRegistry.Projections.Extract
 {
     using AddressExtract;
+    using AddressLinkExtract;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ namespace AddressRegistry.Projections.Extract
         public override string ProjectionStateSchema => Schema.Extract;
 
         public DbSet<AddressExtractItem> AddressExtract { get; set; }
+        public DbSet<AddressLinkExtractItem> AddressLinkExtract { get; set; }
 
         // This needs to be here to please EF
         public ExtractContext() { }

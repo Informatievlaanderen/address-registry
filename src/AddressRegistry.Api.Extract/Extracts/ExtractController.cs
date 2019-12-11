@@ -21,6 +21,7 @@ namespace AddressRegistry.Api.Extract.Extracts
     public class ExtractController : ApiController
     {
         public const string ZipName = "Adres";
+        public const string ZipNameLinks = "Adreskoppelingen";
 
         /// <summary>
         /// Vraag een dump van het volledige register op.
@@ -40,6 +41,26 @@ namespace AddressRegistry.Api.Extract.Extracts
             [FromServices] SyndicationContext syndicationContext,
             CancellationToken cancellationToken = default) =>
             new ExtractArchive($"{ZipName}-{DateTime.Now:yyyy-MM-dd}") { AddressRegistryExtractBuilder.CreateAddressFiles(context, syndicationContext) }
+                .CreateFileCallbackResult(cancellationToken);
+
+        /// <summary>
+        /// Vraag een dump van alle adreskoppelingen op.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="syndicationContext"></param>
+        /// <param name="cancellationToken"></param>
+        /// <response code="200">Als adreskoppelingen kan gedownload worden.</response>
+        /// <response code="500">Als er een interne fout is opgetreden.</response>
+        [HttpGet("addresslinks")]
+        [ProducesResponseType(typeof(FileStreamResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(AddressRegistryResponseExample), jsonConverter: typeof(StringEnumConverter))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples), jsonConverter: typeof(StringEnumConverter))]
+        public IActionResult GetAddressLinks(
+            [FromServices] ExtractContext context,
+            [FromServices] SyndicationContext syndicationContext,
+            CancellationToken cancellationToken = default) =>
+            new ExtractArchive($"{ZipNameLinks}-{DateTime.Now:yyyy-MM-dd}") { LinkedAddressExtractBuilder.CreateLinkedAddressFiles(context, syndicationContext) }
                 .CreateFileCallbackResult(cancellationToken);
     }
 }

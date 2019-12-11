@@ -1,4 +1,4 @@
-namespace AddressRegistry.Projections.Extract
+namespace AddressRegistry.Projections.Extract.AddressExtract
 {
     using Be.Vlaanderen.Basisregisters.Shaperon;
 

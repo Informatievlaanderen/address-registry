@@ -83,7 +83,9 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                     _configuration,
                     _loggerFactory)
                 .RegisterProjections<AddressExtractProjection, ExtractContext>(
-                    context => new AddressExtractProjection(context.Resolve<IOptions<ExtractConfig>>(), DbaseCodePage.Western_European_ANSI.ToEncoding(), new WKBReader()));
+                    context => new AddressExtractProjection(context.Resolve<IOptions<ExtractConfig>>(), DbaseCodePage.Western_European_ANSI.ToEncoding(), new WKBReader()))
+                .RegisterProjections<AddressLinkExtractProjection, ExtractContext>(
+                    context => new AddressLinkExtractProjection(context.Resolve<IOptions<ExtractConfig>>(), DbaseCodePage.Western_European_ANSI.ToEncoding(), new WKBReader()));
         }
 
         private void RegisterLastChangedProjections(ContainerBuilder builder)

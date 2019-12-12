@@ -1,3 +1,10 @@
+## [1.18.1](https://github.com/informatievlaanderen/address-registry/compare/v1.18.0...v1.18.1) (2019-12-12)
+
+
+### Bug Fixes
+
+* remove gemeentid column from extract ([7206a40](https://github.com/informatievlaanderen/address-registry/commit/7206a40))
+
 # [1.18.0](https://github.com/informatievlaanderen/address-registry/compare/v1.17.8...v1.18.0) (2019-12-12)
 
 

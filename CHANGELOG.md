@@ -1,3 +1,10 @@
+## [1.18.2](https://github.com/informatievlaanderen/address-registry/compare/v1.18.1...v1.18.2) (2019-12-12)
+
+
+### Bug Fixes
+
+* log to console for syndication ([7c226ff](https://github.com/informatievlaanderen/address-registry/commit/7c226ff))
+
 ## [1.18.1](https://github.com/informatievlaanderen/address-registry/compare/v1.18.0...v1.18.1) (2019-12-12)
 
 

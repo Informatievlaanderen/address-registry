@@ -34,7 +34,6 @@ namespace AddressRegistry.Api.Extract.Extracts
                 var municipality = cachedMunicipalities.First(x => x.NisCode == streetName.NisCode);
 
                 item.straatnmid.Value = streetName.PersistentLocalId;
-                item.gemeenteid.Value = municipality.NisCode;
 
                 switch (municipality.PrimaryLanguage)
                 {

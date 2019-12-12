@@ -1,3 +1,10 @@
+# [1.18.0](https://github.com/informatievlaanderen/address-registry/compare/v1.17.8...v1.18.0) (2019-12-12)
+
+
+### Features
+
+* add extract address link projection ([12de6f4](https://github.com/informatievlaanderen/address-registry/commit/12de6f4))
+
 ## [1.17.8](https://github.com/informatievlaanderen/address-registry/compare/v1.17.7...v1.17.8) (2019-12-10)
 
 

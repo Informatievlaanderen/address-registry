@@ -8,7 +8,7 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
         BuildingGeometryWasRemoved,
         BuildingMeasurementByGrbWasCorrected,
         BuildingOutlineWasCorrected,
-        BuildingPersistentLocalIdWasAssigned,
+        BuildingPersistentLocalIdentifierWasAssigned,
         BuildingStatusWasCorrectedToRemoved,
         BuildingStatusWasRemoved,
         BuildingWasCorrectedToNotRealized,

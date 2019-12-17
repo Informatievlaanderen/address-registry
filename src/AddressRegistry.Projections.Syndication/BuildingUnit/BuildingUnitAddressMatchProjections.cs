@@ -19,7 +19,7 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
             When(BuildingEvent.BuildingGeometryWasRemoved, DoNothing);
             When(BuildingEvent.BuildingMeasurementByGrbWasCorrected, DoNothing);
             When(BuildingEvent.BuildingOutlineWasCorrected, DoNothing);
-            When(BuildingEvent.BuildingPersistentLocalIdWasAssigned, DoNothing);
+            When(BuildingEvent.BuildingPersistentLocalIdentifierWasAssigned, DoNothing);
             When(BuildingEvent.BuildingStatusWasCorrectedToRemoved, DoNothing);
             When(BuildingEvent.BuildingStatusWasRemoved, DoNothing);
             When(BuildingEvent.BuildingWasCorrectedToNotRealized, DoNothing);

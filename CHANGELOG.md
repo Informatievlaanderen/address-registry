@@ -1,3 +1,15 @@
+## [1.18.3](https://github.com/informatievlaanderen/address-registry/compare/v1.18.2...v1.18.3) (2019-12-17)
+
+
+### Bug Fixes
+
+* sync rename to correct BuildingPersistentLocalIdentifierWasAssigned ([d33480b](https://github.com/informatievlaanderen/address-registry/commit/d33480b))
+
+
+### Performance Improvements
+
+* sync add seperate index on parcel ([f2a50da](https://github.com/informatievlaanderen/address-registry/commit/f2a50da))
+
 ## [1.18.2](https://github.com/informatievlaanderen/address-registry/compare/v1.18.1...v1.18.2) (2019-12-12)
 
 

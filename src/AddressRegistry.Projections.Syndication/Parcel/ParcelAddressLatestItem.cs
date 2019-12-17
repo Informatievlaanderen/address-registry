@@ -28,6 +28,7 @@ namespace AddressRegistry.Projections.Syndication.Parcel
 
             builder.Property(x => x.ParcelPersistentLocalId);
 
+            builder.HasIndex(x => x.ParcelId);
             builder.HasIndex(x => x.AddressId);
         }
     }

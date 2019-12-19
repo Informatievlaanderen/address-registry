@@ -1,3 +1,10 @@
+## [1.18.5](https://github.com/informatievlaanderen/address-registry/compare/v1.18.4...v1.18.5) (2019-12-19)
+
+
+### Bug Fixes
+
+* created one context for addressmatch + no multithread in cache ([3ad1bbe](https://github.com/informatievlaanderen/address-registry/commit/3ad1bbe))
+
 ## [1.18.4](https://github.com/informatievlaanderen/address-registry/compare/v1.18.3...v1.18.4) (2019-12-19)
 
 

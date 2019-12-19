@@ -12,7 +12,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting
 
     public abstract class HandlerTestBase : IocBasedTest
     {
-        protected static InMemoryDatabaseRoot InMemoryDatabaseRootRoot = new InMemoryDatabaseRoot();
+        internal static InMemoryDatabaseRoot InMemoryDatabaseRootRoot = new InMemoryDatabaseRoot();
         private readonly Action<string> noOpLogging = m => { };
         private readonly Action<string> _logAction;
         private readonly Formatting _logFormatting;

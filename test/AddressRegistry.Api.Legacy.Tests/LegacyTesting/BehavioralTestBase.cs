@@ -13,17 +13,13 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting
     using Microsoft.Extensions.Options;
     using Mocking;
     using Newtonsoft.Json;
-    using Projections.Legacy;
-    using Projections.Syndication;
-    using Serilog.Formatting.Json;
     using Xunit.Abstractions;
 
     public abstract class BehavioralTestBase : HandlerTestBase
     {
         protected Mocking<IKadRrService, KadRrServiceSetup, KadRrServiceVerification> _kadRrService;
         protected Mocking<ILatestQueries, LatestQueriesSetup, LatestQueriesVerification> _latest;
-        protected SyndicationContextMemory _syndicationContext;
-        protected LegacyContextMemory _legacyContext;
+        protected AddressMatchContextMemory _context;
         protected Random _random;
         private readonly AddressMatchController _controller;
 
@@ -35,8 +31,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting
             _kadRrService = new Mocking<IKadRrService, KadRrServiceSetup, KadRrServiceVerification>();
             _latest = new Mocking<ILatestQueries, LatestQueriesSetup, LatestQueriesVerification>();
             _controller = new AddressMatchController();
-            _syndicationContext = new SyndicationContextMemory("DB", InMemoryDatabaseRootRoot);
-            _legacyContext = new LegacyContextMemory("DB", InMemoryDatabaseRootRoot);
+            _context = new AddressMatchContextMemory();
 
             JsonConvert.DefaultSettings = () => new JsonSerializerSettings
             {
@@ -50,8 +45,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting
 
             containerBuilder.RegisterInstance(_kadRrService.Object).As<IKadRrService>();
             containerBuilder.RegisterInstance(_latest.Object).As<ILatestQueries>();
-            containerBuilder.RegisterInstance(_syndicationContext).As<SyndicationContext>();
-            containerBuilder.RegisterInstance(_legacyContext).As<LegacyContext>();
+            containerBuilder.RegisterInstance(_context).As<AddressMatchContext>();
         }
 
         public Task<IActionResult> Send(AddressMatchRequest request)
@@ -68,34 +62,13 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting
                     MaxStreetNamesThreshold = 100,
                     SimilarityThreshold = 75.0
                 }),
-                _syndicationContext,
+                _context,
                 request);
         }
     }
 
-    public class LegacyContextMemory : LegacyContext
+    public class AddressMatchContextMemory : AddressMatchContext
     {
-        private readonly string _name;
-        private readonly InMemoryDatabaseRoot _root;
-
-        public LegacyContextMemory(string name, InMemoryDatabaseRoot root)
-        {
-            _name = name;
-            _root = root;
-        }
-        protected override void OnConfiguringOptionsBuilder(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseInMemoryDatabase(_name, _root);
-    }
-
-    public class SyndicationContextMemory : SyndicationContext
-    {
-        private readonly string _name;
-        private readonly InMemoryDatabaseRoot _root;
-
-        public SyndicationContextMemory(string name, InMemoryDatabaseRoot root)
-        {
-            _name = name;
-            _root = root;
-        }
-        protected override void OnConfiguringOptionsBuilder(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseInMemoryDatabase(_name, _root);
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseInMemoryDatabase("DB", HandlerTestBase.InMemoryDatabaseRootRoot);
     }
 }

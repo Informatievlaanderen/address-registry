@@ -1,3 +1,10 @@
+## [1.18.4](https://github.com/informatievlaanderen/address-registry/compare/v1.18.3...v1.18.4) (2019-12-19)
+
+
+### Performance Improvements
+
+* trying to increase parcel sync performance ([91d689f](https://github.com/informatievlaanderen/address-registry/commit/91d689f))
+
 ## [1.18.3](https://github.com/informatievlaanderen/address-registry/compare/v1.18.2...v1.18.3) (2019-12-17)
 
 

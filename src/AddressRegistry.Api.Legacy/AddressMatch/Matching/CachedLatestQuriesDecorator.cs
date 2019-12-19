@@ -1,15 +1,14 @@
 namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 {
     using Microsoft.Extensions.Caching.Memory;
-    using Projections.Legacy;
     using Projections.Legacy.AddressDetail;
-    using Projections.Syndication;
     using Projections.Syndication.Municipality;
     using Projections.Syndication.PostalInfo;
     using Projections.Syndication.StreetName;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Microsoft.EntityFrameworkCore;
 
     public interface ILatestQueries
     {
@@ -25,8 +24,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 
     public class CachedLatestQueriesDecorator : CachedService, ILatestQueries
     {
-        private readonly LegacyContext _legacyContext;
-        private readonly SyndicationContext _syndicationContext;
+        private readonly AddressMatchContext _context;
         private static readonly TimeSpan AllStreetNamesCacheDuration = TimeSpan.FromDays(1);
         private static readonly TimeSpan AllMunicipalitiesCacheDuration = TimeSpan.FromDays(1);
         private static readonly TimeSpan AllPostalInfoCacheDuration = TimeSpan.FromDays(1);
@@ -34,16 +32,15 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
         private const string AllMunicipalitiesCacheKey = "GetAllLatestMunicipalities";
         private const string AllPostalInfoCacheKey = "GetAllLatestPostalInfo";
 
-        public CachedLatestQueriesDecorator(IMemoryCache memoryCache, LegacyContext legacyContext, SyndicationContext syndicationContext)
+        public CachedLatestQueriesDecorator(IMemoryCache memoryCache, AddressMatchContext context)
             : base(memoryCache)
         {
-            _legacyContext = legacyContext;
-            _syndicationContext = syndicationContext;
+            _context = context;
         }
 
         public IEnumerable<PostalInfoLatestItem> GetAllPostalInfo() =>
             GetOrAdd(AllPostalInfoCacheKey,
-                () => _syndicationContext.PostalInfoLatestItems.ToList(),
+                () => _context.PostalInfoLatestItems.ToList(),
                 AllPostalInfoCacheDuration);
 
         public StreetNameLatestItem FindLatestStreetNameById(string streetNamePersistentLocalId) =>
@@ -53,7 +50,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 
         public IEnumerable<MunicipalityLatestItem> GetAllLatestMunicipalities() =>
             GetOrAdd(AllMunicipalitiesCacheKey,
-                () => _syndicationContext.MunicipalityLatestItems.ToList(),
+                () => _context.MunicipalityLatestItems.ToList(),
                 AllMunicipalitiesCacheDuration);
 
         public IEnumerable<StreetNameLatestItem> GetAllLatestStreetNames() =>
@@ -63,7 +60,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 
         private IQueryable<StreetNameLatestItem> GetLatestStreetNameItems()
         {
-            var streetNameLatestItems = _syndicationContext
+            var streetNameLatestItems = _context
                 .StreetNameLatestItems
                 .Where(x => x.IsComplete);
             return streetNameLatestItems;
@@ -74,7 +71,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             var streetName = FindLatestStreetNameById(streetNamePersistentLocalId);
 
             //no caching for addresses
-            var query = _legacyContext
+            var query = _context
                 .AddressDetail
                 .Where(x => x.Complete && !x.Removed && x.PersistentLocalId.HasValue)
                 .Where(x => x.HouseNumber == houseNumber && x.BoxNumber == boxNumber);
@@ -86,20 +83,20 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 
         //no caching for addresses
         public IEnumerable<AddressDetailItem> FindLatestAddressesByCrabSubaddressIds(IEnumerable<int> crabSubaddressIds) =>
-            _legacyContext.AddressDetail
+            _context.AddressDetail
                 .Where(x => x.Complete && !x.Removed && x.PersistentLocalId.HasValue)
                 .Where(detailItem =>
-                    _legacyContext.CrabIdToPersistentLocalIds
+                    _context.CrabIdToPersistentLocalIds
                         .Where(id => crabSubaddressIds.Contains(id.SubaddressId.Value))
                         .Select(y => y.AddressId)
                         .Contains(detailItem.AddressId));
 
         //no caching for addresses
         public IEnumerable<AddressDetailItem> FindLatestAddressesByCrabHouseNumberIds(IEnumerable<int> crabHouseNumberIds) =>
-            _legacyContext.AddressDetail
+            _context.AddressDetail
                 .Where(x => x.Complete && !x.Removed && x.PersistentLocalId.HasValue)
                 .Where(detailItem =>
-                    _legacyContext.CrabIdToPersistentLocalIds
+                    _context.CrabIdToPersistentLocalIds
                         .Where(id => crabHouseNumberIds.Contains(id.HouseNumberId.Value))
                         .Select(y => y.AddressId)
                         .Contains(detailItem.AddressId));
@@ -117,7 +114,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 streetNames => nisCodes
                     .SelectMany(g => streetNames.ContainsKey(g) ? streetNames[g] : new StreetNameLatestItem[] { })
                     .AsQueryable(),
-                () => GetLatestStreetNameItems().Where(x => nisCodes.Contains(x.NisCode)));
+                () => GetLatestStreetNameItems().Where(x => nisCodes.Contains(x.NisCode)).ToList().AsEnumerable());
         }
 
 

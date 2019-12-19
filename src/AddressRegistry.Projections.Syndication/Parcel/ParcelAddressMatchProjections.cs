@@ -37,7 +37,8 @@ namespace AddressRegistry.Projections.Syndication.Parcel
                 context
                     .ParcelAddressMatchLatestItems
                     .Where(x => x.ParcelId == entry.Content.Object.Id)
-                    .Concat(context.ParcelAddressMatchLatestItems.Local.Where(x => x.ParcelId == entry.Content.Object.Id));
+                    .Concat(context.ParcelAddressMatchLatestItems.Local.Where(x => x.ParcelId == entry.Content.Object.Id))
+                    .ToList();
 
             var itemsToRemove = new List<ParcelAddressMatchLatestItem>();
             foreach (var parcelAddressMatchLatestItem in parcelAddressMatchLatestItems)
@@ -50,7 +51,7 @@ namespace AddressRegistry.Projections.Syndication.Parcel
 
             foreach (var addressId in entry.Content.Object.AddressIds)
             {
-                if (!parcelAddressMatchLatestItems.Any(x => x.AddressId == addressId))
+                if (parcelAddressMatchLatestItems.All(x => x.AddressId != addressId))
                     await context.ParcelAddressMatchLatestItems.AddAsync(new ParcelAddressMatchLatestItem
                     {
                         ParcelId = entry.Content.Object.Id,

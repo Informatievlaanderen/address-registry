@@ -24,19 +24,16 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             }
             else
             {
-                Task.Run(() =>
+                lock (CacheLock)
                 {
-                    lock (CacheLock)
+                    cached = _cache.Get(key) as T;
+                    if (cached == null)
                     {
-                        cached = _cache.Get(key) as T;
-                        if (cached == null)
-                        {
-                            T item = getter();
-                            if (item != null)
-                                _cache.Set(key, item, new MemoryCacheEntryOptions { AbsoluteExpiration = new DateTimeOffset(DateTime.Now.Add(cacheDuration)) });
-                        }
+                        T item = getter();
+                        if (item != null)
+                            _cache.Set(key, item, new MemoryCacheEntryOptions { AbsoluteExpiration = new DateTimeOffset(DateTime.Now.Add(cacheDuration)) });
                     }
-                });
+                }
 
                 return ifCacheNotHit();
             }

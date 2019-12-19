@@ -3,6 +3,7 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
     using System;
     using System.Data.SqlClient;
     using Address.Query;
+    using AddressMatch;
     using AddressMatch.Matching;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
@@ -41,6 +42,7 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
 
             logger.LogInformation("Added {Context} to services:", nameof(AddressBosaContext));
             logger.LogInformation("Added {Context} to services:", nameof(AddressQueryContext));
+            logger.LogInformation("Added {Context} to services:", nameof(AddressMatchContext));
         }
 
         protected override void Load(ContainerBuilder containerBuilder)
@@ -77,6 +79,13 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
                 .AddDbContext<AddressQueryContext>((provider, options) => options
                     .UseLoggerFactory(loggerFactory)
                     .UseSqlServer(provider.GetRequiredService<TraceDbConnection<AddressQueryContext>>(),
+                        sqlServerOptions => { sqlServerOptions.EnableRetryOnFailure(); }))
+                .AddScoped(s => new TraceDbConnection<AddressMatchContext>(
+                    new SqlConnection(backofficeProjectionsConnectionString),
+                    configuration["DataDog:ServiceName"]))
+                .AddDbContext<AddressMatchContext>((provider, options) => options
+                    .UseLoggerFactory(loggerFactory)
+                    .UseSqlServer(provider.GetRequiredService<TraceDbConnection<AddressMatchContext>>(),
                         sqlServerOptions => { sqlServerOptions.EnableRetryOnFailure(); }));
         }
 
@@ -91,10 +100,14 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
                     .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { }))
                 .AddDbContext<AddressQueryContext>(options => options
                     .UseLoggerFactory(loggerFactory)
-                    .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { }));
+                    .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { }))
+                .AddDbContext<AddressMatchContext>(options => options
+                    .UseLoggerFactory(loggerFactory)
+                    .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { })); ;
 
             logger.LogWarning("Running InMemory for {Context}!", nameof(AddressBosaContext));
             logger.LogWarning("Running InMemory for {Context}!", nameof(AddressQueryContext));
+            logger.LogWarning("Running InMemory for {Context}!", nameof(AddressMatchContext));
         }
     }
 }

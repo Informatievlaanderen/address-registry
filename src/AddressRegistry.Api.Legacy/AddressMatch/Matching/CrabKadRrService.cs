@@ -5,7 +5,6 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
     using System.Globalization;
     using System.Linq;
     using Microsoft.Extensions.Caching.Memory;
-    using Projections.Legacy;
     using Projections.Legacy.AddressDetail;
     using Projections.Legacy.AddressMatch;
     using Projections.Syndication.StreetName;
@@ -20,15 +19,15 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
     public class CrabKadRrService : CachedService, IKadRrService
     {
         private readonly ILatestQueries _latestQueries;
-        private readonly LegacyContext _legacyContext;
+        private readonly AddressMatchContext _context;
         private static readonly TimeSpan AllKadStreetMappingsCacheDuration = TimeSpan.FromDays(1);
         private static readonly TimeSpan AllRrStreetMappingsCacheDuration = TimeSpan.FromDays(1);
 
-        public CrabKadRrService(IMemoryCache memoryCache, ILatestQueries latestQueries, LegacyContext legacyContext)
+        public CrabKadRrService(IMemoryCache memoryCache, ILatestQueries latestQueries, AddressMatchContext context)
             : base(memoryCache)
         {
             _latestQueries = latestQueries;
-            _legacyContext = legacyContext;
+            _context = context;
         }
 
         public IEnumerable<StreetNameLatestItem> GetStreetNamesByKadStreet(string kadStreetCode, string nisCode) =>
@@ -43,31 +42,31 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 
         public IEnumerable<AddressDetailItem> GetAddressesBy(string houseNumber, string index, string rrStreetCode, string postalCode)
         {
-            var mappings = _legacyContext.RRAddresses.Where(x =>
+            var mappings = _context.RRAddresses.Where(x =>
                 x.RRHouseNumber == houseNumber &&
                 x.RRIndex == index &&
                 x.StreetCode == rrStreetCode &&
                 x.PostalCode == postalCode);
 
             return _latestQueries
-                .FindLatestAddressesByCrabSubaddressIds(mappings.Where(rram => rram.AddressType == "1").Select(rram => rram.AddressId))
+                .FindLatestAddressesByCrabSubaddressIds(mappings.Where(rram => rram.AddressType == "1").Select(rram => rram.AddressId)).ToList()
                 .Concat(
-                    _latestQueries.FindLatestAddressesByCrabHouseNumberIds(mappings.Where(rram => rram.AddressType == "2").Select(rram => rram.AddressId)));
+                    _latestQueries.FindLatestAddressesByCrabHouseNumberIds(mappings.Where(rram => rram.AddressType == "2").Select(rram => rram.AddressId)).ToList());
         }
 
         private IEnumerable<StreetNameLatestItem> GetStreetNamesByKadStreetFromCrab(string kadStreetCode, string nisCode) =>
-            _legacyContext
+            _context
                 .KadStreetNames
                 .Where(x => x.KadStreetNameCode == kadStreetCode && x.NisCode == nisCode)
                 .ToList()
                 .Select(Map);
 
-        private IEnumerable<KadStreetName> GetAllKadStreetNamesMappingsFromCrab() => _legacyContext.KadStreetNames.ToList();
+        private IEnumerable<KadStreetName> GetAllKadStreetNamesMappingsFromCrab() => _context.KadStreetNames.ToList();
 
         private StreetNameLatestItem GetStreetNamesByRrStreetFromCrab(string rrStreetCode, string postalCode) =>
-            Map(_legacyContext.RRStreetNames.SingleOrDefault(x => x.StreetCode == rrStreetCode && x.PostalCode == postalCode));
+            Map(_context.RRStreetNames.SingleOrDefault(x => x.StreetCode == rrStreetCode && x.PostalCode == postalCode));
 
-        private IEnumerable<RRStreetName> GetAllRrStreetNamesMappingsFromCrab() => _legacyContext.RRStreetNames.ToList();
+        private IEnumerable<RRStreetName> GetAllRrStreetNamesMappingsFromCrab() => _context.RRStreetNames.ToList();
 
         private StreetNameLatestItem Map(KadStreetName source)
         {

@@ -9,19 +9,18 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
     using Infrastructure.Options;
     using Matching;
     using Projections.Legacy.AddressDetail;
-    using Projections.Syndication;
 
     internal class AdresMapper : IMapper<AddressDetailItem, AdresMatchItem>
     {
         private readonly ResponseOptions _responseOptions;
         private readonly ILatestQueries _latestQueries;
-        private readonly SyndicationContext _syndicationContext;
+        private readonly AddressMatchContext _context;
 
-        public AdresMapper(ResponseOptions responseOptions, ILatestQueries latestQueries, SyndicationContext syndicationContext)
+        public AdresMapper(ResponseOptions responseOptions, ILatestQueries latestQueries, AddressMatchContext context)
         {
             _responseOptions = responseOptions;
             _latestQueries = latestQueries;
-            _syndicationContext = syndicationContext;
+            _context = context;
         }
 
         public AdresMatchItem Map(AddressDetailItem source)
@@ -62,7 +61,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
                 AdresStatus = AddressMapper.ConvertFromAddressStatus(source.Status),
                 OfficieelToegekend = source.OfficiallyAssigned,
                 AdresseerbareObjecten =
-                    _syndicationContext.BuildingUnitAddressMatchLatestItems
+                    _context.BuildingUnitAddressMatchLatestItems
                         .Where(x => x.AddressId == source.AddressId)
                         .ToList()
                         .Select(matchLatestItem => new AdresseerbaarObject
@@ -73,7 +72,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
                         })
                         .ToList()
                         .Concat(
-                            _syndicationContext.ParcelAddressMatchLatestItems
+                            _context.ParcelAddressMatchLatestItems
                             .Where(x => x.AddressId == source.AddressId)
                             .ToList()
                             .Select(matchLatestItem => new AdresseerbaarObject

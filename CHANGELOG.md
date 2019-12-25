@@ -1,3 +1,20 @@
+# [2.0.0](https://github.com/informatievlaanderen/address-registry/compare/v1.18.5...v2.0.0) (2019-12-25)
+
+
+### Bug Fixes
+
+* update grar common for from/tobytes ([c976b3b](https://github.com/informatievlaanderen/address-registry/commit/c976b3b))
+
+
+### Code Refactoring
+
+* upgrade to netcoreapp31 ([30188ab](https://github.com/informatievlaanderen/address-registry/commit/30188ab))
+
+
+### BREAKING CHANGES
+
+* Upgrade to .NET Core 3.1
+
 ## [1.18.5](https://github.com/informatievlaanderen/address-registry/compare/v1.18.4...v1.18.5) (2019-12-19)
 
 

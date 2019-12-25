@@ -13,14 +13,14 @@ projectUrl https://vlaanderen.be/informatie-vlaanderen
 description Address Registry.
 
 dependencies
-  framework: netstandard20
+  framework: netcoreapp31
     Be.Vlaanderen.Basisregisters.Shaperon >= LOCKEDVERSION
 
 files
-  AddressRegistry.Api.Extract.dll => lib\netcoreapp2.2
-  AddressRegistry.Api.Extract.pdb => lib\netcoreapp2.2
-  AddressRegistry.Api.Extract.xml => lib\netcoreapp2.2
+  AddressRegistry.Api.Extract.dll => lib\netcoreapp3.1
+  AddressRegistry.Api.Extract.pdb => lib\netcoreapp3.1
+  AddressRegistry.Api.Extract.xml => lib\netcoreapp3.1
   AddressRegistry.Api.Extract.xml => content
 
-  AddressRegistry.Projections.Extract.dll => lib\netcoreapp2.2
-  AddressRegistry.Projections.Extract.pdb => lib\netcoreapp2.2
+  AddressRegistry.Projections.Extract.dll => lib\netcoreapp3.1
+  AddressRegistry.Projections.Extract.pdb => lib\netcoreapp3.1

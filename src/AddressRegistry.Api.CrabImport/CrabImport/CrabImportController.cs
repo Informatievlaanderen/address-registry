@@ -1,7 +1,7 @@
 namespace AddressRegistry.Api.CrabImport.CrabImport
 {
     using System;
-    using System.Collections.Async;
+    using Dasync.Collections;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -98,7 +98,7 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
                 logger.LogDebug(CommandMessageTemplate, registerCrabImports.Length, elapsedCommandsMs);
             },
             cancellationToken: cancellationToken,
-            maxDegreeOfParalellism: 0);
+            maxDegreeOfParallelism: 0);
 
             logger.LogDebug(
                 BatchMessageTemplate,

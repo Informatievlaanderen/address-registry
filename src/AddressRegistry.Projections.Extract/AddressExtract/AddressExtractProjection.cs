@@ -2,6 +2,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
 {
     using Address.Events;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Shaperon;
@@ -11,7 +12,6 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
     using System;
     using System.Text;
     using Address.Events.Crab;
-    using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
     using Microsoft.Extensions.Options;
 
     public class AddressExtractProjection : ConnectedProjection<ExtractContext>
@@ -146,6 +146,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                         record.posgeommet.Value = Map(message.Message.GeometryMethod);
                         record.posspec.Value = Map(message.Message.GeometrySpecification);
                     });
+
                     var coordinate = wkbReader.Read(message.Message.ExtendedWkbGeometry.ToByteArray()).Coordinate;
                     var pointShapeContent = new PointShapeContent(new Point(coordinate.X, coordinate.Y));
                     item.ShapeRecordContent = pointShapeContent.ToBytes();
@@ -169,6 +170,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                         record.posgeommet.Value = null;
                         record.posspec.Value = null;
                     });
+
                     item.ShapeRecordContent = null;
                     item.ShapeRecordContentLength = 0;
                     item.MaximumX = 0;
@@ -276,6 +278,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                         record.posgeommet.Value = Map(message.Message.GeometryMethod);
                         record.posspec.Value = Map(message.Message.GeometrySpecification);
                     });
+
                     var coordinate = wkbReader.Read(message.Message.ExtendedWkbGeometry.ToByteArray()).Coordinate;
                     var pointShapeContent = new PointShapeContent(new Point(coordinate.X, coordinate.Y));
                     item.ShapeRecordContent = pointShapeContent.ToBytes();

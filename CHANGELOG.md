@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/informatievlaanderen/address-registry/compare/v2.1.0...v2.1.1) (2020-01-03)
+
+
+### Bug Fixes
+
+* api output properties / names ([9686695](https://github.com/informatievlaanderen/address-registry/commit/9686695))
+
 # [2.1.0](https://github.com/informatievlaanderen/address-registry/compare/v2.0.0...v2.1.0) (2020-01-03)
 
 

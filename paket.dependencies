@@ -22,7 +22,7 @@ nuget AspNetCore.HealthChecks.SqlServer 3.0.0
 
 nuget AsyncEnumerator 4.0.2
 nuget Dapper 2.0.30
-nuget CsvHelper 12.2.2
+nuget CsvHelper 12.2.3
 
 nuget NetTopologySuite 2.0.0
 
@@ -40,7 +40,7 @@ nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.CommandHandling 4.1.0
 nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac 4.1.0
 nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit 4.1.0
 
-nuget Be.Vlaanderen.Basisregisters.Api 9.0.1
+nuget Be.Vlaanderen.Basisregisters.Api 10.0.1
 
 nuget Be.Vlaanderen.Basisregisters.CommandHandling 4.1.0
 nuget Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency 4.1.0
@@ -88,7 +88,7 @@ nuget Microsoft.EntityFrameworkCore.InMemory 3.1.0
 nuget xunit 2.4.1
 nuget xunit.runner.visualstudio 2.4.1
 nuget xunit.categories 2.0.4
-nuget FluentAssertions 5.9.0
+nuget FluentAssertions 5.10.0
 nuget Moq 4.13.1
 nuget AutoFixture.Xunit2 4.11.0
 nuget Serilog.Sinks.XUnit 1.0.21

@@ -15,14 +15,14 @@ licenseUrl https://opensource.org/licenses/EUPL-1.2
 description Address Registry Projector API.
 
 dependencies
-  framework: netstandard20
-    Be.Vlaanderen.Basisregisters.Api ~> 6.0
-    Be.Vlaanderen.Basisregisters.EventHandling.Autofac ~> 1.0
-    Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac ~> 3.0
-    Be.Vlaanderen.Basisregisters.Projector ~> 2.0
+  framework: netcoreapp31
+    Be.Vlaanderen.Basisregisters.Api >= LOCKEDVERSION
+    Be.Vlaanderen.Basisregisters.EventHandling.Autofac >= LOCKEDVERSION
+    Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac >= LOCKEDVERSION
+    Be.Vlaanderen.Basisregisters.Projector >= LOCKEDVERSION
 
 files
-  AddressRegistry.Projector.dll => lib\netcoreapp2.2
-  AddressRegistry.Projector.pdb => lib\netcoreapp2.2
-  AddressRegistry.Projector.xml => lib\netcoreapp2.2
+  AddressRegistry.Projector.dll => lib\netcoreapp3.1
+  AddressRegistry.Projector.pdb => lib\netcoreapp3.1
+  AddressRegistry.Projector.xml => lib\netcoreapp3.1
   AddressRegistry.Projector.xml => content

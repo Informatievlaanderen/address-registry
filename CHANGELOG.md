@@ -1,3 +1,41 @@
+# [2.1.0](https://github.com/informatievlaanderen/address-registry/compare/v2.0.0...v2.1.0) (2020-01-03)
+
+
+### Features
+
+* allow only one projector instance ([0da579d](https://github.com/informatievlaanderen/address-registry/commit/0da579d))
+
+# [2.0.0](https://github.com/informatievlaanderen/address-registry/compare/v1.18.5...v2.0.0) (2019-12-25)
+
+
+### Bug Fixes
+
+* update grar common for from/tobytes ([c976b3b](https://github.com/informatievlaanderen/address-registry/commit/c976b3b))
+
+
+### Code Refactoring
+
+* upgrade to netcoreapp31 ([30188ab](https://github.com/informatievlaanderen/address-registry/commit/30188ab))
+
+
+### BREAKING CHANGES
+
+* Upgrade to .NET Core 3.1
+
+## [1.18.5](https://github.com/informatievlaanderen/address-registry/compare/v1.18.4...v1.18.5) (2019-12-19)
+
+
+### Bug Fixes
+
+* created one context for addressmatch + no multithread in cache ([3ad1bbe](https://github.com/informatievlaanderen/address-registry/commit/3ad1bbe))
+
+## [1.18.4](https://github.com/informatievlaanderen/address-registry/compare/v1.18.3...v1.18.4) (2019-12-19)
+
+
+### Performance Improvements
+
+* trying to increase parcel sync performance ([91d689f](https://github.com/informatievlaanderen/address-registry/commit/91d689f))
+
 ## [1.18.3](https://github.com/informatievlaanderen/address-registry/compare/v1.18.2...v1.18.3) (2019-12-17)
 
 

@@ -447,7 +447,7 @@ namespace AddressRegistry.Structurizr
             foreach (var @event in events)
                 eventsView.Add(@event);
 
-            eventsView.Relationships.RemoveWhere(x => x.Relationship.Tags.Contains(CustomTags.Event));
+            // eventsView.Relationships.RemoveWhere(x => x.Relationship.Tags.Contains(CustomTags.Event));
 
             eventsView.PaperSize = PaperSize.A4_Landscape;
 
@@ -493,7 +493,7 @@ namespace AddressRegistry.Structurizr
             foreach (var command in commands)
                 commandsView.Add(command);
 
-            commandsView.Relationships.RemoveWhere(x => x.Relationship.Tags.Contains(CustomTags.Event));
+            // commandsView.Relationships.RemoveWhere(x => x.Relationship.Tags.Contains(CustomTags.Event));
 
             commandsView.PaperSize = PaperSize.A4_Landscape;
 

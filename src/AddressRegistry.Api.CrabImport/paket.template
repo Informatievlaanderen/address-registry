@@ -13,10 +13,10 @@ projectUrl https://vlaanderen.be/informatie-vlaanderen
 description Address Registry.
 
 files
-  AddressRegistry.Api.CrabImport.dll => lib\netcoreapp2.2
-  AddressRegistry.Api.CrabImport.pdb => lib\netcoreapp2.2
-  AddressRegistry.Api.CrabImport.xml => lib\netcoreapp2.2
+  AddressRegistry.Api.CrabImport.dll => lib\netcoreapp3.1
+  AddressRegistry.Api.CrabImport.pdb => lib\netcoreapp3.1
+  AddressRegistry.Api.CrabImport.xml => lib\netcoreapp3.1
   AddressRegistry.Api.CrabImport.xml => content
 
-  AddressRegistry.dll => lib\netcoreapp2.2
-  AddressRegistry.pdb => lib\netcoreapp2.2
+  AddressRegistry.dll => lib\netcoreapp3.1
+  AddressRegistry.pdb => lib\netcoreapp3.1

@@ -13,13 +13,13 @@ projectUrl https://vlaanderen.be/informatie-vlaanderen
 description Address Registry.
 
 files
-  AddressRegistry.Api.Legacy.dll => lib\netcoreapp2.2
-  AddressRegistry.Api.Legacy.pdb => lib\netcoreapp2.2
-  AddressRegistry.Api.Legacy.xml => lib\netcoreapp2.2
+  AddressRegistry.Api.Legacy.dll => lib\netcoreapp3.1
+  AddressRegistry.Api.Legacy.pdb => lib\netcoreapp3.1
+  AddressRegistry.Api.Legacy.xml => lib\netcoreapp3.1
   AddressRegistry.Api.Legacy.xml => content
 
-  AddressRegistry.Projections.Legacy.dll => lib\netcoreapp2.2
-  AddressRegistry.Projections.Legacy.pdb => lib\netcoreapp2.2
+  AddressRegistry.Projections.Legacy.dll => lib\netcoreapp3.1
+  AddressRegistry.Projections.Legacy.pdb => lib\netcoreapp3.1
 
-  AddressRegistry.dll => lib\netcoreapp2.2
-  AddressRegistry.pdb => lib\netcoreapp2.2
+  AddressRegistry.dll => lib\netcoreapp3.1
+  AddressRegistry.pdb => lib\netcoreapp3.1

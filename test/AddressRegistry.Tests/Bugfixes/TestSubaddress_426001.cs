@@ -7,7 +7,7 @@ namespace AddressRegistry.Tests.Bugfixes
     using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Formatters.Json;
     using Be.Vlaanderen.Basisregisters.Crab;
     using global::AutoFixture;
-    using Microsoft.AspNetCore.Mvc.Formatters;
+    using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
     using Newtonsoft.Json;
     using WhenImportHouseNumberSubaddressFromCrab;
     using WhenImportSubaddressFromCrab;

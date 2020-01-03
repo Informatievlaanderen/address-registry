@@ -3,6 +3,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
     using Address.Events;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
+    using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
     using NetTopologySuite.IO;
     using System;
     using System.Text;

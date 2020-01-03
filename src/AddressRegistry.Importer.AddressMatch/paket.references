@@ -1,5 +1,3 @@
-Microsoft.NETCore.App
-
 Serilog
 Serilog.Settings.Configuration
 Serilog.Extensions.Logging

@@ -55,7 +55,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
             var result = addressMatch.Process(new AddressMatchBuilder(Map(addressMatchRequest)));
             return Ok(new AddressMatchCollection
             {
-                AdresMatches = result.OrderByDescending(i => i.Score).Take(10).ToList(),
+                AdresMatches = result.ToList().OrderByDescending(i => i.Score).Take(10).ToList(),
                 Warnings = warningLogger.Warnings
             });
         }

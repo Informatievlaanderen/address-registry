@@ -1,6 +1,7 @@
 namespace AddressRegistry.Api.Legacy.AddressMatch
 {
     using System.Collections.Generic;
+    using System.Runtime.Serialization;
     using Matching;
 
     internal class ValidationMessageWarningLogger : IWarningLogger
@@ -19,16 +20,19 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
     /// <summary>
     /// contains a warning message in dutch and english
     /// </summary>
+    [DataContract(Name = "Warning", Namespace = "")]
     public class ValidationMessage
     {
         /// <summary>
         /// A code
         /// </summary>
+        [DataMember(Name = "Code", Order = 1)]
         public string Code { get; set; }
 
         /// <summary>
         /// A descriptive message. Preferably in Dutch and English
         /// </summary>
+        [DataMember(Name = "Message", Order = 2)]
         public string Message { get; set; }
     }
 }

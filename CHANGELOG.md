@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/informatievlaanderen/address-registry/compare/v2.0.0...v2.1.0) (2020-01-03)
+
+
+### Features
+
+* allow only one projector instance ([0da579d](https://github.com/informatievlaanderen/address-registry/commit/0da579d))
+
 # [2.0.0](https://github.com/informatievlaanderen/address-registry/compare/v1.18.5...v2.0.0) (2019-12-25)
 
 

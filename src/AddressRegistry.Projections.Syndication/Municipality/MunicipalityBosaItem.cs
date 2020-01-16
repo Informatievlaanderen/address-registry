@@ -9,15 +9,15 @@ namespace AddressRegistry.Projections.Syndication.Municipality
     public class MunicipalityBosaItem
     {
         public Guid MunicipalityId { get; set; }
-        public string NisCode { get; set; }
-        public string NameDutch { get; set; }
-        public string NameDutchSearch { get; set; }
-        public string NameFrench { get; set; }
-        public string NameFrenchSearch { get; set; }
-        public string NameGerman { get; set; }
-        public string NameGermanSearch { get; set; }
-        public string NameEnglish { get; set; }
-        public string NameEnglishSearch { get; set; }
+        public string? NisCode { get; set; }
+        public string? NameDutch { get; set; }
+        public string? NameDutchSearch { get; set; }
+        public string? NameFrench { get; set; }
+        public string? NameFrenchSearch { get; set; }
+        public string? NameGerman { get; set; }
+        public string? NameGermanSearch { get; set; }
+        public string? NameEnglish { get; set; }
+        public string? NameEnglishSearch { get; set; }
         public bool IsFlemishRegion { get; set; }
 
         public Taal? PrimaryLanguage { get; set; }
@@ -33,7 +33,7 @@ namespace AddressRegistry.Projections.Syndication.Municipality
         {
             builder.ToTable(TableName, Schema.Syndication)
                 .HasKey(x => x.MunicipalityId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             builder.Property(x => x.NisCode);
             builder.Property(x => x.NameDutch);
@@ -50,7 +50,7 @@ namespace AddressRegistry.Projections.Syndication.Municipality
             builder.Property(x => x.IsFlemishRegion);
 
             builder.HasIndex(x => x.Position);
-            builder.HasIndex(x => x.NisCode).ForSqlServerIsClustered();
+            builder.HasIndex(x => x.NisCode).IsClustered();
             builder.HasIndex(x => x.IsFlemishRegion);
 
             builder.HasIndex(x => x.Version);

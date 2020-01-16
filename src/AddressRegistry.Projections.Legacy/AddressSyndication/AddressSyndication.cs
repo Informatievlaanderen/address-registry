@@ -14,14 +14,14 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
 
         public Guid? AddressId { get; set; }
         public int? PersistentLocalId { get; set; }
-        public string ChangeType { get; set; }
+        public string? ChangeType { get; set; }
 
         public Guid? StreetNameId { get; set; }
-        public string PostalCode { get; set; }
-        public string HouseNumber { get; set; }
-        public string BoxNumber { get; set; }
+        public string? PostalCode { get; set; }
+        public string? HouseNumber { get; set; }
+        public string? BoxNumber { get; set; }
 
-        public byte[] PointPosition { get; set; }
+        public byte[]? PointPosition { get; set; }
         public GeometryMethod? PositionMethod { get; set; }
         public GeometrySpecification? PositionSpecification { get; set; }
 
@@ -46,10 +46,10 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
 
         public Application? Application { get; set; }
         public Modification? Modification { get; set; }
-        public string Operator { get; set; }
+        public string? Operator { get; set; }
         public Organisation? Organisation { get; set; }
-        public string Reason { get; set; }
-        public string EventDataAsXml { get; set; }
+        public string? Reason { get; set; }
+        public string? EventDataAsXml { get; set; }
 
         public AddressSyndicationItem CloneAndApplyEventInfo(
             long position,
@@ -97,7 +97,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
         {
             b.ToTable(TableName, Schema.Legacy)
                 .HasKey(x => x.Position)
-                .ForSqlServerIsClustered();
+                .IsClustered();
 
             b.Property(x => x.Position).ValueGeneratedNever();
             b.HasIndex(x => x.Position).IsColumnStore($"CI_{TableName}_Position");

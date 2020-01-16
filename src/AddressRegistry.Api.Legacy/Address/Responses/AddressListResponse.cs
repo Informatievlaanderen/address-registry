@@ -81,14 +81,14 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         }
     }
 
-    public class AddressListResponseExamples : IExamplesProvider
+    public class AddressListResponseExamples : IExamplesProvider<AddressListResponse>
     {
         private readonly ResponseOptions _responseOptions;
 
         public AddressListResponseExamples(IOptions<ResponseOptions> responseOptionsProvider)
             => _responseOptions = responseOptionsProvider.Value;
 
-        public object GetExamples()
+        public AddressListResponse GetExamples()
         {
             var addressExamples = new List<AddressListItemResponse>
             {

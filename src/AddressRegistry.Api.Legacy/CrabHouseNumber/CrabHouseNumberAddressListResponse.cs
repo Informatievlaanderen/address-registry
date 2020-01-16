@@ -109,14 +109,14 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
         public VolledigAdres VolledigAdres { get; set; }
     }
 
-    public class CrabHouseNumberListResponseExamples : IExamplesProvider
+    public class CrabHouseNumberListResponseExamples : IExamplesProvider<CrabHouseNumberAddressListResponse>
     {
         private readonly ResponseOptions _responseOptions;
 
         public CrabHouseNumberListResponseExamples(IOptions<ResponseOptions> responseOptionsProvider)
             => _responseOptions = responseOptionsProvider.Value;
 
-        public object GetExamples()
+        public CrabHouseNumberAddressListResponse GetExamples()
         {
             var addressExamples = new List<CrabHouseNumberAddressListItem>
             {

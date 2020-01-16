@@ -14,9 +14,9 @@ namespace AddressRegistry.Projections.Legacy.AddressList
         public int PersistentLocalId { get; set; }
 
         public Guid StreetNameId { get; set; }
-        public string PostalCode { get; set; }
-        public string HouseNumber { get; set; }
-        public string BoxNumber { get; set; }
+        public string? PostalCode { get; set; }
+        public string? HouseNumber { get; set; }
+        public string? BoxNumber { get; set; }
 
         public bool Complete { get; set; }
         public bool Removed { get; set; }
@@ -38,7 +38,7 @@ namespace AddressRegistry.Projections.Legacy.AddressList
         {
             b.ToTable(TableName, Schema.Legacy)
                 .HasKey(p => p.AddressId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.StreetNameId);
 

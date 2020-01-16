@@ -12,9 +12,9 @@ namespace AddressRegistry.Projections.Legacy.AddressDetail
         public int? PersistentLocalId { get; set; }
 
         public Guid StreetNameId { get; set; }
-        public string PostalCode { get; set; }
-        public string HouseNumber { get; set; }
-        public string BoxNumber { get; set; }
+        public string? PostalCode { get; set; }
+        public string? HouseNumber { get; set; }
+        public string? BoxNumber { get; set; }
         public AddressStatus? Status { get; set; }
         public bool? OfficiallyAssigned { get; set; }
 
@@ -42,10 +42,10 @@ namespace AddressRegistry.Projections.Legacy.AddressDetail
         {
             b.ToTable(TableName, Schema.Legacy)
                 .HasKey(p => p.AddressId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.HasIndex(p => p.PersistentLocalId)
-                .ForSqlServerIsClustered();
+                .IsClustered();
 
             // This speeds up AddressBosaQuery's huge StreetNameId IN (...) AND Complete = 1 query
             b.HasIndex(p => new { p.StreetNameId, p.Complete });

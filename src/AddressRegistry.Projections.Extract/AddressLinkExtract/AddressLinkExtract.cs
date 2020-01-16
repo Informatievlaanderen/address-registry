@@ -11,9 +11,9 @@ namespace AddressRegistry.Projections.Extract.AddressLinkExtract
         public int PersistentLocalId { get; set; }
         public byte[] DbaseRecord { get; set; }
         public bool Complete { get; set; }
-        public string HouseNumber { get; set; }
-        public string BoxNumber { get; set; }
-        public string PostalCode { get; set; }
+        public string? HouseNumber { get; set; }
+        public string? BoxNumber { get; set; }
+        public string? PostalCode { get; set; }
         public Guid StreetNameId { get; set; }
     }
 
@@ -25,7 +25,7 @@ namespace AddressRegistry.Projections.Extract.AddressLinkExtract
         {
             builder.ToTable(TableName, Schema.Extract)
                 .HasKey(p => p.AddressId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             builder.Property(p => p.AddressId);
             builder.Property(p => p.PersistentLocalId);

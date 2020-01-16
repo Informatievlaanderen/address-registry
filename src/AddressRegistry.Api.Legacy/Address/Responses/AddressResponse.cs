@@ -132,14 +132,14 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         }
     }
 
-    public class AddressResponseExamples : IExamplesProvider
+    public class AddressResponseExamples : IExamplesProvider<AddressResponse>
     {
         private readonly ResponseOptions _responseOptions;
 
         public AddressResponseExamples(IOptions<ResponseOptions> responseOptionsProvider)
          => _responseOptions = responseOptionsProvider.Value;
 
-        public object GetExamples()
+        public AddressResponse GetExamples()
         {
             var point = new Point
             {
@@ -171,9 +171,9 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         }
     }
 
-    public class AddressNotFoundResponseExamples : IExamplesProvider
+    public class AddressNotFoundResponseExamples : IExamplesProvider<ProblemDetails>
     {
-        public object GetExamples()
+        public ProblemDetails GetExamples()
         {
             return new ProblemDetails
             {
@@ -185,9 +185,9 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         }
     }
 
-    public class AddressGoneResponseExamples : IExamplesProvider
+    public class AddressGoneResponseExamples : IExamplesProvider<ProblemDetails>
     {
-        public object GetExamples()
+        public ProblemDetails GetExamples()
         {
             return new ProblemDetails
             {

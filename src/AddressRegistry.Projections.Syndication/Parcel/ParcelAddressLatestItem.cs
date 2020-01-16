@@ -8,7 +8,7 @@ namespace AddressRegistry.Projections.Syndication.Parcel
     public class ParcelAddressMatchLatestItem
     {
         public Guid ParcelId { get; set; }
-        public string ParcelPersistentLocalId { get; set; }
+        public string? ParcelPersistentLocalId { get; set; }
         public Guid AddressId { get; set; }
     }
 
@@ -24,7 +24,7 @@ namespace AddressRegistry.Projections.Syndication.Parcel
                     x.ParcelId,
                     x.AddressId
                 })
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             builder.Property(x => x.ParcelPersistentLocalId);
 

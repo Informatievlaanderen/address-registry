@@ -15,9 +15,9 @@ namespace AddressRegistry.Api.CrabImport.CrabImport.Requests
         public string CrabItem { get; set; }
     }
 
-    public class RegisterCrabImportRequestExample : IExamplesProvider
+    public class RegisterCrabImportRequestExample : IExamplesProvider<RegisterCrabImportRequest>
     {
-        public object GetExamples()
+        public RegisterCrabImportRequest GetExamples()
         {
             return new RegisterCrabImportRequest
             {

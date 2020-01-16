@@ -11,9 +11,9 @@ namespace AddressRegistry.Api.Legacy.Address.Requests
         public Taal? Taal { get; set; }
     }
 
-    public class BosaAddressRepresentationRequestExamples : IExamplesProvider
+    public class BosaAddressRepresentationRequestExamples : IExamplesProvider<BosaAddressRepresentationRequest>
     {
-        public object GetExamples()
+        public BosaAddressRepresentationRequest GetExamples()
             => new BosaAddressRepresentationRequest
             {
                 AdresCode = new ZoekIdentifier

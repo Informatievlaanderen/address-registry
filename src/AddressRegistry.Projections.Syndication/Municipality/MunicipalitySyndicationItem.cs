@@ -13,14 +13,14 @@ namespace AddressRegistry.Projections.Syndication.Municipality
         public static string OfficialLanguagesBackingPropertyName = nameof(OfficialLanguagesAsString);
 
         public Guid MunicipalityId { get; set; }
-        public string NisCode { get; set; }
-        public string NameDutch { get; set; }
-        public string NameFrench { get; set; }
-        public string NameGerman { get; set; }
-        public string NameEnglish { get; set; }
+        public string? NisCode { get; set; }
+        public string? NameDutch { get; set; }
+        public string? NameFrench { get; set; }
+        public string? NameGerman { get; set; }
+        public string? NameEnglish { get; set; }
         public DateTimeOffset? Version { get; set; }
 
-        private string OfficialLanguagesAsString { get; set; }
+        private string? OfficialLanguagesAsString { get; set; }
         public List<Taal> OfficialLanguages
         {
             get => DeserializeOfficialLanguages();
@@ -43,7 +43,7 @@ namespace AddressRegistry.Projections.Syndication.Municipality
         {
             builder.ToTable(TableName, Schema.Syndication)
                 .HasKey(x => new { x.MunicipalityId, x.Position })
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             builder.Property(x => x.NisCode);
             builder.Property(x => x.NameDutch);
@@ -59,7 +59,7 @@ namespace AddressRegistry.Projections.Syndication.Municipality
 
             builder.HasIndex(x => x.Position);
             builder.HasIndex(x => x.Version);
-            builder.HasIndex(x => x.NisCode).ForSqlServerIsClustered();
+            builder.HasIndex(x => x.NisCode).IsClustered();
         }
     }
 }

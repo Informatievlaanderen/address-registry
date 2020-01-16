@@ -12,7 +12,7 @@ namespace AddressRegistry.Projections.Syndication.PostalInfo
         public string PostalCode { get; set; }
 
         public virtual ICollection<PostalInfoPostalName> PostalNames { get; set; }
-        public string NisCode { get; set; }
+        public string? NisCode { get; set; }
 
         public DateTimeOffset? Version { get; set; }
         public long Position { get; set; }
@@ -27,7 +27,7 @@ namespace AddressRegistry.Projections.Syndication.PostalInfo
     {
         public string PostalCode { get; set; }
         public Taal Language { get; set; }
-        public string PostalName { get; set; }
+        public string? PostalName { get; set; }
     }
 
     public class PostalInfoLatestItemConfiguration : IEntityTypeConfiguration<PostalInfoLatestItem>
@@ -38,7 +38,7 @@ namespace AddressRegistry.Projections.Syndication.PostalInfo
         {
             builder.ToTable(TableName, Schema.Syndication)
                 .HasKey(x => x.PostalCode)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             builder.Property(x => x.Version);
             builder.Property(x => x.Position);
@@ -61,7 +61,7 @@ namespace AddressRegistry.Projections.Syndication.PostalInfo
         {
             builder.ToTable(TableName, Schema.Syndication)
                 .HasKey(x => new { x.PostalCode, x.PostalName })
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             builder.Property(x => x.Language);
 

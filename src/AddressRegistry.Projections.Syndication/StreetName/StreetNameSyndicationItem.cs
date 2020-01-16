@@ -8,18 +8,18 @@ namespace AddressRegistry.Projections.Syndication.StreetName
     public class StreetNameSyndicationItem
     {
         public Guid StreetNameId { get; set; }
-        public string PersistentLocalId { get; set; }
-        public string NisCode { get; set; }
+        public string? PersistentLocalId { get; set; }
+        public string? NisCode { get; set; }
 
-        public string NameDutch { get; set; }
-        public string NameFrench { get; set; }
-        public string NameGerman { get; set; }
-        public string NameEnglish { get; set; }
+        public string? NameDutch { get; set; }
+        public string? NameFrench { get; set; }
+        public string? NameGerman { get; set; }
+        public string? NameEnglish { get; set; }
 
-        public string HomonymAdditionDutch { get; set; }
-        public string HomonymAdditionFrench { get; set; }
-        public string HomonymAdditionGerman { get; set; }
-        public string HomonymAdditionEnglish { get; set; }
+        public string? HomonymAdditionDutch { get; set; }
+        public string? HomonymAdditionFrench { get; set; }
+        public string? HomonymAdditionGerman { get; set; }
+        public string? HomonymAdditionEnglish { get; set; }
 
         public DateTimeOffset? Version { get; set; }
         public long Position { get; set; }
@@ -33,7 +33,7 @@ namespace AddressRegistry.Projections.Syndication.StreetName
         {
             builder.ToTable(TableName, Schema.Syndication)
                 .HasKey(x => new { x.StreetNameId, x.Position })
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             builder.Property(x => x.NisCode);
             builder.Property(x => x.PersistentLocalId);

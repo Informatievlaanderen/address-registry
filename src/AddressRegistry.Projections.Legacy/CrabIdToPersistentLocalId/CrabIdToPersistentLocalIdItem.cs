@@ -14,9 +14,9 @@ namespace AddressRegistry.Projections.Legacy.CrabIdToPersistentLocalId
         public int? PersistentLocalId { get; set; }
         public int? HouseNumberId { get; set; }
         public int? SubaddressId { get; set; }
-        public string HouseNumber { get; set; }
-        public string BoxNumber { get; set; }
-        public string PostalCode { get; set; }
+        public string? HouseNumber { get; set; }
+        public string? BoxNumber { get; set; }
+        public string? PostalCode { get; set; }
         public Guid StreetNameId { get; set; }
         public bool IsComplete { get; set; }
         public bool IsRemoved { get; set; }
@@ -38,7 +38,7 @@ namespace AddressRegistry.Projections.Legacy.CrabIdToPersistentLocalId
         {
             b.ToTable(TableName, Schema.Legacy)
                 .HasKey(p => p.AddressId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.PersistentLocalId);
             b.Property(p => p.HouseNumberId);

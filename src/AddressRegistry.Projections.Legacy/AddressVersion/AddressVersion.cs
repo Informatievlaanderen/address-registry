@@ -15,9 +15,9 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
         public int PersistentLocalId { get; set; }
 
         public Guid StreetNameId { get; set; }
-        public string PostalCode { get; set; }
-        public string HouseNumber { get; set; }
-        public string BoxNumber { get; set; }
+        public string? PostalCode { get; set; }
+        public string? HouseNumber { get; set; }
+        public string? BoxNumber { get; set; }
 
         public AddressStatus? Status { get; set; }
         public bool? OfficiallyAssigned { get; set; }
@@ -39,9 +39,9 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
 
         public Application? Application { get; set; }
         public Modification? Modification { get; set; }
-        public string Operator { get; set; }
+        public string? Operator { get; set; }
         public Organisation? Organisation { get; set; }
-        public string Reason { get; set; }
+        public string? Reason { get; set; }
 
         public AddressVersion CloneAndApplyEventInfo(
             long newStreamPosition,
@@ -91,7 +91,7 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
         {
             b.ToTable(TableName, Schema.Legacy)
                 .HasKey(p => new { p.AddressId, p.StreamPosition })
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.HasIndex(p => p.PersistentLocalId);
 

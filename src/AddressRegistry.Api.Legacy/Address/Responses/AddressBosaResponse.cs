@@ -114,14 +114,14 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         }
     }
 
-    public class AddressBosaResponseExamples : IExamplesProvider
+    public class AddressBosaResponseExamples : IExamplesProvider<AddressBosaResponse>
     {
         private readonly ResponseOptions _responseOptions;
 
         public AddressBosaResponseExamples(IOptions<ResponseOptions> responseOptionsProvider)
             => _responseOptions = responseOptionsProvider.Value;
 
-        public object GetExamples()
+        public AddressBosaResponse GetExamples()
         {
             var addressBosaResponseItems = new List<AddressBosaResponseItem>
             {

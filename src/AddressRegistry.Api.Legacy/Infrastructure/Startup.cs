@@ -15,10 +15,10 @@ namespace AddressRegistry.Api.Legacy.Infrastructure
     using Microsoft.Extensions.Hosting;
     using Modules;
     using Options;
-    using Swashbuckle.AspNetCore.Swagger;
     using System;
     using System.Linq;
     using System.Reflection;
+    using Microsoft.OpenApi.Models;
 
     /// <summary>Represents the startup process for the application.</summary>
     public class Startup
@@ -55,16 +55,16 @@ namespace AddressRegistry.Api.Legacy.Infrastructure
                     },
                     Swagger =
                     {
-                        ApiInfo = (provider, description) => new Info
+                        ApiInfo = (provider, description) => new OpenApiInfo
                         {
                             Version = description.ApiVersion.ToString(),
                             Title = "Basisregisters Vlaanderen Address Registry API",
                             Description = GetApiLeadingText(description),
-                            Contact = new Contact
+                            Contact = new OpenApiContact
                             {
                                 Name = "Informatie Vlaanderen",
                                 Email = "informatie.vlaanderen@vlaanderen.be",
-                                Url = "https://legacy.basisregisters.vlaanderen"
+                                Url = new Uri("https://legacy.basisregisters.vlaanderen")
                             }
                         },
                         XmlCommentPaths = new[] {typeof(Startup).GetTypeInfo().Assembly.GetName().Name}

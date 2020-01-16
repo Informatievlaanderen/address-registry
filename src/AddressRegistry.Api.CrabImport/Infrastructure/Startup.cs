@@ -16,7 +16,6 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure
     using Microsoft.Extensions.Hosting;
     using Modules;
     using SqlStreamStore;
-    using Swashbuckle.AspNetCore.Swagger;
     using System;
     using System.IO;
     using System.Linq;
@@ -24,6 +23,7 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure
     using System.Threading;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing.CrabImport;
     using Microsoft.Extensions.FileProviders;
+    using Microsoft.OpenApi.Models;
     using Projections.Legacy;
 
     /// <summary>Represents the startup process for the application.</summary>
@@ -61,16 +61,16 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure
                     },
                     Swagger =
                     {
-                        ApiInfo = (provider, description) => new Info
+                        ApiInfo = (provider, description) => new OpenApiInfo
                         {
                             Version = description.ApiVersion.ToString(),
                             Title = "Basisregisters Vlaanderen Address Registry API",
                             Description = GetApiLeadingText(description),
-                            Contact = new Contact
+                            Contact = new OpenApiContact
                             {
                                 Name = "Informatie Vlaanderen",
                                 Email = "informatie.vlaanderen@vlaanderen.be",
-                                Url = "https://legacy.basisregisters.vlaanderen"
+                                Url = new Uri("https://legacy.basisregisters.vlaanderen")
                             }
                         },
                         XmlCommentPaths = new[] {typeof(Startup).GetTypeInfo().Assembly.GetName().Name}

@@ -57,14 +57,14 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         }
     }
 
-    public class AddressRepresentationBosaResponseExamples : IExamplesProvider
+    public class AddressRepresentationBosaResponseExamples : IExamplesProvider<AddressRepresentationBosaResponse>
     {
         private readonly ResponseOptions _responseOptions;
 
         public AddressRepresentationBosaResponseExamples(IOptions<ResponseOptions> responseOptionsProvider)
             => _responseOptions = responseOptionsProvider.Value;
 
-        public object GetExamples()
+        public AddressRepresentationBosaResponse GetExamples()
             => new AddressRepresentationBosaResponse
             {
                 Identificator = new AdresIdentificator(_responseOptions.Naamruimte, "12345", DateTimeOffset.Now),

@@ -40,7 +40,7 @@ nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.CommandHandling 4.1.0
 nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac 4.1.0
 nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit 4.1.0
 
-nuget Be.Vlaanderen.Basisregisters.Api 10.0.1
+nuget Be.Vlaanderen.Basisregisters.Api 10.2.0
 
 nuget Be.Vlaanderen.Basisregisters.CommandHandling 4.1.0
 nuget Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency 4.1.0
@@ -49,15 +49,15 @@ nuget Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore 4.1.0
 nuget Be.Vlaanderen.Basisregisters.EventHandling 2.1.0
 nuget Be.Vlaanderen.Basisregisters.EventHandling.Autofac 2.1.0
 
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList 5.1.0
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore 5.1.0
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac 5.1.0
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner 5.1.0
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing 5.1.0
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit 5.1.0
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication 5.1.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList 5.1.1
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore 5.1.1
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac 5.1.1
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner 5.1.1
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing 5.1.1
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit 5.1.1
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication 5.1.1
 
-nuget Be.Vlaanderen.Basisregisters.Projector 5.0.0
+nuget Be.Vlaanderen.Basisregisters.Projector 5.1.0
 
 nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac 4.1.0
 nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.AspNetCore 4.1.0

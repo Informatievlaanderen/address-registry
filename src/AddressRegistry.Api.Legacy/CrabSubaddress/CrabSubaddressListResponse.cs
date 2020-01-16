@@ -72,14 +72,14 @@ namespace AddressRegistry.Api.Legacy.CrabSubaddress
         public CrabAddressListItemAddress Address { get; set; }
     }
 
-    public class CrabSubaddressListResponseExamples : IExamplesProvider
+    public class CrabSubaddressListResponseExamples : IExamplesProvider<CrabSubAddressListResponse>
     {
         private readonly ResponseOptions _responseOptions;
 
         public CrabSubaddressListResponseExamples(IOptions<ResponseOptions> responseOptionsProvider)
             => _responseOptions = responseOptionsProvider.Value;
 
-        public object GetExamples()
+        public CrabSubAddressListResponse GetExamples()
         {
             var addressExamples = new List<CrabSubAddressListItem>
             {

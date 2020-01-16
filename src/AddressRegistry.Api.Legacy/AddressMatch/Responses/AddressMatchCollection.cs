@@ -277,7 +277,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         public string Detail { get; set; }
     }
 
-    public class AddressMatchResponseExamples : IExamplesProvider
+    public class AddressMatchResponseExamples : IExamplesProvider<AddressMatchCollection>
     {
         private readonly ResponseOptions _options;
 
@@ -286,7 +286,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
             _options = options.Value;
         }
 
-        public object GetExamples()
+        public AddressMatchCollection GetExamples()
         {
             return new AddressMatchCollection
             {

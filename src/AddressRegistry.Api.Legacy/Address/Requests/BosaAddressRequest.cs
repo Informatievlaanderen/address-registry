@@ -28,9 +28,9 @@ namespace AddressRegistry.Api.Legacy.Address.Requests
                && (GemeenteCode == null || (!GemeenteCode.VersieId.HasValue && string.IsNullOrEmpty(GemeenteCode.ObjectId)));
     }
 
-    public class BosaAddressRequestExamples : IExamplesProvider
+    public class BosaAddressRequestExamples : IExamplesProvider<BosaAddressRequest>
     {
-        public object GetExamples()
+        public BosaAddressRequest GetExamples()
             => new BosaAddressRequest
             {
                 AdresCode = new ZoekIdentifier

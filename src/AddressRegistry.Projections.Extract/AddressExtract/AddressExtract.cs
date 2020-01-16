@@ -18,7 +18,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
         public double MinimumY { get; set; }
         public double MaximumY { get; set; }
         public Guid StreetNameId { get; set; }
-        public string NisCode{ get; set; }
+        public string? NisCode { get; set; }
     }
 
     public class AddressExtractItemConfiguration : IEntityTypeConfiguration<AddressExtractItem>
@@ -29,7 +29,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
         {
             builder.ToTable(TableName, Schema.Extract)
                 .HasKey(p => p.AddressId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             builder.Property(p => p.Complete);
             builder.Property(p => p.DbaseRecord);

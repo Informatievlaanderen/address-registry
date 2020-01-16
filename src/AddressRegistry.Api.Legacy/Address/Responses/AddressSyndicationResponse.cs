@@ -235,7 +235,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         }
     }
 
-    public class AddressSyndicationResponseExamples : IExamplesProvider
+    public class AddressSyndicationResponseExamples : IExamplesProvider<object>
     {
         private SyndicationContent ContentExample =>
             new SyndicationContent

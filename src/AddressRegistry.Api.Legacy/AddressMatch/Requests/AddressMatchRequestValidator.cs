@@ -34,6 +34,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Requests
                 () => RuleFor(r => r.RrStraatcode).Must(BeNumeric).WithMessage(NUMERIC_NL).WithErrorCode("14"));
 
             When(r => !string.IsNullOrEmpty(r.RrStraatcode),
+                () => RuleFor(r => r.RrStraatcode).MaximumLength(4).WithMessage(MAX_LENGTH_NL).WithErrorCode("18"));
+
+            When(r => !string.IsNullOrEmpty(r.RrStraatcode),
                 () => RuleFor(r => r.Postcode).NotEmpty().WithMessage(string.Format(WHEN_PROP1_THEN_PROP2_NL_FORMAT, "RrStraatCode")).WithErrorCode("19"));
 
             RuleFor(r => r)

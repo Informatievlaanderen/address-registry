@@ -1,3 +1,11 @@
+## [2.1.3](https://github.com/informatievlaanderen/address-registry/compare/v2.1.2...v2.1.3) (2020-01-22)
+
+
+### Bug Fixes
+
+* add validation rule for rrstraatcode addressmatch GR-1162 ([bbd7066](https://github.com/informatievlaanderen/address-registry/commit/bbd7066))
+* do not emit default values addressmatch GR-1156 ([1e5ecf3](https://github.com/informatievlaanderen/address-registry/commit/1e5ecf3))
+
 ## [2.1.2](https://github.com/informatievlaanderen/address-registry/compare/v2.1.1...v2.1.2) (2020-01-16)
 
 

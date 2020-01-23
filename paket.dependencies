@@ -42,6 +42,8 @@ nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit 4.1.0
 
 nuget Be.Vlaanderen.Basisregisters.Api 10.2.0
 
+nuget Be.Vlaanderen.Basisregisters.Aws.DistributedMutex 2.1.0
+
 nuget Be.Vlaanderen.Basisregisters.CommandHandling 4.1.0
 nuget Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency 4.1.0
 nuget Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore 4.1.0

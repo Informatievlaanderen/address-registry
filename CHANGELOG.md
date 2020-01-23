@@ -1,3 +1,10 @@
+## [2.3.1](https://github.com/informatievlaanderen/address-registry/compare/v2.3.0...v2.3.1) (2020-01-23)
+
+
+### Bug Fixes
+
+* syndication distributed lock now runs async ([aa5053c](https://github.com/informatievlaanderen/address-registry/commit/aa5053c))
+
 # [2.3.0](https://github.com/informatievlaanderen/address-registry/compare/v2.2.0...v2.3.0) (2020-01-23)
 
 

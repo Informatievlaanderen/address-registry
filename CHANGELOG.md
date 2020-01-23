@@ -1,3 +1,15 @@
+# [2.4.0](https://github.com/informatievlaanderen/address-registry/compare/v2.3.1...v2.4.0) (2020-01-23)
+
+
+### Bug Fixes
+
+* boxnumber was ignored in certain cases GR-1163 ([d10e59d](https://github.com/informatievlaanderen/address-registry/commit/d10e59d))
+
+
+### Features
+
+* add IsRemoved flag to syndications to process future events ([d9483a7](https://github.com/informatievlaanderen/address-registry/commit/d9483a7))
+
 ## [2.3.1](https://github.com/informatievlaanderen/address-registry/compare/v2.3.0...v2.3.1) (2020-01-23)
 
 

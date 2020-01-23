@@ -28,7 +28,8 @@ namespace AddressRegistry.Projections.Syndication.Parcel
                     .Where(x => x.ParcelId == entry.Content.Object.Id)
                     .Concat(context.ParcelAddressMatchLatestItems.Local.Where(x => x.ParcelId == entry.Content.Object.Id));
 
-            context.ParcelAddressMatchLatestItems.RemoveRange(parcelAddressMatchLatestItems);
+            foreach (var parcelAddressMatchLatestItem in parcelAddressMatchLatestItems)
+                parcelAddressMatchLatestItem.IsRemoved = true;
         }
 
         private static async Task AddSyndicationItemEntry(AtomEntry<SyndicationItem<Parcel>> entry, SyndicationContext context, CancellationToken ct)
@@ -47,7 +48,8 @@ namespace AddressRegistry.Projections.Syndication.Parcel
                     itemsToRemove.Add(parcelAddressMatchLatestItem);
             }
 
-            context.ParcelAddressMatchLatestItems.RemoveRange(itemsToRemove);
+            foreach (var parcelAddressMatchLatestItem in itemsToRemove)
+                parcelAddressMatchLatestItem.IsRemoved = true;
 
             foreach (var addressId in entry.Content.Object.AddressIds)
             {

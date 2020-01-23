@@ -61,7 +61,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
         {
             var streetNameLatestItems = _context
                 .StreetNameLatestItems
-                .Where(x => x.IsComplete);
+                .Where(x => x.IsComplete && !x.IsRemoved);
             return streetNameLatestItems;
         }
 
@@ -77,6 +77,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 
             if (!string.IsNullOrEmpty(houseNumber))
                 query = query.Where(x => x.HouseNumber == houseNumber);
+
             if (!string.IsNullOrEmpty(boxNumber))
                 query = query.Where(x => x.BoxNumber == boxNumber);
 

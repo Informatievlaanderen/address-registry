@@ -75,7 +75,8 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
                     .Where(x => x.BuildingId == entry.Content.Object.Id)
                     .Concat(context.BuildingUnitAddressMatchLatestItems.Local.Where(x => x.BuildingId == entry.Content.Object.Id));
 
-            context.BuildingUnitAddressMatchLatestItems.RemoveRange(buildingUnitAddressMatchLatestItems);
+            foreach (var buildingUnitAddressMatchLatestItem in buildingUnitAddressMatchLatestItems)
+                buildingUnitAddressMatchLatestItem.IsRemoved = true;
         }
 
         private static async Task AddSyndicationItemEntry(AtomEntry<SyndicationItem<Building>> entry, SyndicationContext context, CancellationToken ct)
@@ -95,7 +96,8 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
                     itemsToRemove.Add(buildingUnitAddressMatchLatestItem);
             }
 
-            context.BuildingUnitAddressMatchLatestItems.RemoveRange(itemsToRemove);
+            foreach (var buildingUnitAddressMatchLatestItem in itemsToRemove)
+                buildingUnitAddressMatchLatestItem.IsRemoved = true;
 
             foreach (var buildingUnit in entry.Content.Object.BuildingUnits)
             {
@@ -123,7 +125,8 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
                     }
                 }
 
-                context.BuildingUnitAddressMatchLatestItems.RemoveRange(addressItemsToRemove);
+                foreach (var buildingUnitAddressMatchLatestItem in addressItemsToRemove)
+                    buildingUnitAddressMatchLatestItem.IsRemoved = true;
             }
         }
 

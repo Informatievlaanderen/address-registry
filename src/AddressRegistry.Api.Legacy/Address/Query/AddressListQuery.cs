@@ -34,7 +34,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             var streetnames = _context
                 .StreetNameLatestItems
                 .AsNoTracking()
-                .Where(x => x.IsComplete);
+                .Where(x => x.IsComplete && !x.IsRemoved);
 
             var filterStreet = false;
 

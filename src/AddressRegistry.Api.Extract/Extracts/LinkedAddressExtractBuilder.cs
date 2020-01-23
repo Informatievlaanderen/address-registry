@@ -30,8 +30,8 @@ namespace AddressRegistry.Api.Extract.Extracts
 
             AddressLink TransformRecord(AddressLinkExtractItem r)
             {
-                var parcels = syndicationContext.ParcelAddressMatchLatestItems.Where(x => x.AddressId == r.AddressId);
-                var buildingUnits = syndicationContext.BuildingUnitAddressMatchLatestItems.Where(x => x.AddressId == r.AddressId);
+                var parcels = syndicationContext.ParcelAddressMatchLatestItems.Where(x => x.AddressId == r.AddressId && !x.IsRemoved);
+                var buildingUnits = syndicationContext.BuildingUnitAddressMatchLatestItems.Where(x => x.AddressId == r.AddressId && !x.IsRemoved);
 
                 if (!parcels.Any() && !buildingUnits.Any())
                     return new AddressLink();

@@ -28,6 +28,7 @@ namespace AddressRegistry.Projections.Syndication.StreetName
         public DateTimeOffset? Version { get; set; }
         public long Position { get; set; }
         public bool IsComplete { get; set; }
+        public bool IsRemoved { get; set; }
 
         public bool HasHomonymAddition =>
             !string.IsNullOrEmpty(HomonymAdditionDutch) ||
@@ -66,9 +67,10 @@ namespace AddressRegistry.Projections.Syndication.StreetName
             builder.Property(x => x.Version);
             builder.Property(x => x.Position);
             builder.Property(x => x.IsComplete);
+            builder.Property(x => x.IsRemoved);
 
             builder.HasIndex(x => x.NisCode);
-            builder.HasIndex(x => x.IsComplete);
+            builder.HasIndex(x => new { x.IsComplete, x.IsRemoved });
 
             builder.HasIndex(x => x.NameDutch);
             builder.HasIndex(x => x.NameFrench);

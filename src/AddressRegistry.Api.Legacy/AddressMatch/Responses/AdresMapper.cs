@@ -62,7 +62,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
                 OfficieelToegekend = source.OfficiallyAssigned,
                 AdresseerbareObjecten =
                     _context.BuildingUnitAddressMatchLatestItems
-                        .Where(x => x.AddressId == source.AddressId)
+                        .Where(x => x.AddressId == source.AddressId && !x.IsRemoved)
                         .ToList()
                         .Select(matchLatestItem => new AdresseerbaarObject
                         {
@@ -73,7 +73,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
                         .ToList()
                         .Concat(
                             _context.ParcelAddressMatchLatestItems
-                            .Where(x => x.AddressId == source.AddressId)
+                            .Where(x => x.AddressId == source.AddressId && !x.IsRemoved)
                             .ToList()
                             .Select(matchLatestItem => new AdresseerbaarObject
                             {

@@ -10,6 +10,7 @@ namespace AddressRegistry.Projections.Syndication.Parcel
         public Guid ParcelId { get; set; }
         public string? ParcelPersistentLocalId { get; set; }
         public Guid AddressId { get; set; }
+        public bool IsRemoved { get; set; }
     }
 
     public class ParcelAddressLatestItemConfiguration : IEntityTypeConfiguration<ParcelAddressMatchLatestItem>
@@ -27,9 +28,11 @@ namespace AddressRegistry.Projections.Syndication.Parcel
                 .IsClustered(false);
 
             builder.Property(x => x.ParcelPersistentLocalId);
+            builder.Property(x => x.IsRemoved);
 
             builder.HasIndex(x => x.ParcelId);
             builder.HasIndex(x => x.AddressId);
+            builder.HasIndex(x => x.IsRemoved);
         }
     }
 }

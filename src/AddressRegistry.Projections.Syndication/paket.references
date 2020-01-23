@@ -29,6 +29,8 @@ Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac
 Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication
 Be.Vlaanderen.Basisregisters.Shaperon
 
+Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
+
 Be.Vlaanderen.Basisregisters.GrAr.Common
 Be.Vlaanderen.Basisregisters.GrAr.Legacy
 

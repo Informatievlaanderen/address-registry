@@ -8,7 +8,6 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Microsoft.EntityFrameworkCore;
 
     public interface ILatestQueries
     {
@@ -74,9 +73,12 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             var query = _context
                 .AddressDetail
                 .Where(x => x.Complete && !x.Removed && x.PersistentLocalId.HasValue)
-                .Where(x => x.HouseNumber == houseNumber && x.BoxNumber == boxNumber);
-            if (streetName != null)
-                query = query.Where(x => x.StreetNameId == streetName.StreetNameId);
+                .Where(x => x.StreetNameId == streetName.StreetNameId);
+
+            if (!string.IsNullOrEmpty(houseNumber))
+                query = query.Where(x => x.HouseNumber == houseNumber);
+            if (!string.IsNullOrEmpty(boxNumber))
+                query = query.Where(x => x.BoxNumber == boxNumber);
 
             return query;
         }

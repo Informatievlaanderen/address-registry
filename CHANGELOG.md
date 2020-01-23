@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/informatievlaanderen/address-registry/compare/v2.1.3...v2.2.0) (2020-01-23)
+
+
+### Features
+
+* use distributed lock ([ad2c0be](https://github.com/informatievlaanderen/address-registry/commit/ad2c0be))
+
 ## [2.1.3](https://github.com/informatievlaanderen/address-registry/compare/v2.1.2...v2.1.3) (2020-01-22)
 
 

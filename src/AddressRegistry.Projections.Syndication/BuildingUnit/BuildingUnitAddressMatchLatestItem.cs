@@ -12,6 +12,7 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
         public Guid AddressId { get; set; }
         public Guid BuildingId { get; set; }
         public bool IsComplete { get; set; }
+        public bool IsRemoved { get; set; }
     }
 
     public class ParcelAddressLatestItemConfiguration : IEntityTypeConfiguration<BuildingUnitAddressMatchLatestItem>
@@ -31,8 +32,10 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
             builder.Property(x => x.BuildingUnitPersistentLocalId);
             builder.Property(x => x.BuildingId);
             builder.Property(x => x.IsComplete);
+            builder.Property(x => x.IsRemoved);
 
-            builder.HasIndex(x => new { x.AddressId, x.IsComplete });
+            builder.HasIndex(x => x.AddressId);
+            builder.HasIndex(x => new { x.IsComplete, x.IsRemoved });
             builder.HasIndex(x => x.BuildingId);
         }
     }

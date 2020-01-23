@@ -36,7 +36,17 @@ namespace AddressRegistry.Projections.Syndication.StreetName
             When(StreetNameEvent.StreetNameStatusWasRemoved, AddSyndicationItemEntry);
 
             When(StreetNameEvent.StreetNameWasRegistered, AddSyndicationItemEntry);
-            When(StreetNameEvent.StreetNameWasRemoved, AddSyndicationItemEntry);
+            When(StreetNameEvent.StreetNameWasRemoved, RemoveStreetName);
+        }
+
+        private static async Task RemoveStreetName(AtomEntry<SyndicationItem<StreetName>> entry, SyndicationContext context, CancellationToken ct)
+        {
+            var latestItem =
+                await context
+                    .StreetNameLatestItems
+                    .FindAsync(entry.Content.Object.StreetNameId);
+
+            latestItem.IsRemoved = true;
         }
 
         private static async Task AddSyndicationItemEntry(AtomEntry<SyndicationItem<StreetName>> entry, SyndicationContext context, CancellationToken ct)
@@ -54,7 +64,7 @@ namespace AddressRegistry.Projections.Syndication.StreetName
                     Version = entry.Content.Object.Identificator?.Versie,
                     Position = long.Parse(entry.FeedEntry.Id),
                     PersistentLocalId = entry.Content.Object.Identificator?.ObjectId,
-                    IsComplete = entry.Content.Object.IsComplete,
+                    IsComplete = entry.Content.Object.IsComplete
                 };
 
                 UpdateNames(latestItem, entry.Content.Object.StreetNames);

@@ -35,8 +35,25 @@ namespace AddressRegistry.Projections.Legacy
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Query<AddressListViewCount>()
+            modelBuilder
+                .Entity<AddressListViewCount>()
+                .HasNoKey()
                 .ToView(AddressListViewCountName, Schema.Legacy);
+
+            modelBuilder
+                .Entity<RRStreetName>()
+                .HasNoKey()
+                .ToView(RRStreetName.TableName, Schema.Legacy);
+
+            modelBuilder
+                .Entity<KadStreetName>()
+                .HasNoKey()
+                .ToView(KadStreetName.TableName, Schema.Legacy);
+
+            modelBuilder
+                .Entity<RRAddress>()
+                .HasNoKey()
+                .ToView(RRAddress.TableName, Schema.Legacy);
         }
     }
 }

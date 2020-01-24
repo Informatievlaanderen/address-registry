@@ -2,6 +2,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
 {
     using System.Reflection;
     using Address.Query;
+    using AddressRegistry.Infrastructure;
     using Be.Vlaanderen.Basisregisters.EntityFrameworkCore.EntityTypeConfiguration;
     using Microsoft.EntityFrameworkCore;
     using Projections.Legacy;
@@ -46,6 +47,21 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
 
             modelBuilder.AddEntityConfigurationsFromAssembly(typeof(LegacyContext).GetTypeInfo().Assembly);
             modelBuilder.AddEntityConfigurationsFromAssembly(typeof(SyndicationContext).GetTypeInfo().Assembly);
+
+            modelBuilder
+                .Entity<RRStreetName>()
+                .HasNoKey()
+                .ToView(RRStreetName.TableName, Schema.Legacy);
+
+            modelBuilder
+                .Entity<KadStreetName>()
+                .HasNoKey()
+                .ToView(KadStreetName.TableName, Schema.Legacy);
+
+            modelBuilder
+                .Entity<RRAddress>()
+                .HasNoKey()
+                .ToView(RRAddress.TableName, Schema.Legacy);
         }
     }
 }

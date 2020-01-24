@@ -1,3 +1,10 @@
+## [2.4.3](https://github.com/informatievlaanderen/address-registry/compare/v2.4.2...v2.4.3) (2020-01-24)
+
+
+### Bug Fixes
+
+* ef core 3 unsupported client evaluation by making explicit ([1ea439a](https://github.com/informatievlaanderen/address-registry/commit/1ea439a))
+
 ## [2.4.2](https://github.com/informatievlaanderen/address-registry/compare/v2.4.1...v2.4.2) (2020-01-24)
 
 

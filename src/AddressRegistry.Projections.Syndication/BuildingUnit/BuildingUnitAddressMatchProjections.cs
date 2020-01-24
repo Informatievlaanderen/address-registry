@@ -73,7 +73,9 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
                 context
                     .BuildingUnitAddressMatchLatestItems
                     .Where(x => x.BuildingId == entry.Content.Object.Id)
-                    .Concat(context.BuildingUnitAddressMatchLatestItems.Local.Where(x => x.BuildingId == entry.Content.Object.Id));
+                    .AsEnumerable()
+                    .Concat(context.BuildingUnitAddressMatchLatestItems.Local.Where(x => x.BuildingId == entry.Content.Object.Id))
+                    .ToList();
 
             foreach (var buildingUnitAddressMatchLatestItem in buildingUnitAddressMatchLatestItems)
                 buildingUnitAddressMatchLatestItem.IsRemoved = true;
@@ -85,6 +87,7 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
                 context
                     .BuildingUnitAddressMatchLatestItems
                     .Where(x => x.BuildingId == entry.Content.Object.Id)
+                    .AsEnumerable()
                     .Concat(context.BuildingUnitAddressMatchLatestItems.Local.Where(x => x.BuildingId == entry.Content.Object.Id))
                     .Distinct()
                     .ToList();

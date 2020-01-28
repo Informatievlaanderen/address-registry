@@ -115,6 +115,9 @@ Target.create "PushContainer_ApiCrabImport" (fun _ -> push "api-crab-import")
 Target.create "Containerize_ProjectionsSyndication" (fun _ -> containerize "AddressRegistry.Projections.Syndication" "projections-syndication")
 Target.create "PushContainer_ProjectionsSyndication" (fun _ -> push "projections-syndication")
 
+Target.create "Containerize_CacheWarmer" (fun _ -> containerize "AddressRegistry.CacheWarmer" "cache-warmer")
+Target.create "PushContainer_CacheWarmer" (fun _ -> push "cache-warmer")
+
 // --------------------------------------------------------------------------------
 
 Target.create "Build" ignore
@@ -149,6 +152,7 @@ Target.create "Push" ignore
   ==> "Containerize_ApiExtract"
   ==> "Containerize_ApiCrabImport"
   ==> "Containerize_ProjectionsSyndication"
+  ==> "Containerize_CacheWarmer"
   ==> "Containerize"
 // Possibly add more projects to containerize here
 
@@ -159,6 +163,7 @@ Target.create "Push" ignore
   ==> "PushContainer_ApiExtract"
   ==> "PushContainer_ApiCrabImport"
   ==> "PushContainer_ProjectionsSyndication"
+  ==> "PushContainer_CacheWarmer"
   ==> "Push"
 // Possibly add more projects to push here
 

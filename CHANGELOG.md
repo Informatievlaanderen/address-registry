@@ -1,3 +1,10 @@
+## [2.4.5](https://github.com/informatievlaanderen/address-registry/compare/v2.4.4...v2.4.5) (2020-01-28)
+
+
+### Bug Fixes
+
+* BOSA filter when street and muni combined GR-1169 ([cbf5579](https://github.com/informatievlaanderen/address-registry/commit/cbf5579))
+
 ## [2.4.4](https://github.com/informatievlaanderen/address-registry/compare/v2.4.3...v2.4.4) (2020-01-28)
 
 

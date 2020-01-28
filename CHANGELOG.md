@@ -1,3 +1,10 @@
+# [2.5.0](https://github.com/informatievlaanderen/address-registry/compare/v2.4.5...v2.5.0) (2020-01-28)
+
+
+### Features
+
+* add CacheWarmer dockerfile ([c443012](https://github.com/informatievlaanderen/address-registry/commit/c443012))
+
 ## [2.4.5](https://github.com/informatievlaanderen/address-registry/compare/v2.4.4...v2.4.5) (2020-01-28)
 
 

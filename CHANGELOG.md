@@ -1,3 +1,11 @@
+## [2.5.1](https://github.com/informatievlaanderen/address-registry/compare/v2.5.0...v2.5.1) (2020-01-28)
+
+
+### Bug Fixes
+
+* dockerize cache warmer ([8a1da83](https://github.com/informatievlaanderen/address-registry/commit/8a1da83))
+* force build ([b1ee523](https://github.com/informatievlaanderen/address-registry/commit/b1ee523))
+
 # [2.5.0](https://github.com/informatievlaanderen/address-registry/compare/v2.4.5...v2.5.0) (2020-01-28)
 
 

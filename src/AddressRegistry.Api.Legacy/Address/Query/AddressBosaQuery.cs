@@ -202,12 +202,12 @@ namespace AddressRegistry.Api.Legacy.Address.Query
 
             if (!string.IsNullOrEmpty(streetName))
                 filtered = CompareStreetNameByCompareType(
-                    streetNames,
+                    filtered,
                     streetName,
                     language,
                     searchType == BosaSearchType.Bevat);
             else if (language.HasValue)
-                filtered = ApplyStreetNameLanguageFilter(streetNames, language.Value);
+                filtered = ApplyStreetNameLanguageFilter(filtered, language.Value);
 
             return filtered;
         }

@@ -9,6 +9,7 @@ nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 3.2.0 //"
 open Fake
 open Fake.Core
 open Fake.Core.TargetOperators
+open Fake.IO
 open Fake.IO.FileSystemOperators
 open ``Build-generic``
 
@@ -90,7 +91,14 @@ Target.create "Publish_Solution" (fun _ ->
     "AddressRegistry.Projections.Extract"
     "AddressRegistry.Projections.LastChangedList"
     "AddressRegistry.Projections.Syndication"
-  ] |> List.iter publish)
+  ] |> List.iter publish
+
+  let dist = (buildDir @@ "AddressRegistry.CacheWarmer" @@ "linux")
+  let source = "src" @@ "AddressRegistry.CacheWarmer"
+
+  Directory.ensure dist
+  Shell.copyFile dist (source @@ "Dockerfile")
+ )
 
 Target.create "Pack_Solution" (fun _ ->
   [
@@ -128,7 +136,7 @@ Target.create "Containerize" ignore
 Target.create "Push" ignore
 
 "NpmInstall"
-  ==> "DotNetCli"
+ // ==> "DotNetCli"
   ==> "Clean"
   ==> "Restore_Solution"
   ==> "Build_Solution"

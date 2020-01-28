@@ -18,7 +18,7 @@ namespace AddressRegistry.Projections.Legacy.AddressDetail
         public AddressStatus? Status { get; set; }
         public bool? OfficiallyAssigned { get; set; }
 
-        public byte[] Position { get; set; }
+        public byte[]? Position { get; set; }
         public GeometryMethod? PositionMethod { get; set; }
         public GeometrySpecification? PositionSpecification { get; set; }
 

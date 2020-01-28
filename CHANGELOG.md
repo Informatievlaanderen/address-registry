@@ -1,3 +1,10 @@
+## [2.4.4](https://github.com/informatievlaanderen/address-registry/compare/v2.4.3...v2.4.4) (2020-01-28)
+
+
+### Bug Fixes
+
+* correct nullability on position address detail legacy ([8b22590](https://github.com/informatievlaanderen/address-registry/commit/8b22590))
+
 ## [2.4.3](https://github.com/informatievlaanderen/address-registry/compare/v2.4.2...v2.4.3) (2020-01-24)
 
 

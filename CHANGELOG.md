@@ -1,3 +1,10 @@
+## [2.5.3](https://github.com/informatievlaanderen/address-registry/compare/v2.5.2...v2.5.3) (2020-01-29)
+
+
+### Bug Fixes
+
+* update grar packages ([f00435d](https://github.com/informatievlaanderen/address-registry/commit/f00435d))
+
 ## [2.5.2](https://github.com/informatievlaanderen/address-registry/compare/v2.5.1...v2.5.2) (2020-01-28)
 
 

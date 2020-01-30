@@ -42,7 +42,7 @@ namespace AddressRegistry.Api.Legacy.Address
 
             return new Point
             {
-                XmlPoint = new GmlPoint { Pos = $"{geometry.Coordinate.X} {geometry.Coordinate.Y}" },
+                XmlPoint = new GmlPoint { Pos = $"{geometry.Coordinate.X.ToGeometryCoordinateValueFormat()} {geometry.Coordinate.Y.ToGeometryCoordinateValueFormat()}" },
                 JsonPoint = new GeoJSONPoint { Coordinates = new[] { geometry.Coordinate.X, geometry.Coordinate.Y } }
             };
         }

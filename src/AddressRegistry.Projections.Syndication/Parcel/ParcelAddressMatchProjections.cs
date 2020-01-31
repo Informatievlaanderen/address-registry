@@ -26,6 +26,7 @@ namespace AddressRegistry.Projections.Syndication.Parcel
                 context
                     .ParcelAddressMatchLatestItems
                     .Where(x => x.ParcelId == entry.Content.Object.Id)
+                    .ToList()
                     .Concat(context.ParcelAddressMatchLatestItems.Local.Where(x => x.ParcelId == entry.Content.Object.Id));
 
             foreach (var parcelAddressMatchLatestItem in parcelAddressMatchLatestItems)
@@ -38,6 +39,7 @@ namespace AddressRegistry.Projections.Syndication.Parcel
                 context
                     .ParcelAddressMatchLatestItems
                     .Where(x => x.ParcelId == entry.Content.Object.Id)
+                    .ToList()
                     .Concat(context.ParcelAddressMatchLatestItems.Local.Where(x => x.ParcelId == entry.Content.Object.Id))
                     .ToList();
 

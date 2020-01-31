@@ -1,3 +1,10 @@
+## [2.5.5](https://github.com/informatievlaanderen/address-registry/compare/v2.5.4...v2.5.5) (2020-01-31)
+
+
+### Bug Fixes
+
+* ef warning concerning local evaluation expression ([1190e0b](https://github.com/informatievlaanderen/address-registry/commit/1190e0b))
+
 ## [2.5.4](https://github.com/informatievlaanderen/address-registry/compare/v2.5.3...v2.5.4) (2020-01-30)
 
 

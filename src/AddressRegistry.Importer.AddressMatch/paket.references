@@ -7,8 +7,6 @@ Serilog.Enrichers.Thread
 Serilog.Enrichers.Environment
 Serilog.Formatting.Compact
 
-Destructurama.JsonNet
-
 Microsoft.Extensions.Configuration
 Microsoft.Extensions.Configuration.CommandLine
 Microsoft.Extensions.Configuration.FileExtensions

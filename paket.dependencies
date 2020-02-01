@@ -9,75 +9,75 @@ source https://api.nuget.org/v3/index.json
 // source https://informatievlaanderen.myget.org/F/nuget-mirror/api/v3/index.json username: "%MYGET_FEED_USER%" password: "%MYGET_FEED_PASS%" authtype: "basic"
 
 // PRODUCTION STUFF
-nuget Microsoft.Extensions.Configuration 3.1.0
-nuget Microsoft.Extensions.Configuration.CommandLine 3.1.0
-nuget Microsoft.Extensions.Configuration.FileExtensions 3.1.0
-nuget Microsoft.Extensions.Configuration.EnvironmentVariables 3.1.0
-nuget Microsoft.Extensions.Configuration.Json 3.1.0
+nuget Microsoft.Extensions.Configuration 3.1.1
+nuget Microsoft.Extensions.Configuration.CommandLine 3.1.1
+nuget Microsoft.Extensions.Configuration.FileExtensions 3.1.1
+nuget Microsoft.Extensions.Configuration.EnvironmentVariables 3.1.1
+nuget Microsoft.Extensions.Configuration.Json 3.1.1
 
-nuget Microsoft.Extensions.Http.Polly 3.1.0
+nuget Microsoft.Extensions.Http.Polly 3.1.1
 
 // For more healtchecks, look at https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks
 nuget AspNetCore.HealthChecks.SqlServer 3.0.0
 
 nuget AsyncEnumerator 4.0.2
 nuget Dapper 2.0.30
-nuget CsvHelper 12.2.3
+nuget CsvHelper 12.3.2
 
 nuget NetTopologySuite 2.0.0
 
-nuget Microsoft.EntityFrameworkCore.Design 3.1.0
+nuget Microsoft.EntityFrameworkCore.Design 3.1.1
 
 // VBR STUFF
-nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 3.2.0
-nuget Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events 2.1.0 content: true, copy_content_to_output_dir: always, copy_local: true
+nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 3.3.1
+nuget Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events 2.2.0 content: true, copy_content_to_output_dir: always, copy_local: true
 
-nuget Be.Vlaanderen.Basisregisters.AggregateSource 4.1.0
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.ExplicitRouting 4.1.0
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore.Autofac 4.1.0
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing 4.1.0
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.CommandHandling 4.1.0
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac 4.1.0
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit 4.1.0
+nuget Be.Vlaanderen.Basisregisters.AggregateSource 4.2.0
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.ExplicitRouting 4.2.0
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore.Autofac 4.2.0
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing 4.2.0
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.CommandHandling 4.2.0
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac 4.2.0
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit 4.2.0
 
-nuget Be.Vlaanderen.Basisregisters.Api 10.2.0
+nuget Be.Vlaanderen.Basisregisters.Api 10.6.0
 
-nuget Be.Vlaanderen.Basisregisters.Aws.DistributedMutex 2.1.0
+nuget Be.Vlaanderen.Basisregisters.Aws.DistributedMutex 2.2.0
 
-nuget Be.Vlaanderen.Basisregisters.CommandHandling 4.1.0
-nuget Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency 4.1.0
-nuget Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore 4.1.0
+nuget Be.Vlaanderen.Basisregisters.CommandHandling 4.2.0
+nuget Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency 4.2.0
+nuget Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore 4.2.0
 
-nuget Be.Vlaanderen.Basisregisters.EventHandling 2.1.0
-nuget Be.Vlaanderen.Basisregisters.EventHandling.Autofac 2.1.0
+nuget Be.Vlaanderen.Basisregisters.EventHandling 2.2.0
+nuget Be.Vlaanderen.Basisregisters.EventHandling.Autofac 2.2.0
 
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList 5.1.2
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore 5.1.2
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac 5.1.2
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner 5.1.2
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing 5.1.2
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit 5.1.2
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication 5.1.2
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList 5.2.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore 5.2.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac 5.2.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner 5.2.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing 5.2.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit 5.2.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication 5.2.0
 
-nuget Be.Vlaanderen.Basisregisters.Projector 5.1.0
+nuget Be.Vlaanderen.Basisregisters.Projector 5.2.0
 
-nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac 4.1.0
-nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.AspNetCore 4.1.0
-nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.SqlStreamStore 4.1.0
+nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac 4.4.0
+nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.AspNetCore 4.4.0
+nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.SqlStreamStore 4.4.0
 
-nuget Be.Vlaanderen.Basisregisters.Crab 2.0.0
+nuget Be.Vlaanderen.Basisregisters.Crab 2.1.0
 
-nuget Be.Vlaanderen.Basisregisters.GrAr.Common 14.2.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Import 14.2.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Legacy 14.2.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance 14.2.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Extracts 14.2.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Common 14.3.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Import 14.3.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Legacy 14.3.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance 14.3.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Extracts 14.3.0
 
-nuget Be.Vlaanderen.Basisregisters.Shaperon 7.2.0
+nuget Be.Vlaanderen.Basisregisters.Shaperon 7.3.0
 
 // .NET CLASSIC STUFF
 nuget EntityFramework 6.4.0
-nuget Microsoft.SqlServer.Types 13.0.4001
+nuget Microsoft.SqlServer.Types 13.0.4001 // Don't update: requires version 13.0.4001 for legacy reasons
 
 // DOCS STUFF
 nuget Structurizr.Core 0.9.5
@@ -86,7 +86,7 @@ nuget Structurizr.AdrTools 0.9.3
 
 // TEST STUFF
 nuget Microsoft.NET.Test.Sdk 16.4.0
-nuget Microsoft.EntityFrameworkCore.InMemory 3.1.0
+nuget Microsoft.EntityFrameworkCore.InMemory 3.1.1
 nuget xunit 2.4.1
 nuget xunit.runner.visualstudio 2.4.1
 nuget xunit.categories 2.0.4

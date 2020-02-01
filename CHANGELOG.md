@@ -1,3 +1,10 @@
+# [2.6.0](https://github.com/informatievlaanderen/address-registry/compare/v2.5.5...v2.6.0) (2020-02-01)
+
+
+### Features
+
+* upgrade netcoreapp31 and dependencies ([cdd8380](https://github.com/informatievlaanderen/address-registry/commit/cdd8380))
+
 ## [2.5.5](https://github.com/informatievlaanderen/address-registry/compare/v2.5.4...v2.5.5) (2020-01-31)
 
 

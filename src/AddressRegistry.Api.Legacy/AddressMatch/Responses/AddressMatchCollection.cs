@@ -45,98 +45,98 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         /// the identifier of the address
         /// </summary>
         [DataMember(Name = "Identificator", Order = 1, EmitDefaultValue = false)]
-        [JsonProperty(Required = Required.DisallowNull)]
+        [JsonProperty(Required = Required.Default)]
         public AdresIdentificator Identificator { get; set; }
 
         /// <summary>
         /// URL returning the details of the latest version of the address
         /// </summary>
         [DataMember(Name = "Detail", Order = 2, EmitDefaultValue = false)]
-        [JsonProperty(Required = Required.DisallowNull)]
+        [JsonProperty(Required = Required.Default)]
         public string Detail { get; set; }
 
         /// <summary>
         /// municipality that is part of the address
         /// </summary>
         [DataMember(Name = "Gemeente", Order = 3, EmitDefaultValue = false)]
-        [JsonProperty(Required = Required.DisallowNull)]
+        [JsonProperty(Required = Required.Default)]
         public AdresMatchItemGemeente Gemeente { get; set; }
 
         /// <summary>
         /// postal information object that is part of the address
         /// </summary>
         [DataMember(Name = "Postinfo", Order = 4, EmitDefaultValue = false)]
-        [JsonProperty(Required = Required.DisallowNull)]
+        [JsonProperty(Required = Required.Default)]
         public AdresMatchItemPostinfo Postinfo { get; set; }
 
         /// <summary>
         /// street name that is part of the address
         /// </summary>
         [DataMember(Name = "Straatnaam", Order = 5, EmitDefaultValue = false)]
-        [JsonProperty(Required = Required.DisallowNull)]
+        [JsonProperty(Required = Required.Default)]
         public AdresMatchItemStraatnaam Straatnaam { get; set; }
 
         /// <summary>
         /// homonym addition to the street name
         /// </summary>
         [DataMember(Name = "HomoniemToevoeging", Order = 6, EmitDefaultValue = false)]
-        [JsonProperty(Required = Required.DisallowNull)]
+        [JsonProperty(Required = Required.Default)]
         public HomoniemToevoeging HomoniemToevoeging { get; set; }
 
         /// <summary>
         /// the house number
         /// </summary>
         [DataMember(Name = "Huisnummer", Order = 7, EmitDefaultValue = false)]
-        [JsonProperty(Required = Required.DisallowNull)]
+        [JsonProperty(Required = Required.Default)]
         public string Huisnummer { get; set; }
 
         /// <summary>
         /// the mailbox number
         /// </summary>
         [DataMember(Name = "Busnummer", Order = 8, EmitDefaultValue = false)]
-        [JsonProperty(Required = Required.DisallowNull)]
+        [JsonProperty(Required = Required.Default)]
         public string Busnummer { get; set; }
 
         /// <summary>
         /// the representation of an address in dutch
         /// </summary>
         [DataMember(Name = "VolledigAdres", Order = 9, EmitDefaultValue = false)]
-        [JsonProperty(Required = Required.DisallowNull)]
+        [JsonProperty(Required = Required.Default)]
         public VolledigAdres VolledigAdres { get; set; }
 
         /// <summary>
         /// the address position
         /// </summary>
         [DataMember(Name = "AdresPositie", Order = 10, EmitDefaultValue = false)]
-        [JsonProperty(Required = Required.DisallowNull)]
+        [JsonProperty(Required = Required.Default)]
         public Point AdresPositie { get; set; }
 
         /// <summary>
         /// the specification of the object represented by the position
         /// </summary>
         [DataMember(Name = "PositieSpecificatie", Order = 11, EmitDefaultValue = false)]
-        [JsonProperty(Required = Required.DisallowNull)]
+        [JsonProperty(Required = Required.Default)]
         public PositieSpecificatie? PositieSpecificatie { get; set; }
 
         /// <summary>
         /// the method used to provide the position
         /// </summary>
         [DataMember(Name = "PositieGeometrieMethode", Order = 12, EmitDefaultValue = false)]
-        [JsonProperty(Required = Required.DisallowNull)]
+        [JsonProperty(Required = Required.Default)]
         public PositieGeometrieMethode? PositieGeometrieMethode { get; set; }
 
         /// <summary>
         /// the current phase in the lifecycle of the address
         /// </summary>
         [DataMember(Name = "AdresStatus", Order = 13, EmitDefaultValue = false)]
-        [JsonProperty(Required = Required.DisallowNull)]
+        [JsonProperty(Required = Required.Default)]
         public AdresStatus? AdresStatus { get; set; }
 
         /// <summary>
         /// true if the existence of the address was not known within administrative procedures but only after observation on site
         /// </summary>
         [DataMember(Name = "OfficieelToegekend", Order = 14, EmitDefaultValue = false)]
-        [JsonProperty(Required = Required.DisallowNull)]
+        [JsonProperty(Required = Required.Default)]
         public bool? OfficieelToegekend { get; set; }
 
         /// <summary>
@@ -144,8 +144,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         /// </summary>
         [XmlArray(ElementName = "AdresseerbareObjecten", Order = 15)]
         [XmlArrayItem(ElementName = "AdresseerbaarObject")]
-        [JsonProperty(PropertyName = "AdresseerbareObjecten", Order = 15, DefaultValueHandling = DefaultValueHandling.Ignore, Required = Required.DisallowNull)]
         [DataMember(Name = "AdresseerbareObjecten", Order = 15, EmitDefaultValue = false)]
+        [JsonProperty(PropertyName = "AdresseerbareObjecten", Order = 15, DefaultValueHandling = DefaultValueHandling.Ignore, Required = Required.Default)]
         public List<AdresseerbaarObject> AdresseerbareObjecten { get; set; }
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         /// </summary>
         [Range(0.0, 100.0)]
         [DataMember(Name = "Score", Order = 20, EmitDefaultValue = false)]
-        [JsonProperty(Required = Required.DisallowNull)]
+        [JsonProperty(Required = Required.Default)]
         public double Score { get; set; }
 
         [JsonIgnore]

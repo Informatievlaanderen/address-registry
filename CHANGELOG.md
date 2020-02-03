@@ -1,3 +1,10 @@
+## [2.6.2](https://github.com/informatievlaanderen/address-registry/compare/v2.6.1...v2.6.2) (2020-02-03)
+
+
+### Bug Fixes
+
+* addressmatch is one big bunch of nullables ([3854528](https://github.com/informatievlaanderen/address-registry/commit/3854528))
+
 ## [2.6.1](https://github.com/informatievlaanderen/address-registry/compare/v2.6.0...v2.6.1) (2020-02-03)
 
 

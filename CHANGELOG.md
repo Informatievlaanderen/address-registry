@@ -1,3 +1,10 @@
+## [2.6.3](https://github.com/informatievlaanderen/address-registry/compare/v2.6.2...v2.6.3) (2020-02-03)
+
+
+### Bug Fixes
+
+* add type to problemdetails ([a563b7e](https://github.com/informatievlaanderen/address-registry/commit/a563b7e))
+
 ## [2.6.2](https://github.com/informatievlaanderen/address-registry/compare/v2.6.1...v2.6.2) (2020-02-03)
 
 

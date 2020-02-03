@@ -1,3 +1,10 @@
+## [2.6.1](https://github.com/informatievlaanderen/address-registry/compare/v2.6.0...v2.6.1) (2020-02-03)
+
+
+### Bug Fixes
+
+* specify non nullable responses ([22d70af](https://github.com/informatievlaanderen/address-registry/commit/22d70af))
+
 # [2.6.0](https://github.com/informatievlaanderen/address-registry/compare/v2.5.5...v2.6.0) (2020-02-01)
 
 

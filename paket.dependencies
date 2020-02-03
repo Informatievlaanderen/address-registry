@@ -67,11 +67,11 @@ nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.SqlStreamStore 4.4.0
 
 nuget Be.Vlaanderen.Basisregisters.Crab 2.1.0
 
-nuget Be.Vlaanderen.Basisregisters.GrAr.Common 14.3.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Import 14.3.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Legacy 14.3.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance 14.3.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Extracts 14.3.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Common 14.3.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Import 14.3.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Legacy 14.3.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance 14.3.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Extracts 14.3.1
 
 nuget Be.Vlaanderen.Basisregisters.Shaperon 7.3.0
 

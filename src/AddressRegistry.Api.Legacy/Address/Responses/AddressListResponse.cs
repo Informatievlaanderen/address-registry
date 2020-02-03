@@ -8,6 +8,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
     using System;
     using System.Collections.Generic;
     using System.Runtime.Serialization;
+    using Newtonsoft.Json;
 
     [DataContract(Name = "AdresCollectie", Namespace = "")]
     public class AddressListResponse
@@ -16,18 +17,21 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         /// De verzameling van adressen.
         /// </summary>
         [DataMember(Name = "Adressen", Order = 1)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public List<AddressListItemResponse> Adressen { get; set; }
 
         /// <summary>
         /// Het totaal aantal gemeenten die overeenkomen met de vraag.
         /// </summary>
         [DataMember(Name = "TotaalAantal", Order = 2)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public long TotaalAantal { get; set; }
 
         /// <summary>
         /// De URL voor het ophalen van de volgende verzameling.
         /// </summary>
         [DataMember(Name = "Volgende", Order = 3, EmitDefaultValue = false)]
+        [JsonProperty(Required = Required.Default)]
         public Uri Volgende { get; set; }
     }
 
@@ -38,30 +42,35 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         /// De identificator van het adres.
         /// </summary>
         [DataMember(Name = "Identificator", Order = 1)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public AdresIdentificator Identificator { get; set; }
 
         /// <summary>
         /// De URL die naar de details van de meeste recente versie van een enkel adres leidt.
         /// </summary>
         [DataMember(Name = "Detail", Order = 2)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public Uri Detail { get; set; }
 
         /// <summary>
         /// Het huisnummer.
         /// </summary>
         [DataMember(Name = "Huisnummer", Order = 3)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public string Huisnummer { get; set; }
 
         /// <summary>
         /// Het busnummer.
         /// </summary>
         [DataMember(Name = "Busnummer", Order = 4, EmitDefaultValue = false)]
+        [JsonProperty(Required = Required.Default)]
         public string Busnummer { get; set; }
 
         /// <summary>
         /// De voorstelling van een adres in het Nederlands.
         /// </summary>
         [DataMember(Name = "VolledigAdres", Order = 5)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public VolledigAdres VolledigAdres { get; set; }
 
         public AddressListItemResponse(

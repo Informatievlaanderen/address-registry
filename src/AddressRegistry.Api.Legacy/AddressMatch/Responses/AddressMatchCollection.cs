@@ -22,7 +22,6 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         /// <summary>
         /// the first 10 found address matches
         /// </summary>
-        [Required]
         [XmlArray(ElementName = "AdresMatches")]
         [XmlArrayItem(ElementName = "AdresMatch")]
         [JsonProperty(PropertyName = "AdresMatches")]
@@ -46,84 +45,98 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         /// the identifier of the address
         /// </summary>
         [DataMember(Name = "Identificator", Order = 1, EmitDefaultValue = false)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public AdresIdentificator Identificator { get; set; }
 
         /// <summary>
         /// URL returning the details of the latest version of the address
         /// </summary>
         [DataMember(Name = "Detail", Order = 2, EmitDefaultValue = false)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public string Detail { get; set; }
 
         /// <summary>
         /// municipality that is part of the address
         /// </summary>
         [DataMember(Name = "Gemeente", Order = 3, EmitDefaultValue = false)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public AdresMatchItemGemeente Gemeente { get; set; }
 
         /// <summary>
         /// postal information object that is part of the address
         /// </summary>
         [DataMember(Name = "Postinfo", Order = 4, EmitDefaultValue = false)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public AdresMatchItemPostinfo Postinfo { get; set; }
 
         /// <summary>
         /// street name that is part of the address
         /// </summary>
         [DataMember(Name = "Straatnaam", Order = 5, EmitDefaultValue = false)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public AdresMatchItemStraatnaam Straatnaam { get; set; }
 
         /// <summary>
         /// homonym addition to the street name
         /// </summary>
         [DataMember(Name = "HomoniemToevoeging", Order = 6, EmitDefaultValue = false)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public HomoniemToevoeging HomoniemToevoeging { get; set; }
 
         /// <summary>
         /// the house number
         /// </summary>
         [DataMember(Name = "Huisnummer", Order = 7, EmitDefaultValue = false)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public string Huisnummer { get; set; }
 
         /// <summary>
         /// the mailbox number
         /// </summary>
         [DataMember(Name = "Busnummer", Order = 8, EmitDefaultValue = false)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public string Busnummer { get; set; }
 
         /// <summary>
         /// the representation of an address in dutch
         /// </summary>
         [DataMember(Name = "VolledigAdres", Order = 9, EmitDefaultValue = false)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public VolledigAdres VolledigAdres { get; set; }
 
         /// <summary>
         /// the address position
         /// </summary>
         [DataMember(Name = "AdresPositie", Order = 10, EmitDefaultValue = false)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public Point AdresPositie { get; set; }
 
         /// <summary>
         /// the specification of the object represented by the position
         /// </summary>
         [DataMember(Name = "PositieSpecificatie", Order = 11, EmitDefaultValue = false)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public PositieSpecificatie? PositieSpecificatie { get; set; }
 
         /// <summary>
         /// the method used to provide the position
         /// </summary>
         [DataMember(Name = "PositieGeometrieMethode", Order = 12, EmitDefaultValue = false)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public PositieGeometrieMethode? PositieGeometrieMethode { get; set; }
 
         /// <summary>
         /// the current phase in the lifecycle of the address
         /// </summary>
         [DataMember(Name = "AdresStatus", Order = 13, EmitDefaultValue = false)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public AdresStatus? AdresStatus { get; set; }
 
         /// <summary>
         /// true if the existence of the address was not known within administrative procedures but only after observation on site
         /// </summary>
         [DataMember(Name = "OfficieelToegekend", Order = 14, EmitDefaultValue = false)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public bool? OfficieelToegekend { get; set; }
 
         /// <summary>
@@ -131,7 +144,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         /// </summary>
         [XmlArray(ElementName = "AdresseerbareObjecten", Order = 15)]
         [XmlArrayItem(ElementName = "AdresseerbaarObject")]
-        [JsonProperty(PropertyName = "AdresseerbareObjecten", Order = 15, DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [JsonProperty(PropertyName = "AdresseerbareObjecten", Order = 15, DefaultValueHandling = DefaultValueHandling.Ignore, Required = Required.DisallowNull)]
         [DataMember(Name = "AdresseerbareObjecten", Order = 15, EmitDefaultValue = false)]
         public List<AdresseerbaarObject> AdresseerbareObjecten { get; set; }
 
@@ -140,6 +153,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         /// </summary>
         [Range(0.0, 100.0)]
         [DataMember(Name = "Score", Order = 20, EmitDefaultValue = false)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public double Score { get; set; }
 
         [JsonIgnore]
@@ -167,22 +181,22 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         /// <summary>
         /// the object identifier of the coupled municipality
         /// </summary>
-        [Required]
         [DataMember(Name = "ObjectId", Order = 1)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public string ObjectId { get; set; }
 
         /// <summary>
         /// URL returning the details of the latest version of the coupled municipality
         /// </summary>
-        [Required]
         [DataMember(Name = "Detail", Order = 2)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public string Detail { get; set; }
 
         /// <summary>
         /// the municipality name in Dutch
         /// </summary>
-        [Required]
         [DataMember(Name = "Gemeentenaam", Order = 3)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public Gemeentenaam Gemeentenaam { get; set; }
     }
 
@@ -192,22 +206,22 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         /// <summary>
         /// the object identifier of the coupled street name
         /// </summary>
-        [Required]
         [DataMember(Name = "ObjectId", Order = 1)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public string ObjectId { get; set; }
 
         /// <summary>
         /// URL returning the details of the latest version of the coupled street name
         /// </summary>
-        [Required]
         [DataMember(Name = "Detail", Order = 2)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public string Detail { get; set; }
 
         /// <summary>
         /// the street name in Dutch
         /// </summary>
-        [Required]
         [DataMember(Name = "Straatnaam", Order = 3)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public Straatnaam Straatnaam { get; set; }
 
         public static AdresMatchItemStraatnaam Create(string objectId, string detail, GeografischeNaam straatnaam) =>
@@ -225,15 +239,15 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         /// <summary>
         /// the object identifier of the coupled postal information object
         /// </summary>
-        [Required]
         [DataMember(Name = "ObjectId", Order = 1)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public string ObjectId { get; set; }
 
         /// <summary>
         /// URL returning the details of the latest version of the coupled postal information object
         /// </summary>
-        [Required]
         [DataMember(Name = "Detail", Order = 2)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public string Detail { get; set; }
 
         public static AdresMatchItemPostinfo Create(string objectId, string detail) =>
@@ -258,22 +272,22 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         /// <summary>
         /// the object type of the coupled resource
         /// </summary>
-        [Required]
         [DataMember(Name = "ObjectType", Order = 1)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public ObjectType ObjectType { get; set; }
 
         /// <summary>
         /// the object identifier of the coupled resource
         /// </summary>
-        [Required]
         [DataMember(Name = "ObjectId", Order = 2)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public string ObjectId { get; set; }
 
         /// <summary>
         /// URL returning the details of the latest version of the coupled resource
         /// </summary>
-        [Required]
         [DataMember(Name = "Detail", Order = 3)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public string Detail { get; set; }
     }
 

@@ -129,7 +129,7 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETCoreApp' And $(TargetFrameworkVersion) == 'v3.1'">
       <ItemGroup>
         <Reference Include="Autofac">
-          <HintPath>..\..\packages\Autofac\lib\netstandard2.0\Autofac.dll</HintPath>
+          <HintPath>..\..\packages\Autofac\lib\netstandard2.1\Autofac.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -140,7 +140,7 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETCoreApp' And $(TargetFrameworkVersion) == 'v3.1'">
       <ItemGroup>
         <Reference Include="Autofac.Extensions.DependencyInjection">
-          <HintPath>..\..\packages\Autofac.Extensions.DependencyInjection\lib\netstandard2.0\Autofac.Extensions.DependencyInjection.dll</HintPath>
+          <HintPath>..\..\packages\Autofac.Extensions.DependencyInjection\lib\netstandard2.1\Autofac.Extensions.DependencyInjection.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

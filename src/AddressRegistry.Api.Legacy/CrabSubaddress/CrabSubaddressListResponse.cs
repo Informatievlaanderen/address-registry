@@ -9,6 +9,7 @@ namespace AddressRegistry.Api.Legacy.CrabSubaddress
     using System.Runtime.Serialization;
     using Infrastructure.Options;
     using Microsoft.Extensions.Options;
+    using Newtonsoft.Json;
     using Swashbuckle.AspNetCore.Filters;
 
     [DataContract(Name = "CrabSubadresCollectie", Namespace = "")]
@@ -18,24 +19,41 @@ namespace AddressRegistry.Api.Legacy.CrabSubaddress
         /// De verzameling van adressen.
         /// </summary>
         [DataMember(Name = "CrabSubadressen", Order = 1)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public List<CrabSubAddressListItem> Addresses { get; set; }
 
         /// <summary>
         /// Het totaal aantal gemeenten die overeenkomen met de vraag.
         /// </summary>
         [DataMember(Name = "TotaalAantal", Order = 2)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public long TotaalAantal { get; set; }
 
         /// <summary>
         /// De URL voor het ophalen van de volgende verzameling.
         /// </summary>
         [DataMember(Name = "Volgende", Order = 3, EmitDefaultValue = false)]
+        [JsonProperty(Required = Required.Default)]
         public Uri Volgende { get; set; }
     }
 
     [DataContract(Name = "CrabSubadres", Namespace = "")]
     public class CrabSubAddressListItem
     {
+        /// <summary>
+        /// Het CRAB HuisnummerId.
+        /// </summary>
+        [DataMember(Name = "ObjectId", Order = 1)]
+        [JsonProperty(Required = Required.DisallowNull)]
+        public int CrabSubadresId { get; set; }
+
+        /// <summary>
+        ///	Het corresponderend address.
+        /// </summary>
+        [DataMember(Name = "Adres", Order = 2)]
+        [JsonProperty(Required = Required.DisallowNull)]
+        public CrabAddressListItemAddress Address { get; set; }
+
         public CrabSubAddressListItem(
             int crabSubadresId,
             int persistentLocalId,
@@ -58,18 +76,6 @@ namespace AddressRegistry.Api.Legacy.CrabSubaddress
                 VolledigAdres = volledigAdres,
             };
         }
-
-        /// <summary>
-        /// Het CRAB HuisnummerId.
-        /// </summary>
-        [DataMember(Name = "ObjectId", Order = 1)]
-        public int CrabSubadresId { get; set; }
-
-        /// <summary>
-        ///	Het corresponderend address.
-        /// </summary>
-        [DataMember(Name = "Adres", Order = 2)]
-        public CrabAddressListItemAddress Address { get; set; }
     }
 
     public class CrabSubaddressListResponseExamples : IExamplesProvider<CrabSubAddressListResponse>

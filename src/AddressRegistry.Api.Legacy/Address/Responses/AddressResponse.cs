@@ -9,6 +9,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
     using Swashbuckle.AspNetCore.Filters;
     using System;
     using System.Runtime.Serialization;
+    using Newtonsoft.Json;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
     [DataContract(Name = "AdresDetail", Namespace = "")]
@@ -18,78 +19,91 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         /// De identificator van het adres.
         /// </summary>
         [DataMember(Name = "Identificator", Order = 1)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public AdresIdentificator Identificator { get; set; }
 
         /// <summary>
         /// De gemeente die deel uitmaakt van het adres.
         /// </summary>
         [DataMember(Name = "Gemeente", Order = 2)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public AdresDetailGemeente Gemeente { get; set; }
 
         /// <summary>
         /// Een PostInfo object dat deel uitmaakt van het adres.
         /// </summary>
         [DataMember(Name = "Postinfo", Order = 3)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public AdresDetailPostinfo Postinfo { get; set; }
 
         /// <summary>
         /// Een straatnaam die deel uitmaakt van het adres.
         /// </summary>
         [DataMember(Name = "Straatnaam", Order = 4)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public AdresDetailStraatnaam Straatnaam { get; set; }
 
         /// <summary>
         /// Homoniem toevoeging aan de straatnaam.
         /// </summary>
         [DataMember(Name = "HomoniemToevoeging", Order = 5, EmitDefaultValue = false)]
+        [JsonProperty(Required = Required.Default)]
         public HomoniemToevoeging HomoniemToevoeging { get; set; }
 
         /// <summary>
         /// Het huisnummer.
         /// </summary>
         [DataMember(Name = "Huisnummer", Order = 6)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public string Huisnummer { get; set; }
 
         /// <summary>
         /// Het nummer van de bus.
         /// </summary>
         [DataMember(Name = "Busnummer", Order = 7, EmitDefaultValue = false)]
+        [JsonProperty(Required = Required.Default)]
         public string Busnummer { get; set; }
 
         /// <summary>
         /// De voorstelling van een adres in het Nederlands.
         /// </summary>
         [DataMember(Name = "VolledigAdres", Order = 8)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public VolledigAdres VolledigAdres { get; set; }
 
         /// <summary>
         /// De positie van het adres.
         /// </summary>
         [DataMember(Name = "AdresPositie", Order = 9)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public Point AdresPositie { get; set; }
 
         /// <summary>
         /// De gebruikte methode om de positie te bepalen.
         /// </summary>
         [DataMember(Name = "PositieGeometrieMethode", Order = 10)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public PositieGeometrieMethode? PositieGeometrieMethode { get; set; }
 
         /// <summary>
         /// De specificatie van het object, voorgesteld door de positie.
         /// </summary>
         [DataMember(Name = "PositieSpecificatie", Order = 11)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public PositieSpecificatie PositieSpecificatie { get; set; }
 
         /// <summary>
         /// De fase in het leven van het adres.
         /// </summary>
         [DataMember(Name = "AdresStatus", Order = 12)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public AdresStatus AdresStatus { get; set; }
 
         /// <summary>
         /// False wanneer het bestaan van het adres niet geweten is ten tijde van administratieve procedures, maar pas na observatie op het terrein.
         /// </summary>
         [DataMember(Name = "OfficieelToegekend", Order = 13)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public bool OfficieelToegekend { get; set; }
 
         public AddressResponse(
@@ -173,29 +187,25 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
 
     public class AddressNotFoundResponseExamples : IExamplesProvider<ProblemDetails>
     {
-        public ProblemDetails GetExamples()
-        {
-            return new ProblemDetails
+        public ProblemDetails GetExamples() =>
+            new ProblemDetails
             {
                 HttpStatus = StatusCodes.Status404NotFound,
                 Title = ProblemDetails.DefaultTitle,
                 Detail = "Onbestaand adres.",
                 ProblemInstanceUri = ProblemDetails.GetProblemNumber()
             };
-        }
     }
 
     public class AddressGoneResponseExamples : IExamplesProvider<ProblemDetails>
     {
-        public ProblemDetails GetExamples()
-        {
-            return new ProblemDetails
+        public ProblemDetails GetExamples() =>
+            new ProblemDetails
             {
                 HttpStatus = StatusCodes.Status410Gone,
                 Title = ProblemDetails.DefaultTitle,
                 Detail = "Adres werd verwijderd.",
                 ProblemInstanceUri = ProblemDetails.GetProblemNumber()
             };
-        }
     }
 }

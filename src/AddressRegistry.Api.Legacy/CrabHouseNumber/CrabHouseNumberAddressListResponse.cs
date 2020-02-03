@@ -8,6 +8,7 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
     using System.Runtime.Serialization;
     using Infrastructure.Options;
     using Microsoft.Extensions.Options;
+    using Newtonsoft.Json;
     using Swashbuckle.AspNetCore.Filters;
 
     [DataContract(Name = "CrabHuisnummerCollectie", Namespace = "")]
@@ -17,24 +18,41 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
         /// De verzameling van adressen.
         /// </summary>
         [DataMember(Name = "CrabHuisnummers", Order = 1)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public List<CrabHouseNumberAddressListItem> Addresses { get; set; }
 
         /// <summary>
         /// Het totaal aantal gemeenten die overeenkomen met de vraag.
         /// </summary>
         [DataMember(Name = "TotaalAantal", Order = 2)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public long TotaalAantal { get; set; }
 
         /// <summary>
         /// De URL voor het ophalen van de volgende verzameling.
         /// </summary>
         [DataMember(Name = "Volgende", Order = 3, EmitDefaultValue = false)]
+        [JsonProperty(Required = Required.Default)]
         public Uri Volgende { get; set; }
     }
 
     [DataContract(Name = "CrabHuisnummer", Namespace = "")]
     public class CrabHouseNumberAddressListItem
     {
+        /// <summary>
+        /// Het CRAB HuisnummerId.
+        /// </summary>
+        [DataMember(Name = "ObjectId", Order = 1)]
+        [JsonProperty(Required = Required.DisallowNull)]
+        public int CrabHouseNumberId { get; set; }
+
+        /// <summary>
+        ///	Het corresponderend address.
+        /// </summary>
+        [DataMember(Name = "Adres", Order = 2)]
+        [JsonProperty(Required = Required.DisallowNull)]
+        public CrabAddressListItemAddress Address { get; set; }
+
         public CrabHouseNumberAddressListItem(
             int crabHouseNumberId,
             int persistentLocalId,
@@ -55,18 +73,6 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
                 VolledigAdres = volledigAdres,
             };
         }
-
-        /// <summary>
-        /// Het CRAB HuisnummerId.
-        /// </summary>
-        [DataMember(Name = "ObjectId", Order = 1)]
-        public int CrabHouseNumberId { get; set; }
-
-        /// <summary>
-        ///	Het corresponderend address.
-        /// </summary>
-        [DataMember(Name = "Adres", Order = 2)]
-        public CrabAddressListItemAddress Address { get; set; }
     }
 
     [DataContract(Name = "CrabHuisnummerSubadresAdres", Namespace = "")]
@@ -76,36 +82,42 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
         /// True als het adres volledig is (heeft status en positie).
         /// </summary>
         [DataMember(Name = "IsVolledig", Order = 1)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public bool IsComplete { get; set; }
 
         /// <summary>
         /// De identificator van het adres.
         /// </summary>
         [DataMember(Name = "Identificator", Order = 2)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public AdresIdentificator Identificator { get; set; }
 
         /// <summary>
         /// De URL die naar de details van de meeste recente versie van een enkele straatnaam leidt.
         /// </summary>
         [DataMember(Name = "Detail", Order = 3)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public Uri Detail { get; set; }
 
         /// <summary>
         /// Het huisnummer.
         /// </summary>
         [DataMember(Name = "Huisnummer", Order = 4)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public string Huisnummer { get; set; }
 
         /// <summary>
         /// Het nummer van de bus.
         /// </summary>
         [DataMember(Name = "Busnummer", Order = 5, EmitDefaultValue = false)]
+        [JsonProperty(Required = Required.Default)]
         public string Busnummer { get; set; }
 
         /// <summary>
         /// De voorstelling van een adres in het Nederlands.
         /// </summary>
         [DataMember(Name = "VolledigAdres", Order = 6)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public VolledigAdres VolledigAdres { get; set; }
     }
 

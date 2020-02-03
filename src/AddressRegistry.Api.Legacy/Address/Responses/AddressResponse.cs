@@ -190,6 +190,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         public ProblemDetails GetExamples() =>
             new ProblemDetails
             {
+                ProblemTypeUri = "urn:be.vlaanderen.basisregisters.api:address:not-found",
                 HttpStatus = StatusCodes.Status404NotFound,
                 Title = ProblemDetails.DefaultTitle,
                 Detail = "Onbestaand adres.",
@@ -202,6 +203,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         public ProblemDetails GetExamples() =>
             new ProblemDetails
             {
+                ProblemTypeUri = "urn:be.vlaanderen.basisregisters.api:address:gone",
                 HttpStatus = StatusCodes.Status410Gone,
                 Title = ProblemDetails.DefaultTitle,
                 Detail = "Adres werd verwijderd.",

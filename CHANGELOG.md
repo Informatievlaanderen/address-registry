@@ -1,3 +1,10 @@
+## [2.6.4](https://github.com/informatievlaanderen/address-registry/compare/v2.6.3...v2.6.4) (2020-02-04)
+
+
+### Bug Fixes
+
+* update api for problemdetails fix ([facf7d6](https://github.com/informatievlaanderen/address-registry/commit/facf7d6))
+
 ## [2.6.3](https://github.com/informatievlaanderen/address-registry/compare/v2.6.2...v2.6.3) (2020-02-03)
 
 

@@ -1,3 +1,10 @@
+## [2.6.5](https://github.com/informatievlaanderen/address-registry/compare/v2.6.4...v2.6.5) (2020-02-04)
+
+
+### Bug Fixes
+
+* force build ([bdb53f5](https://github.com/informatievlaanderen/address-registry/commit/bdb53f5))
+
 ## [2.6.4](https://github.com/informatievlaanderen/address-registry/compare/v2.6.3...v2.6.4) (2020-02-04)
 
 

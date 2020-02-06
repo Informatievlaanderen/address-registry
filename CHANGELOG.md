@@ -1,3 +1,10 @@
+## [2.6.6](https://github.com/informatievlaanderen/address-registry/compare/v2.6.5...v2.6.6) (2020-02-06)
+
+
+### Bug Fixes
+
+* remove english text from addressmatch example ([4c1b04f](https://github.com/informatievlaanderen/address-registry/commit/4c1b04f))
+
 ## [2.6.5](https://github.com/informatievlaanderen/address-registry/compare/v2.6.4...v2.6.5) (2020-02-04)
 
 

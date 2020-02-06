@@ -351,7 +351,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
                 },
                 Warnings = new List<ValidationMessage>
                 {
-                    new ValidationMessage { Code="4", Message = "Unknown 'Postcode' - Onbekende 'Postcode'." }
+                    new ValidationMessage { Code="4", Message = "Onbekende 'Postcode'." }
                 }
             };
         }

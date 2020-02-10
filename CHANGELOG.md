@@ -1,3 +1,10 @@
+## [2.6.7](https://github.com/informatievlaanderen/address-registry/compare/v2.6.6...v2.6.7) (2020-02-10)
+
+
+### Bug Fixes
+
+* JSON default value for nullable fields ([50ac4f4](https://github.com/informatievlaanderen/address-registry/commit/50ac4f4))
+
 ## [2.6.6](https://github.com/informatievlaanderen/address-registry/compare/v2.6.5...v2.6.6) (2020-02-06)
 
 

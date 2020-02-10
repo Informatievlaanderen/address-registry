@@ -48,7 +48,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         /// Homoniem toevoeging aan de straatnaam.
         /// </summary>
         [DataMember(Name = "HomoniemToevoeging", Order = 5, EmitDefaultValue = false)]
-        [JsonProperty(Required = Required.Default)]
+        [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Ignore)]
         public HomoniemToevoeging HomoniemToevoeging { get; set; }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         /// Het nummer van de bus.
         /// </summary>
         [DataMember(Name = "Busnummer", Order = 7, EmitDefaultValue = false)]
-        [JsonProperty(Required = Required.Default)]
+        [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string Busnummer { get; set; }
 
         /// <summary>

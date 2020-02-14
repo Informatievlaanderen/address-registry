@@ -1,3 +1,10 @@
+## [2.6.9](https://github.com/informatievlaanderen/address-registry/compare/v2.6.8...v2.6.9) (2020-02-14)
+
+
+### Bug Fixes
+
+* add index on list ([457bcf9](https://github.com/informatievlaanderen/address-registry/commit/457bcf9))
+
 ## [2.6.8](https://github.com/informatievlaanderen/address-registry/compare/v2.6.7...v2.6.8) (2020-02-14)
 
 

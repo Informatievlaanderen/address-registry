@@ -1,3 +1,11 @@
+## [2.6.8](https://github.com/informatievlaanderen/address-registry/compare/v2.6.7...v2.6.8) (2020-02-14)
+
+
+### Bug Fixes
+
+* correct addressmatch response streetname url ([3a87e45](https://github.com/informatievlaanderen/address-registry/commit/3a87e45))
+* filter addresses with no persistentlocalid from list ([d6bbf42](https://github.com/informatievlaanderen/address-registry/commit/d6bbf42))
+
 ## [2.6.7](https://github.com/informatievlaanderen/address-registry/compare/v2.6.6...v2.6.7) (2020-02-10)
 
 

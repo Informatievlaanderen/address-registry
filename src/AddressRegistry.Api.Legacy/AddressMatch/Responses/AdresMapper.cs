@@ -43,7 +43,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
                 Straatnaam = new AdresMatchItemStraatnaam
                 {
                     ObjectId = streetName.PersistentLocalId,
-                    Detail = string.Format(_responseOptions.StraatnaamDetailUrl, source.PersistentLocalId),
+                    Detail = string.Format(_responseOptions.StraatnaamDetailUrl, streetName.PersistentLocalId),
                     Straatnaam = new Straatnaam(new GeografischeNaam(defaultStreetName.Value, defaultStreetName.Key)),
                 },
                 HomoniemToevoeging = homonym == null ? null : new HomoniemToevoeging(new GeografischeNaam(homonym.Value.Value, homonym.Value.Key)),

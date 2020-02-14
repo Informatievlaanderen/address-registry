@@ -25,7 +25,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             var addresses = _context
                 .AddressList
                 .AsNoTracking()
-                .Where(a => a.Complete && !a.Removed);
+                .Where(a => a.Complete && !a.Removed && a.PersistentLocalId != 0);
 
             var municipalities = _context
                 .MunicipalityLatestItems

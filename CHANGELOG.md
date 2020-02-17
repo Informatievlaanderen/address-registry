@@ -1,3 +1,10 @@
+## [2.6.11](https://github.com/informatievlaanderen/address-registry/compare/v2.6.10...v2.6.11) (2020-02-17)
+
+
+### Bug Fixes
+
+* upgrade packages to fix json order ([3359927](https://github.com/informatievlaanderen/address-registry/commit/3359927))
+
 ## [2.6.10](https://github.com/informatievlaanderen/address-registry/compare/v2.6.9...v2.6.10) (2020-02-17)
 
 

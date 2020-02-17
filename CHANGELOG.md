@@ -1,3 +1,10 @@
+## [2.6.10](https://github.com/informatievlaanderen/address-registry/compare/v2.6.9...v2.6.10) (2020-02-17)
+
+
+### Bug Fixes
+
+* upgrade Grar Common libs ([a3a202f](https://github.com/informatievlaanderen/address-registry/commit/a3a202f))
+
 ## [2.6.9](https://github.com/informatievlaanderen/address-registry/compare/v2.6.8...v2.6.9) (2020-02-14)
 
 

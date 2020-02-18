@@ -1,3 +1,10 @@
+## [2.6.12](https://github.com/informatievlaanderen/address-registry/compare/v2.6.11...v2.6.12) (2020-02-18)
+
+
+### Bug Fixes
+
+* nullability for addressmatch tables is now correct ([31cdd80](https://github.com/informatievlaanderen/address-registry/commit/31cdd80))
+
 ## [2.6.11](https://github.com/informatievlaanderen/address-registry/compare/v2.6.10...v2.6.11) (2020-02-17)
 
 

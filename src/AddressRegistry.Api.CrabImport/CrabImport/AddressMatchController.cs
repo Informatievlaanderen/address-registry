@@ -16,6 +16,7 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Projections.Legacy.AddressMatch;
 
     [ApiVersion("1.0")]
@@ -75,8 +76,13 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
             var dataTable = new DataTable();
             dataTable.Columns.Add(nameof(RRStreetName.StreetNameId), typeof(int));
             dataTable.Columns.Add(nameof(RRStreetName.StreetName), typeof(string));
+            dataTable.Columns[nameof(RRStreetName.StreetName)].AllowDBNull = true;
+
             dataTable.Columns.Add(nameof(RRStreetName.StreetCode), typeof(string));
+            dataTable.Columns[nameof(RRStreetName.StreetCode)].AllowDBNull = true;
+
             dataTable.Columns.Add(nameof(RRStreetName.PostalCode), typeof(string));
+            dataTable.Columns[nameof(RRStreetName.PostalCode)].AllowDBNull = true;
 
             ExtractAndTransform(RrStreetNamesFileName, dataTable);
             Load(connection, transaction, destinationTableName, dataTable);
@@ -87,8 +93,12 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
             var destinationTableName = $"{Schema.Legacy}.{KadStreetName.TableName}";
             var dataTable = new DataTable();
             dataTable.Columns.Add(nameof(KadStreetName.StreetNameId), typeof(int));
+
             dataTable.Columns.Add(nameof(KadStreetName.KadStreetNameCode), typeof(string));
+            dataTable.Columns[nameof(KadStreetName.KadStreetNameCode)].AllowDBNull = true;
+
             dataTable.Columns.Add(nameof(KadStreetName.NisCode), typeof(string));
+            dataTable.Columns[nameof(KadStreetName.NisCode)].AllowDBNull = true;
 
             ExtractAndTransform(KadStreetNamesFileName, dataTable);
             Load(connection, transaction, destinationTableName, dataTable);
@@ -100,10 +110,18 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
             var dataTable = new DataTable();
             dataTable.Columns.Add(nameof(RRAddress.AddressId), typeof(int));
             dataTable.Columns.Add(nameof(RRAddress.AddressType), typeof(string));
+
             dataTable.Columns.Add(nameof(RRAddress.RRHouseNumber), typeof(string));
+            dataTable.Columns[nameof(RRAddress.RRHouseNumber)].AllowDBNull = true;
+
             dataTable.Columns.Add(nameof(RRAddress.RRIndex), typeof(string));
+            dataTable.Columns[nameof(RRAddress.RRIndex)].AllowDBNull = true;
+
             dataTable.Columns.Add(nameof(RRAddress.StreetCode), typeof(string));
+            dataTable.Columns[nameof(RRAddress.StreetCode)].AllowDBNull = true;
+
             dataTable.Columns.Add(nameof(RRAddress.PostalCode), typeof(string));
+            dataTable.Columns[nameof(RRAddress.PostalCode)].AllowDBNull = true;
 
             ExtractAndTransform(RrAddressesFileName, dataTable);
             Load(connection, transaction, destinationTableName, dataTable);
@@ -136,7 +154,12 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
                     var row = dataTable.NewRow();
                     foreach (DataColumn column in dataTable.Columns)
                     {
-                        row[column.ColumnName] = reader.GetField(column.DataType, column.ColumnName);
+                        var value = reader.GetField(column.DataType, column.ColumnName);
+
+                        if (value is string stringValue && stringValue == string.Empty)
+                            row[column.ColumnName] = null;
+                        else
+                            row[column.ColumnName] = value;
                     }
 
                     dataTable.Rows.Add(row);

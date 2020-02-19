@@ -44,12 +44,6 @@ namespace AddressRegistry.Projections.Legacy.AddressDetail
                 .HasKey(p => p.AddressId)
                 .IsClustered(false);
 
-            b.HasIndex(p => p.PersistentLocalId)
-                .IsClustered();
-
-            // This speeds up AddressBosaQuery's huge StreetNameId IN (...) AND Complete = 1 query
-            b.HasIndex(p => new { p.StreetNameId, p.Complete });
-
             b.Property(p => p.VersionTimestampAsDateTimeOffset)
                 .HasColumnName("VersionTimestamp");
 
@@ -67,6 +61,11 @@ namespace AddressRegistry.Projections.Legacy.AddressDetail
             b.Property(p => p.Status);
             b.Property(p => p.Removed);
 
+            b.HasIndex(p => p.PersistentLocalId)
+                .IsClustered();
+
+            // This speeds up AddressBosaQuery's huge StreetNameId IN (...) AND Complete = 1 query
+            b.HasIndex(p => new { p.StreetNameId, p.Complete });
             b.HasIndex(p => p.HouseNumber);
             b.HasIndex(p => p.BoxNumber);
             b.HasIndex(p => p.Status);

@@ -49,7 +49,7 @@ namespace AddressRegistry.Projections.Syndication.PostalInfo
                 .HasForeignKey("PostalCode")
                 .IsRequired();
 
-            builder.HasIndex(p => p.NisCode);
+            builder.HasIndex(p => p.NisCode).IsClustered();
         }
     }
 

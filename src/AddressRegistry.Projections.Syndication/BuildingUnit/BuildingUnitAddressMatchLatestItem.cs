@@ -34,7 +34,7 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
             builder.Property(x => x.IsComplete);
             builder.Property(x => x.IsRemoved);
 
-            builder.HasIndex(x => x.AddressId);
+            builder.HasIndex(x => x.AddressId).IsClustered();
             builder.HasIndex(x => new { x.IsComplete, x.IsRemoved });
             builder.HasIndex(x => x.BuildingId);
         }

@@ -25,6 +25,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             var addresses = _context
                 .AddressList
                 .AsNoTracking()
+                .OrderBy(x => x.PersistentLocalId)
                 .Where(a => a.Complete && !a.Removed && a.PersistentLocalId != 0);
 
             var municipalities = _context

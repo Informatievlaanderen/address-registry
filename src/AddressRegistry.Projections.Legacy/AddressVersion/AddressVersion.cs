@@ -93,7 +93,7 @@ namespace AddressRegistry.Projections.Legacy.AddressVersion
                 .HasKey(p => new { p.AddressId, p.StreamPosition })
                 .IsClustered(false);
 
-            b.HasIndex(p => p.PersistentLocalId);
+            b.HasIndex(p => p.PersistentLocalId).IsClustered();
 
             b.Property(p => p.StreetNameId);
 

@@ -45,7 +45,7 @@ namespace AddressRegistry.Projections.Syndication.StreetName
         {
             builder.ToTable(TableName, Schema.Syndication)
                 .HasKey(x => x.StreetNameId)
-                .IsClustered(false);
+                .IsClustered();
 
             builder.Property(x => x.NisCode);
             builder.Property(x => x.PersistentLocalId);

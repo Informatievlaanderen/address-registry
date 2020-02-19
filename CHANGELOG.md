@@ -1,3 +1,10 @@
+## [2.6.13](https://github.com/informatievlaanderen/address-registry/compare/v2.6.12...v2.6.13) (2020-02-19)
+
+
+### Bug Fixes
+
+* add order in api's + add clustered indexes ([8b87409](https://github.com/informatievlaanderen/address-registry/commit/8b87409))
+
 ## [2.6.12](https://github.com/informatievlaanderen/address-registry/compare/v2.6.11...v2.6.12) (2020-02-18)
 
 

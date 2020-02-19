@@ -31,7 +31,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
 
         public async Task<AddressBosaResponse> Filter(BosaAddressRequest filter)
         {
-            var addressesQuery = _context.AddressDetail.AsNoTracking().Where(x => x.Complete && !x.Removed);
+            var addressesQuery = _context.AddressDetail.AsNoTracking().OrderBy(x => x.PersistentLocalId).Where(x => x.Complete && !x.Removed);
             var streetNamesQuery = _context.StreetNameBosaItems.AsNoTracking().Where(x => x.IsComplete);
             var municipalitiesQuery = _context.MunicipalityBosaItems.AsNoTracking();
 

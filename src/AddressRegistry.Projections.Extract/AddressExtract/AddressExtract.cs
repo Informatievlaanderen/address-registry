@@ -10,8 +10,8 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
         public Guid? AddressId { get; set; }
         public int AddressPersistentLocalId { get; set; }
         public bool Complete { get; set; }
-        public byte[] DbaseRecord { get; set; }
-        public byte[] ShapeRecordContent { get; set; }
+        public byte[]? DbaseRecord { get; set; }
+        public byte[]? ShapeRecordContent { get; set; }
         public int ShapeRecordContentLength { get; set; }
         public double MinimumX { get; set; }
         public double MaximumX { get; set; }
@@ -45,7 +45,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
             builder.HasIndex(p => p.StreetNameId);
             builder.HasIndex(p => p.NisCode);
             builder.HasIndex(p => p.Complete);
-            builder.HasIndex(p => p.AddressPersistentLocalId);
+            builder.HasIndex(p => p.AddressPersistentLocalId).IsClustered();
         }
     }
 }

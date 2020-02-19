@@ -281,6 +281,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
         {
             var addresses = _context
                 .AddressSyndication
+                .OrderBy(x => x.Position)
                 .AsNoTracking();
 
             if (!filtering.ShouldFilter)

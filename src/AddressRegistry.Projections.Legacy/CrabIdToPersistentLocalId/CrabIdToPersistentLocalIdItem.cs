@@ -56,7 +56,7 @@ namespace AddressRegistry.Projections.Legacy.CrabIdToPersistentLocalId
             b.Ignore(x => x.VersionTimestamp);
 
             b.HasIndex(p => p.PersistentLocalId).IsUnique();
-            b.HasIndex(p => p.HouseNumberId);
+            b.HasIndex(p => p.HouseNumberId).IsClustered(); //Had to choose between this and subaddress id, HouseNumberId collection is 3x larger than SubaddressId
             b.HasIndex(p => p.SubaddressId);
             b.HasIndex(p => p.IsRemoved);
         }

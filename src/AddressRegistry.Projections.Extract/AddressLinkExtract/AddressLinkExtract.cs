@@ -9,7 +9,7 @@ namespace AddressRegistry.Projections.Extract.AddressLinkExtract
     {
         public Guid AddressId { get; set; }
         public int PersistentLocalId { get; set; }
-        public byte[] DbaseRecord { get; set; }
+        public byte[]? DbaseRecord { get; set; }
         public bool Complete { get; set; }
         public string? HouseNumber { get; set; }
         public string? BoxNumber { get; set; }
@@ -35,7 +35,7 @@ namespace AddressRegistry.Projections.Extract.AddressLinkExtract
             builder.Property(p => p.BoxNumber);
             builder.Property(p => p.PostalCode);
 
-            builder.HasIndex(p => p.PersistentLocalId);
+            builder.HasIndex(p => p.PersistentLocalId).IsClustered();
         }
     }
 }

@@ -59,6 +59,7 @@ namespace AddressRegistry.Projections.Legacy.AddressList
             b.HasIndex(p => new { p.Complete, p.Removed });
             b.HasIndex(p => new { p.Complete, p.Removed, p.PersistentLocalId });
             b.HasIndex(p => p.StreetNameId);
+            b.HasIndex(p => p.PersistentLocalId).IsClustered();
         }
     }
 }

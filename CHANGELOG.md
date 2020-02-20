@@ -1,3 +1,10 @@
+## [2.6.14](https://github.com/informatievlaanderen/address-registry/compare/v2.6.13...v2.6.14) (2020-02-20)
+
+
+### Bug Fixes
+
+* update grar common ([db32910](https://github.com/informatievlaanderen/address-registry/commit/db32910))
+
 ## [2.6.13](https://github.com/informatievlaanderen/address-registry/compare/v2.6.12...v2.6.13) (2020-02-19)
 
 

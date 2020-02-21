@@ -44,7 +44,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
 
                 var address = addressesQuery.FirstOrDefault();
                 if (address == null)
-                    return new AddressBosaResponse { Adressen = new List<AddressBosaResponseItem>(), TotaalAantal = 0 };
+                    return new AddressBosaResponse { Adressen = new List<AddressBosaResponseItem>() };
 
                 streetNamesQuery = (await streetNamesQuery
                     .Where(x => x.StreetNameId == address.StreetNameId)
@@ -90,7 +90,6 @@ namespace AddressRegistry.Api.Legacy.Address.Query
 
             var municipalities = filteredMunicipalities.Select(x => new { x.NisCode, x.Version }).ToList();
             var streetNames = filteredStreetNames.Select(x => new { x.StreetNameId, x.PersistentLocalId, x.Version, x.NisCode }).ToList();
-            var count = filteredAddresses.Count();
 
             var addresses = filteredAddresses
                     .Take(1000)
@@ -129,7 +128,6 @@ namespace AddressRegistry.Api.Legacy.Address.Query
 
             return new AddressBosaResponse
             {
-                TotaalAantal = count,
                 Adressen = addresses
             };
         }

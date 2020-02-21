@@ -153,14 +153,8 @@ namespace AddressRegistry.Api.Legacy.Address
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
-            long Count(IQueryable<AddressListItem> items) => context.AddressListViewCount.Single().Count;
-
             var pagedAddresses = new AddressListQuery(queryContext)
-                .Fetch(
-                    filtering,
-                    sorting,
-                    pagination,
-                    filtering.ShouldFilter ? null : (Func<IQueryable<AddressListItem>, long>) Count);
+                .Fetch(filtering, sorting, pagination);
 
             Response.AddPagedQueryResultHeaders(pagedAddresses);
 
@@ -216,7 +210,6 @@ namespace AddressRegistry.Api.Legacy.Address
             return Ok(new AddressListResponse
             {
                 Adressen = addressListItemResponses,
-                TotaalAantal = pagedAddresses.PaginationInfo.TotalItems,
                 Volgende = pagedAddresses.PaginationInfo.BuildNextUri(responseOptions.Value.VolgendeUrl)
             });
         }
@@ -251,7 +244,7 @@ namespace AddressRegistry.Api.Legacy.Address
                 context,
                 filtering.Filter?.ContainsEvent ?? false,
                 filtering.Filter?.ContainsObject ?? false)
-                .Fetch(filtering, sorting, pagination, items => 0);
+                .Fetch(filtering, sorting, pagination);
 
             Response.AddPagedQueryResultHeaders(pagedAddresses);
 

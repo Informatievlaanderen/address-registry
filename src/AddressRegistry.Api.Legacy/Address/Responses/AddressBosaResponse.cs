@@ -22,8 +22,8 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         /// <summary>
         /// The total number of municipalities matching the request
         /// </summary>
-        [DataMember(Name = "TotaalAantal")]
-        public long TotaalAantal { get; set; }
+        //[DataMember(Name = "TotaalAantal")]
+        //public long TotaalAantal { get; set; }
 
         public AddressBosaResponse()
         {
@@ -195,7 +195,6 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             return new AddressBosaResponse
             {
                 Adressen = addressBosaResponseItems,
-                TotaalAantal = 3
             };
         }
     }

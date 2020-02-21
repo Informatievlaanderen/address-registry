@@ -61,7 +61,7 @@ NUGET
       Be.Vlaanderen.Basisregisters.AggregateSource.Testing (4.2) - restriction: || (&& (== net472) (>= netcoreapp3.1)) (== netcoreapp3.1)
       Microsoft.Extensions.Logging (>= 3.1.1) - restriction: || (&& (== net472) (>= netcoreapp3.1)) (== netcoreapp3.1)
       xunit (>= 2.4.1) - restriction: || (&& (== net472) (>= netcoreapp3.1)) (== netcoreapp3.1)
-    Be.Vlaanderen.Basisregisters.Api (10.8)
+    Be.Vlaanderen.Basisregisters.Api (11.0)
       Autofac (>= 5.0) - restriction: || (&& (== net472) (>= netcoreapp3.1)) (== netcoreapp3.1)
       Autofac.Extensions.DependencyInjection (>= 6.0) - restriction: || (&& (== net472) (>= netcoreapp3.1)) (== netcoreapp3.1)
       Be.Vlaanderen.Basisregisters.AggregateSource (>= 4.2) - restriction: || (&& (== net472) (>= netcoreapp3.1)) (== netcoreapp3.1)

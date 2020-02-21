@@ -91,7 +91,6 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
             return Ok(new CrabHouseNumberAddressListResponse
             {
                 Addresses = addressListItemResponses,
-                TotaalAantal = pagedAddresses.PaginationInfo.TotalItems,
                 Volgende = pagedAddresses.PaginationInfo.BuildNextUri(responseOptions.Value.CrabHuisnummersVolgendeUrl)
             });
         }

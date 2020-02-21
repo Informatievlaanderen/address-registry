@@ -12,7 +12,7 @@ namespace AddressRegistry.Api.Legacy.Address
             var offset = paginationInfo.Offset;
             var limit = paginationInfo.Limit;
 
-            return offset + limit < paginationInfo.TotalItems
+            return paginationInfo.HasNextPage
                 ? new Uri(string.Format(volgendeUrlBase, offset + limit, limit))
                 : null;
         }

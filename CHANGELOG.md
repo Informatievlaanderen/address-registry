@@ -1,3 +1,10 @@
+## [2.6.15](https://github.com/informatievlaanderen/address-registry/compare/v2.6.14...v2.6.15) (2020-02-21)
+
+
+### Performance Improvements
+
+* increase performance by removing count from lists ([2b842b9](https://github.com/informatievlaanderen/address-registry/commit/2b842b9))
+
 ## [2.6.14](https://github.com/informatievlaanderen/address-registry/compare/v2.6.13...v2.6.14) (2020-02-20)
 
 

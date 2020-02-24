@@ -100,9 +100,11 @@ namespace AddressRegistry.Api.Legacy.Address
                 string.Format(responseOptions.Value.StraatnaamDetailUrl, streetName.PersistentLocalId),
                 new GeografischeNaam(defaultStreetName.Value, defaultStreetName.Key));
 
-            var postInfo = new AdresDetailPostinfo(
-                address.PostalCode,
-                string.Format(responseOptions.Value.PostInfoDetailUrl, address.PostalCode));
+            var postInfo = string.IsNullOrEmpty(address.PostalCode)
+                ? null
+                : new AdresDetailPostinfo(
+                    address.PostalCode,
+                    string.Format(responseOptions.Value.PostInfoDetailUrl, address.PostalCode));
 
             var homoniemToevoeging = defaultHomonymAddition == null
                 ? null

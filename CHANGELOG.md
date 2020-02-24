@@ -1,3 +1,10 @@
+## [2.6.16](https://github.com/informatievlaanderen/address-registry/compare/v2.6.15...v2.6.16) (2020-02-24)
+
+
+### Bug Fixes
+
+* no postal code now returns address ([27f9efd](https://github.com/informatievlaanderen/address-registry/commit/27f9efd))
+
 ## [2.6.15](https://github.com/informatievlaanderen/address-registry/compare/v2.6.14...v2.6.15) (2020-02-21)
 
 

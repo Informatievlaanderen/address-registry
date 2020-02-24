@@ -1,3 +1,10 @@
+## [2.6.18](https://github.com/informatievlaanderen/address-registry/compare/v2.6.17...v2.6.18) (2020-02-24)
+
+
+### Bug Fixes
+
+* update projection handling & sync migrator ([49b1ae1](https://github.com/informatievlaanderen/address-registry/commit/49b1ae1))
+
 ## [2.6.17](https://github.com/informatievlaanderen/address-registry/compare/v2.6.16...v2.6.17) (2020-02-24)
 
 

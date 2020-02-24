@@ -1,3 +1,10 @@
+## [2.6.17](https://github.com/informatievlaanderen/address-registry/compare/v2.6.16...v2.6.17) (2020-02-24)
+
+
+### Bug Fixes
+
+* increase migrator timeout ([dc157f3](https://github.com/informatievlaanderen/address-registry/commit/dc157f3))
+
 ## [2.6.16](https://github.com/informatievlaanderen/address-registry/compare/v2.6.15...v2.6.16) (2020-02-24)
 
 

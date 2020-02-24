@@ -56,10 +56,7 @@ namespace AddressRegistry.Projections.Syndication
                 migratorOptions = migratorOptions.UseLoggerFactory(loggerFactory);
 
             using (var migrator = new SyndicationContext(migratorOptions.Options))
-            {
-                migrator.Database.SetCommandTimeout(new TimeSpan(1, 0, 0, 0));
-                await migrator.Database.MigrateAsync(cancellationToken);
-            }
+                await migrator.MigrateAsync(cancellationToken);
         }
     }
 }

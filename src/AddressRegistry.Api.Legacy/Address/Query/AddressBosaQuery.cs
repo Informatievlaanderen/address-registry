@@ -92,7 +92,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             var streetNames = filteredStreetNames.Select(x => new { x.StreetNameId, x.PersistentLocalId, x.Version, x.NisCode }).ToList();
 
             var addresses = filteredAddresses
-                    .Take(1000)
+                    .Take(1001)
                     .ToList()
                     .Select(x =>
                     {

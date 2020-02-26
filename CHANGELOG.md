@@ -1,3 +1,10 @@
+## [2.6.19](https://github.com/informatievlaanderen/address-registry/compare/v2.6.18...v2.6.19) (2020-02-26)
+
+
+### Bug Fixes
+
+* increase bosa result size to 1001 ([3e11800](https://github.com/informatievlaanderen/address-registry/commit/3e11800))
+
 ## [2.6.18](https://github.com/informatievlaanderen/address-registry/compare/v2.6.17...v2.6.18) (2020-02-24)
 
 

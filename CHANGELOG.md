@@ -1,3 +1,11 @@
+## [2.6.20](https://github.com/informatievlaanderen/address-registry/compare/v2.6.19...v2.6.20) (2020-02-27)
+
+
+### Bug Fixes
+
+* correct url in default configuration ([f09a7e0](https://github.com/informatievlaanderen/address-registry/commit/f09a7e0))
+* update api dependencies for json serialization ([22ecac3](https://github.com/informatievlaanderen/address-registry/commit/22ecac3))
+
 ## [2.6.19](https://github.com/informatievlaanderen/address-registry/compare/v2.6.18...v2.6.19) (2020-02-26)
 
 

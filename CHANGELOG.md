@@ -1,3 +1,10 @@
+## [2.6.22](https://github.com/informatievlaanderen/address-registry/compare/v2.6.21...v2.6.22) (2020-03-03)
+
+
+### Bug Fixes
+
+* update dockerid detection ([44b0131](https://github.com/informatievlaanderen/address-registry/commit/44b0131))
+
 ## [2.6.21](https://github.com/informatievlaanderen/address-registry/compare/v2.6.20...v2.6.21) (2020-03-03)
 
 

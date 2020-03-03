@@ -1,3 +1,11 @@
+## [2.6.21](https://github.com/informatievlaanderen/address-registry/compare/v2.6.20...v2.6.21) (2020-03-03)
+
+
+### Bug Fixes
+
+* bump netcore to 3.1.2 ([153dc49](https://github.com/informatievlaanderen/address-registry/commit/153dc49))
+* update dockerid detection ([2bb63f4](https://github.com/informatievlaanderen/address-registry/commit/2bb63f4))
+
 ## [2.6.20](https://github.com/informatievlaanderen/address-registry/compare/v2.6.19...v2.6.20) (2020-02-27)
 
 

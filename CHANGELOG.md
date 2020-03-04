@@ -1,3 +1,10 @@
+## [2.7.1](https://github.com/informatievlaanderen/address-registry/compare/v2.7.0...v2.7.1) (2020-03-04)
+
+
+### Bug Fixes
+
+* bump netcore dockerfiles ([d23bd2d](https://github.com/informatievlaanderen/address-registry/commit/d23bd2d))
+
 # [2.7.0](https://github.com/informatievlaanderen/address-registry/compare/v2.6.22...v2.7.0) (2020-03-03)
 
 

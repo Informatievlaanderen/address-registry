@@ -1,3 +1,10 @@
+## [2.7.3](https://github.com/informatievlaanderen/address-registry/compare/v2.7.2...v2.7.3) (2020-03-05)
+
+
+### Bug Fixes
+
+* set correct timestamp for sync projection ([0efc83d](https://github.com/informatievlaanderen/address-registry/commit/0efc83d))
+
 ## [2.7.2](https://github.com/informatievlaanderen/address-registry/compare/v2.7.1...v2.7.2) (2020-03-05)
 
 

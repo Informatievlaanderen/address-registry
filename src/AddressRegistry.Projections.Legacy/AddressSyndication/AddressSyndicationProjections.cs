@@ -20,8 +20,8 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     AddressId = message.Message.AddressId,
                     StreetNameId = message.Message.StreetNameId,
                     HouseNumber = message.Message.HouseNumber,
-                    RecordCreatedAt = Instant.FromDateTimeUtc(message.CreatedUtc.ToUniversalTime()),
-                    LastChangedOn = Instant.FromDateTimeUtc(message.CreatedUtc.ToUniversalTime()),
+                    RecordCreatedAt = message.Message.Provenance.Timestamp,
+                    LastChangedOn = message.Message.Provenance.Timestamp,
                     ChangeType = message.EventName
                 };
 
@@ -322,7 +322,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                 var newAddressSyndicationItem = addressSyndicationItem.CloneAndApplyEventInfo(
                     message.Position,
                     message.EventName,
-                    Instant.FromDateTimeUtc(message.CreatedUtc.ToUniversalTime()),
+                    message.Message.AssignmentDate,
                     x => x.PersistentLocalId = message.Message.PersistentLocalId);
 
                 newAddressSyndicationItem.SetEventData(message.Message);

@@ -1,3 +1,10 @@
+## [2.7.2](https://github.com/informatievlaanderen/address-registry/compare/v2.7.1...v2.7.2) (2020-03-05)
+
+
+### Bug Fixes
+
+* update grar common to fix provenance ([aff898f](https://github.com/informatievlaanderen/address-registry/commit/aff898f))
+
 ## [2.7.1](https://github.com/informatievlaanderen/address-registry/compare/v2.7.0...v2.7.1) (2020-03-04)
 
 

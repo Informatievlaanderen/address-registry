@@ -33,16 +33,18 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
 
             var logger = loggerFactory.CreateLogger<ApiModule>();
             var connectionString = configuration.GetConnectionString("SyndicationProjections");
+            var buildingConnectionString = configuration.GetConnectionString("BuildingLegacyProjections");
 
             var hasConnectionString = !string.IsNullOrWhiteSpace(connectionString);
             if (hasConnectionString)
-                RunOnSqlServer(configuration, services, loggerFactory, connectionString);
+                RunOnSqlServer(configuration, services, loggerFactory, connectionString, buildingConnectionString);
             else
                 RunInMemoryDb(services, loggerFactory, logger);
 
             logger.LogInformation("Added {Context} to services:", nameof(AddressBosaContext));
             logger.LogInformation("Added {Context} to services:", nameof(AddressQueryContext));
             logger.LogInformation("Added {Context} to services:", nameof(AddressMatchContext));
+            logger.LogInformation("Added {Context} to services:", nameof(BuildingContext));
         }
 
         protected override void Load(ContainerBuilder containerBuilder)
@@ -63,7 +65,8 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
             IConfiguration configuration,
             IServiceCollection services,
             ILoggerFactory loggerFactory,
-            string backofficeProjectionsConnectionString)
+            string backofficeProjectionsConnectionString,
+            string buildingProjectionsConnectionString)
         {
             services
                 .AddScoped(s => new TraceDbConnection<AddressBosaContext>(
@@ -86,6 +89,13 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
                 .AddDbContext<AddressMatchContext>((provider, options) => options
                     .UseLoggerFactory(loggerFactory)
                     .UseSqlServer(provider.GetRequiredService<TraceDbConnection<AddressMatchContext>>(),
+                        sqlServerOptions => { sqlServerOptions.EnableRetryOnFailure(); }))
+                .AddScoped(s => new TraceDbConnection<BuildingContext>(
+                    new SqlConnection(buildingProjectionsConnectionString),
+                    configuration["DataDog:ServiceName"]))
+                .AddDbContext<BuildingContext>((provider, options) => options
+                    .UseLoggerFactory(loggerFactory)
+                    .UseSqlServer(provider.GetRequiredService<TraceDbConnection<BuildingContext>>(),
                         sqlServerOptions => { sqlServerOptions.EnableRetryOnFailure(); }));
         }
 
@@ -103,11 +113,15 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
                     .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { }))
                 .AddDbContext<AddressMatchContext>(options => options
                     .UseLoggerFactory(loggerFactory)
-                    .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { })); ;
+                    .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { }))
+                .AddDbContext<BuildingContext>(options => options
+                    .UseLoggerFactory(loggerFactory)
+                    .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { }));
 
             logger.LogWarning("Running InMemory for {Context}!", nameof(AddressBosaContext));
             logger.LogWarning("Running InMemory for {Context}!", nameof(AddressQueryContext));
             logger.LogWarning("Running InMemory for {Context}!", nameof(AddressMatchContext));
+            logger.LogWarning("Running InMemory for {Context}!", nameof(BuildingContext));
         }
     }
 }

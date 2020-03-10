@@ -36,6 +36,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
             [FromServices] ILatestQueries latestQueries,
             [FromServices] IOptions<ResponseOptions> responseOptions,
             [FromServices] AddressMatchContext context,
+            [FromServices] BuildingContext buildingContext,
             [FromQuery] AddressMatchRequest addressMatchRequest,
             CancellationToken cancellationToken = default)
         {
@@ -49,7 +50,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
                 latestQueries,
                 new GemeenteMapper(responseOptions.Value),
                 new StreetNameMapper(responseOptions.Value, latestQueries),
-                new AdresMapper(responseOptions.Value, latestQueries, context),
+                new AdresMapper(responseOptions.Value, latestQueries, context, buildingContext),
                 warningLogger);
 
             var result = addressMatch.Process(new AddressMatchBuilder(Map(addressMatchRequest)));

@@ -1,3 +1,10 @@
+# [2.9.0](https://github.com/informatievlaanderen/address-registry/compare/v2.8.0...v2.9.0) (2020-03-10)
+
+
+### Features
+
+* add totaal aantal endpoint ([1a5db85](https://github.com/informatievlaanderen/address-registry/commit/1a5db85))
+
 # [2.8.0](https://github.com/informatievlaanderen/address-registry/compare/v2.7.3...v2.8.0) (2020-03-10)
 
 

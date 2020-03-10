@@ -8,6 +8,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Straatnaam;
     using Infrastructure.Options;
     using Matching;
+    using Microsoft.EntityFrameworkCore;
     using Projections.Legacy.AddressDetail;
 
     internal class AdresMapper : IMapper<AddressDetailItem, AdresMatchItem>
@@ -15,12 +16,14 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         private readonly ResponseOptions _responseOptions;
         private readonly ILatestQueries _latestQueries;
         private readonly AddressMatchContext _context;
+        private readonly BuildingContext _buildingContext;
 
-        public AdresMapper(ResponseOptions responseOptions, ILatestQueries latestQueries, AddressMatchContext context)
+        public AdresMapper(ResponseOptions responseOptions, ILatestQueries latestQueries, AddressMatchContext context, BuildingContext buildingContext)
         {
             _responseOptions = responseOptions;
             _latestQueries = latestQueries;
             _context = context;
+            _buildingContext = buildingContext;
         }
 
         public AdresMatchItem Map(AddressDetailItem source)
@@ -61,14 +64,16 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
                 AdresStatus = AddressMapper.ConvertFromAddressStatus(source.Status),
                 OfficieelToegekend = source.OfficiallyAssigned,
                 AdresseerbareObjecten =
-                    _context.BuildingUnitAddressMatchLatestItems
-                        .Where(x => x.AddressId == source.AddressId && !x.IsRemoved)
+                    _buildingContext.BuildingUnits
+                        .Include(x => x.Addresses)
+                        .Where(x => x.Addresses.Any(y => y.AddressId == source.AddressId) && !x.IsRemoved && x.IsBuildingComplete && x.IsComplete && x.PersistentLocalId.HasValue)
+                        .Select(x => new { x.PersistentLocalId })
                         .ToList()
                         .Select(matchLatestItem => new AdresseerbaarObject
                         {
-                            ObjectId = matchLatestItem.BuildingUnitPersistentLocalId,
+                            ObjectId = matchLatestItem.PersistentLocalId.ToString(),
                             ObjectType = ObjectType.Gebouweenheid,
-                            Detail = string.Format(_responseOptions.GebouweenheidDetailUrl, matchLatestItem.BuildingUnitPersistentLocalId),
+                            Detail = string.Format(_responseOptions.GebouweenheidDetailUrl, matchLatestItem.PersistentLocalId.ToString()),
                         })
                         .ToList()
                         .Concat(

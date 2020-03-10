@@ -9,7 +9,6 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting
     using Infrastructure.Options;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Storage;
     using Microsoft.Extensions.Options;
     using Mocking;
     using Newtonsoft.Json;
@@ -22,6 +21,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting
         protected AddressMatchContextMemory _context;
         protected Random _random;
         private readonly AddressMatchController _controller;
+        private readonly BuildingContextMemory _buildingContext;
 
         public BehavioralTestBase(ITestOutputHelper testOutputHelper, Action<string> logAction, Formatting logFormatting = Formatting.Indented, bool disableArrangeLogging = false, bool disableActLogging = false, bool disableAssertionLogging = false) :
             base(testOutputHelper, logAction, logFormatting, disableArrangeLogging: disableArrangeLogging, disableActLogging: disableActLogging, disableAssertionLogging: disableAssertionLogging)
@@ -32,6 +32,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting
             _latest = new Mocking<ILatestQueries, LatestQueriesSetup, LatestQueriesVerification>();
             _controller = new AddressMatchController();
             _context = new AddressMatchContextMemory();
+            _buildingContext = new BuildingContextMemory();
 
             JsonConvert.DefaultSettings = () => new JsonSerializerSettings
             {
@@ -46,6 +47,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting
             containerBuilder.RegisterInstance(_kadRrService.Object).As<IKadRrService>();
             containerBuilder.RegisterInstance(_latest.Object).As<ILatestQueries>();
             containerBuilder.RegisterInstance(_context).As<AddressMatchContext>();
+            containerBuilder.RegisterInstance(_buildingContext).As<BuildingContext>();
         }
 
         public Task<IActionResult> Send(AddressMatchRequest request)
@@ -63,11 +65,17 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting
                     SimilarityThreshold = 75.0
                 }),
                 _context,
+                _buildingContext,
                 request);
         }
     }
 
     public class AddressMatchContextMemory : AddressMatchContext
+    {
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseInMemoryDatabase("DB", HandlerTestBase.InMemoryDatabaseRootRoot);
+    }
+
+    public class BuildingContextMemory : BuildingContext
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseInMemoryDatabase("DB", HandlerTestBase.InMemoryDatabaseRootRoot);
     }

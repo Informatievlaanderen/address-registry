@@ -217,6 +217,43 @@ namespace AddressRegistry.Api.Legacy.Address
         }
 
         /// <summary>
+        /// Vraag het totaal aantal adressen op.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="queryContext"></param>
+        /// <param name="cancellationToken"></param>
+        /// <response code="200">Als de opvraging van het totaal aantal gelukt is.</response>
+        /// <response code="500">Als er een interne fout is opgetreden.</response>
+        [HttpGet("totaal-aantal")]
+        [ProducesResponseType(typeof(TotaalAantalResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(TotalCountResponseExample), jsonConverter: typeof(StringEnumConverter))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples), jsonConverter: typeof(StringEnumConverter))]
+        public async Task<IActionResult> Count(
+            [FromServices] LegacyContext context,
+            [FromServices] AddressQueryContext queryContext,
+            CancellationToken cancellationToken = default)
+        {
+            var filtering = Request.ExtractFilteringRequest<AddressFilter>();
+            var sorting = Request.ExtractSortingRequest();
+            var pagination = Request.ExtractPaginationRequest();
+
+            return Ok(
+                new TotaalAantalResponse
+                {
+                    Aantal = filtering.ShouldFilter
+                        ? await new AddressListQuery(queryContext)
+                            .Fetch(filtering, sorting, pagination)
+                            .Items
+                            .CountAsync(cancellationToken)
+                        : Convert.ToInt32(context
+                            .AddressListViewCount
+                            .First()
+                            .Count)
+                });
+        }
+
+        /// <summary>
         /// Vraag een lijst met wijzigingen van adressen op.
         /// </summary>
         /// <param name="configuration"></param>

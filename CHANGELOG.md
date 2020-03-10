@@ -1,3 +1,10 @@
+# [2.8.0](https://github.com/informatievlaanderen/address-registry/compare/v2.7.3...v2.8.0) (2020-03-10)
+
+
+### Features
+
+* use building directly for addressmatch (temp) ([a2127d5](https://github.com/informatievlaanderen/address-registry/commit/a2127d5))
+
 ## [2.7.3](https://github.com/informatievlaanderen/address-registry/compare/v2.7.2...v2.7.3) (2020-03-05)
 
 

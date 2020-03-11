@@ -1,3 +1,10 @@
+## [2.9.1](https://github.com/informatievlaanderen/address-registry/compare/v2.9.0...v2.9.1) (2020-03-11)
+
+
+### Bug Fixes
+
+* count addresses now counts correctly ([2f6cff0](https://github.com/informatievlaanderen/address-registry/commit/2f6cff0))
+
 # [2.9.0](https://github.com/informatievlaanderen/address-registry/compare/v2.8.0...v2.9.0) (2020-03-10)
 
 

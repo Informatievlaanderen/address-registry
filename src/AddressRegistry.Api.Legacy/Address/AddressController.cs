@@ -236,7 +236,7 @@ namespace AddressRegistry.Api.Legacy.Address
         {
             var filtering = Request.ExtractFilteringRequest<AddressFilter>();
             var sorting = Request.ExtractSortingRequest();
-            var pagination = Request.ExtractPaginationRequest();
+            var pagination = new NoPaginationRequest();
 
             return Ok(
                 new TotaalAantalResponse

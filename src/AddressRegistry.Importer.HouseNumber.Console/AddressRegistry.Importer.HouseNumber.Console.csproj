@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.App.props" />
+
+  <PropertyGroup>
+    <ApplicationIcon />
+    <StartupObject />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.json" CopyToOutputDirectory="Always" />
+    <Content Include="SqlServerTypes\readme.htm" />
+    <Content Include="SqlServerTypes\x64\msvcr120.dll" CopyToOutputDirectory="Always" />
+    <Content Include="SqlServerTypes\x64\SqlServerSpatial130.dll" CopyToOutputDirectory="Always" />
+    <Content Include="SqlServerTypes\x86\msvcr120.dll" CopyToOutputDirectory="Always" />
+    <Content Include="SqlServerTypes\x86\SqlServerSpatial130.dll" CopyToOutputDirectory="Always" />
+    <Content Include="appsettings.*.json" CopyToOutputDirectory="Always" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AddressRegistry\AddressRegistry.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\SolutionInfo.cs" Link="Properties\SolutionInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Aiv.Vbr.CentraalBeheer.Crab">
+      <HintPath>..\..\assets\crab2vbr\Aiv.Vbr.CentraalBeheer.Crab.dll</HintPath>
+    </Reference>
+    <Reference Include="Aiv.Vbr.Common">
+      <HintPath>..\..\assets\crab2vbr\Aiv.Vbr.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Aiv.Vbr.CrabModel">
+      <HintPath>..\..\assets\crab2vbr\Aiv.Vbr.CrabModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Aiv.Vbr.Domain.Model">
+      <HintPath>..\..\assets\crab2vbr\Aiv.Vbr.Domain.Model.dll</HintPath>
+    </Reference>
+    <Reference Include="Aiv.Vbr.DomainModel.Operations">
+      <HintPath>..\..\assets\crab2vbr\Aiv.Vbr.DomainModel.Operations.dll</HintPath>
+    </Reference>
+    <Reference Include="Aiv.Vbr.Shared">
+      <HintPath>..\..\assets\crab2vbr\Aiv.Vbr.Shared.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>

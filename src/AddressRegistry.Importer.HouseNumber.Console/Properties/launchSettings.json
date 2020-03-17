@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "AddressRegistry.Importer.HouseNumber.Console": {
+      "commandName": "Project",
+      "commandLineArgs": "init -c"
+    }
+  }
+}

@@ -1,3 +1,10 @@
+# [2.10.0](https://github.com/informatievlaanderen/address-registry/compare/v2.9.2...v2.10.0) (2020-03-17)
+
+
+### Features
+
+* upgrade importers to netcore3 ([623a5d4](https://github.com/informatievlaanderen/address-registry/commit/623a5d4))
+
 ## [2.9.2](https://github.com/informatievlaanderen/address-registry/compare/v2.9.1...v2.9.2) (2020-03-12)
 
 

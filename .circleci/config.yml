@@ -20,7 +20,7 @@ jobs:
       GIT_EMAIL: informatie.vlaanderen@vlaanderen.be
       GIT_AUTHOR_EMAIL: informatie.vlaanderen@vlaanderen.be
       GIT_COMMITTER_EMAIL: informatie.vlaanderen@vlaanderen.be
-      CONFLUENCE_USERNAME: david.cumps@kb.vlaanderen.be
+      CONFLUENCE_USERNAME: david.cumps@vlaanderen.be
 
     steps:
       - checkout

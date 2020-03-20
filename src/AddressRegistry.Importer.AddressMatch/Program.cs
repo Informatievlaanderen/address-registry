@@ -14,6 +14,7 @@ namespace AddressRegistry.Importer.AddressMatch
     using System.Net.Http;
     using System.Text;
     using System.Threading.Tasks;
+    using Serilog.Events;
 
     public static class Program
     {
@@ -32,15 +33,6 @@ namespace AddressRegistry.Importer.AddressMatch
         {
             Console.WriteLine("Starting AddressRegistry.Importer.AddressMatch");
 
-            AppDomain.CurrentDomain.FirstChanceException += (sender, eventArgs) =>
-                Log.Debug(
-                    eventArgs.Exception,
-                    "FirstChanceException event raised in {AppDomain}.",
-                    AppDomain.CurrentDomain.FriendlyName);
-
-            AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) =>
-                Log.Fatal((Exception)eventArgs.ExceptionObject, "Encountered a fatal exception, exiting program.");
-
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
@@ -51,19 +43,40 @@ namespace AddressRegistry.Importer.AddressMatch
 
             _crabConnectionString = configuration.GetConnectionString("CRAB");
 
+            var mailSettings = configuration.GetSection("ApplicationSettings").GetSection("SerilogMail");
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.SendGridSmtp(
+                    mailSettings["apiKey"],
+                    mailSettings["subject"],
+                    mailSettings["fromEmail"],
+                    mailSettings["toEmail"],
+                    (LogEventLevel)Enum.Parse(typeof(LogEventLevel), mailSettings["restrictedToMinimumLevel"], true))
+                .ReadFrom.Configuration(configuration)
+                .CreateLogger();
+
+
+            AppDomain.CurrentDomain.FirstChanceException += (sender, eventArgs) =>
+                Log.Debug(
+                    eventArgs.Exception,
+                    "FirstChanceException event raised in {AppDomain}.",
+                    AppDomain.CurrentDomain.FriendlyName);
+
+            AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) =>
+                Log.Fatal((Exception)eventArgs.ExceptionObject, "Encountered a fatal exception, exiting program.");
+
             WriteCsvFile(ExtractRrStreetNames(), RrStreetNamesPath);
             WriteCsvFile(ExtractKadStreetNames(), KadStreetNamesPath);
             WriteCsvFile(ExtractRrAddress(), RrAddressesPath);
 
-            Console.WriteLine("Creating Zip");
+            Log.Information("Creating Zip");
 
             CreateZip(new[] { RrStreetNamesPath, KadStreetNamesPath, RrAddressesPath });
 
-            Console.WriteLine("Sending Zip");
+            Log.Information("Sending Zip");
 
             await SendZip(configuration.GetValue<string>(ImportUrlKey));
 
-            Console.WriteLine("Cleaning up");
+            Log.Information("Cleaning up");
 
             CleanUpFiles(new[] { RrStreetNamesPath, KadStreetNamesPath, RrAddressesPath, ImportAddressMatchZipPath });
         }

@@ -28,6 +28,20 @@ namespace AddressRegistry.Importer.Subaddress.Console
                 .AddCommandLine(args ?? new string[0])
                 .Build();
 
+            var mailSettings = configuration.GetSection("ApplicationSettings").GetSection("SerilogMail");
+
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.File("tracing.log", LogEventLevel.Verbose)
+                .WriteTo.Console(LogEventLevel.Information)
+                .WriteTo.SendGridSmtp(
+                    mailSettings["apiKey"],
+                    mailSettings["subject"],
+                    mailSettings["fromEmail"],
+                    mailSettings["toEmail"],
+                    (LogEventLevel)Enum.Parse(typeof(LogEventLevel), mailSettings["restrictedToMinimumLevel"], true))
+                .ReadFrom.Configuration(configuration)
+                .CreateLogger();
+
             var crabConnectionString = configuration.GetConnectionString("CRABEntities");
             Func<CRABEntities> crabEntitiesFactory = () =>
             {
@@ -78,11 +92,8 @@ namespace AddressRegistry.Importer.Subaddress.Console
 
         private static void WaitForExit(bool waitForUserInput, string errorMessage = null, Exception exception = null)
         {
-            if (!string.IsNullOrEmpty(errorMessage))
-                Console.Error.WriteLine(errorMessage);
-
-            if (exception != null)
-                Console.Error.WriteLine(exception);
+            if (!string.IsNullOrEmpty(errorMessage) || exception != null)
+                Log.Fatal(exception, errorMessage);
 
             Console.WriteLine();
             if (_stopwatch != null)

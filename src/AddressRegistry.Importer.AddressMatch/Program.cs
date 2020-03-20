@@ -54,7 +54,6 @@ namespace AddressRegistry.Importer.AddressMatch
                 .ReadFrom.Configuration(configuration)
                 .CreateLogger();
 
-
             AppDomain.CurrentDomain.FirstChanceException += (sender, eventArgs) =>
                 Log.Debug(
                     eventArgs.Exception,

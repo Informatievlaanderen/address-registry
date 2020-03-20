@@ -1,3 +1,24 @@
+## [2.10.2](https://github.com/informatievlaanderen/address-registry/compare/v2.10.1...v2.10.2) (2020-03-18)
+
+
+### Bug Fixes
+
+* use correct confluence user ([a6d2077](https://github.com/informatievlaanderen/address-registry/commit/a6d2077))
+
+## [2.10.1](https://github.com/informatievlaanderen/address-registry/compare/v2.10.0...v2.10.1) (2020-03-17)
+
+
+### Bug Fixes
+
+* force build ([740912d](https://github.com/informatievlaanderen/address-registry/commit/740912d))
+
+# [2.10.0](https://github.com/informatievlaanderen/address-registry/compare/v2.9.2...v2.10.0) (2020-03-17)
+
+
+### Features
+
+* upgrade importers to netcore3 ([623a5d4](https://github.com/informatievlaanderen/address-registry/commit/623a5d4))
+
 ## [2.9.2](https://github.com/informatievlaanderen/address-registry/compare/v2.9.1...v2.9.2) (2020-03-12)
 
 

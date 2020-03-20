@@ -1,3 +1,10 @@
+# [2.11.0](https://github.com/informatievlaanderen/address-registry/compare/v2.10.2...v2.11.0) (2020-03-20)
+
+
+### Features
+
+* send mail when importer crashes ([f69e4eb](https://github.com/informatievlaanderen/address-registry/commit/f69e4eb))
+
 ## [2.10.2](https://github.com/informatievlaanderen/address-registry/compare/v2.10.1...v2.10.2) (2020-03-18)
 
 

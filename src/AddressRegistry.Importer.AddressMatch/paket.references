@@ -15,6 +15,7 @@ Microsoft.Extensions.Configuration.Json
 Microsoft.Extensions.Http.Polly
 
 Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql
+Be.Vlaanderen.Basisregisters.GrAr.Import
 
 Dapper
 CsvHelper

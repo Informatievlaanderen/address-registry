@@ -1,3 +1,11 @@
+## [2.11.1](https://github.com/informatievlaanderen/address-registry/compare/v2.11.0...v2.11.1) (2020-03-23)
+
+
+### Bug Fixes
+
+* correct versie id type in syndication ([eb2a2cb](https://github.com/informatievlaanderen/address-registry/commit/eb2a2cb))
+* update grar common to fix versie id type ([640de86](https://github.com/informatievlaanderen/address-registry/commit/640de86))
+
 # [2.11.0](https://github.com/informatievlaanderen/address-registry/compare/v2.10.2...v2.11.0) (2020-03-20)
 
 

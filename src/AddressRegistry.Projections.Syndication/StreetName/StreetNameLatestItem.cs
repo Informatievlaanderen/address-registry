@@ -25,7 +25,7 @@ namespace AddressRegistry.Projections.Syndication.StreetName
         public string? HomonymAdditionGerman { get; set; }
         public string? HomonymAdditionEnglish { get; set; }
 
-        public DateTimeOffset? Version { get; set; }
+        public string? Version { get; set; }
         public long Position { get; set; }
         public bool IsComplete { get; set; }
         public bool IsRemoved { get; set; }

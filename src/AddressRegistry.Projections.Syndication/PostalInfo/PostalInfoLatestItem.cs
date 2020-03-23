@@ -14,7 +14,7 @@ namespace AddressRegistry.Projections.Syndication.PostalInfo
         public virtual ICollection<PostalInfoPostalName> PostalNames { get; set; }
         public string? NisCode { get; set; }
 
-        public DateTimeOffset? Version { get; set; }
+        public string? Version { get; set; }
         public long Position { get; set; }
 
         public PostalInfoLatestItem()

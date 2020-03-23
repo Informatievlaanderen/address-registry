@@ -27,7 +27,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting.Generate
             };
         }
 
-        public static MunicipalityLatestItem WithGemeenteVersion(this MunicipalityLatestItem original, DateTimeOffset version)
+        public static MunicipalityLatestItem WithGemeenteVersion(this MunicipalityLatestItem original, string version)
         {
             return new MunicipalityLatestItem
             {
@@ -114,7 +114,7 @@ namespace AddressRegistry.Api.Legacy.Tests.LegacyTesting.Generate
             };
         }
 
-        public static StreetNameLatestItem WithStraatNaamVersion(this StreetNameLatestItem original, DateTimeOffset version)
+        public static StreetNameLatestItem WithStraatNaamVersion(this StreetNameLatestItem original, string version)
         {
             return new StreetNameLatestItem
             {

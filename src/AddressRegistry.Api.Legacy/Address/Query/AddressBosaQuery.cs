@@ -15,6 +15,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Be.Vlaanderen.Basisregisters.Utilities;
 
     public class AddressBosaQuery
     {
@@ -59,17 +60,20 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                     .AsQueryable();
             }
 
+            var gemeenteCodeVersieId = filter?.GemeenteCode?.VersieId == null ? null : new Rfc3339SerializableDateTimeOffset(filter.GemeenteCode.VersieId.Value).ToString();
+
             var filteredMunicipalities = FilterMunicipalities(
                 filter?.GemeenteCode?.ObjectId,
-                filter?.GemeenteCode?.VersieId,
+                gemeenteCodeVersieId,
                 filter?.Gemeentenaam?.Spelling,
                 filter?.Gemeentenaam?.Taal,
                 filter?.Gemeentenaam?.SearchType ?? BosaSearchType.Bevat,
                 municipalitiesQuery);
 
+            var straatnaamCodeVersieId = filter?.StraatnaamCode?.VersieId == null ? null : new Rfc3339SerializableDateTimeOffset(filter.StraatnaamCode.VersieId.Value).ToString();
             var filteredStreetNames = FilterStreetNames(
                 filter?.StraatnaamCode?.ObjectId,
-                filter?.StraatnaamCode?.VersieId,
+                straatnaamCodeVersieId,
                 filter?.Straatnaam?.Spelling,
                 filter?.Straatnaam?.Taal,
                 filter?.Straatnaam?.SearchType ?? BosaSearchType.Bevat,
@@ -118,11 +122,11 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                             AddressMapper.ConvertFromGeometrySpecification(x.PositionSpecification),
                             x.VersionTimestamp.ToBelgianDateTimeOffset(),
                             streetName.PersistentLocalId,
-                            streetName.Version.Value,
+                            streetName.Version,
                             municipality.NisCode,
-                            municipality.Version.Value,
+                            municipality.Version,
                             x.PostalCode,
-                            postalCode.Version.Value);
+                            postalCode.Version);
                     })
                     .ToList();
 
@@ -179,7 +183,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
         // https://github.com/Informatievlaanderen/streetname-registry/blob/550a2398077140993d6e60029a1b831c193fb0ad/src/StreetNameRegistry.Api.Legacy/StreetName/Query/StreetNameBosaQuery.cs#L38
         private static IQueryable<StreetNameBosaItem> FilterStreetNames(
             string persistentLocalId,
-            DateTimeOffset? version,
+            string version,
             string streetName,
             Taal? language,
             BosaSearchType searchType,
@@ -195,7 +199,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             if (!string.IsNullOrEmpty(persistentLocalId))
                 filtered = filtered.Where(m => m.PersistentLocalId == persistentLocalId);
 
-            if (version.HasValue)
+            if (!string.IsNullOrEmpty(version))
                 filtered = filtered.Where(m => m.Version == version);
 
             if (!string.IsNullOrEmpty(streetName))
@@ -279,7 +283,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
         // https://github.com/Informatievlaanderen/municipality-registry/blob/054e52fffe13bb4a09f80bf36d221d34ab0aacaa/src/MunicipalityRegistry.Api.Legacy/Municipality/Query/MunicipalityBosaQuery.cs#L83
         private static IQueryable<MunicipalityBosaItem> FilterMunicipalities(
             string nisCode,
-            DateTimeOffset? version,
+            string version,
             string municipalityName,
             Taal? language,
             BosaSearchType searchType,
@@ -290,7 +294,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             if (!string.IsNullOrEmpty(nisCode))
                 filtered = filtered.Where(m => m.NisCode == nisCode);
 
-            if (version.HasValue)
+            if (!string.IsNullOrEmpty(version))
                 filtered = filtered.Where(m => m.Version == version);
 
             if (string.IsNullOrEmpty(municipalityName))

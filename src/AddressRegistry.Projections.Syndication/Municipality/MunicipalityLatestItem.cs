@@ -21,7 +21,7 @@ namespace AddressRegistry.Projections.Syndication.Municipality
         public string? NameEnglishSearch { get; set; }
 
         public Taal? PrimaryLanguage { get; set; }
-        public DateTimeOffset? Version { get; set; }
+        public string? Version { get; set; }
         public long Position { get; set; }
 
         public KeyValuePair<Taal, string> DefaultName

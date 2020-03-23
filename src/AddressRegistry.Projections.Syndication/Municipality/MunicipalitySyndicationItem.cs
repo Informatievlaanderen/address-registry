@@ -18,7 +18,7 @@ namespace AddressRegistry.Projections.Syndication.Municipality
         public string? NameFrench { get; set; }
         public string? NameGerman { get; set; }
         public string? NameEnglish { get; set; }
-        public DateTimeOffset? Version { get; set; }
+        public string? Version { get; set; }
 
         private string? OfficialLanguagesAsString { get; set; }
         public List<Taal> OfficialLanguages

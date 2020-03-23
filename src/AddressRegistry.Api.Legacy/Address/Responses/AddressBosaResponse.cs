@@ -9,6 +9,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
     using System;
     using System.Collections.Generic;
     using System.Runtime.Serialization;
+    using Be.Vlaanderen.Basisregisters.Utilities;
 
     [DataContract]
     public class AddressBosaResponse
@@ -94,11 +95,11 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             PositieSpecificatie positionSpecification,
             DateTimeOffset version,
             string straatnaamId,
-            DateTimeOffset straatnaamVersion,
+            string straatnaamVersion,
             string gemeenteId,
-            DateTimeOffset gemeenteVersion,
+            string gemeenteVersion,
             string postalCode,
-            DateTimeOffset postinfoVersion)
+            string postinfoVersion)
         {
             Identificator = new AdresIdentificator(addressNamespace, persistentLocalId.ToString(), version);
             AdresStatus = status;
@@ -151,11 +152,11 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
                     PositieSpecificatie.Gebouweenheid,
                     DateTimeOffset.Now,
                     "1",
-                    DateTimeOffset.Now,
+                    new Rfc3339SerializableDateTimeOffset(DateTimeOffset.Now).ToString(),
                     "11002",
-                    DateTimeOffset.Now,
+                    new Rfc3339SerializableDateTimeOffset(DateTimeOffset.Now).ToString(),
                     "8000",
-                    DateTimeOffset.Now
+                    new Rfc3339SerializableDateTimeOffset(DateTimeOffset.Now).ToString()
                    ),
 
                 new AddressBosaResponseItem(
@@ -184,11 +185,11 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
                     PositieSpecificatie.Straat,
                     DateTimeOffset.Now,
                     "9645",
-                    DateTimeOffset.Now,
+                    new Rfc3339SerializableDateTimeOffset(DateTimeOffset.Now).ToString(),
                     "11001",
-                    DateTimeOffset.Now,
+                    new Rfc3339SerializableDateTimeOffset(DateTimeOffset.Now).ToString(),
                     "9000",
-                    DateTimeOffset.Now
+                    new Rfc3339SerializableDateTimeOffset(DateTimeOffset.Now).ToString()
                 ),
             };
 

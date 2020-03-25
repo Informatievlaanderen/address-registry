@@ -30,10 +30,10 @@ namespace AddressRegistry.Api.Extract.Extracts
 
             AddressLink TransformRecord(AddressLinkExtractItem r)
             {
-                var parcels = syndicationContext.ParcelAddressMatchLatestItems.Where(x => x.AddressId == r.AddressId && !x.IsRemoved);
-                var buildingUnits = syndicationContext.BuildingUnitAddressMatchLatestItems.Where(x => x.AddressId == r.AddressId && !x.IsRemoved);
+                var parcelIds = syndicationContext.ParcelAddressMatchLatestItems.Where(x => x.AddressId == r.AddressId && !x.IsRemoved).Select(x => x.ParcelPersistentLocalId);
+                var buildingUnitIds = syndicationContext.BuildingUnitAddressMatchLatestItems.Where(x => x.AddressId == r.AddressId && !x.IsRemoved).Select(x => x.BuildingUnitPersistentLocalId);
 
-                if (!parcels.Any() && !buildingUnits.Any())
+                if (!parcelIds.Any() && !buildingUnitIds.Any())
                     return new AddressLink();
 
                 var addressLink = new AddressLink();
@@ -74,25 +74,25 @@ namespace AddressRegistry.Api.Extract.Extracts
                     ? $"{streetNameName} {r.HouseNumber}, {r.PostalCode}, {municipalityName}"
                     : $"{streetNameName} {r.HouseNumber} bus {r.BoxNumber}, {r.PostalCode}, {municipalityName}";
 
-                foreach (var parcel in parcels)
+                foreach (var parcelId in parcelIds)
                 {
                     var item = new AddressLinkDbaseRecord();
                     item.FromBytes(r.DbaseRecord, DbfFileWriter<AddressLinkDbaseRecord>.Encoding);
 
                     item.objecttype.Value = ParcelObjectType;
-                    item.adresobjid.Value = parcel.ParcelPersistentLocalId;
+                    item.adresobjid.Value = parcelId;
                     item.voladres.Value = completeAddress;
 
                     addressLink.DbaseRecords.Add(item.ToBytes(DbfFileWriter<AddressLinkDbaseRecord>.Encoding));
                 }
 
-                foreach (var buildingUnit in buildingUnits)
+                foreach (var buildingUnitId in buildingUnitIds)
                 {
                     var item = new AddressLinkDbaseRecord();
                     item.FromBytes(r.DbaseRecord, DbfFileWriter<AddressLinkDbaseRecord>.Encoding);
 
                     item.objecttype.Value = BuildingUnitObjectType;
-                    item.adresobjid.Value = buildingUnit.BuildingUnitPersistentLocalId;
+                    item.adresobjid.Value = buildingUnitId;
                     item.voladres.Value = completeAddress;
 
                     addressLink.DbaseRecords.Add(item.ToBytes(DbfFileWriter<AddressLinkDbaseRecord>.Encoding));

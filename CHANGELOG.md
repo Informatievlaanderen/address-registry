@@ -1,3 +1,10 @@
+## [2.11.2](https://github.com/informatievlaanderen/address-registry/compare/v2.11.1...v2.11.2) (2020-03-25)
+
+
+### Performance Improvements
+
+* extract addresslinks only get ids from db to reduce memory ([dbbe366](https://github.com/informatievlaanderen/address-registry/commit/dbbe366))
+
 ## [2.11.1](https://github.com/informatievlaanderen/address-registry/compare/v2.11.0...v2.11.1) (2020-03-23)
 
 

@@ -34,8 +34,8 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             {
                 Id = address.Position.ToString(CultureInfo.InvariantCulture),
                 Title = $"{address.ChangeType}-{address.Position}",
-                Published = address.RecordCreatedAt.ToDateTimeOffset(),
-                LastUpdated = address.LastChangedOn.ToDateTimeOffset(),
+                Published = address.RecordCreatedAt.ToBelgianDateTimeOffset(),
+                LastUpdated = address.LastChangedOn.ToBelgianDateTimeOffset(),
                 Description = BuildDescription(address, responseOptions.Value.Naamruimte)
             };
 

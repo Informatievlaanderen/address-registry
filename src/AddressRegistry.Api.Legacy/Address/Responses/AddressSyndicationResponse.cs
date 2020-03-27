@@ -39,28 +39,31 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
                 Description = BuildDescription(address, responseOptions.Value.Naamruimte)
             };
 
-            // TODO: Hier moet prolly version nog ergens in
-            item.AddLink(
-                new SyndicationLink(
-                    new Uri($"{responseOptions.Value.Naamruimte}/{address.PersistentLocalId}"),
-                    AtomLinkTypes.Related));
+            if (address.PersistentLocalId.HasValue)
+            {
+                // TODO: Hier moet prolly version nog ergens in
+                item.AddLink(
+                    new SyndicationLink(
+                        new Uri($"{responseOptions.Value.Naamruimte}/{address.PersistentLocalId}"),
+                        AtomLinkTypes.Related));
 
-            item.AddLink(
-                new SyndicationLink(
-                    new Uri(string.Format(responseOptions.Value.DetailUrl, address.PersistentLocalId)),
-                    AtomLinkTypes.Self));
+                item.AddLink(
+                    new SyndicationLink(
+                        new Uri(string.Format(responseOptions.Value.DetailUrl, address.PersistentLocalId)),
+                        AtomLinkTypes.Self));
 
-            item.AddLink(
-                new SyndicationLink(
-                        new Uri(string.Format($"{responseOptions.Value.DetailUrl}.xml", address.PersistentLocalId)),
-                        AtomLinkTypes.Alternate)
-                { MediaType = MediaTypeNames.Application.Xml });
+                item.AddLink(
+                    new SyndicationLink(
+                            new Uri(string.Format($"{responseOptions.Value.DetailUrl}.xml", address.PersistentLocalId)), AtomLinkTypes.Alternate)
+                    { MediaType = MediaTypeNames.Application.Xml });
 
-            item.AddLink(
-                new SyndicationLink(
-                        new Uri(string.Format($"{responseOptions.Value.DetailUrl}.json", address.PersistentLocalId)),
-                        AtomLinkTypes.Alternate)
-                { MediaType = MediaTypeNames.Application.Json });
+                item.AddLink(
+                    new SyndicationLink(
+                            new Uri(string.Format($"{responseOptions.Value.DetailUrl}.json",
+                                address.PersistentLocalId)),
+                            AtomLinkTypes.Alternate)
+                    { MediaType = MediaTypeNames.Application.Json });
+            }
 
             item.AddCategory(
                 new SyndicationCategory(category));

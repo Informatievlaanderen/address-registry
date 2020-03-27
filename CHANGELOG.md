@@ -1,3 +1,10 @@
+## [2.11.3](https://github.com/informatievlaanderen/address-registry/compare/v2.11.2...v2.11.3) (2020-03-27)
+
+
+### Bug Fixes
+
+* set sync feed dates to belgian timezone ([e50e483](https://github.com/informatievlaanderen/address-registry/commit/e50e483))
+
 ## [2.11.2](https://github.com/informatievlaanderen/address-registry/compare/v2.11.1...v2.11.2) (2020-03-25)
 
 

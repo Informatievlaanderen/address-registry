@@ -1,3 +1,10 @@
+## [2.11.4](https://github.com/informatievlaanderen/address-registry/compare/v2.11.3...v2.11.4) (2020-03-27)
+
+
+### Bug Fixes
+
+* don't output sync feed links if no persistent local id is present ([28ab11b](https://github.com/informatievlaanderen/address-registry/commit/28ab11b))
+
 ## [2.11.3](https://github.com/informatievlaanderen/address-registry/compare/v2.11.2...v2.11.3) (2020-03-27)
 
 

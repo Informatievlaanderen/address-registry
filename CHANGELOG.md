@@ -1,3 +1,10 @@
+# [2.12.0](https://github.com/informatievlaanderen/address-registry/compare/v2.11.4...v2.12.0) (2020-04-03)
+
+
+### Features
+
+* upgrade projection handling to include errmessage lastchangedlist ([3f95e48](https://github.com/informatievlaanderen/address-registry/commit/3f95e48))
+
 ## [2.11.4](https://github.com/informatievlaanderen/address-registry/compare/v2.11.3...v2.11.4) (2020-03-27)
 
 

@@ -1,3 +1,10 @@
+## [2.12.1](https://github.com/informatievlaanderen/address-registry/compare/v2.12.0...v2.12.1) (2020-04-06)
+
+
+### Bug Fixes
+
+* import new subaddress via update with older linked data ([baf7976](https://github.com/informatievlaanderen/address-registry/commit/baf7976))
+
 # [2.12.0](https://github.com/informatievlaanderen/address-registry/compare/v2.11.4...v2.12.0) (2020-04-03)
 
 

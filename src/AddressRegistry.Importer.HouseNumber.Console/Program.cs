@@ -75,7 +75,7 @@ namespace AddressRegistry.Importer.HouseNumber.Console
                     .UseHttpApiProxyConfig(settings)
                     .UseCommandProcessorConfig(settings)
                     .UseDefaultSerializerSettingsForCrabImports()
-                    .ConfigureImportFeedFromAssembly(Assembly.GetExecutingAssembly())
+                    .UseImportFeed(new ImportFeed { Name = settings.FeedName })
                     .Build();
 
                 WaitForStart(settings.WaitForUserInput);

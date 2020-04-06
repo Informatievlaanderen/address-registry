@@ -175,7 +175,7 @@ namespace AddressRegistry.Importer.Subaddress.Console
             var commands = new List<dynamic>();
 
             ImportHouseNumberSubaddressFromCrab initialImportHouseNumberSubaddressFromCrab = null;
-            if (importMode == ImportMode.Init)
+            if (importSubaddressCommands.Any(x => x.Modification == CrabModification.Insert))
             {
                 initialImportHouseNumberSubaddressFromCrab = importHouseNumberSubaddressCommands
                     .Concat(importHouseNumberSubaddressCommandsHist)
@@ -186,7 +186,7 @@ namespace AddressRegistry.Importer.Subaddress.Console
             }
 
             foreach (var adresCommand in addressCommands)
-                if (importMode == ImportMode.Update || !adresCommand.Item1.Equals(initialImportHouseNumberSubaddressFromCrab))
+                if (!adresCommand.Item1.Equals(initialImportHouseNumberSubaddressFromCrab))
                     commands.Add(adresCommand.Item1);
 
             return commands;

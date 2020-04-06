@@ -19,6 +19,7 @@ namespace AddressRegistry.Importer.HouseNumber.Console
             BatchSize = Convert.ToInt32(configurationSection["BatchSize"]);
             WaitForUserInput = Convert.ToBoolean(configurationSection["WaitForUserInput"]);
             TimeMargin = new TimeSpan(0, 0, Convert.ToInt32(configurationSection["TimeMarginInMinutes"]), 0);
+            FeedName = configurationSection["FeedName"];
         }
 
         public Uri BaseUrl { get; }
@@ -33,6 +34,7 @@ namespace AddressRegistry.Importer.HouseNumber.Console
         public int BatchSize { get; }
         public bool WaitForUserInput { get; }
         public TimeSpan TimeMargin { get; }
+        public string FeedName { get; }
 
         public override string ToString() => $"{Environment.NewLine}" +
                                              $"BaseUrl: {BaseUrl}{Environment.NewLine}" +
@@ -46,7 +48,8 @@ namespace AddressRegistry.Importer.HouseNumber.Console
                                              $"BufferSize: {BufferSize}{Environment.NewLine}" +
                                              $"NrOfConsumers: {NrOfConsumers}{Environment.NewLine}" +
                                              $"BatchSize: {BatchSize}" +
-                                             $"WaitForUserInput: {WaitForUserInput}";
+                                             $"WaitForUserInput: {WaitForUserInput}" +
+                                             $"FeedName: {FeedName}";
 
         public int Deserialize(string key) => int.Parse(key);
     }

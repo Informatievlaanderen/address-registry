@@ -160,7 +160,7 @@
       },
       {
         "path": "@semantic-release/exec",
-        "cmd": "JIRA_VERSION=${nextRelease.version} JIRA_PREFIX=Address JIRA_PROJECT=GR ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-jira.sh"
+        "cmd": "JIRA_VERSION=${nextRelease.version} JIRA_PREFIX=Address JIRA_PROJECT=GRAR ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-jira.sh"
       }
     ],
     "success": [

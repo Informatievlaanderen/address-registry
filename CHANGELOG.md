@@ -1,3 +1,11 @@
+## [2.12.2](https://github.com/informatievlaanderen/address-registry/compare/v2.12.1...v2.12.2) (2020-04-10)
+
+
+### Bug Fixes
+
+* update packages for import batch timestamps ([8ccb0d0](https://github.com/informatievlaanderen/address-registry/commit/8ccb0d0))
+* update packages for import batch timestamps ([2106b67](https://github.com/informatievlaanderen/address-registry/commit/2106b67))
+
 ## [2.12.1](https://github.com/informatievlaanderen/address-registry/compare/v2.12.0...v2.12.1) (2020-04-06)
 
 

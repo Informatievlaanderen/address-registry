@@ -1,3 +1,10 @@
+## [2.12.4](https://github.com/informatievlaanderen/address-registry/compare/v2.12.3...v2.12.4) (2020-04-14)
+
+
+### Bug Fixes
+
+* update import packages ([61137e5](https://github.com/informatievlaanderen/address-registry/commit/61137e5))
+
 ## [2.12.3](https://github.com/informatievlaanderen/address-registry/compare/v2.12.2...v2.12.3) (2020-04-10)
 
 

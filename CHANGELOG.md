@@ -1,3 +1,10 @@
+## [2.12.5](https://github.com/informatievlaanderen/address-registry/compare/v2.12.4...v2.12.5) (2020-04-25)
+
+
+### Bug Fixes
+
+* import subaddress updates housenumber applied correctly ([d11b9bc](https://github.com/informatievlaanderen/address-registry/commit/d11b9bc))
+
 ## [2.12.4](https://github.com/informatievlaanderen/address-registry/compare/v2.12.3...v2.12.4) (2020-04-14)
 
 

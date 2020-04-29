@@ -1,3 +1,10 @@
+## [2.12.7](https://github.com/informatievlaanderen/address-registry/compare/v2.12.6...v2.12.7) (2020-04-29)
+
+
+### Bug Fixes
+
+* add logo and licence info to nuget ([3d1eb97](https://github.com/informatievlaanderen/address-registry/commit/3d1eb97))
+
 ## [2.12.6](https://github.com/informatievlaanderen/address-registry/compare/v2.12.5...v2.12.6) (2020-04-28)
 
 

@@ -16,6 +16,8 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using Microsoft.Extensions.Logging;
     using AddressRegistry.Infrastructure;
     using AddressRegistry.Projections.Extract;
+    using AddressRegistry.Projections.Extract.AddressCrabHouseNumberIdExtract;
+    using AddressRegistry.Projections.Extract.AddressCrabSubaddressIdExtract;
     using AddressRegistry.Projections.Extract.AddressExtract;
     using AddressRegistry.Projections.LastChangedList;
     using AddressRegistry.Projections.Legacy;
@@ -85,7 +87,9 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .RegisterProjections<AddressExtractProjection, ExtractContext>(
                     context => new AddressExtractProjection(context.Resolve<IOptions<ExtractConfig>>(), DbaseCodePage.Western_European_ANSI.ToEncoding(), new WKBReader()))
                 .RegisterProjections<AddressLinkExtractProjection, ExtractContext>(
-                    context => new AddressLinkExtractProjection(context.Resolve<IOptions<ExtractConfig>>(), DbaseCodePage.Western_European_ANSI.ToEncoding(), new WKBReader()));
+                    context => new AddressLinkExtractProjection(context.Resolve<IOptions<ExtractConfig>>(), DbaseCodePage.Western_European_ANSI.ToEncoding(), new WKBReader()))
+                .RegisterProjections<AddressCrabHouseNumberIdExtractProjection, ExtractContext>(context => new AddressCrabHouseNumberIdExtractProjection(DbaseCodePage.Western_European_ANSI.ToEncoding()))
+                .RegisterProjections<AddressCrabSubaddressIdExtractProjection, ExtractContext>(context => new AddressCrabSubaddressIdExtractProjection(DbaseCodePage.Western_European_ANSI.ToEncoding()));
         }
 
         private void RegisterLastChangedProjections(ContainerBuilder builder)

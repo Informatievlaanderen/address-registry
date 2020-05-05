@@ -1,5 +1,7 @@
 namespace AddressRegistry.Projections.Extract
 {
+    using AddressCrabHouseNumberIdExtract;
+    using AddressCrabSubaddressIdExtract;
     using AddressExtract;
     using AddressLinkExtract;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
@@ -12,6 +14,9 @@ namespace AddressRegistry.Projections.Extract
 
         public DbSet<AddressExtractItem> AddressExtract { get; set; }
         public DbSet<AddressLinkExtractItem> AddressLinkExtract { get; set; }
+
+        public DbSet<AddressCrabHouseNumberIdExtractItem> AddressCrabHouseNumberIdExtract { get; set; }
+        public DbSet<AddressCrabSubaddressIdExtractItem> AddressCrabSubaddressIdExtract { get; set; }
 
         // This needs to be here to please EF
         public ExtractContext() { }

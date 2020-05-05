@@ -21,6 +21,8 @@ namespace AddressRegistry.Api.Extract.Extracts
     public class ExtractController : ApiController
     {
         public const string ZipName = "Adres";
+        public const string FileNameCrabHouseNumberId = "CrabHuisnummer";
+        public const string FileNameCrabSubadresId = "CrabSubadres";
         public const string ZipNameLinks = "Adreskoppelingen";
 
         /// <summary>
@@ -40,7 +42,12 @@ namespace AddressRegistry.Api.Extract.Extracts
             [FromServices] ExtractContext context,
             [FromServices] SyndicationContext syndicationContext,
             CancellationToken cancellationToken = default) =>
-            new ExtractArchive($"{ZipName}-{DateTime.Now:yyyy-MM-dd}") { AddressRegistryExtractBuilder.CreateAddressFiles(context, syndicationContext) }
+            new ExtractArchive($"{ZipName}-{DateTime.Now:yyyy-MM-dd}")
+                {
+                    AddressRegistryExtractBuilder.CreateAddressFiles(context, syndicationContext),
+                    AddressCrabHouseNumberIdExtractBuilder.CreateAddressCrabHouseNumberIdFile(context),
+                    AddressCrabSubaddressIdExtractBuilder.CreateAddressSubaddressIdFile(context)
+                }
                 .CreateFileCallbackResult(cancellationToken);
 
         /// <summary>

@@ -1,3 +1,10 @@
+## [2.12.8](https://github.com/informatievlaanderen/address-registry/compare/v2.12.7...v2.12.8) (2020-05-05)
+
+
+### Bug Fixes
+
+* add extracts for crabid mappings ([d0ef37c](https://github.com/informatievlaanderen/address-registry/commit/d0ef37c))
+
 ## [2.12.7](https://github.com/informatievlaanderen/address-registry/compare/v2.12.6...v2.12.7) (2020-04-29)
 
 

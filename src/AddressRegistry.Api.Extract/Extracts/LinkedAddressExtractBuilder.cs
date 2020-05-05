@@ -11,102 +11,131 @@ namespace AddressRegistry.Api.Extract.Extracts
     using Projections.Extract;
     using Projections.Extract.AddressLinkExtract;
     using Projections.Syndication;
+    using Projections.Syndication.Municipality;
+    using Projections.Syndication.StreetName;
 
-    public static class LinkedAddressExtractBuilder
+    public class LinkedAddressExtractBuilder
     {
+        private readonly ExtractContext _context;
+        private readonly SyndicationContext _syndicationContext;
+        private readonly List<MunicipalityLatestItem> _cachedMunicipalities;
+        private readonly List<StreetNameLatestItem> _cachedStreetNames;
         private const string BuildingUnitObjectType = "Gebouweenheid";
         private const string ParcelObjectType = "Perceel";
 
-        public static IEnumerable<ExtractFile> CreateLinkedAddressFiles(ExtractContext context, SyndicationContext syndicationContext)
+        public LinkedAddressExtractBuilder(ExtractContext context, SyndicationContext syndicationContext)
         {
-            var extractItems = context
+            _context = context;
+            _syndicationContext = syndicationContext;
+            _cachedMunicipalities = syndicationContext.MunicipalityLatestItems.AsNoTracking().ToList();
+            _cachedStreetNames = syndicationContext.StreetNameLatestItems.AsNoTracking().ToList();
+        }
+
+        public IEnumerable<ExtractFile> CreateLinkedBuildingUnitAddressFiles()
+        {
+            var extractItems = _context
                 .AddressLinkExtract
                 .AsNoTracking()
                 .Where(m => m.Complete)
                 .OrderBy(m => m.PersistentLocalId);
 
-            var cachedMunicipalities = syndicationContext.MunicipalityLatestItems.AsNoTracking().ToList();
-            var cachedStreetNames = syndicationContext.StreetNameLatestItems.AsNoTracking().ToList();
-
             AddressLink TransformRecord(AddressLinkExtractItem r)
             {
-                var parcelIds = syndicationContext.ParcelAddressMatchLatestItems.Where(x => x.AddressId == r.AddressId && !x.IsRemoved).Select(x => x.ParcelPersistentLocalId);
-                var buildingUnitIds = syndicationContext.BuildingUnitAddressMatchLatestItems.Where(x => x.AddressId == r.AddressId && !x.IsRemoved).Select(x => x.BuildingUnitPersistentLocalId);
+                var buildingUnitIds = _syndicationContext.BuildingUnitAddressMatchLatestItems.Where(x => x.AddressId == r.AddressId && !x.IsRemoved).Select(x => x.BuildingUnitPersistentLocalId);
 
-                if (!parcelIds.Any() && !buildingUnitIds.Any())
-                    return new AddressLink();
-
-                var addressLink = new AddressLink();
-
-                // update streetname, municipality
-                var streetName = cachedStreetNames.First(x => x.StreetNameId == r.StreetNameId);
-                var municipality = cachedMunicipalities.First(x => x.NisCode == streetName.NisCode);
-
-                var municipalityName = string.Empty;
-                var streetNameName = string.Empty;
-
-                switch (municipality.PrimaryLanguage)
-                {
-                    case null:
-                    case Taal.NL:
-                    default:
-                        municipalityName = municipality.NameDutch;
-                        streetNameName = streetName.NameDutch;
-                        break;
-
-                    case Taal.FR:
-                        municipalityName = municipality.NameFrench;
-                        streetNameName = streetName.NameFrench;
-                        break;
-
-                    case Taal.DE:
-                        municipalityName = municipality.NameGerman;
-                        streetNameName = streetName.NameGerman;
-                        break;
-
-                    case Taal.EN:
-                        municipalityName = municipality.NameEnglish;
-                        streetNameName = streetName.NameEnglish;
-                        break;
-                }
-
-                var completeAddress = string.IsNullOrEmpty(r.BoxNumber)
-                    ? $"{streetNameName} {r.HouseNumber}, {r.PostalCode}, {municipalityName}"
-                    : $"{streetNameName} {r.HouseNumber} bus {r.BoxNumber}, {r.PostalCode}, {municipalityName}";
-
-                foreach (var parcelId in parcelIds)
-                {
-                    var item = new AddressLinkDbaseRecord();
-                    item.FromBytes(r.DbaseRecord, DbfFileWriter<AddressLinkDbaseRecord>.Encoding);
-
-                    item.objecttype.Value = ParcelObjectType;
-                    item.adresobjid.Value = parcelId;
-                    item.voladres.Value = completeAddress;
-
-                    addressLink.DbaseRecords.Add(item.ToBytes(DbfFileWriter<AddressLinkDbaseRecord>.Encoding));
-                }
-
-                foreach (var buildingUnitId in buildingUnitIds)
-                {
-                    var item = new AddressLinkDbaseRecord();
-                    item.FromBytes(r.DbaseRecord, DbfFileWriter<AddressLinkDbaseRecord>.Encoding);
-
-                    item.objecttype.Value = BuildingUnitObjectType;
-                    item.adresobjid.Value = buildingUnitId;
-                    item.voladres.Value = completeAddress;
-
-                    addressLink.DbaseRecords.Add(item.ToBytes(DbfFileWriter<AddressLinkDbaseRecord>.Encoding));
-                }
-
-                return addressLink;
+                return CreateAddressLink(buildingUnitIds, r, BuildingUnitObjectType);
             }
 
             yield return CreateDbfFile<AddressLinkExtractItem, AddressLinkDbaseRecord>(
-                ExtractController.ZipNameLinks,
+                ExtractController.FileNameLinksBuildingUnit,
                 new AddressLinkDbaseSchema(),
                 extractItems,
-                () => (syndicationContext.BuildingUnitAddressMatchLatestItems.Count() + syndicationContext.ParcelAddressMatchLatestItems.Count()),
+                () => _syndicationContext.BuildingUnitAddressMatchLatestItems.Count(),
                 TransformRecord);
+        }
+
+        public IEnumerable<ExtractFile> CreateLinkedParcelAddressFiles()
+        {
+            var extractItems = _context
+                .AddressLinkExtract
+                .AsNoTracking()
+                .Where(m => m.Complete)
+                .OrderBy(m => m.PersistentLocalId);
+
+            AddressLink TransformRecord(AddressLinkExtractItem r)
+            {
+                var parcelIds = _syndicationContext.ParcelAddressMatchLatestItems.Where(x => x.AddressId == r.AddressId && !x.IsRemoved).Select(x => x.ParcelPersistentLocalId);
+
+                return CreateAddressLink(parcelIds, r, ParcelObjectType);
+            }
+
+            yield return CreateDbfFile<AddressLinkExtractItem, AddressLinkDbaseRecord>(
+                ExtractController.FileNameLinksParcel,
+                new AddressLinkDbaseSchema(),
+                extractItems,
+                () => _syndicationContext.ParcelAddressMatchLatestItems.Count(),
+                TransformRecord);
+        }
+
+        private AddressLink CreateAddressLink(
+            IQueryable<string> linkIds,
+            AddressLinkExtractItem linkExtractItem,
+            string linkType)
+        {
+            if (!linkIds.Any())
+                return new AddressLink();
+
+            var addressLink = new AddressLink();
+
+            // update streetname, municipality
+            var streetName = _cachedStreetNames.First(x => x.StreetNameId == linkExtractItem.StreetNameId);
+            var municipality = _cachedMunicipalities.First(x => x.NisCode == streetName.NisCode);
+
+            var municipalityName = string.Empty;
+            var streetNameName = string.Empty;
+
+            switch (municipality.PrimaryLanguage)
+            {
+                case null:
+                case Taal.NL:
+                default:
+                    municipalityName = municipality.NameDutch;
+                    streetNameName = streetName.NameDutch;
+                    break;
+
+                case Taal.FR:
+                    municipalityName = municipality.NameFrench;
+                    streetNameName = streetName.NameFrench;
+                    break;
+
+                case Taal.DE:
+                    municipalityName = municipality.NameGerman;
+                    streetNameName = streetName.NameGerman;
+                    break;
+
+                case Taal.EN:
+                    municipalityName = municipality.NameEnglish;
+                    streetNameName = streetName.NameEnglish;
+                    break;
+            }
+
+            var completeAddress = string.IsNullOrEmpty(linkExtractItem.BoxNumber)
+                ? $"{streetNameName} {linkExtractItem.HouseNumber}, {linkExtractItem.PostalCode}, {municipalityName}"
+                : $"{streetNameName} {linkExtractItem.HouseNumber} bus {linkExtractItem.BoxNumber}, {linkExtractItem.PostalCode}, {municipalityName}";
+
+            foreach (var linkId in linkIds)
+            {
+                var item = new AddressLinkDbaseRecord();
+                item.FromBytes(linkExtractItem.DbaseRecord, DbfFileWriter<AddressLinkDbaseRecord>.Encoding);
+
+                item.objecttype.Value = linkType;
+                item.adresobjid.Value = linkId;
+                item.voladres.Value = completeAddress;
+
+                addressLink.DbaseRecords.Add(item.ToBytes(DbfFileWriter<AddressLinkDbaseRecord>.Encoding));
+            }
+
+            return addressLink;
         }
 
         public static ExtractFile CreateDbfFile<T, TDbaseRecord>(

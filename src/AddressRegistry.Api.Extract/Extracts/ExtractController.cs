@@ -24,6 +24,8 @@ namespace AddressRegistry.Api.Extract.Extracts
         public const string FileNameCrabHouseNumberId = "CrabHuisnummer";
         public const string FileNameCrabSubadresId = "CrabSubadres";
         public const string ZipNameLinks = "Adreskoppelingen";
+        public const string FileNameLinksBuildingUnit = "Adreskoppelingen";
+        public const string FileNameLinksParcel = "Adreskoppelingen_1";
 
         /// <summary>
         /// Vraag een dump van het volledige register op.
@@ -66,8 +68,16 @@ namespace AddressRegistry.Api.Extract.Extracts
         public IActionResult GetAddressLinks(
             [FromServices] ExtractContext context,
             [FromServices] SyndicationContext syndicationContext,
-            CancellationToken cancellationToken = default) =>
-            new ExtractArchive($"{ZipNameLinks}-{DateTime.Now:yyyy-MM-dd}") { LinkedAddressExtractBuilder.CreateLinkedAddressFiles(context, syndicationContext) }
+            CancellationToken cancellationToken = default)
+        {
+            var extractBuilder = new LinkedAddressExtractBuilder(context, syndicationContext);
+
+            return new ExtractArchive($"{ZipNameLinks}-{DateTime.Now:yyyy-MM-dd}")
+                {
+                    extractBuilder.CreateLinkedBuildingUnitAddressFiles(),
+                    extractBuilder.CreateLinkedParcelAddressFiles()
+                }
                 .CreateFileCallbackResult(cancellationToken);
+        }
     }
 }

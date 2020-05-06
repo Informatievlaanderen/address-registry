@@ -47,7 +47,7 @@ namespace AddressRegistry.Projections.Extract.AddressCrabSubaddressIdExtract
 
             When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) =>
             {
-                Guid addressId = AddressId.CreateFor(new CrabSubaddressId(message.Message.HouseNumberId));
+                Guid addressId = AddressId.CreateFor(new CrabSubaddressId(message.Message.SubaddressId));
                 var item = await context.AddressCrabSubaddressIdExtract.FindAsync(addressId, cancellationToken: ct);
                 item.CrabSubaddressId = message.Message.SubaddressId;
 

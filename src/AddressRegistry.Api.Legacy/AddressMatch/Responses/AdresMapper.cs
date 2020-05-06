@@ -8,33 +8,29 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Straatnaam;
     using Infrastructure.Options;
     using Matching;
-    using Microsoft.EntityFrameworkCore;
     using Projections.Legacy.AddressDetail;
 
-    internal class AdresMapper : IMapper<AddressDetailItem, AdresMatchItem>
+    internal class AdresMapper : IMapper<AddressDetailItem, AdresMatchScorableItem>
     {
         private readonly ResponseOptions _responseOptions;
         private readonly ILatestQueries _latestQueries;
-        private readonly AddressMatchContext _context;
-        private readonly BuildingContext _buildingContext;
 
-        public AdresMapper(ResponseOptions responseOptions, ILatestQueries latestQueries, AddressMatchContext context, BuildingContext buildingContext)
+        public AdresMapper(ResponseOptions responseOptions, ILatestQueries latestQueries)
         {
             _responseOptions = responseOptions;
             _latestQueries = latestQueries;
-            _context = context;
-            _buildingContext = buildingContext;
         }
 
-        public AdresMatchItem Map(AddressDetailItem source)
+        public AdresMatchScorableItem Map(AddressDetailItem source)
         {
             var streetName = _latestQueries.GetAllLatestStreetNames().Single(x => x.StreetNameId == source.StreetNameId);
             var municipality = _latestQueries.GetAllLatestMunicipalities().Single(x => x.NisCode == streetName.NisCode);
             var defaultStreetName = AddressMapper.GetDefaultStreetNameName(streetName, municipality.PrimaryLanguage);
             var homonym = AddressMapper.GetDefaultHomonymAddition(streetName, municipality.PrimaryLanguage);
 
-            return new AdresMatchItem
+            return new AdresMatchScorableItem
             {
+                AddressId = source.AddressId,
                 Identificator = new AdresIdentificator(_responseOptions.Naamruimte, source.PersistentLocalId.ToString(), source.VersionTimestamp.ToBelgianDateTimeOffset()),
                 Detail = string.Format(_responseOptions.DetailUrl, source.PersistentLocalId.Value.ToString()),
                 Gemeente = new AdresMatchItemGemeente
@@ -63,31 +59,6 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
                 PositieGeometrieMethode = AddressMapper.ConvertFromGeometryMethod(source.PositionMethod),
                 AdresStatus = AddressMapper.ConvertFromAddressStatus(source.Status),
                 OfficieelToegekend = source.OfficiallyAssigned,
-                AdresseerbareObjecten =
-                    _buildingContext.BuildingUnits
-                        .Include(x => x.Addresses)
-                        .Where(x => x.Addresses.Any(y => y.AddressId == source.AddressId) && !x.IsRemoved && x.IsBuildingComplete && x.IsComplete && x.PersistentLocalId.HasValue)
-                        .Select(x => new { x.PersistentLocalId })
-                        .ToList()
-                        .Select(matchLatestItem => new AdresseerbaarObject
-                        {
-                            ObjectId = matchLatestItem.PersistentLocalId.ToString(),
-                            ObjectType = ObjectType.Gebouweenheid,
-                            Detail = string.Format(_responseOptions.GebouweenheidDetailUrl, matchLatestItem.PersistentLocalId.ToString()),
-                        })
-                        .ToList()
-                        .Concat(
-                            _context.ParcelAddressMatchLatestItems
-                            .Where(x => x.AddressId == source.AddressId && !x.IsRemoved)
-                            .ToList()
-                            .Select(matchLatestItem => new AdresseerbaarObject
-                            {
-                                ObjectId = matchLatestItem.ParcelPersistentLocalId,
-                                ObjectType = ObjectType.Perceel,
-                                Detail = string.Format(_responseOptions.PerceelDetailUrl, matchLatestItem.ParcelPersistentLocalId),
-                            })
-                            .ToList())
-                        .ToList()
             };
         }
     }

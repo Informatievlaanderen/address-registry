@@ -21,9 +21,10 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             IMapper<MunicipalityLatestItem, TResult> municipalityMapper,
             IMapper<StreetNameLatestItem, TResult> streetNameMapper,
             IMapper<AddressDetailItem, TResult> addressMapper,
+            int maxNumberOfResults,
             IWarningLogger warnings) :
             //ITelemetry telemetry) :
-            base(new RrAddressMatcher<TResult>(kadRrService, addressMapper, warnings),
+            base(new RrAddressMatcher<TResult>(kadRrService, addressMapper, maxNumberOfResults, warnings),
                 new MunicipalityMatcher<TResult>(latestQueries, config, municipalityMapper, warnings),//, telemetry),
                 new StreetNameMatcher<TResult>(latestQueries, kadRrService, config, streetNameMapper, warnings),//, telemetry),
                 new AddressMatcher<TResult>(latestQueries, addressMapper, warnings))

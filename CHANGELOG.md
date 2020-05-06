@@ -1,3 +1,10 @@
+## [2.12.11](https://github.com/informatievlaanderen/address-registry/compare/v2.12.10...v2.12.11) (2020-05-06)
+
+
+### Bug Fixes
+
+* correct issues extract crabid's GRAR-1262 ([f219e7d](https://github.com/informatievlaanderen/address-registry/commit/f219e7d))
+
 ## [2.12.10](https://github.com/informatievlaanderen/address-registry/compare/v2.12.9...v2.12.10) (2020-05-06)
 
 ## [2.12.9](https://github.com/informatievlaanderen/address-registry/compare/v2.12.8...v2.12.9) (2020-05-05)

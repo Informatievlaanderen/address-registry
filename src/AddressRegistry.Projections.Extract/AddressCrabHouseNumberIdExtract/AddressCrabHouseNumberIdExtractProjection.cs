@@ -49,9 +49,12 @@ namespace AddressRegistry.Projections.Extract.AddressCrabHouseNumberIdExtract
             {
                 Guid addressId = AddressId.CreateFor(new CrabHouseNumberId(message.Message.HouseNumberId));
                 var item = await context.AddressCrabHouseNumberIdExtract.FindAsync(addressId, cancellationToken: ct);
-                item.CrabHouseNumberId = message.Message.HouseNumberId;
 
-                UpdateDbaseRecordField(item, record => { record.crabhnrid.Value = message.Message.HouseNumberId; });
+                if (item != null)
+                {
+                    item.CrabHouseNumberId = message.Message.HouseNumberId;
+                    UpdateDbaseRecordField(item, record => { record.crabhnrid.Value = message.Message.HouseNumberId; });
+                }
             });
         }
 

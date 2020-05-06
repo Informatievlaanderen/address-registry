@@ -44,19 +44,21 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
                 .ValidateAndThrowAsync(addressMatchRequest, cancellationToken: cancellationToken);
 
             var warningLogger = new ValidationMessageWarningLogger();
-            var addressMatch = new AddressMatchMatchingAlgorithm<AdresMatchItem>(
+            var maxNumberOfResults = 10;
+            var addressMatch = new AddressMatchMatchingAlgorithm<AdresMatchScorableItem>(
                 kadRrService,
                 new ManualAddressMatchConfig(responseOptions.Value.SimilarityThreshold, responseOptions.Value.MaxStreetNamesThreshold),
                 latestQueries,
                 new GemeenteMapper(responseOptions.Value),
                 new StreetNameMapper(responseOptions.Value, latestQueries),
-                new AdresMapper(responseOptions.Value, latestQueries, context, buildingContext),
+                new AdresMapper(responseOptions.Value, latestQueries),
+                maxNumberOfResults,
                 warningLogger);
 
-            var result = addressMatch.Process(new AddressMatchBuilder(Map(addressMatchRequest)));
+            var result = addressMatch.Process(new AddressMatchBuilder(Map(addressMatchRequest))).Take(maxNumberOfResults);
             return Ok(new AddressMatchCollection
             {
-                AdresMatches = result.ToList().OrderByDescending(i => i.Score).Take(10).ToList(),
+                AdresMatches = result.ToList().Select(x => AdresMatchItem.Create(x, buildingContext, context, responseOptions.Value)).ToList(),
                 Warnings = warningLogger.Warnings
             });
         }

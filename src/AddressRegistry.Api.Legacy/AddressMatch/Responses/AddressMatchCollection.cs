@@ -13,8 +13,10 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using System.Linq;
     using System.Runtime.Serialization;
     using System.Xml.Serialization;
+    using Microsoft.EntityFrameworkCore;
 
     [DataContract(Name = "AdresMatchCollectie", Namespace = "")]
     public class AddressMatchCollection
@@ -39,7 +41,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
     }
 
     [DataContract(Name = "AdresMatch", Namespace = "")]
-    public class AdresMatchItem : IScoreable
+    public class AdresMatchItem
     {
         /// <summary>
         /// the identifier of the address
@@ -156,22 +158,54 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         [JsonProperty(Required = Required.Default)]
         public double Score { get; set; }
 
-        [JsonIgnore]
-        [XmlIgnore]
-        [IgnoreDataMember]
-        public string ScoreableProperty
+        public static AdresMatchItem Create(
+            AdresMatchScorableItem scorableItem,
+            BuildingContext buildingContext,
+            AddressMatchContext addressMatchContext,
+            ResponseOptions responseOptions)
         {
-            get
+            return new AdresMatchItem
             {
-                if (VolledigAdres != null)
-                    return VolledigAdres.GeografischeNaam?.Spelling;
-                else if (Gemeente != null && Straatnaam != null)
-                    return $"{Straatnaam.Straatnaam?.GeografischeNaam?.Spelling}, {Gemeente.Gemeentenaam?.GeografischeNaam?.Spelling}";
-                else if (Gemeente != null)
-                    return Gemeente.Gemeentenaam?.GeografischeNaam?.Spelling;
-                else
-                    return null;
-            }
+                Identificator = scorableItem.Identificator,
+                Detail = scorableItem.Detail,
+                Gemeente = scorableItem.Gemeente,
+                Straatnaam = scorableItem.Straatnaam,
+                AdresStatus = scorableItem.AdresStatus,
+                Postinfo = scorableItem.Postinfo,
+                HomoniemToevoeging = scorableItem.HomoniemToevoeging,
+                Huisnummer = scorableItem.Huisnummer,
+                Busnummer = scorableItem.Busnummer,
+                PositieGeometrieMethode = scorableItem.PositieGeometrieMethode,
+                AdresPositie = scorableItem.AdresPositie,
+                PositieSpecificatie = scorableItem.PositieSpecificatie,
+                VolledigAdres = scorableItem.VolledigAdres,
+                OfficieelToegekend = scorableItem.OfficieelToegekend,
+                Score = scorableItem.Score,
+                AdresseerbareObjecten = buildingContext.BuildingUnits
+                        .Include(x => x.Addresses)
+                        .Where(x => x.Addresses.Any(y => y.AddressId == scorableItem.AddressId) && !x.IsRemoved && x.IsBuildingComplete && x.IsComplete && x.PersistentLocalId.HasValue)
+                        .Select(x => new { x.PersistentLocalId })
+                        .ToList()
+                        .Select(matchLatestItem => new AdresseerbaarObject
+                        {
+                            ObjectId = matchLatestItem.PersistentLocalId.ToString(),
+                            ObjectType = ObjectType.Gebouweenheid,
+                            Detail = string.Format(responseOptions.GebouweenheidDetailUrl, matchLatestItem.PersistentLocalId.ToString()),
+                        })
+                        .ToList()
+                        .Concat(
+                            addressMatchContext.ParcelAddressMatchLatestItems
+                            .Where(x => x.AddressId == scorableItem.AddressId && !x.IsRemoved)
+                            .ToList()
+                            .Select(matchLatestItem => new AdresseerbaarObject
+                            {
+                                ObjectId = matchLatestItem.ParcelPersistentLocalId,
+                                ObjectType = ObjectType.Perceel,
+                                Detail = string.Format(responseOptions.PerceelDetailUrl, matchLatestItem.ParcelPersistentLocalId),
+                            })
+                            .ToList())
+                        .ToList()
+            };
         }
     }
 

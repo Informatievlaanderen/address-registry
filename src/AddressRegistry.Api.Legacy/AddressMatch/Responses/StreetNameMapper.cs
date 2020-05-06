@@ -9,7 +9,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
     using Projections.Syndication.StreetName;
     using System.Linq;
 
-    internal class StreetNameMapper : IMapper<StreetNameLatestItem, AdresMatchItem>
+    internal class StreetNameMapper : IMapper<StreetNameLatestItem, AdresMatchScorableItem>
     {
         private readonly ResponseOptions _responseOptions;
         private readonly ILatestQueries _latestQueries;
@@ -20,13 +20,13 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
             _latestQueries = latestQueries;
         }
 
-        public AdresMatchItem Map(StreetNameLatestItem source)
+        public AdresMatchScorableItem Map(StreetNameLatestItem source)
         {
             var municipality = _latestQueries.GetAllLatestMunicipalities().Single(x => x.NisCode == source.NisCode);
             var name = AddressMapper.GetDefaultStreetNameName(source, municipality.PrimaryLanguage);
             var homonym = AddressMapper.GetDefaultHomonymAddition(source, municipality.PrimaryLanguage);
 
-            return new AdresMatchItem
+            return new AdresMatchScorableItem
             {
                 Gemeente = new AdresMatchItemGemeente
                 {

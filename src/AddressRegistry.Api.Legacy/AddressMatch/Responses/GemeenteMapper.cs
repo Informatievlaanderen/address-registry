@@ -6,7 +6,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
     using Matching;
     using Projections.Syndication.Municipality;
 
-    internal class GemeenteMapper : IMapper<MunicipalityLatestItem, AdresMatchItem>
+    internal class GemeenteMapper : IMapper<MunicipalityLatestItem, AdresMatchScorableItem>
     {
         private readonly ResponseOptions _responseOptions;
 
@@ -15,8 +15,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
             _responseOptions = responseOptions;
         }
 
-        public AdresMatchItem Map(MunicipalityLatestItem source) =>
-            new AdresMatchItem
+        public AdresMatchScorableItem Map(MunicipalityLatestItem source) =>
+            new AdresMatchScorableItem
             {
                 Gemeente = new AdresMatchItemGemeente
                 {

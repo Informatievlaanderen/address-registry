@@ -9,18 +9,20 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
     {
         private readonly IKadRrService _kadRrService;
         private readonly IMapper<AddressDetailItem, TResult> _mapper;
+        private readonly int _maxNumberOfResults;
         private readonly IWarningLogger _warnings;
 
-        public RrAddressMatcher(IKadRrService kadRrService, IMapper<AddressDetailItem, TResult> mapper, IWarningLogger warnings)
+        public RrAddressMatcher(IKadRrService kadRrService, IMapper<AddressDetailItem, TResult> mapper, int maxNumberOfResults, IWarningLogger warnings)
         {
             _kadRrService = kadRrService;
             _mapper = mapper;
+            _maxNumberOfResults = maxNumberOfResults;
             _warnings = warnings;
         }
 
         public override IReadOnlyList<TResult> BuildResults(AddressMatchBuilder builder)
         {
-            List<TResult> results = builder.AllAddresses().Select(_mapper.Map).ToList();
+            List<TResult> results = builder.AllAddresses().Take(_maxNumberOfResults).Select(_mapper.Map).ToList();
             results.ForEach(s => s.Score = 100);
 
             return results;

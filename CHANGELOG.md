@@ -1,3 +1,10 @@
+## [2.12.12](https://github.com/informatievlaanderen/address-registry/compare/v2.12.11...v2.12.12) (2020-05-15)
+
+
+### Bug Fixes
+
+* correct default streetname according to muni language GR-1242 ([b7b4b02](https://github.com/informatievlaanderen/address-registry/commit/b7b4b02))
+
 ## [2.12.11](https://github.com/informatievlaanderen/address-registry/compare/v2.12.10...v2.12.11) (2020-05-06)
 
 

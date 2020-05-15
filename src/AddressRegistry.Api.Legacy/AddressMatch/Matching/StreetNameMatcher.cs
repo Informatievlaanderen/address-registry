@@ -150,7 +150,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 {
                     var municipalityWithStreetNames = municipalitiesWithStreetNames[municipalityWrapper.NisCode];
 
-                    var matchingStreetName = municipalityWithStreetNames.Where(s => comparer(s.NameDutch, results.Query.StreetName));
+                    var matchingStreetName = municipalityWithStreetNames.Where(s => comparer(s.GetDefaultName(municipalityWrapper.Municipality.PrimaryLanguage), results.Query.StreetName));
                     municipalityWrapper.AddStreetNames(matchingStreetName);
 
                     //if (matchingStreetName.Any())

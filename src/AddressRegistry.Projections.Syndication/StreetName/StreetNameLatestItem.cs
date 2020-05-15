@@ -1,6 +1,7 @@
 namespace AddressRegistry.Projections.Syndication.StreetName
 {
     using System;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -35,6 +36,22 @@ namespace AddressRegistry.Projections.Syndication.StreetName
             !string.IsNullOrEmpty(HomonymAdditionEnglish) ||
             !string.IsNullOrEmpty(HomonymAdditionFrench) ||
             !string.IsNullOrEmpty(HomonymAdditionGerman);
+
+        public string GetDefaultName(Taal? primaryLanguageMunicipality)
+        {
+            switch (primaryLanguageMunicipality)
+            {
+                default:
+                case Taal.NL:
+                    return NameDutch;
+                case Taal.FR:
+                    return NameFrench;
+                case Taal.DE:
+                    return NameGerman;
+                case Taal.EN:
+                    return NameEnglish;
+            }
+        }
     }
 
     public class StreetNameLatestItemConfiguration : IEntityTypeConfiguration<StreetNameLatestItem>

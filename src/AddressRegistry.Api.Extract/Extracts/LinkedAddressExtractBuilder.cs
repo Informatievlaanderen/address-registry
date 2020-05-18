@@ -3,6 +3,7 @@ namespace AddressRegistry.Api.Extract.Extracts
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api.Extract;
     using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
@@ -31,7 +32,7 @@ namespace AddressRegistry.Api.Extract.Extracts
             _cachedStreetNames = syndicationContext.StreetNameLatestItems.AsNoTracking().ToList();
         }
 
-        public IEnumerable<ExtractFile> CreateLinkedBuildingUnitAddressFiles()
+        public ExtractFile CreateLinkedBuildingUnitAddressFiles()
         {
             var extractItems = _context
                 .AddressLinkExtract
@@ -39,22 +40,24 @@ namespace AddressRegistry.Api.Extract.Extracts
                 .Where(m => m.Complete)
                 .OrderBy(m => m.PersistentLocalId);
 
+            var buildingUnitsIdsWithRemoved = _syndicationContext.BuildingUnitAddressMatchLatestItems.Where(x => !x.IsRemoved).Select(x => new { x.BuildingUnitPersistentLocalId, x.AddressId });
+
             AddressLink TransformRecord(AddressLinkExtractItem r)
             {
-                var buildingUnitIds = _syndicationContext.BuildingUnitAddressMatchLatestItems.Where(x => x.AddressId == r.AddressId && !x.IsRemoved).Select(x => x.BuildingUnitPersistentLocalId);
+                var buildingUnitIds = buildingUnitsIdsWithRemoved.Where(x => x.AddressId == r.AddressId).Select(x => x.BuildingUnitPersistentLocalId);
 
                 return CreateAddressLink(buildingUnitIds, r, BuildingUnitObjectType);
             }
 
-            yield return CreateDbfFile<AddressLinkExtractItem, AddressLinkDbaseRecord>(
+            return CreateDbfFile<AddressLinkExtractItem, AddressLinkDbaseRecord>(
                 ExtractController.FileNameLinksBuildingUnit,
                 new AddressLinkDbaseSchema(),
                 extractItems,
-                () => _syndicationContext.BuildingUnitAddressMatchLatestItems.Count(),
+                () => _syndicationContext.BuildingUnitAddressMatchLatestItems.Count(x => !x.IsRemoved),
                 TransformRecord);
         }
 
-        public IEnumerable<ExtractFile> CreateLinkedParcelAddressFiles()
+        public ExtractFile CreateLinkedParcelAddressFiles()
         {
             var extractItems = _context
                 .AddressLinkExtract
@@ -62,18 +65,20 @@ namespace AddressRegistry.Api.Extract.Extracts
                 .Where(m => m.Complete)
                 .OrderBy(m => m.PersistentLocalId);
 
+            var parcelIdsWithRemoved = _syndicationContext.ParcelAddressMatchLatestItems.Where(x => !x.IsRemoved).Select(x => new { x.ParcelPersistentLocalId, x.AddressId });
+
             AddressLink TransformRecord(AddressLinkExtractItem r)
             {
-                var parcelIds = _syndicationContext.ParcelAddressMatchLatestItems.Where(x => x.AddressId == r.AddressId && !x.IsRemoved).Select(x => x.ParcelPersistentLocalId);
+                var parcelIds = parcelIdsWithRemoved.Where(x => x.AddressId == r.AddressId).Select(x => x.ParcelPersistentLocalId);
 
                 return CreateAddressLink(parcelIds, r, ParcelObjectType);
             }
 
-            yield return CreateDbfFile<AddressLinkExtractItem, AddressLinkDbaseRecord>(
+            return CreateDbfFile<AddressLinkExtractItem, AddressLinkDbaseRecord>(
                 ExtractController.FileNameLinksParcel,
                 new AddressLinkDbaseSchema(),
                 extractItems,
-                () => _syndicationContext.ParcelAddressMatchLatestItems.Count(),
+                () => _syndicationContext.ParcelAddressMatchLatestItems.Count(x => !x.IsRemoved),
                 TransformRecord);
         }
 
@@ -123,7 +128,7 @@ namespace AddressRegistry.Api.Extract.Extracts
                 ? $"{streetNameName} {linkExtractItem.HouseNumber}, {linkExtractItem.PostalCode}, {municipalityName}"
                 : $"{streetNameName} {linkExtractItem.HouseNumber} bus {linkExtractItem.BoxNumber}, {linkExtractItem.PostalCode}, {municipalityName}";
 
-            foreach (var linkId in linkIds)
+            Parallel.ForEach(linkIds, linkId =>
             {
                 var item = new AddressLinkDbaseRecord();
                 item.FromBytes(linkExtractItem.DbaseRecord, DbfFileWriter<AddressLinkDbaseRecord>.Encoding);
@@ -133,7 +138,19 @@ namespace AddressRegistry.Api.Extract.Extracts
                 item.voladres.Value = completeAddress;
 
                 addressLink.DbaseRecords.Add(item.ToBytes(DbfFileWriter<AddressLinkDbaseRecord>.Encoding));
-            }
+            });
+
+            //foreach (var linkId in linkIds)
+            //{
+            //    var item = new AddressLinkDbaseRecord();
+            //    item.FromBytes(linkExtractItem.DbaseRecord, DbfFileWriter<AddressLinkDbaseRecord>.Encoding);
+
+            //    item.objecttype.Value = linkType;
+            //    item.adresobjid.Value = linkId;
+            //    item.voladres.Value = completeAddress;
+
+            //    addressLink.DbaseRecords.Add(item.ToBytes(DbfFileWriter<AddressLinkDbaseRecord>.Encoding));
+            //}
 
             return addressLink;
         }

@@ -20,18 +20,18 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
 
         public AddressDbaseSchema() => Fields = new[]
         {
-            DbaseField.CreateStringField(new DbaseFieldName(nameof(id)), new DbaseFieldLength(50)),
-            DbaseField.CreateInt32Field(new DbaseFieldName(nameof(adresid)), new DbaseFieldLength(10)),
-            DbaseField.CreateStringField(new DbaseFieldName(nameof(versieid)), new DbaseFieldLength(25)),
-            DbaseField.CreateStringField(new DbaseFieldName(nameof(posspec)), new DbaseFieldLength(20)),
-            DbaseField.CreateStringField(new DbaseFieldName(nameof(posgeommet)), new DbaseFieldLength(30)),
-            DbaseField.CreateStringField(new DbaseFieldName(nameof(straatnmid)), new DbaseFieldLength(10)),
-            DbaseField.CreateStringField(new DbaseFieldName(nameof(straatnm)), new DbaseFieldLength(80)),
-            DbaseField.CreateStringField(new DbaseFieldName(nameof(huisnr)), new DbaseFieldLength(11)),
-            DbaseField.CreateStringField(new DbaseFieldName(nameof(busnr)), new DbaseFieldLength(35)),
-            DbaseField.CreateStringField(new DbaseFieldName(nameof(postcode)), new DbaseFieldLength(4)),
-            DbaseField.CreateStringField(new DbaseFieldName(nameof(gemeentenm)), new DbaseFieldLength(40)),
-            DbaseField.CreateStringField(new DbaseFieldName(nameof(status)), new DbaseFieldLength(20)),
+            DbaseField.CreateCharacterField(new DbaseFieldName(nameof(id)), new DbaseFieldLength(50)),
+            DbaseField.CreateNumberField(new DbaseFieldName(nameof(adresid)), new DbaseFieldLength(10), new DbaseDecimalCount(0)),
+            DbaseField.CreateCharacterField(new DbaseFieldName(nameof(versieid)), new DbaseFieldLength(25)),
+            DbaseField.CreateCharacterField(new DbaseFieldName(nameof(posspec)), new DbaseFieldLength(20)),
+            DbaseField.CreateCharacterField(new DbaseFieldName(nameof(posgeommet)), new DbaseFieldLength(30)),
+            DbaseField.CreateCharacterField(new DbaseFieldName(nameof(straatnmid)), new DbaseFieldLength(10)),
+            DbaseField.CreateCharacterField(new DbaseFieldName(nameof(straatnm)), new DbaseFieldLength(80)),
+            DbaseField.CreateCharacterField(new DbaseFieldName(nameof(huisnr)), new DbaseFieldLength(11)),
+            DbaseField.CreateCharacterField(new DbaseFieldName(nameof(busnr)), new DbaseFieldLength(35)),
+            DbaseField.CreateCharacterField(new DbaseFieldName(nameof(postcode)), new DbaseFieldLength(4)),
+            DbaseField.CreateCharacterField(new DbaseFieldName(nameof(gemeentenm)), new DbaseFieldLength(40)),
+            DbaseField.CreateCharacterField(new DbaseFieldName(nameof(status)), new DbaseFieldLength(20)),
             DbaseField.CreateLogicalField(new DbaseFieldName(nameof(offtoegknd)))
         };
     }

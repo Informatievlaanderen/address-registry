@@ -1,7 +1,7 @@
 namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
 {
     using System;
-    using System.Data.SqlClient;
+    using Microsoft.Data.SqlClient;
     using Address.Query;
     using AddressMatch;
     using AddressMatch.Matching;

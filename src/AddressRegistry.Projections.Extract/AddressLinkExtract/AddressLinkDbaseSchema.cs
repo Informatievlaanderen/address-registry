@@ -11,10 +11,10 @@ namespace AddressRegistry.Projections.Extract.AddressLinkExtract
 
         public AddressLinkDbaseSchema() => Fields = new[]
         {
-            DbaseField.CreateStringField(new DbaseFieldName(nameof(objecttype)), new DbaseFieldLength(20)),
-            DbaseField.CreateStringField(new DbaseFieldName(nameof(adresobjid)), new DbaseFieldLength(30)),
-            DbaseField.CreateInt32Field(new DbaseFieldName(nameof(adresid)), new DbaseFieldLength(DbaseInt32.MaximumIntegerDigits.ToInt32())),
-            DbaseField.CreateStringField(new DbaseFieldName(nameof(voladres)), new DbaseFieldLength(254))
+            DbaseField.CreateCharacterField(new DbaseFieldName(nameof(objecttype)), new DbaseFieldLength(20)),
+            DbaseField.CreateCharacterField(new DbaseFieldName(nameof(adresobjid)), new DbaseFieldLength(30)),
+            DbaseField.CreateNumberField(new DbaseFieldName(nameof(adresid)), new DbaseFieldLength(DbaseInt32.MaximumIntegerDigits.ToInt32()), new DbaseDecimalCount(0)),
+            DbaseField.CreateCharacterField(new DbaseFieldName(nameof(voladres)), new DbaseFieldLength(254))
         };
     }
 }

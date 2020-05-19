@@ -2,7 +2,7 @@ namespace AddressRegistry.Importer.Subaddress.Console
 {
     using System;
     using System.Collections.Generic;
-    using System.Data.SqlClient;
+    using Microsoft.Data.SqlClient;
     using System.Linq;
     using Address.Commands.Crab;
     using Aiv.Vbr.CentraalBeheer.Crab.CrabHist;

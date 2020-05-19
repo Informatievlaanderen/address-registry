@@ -1,7 +1,7 @@
 namespace AddressRegistry.Projections.Syndication
 {
     using System;
-    using System.Data.SqlClient;
+    using Microsoft.Data.SqlClient;
     using System.Net.Http;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Http;

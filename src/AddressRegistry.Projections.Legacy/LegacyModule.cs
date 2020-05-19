@@ -1,7 +1,7 @@
 namespace AddressRegistry.Projections.Legacy
 {
     using System;
-    using System.Data.SqlClient;
+    using Microsoft.Data.SqlClient;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;

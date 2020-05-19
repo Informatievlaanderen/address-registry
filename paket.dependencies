@@ -1,82 +1,75 @@
-// Only the target frameworks that are used in projects.
-// If you change the target framework of the projects then you need to run paket install again.
 framework: netcoreapp31, net472
-
-// When doing development as a non-employee, uncomment this to use the public NuGet feed
 source https://api.nuget.org/v3/index.json
 
-// When doing development as an employee, uncomment this to use the private NuGet proxy
-// source https://informatievlaanderen.myget.org/F/nuget-mirror/api/v3/index.json username: "%MYGET_FEED_USER%" password: "%MYGET_FEED_PASS%" authtype: "basic"
-
 // PRODUCTION STUFF
-nuget Microsoft.Extensions.Configuration 3.1.2
-nuget Microsoft.Extensions.Configuration.CommandLine 3.1.2
-nuget Microsoft.Extensions.Configuration.FileExtensions 3.1.2
-nuget Microsoft.Extensions.Configuration.EnvironmentVariables 3.1.2
-nuget Microsoft.Extensions.Configuration.Json 3.1.2
+nuget Microsoft.Extensions.Configuration 3.1.4
+nuget Microsoft.Extensions.Configuration.CommandLine 3.1.4
+nuget Microsoft.Extensions.Configuration.FileExtensions 3.1.4
+nuget Microsoft.Extensions.Configuration.EnvironmentVariables 3.1.4
+nuget Microsoft.Extensions.Configuration.Json 3.1.4
 
-nuget Microsoft.Extensions.Http.Polly 3.1.2
+nuget Microsoft.Extensions.Http.Polly 3.1.4
 
 // For more healtchecks, look at https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks
-nuget AspNetCore.HealthChecks.SqlServer 3.0.0
+nuget AspNetCore.HealthChecks.SqlServer 3.1.1
 
 nuget AsyncEnumerator 4.0.2
-nuget Dapper 2.0.30
+nuget Dapper 2.0.35
 nuget CsvHelper 12.3.2
 
 nuget NetTopologySuite 2.0.0
 
-nuget Microsoft.EntityFrameworkCore.Design 3.1.2
+nuget Microsoft.EntityFrameworkCore.Design 3.1.4
 
 // VBR STUFF
-nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 3.3.2
-nuget Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events 2.2.1 content: true, copy_content_to_output_dir: always, copy_local: true
+nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 4.1.0
+nuget Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events 2.2.3 content: true, copy_content_to_output_dir: always, copy_local: true
 
-nuget Be.Vlaanderen.Basisregisters.AggregateSource 4.2.2
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.ExplicitRouting 4.2.2
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore.Autofac 4.2.2
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing 4.2.2
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.CommandHandling 4.2.2
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac 4.2.2
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit 4.2.2
+nuget Be.Vlaanderen.Basisregisters.AggregateSource 5.0.5
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.ExplicitRouting 5.0.5
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore.Autofac 5.0.5
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing 5.0.5
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.CommandHandling 5.0.5
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac 5.0.5
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit 5.0.5
 
-nuget Be.Vlaanderen.Basisregisters.Api 11.1.4
+nuget Be.Vlaanderen.Basisregisters.Api 11.2.3
 
-nuget Be.Vlaanderen.Basisregisters.Aws.DistributedMutex 2.2.1
+nuget Be.Vlaanderen.Basisregisters.Aws.DistributedMutex 2.2.3
 
-nuget Be.Vlaanderen.Basisregisters.CommandHandling 4.2.2
-nuget Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency 4.2.2
-nuget Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore 4.2.2
+nuget Be.Vlaanderen.Basisregisters.CommandHandling 5.0.5
+nuget Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency 5.0.5
+nuget Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore 5.0.5
 
-nuget Be.Vlaanderen.Basisregisters.EventHandling 2.2.1
-nuget Be.Vlaanderen.Basisregisters.EventHandling.Autofac 2.2.1
+nuget Be.Vlaanderen.Basisregisters.EventHandling 2.2.3
+nuget Be.Vlaanderen.Basisregisters.EventHandling.Autofac 2.2.3
 
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList 5.4.1
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore 5.4.1
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac 5.4.1
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner 5.4.1
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing 5.4.1
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit 5.4.1
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication 5.4.1
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList 6.0.4
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore 6.0.4
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac 6.0.4
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner 6.0.4
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing 6.0.4
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit 6.0.4
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication 6.0.4
 
-nuget Be.Vlaanderen.Basisregisters.Projector 5.2.1
+nuget Be.Vlaanderen.Basisregisters.Projector 5.2.4
 
-nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac 4.4.1
-nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.AspNetCore 4.4.1
-nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.SqlStreamStore 4.4.1
+nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac 4.4.3
+nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.AspNetCore 4.4.3
+nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.SqlStreamStore 4.4.3
 
-nuget Be.Vlaanderen.Basisregisters.Crab 2.1.1
+nuget Be.Vlaanderen.Basisregisters.Crab 2.1.3
 
-nuget Be.Vlaanderen.Basisregisters.GrAr.Common 15.5.2
-nuget Be.Vlaanderen.Basisregisters.GrAr.Import 15.5.2
-nuget Be.Vlaanderen.Basisregisters.GrAr.Legacy 15.5.2
-nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance 15.5.2
-nuget Be.Vlaanderen.Basisregisters.GrAr.Extracts 15.5.2
+nuget Be.Vlaanderen.Basisregisters.GrAr.Common 15.5.3
+nuget Be.Vlaanderen.Basisregisters.GrAr.Import 15.5.3
+nuget Be.Vlaanderen.Basisregisters.GrAr.Legacy 15.5.3
+nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance 15.5.3
+nuget Be.Vlaanderen.Basisregisters.GrAr.Extracts 15.5.3
 
-nuget Be.Vlaanderen.Basisregisters.Shaperon 7.3.1
+nuget Be.Vlaanderen.Basisregisters.Shaperon 7.7.4
 
 // .NET CLASSIC STUFF
-nuget EntityFramework 6.4.0
+nuget EntityFramework 6.4.4
 nuget Microsoft.SqlServer.Types 13.0.4001 // Don't update: requires version 13.0.4001 for legacy reasons
 
 // DOCS STUFF
@@ -85,15 +78,15 @@ nuget Structurizr.Client 0.9.6
 nuget Structurizr.AdrTools 0.9.3
 
 // TEST STUFF
-nuget Microsoft.NET.Test.Sdk 16.5.0
-nuget Microsoft.EntityFrameworkCore.InMemory 3.1.2
+nuget Microsoft.NET.Test.Sdk 16.6.1
+nuget Microsoft.EntityFrameworkCore.InMemory 3.1.4
 nuget xunit 2.4.1
 nuget xunit.runner.visualstudio 2.4.1
 nuget xunit.categories 2.0.4
-nuget FluentAssertions 5.10.2
-nuget Moq 4.13.1
+nuget FluentAssertions 5.10.3
+nuget Moq 4.14.1
 nuget AutoFixture.Xunit2 4.11.0
-nuget Serilog.Sinks.XUnit 1.0.21
+nuget Serilog.Sinks.XUnit 2.0.4
 
 // BUILD STUFF
 nuget SourceLink.Embed.AllSourceFiles 2.8.3 copy_local: true

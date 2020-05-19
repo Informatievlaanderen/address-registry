@@ -121,6 +121,7 @@ jobs:
         docker push $BUILD_DOCKER_REGISTRY/address-registry/api-extract:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/projector:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/projections-syndication:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY/address-registry/cache-warmer:$SEMVER
       env:
         BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
         SEMVER: ${{ env.RELEASE_VERSION }}
@@ -156,6 +157,9 @@ jobs:
 
         docker tag  $BUILD_DOCKER_REGISTRY/address-registry/projections-syndication:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/projections-syndication:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/projections-syndication:$SEMVER
+  
+        docker tag  $BUILD_DOCKER_REGISTRY/address-registry/cache-warmer:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/cache-warmer:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/cache-warmer:$SEMVER
       env:
         BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
         BUILD_DOCKER_REGISTRY_PRD: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_PRD }}

@@ -1,3 +1,11 @@
+## [2.12.13](https://github.com/informatievlaanderen/address-registry/compare/v2.12.12...v2.12.13) (2020-05-19)
+
+
+### Bug Fixes
+
+* add cache warmer to docker push ([c62705f](https://github.com/informatievlaanderen/address-registry/commit/c62705f4d74837150adcbbaa349eeb7061a43eef))
+* move to 3.1.4 and gh actions ([fd87a8c](https://github.com/informatievlaanderen/address-registry/commit/fd87a8c80dace63017abcca98ea55c46fe279d64))
+
 ## [2.12.12](https://github.com/informatievlaanderen/address-registry/compare/v2.12.11...v2.12.12) (2020-05-15)
 
 

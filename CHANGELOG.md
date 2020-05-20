@@ -1,3 +1,10 @@
+## [2.12.15](https://github.com/informatievlaanderen/address-registry/compare/v2.12.14...v2.12.15) (2020-05-20)
+
+
+### Bug Fixes
+
+* add build badge ([e33bff0](https://github.com/informatievlaanderen/address-registry/commit/e33bff0627dce22d3f255a73b1a473a9c47e2e10))
+
 ## [2.12.14](https://github.com/informatievlaanderen/address-registry/compare/v2.12.13...v2.12.14) (2020-05-20)
 
 

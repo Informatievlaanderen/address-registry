@@ -67,7 +67,7 @@ namespace AddressRegistry.Api.Extract.Extracts
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples), jsonConverter: typeof(StringEnumConverter))]
         public IActionResult GetAddressLinks(
             [FromServices] ExtractContext context,
-            [FromServices] SyndicationContext syndicationContext,
+            [FromServices] Func<SyndicationContext> syndicationContext,
             CancellationToken cancellationToken = default)
         {
             var extractBuilder = new LinkedAddressExtractBuilder(context, syndicationContext);

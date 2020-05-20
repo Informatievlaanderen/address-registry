@@ -51,25 +51,32 @@ namespace AddressRegistry.Console.Extract
 
             try
             {
-                var extractBuilder = new LinkedAddressExtractBuilder(container.GetService<ExtractContext>(), container.GetService<SyndicationContext>());
                 var sourceDirectoryName = "addresslinks";
+                var destinationArchiveFileName = ExtractController.ZipNameLinks + ".zip";
 
+                File.Delete(destinationArchiveFileName);
                 Directory.CreateDirectory(sourceDirectoryName);
-                var buildingTask =Task.Run(() =>
-                {
+                //var buildingTask = Task.Run(() =>
+                //{
                     using (var file = File.Create(Path.Combine(sourceDirectoryName, ExtractController.FileNameLinksBuildingUnit + ".dbf")))
+                    {
+                        var extractBuilder = new LinkedAddressExtractBuilder(container.GetService<ExtractContext>(), container.GetService<Func<SyndicationContext>>());
                         extractBuilder.CreateLinkedBuildingUnitAddressFiles().WriteTo(file, ct);
-                });
+                    }
+                //}, ct);
 
-                var parcelTask = Task.Run(() =>
-                {
-                    using (var file = File.Create(Path.Combine(sourceDirectoryName, ExtractController.FileNameLinksParcel + ".dbf")))
-                        extractBuilder.CreateLinkedParcelAddressFiles().WriteTo(file, ct);
-                });
+                //var parcelTask = Task.Run(() =>
+                //{
+                //    using (var file = File.Create(Path.Combine(sourceDirectoryName, ExtractController.FileNameLinksParcel + ".dbf")))
+                //    {
+                //        var extractBuilder = new LinkedAddressExtractBuilder(container.GetService<Func<ExtractContext>>(), container.GetService<Func<SyndicationContext>>());
+                //        extractBuilder.CreateLinkedParcelAddressFiles().WriteTo(file, ct);
+                //    }
+                //}, ct);
 
-                Task.WaitAll(buildingTask, parcelTask);
+                //Task.WaitAll(buildingTask/**, parcelTask**/);
 
-                ZipFile.CreateFromDirectory(sourceDirectoryName, ExtractController.ZipNameLinks + ".zip");
+                ZipFile.CreateFromDirectory(sourceDirectoryName, destinationArchiveFileName);
             }
             catch (Exception e)
             {

@@ -3,6 +3,7 @@ namespace AddressRegistry.Api.Extract.Extracts
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api.Extract;
     using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
@@ -13,38 +14,51 @@ namespace AddressRegistry.Api.Extract.Extracts
     using Projections.Extract.AddressLinkExtract;
     using Projections.Syndication;
     using Projections.Syndication.Municipality;
+    using Projections.Syndication.Parcel;
     using Projections.Syndication.StreetName;
 
     public class LinkedAddressExtractBuilder
     {
         private readonly ExtractContext _context;
-        private readonly SyndicationContext _syndicationContext;
+        private readonly Func<SyndicationContext> _syndicationContext;
         private readonly List<MunicipalityLatestItem> _cachedMunicipalities;
         private readonly List<StreetNameLatestItem> _cachedStreetNames;
         private const string BuildingUnitObjectType = "Gebouweenheid";
         private const string ParcelObjectType = "Perceel";
+        private readonly ReaderWriterLockSlim _writerLock = new ReaderWriterLockSlim();
 
-        public LinkedAddressExtractBuilder(ExtractContext context, SyndicationContext syndicationContext)
+        public LinkedAddressExtractBuilder(ExtractContext context, Func<SyndicationContext> syndicationContext)
         {
             _context = context;
             _syndicationContext = syndicationContext;
-            _cachedMunicipalities = syndicationContext.MunicipalityLatestItems.AsNoTracking().ToList();
-            _cachedStreetNames = syndicationContext.StreetNameLatestItems.AsNoTracking().ToList();
+
+            using (var syncContext = _syndicationContext())
+            {
+                _cachedMunicipalities = syncContext.MunicipalityLatestItems.AsNoTracking().ToList();
+                _cachedStreetNames = syncContext.StreetNameLatestItems.AsNoTracking().ToList();
+            }
         }
 
         public ExtractFile CreateLinkedBuildingUnitAddressFiles()
         {
-            var extractItems = _context
+            IQueryable<AddressLinkExtractItem> extractItems;
+            extractItems = _context
                 .AddressLinkExtract
                 .AsNoTracking()
                 .Where(m => m.Complete)
                 .OrderBy(m => m.PersistentLocalId);
 
-            var buildingUnitsIdsWithRemoved = _syndicationContext.BuildingUnitAddressMatchLatestItems.Where(x => !x.IsRemoved).Select(x => new { x.BuildingUnitPersistentLocalId, x.AddressId });
+            IEnumerable<dynamic> buildingUnitsIdsWithRemoved;
+            using (var syndicationContext = _syndicationContext())
+            {
+                buildingUnitsIdsWithRemoved =
+                    syndicationContext.BuildingUnitAddressMatchLatestItems.Where(x => !x.IsRemoved).Select(x => new { x.BuildingUnitPersistentLocalId, x.AddressId }).ToList();
+            }
 
             AddressLink TransformRecord(AddressLinkExtractItem r)
             {
-                var buildingUnitIds = buildingUnitsIdsWithRemoved.Where(x => x.AddressId == r.AddressId).Select(x => x.BuildingUnitPersistentLocalId);
+                var buildingUnitIds = buildingUnitsIdsWithRemoved.Where(x => x.AddressId == r.AddressId)
+                    .Select(x => (string)x.BuildingUnitPersistentLocalId);
 
                 return CreateAddressLink(buildingUnitIds, r, BuildingUnitObjectType);
             }
@@ -53,23 +67,33 @@ namespace AddressRegistry.Api.Extract.Extracts
                 ExtractController.FileNameLinksBuildingUnit,
                 new AddressLinkDbaseSchema(),
                 extractItems,
-                () => _syndicationContext.BuildingUnitAddressMatchLatestItems.Count(x => !x.IsRemoved),
+                () =>
+                {
+                    using (var syncContext = _syndicationContext())
+                        return syncContext.BuildingUnitAddressMatchLatestItems.Count(x => !x.IsRemoved);
+                },
                 TransformRecord);
         }
 
         public ExtractFile CreateLinkedParcelAddressFiles()
         {
-            var extractItems = _context
+            IQueryable<AddressLinkExtractItem> extractItems;
+            extractItems = _context
                 .AddressLinkExtract
                 .AsNoTracking()
                 .Where(m => m.Complete)
-                .OrderBy(m => m.PersistentLocalId);
+                .OrderBy(m => m.PersistentLocalId)
+                .Take(10000);
 
-            var parcelIdsWithRemoved = _syndicationContext.ParcelAddressMatchLatestItems.Where(x => !x.IsRemoved).Select(x => new { x.ParcelPersistentLocalId, x.AddressId });
+
+            IEnumerable<ParcelAddressMatchLatestItem> parcelIdsWithRemoved;
+            using (var syndicationContext = _syndicationContext())
+                parcelIdsWithRemoved = syndicationContext.ParcelAddressMatchLatestItems.Where(x => !x.IsRemoved).ToList();
 
             AddressLink TransformRecord(AddressLinkExtractItem r)
             {
-                var parcelIds = parcelIdsWithRemoved.Where(x => x.AddressId == r.AddressId).Select(x => x.ParcelPersistentLocalId);
+                var parcelIds = parcelIdsWithRemoved.Where(x => x.AddressId == r.AddressId)
+                    .Select(x => x.ParcelPersistentLocalId);
 
                 return CreateAddressLink(parcelIds, r, ParcelObjectType);
             }
@@ -78,12 +102,17 @@ namespace AddressRegistry.Api.Extract.Extracts
                 ExtractController.FileNameLinksParcel,
                 new AddressLinkDbaseSchema(),
                 extractItems,
-                () => _syndicationContext.ParcelAddressMatchLatestItems.Count(x => !x.IsRemoved),
+                () =>
+                {
+                    using (var syncContext = _syndicationContext())
+                        return syncContext.ParcelAddressMatchLatestItems.Count(x => !x.IsRemoved);
+                },
                 TransformRecord);
+
         }
 
         private AddressLink CreateAddressLink(
-            IQueryable<string> linkIds,
+            IEnumerable<string> linkIds,
             AddressLinkExtractItem linkExtractItem,
             string linkType)
         {
@@ -155,7 +184,7 @@ namespace AddressRegistry.Api.Extract.Extracts
             return addressLink;
         }
 
-        public static ExtractFile CreateDbfFile<T, TDbaseRecord>(
+        public ExtractFile CreateDbfFile<T, TDbaseRecord>(
             string fileName,
             DbaseSchema schema,
             IEnumerable<T> records,
@@ -167,14 +196,24 @@ namespace AddressRegistry.Api.Extract.Extracts
                 {
                     var dbfFile = new DbfFileWriter<TDbaseRecord>(new DbaseFileHeader(DateTime.Now, DbaseCodePage.Western_European_ANSI, new DbaseRecordCount(getRecordCount()), schema), stream);
 
-                    foreach (var record in records)
+                    Parallel.ForEach(records, record =>
                     {
                         if (token.IsCancellationRequested)
                             return;
 
                         foreach (var dbaseRecord in buildRecordFunc(record).DbaseRecords)
-                            dbfFile.WriteBytesAs<TDbaseRecord>(dbaseRecord);
-                    }
+                        {
+                            _writerLock.EnterWriteLock();
+                            try
+                            {
+                                dbfFile.WriteBytesAs<TDbaseRecord>(dbaseRecord);
+                            }
+                            finally
+                            {
+                                _writerLock.ExitWriteLock();
+                            }
+                        }
+                    });
 
                     dbfFile.WriteEndOfFile();
                 });

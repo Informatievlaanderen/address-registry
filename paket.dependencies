@@ -15,7 +15,7 @@ nuget AspNetCore.HealthChecks.SqlServer 3.1.1
 
 nuget AsyncEnumerator 4.0.2
 nuget Dapper 2.0.35
-nuget CsvHelper 12.3.2
+nuget CsvHelper 15.0.5
 
 nuget NetTopologySuite 2.0.0
 

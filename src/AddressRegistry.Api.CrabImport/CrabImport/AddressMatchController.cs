@@ -10,13 +10,13 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
     using Microsoft.Extensions.Logging;
     using System;
     using System.Data;
+    using System.Globalization;
     using Microsoft.Data.SqlClient;
     using System.IO;
     using System.IO.Compression;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Extensions.Logging.Abstractions;
     using Projections.Legacy.AddressMatch;
 
     [ApiVersion("1.0")]
@@ -29,7 +29,7 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
         private const string RrStreetNamesFileName = "RRStreetNames.csv";
         private const string KadStreetNamesFileName = "KadStreetNames.csv";
         private const string RrAddressesFileName = "RRAddresses.csv";
-        private readonly Configuration _csvConfiguration = new Configuration { Encoding = Encoding.UTF8, Delimiter = ";" };
+        private readonly CsvConfiguration _csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture) { Encoding = Encoding.UTF8, Delimiter = ";" };
 
         [HttpPost, DisableRequestSizeLimit]
         public async Task<IActionResult> Post(

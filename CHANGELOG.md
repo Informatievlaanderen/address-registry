@@ -1,3 +1,11 @@
+## [2.12.14](https://github.com/informatievlaanderen/address-registry/compare/v2.12.13...v2.12.14) (2020-05-20)
+
+
+### Bug Fixes
+
+* addressmatch postalcode without niscode now returns empty result ([bf53b36](https://github.com/informatievlaanderen/address-registry/commit/bf53b367e1ce05e977b60362b32780bc0849e7b8))
+* upgrade csv helper ([56bfd7a](https://github.com/informatievlaanderen/address-registry/commit/56bfd7ac45f3c9f6eaee3e214b4747b5662c911d))
+
 ## [2.12.13](https://github.com/informatievlaanderen/address-registry/compare/v2.12.12...v2.12.13) (2020-05-19)
 
 

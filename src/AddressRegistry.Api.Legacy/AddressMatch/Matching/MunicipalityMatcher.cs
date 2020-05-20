@@ -92,7 +92,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 if (results.Any() && !results.ContainsNisCode(postalInfo.NisCode))
                     _warnings.AddWarning("8", "Geen overeenkomst tussen 'Postcode' en 'Gemeentenaam'/'Niscode'.");
 
-                if(string.IsNullOrEmpty(postalInfo.NisCode))
+                if (string.IsNullOrEmpty(postalInfo.NisCode))
                     return new List<MunicipalityLatestItem>();
 
                 return municipalities.Where(g => g.NisCode.Contains(postalInfo.NisCode));

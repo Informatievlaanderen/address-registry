@@ -17,6 +17,7 @@ namespace AddressRegistry.Projections.Syndication
     using System.Threading;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
+    using Be.Vlaanderen.Basisregisters.Shaperon;
     using BuildingUnit;
     using Parcel;
     using PostalInfo;
@@ -158,7 +159,8 @@ namespace AddressRegistry.Projections.Syndication
                 true,
                 container.GetService<ILogger<Program>>(),
                 container.GetService<IRegistryAtomFeedReader>(),
-                new BuildingUnitAddressMatchProjections());
+                new BuildingUnitAddressMatchProjections(),
+                new AddressBuildingUnitLinkProjections(DbaseCodePage.Western_European_ANSI.ToEncoding()));
 
             yield return municipalityRunner.CatchUpAsync(
                 container.GetService<Func<Owned<SyndicationContext>>>(),

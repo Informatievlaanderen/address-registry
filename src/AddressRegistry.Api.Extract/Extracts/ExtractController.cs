@@ -70,12 +70,12 @@ namespace AddressRegistry.Api.Extract.Extracts
             [FromServices] SyndicationContext syndicationContext,
             CancellationToken cancellationToken = default)
         {
-            var extractBuilder = new LinkedAddressExtractBuilder(context, syndicationContext);
+            var extractBuilder = new LinkedAddressExtractBuilder2(syndicationContext);
 
             return new ExtractArchive($"{ZipNameLinks}-{DateTime.Now:yyyy-MM-dd}")
                 {
                     extractBuilder.CreateLinkedBuildingUnitAddressFiles(),
-                    extractBuilder.CreateLinkedParcelAddressFiles()
+                    //extractBuilder.CreateLinkedParcelAddressFiles()
                 }
                 .CreateFileCallbackResult(cancellationToken);
         }

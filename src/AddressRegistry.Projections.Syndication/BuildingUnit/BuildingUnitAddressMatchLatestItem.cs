@@ -12,6 +12,7 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
         public Guid AddressId { get; set; }
         public Guid BuildingId { get; set; }
         public bool IsComplete { get; set; }
+        public bool IsBuildingComplete { get; set; }
         public bool IsRemoved { get; set; }
     }
 
@@ -32,10 +33,11 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
             builder.Property(x => x.BuildingUnitPersistentLocalId);
             builder.Property(x => x.BuildingId);
             builder.Property(x => x.IsComplete);
+            builder.Property(x => x.IsBuildingComplete);
             builder.Property(x => x.IsRemoved);
 
             builder.HasIndex(x => x.AddressId).IsClustered();
-            builder.HasIndex(x => new { x.IsComplete, x.IsRemoved });
+            builder.HasIndex(x => new { x.IsComplete, x.IsRemoved, x.IsBuildingComplete });
             builder.HasIndex(x => x.BuildingId);
         }
     }

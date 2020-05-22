@@ -8,7 +8,6 @@ namespace AddressRegistry.Api.Extract.Extracts
     using Projections.Extract;
     using Responses;
     using Swashbuckle.AspNetCore.Filters;
-    using System;
     using System.Threading;
     using Be.Vlaanderen.Basisregisters.Api.Extract;
     using Projections.Syndication;
@@ -20,13 +19,6 @@ namespace AddressRegistry.Api.Extract.Extracts
     [ApiExplorerSettings(GroupName = "Extract")]
     public class ExtractController : ApiController
     {
-        public const string ZipName = "Adres";
-        public const string FileNameCrabHouseNumberId = "CrabHuisnummer";
-        public const string FileNameCrabSubadresId = "CrabSubadres";
-        public const string ZipNameLinks = "Adreskoppelingen";
-        public const string FileNameLinksBuildingUnit = "Adreskoppelingen";
-        public const string FileNameLinksParcel = "Adreskoppelingen_1";
-
         /// <summary>
         /// Vraag een dump van het volledige register op.
         /// </summary>
@@ -38,13 +30,15 @@ namespace AddressRegistry.Api.Extract.Extracts
         [HttpGet]
         [ProducesResponseType(typeof(FileStreamResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(AddressRegistryResponseExample), jsonConverter: typeof(StringEnumConverter))]
-        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples), jsonConverter: typeof(StringEnumConverter))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(AddressRegistryResponseExample),
+            jsonConverter: typeof(StringEnumConverter))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples),
+            jsonConverter: typeof(StringEnumConverter))]
         public IActionResult Get(
             [FromServices] ExtractContext context,
             [FromServices] SyndicationContext syndicationContext,
             CancellationToken cancellationToken = default) =>
-            new ExtractArchive($"{ZipName}-{DateTime.Now:yyyy-MM-dd}")
+            new ExtractArchive(ExtractFileNames.GetAddressZip())
                 {
                     AddressRegistryExtractBuilder.CreateAddressFiles(context, syndicationContext),
                     AddressCrabHouseNumberIdExtractBuilder.CreateAddressCrabHouseNumberIdFile(context),
@@ -63,8 +57,10 @@ namespace AddressRegistry.Api.Extract.Extracts
         [HttpGet("addresslinks")]
         [ProducesResponseType(typeof(FileStreamResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(AddressRegistryResponseExample), jsonConverter: typeof(StringEnumConverter))]
-        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples), jsonConverter: typeof(StringEnumConverter))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(AddressRegistryResponseExample),
+            jsonConverter: typeof(StringEnumConverter))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples),
+            jsonConverter: typeof(StringEnumConverter))]
         public IActionResult GetAddressLinks(
             [FromServices] ExtractContext context,
             [FromServices] SyndicationContext syndicationContext,
@@ -72,7 +68,7 @@ namespace AddressRegistry.Api.Extract.Extracts
         {
             var extractBuilder = new LinkedAddressExtractBuilder(context, syndicationContext);
 
-            return new ExtractArchive($"{ZipNameLinks}-{DateTime.Now:yyyy-MM-dd}")
+            return new ExtractArchive(ExtractFileNames.GetAddressLinksZip())
                 {
                     extractBuilder.CreateLinkedBuildingUnitAddressFiles(),
                     extractBuilder.CreateLinkedParcelAddressFiles()

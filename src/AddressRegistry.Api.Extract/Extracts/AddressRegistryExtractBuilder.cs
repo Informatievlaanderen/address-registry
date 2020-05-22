@@ -64,7 +64,7 @@ namespace AddressRegistry.Api.Extract.Extracts
             }
 
             yield return ExtractBuilder.CreateDbfFile<AddressExtractItem, AddressDbaseRecord>(
-                ExtractController.ZipName,
+                ExtractFileNames.Address,
                 new AddressDbaseSchema(),
                 extractItems,
                 extractItems.Count,
@@ -81,7 +81,7 @@ namespace AddressRegistry.Api.Extract.Extracts
                 double.PositiveInfinity);
 
             yield return ExtractBuilder.CreateShapeFile<PointShapeContent>(
-                ExtractController.ZipName,
+                ExtractFileNames.Address,
                 ShapeType.Point,
                 extractItems.Select(x => x.ShapeRecordContent),
                 ShapeContent.Read,
@@ -89,7 +89,7 @@ namespace AddressRegistry.Api.Extract.Extracts
                 boundingBox);
 
             yield return ExtractBuilder.CreateShapeIndexFile(
-                ExtractController.ZipName,
+                ExtractFileNames.Address,
                 ShapeType.Point,
                 extractItems.Select(x => x.ShapeRecordContentLength),
                 extractItems.Count,

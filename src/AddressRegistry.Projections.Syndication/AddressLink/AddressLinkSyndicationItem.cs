@@ -13,9 +13,9 @@ namespace AddressRegistry.Projections.Syndication.AddressLink
         public long Position { get; set; }
 
         public Guid? StreetNameId { get; set; }
-        public string HouseNumber { get; set; }
-        public string BoxNumber { get; set; }
-        public string PostalCode { get; set; }
+        public string? HouseNumber { get; set; }
+        public string? BoxNumber { get; set; }
+        public string? PostalCode { get; set; }
 
         public bool IsComplete { get; set; }
         public bool IsRemoved { get; set; }

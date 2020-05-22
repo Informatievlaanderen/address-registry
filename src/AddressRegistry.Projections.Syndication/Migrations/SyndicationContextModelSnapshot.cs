@@ -26,11 +26,9 @@ namespace AddressRegistry.Projections.Syndication.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("BoxNumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("HouseNumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsComplete")
@@ -46,7 +44,6 @@ namespace AddressRegistry.Projections.Syndication.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("PostalCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("StreetNameId")

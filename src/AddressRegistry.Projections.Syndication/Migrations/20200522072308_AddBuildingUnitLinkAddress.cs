@@ -48,9 +48,9 @@ namespace AddressRegistry.Projections.Syndication.Migrations
                     Version = table.Column<string>(nullable: true),
                     Position = table.Column<long>(nullable: false),
                     StreetNameId = table.Column<Guid>(nullable: true),
-                    HouseNumber = table.Column<string>(nullable: false),
-                    BoxNumber = table.Column<string>(nullable: false),
-                    PostalCode = table.Column<string>(nullable: false),
+                    HouseNumber = table.Column<string>(nullable: true),
+                    BoxNumber = table.Column<string>(nullable: true),
+                    PostalCode = table.Column<string>(nullable: true),
                     IsComplete = table.Column<bool>(nullable: false),
                     IsRemoved = table.Column<bool>(nullable: false)
                 },

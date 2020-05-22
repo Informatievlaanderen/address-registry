@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AddressRegistry.Projections.Syndication.Migrations
 {
     [DbContext(typeof(SyndicationContext))]
-    [Migration("20200521120358_AddBuildingUnitLinkAddress")]
+    [Migration("20200522072308_AddBuildingUnitLinkAddress")]
     partial class AddBuildingUnitLinkAddress
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,11 +28,9 @@ namespace AddressRegistry.Projections.Syndication.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("BoxNumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("HouseNumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsComplete")
@@ -48,7 +46,6 @@ namespace AddressRegistry.Projections.Syndication.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("PostalCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("StreetNameId")

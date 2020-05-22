@@ -34,20 +34,33 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
 
         private static async Task RemoveBuildingUnit(AtomEntry<SyndicationItem<Building>> entry, SyndicationContext context, CancellationToken ct)
         {
-            var addressBuildingUnitLinkExtractItems =
-                context
-                    .AddressBulidingUnitLinkExtract
-                    .Where(x => x.BuildingId == entry.Content.Object.Id)
-                    .AsEnumerable()
-                    .Concat(context.AddressBulidingUnitLinkExtract.Local.Where(x => x.BuildingId == entry.Content.Object.Id))
-                    .ToList();
+            context.AddressLinkWriterLock.EnterWriteLock();
 
-            context.AddressBulidingUnitLinkExtract.RemoveRange(addressBuildingUnitLinkExtractItems);
+            try
+            {
+                var addressBuildingUnitLinkExtractItems =
+                    context
+                        .AddressBulidingUnitLinkExtract
+                        .Where(x => x.BuildingId == entry.Content.Object.Id)
+                        .AsEnumerable()
+                        .Concat(context.AddressBulidingUnitLinkExtract.Local.Where(x => x.BuildingId == entry.Content.Object.Id))
+                        .ToList();
+
+                context.AddressBulidingUnitLinkExtract.RemoveRange(addressBuildingUnitLinkExtractItems);
+            }
+            finally
+            {
+                context.AddressLinkWriterLock.ExitWriteLock();
+            }
         }
 
         private async Task AddSyndicationItemEntry(AtomEntry<SyndicationItem<Building>> entry, SyndicationContext context, CancellationToken ct)
         {
-            var addressBuildingUnitLinkExtractItems =
+            context.AddressLinkWriterLock.EnterWriteLock();
+
+            try
+            {
+                var addressBuildingUnitLinkExtractItems =
                 context
                     .AddressBulidingUnitLinkExtract
                     .Where(x => x.BuildingId == entry.Content.Object.Id)
@@ -56,35 +69,40 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
                     .Distinct()
                     .ToList();
 
-            var itemsToRemove = new List<AddressBuildingUnitLinkExtractItem>();
-            foreach (var buildingUnitAddressMatchLatestItem in addressBuildingUnitLinkExtractItems)
-            {
-                if (!entry.Content.Object.BuildingUnits.Select(x => x.BuildingUnitId).Contains(buildingUnitAddressMatchLatestItem.BuildingUnitId))
-                    itemsToRemove.Add(buildingUnitAddressMatchLatestItem);
-            }
-
-            context.AddressBulidingUnitLinkExtract.RemoveRange(itemsToRemove);
-
-            foreach (var buildingUnit in entry.Content.Object.BuildingUnits)
-            {
-                var unitItems = addressBuildingUnitLinkExtractItems.Where(x => x.BuildingUnitId == buildingUnit.BuildingUnitId).ToList();
-                var addressItemsToRemove = unitItems.Where(x => !buildingUnit.Addresses.Contains(x.AddressId));
-                foreach (var addressId in buildingUnit.Addresses)
+                var itemsToRemove = new List<AddressBuildingUnitLinkExtractItem>();
+                foreach (var buildingUnitAddressMatchLatestItem in addressBuildingUnitLinkExtractItems)
                 {
-                    var addressItem = unitItems.FirstOrDefault(x => x.AddressId == addressId);
-                    if (addressItem == null)
-                    {
-                        await context.AddressBulidingUnitLinkExtract.AddAsync(await
-                            CreateAddressBuildingUnitLinkExtractItem(entry, addressId, buildingUnit, context), ct);
-                    }
-                    else
-                    {
-                        addressItem.BuildingUnitPersistentLocalId = buildingUnit.Identificator.ObjectId;
-                        UpdateDbaseRecordField(addressItem, record => record.adresobjid.Value = buildingUnit.Identificator.ObjectId);
-                    }
+                    if (!entry.Content.Object.BuildingUnits.Select(x => x.BuildingUnitId).Contains(buildingUnitAddressMatchLatestItem.BuildingUnitId))
+                        itemsToRemove.Add(buildingUnitAddressMatchLatestItem);
                 }
 
-                context.AddressBulidingUnitLinkExtract.RemoveRange(addressItemsToRemove);
+                context.AddressBulidingUnitLinkExtract.RemoveRange(itemsToRemove);
+
+                foreach (var buildingUnit in entry.Content.Object.BuildingUnits)
+                {
+                    var unitItems = addressBuildingUnitLinkExtractItems.Where(x => x.BuildingUnitId == buildingUnit.BuildingUnitId).ToList();
+                    var addressItemsToRemove = unitItems.Where(x => !buildingUnit.Addresses.Contains(x.AddressId));
+                    foreach (var addressId in buildingUnit.Addresses)
+                    {
+                        var addressItem = unitItems.FirstOrDefault(x => x.AddressId == addressId);
+                        if (addressItem == null)
+                        {
+                            await context.AddressBulidingUnitLinkExtract.AddAsync(await
+                                CreateAddressBuildingUnitLinkExtractItem(entry, addressId, buildingUnit, context), ct);
+                        }
+                        else
+                        {
+                            addressItem.BuildingUnitPersistentLocalId = buildingUnit.Identificator.ObjectId;
+                            UpdateDbaseRecordField(addressItem, record => record.adresobjid.Value = buildingUnit.Identificator.ObjectId);
+                        }
+                    }
+
+                    context.AddressBulidingUnitLinkExtract.RemoveRange(addressItemsToRemove);
+                }
+            }
+            finally
+            {
+                context.AddressLinkWriterLock.ExitWriteLock();
             }
         }
 
@@ -132,7 +150,7 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
             item.DbaseRecord = record.ToBytes(_encoding);
         }
 
-        private static string CreateCompleteAddress(AddressLinkSyndicationItem address, SyndicationContext context)
+        internal static string CreateCompleteAddress(AddressLinkSyndicationItem address, SyndicationContext context)
         {
             // update streetname, municipality
             var streetName = context.StreetNameLatestItems.First(x => x.StreetNameId == address.StreetNameId);

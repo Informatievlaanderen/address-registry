@@ -16,6 +16,7 @@ namespace AddressRegistry.Projections.Syndication
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
+    using AddressLink;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
     using Be.Vlaanderen.Basisregisters.Shaperon;
     using BuildingUnit;
@@ -159,8 +160,31 @@ namespace AddressRegistry.Projections.Syndication
                 true,
                 container.GetService<ILogger<Program>>(),
                 container.GetService<IRegistryAtomFeedReader>(),
-                new BuildingUnitAddressMatchProjections(),
+                new BuildingUnitAddressMatchProjections());
+
+            var buildingUnitAddressRunner = new FeedProjectionRunner<BuildingEvent, SyndicationItem<Building>, SyndicationContext>(
+                "buildingUnitAddressLink",
+                configuration.GetValue<Uri>("SyndicationFeeds:Building"),
+                configuration.GetValue<string>("SyndicationFeeds:BuildingAuthUserName"),
+                configuration.GetValue<string>("SyndicationFeeds:BuildingAuthPassword"),
+                configuration.GetValue<int>("SyndicationFeeds:BuildingPollingInMilliseconds"),
+                false,
+                true,
+                container.GetService<ILogger<Program>>(),
+                container.GetService<IRegistryAtomFeedReader>(),
                 new AddressBuildingUnitLinkProjections(DbaseCodePage.Western_European_ANSI.ToEncoding()));
+
+            var addressRunner = new FeedProjectionRunner<AddressEvent, SyndicationItem<Address>, SyndicationContext>(
+                "address",
+                configuration.GetValue<Uri>("SyndicationFeeds:Address"),
+                configuration.GetValue<string>("SyndicationFeeds:AddressAuthUserName"),
+                configuration.GetValue<string>("SyndicationFeeds:AddressAuthPassword"),
+                configuration.GetValue<int>("SyndicationFeeds:AddressPollingInMilliseconds"),
+                false,
+                true,
+                container.GetService<ILogger<Program>>(),
+                container.GetService<IRegistryAtomFeedReader>(),
+                new AddressLinkSyndicationProjections(DbaseCodePage.Western_European_ANSI.ToEncoding()));
 
             yield return municipalityRunner.CatchUpAsync(
                 container.GetService<Func<Owned<SyndicationContext>>>(),
@@ -181,6 +205,10 @@ namespace AddressRegistry.Projections.Syndication
             yield return buildingUnitRunner.CatchUpAsync(
                 container.GetService<Func<Owned<SyndicationContext>>>(),
                 ct);
+
+            var addressLinkExtractSyndicationContext = container.GetService<Func<Owned<SyndicationContext>>>();
+            yield return addressRunner.CatchUpAsync(addressLinkExtractSyndicationContext, ct);
+            yield return buildingUnitAddressRunner.CatchUpAsync(addressLinkExtractSyndicationContext, ct);
         }
 
         private static IServiceProvider ConfigureServices(IConfiguration configuration)

@@ -47,7 +47,7 @@ namespace AddressRegistry.Api.Extract.Extracts
             }
 
             yield return CreateDbfFile<AddressLinkExtractItem, AddressLinkDbaseRecord>(
-                ExtractController.FileNameLinksBuildingUnit,
+                ExtractFileNames.BuildingUnitLinks,
                 new AddressLinkDbaseSchema(),
                 extractItems,
                 () => _syndicationContext.BuildingUnitAddressMatchLatestItems.Count(),
@@ -70,7 +70,7 @@ namespace AddressRegistry.Api.Extract.Extracts
             }
 
             yield return CreateDbfFile<AddressLinkExtractItem, AddressLinkDbaseRecord>(
-                ExtractController.FileNameLinksParcel,
+                ExtractFileNames.ParcelLinks,
                 new AddressLinkDbaseSchema(),
                 extractItems,
                 () => _syndicationContext.ParcelAddressMatchLatestItems.Count(),

@@ -34,7 +34,7 @@ namespace AddressRegistry.Projections.Syndication
         public DbSet<ParcelAddressMatchLatestItem> ParcelAddressMatchLatestItems { get; set; }
         public DbSet<BuildingUnitAddressMatchLatestItem> BuildingUnitAddressMatchLatestItems { get; set; }
 
-        public DbSet<AddressBuildingUnitLinkExtractItem> AddressBulidingUnitLinkExtract { get; set; }
+        public DbSet<AddressBuildingUnitLinkExtractItem> AddressBuildingUnitLinkExtract { get; set; }
         public DbSet<AddressLinkSyndicationItem> AddressLinkAddresses { get; set; }
 
         // This needs to be here to please EF

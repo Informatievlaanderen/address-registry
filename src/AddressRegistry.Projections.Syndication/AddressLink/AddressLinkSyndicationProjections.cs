@@ -44,8 +44,7 @@ namespace AddressRegistry.Projections.Syndication.AddressLink
 
             try
             {
-                var latestItem =
-                await context
+                var latestItem = await context
                     .AddressLinkAddresses
                     .FindAsync(entry.Content.Object.AddressId);
 
@@ -81,10 +80,10 @@ namespace AddressRegistry.Projections.Syndication.AddressLink
                 }
 
                 var addressBuildingUnitLinkExtractItems =
-                    context.AddressBulidingUnitLinkExtract
+                    context.AddressBuildingUnitLinkExtract
                         .Where(x => x.AddressId == latestItem.AddressId)
                         .AsEnumerable()
-                        .Concat(context.AddressBulidingUnitLinkExtract.Local.Where(x => x.AddressId == latestItem.AddressId));
+                        .Concat(context.AddressBuildingUnitLinkExtract.Local.Where(x => x.AddressId == latestItem.AddressId));
 
                 foreach (var addressBuildingUnitLinkExtractItem in addressBuildingUnitLinkExtractItems)
                 {
@@ -92,10 +91,10 @@ namespace AddressRegistry.Projections.Syndication.AddressLink
                     var completeAddress = AddressBuildingUnitLinkProjections.CreateCompleteAddress(latestItem, context);
 
                     UpdateBuildingUnitDbaseRecordField(addressBuildingUnitLinkExtractItem, record =>
-                        {
-                            record.adresid.Value = Convert.ToInt32(latestItem.PersistentLocalId);
-                            record.voladres.Value = completeAddress;
-                        });
+                    {
+                        record.adresid.Value = Convert.ToInt32(latestItem.PersistentLocalId);
+                        record.voladres.Value = completeAddress;
+                    });
                 }
 
                 //TODO: Update Parcel Links
@@ -123,7 +122,7 @@ namespace AddressRegistry.Projections.Syndication.AddressLink
                 latestItem.IsComplete = entry.Content.Object.IsComplete;
                 latestItem.IsRemoved = true;
 
-                context.AddressBulidingUnitLinkExtract.RemoveRange(context.AddressBulidingUnitLinkExtract.Where(x => x.AddressId == entry.Content.Object.AddressId));
+                context.AddressBuildingUnitLinkExtract.RemoveRange(context.AddressBuildingUnitLinkExtract.Where(x => x.AddressId == entry.Content.Object.AddressId));
                 //TODO: Remove parcel links
             }
             finally

@@ -20,18 +20,16 @@ namespace AddressRegistry.Api.Extract.Extracts
         public ExtractFile CreateLinkedBuildingUnitAddressFiles()
         {
             var extractItems =
-                from extractItem in _syndicationContext.AddressBulidingUnitLinkExtract
-                join buildingUnit in _syndicationContext.BuildingUnitAddressMatchLatestItems on extractItem
-                    .BuildingUnitId equals buildingUnit.BuildingUnitId
+                from extractItem in _syndicationContext.AddressBuildingUnitLinkExtract
+                join buildingUnit in _syndicationContext.BuildingUnitAddressMatchLatestItems
+                    on extractItem.BuildingUnitId equals buildingUnit.BuildingUnitId
                 where !buildingUnit.IsRemoved && buildingUnit.IsComplete && buildingUnit.IsBuildingComplete
-                select extractItem;
-
-            extractItems = extractItems.AsNoTracking();
+                select extractItem.DbaseRecord;
 
             return ExtractBuilder.CreateDbfFile<AddressLinkDbaseRecord>(
                 ExtractController.FileNameLinksBuildingUnit,
                 new AddressDbaseSchema(),
-                extractItems.Select(org => org.DbaseRecord),
+                extractItems,
                 extractItems.Count);
         }
     }

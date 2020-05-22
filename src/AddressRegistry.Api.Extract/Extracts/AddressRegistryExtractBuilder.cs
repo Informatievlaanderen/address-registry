@@ -94,6 +94,10 @@ namespace AddressRegistry.Api.Extract.Extracts
                 extractItems.Select(x => x.ShapeRecordContentLength),
                 extractItems.Count,
                 boundingBox);
+
+            yield return ExtractBuilder.CreateProjectedCoordinateSystemFile(
+                ExtractFileNames.Address,
+                ProjectedCoordinateSystem.Belge_Lambert_1972);
         }
     }
 }

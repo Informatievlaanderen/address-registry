@@ -2,7 +2,6 @@ namespace AddressRegistry.Projections.Syndication
 {
     using System;
     using System.IO;
-    using System.Threading;
     using AddressLink;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
@@ -18,8 +17,6 @@ namespace AddressRegistry.Projections.Syndication
 
     public class SyndicationContext : RunnerDbContext<SyndicationContext>
     {
-        public ReaderWriterLockSlim AddressLinkWriterLock { get; set; } = new ReaderWriterLockSlim();
-
         public override string ProjectionStateSchema => Schema.Syndication;
 
         public DbSet<MunicipalitySyndicationItem> MunicipalitySyndicationItems { get; set; }

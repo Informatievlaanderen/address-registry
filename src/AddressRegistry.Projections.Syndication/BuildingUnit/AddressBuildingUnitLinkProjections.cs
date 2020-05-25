@@ -35,75 +35,57 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
 
         private static async Task RemoveBuildingUnit(AtomEntry<SyndicationItem<Building>> entry, SyndicationContext context, CancellationToken ct)
         {
-            context.AddressLinkWriterLock.EnterWriteLock();
+            var addressBuildingUnitLinkExtractItems =
+                context
+                    .AddressBuildingUnitLinkExtract
+                    .Where(x => x.BuildingId == entry.Content.Object.Id)
+                    .AsEnumerable()
+                    .Concat(context.AddressBuildingUnitLinkExtract.Local.Where(x => x.BuildingId == entry.Content.Object.Id))
+                    .ToList();
 
-            try
-            {
-                var addressBuildingUnitLinkExtractItems =
-                    context
-                        .AddressBuildingUnitLinkExtract
-                        .Where(x => x.BuildingId == entry.Content.Object.Id)
-                        .AsEnumerable()
-                        .Concat(context.AddressBuildingUnitLinkExtract.Local.Where(x => x.BuildingId == entry.Content.Object.Id))
-                        .ToList();
-
-                context.AddressBuildingUnitLinkExtract.RemoveRange(addressBuildingUnitLinkExtractItems);
-            }
-            finally
-            {
-                context.AddressLinkWriterLock.ExitWriteLock();
-            }
+            context.AddressBuildingUnitLinkExtract.RemoveRange(addressBuildingUnitLinkExtractItems);
         }
 
         private async Task AddSyndicationItemEntry(AtomEntry<SyndicationItem<Building>> entry, SyndicationContext context, CancellationToken ct)
         {
-            context.AddressLinkWriterLock.EnterWriteLock();
+            var addressBuildingUnitLinkExtractItems =
+                context
+                    .AddressBuildingUnitLinkExtract
+                    .Where(x => x.BuildingId == entry.Content.Object.Id)
+                    .AsEnumerable()
+                    .Concat(context.AddressBuildingUnitLinkExtract.Local.Where(x => x.BuildingId == entry.Content.Object.Id))
+                    .Distinct()
+                    .ToList();
 
-            try
+            var itemsToRemove = new List<AddressBuildingUnitLinkExtractItem>();
+            foreach (var buildingUnitAddressMatchLatestItem in addressBuildingUnitLinkExtractItems)
             {
-                var addressBuildingUnitLinkExtractItems =
-                    context
-                        .AddressBuildingUnitLinkExtract
-                        .Where(x => x.BuildingId == entry.Content.Object.Id)
-                        .AsEnumerable()
-                        .Concat(context.AddressBuildingUnitLinkExtract.Local.Where(x => x.BuildingId == entry.Content.Object.Id))
-                        .Distinct()
-                        .ToList();
-
-                var itemsToRemove = new List<AddressBuildingUnitLinkExtractItem>();
-                foreach (var buildingUnitAddressMatchLatestItem in addressBuildingUnitLinkExtractItems)
-                {
-                    if (!entry.Content.Object.BuildingUnits.Select(x => x.BuildingUnitId).Contains(buildingUnitAddressMatchLatestItem.BuildingUnitId))
-                        itemsToRemove.Add(buildingUnitAddressMatchLatestItem);
-                }
-
-                context.AddressBuildingUnitLinkExtract.RemoveRange(itemsToRemove);
-
-                foreach (var buildingUnit in entry.Content.Object.BuildingUnits)
-                {
-                    var unitItems = addressBuildingUnitLinkExtractItems.Where(x => x.BuildingUnitId == buildingUnit.BuildingUnitId).ToList();
-                    var addressItemsToRemove = unitItems.Where(x => !buildingUnit.Addresses.Contains(x.AddressId));
-                    foreach (var addressId in buildingUnit.Addresses)
-                    {
-                        var addressItem = unitItems.FirstOrDefault(x => x.AddressId == addressId);
-                        if (addressItem == null)
-                        {
-                            await context.AddressBuildingUnitLinkExtract.AddAsync(await
-                                CreateAddressBuildingUnitLinkExtractItem(entry, addressId, buildingUnit, context), ct);
-                        }
-                        else
-                        {
-                            addressItem.BuildingUnitPersistentLocalId = buildingUnit.Identificator.ObjectId;
-                            UpdateDbaseRecordField(addressItem, record => record.adresobjid.Value = buildingUnit.Identificator.ObjectId);
-                        }
-                    }
-
-                    context.AddressBuildingUnitLinkExtract.RemoveRange(addressItemsToRemove);
-                }
+                if (!entry.Content.Object.BuildingUnits.Select(x => x.BuildingUnitId).Contains(buildingUnitAddressMatchLatestItem.BuildingUnitId))
+                    itemsToRemove.Add(buildingUnitAddressMatchLatestItem);
             }
-            finally
+
+            context.AddressBuildingUnitLinkExtract.RemoveRange(itemsToRemove);
+
+            foreach (var buildingUnit in entry.Content.Object.BuildingUnits)
             {
-                context.AddressLinkWriterLock.ExitWriteLock();
+                var unitItems = addressBuildingUnitLinkExtractItems.Where(x => x.BuildingUnitId == buildingUnit.BuildingUnitId).ToList();
+                var addressItemsToRemove = unitItems.Where(x => !buildingUnit.Addresses.Contains(x.AddressId));
+                foreach (var addressId in buildingUnit.Addresses)
+                {
+                    var addressItem = unitItems.FirstOrDefault(x => x.AddressId == addressId);
+                    if (addressItem == null)
+                    {
+                        await context.AddressBuildingUnitLinkExtract.AddAsync(await
+                            CreateAddressBuildingUnitLinkExtractItem(entry, addressId, buildingUnit, context), ct);
+                    }
+                    else
+                    {
+                        addressItem.BuildingUnitPersistentLocalId = buildingUnit.Identificator.ObjectId;
+                        UpdateDbaseRecordField(addressItem, record => record.adresobjid.Value = buildingUnit.Identificator.ObjectId);
+                    }
+                }
+
+                context.AddressBuildingUnitLinkExtract.RemoveRange(addressItemsToRemove);
             }
         }
 

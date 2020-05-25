@@ -98,117 +98,121 @@ namespace AddressRegistry.Projections.Syndication
 
         private static IEnumerable<Task> StartRunners(IConfiguration configuration, IServiceProvider container, CancellationToken ct)
         {
-            var municipalityRunner = new FeedProjectionRunner<MunicipalityEvent, SyndicationItem<Municipality.Municipality>, SyndicationContext>(
-                "municipality",
-                configuration.GetValue<Uri>("SyndicationFeeds:Municipality"),
-                configuration.GetValue<string>("SyndicationFeeds:MunicipalityAuthUserName"),
-                configuration.GetValue<string>("SyndicationFeeds:MunicipalityAuthPassword"),
-                configuration.GetValue<int>("SyndicationFeeds:MunicipalityPollingInMilliseconds"),
-                false,
-                true,
-                container.GetService<ILogger<Program>>(),
-                container.GetService<IRegistryAtomFeedReader>(),
-                new MunicipalitySyndiciationItemProjections(),
-                new MunicipalityLatestProjections(),
-                new MunicipalityBosaProjections());
+            //var municipalityRunner = new FeedProjectionRunner<MunicipalityEvent, SyndicationItem<Municipality.Municipality>, SyndicationContext>(
+            //    "municipality",
+            //    configuration.GetValue<Uri>("SyndicationFeeds:Municipality"),
+            //    configuration.GetValue<string>("SyndicationFeeds:MunicipalityAuthUserName"),
+            //    configuration.GetValue<string>("SyndicationFeeds:MunicipalityAuthPassword"),
+            //    configuration.GetValue<int>("SyndicationFeeds:MunicipalityPollingInMilliseconds"),
+            //    false,
+            //    true,
+            //    container.GetService<ILogger<Program>>(),
+            //    container.GetService<IRegistryAtomFeedReader>(),
+            //    new MunicipalitySyndiciationItemProjections(),
+            //    new MunicipalityLatestProjections(),
+            //    new MunicipalityBosaProjections());
 
-            var postalInfoRunner = new FeedProjectionRunner<PostalInfoEvent, SyndicationItem<PostalInfo.PostalInfo>, SyndicationContext>(
-                "postalInfo",
-                configuration.GetValue<Uri>("SyndicationFeeds:PostalInfo"),
-                configuration.GetValue<string>("SyndicationFeeds:PostalInfoAuthUserName"),
-                configuration.GetValue<string>("SyndicationFeeds:PostalInfoAuthPassword"),
-                configuration.GetValue<int>("SyndicationFeeds:PostalInfoPollingInMilliseconds"),
-                false,
-                true,
-                container.GetService<ILogger<Program>>(),
-                container.GetService<IRegistryAtomFeedReader>(),
-                new PostalInfoLatestProjections());
+            //var postalInfoRunner = new FeedProjectionRunner<PostalInfoEvent, SyndicationItem<PostalInfo.PostalInfo>, SyndicationContext>(
+            //    "postalInfo",
+            //    configuration.GetValue<Uri>("SyndicationFeeds:PostalInfo"),
+            //    configuration.GetValue<string>("SyndicationFeeds:PostalInfoAuthUserName"),
+            //    configuration.GetValue<string>("SyndicationFeeds:PostalInfoAuthPassword"),
+            //    configuration.GetValue<int>("SyndicationFeeds:PostalInfoPollingInMilliseconds"),
+            //    false,
+            //    true,
+            //    container.GetService<ILogger<Program>>(),
+            //    container.GetService<IRegistryAtomFeedReader>(),
+            //    new PostalInfoLatestProjections());
 
-            var streetNameRunner = new FeedProjectionRunner<StreetNameEvent, SyndicationItem<StreetName.StreetName>, SyndicationContext>(
-                "streetName",
-                configuration.GetValue<Uri>("SyndicationFeeds:StreetName"),
-                configuration.GetValue<string>("SyndicationFeeds:StreetNameAuthUserName"),
-                configuration.GetValue<string>("SyndicationFeeds:StreetNameAuthPassword"),
-                configuration.GetValue<int>("SyndicationFeeds:StreetNamePollingInMilliseconds"),
-                false,
-                true,
-                container.GetService<ILogger<Program>>(),
-                container.GetService<IRegistryAtomFeedReader>(),
-                new StreetNameSyndicationItemProjections(),
-                new StreetNameLatestProjections(),
-                new StreetNameBosaProjections());
+            //var streetNameRunner = new FeedProjectionRunner<StreetNameEvent, SyndicationItem<StreetName.StreetName>, SyndicationContext>(
+            //    "streetName",
+            //    configuration.GetValue<Uri>("SyndicationFeeds:StreetName"),
+            //    configuration.GetValue<string>("SyndicationFeeds:StreetNameAuthUserName"),
+            //    configuration.GetValue<string>("SyndicationFeeds:StreetNameAuthPassword"),
+            //    configuration.GetValue<int>("SyndicationFeeds:StreetNamePollingInMilliseconds"),
+            //    false,
+            //    true,
+            //    container.GetService<ILogger<Program>>(),
+            //    container.GetService<IRegistryAtomFeedReader>(),
+            //    new StreetNameSyndicationItemProjections(),
+            //    new StreetNameLatestProjections(),
+            //    new StreetNameBosaProjections());
 
-            var parcelRunner = new FeedProjectionRunner<ParcelEvent, SyndicationItem<Parcel.Parcel>, SyndicationContext>(
-                "parcel",
-                configuration.GetValue<Uri>("SyndicationFeeds:Parcel"),
-                configuration.GetValue<string>("SyndicationFeeds:ParcelAuthUserName"),
-                configuration.GetValue<string>("SyndicationFeeds:ParcelAuthPassword"),
-                configuration.GetValue<int>("SyndicationFeeds:ParcelPollingInMilliseconds"),
-                false,
-                true,
-                container.GetService<ILogger<Program>>(),
-                container.GetService<IRegistryAtomFeedReader>(),
-                new ParcelAddressMatchProjections());
+            //var parcelRunner = new FeedProjectionRunner<ParcelEvent, SyndicationItem<Parcel.Parcel>, SyndicationContext>(
+            //    "parcel",
+            //    configuration.GetValue<Uri>("SyndicationFeeds:Parcel"),
+            //    configuration.GetValue<string>("SyndicationFeeds:ParcelAuthUserName"),
+            //    configuration.GetValue<string>("SyndicationFeeds:ParcelAuthPassword"),
+            //    configuration.GetValue<int>("SyndicationFeeds:ParcelPollingInMilliseconds"),
+            //    false,
+            //    true,
+            //    container.GetService<ILogger<Program>>(),
+            //    container.GetService<IRegistryAtomFeedReader>(),
+            //    new ParcelAddressMatchProjections());
 
-            var buildingUnitRunner = new FeedProjectionRunner<BuildingEvent, SyndicationItem<Building>, SyndicationContext>(
-                "buildingUnit",
-                configuration.GetValue<Uri>("SyndicationFeeds:Building"),
-                configuration.GetValue<string>("SyndicationFeeds:BuildingAuthUserName"),
-                configuration.GetValue<string>("SyndicationFeeds:BuildingAuthPassword"),
-                configuration.GetValue<int>("SyndicationFeeds:BuildingPollingInMilliseconds"),
-                true,
-                true,
-                container.GetService<ILogger<Program>>(),
-                container.GetService<IRegistryAtomFeedReader>(),
-                new BuildingUnitAddressMatchProjections());
+            //var buildingUnitRunner = new FeedProjectionRunner<BuildingEvent, SyndicationItem<Building>, SyndicationContext>(
+            //    "buildingUnit",
+            //    configuration.GetValue<Uri>("SyndicationFeeds:Building"),
+            //    configuration.GetValue<string>("SyndicationFeeds:BuildingAuthUserName"),
+            //    configuration.GetValue<string>("SyndicationFeeds:BuildingAuthPassword"),
+            //    configuration.GetValue<int>("SyndicationFeeds:BuildingPollingInMilliseconds"),
+            //    true,
+            //    true,
+            //    container.GetService<ILogger<Program>>(),
+            //    container.GetService<IRegistryAtomFeedReader>(),
+            //    new BuildingUnitAddressMatchProjections());
 
-            var buildingUnitAddressRunner = new FeedProjectionRunner<BuildingEvent, SyndicationItem<Building>, SyndicationContext>(
+            var buildingUnitAddressRunner = new LinkedFeedProjectionRunner<BuildingEvent, SyndicationItem<Building>, SyndicationContext>(
                 "buildingUnitAddressLink",
                 configuration.GetValue<Uri>("SyndicationFeeds:Building"),
                 configuration.GetValue<string>("SyndicationFeeds:BuildingAuthUserName"),
                 configuration.GetValue<string>("SyndicationFeeds:BuildingAuthPassword"),
-                configuration.GetValue<int>("SyndicationFeeds:BuildingPollingInMilliseconds"),
+                0,
                 false,
                 true,
                 container.GetService<ILogger<Program>>(),
                 container.GetService<IRegistryAtomFeedReader>(),
                 new AddressBuildingUnitLinkProjections(DbaseCodePage.Western_European_ANSI.ToEncoding()));
 
-            var addressRunner = new FeedProjectionRunner<AddressEvent, SyndicationItem<Address>, SyndicationContext>(
+            var addressRunner = new LinkedFeedProjectionRunner<AddressEvent, SyndicationItem<Address>, SyndicationContext>(
                 "address",
                 configuration.GetValue<Uri>("SyndicationFeeds:Address"),
                 configuration.GetValue<string>("SyndicationFeeds:AddressAuthUserName"),
                 configuration.GetValue<string>("SyndicationFeeds:AddressAuthPassword"),
-                configuration.GetValue<int>("SyndicationFeeds:AddressPollingInMilliseconds"),
+                0,
                 false,
                 true,
                 container.GetService<ILogger<Program>>(),
                 container.GetService<IRegistryAtomFeedReader>(),
                 new AddressLinkSyndicationProjections(DbaseCodePage.Western_European_ANSI.ToEncoding()));
 
-            yield return municipalityRunner.CatchUpAsync(
-                container.GetService<Func<Owned<SyndicationContext>>>(),
-                ct);
+            //yield return municipalityRunner.CatchUpAsync(
+            //    container.GetService<Func<Owned<SyndicationContext>>>(),
+            //    ct);
 
-            yield return postalInfoRunner.CatchUpAsync(
-                container.GetService<Func<Owned<SyndicationContext>>>(),
-                ct);
+            //yield return postalInfoRunner.CatchUpAsync(
+            //    container.GetService<Func<Owned<SyndicationContext>>>(),
+            //    ct);
 
-            yield return streetNameRunner.CatchUpAsync(
-                container.GetService<Func<Owned<SyndicationContext>>>(),
-                ct);
+            //yield return streetNameRunner.CatchUpAsync(
+            //    container.GetService<Func<Owned<SyndicationContext>>>(),
+            //    ct);
 
-            yield return parcelRunner.CatchUpAsync(
-                container.GetService<Func<Owned<SyndicationContext>>>(),
-                ct);
+            //yield return parcelRunner.CatchUpAsync(
+            //    container.GetService<Func<Owned<SyndicationContext>>>(),
+            //    ct);
 
-            yield return buildingUnitRunner.CatchUpAsync(
-                container.GetService<Func<Owned<SyndicationContext>>>(),
-                ct);
+            //yield return buildingUnitRunner.CatchUpAsync(
+            //    container.GetService<Func<Owned<SyndicationContext>>>(),
+            //    ct);
 
-            var addressLinkExtractSyndicationContext = container.GetService<Func<Owned<SyndicationContext>>>();
-            yield return addressRunner.CatchUpAsync(addressLinkExtractSyndicationContext, ct);
-            yield return buildingUnitAddressRunner.CatchUpAsync(addressLinkExtractSyndicationContext, ct);
+           var linkedFeedManager = new LinkedFeedProjectionManager<SyndicationContext>(new List<ILinkedFeedProjectionRunner<SyndicationContext>>
+           {
+               addressRunner,
+               buildingUnitAddressRunner
+           });
+
+           yield return linkedFeedManager.CatchUpAsync(container.GetService<Func<Owned<SyndicationContext>>>(), ct);
         }
 
         private static IServiceProvider ConfigureServices(IConfiguration configuration)

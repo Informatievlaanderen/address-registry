@@ -1,3 +1,10 @@
+# [2.14.0](https://github.com/informatievlaanderen/address-registry/compare/v2.13.0...v2.14.0) (2020-05-26)
+
+
+### Features
+
+* add buildingunit extract linked address via syndication GRAR-853 ([e390e53](https://github.com/informatievlaanderen/address-registry/commit/e390e53340d36123d36062824db442f6102db127))
+
 # [2.13.0](https://github.com/informatievlaanderen/address-registry/compare/v2.12.15...v2.13.0) (2020-05-22)
 
 

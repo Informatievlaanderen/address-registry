@@ -1,4 +1,4 @@
-# Address Registry
+# Address Registry [![Build Status](https://github.com/Informatievlaanderen/address-registry/workflows/CI/badge.svg)](https://github.com/Informatievlaanderen/address-registry/actions)
 
 ## Goal
 

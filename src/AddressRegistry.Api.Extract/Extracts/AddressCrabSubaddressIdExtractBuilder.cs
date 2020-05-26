@@ -18,7 +18,7 @@ namespace AddressRegistry.Api.Extract.Extracts
                .OrderBy(m => m.PersistentLocalId);
 
             return ExtractBuilder.CreateDbfFile<AddressCrabSubaddressIdDbaseRecord>(
-                ExtractController.FileNameCrabSubadresId,
+                ExtractFileNames.CrabSubadresId,
                 new AddressCrabSubaddressIdDbaseSchema(),
                 extractItems.Select(x => x.DbaseRecord),
                 extractItems.Count);

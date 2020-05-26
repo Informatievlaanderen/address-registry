@@ -1,3 +1,22 @@
+# [2.13.0](https://github.com/informatievlaanderen/address-registry/compare/v2.12.15...v2.13.0) (2020-05-22)
+
+
+### Bug Fixes
+
+* only run ci on master repo ([fac19ef](https://github.com/informatievlaanderen/address-registry/commit/fac19efaa7a1253f07c48cf43e7927b5c182500a))
+
+
+### Features
+
+* add prj file to address extract GRAR-356 ([695d4fc](https://github.com/informatievlaanderen/address-registry/commit/695d4fc05a7ca1c3a2a3f8d3bf32a2f02a679a34))
+
+## [2.12.15](https://github.com/informatievlaanderen/address-registry/compare/v2.12.14...v2.12.15) (2020-05-20)
+
+
+### Bug Fixes
+
+* add build badge ([e33bff0](https://github.com/informatievlaanderen/address-registry/commit/e33bff0627dce22d3f255a73b1a473a9c47e2e10))
+
 ## [2.12.14](https://github.com/informatievlaanderen/address-registry/compare/v2.12.13...v2.12.14) (2020-05-20)
 
 

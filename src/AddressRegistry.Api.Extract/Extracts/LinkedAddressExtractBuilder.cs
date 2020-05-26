@@ -26,7 +26,7 @@ namespace AddressRegistry.Api.Extract.Extracts
                 select extractItem.DbaseRecord;
 
             return ExtractBuilder.CreateDbfFile<AddressLinkDbaseRecord>(
-                ExtractController.FileNameLinksBuildingUnit,
+                ExtractFileNames.BuildingUnitLinks,
                 new AddressDbaseSchema(),
                 extractItems,
                 extractItems.Count);
@@ -42,7 +42,7 @@ namespace AddressRegistry.Api.Extract.Extracts
                 select extractItem.DbaseRecord;
 
             return ExtractBuilder.CreateDbfFile<AddressLinkDbaseRecord>(
-                ExtractController.FileNameLinksParcel,
+                ExtractFileNames.ParcelLinks,
                 new AddressDbaseSchema(),
                 extractItems,
                 extractItems.Count);

@@ -66,16 +66,15 @@ namespace AddressRegistry.Api.Extract.Extracts
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(AddressRegistryResponseExample), jsonConverter: typeof(StringEnumConverter))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples), jsonConverter: typeof(StringEnumConverter))]
         public IActionResult GetAddressLinks(
-            [FromServices] ExtractContext context,
             [FromServices] SyndicationContext syndicationContext,
             CancellationToken cancellationToken = default)
         {
-            var extractBuilder = new LinkedAddressExtractBuilder2(syndicationContext);
+            var extractBuilder = new LinkedAddressExtractBuilder(syndicationContext);
 
             return new ExtractArchive($"{ZipNameLinks}-{DateTime.Now:yyyy-MM-dd}")
                 {
                     extractBuilder.CreateLinkedBuildingUnitAddressFiles(),
-                    //extractBuilder.CreateLinkedParcelAddressFiles()
+                    extractBuilder.CreateLinkedParcelAddressFiles()
                 }
                 .CreateFileCallbackResult(cancellationToken);
         }

@@ -8,6 +8,7 @@ namespace AddressRegistry.Projections.Syndication.AddressLink
     using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication;
     using BuildingUnit;
+    using Parcel;
 
     public class AddressLinkSyndicationProjections : AtomEntryProjectionHandlerModule<AddressEvent, SyndicationItem<Address>, SyndicationContext>
     {
@@ -93,7 +94,23 @@ namespace AddressRegistry.Projections.Syndication.AddressLink
                 });
             }
 
-            //TODO: Update Parcel Links
+            var addreesAddressParcelLinkExtractItems =
+                context.AddressParcelLinkExtract
+                    .Where(x => x.AddressId == latestItem.AddressId)
+                    .AsEnumerable()
+                    .Concat(context.AddressParcelLinkExtract.Local.Where(x => x.AddressId == latestItem.AddressId));
+
+            foreach (var addressParcelLinkExtractItem in addreesAddressParcelLinkExtractItems)
+            {
+                addressParcelLinkExtractItem.AddressPersistentLocalId = latestItem.PersistentLocalId;
+                var completeAddress = AddressBuildingUnitLinkProjections.CreateCompleteAddress(latestItem, context);
+
+                UpdateParcelDbaseRecordField(addressParcelLinkExtractItem, record =>
+                {
+                    record.adresid.Value = Convert.ToInt32(latestItem.PersistentLocalId);
+                    record.voladres.Value = completeAddress;
+                });
+            }
         }
 
         private static async Task RemoveSyndicationItemEntry(AtomEntry<SyndicationItem<Address>> entry, SyndicationContext context, CancellationToken ct)
@@ -110,10 +127,18 @@ namespace AddressRegistry.Projections.Syndication.AddressLink
             latestItem.IsRemoved = true;
 
             context.AddressBuildingUnitLinkExtract.RemoveRange(context.AddressBuildingUnitLinkExtract.Where(x => x.AddressId == entry.Content.Object.AddressId));
-            //TODO: Remove parcel links
+            context.AddressParcelLinkExtract.RemoveRange(context.AddressParcelLinkExtract.Where(x => x.AddressId == entry.Content.Object.AddressId));
         }
 
         private void UpdateBuildingUnitDbaseRecordField(AddressBuildingUnitLinkExtractItem item, Action<AddressLinkDbaseRecord> update)
+        {
+            var record = new AddressLinkDbaseRecord();
+            record.FromBytes(item.DbaseRecord, _encoding);
+            update(record);
+            item.DbaseRecord = record.ToBytes(_encoding);
+        }
+
+        private void UpdateParcelDbaseRecordField(AddressParcelLinkExtractItem item, Action<AddressLinkDbaseRecord> update)
         {
             var record = new AddressLinkDbaseRecord();
             record.FromBytes(item.DbaseRecord, _encoding);

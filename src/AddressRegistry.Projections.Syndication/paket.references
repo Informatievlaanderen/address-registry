@@ -31,6 +31,7 @@ Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 
 Be.Vlaanderen.Basisregisters.GrAr.Common
 Be.Vlaanderen.Basisregisters.GrAr.Legacy
+Be.Vlaanderen.Basisregisters.GrAr.Extracts
 
 SourceLink.Embed.AllSourceFiles
 SourceLink.Copy.PdbFiles

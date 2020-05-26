@@ -2,6 +2,7 @@ namespace AddressRegistry.Projections.Syndication
 {
     using System;
     using System.IO;
+    using AddressLink;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
     using Infrastructure;
@@ -29,6 +30,10 @@ namespace AddressRegistry.Projections.Syndication
 
         public DbSet<ParcelAddressMatchLatestItem> ParcelAddressMatchLatestItems { get; set; }
         public DbSet<BuildingUnitAddressMatchLatestItem> BuildingUnitAddressMatchLatestItems { get; set; }
+
+        public DbSet<AddressBuildingUnitLinkExtractItem> AddressBuildingUnitLinkExtract { get; set; }
+        public DbSet<AddressParcelLinkExtractItem> AddressParcelLinkExtract { get; set; }
+        public DbSet<AddressLinkSyndicationItem> AddressLinkAddresses { get; set; }
 
         // This needs to be here to please EF
         public SyndicationContext() { }

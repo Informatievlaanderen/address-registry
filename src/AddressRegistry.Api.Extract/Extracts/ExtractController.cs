@@ -58,11 +58,10 @@ namespace AddressRegistry.Api.Extract.Extracts
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(AddressRegistryResponseExample), jsonConverter: typeof(StringEnumConverter))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples), jsonConverter: typeof(StringEnumConverter))]
         public IActionResult GetAddressLinks(
-            [FromServices] ExtractContext context,
             [FromServices] SyndicationContext syndicationContext,
             CancellationToken cancellationToken = default)
         {
-            var extractBuilder = new LinkedAddressExtractBuilder(context, syndicationContext);
+            var extractBuilder = new LinkedAddressExtractBuilder(syndicationContext);
 
             return new ExtractArchive(ExtractFileNames.GetAddressLinksZip())
                 {

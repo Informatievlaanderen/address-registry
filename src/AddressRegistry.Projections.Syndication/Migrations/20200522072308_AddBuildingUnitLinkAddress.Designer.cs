@@ -4,14 +4,16 @@ using AddressRegistry.Projections.Syndication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AddressRegistry.Projections.Syndication.Migrations
 {
     [DbContext(typeof(SyndicationContext))]
-    partial class SyndicationContextModelSnapshot : ModelSnapshot
+    [Migration("20200522072308_AddBuildingUnitLinkAddress")]
+    partial class AddBuildingUnitLinkAddress
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -302,39 +304,6 @@ namespace AddressRegistry.Projections.Syndication.Migrations
                     b.HasIndex("Version");
 
                     b.ToTable("MunicipalitySyndication","AddressRegistrySyndication");
-                });
-
-            modelBuilder.Entity("AddressRegistry.Projections.Syndication.Parcel.AddressParcelLinkExtractItem", b =>
-                {
-                    b.Property<Guid>("AddressId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ParcelId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("AddressComplete")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("AddressPersistentLocalId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<byte[]>("DbaseRecord")
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("ParcelPersistentLocalId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("AddressId", "ParcelId")
-                        .HasAnnotation("SqlServer:Clustered", false);
-
-                    b.HasIndex("AddressId");
-
-                    b.HasIndex("AddressPersistentLocalId")
-                        .HasAnnotation("SqlServer:Clustered", true);
-
-                    b.HasIndex("ParcelId");
-
-                    b.ToTable("AddressParcelLinksExtract","AddressRegistrySyndication");
                 });
 
             modelBuilder.Entity("AddressRegistry.Projections.Syndication.Parcel.ParcelAddressMatchLatestItem", b =>

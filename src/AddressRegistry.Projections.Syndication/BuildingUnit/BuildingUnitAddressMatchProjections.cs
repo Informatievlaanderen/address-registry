@@ -119,12 +119,14 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
                                 BuildingUnitPersistentLocalId = buildingUnit.Identificator.ObjectId,
                                 BuildingUnitId = buildingUnit.BuildingUnitId,
                                 IsComplete = buildingUnit.IsComplete,
+                                IsBuildingComplete = entry.Content.Object.IsComplete,
                             }, ct);
                     }
                     else
                     {
                         addressItem.BuildingUnitPersistentLocalId = buildingUnit.Identificator.ObjectId;
                         addressItem.IsComplete = buildingUnit.IsComplete;
+                        addressItem.IsBuildingComplete = entry.Content.Object.IsComplete;
                     }
                 }
 

@@ -16,7 +16,9 @@ namespace AddressRegistry.Projections.Syndication
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
+    using AddressLink;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
+    using Be.Vlaanderen.Basisregisters.Shaperon;
     using BuildingUnit;
     using Parcel;
     using PostalInfo;
@@ -160,6 +162,42 @@ namespace AddressRegistry.Projections.Syndication
                 container.GetService<IRegistryAtomFeedReader>(),
                 new BuildingUnitAddressMatchProjections());
 
+            var buildingUnitAddressRunner = new LinkedFeedProjectionRunner<BuildingEvent, SyndicationItem<Building>, SyndicationContext>(
+                "buildingUnitAddressLink",
+                configuration.GetValue<Uri>("SyndicationFeeds:Building"),
+                configuration.GetValue<string>("SyndicationFeeds:BuildingAuthUserName"),
+                configuration.GetValue<string>("SyndicationFeeds:BuildingAuthPassword"),
+                0,
+                false,
+                true,
+                container.GetService<ILogger<Program>>(),
+                container.GetService<IRegistryAtomFeedReader>(),
+                new AddressBuildingUnitLinkProjections(DbaseCodePage.Western_European_ANSI.ToEncoding()));
+
+            var parcelAddressRunner = new LinkedFeedProjectionRunner<ParcelEvent, SyndicationItem<Parcel.Parcel>, SyndicationContext>(
+                "parcelAddressLink",
+                configuration.GetValue<Uri>("SyndicationFeeds:Parcel"),
+                configuration.GetValue<string>("SyndicationFeeds:ParcelAuthUserName"),
+                configuration.GetValue<string>("SyndicationFeeds:ParcelAuthPassword"),
+                0,
+                false,
+                true,
+                container.GetService<ILogger<Program>>(),
+                container.GetService<IRegistryAtomFeedReader>(),
+                new AddressParcelLinkProjections(DbaseCodePage.Western_European_ANSI.ToEncoding()));
+
+            var addressRunner = new LinkedFeedProjectionRunner<AddressEvent, SyndicationItem<Address>, SyndicationContext>(
+                "address",
+                configuration.GetValue<Uri>("SyndicationFeeds:Address"),
+                configuration.GetValue<string>("SyndicationFeeds:AddressAuthUserName"),
+                configuration.GetValue<string>("SyndicationFeeds:AddressAuthPassword"),
+                0,
+                false,
+                true,
+                container.GetService<ILogger<Program>>(),
+                container.GetService<IRegistryAtomFeedReader>(),
+                new AddressLinkSyndicationProjections(DbaseCodePage.Western_European_ANSI.ToEncoding()));
+
             yield return municipalityRunner.CatchUpAsync(
                 container.GetService<Func<Owned<SyndicationContext>>>(),
                 ct);
@@ -179,6 +217,16 @@ namespace AddressRegistry.Projections.Syndication
             yield return buildingUnitRunner.CatchUpAsync(
                 container.GetService<Func<Owned<SyndicationContext>>>(),
                 ct);
+
+            var linkedFeedManager = new LinkedFeedProjectionManager<SyndicationContext>(
+                new List<ILinkedFeedProjectionRunner<SyndicationContext>>
+                {
+                   addressRunner,
+                   buildingUnitAddressRunner,
+                   parcelAddressRunner
+                });
+
+            yield return linkedFeedManager.CatchUpAsync(container.GetService<Func<Owned<SyndicationContext>>>(), ct);
         }
 
         private static IServiceProvider ConfigureServices(IConfiguration configuration)

@@ -1,3 +1,10 @@
+## [2.14.1](https://github.com/informatievlaanderen/address-registry/compare/v2.14.0...v2.14.1) (2020-05-27)
+
+
+### Bug Fixes
+
+* correct muni name search in addressmatch ([6da4384](https://github.com/informatievlaanderen/address-registry/commit/6da4384fc2da3f71bd238d98549f468256f3e175))
+
 # [2.14.0](https://github.com/informatievlaanderen/address-registry/compare/v2.13.0...v2.14.0) (2020-05-26)
 
 

@@ -106,7 +106,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 
         public IEnumerable<StreetNameLatestItem> GetLatestStreetNamesBy(params string[] municipalityNames)
         {
-            var lowerMunicipalityNames = municipalityNames.Select(x => x.ToLowerInvariant()).ToList();
+            var lowerMunicipalityNames = municipalityNames.Select(x => x.RemoveDiacritics().ToLowerInvariant()).ToList();
             var nisCodes = GetAllLatestMunicipalities()
                 .Where(x =>
                     lowerMunicipalityNames.Contains(x.NameDutchSearch) || // English/German probably not needed as AddressMatch is relevant to flanders

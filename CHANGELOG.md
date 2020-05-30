@@ -1,3 +1,10 @@
+## [2.14.2](https://github.com/informatievlaanderen/address-registry/compare/v2.14.1...v2.14.2) (2020-05-30)
+
+
+### Bug Fixes
+
+* update dependencies GRAR-752 ([afc47e1](https://github.com/informatievlaanderen/address-registry/commit/afc47e1cdcdc63a8039f1ef70fd4d9bc6e136edb))
+
 ## [2.14.1](https://github.com/informatievlaanderen/address-registry/compare/v2.14.0...v2.14.1) (2020-05-27)
 
 

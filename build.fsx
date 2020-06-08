@@ -2,7 +2,7 @@
 version 5.241.6
 framework: netstandard20
 source https://api.nuget.org/v3/index.json
-nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 4.1.0 //"
+nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 4.2.0 //"
 
 #load "packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/build-generic.fsx"
 
@@ -29,7 +29,7 @@ let pack = pack nugetVersionNumber
 let containerize = containerize dockerRepository
 let push = push dockerRepository
 
-supportedRuntimeIdentifiers <- [ "linux-x64" ]
+supportedRuntimeIdentifiers <- [ "msil"; "linux-x64" ]
 
 // Solution -----------------------------------------------------------------------
 

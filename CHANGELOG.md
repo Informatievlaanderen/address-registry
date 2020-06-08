@@ -1,3 +1,10 @@
+## [2.14.3](https://github.com/informatievlaanderen/address-registry/compare/v2.14.2...v2.14.3) (2020-06-08)
+
+
+### Bug Fixes
+
+* build msil version for public api ([401566b](https://github.com/informatievlaanderen/address-registry/commit/401566b677890b69aa6fb4dda49c61bde1ba7588))
+
 ## [2.14.2](https://github.com/informatievlaanderen/address-registry/compare/v2.14.1...v2.14.2) (2020-05-30)
 
 

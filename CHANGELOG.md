@@ -1,3 +1,10 @@
+# [2.15.0](https://github.com/informatievlaanderen/address-registry/compare/v2.14.3...v2.15.0) (2020-06-09)
+
+
+### Features
+
+* add retry on polling the syndication feed for the linked feeds ([09f7dd1](https://github.com/informatievlaanderen/address-registry/commit/09f7dd1ff3834d34fb6fe78b57b4982b01332f86))
+
 ## [2.14.3](https://github.com/informatievlaanderen/address-registry/compare/v2.14.2...v2.14.3) (2020-06-08)
 
 

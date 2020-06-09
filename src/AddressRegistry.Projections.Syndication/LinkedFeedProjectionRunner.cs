@@ -14,6 +14,7 @@ namespace AddressRegistry.Projections.Syndication
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using Microsoft.SyndicationFeed;
+    using Polly;
 
     public interface ILinkedFeedProjectionRunner<TContext> where TContext : RunnerDbContext<TContext>
     {
@@ -29,6 +30,7 @@ namespace AddressRegistry.Projections.Syndication
         private readonly IRegistryAtomFeedReader _atomFeedReader;
         private readonly DataContractSerializer _dataContractSerializer;
         private readonly AtomEntryProjectionHandlerResolver<TMessage, TContext> _atomEntryProjectionHandlerResolver;
+        private static Random _jitterer = new Random();
 
         // ReSharper disable StaticMemberInGenericType
         public static string RunnerName { get; private set; }
@@ -81,8 +83,12 @@ namespace AddressRegistry.Projections.Syndication
                 position = dbPosition?.Position + 1;
             }
 
-            // Read new events
-            var entries = (await _atomFeedReader.ReadEntriesAsync(FeedUri, position, FeedUserName, FeedPassword, EmbedEvent, EmbedObject)).ToList();
+            var entries = await Policy
+                .Handle<XmlException>()
+                .WaitAndRetryAsync(5,
+                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)) // exponential back-off: 2, 4, 8 etc
+                                    + TimeSpan.FromMilliseconds(_jitterer.Next(0, 10000))) // plus some jitter: up to 10 seconds (cause sync request can be heavy)
+                .ExecuteAsync(async () => (await _atomFeedReader.ReadEntriesAsync(FeedUri, position, FeedUserName, FeedPassword, EmbedEvent, EmbedObject)).ToList()); // Read new events
 
             while (entries.Any())
             {

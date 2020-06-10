@@ -1,3 +1,10 @@
+## [2.15.1](https://github.com/informatievlaanderen/address-registry/compare/v2.15.0...v2.15.1) (2020-06-10)
+
+
+### Bug Fixes
+
+* update grar extract GRAR-1330 ([d509b72](https://github.com/informatievlaanderen/address-registry/commit/d509b725a54708c29a5338e84fd68e087f32bb47))
+
 # [2.15.0](https://github.com/informatievlaanderen/address-registry/compare/v2.14.3...v2.15.0) (2020-06-09)
 
 

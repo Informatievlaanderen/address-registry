@@ -1,3 +1,10 @@
+## [2.15.2](https://github.com/informatievlaanderen/address-registry/compare/v2.15.1...v2.15.2) (2020-06-12)
+
+
+### Bug Fixes
+
+* include streetnameid to list index ([e7e5211](https://github.com/informatievlaanderen/address-registry/commit/e7e5211f029c81b6a541e2f582eaa8c94440e724))
+
 ## [2.15.1](https://github.com/informatievlaanderen/address-registry/compare/v2.15.0...v2.15.1) (2020-06-10)
 
 

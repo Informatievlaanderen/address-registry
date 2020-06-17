@@ -54,14 +54,17 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             if (!string.IsNullOrEmpty(filtering.Filter.MunicipalityName))
             {
                 var searchName = filtering.Filter.MunicipalityName.RemoveDiacritics();
-                var nisCodes = municipalities.Where(m =>
-                    m.NameDutchSearch == searchName ||
-                    m.NameFrenchSearch == searchName ||
-                    m.NameGermanSearch == searchName ||
-                    m.NameEnglishSearch == searchName)
-                    .Select(m => m.NisCode);
 
-                streetnames = streetnames.Where(s => nisCodes.Contains(s.NisCode));
+                streetnames =
+                    from s in streetnames
+                    join m in municipalities.Where(m =>
+                            m.NameDutchSearch == searchName ||
+                            m.NameFrenchSearch == searchName ||
+                            m.NameGermanSearch == searchName ||
+                            m.NameEnglishSearch == searchName)
+                        on s.NisCode equals m.NisCode
+                    select s;
+
                 filterStreet = true;
             }
 
@@ -90,8 +93,11 @@ namespace AddressRegistry.Api.Legacy.Address.Query
 
             if (filterStreet)
             {
-                var streetnamesList = streetnames.Select(x => x.StreetNameId).ToList();
-                addresses = addresses.Where(a => streetnamesList.Contains(a.StreetNameId));
+                addresses =
+                    from a in addresses
+                    join s in streetnames
+                        on a.StreetNameId equals s.StreetNameId
+                    select a;
             }
 
             return addresses;

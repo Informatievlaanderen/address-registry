@@ -80,6 +80,7 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
                     new SqlConnection(backofficeProjectionsConnectionString),
                     configuration["DataDog:ServiceName"]))
                 .AddDbContext<AddressQueryContext>((provider, options) => options
+                    .EnableSensitiveDataLogging()
                     .UseLoggerFactory(loggerFactory)
                     .UseSqlServer(provider.GetRequiredService<TraceDbConnection<AddressQueryContext>>(),
                         sqlServerOptions => { sqlServerOptions.EnableRetryOnFailure(); }))

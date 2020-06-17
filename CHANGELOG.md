@@ -1,3 +1,10 @@
+## [2.15.3](https://github.com/informatievlaanderen/address-registry/compare/v2.15.2...v2.15.3) (2020-06-17)
+
+
+### Bug Fixes
+
+* optimized addresslist queries to reduce timeouts GRAR-1367 ([e7cc8b5](https://github.com/informatievlaanderen/address-registry/commit/e7cc8b5347d22f1971f750a944fd34452d0b82d1))
+
 ## [2.15.2](https://github.com/informatievlaanderen/address-registry/compare/v2.15.1...v2.15.2) (2020-06-12)
 
 

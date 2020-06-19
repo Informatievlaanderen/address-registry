@@ -1,3 +1,11 @@
+## [2.15.4](https://github.com/informatievlaanderen/address-registry/compare/v2.15.3...v2.15.4) (2020-06-19)
+
+
+### Bug Fixes
+
+* move to 3.1.5 ([e7673d1](https://github.com/informatievlaanderen/address-registry/commit/e7673d1fb1282edc2a6d2d999d826591eaa2b9ec))
+* move to 3.1.5 ([55627f5](https://github.com/informatievlaanderen/address-registry/commit/55627f5aca90bfd3bdb3d3a9e417138f4820b4ab))
+
 ## [2.15.3](https://github.com/informatievlaanderen/address-registry/compare/v2.15.2...v2.15.3) (2020-06-17)
 
 

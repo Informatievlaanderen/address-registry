@@ -1,3 +1,10 @@
+## [2.15.5](https://github.com/informatievlaanderen/address-registry/compare/v2.15.4...v2.15.5) (2020-06-22)
+
+
+### Bug Fixes
+
+* configure baseurls for all problemdetails GRAR-1358 GRAR-1357 ([e22caca](https://github.com/informatievlaanderen/address-registry/commit/e22cacacb70fa4d01f20412e5fa91ded4290ea28))
+
 ## [2.15.4](https://github.com/informatievlaanderen/address-registry/compare/v2.15.3...v2.15.4) (2020-06-19)
 
 

@@ -48,6 +48,11 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure
         /// <param name="services">The collection of services to configure the application with.</param>
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            var baseUrl = _configuration.GetValue<string>("BaseUrl");
+            var baseUrlForExceptions = baseUrl.EndsWith("/")
+                ? baseUrl.Substring(0, baseUrl.Length - 1)
+                : baseUrl;
+
             services
                 .ConfigureDefaultForApi<Startup>(new StartupConfigureOptions
                 {
@@ -58,6 +63,10 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure
                             .GetChildren()
                             .Select(c => c.Value)
                             .ToArray()
+                    },
+                    Server =
+                    {
+                        BaseUrl = baseUrlForExceptions
                     },
                     Swagger =
                     {

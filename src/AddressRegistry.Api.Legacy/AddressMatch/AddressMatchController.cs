@@ -2,7 +2,6 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
 {
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
-    using Be.Vlaanderen.Basisregisters.BasicApiProblem;
     using Infrastructure.Options;
     using Matching;
     using Microsoft.AspNetCore.Http;
@@ -15,7 +14,6 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Projections.Syndication;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
     [ApiVersion("1.0")]

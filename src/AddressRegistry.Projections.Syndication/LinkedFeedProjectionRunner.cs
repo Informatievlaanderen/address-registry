@@ -25,12 +25,14 @@ namespace AddressRegistry.Projections.Syndication
         where TMessage : struct
         where TContext : RunnerDbContext<TContext>
     {
-        private readonly int _pollingInMilliseconds;
         private readonly ILogger _logger;
         private readonly IRegistryAtomFeedReader _atomFeedReader;
         private readonly DataContractSerializer _dataContractSerializer;
         private readonly AtomEntryProjectionHandlerResolver<TMessage, TContext> _atomEntryProjectionHandlerResolver;
         private static Random _jitterer = new Random();
+        private readonly int _numberOfRetryAttempts;
+        private readonly int _retryJittererMinSeconds;
+        private readonly int _retryJittererMaxSeconds;
 
         // ReSharper disable StaticMemberInGenericType
         public static string RunnerName { get; private set; }
@@ -45,9 +47,11 @@ namespace AddressRegistry.Projections.Syndication
             Uri feedUri,
             string feedUserName,
             string feedPassword,
-            int pollingInMilliseconds,
             bool embedEvent,
             bool embedObject,
+            int numberOfRetryAttempts,
+            int retryJittererMinSeconds,
+            int retryJittererMaxSeconds,
             ILogger logger,
             IRegistryAtomFeedReader atomFeedReader,
             params AtomEntryProjectionHandlerModule<TMessage, TContent, TContext>[] projectionHandlerModules)
@@ -59,9 +63,13 @@ namespace AddressRegistry.Projections.Syndication
             EmbedEvent = embedEvent;
             EmbedObject = embedObject;
 
-            _pollingInMilliseconds = pollingInMilliseconds;
+            _numberOfRetryAttempts = numberOfRetryAttempts;
+            _retryJittererMinSeconds = retryJittererMinSeconds;
+            _retryJittererMaxSeconds = retryJittererMaxSeconds;
+
             _logger = logger;
             _atomFeedReader = atomFeedReader;
+
             _dataContractSerializer = new DataContractSerializer(typeof(TContent));
             _atomEntryProjectionHandlerResolver = Resolve.WhenEqualToEvent(projectionHandlerModules.SelectMany(t => t.ProjectionHandlers).ToArray());
         }
@@ -85,9 +93,9 @@ namespace AddressRegistry.Projections.Syndication
 
             var entries = await Policy
                 .Handle<XmlException>()
-                .WaitAndRetryAsync(5,
+                .WaitAndRetryAsync(_numberOfRetryAttempts,
                     retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)) // exponential back-off: 2, 4, 8 etc
-                                    + TimeSpan.FromMilliseconds(_jitterer.Next(0, 10000))) // plus some jitter: up to 10 seconds (cause sync request can be heavy)
+                                    + TimeSpan.FromMilliseconds(_jitterer.Next(_retryJittererMinSeconds, _retryJittererMaxSeconds))) // plus some jitter (cause sync request can be heavy)
                 .ExecuteAsync(async () => (await _atomFeedReader.ReadEntriesAsync(FeedUri, position, FeedUserName, FeedPassword, EmbedEvent, EmbedObject)).ToList()); // Read new events
 
             while (entries.Any())

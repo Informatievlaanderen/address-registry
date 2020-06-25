@@ -18,48 +18,57 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             public static readonly IEqualityComparer<AddressDetailItem> AddressComparer = new PropertyEqualityComparer<AddressDetailItem, int>(a => a.PersistentLocalId.Value);
 
             public StreetNameWrapper()
-            {
-                _addresses = new List<AddressDetailItem>();
-            }
+                => _addresses = new List<AddressDetailItem>();
 
             public StreetNameLatestItem StreetName { get; set; }
 
             public void AddAddresses(IEnumerable<AddressDetailItem> addresses)
-            {
-                _addresses = _addresses.Concat(addresses).Distinct(AddressComparer).ToList();
-            }
+                => _addresses = _addresses
+                    .Concat(addresses)
+                    .Distinct(AddressComparer)
+                    .ToList();
 
-            public IEnumerator<AddressDetailItem> GetEnumerator() => _addresses.GetEnumerator();
+            public IEnumerator<AddressDetailItem> GetEnumerator()
+                => _addresses.GetEnumerator();
 
-            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+            IEnumerator IEnumerable.GetEnumerator()
+                => GetEnumerator();
         }
 
         public class MunicipalityWrapper : IEnumerable<StreetNameWrapper>
         {
             private IList<StreetNameWrapper> _streetNames;
 
-            public MunicipalityWrapper()
-            {
-                _streetNames = new List<StreetNameWrapper>();
-            }
-
-            public string NisCode { get; set; }
+            public string? NisCode { get; set; }
             public string Name { get; set; }
-            public string PostalCode { get; set; }
+            public string? PostalCode { get; set; }
             public MunicipalityLatestItem Municipality { get; set; }
 
-            public void AddStreetNames(IEnumerable<StreetNameLatestItem> streetNames)
-            {
-                _streetNames = _streetNames.Concat(streetNames.Select(s => new StreetNameWrapper { StreetName = s })).Distinct(StreetNameWrapper.Comparer).ToList();
-            }
+            public MunicipalityWrapper()
+                => _streetNames = new List<StreetNameWrapper>();
 
-            public void AddStreetName(StreetNameLatestItem streetName) => AddStreetNames(new[] { streetName });
+            public void AddStreetNames(IEnumerable<StreetNameLatestItem?> streetNames)
+                => _streetNames = _streetNames
+                    .Concat(
+                        streetNames
+                            .Select(streetName => new StreetNameWrapper
+                            {
+                                StreetName = streetName
+                            }))
+                    .Distinct(StreetNameWrapper.Comparer)
+                    .ToList();
 
-            public IEnumerator<StreetNameWrapper> GetEnumerator() => _streetNames.GetEnumerator();
+            public void AddStreetName(StreetNameLatestItem streetName)
+                => AddStreetNames(new[] { streetName });
 
-            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+            public IEnumerator<StreetNameWrapper> GetEnumerator()
+                => _streetNames.GetEnumerator();
 
-            internal void ClearStreetNames() => _streetNames.Clear();
+            IEnumerator IEnumerable.GetEnumerator()
+                => GetEnumerator();
+
+            internal void ClearStreetNames()
+                => _streetNames.Clear();
         }
 
         private readonly Dictionary<string, MunicipalityWrapper> _municipalities;
@@ -67,7 +76,6 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
         private readonly Sanitizer _sanitizer;
 
         public AddressMatchQueryComponents Query { get; }
-        public IEnumerable<string> NisCodes => _municipalities.Keys;
 
         public AddressMatchBuilder(AddressMatchQueryComponents query)
         {
@@ -77,11 +85,14 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             _sanitizer = new Sanitizer();
         }
 
-        public IEnumerator<MunicipalityWrapper> GetEnumerator() => _municipalities.Values.GetEnumerator();
+        public IEnumerator<MunicipalityWrapper> GetEnumerator()
+            => _municipalities.Values.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+            => GetEnumerator();
 
-        public bool ContainsNisCode(string nisCode) => _municipalities.ContainsKey(nisCode);
+        public bool ContainsNisCode(string? nisCode)
+            => !string.IsNullOrWhiteSpace(nisCode) && _municipalities.ContainsKey(nisCode);
 
         internal void ClearAllStreetNames()
         {
@@ -89,54 +100,108 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 municipalityWrapper.ClearStreetNames();
         }
 
-        public void AddMunicipalities(IEnumerable<MunicipalityLatestItem> municipalities) => AddMunicipalitiesByPostalCode(municipalities, null);
+        public void AddMunicipalities(IEnumerable<MunicipalityLatestItem> municipalities)
+            => AddMunicipalitiesByPostalCode(municipalities, null);
 
-        public void AddMunicipalitiesByPostalCode(IEnumerable<MunicipalityLatestItem> municipalities, string postalCodes)
+        public void AddMunicipalitiesByPostalCode(
+            IEnumerable<MunicipalityLatestItem> municipalities,
+            string? postalCodes)
         {
             foreach (var municipality in municipalities)
-                _municipalities[municipality.NisCode] = new MunicipalityWrapper { Name = municipality.DefaultName.Value, NisCode = municipality.NisCode, PostalCode = postalCodes, Municipality = municipality };
+                _municipalities[municipality.NisCode] = new MunicipalityWrapper
+                {
+                    Name = municipality.DefaultName.Value,
+                    NisCode = municipality.NisCode,
+                    PostalCode = postalCodes,
+                    Municipality = municipality
+                };
         }
 
-        public void AddRrAddresses(IEnumerable<AddressDetailItem> rrAddresses) => _rrAddresses.AddRange(rrAddresses);
+        public void AddRrAddresses(IEnumerable<AddressDetailItem> rrAddresses)
+            => _rrAddresses.AddRange(rrAddresses);
 
-        public IEnumerable<StreetNameWrapper> AllStreetNames() =>
-            this.SelectMany(municipalityWrapper => municipalityWrapper).Distinct(StreetNameWrapper.Comparer);
+        public IEnumerable<StreetNameWrapper> AllStreetNames()
+            => this.SelectMany(municipalityWrapper => municipalityWrapper).Distinct(StreetNameWrapper.Comparer);
 
-        public IEnumerable<AddressDetailItem> AllAddresses() =>
-            AllStreetNames().SelectMany(s => s).Union(_rrAddresses).Distinct(StreetNameWrapper.AddressComparer);
+        public IEnumerable<AddressDetailItem> AllAddresses()
+            => AllStreetNames()
+                .SelectMany(s => s)
+                .Union(_rrAddresses)
+                .Distinct(StreetNameWrapper.AddressComparer);
 
         public IEnumerable<string> GetMatchRepresentationsForScoring()
         {
-            IEnumerable<string> municipalityNames = _municipalities.Values.Select(g => g.Name).Concat(new[] { Query.MunicipalityName }).Where(x => x != null).Distinct(StringComparer.InvariantCultureIgnoreCase);
+            var municipalityNames = _municipalities
+                .Values
+                .Select(g => g.Name)
+                .Concat(new[] { Query.MunicipalityName })
+                .Where(x => x != null)
+                .Distinct(StringComparer.InvariantCultureIgnoreCase);
 
-            IEnumerable<StreetNameWrapper> relevantStreetNames = AllStreetNames();
-            //if addresses found, forget about the streetnames without addresses
+            var relevantStreetNames = AllStreetNames();
+
+            // if addresses are found, forget about the streetnames without addresses
             if (AllAddresses().Any())
                 relevantStreetNames = relevantStreetNames.Where(s => s.Any());
 
-            IEnumerable<string> streetNames = relevantStreetNames.Select(sn => sn.StreetName.NameDutch).Concat(new[] { Query.StreetName }).Where(x => x != null).Distinct(StringComparer.InvariantCultureIgnoreCase);
+            // TODO: Use GetDefaultName() instead of NameDutch?
+            var streetNames = relevantStreetNames
+                .Select(sn => sn.StreetName.NameDutch)
+                .Concat(new[] { Query.StreetName })
+                .Where(x => x != null)
+                .Distinct(StringComparer.InvariantCultureIgnoreCase)
+                .ToList();
 
-            Func<string, string, string, string> createRepresentation = (municipalityName, streetName, houseNumber) =>
-                string.Format("{0}{1}{2}{3},{4}{5}", streetName,
-                    !string.IsNullOrEmpty(houseNumber) ? string.Concat(" ", houseNumber) : string.Empty,
-                    !string.IsNullOrEmpty(Query.Index) ? string.Concat(" bus ", Query.Index) : string.Empty,
-                    !string.IsNullOrEmpty(Query.BoxNumber) ? string.Concat(" bus ", Query.BoxNumber) : string.Empty,
-                    !string.IsNullOrEmpty(Query.PostalCode) ? string.Concat(" ", Query.PostalCode) : string.Empty,
+            string CreateRepresentation(string municipalityName, string streetName, string houseNumber)
+                => string.Format("{0}{1}{2}{3},{4}{5}",
+                    streetName,
+                    !string.IsNullOrEmpty(houseNumber)
+                        ? string.Concat(" ", houseNumber)
+                        : string.Empty,
+                    !string.IsNullOrEmpty(Query.Index)
+                        ? string.Concat(" bus ", Query.Index)
+                        : string.Empty,
+                    !string.IsNullOrEmpty(Query.BoxNumber)
+                        ? string.Concat(" bus ", Query.BoxNumber)
+                        : string.Empty,
+                    !string.IsNullOrEmpty(Query.PostalCode)
+                        ? string.Concat(" ", Query.PostalCode)
+                        : string.Empty,
                     string.Concat(" ", municipalityName));
 
             foreach (var municipalityName in municipalityNames)
+            {
                 if (streetNames.Any())
+                {
                     foreach (var streetName in streetNames.Distinct())
                     {
-                        var houseNumbers = _sanitizer.Sanitize(streetName, Query.HouseNumber, Query.Index);
-                        if (houseNumbers.Count > 1)//create a representation per sanitized housenumber
+                        var houseNumbers = _sanitizer.Sanitize(
+                            streetName,
+                            Query.HouseNumber,
+                            Query.Index);
+
+                        if (houseNumbers.Count > 1) // create a representation per sanitized housenumber
+                        {
                             foreach (var houseNumberWithSubaddress in houseNumbers)
-                                yield return createRepresentation(municipalityName, streetName, houseNumberWithSubaddress.HouseNumber);
+                                yield return CreateRepresentation(
+                                    municipalityName,
+                                    streetName,
+                                    houseNumberWithSubaddress.HouseNumber);
+                        }
                         else
-                            yield return createRepresentation(municipalityName, streetName, Query.HouseNumber);
+                        {
+                            yield return CreateRepresentation(
+                                municipalityName,
+                                streetName,
+                                Query.HouseNumber);
+                        }
                     }
+                }
                 else
+                {
                     yield return municipalityName;
+                }
+            }
         }
     }
 }

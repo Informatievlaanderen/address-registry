@@ -1,6 +1,7 @@
 namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 {
     using System;
+    using System.Linq;
 
     public class FuzzyMatch
     {
@@ -11,7 +12,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
         /// <param name="pStr1">First string to compare</param>
         /// <param name="pStr2">Second string to compare</param>
         /// <returns>A similarity percentage</returns>
-        public static double Calculate(String pStr1, String pStr2)
+        public static double Calculate(string pStr1, string pStr2)
         {
             if (string.IsNullOrEmpty(pStr1) || string.IsNullOrEmpty(pStr1))
                 return 0.0;
@@ -19,11 +20,11 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             pStr1 = pStr1.ToUpper();
             pStr2 = pStr2.ToUpper();
 
-            double dice = Math.Min(FuzzyMatchAlgorithms.DiceCoefficient(pStr1, pStr2), 1.00);
-            double LED = FuzzyMatchAlgorithms.LevenshteinEditDistance(pStr1, pStr2);
-            double LCS = FuzzyMatchAlgorithms.LongestCommonSubsequence(pStr1, pStr2);
+            var dice = Math.Min(FuzzyMatchAlgorithms.DiceCoefficient(pStr1, pStr2), 1.00);
+            var LED = FuzzyMatchAlgorithms.LevenshteinEditDistance(pStr1, pStr2);
+            var LCS = FuzzyMatchAlgorithms.LongestCommonSubsequence(pStr1, pStr2);
 
-            double similarity = (3 * dice + LED / 0.8 + LCS / 0.8) / 5.5;
+            var similarity = (3 * dice + LED / 0.8 + LCS / 0.8) / 5.5;
             return similarity * 100;
         }
 
@@ -42,7 +43,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             /// <param name="pStr1">First string to compare</param>
             /// <param name="pStr2">Second string to compare</param>
             /// <returns>Dice Coefficient</returns>
-            internal static double DiceCoefficient(String pStr1, String pStr2)
+            internal static double DiceCoefficient(string pStr1, string pStr2)
             {
                 // faulty input parameters
                 if (string.IsNullOrEmpty(pStr1) || string.IsNullOrEmpty(pStr1))
@@ -52,19 +53,10 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 var bigram2 = Bigram.Parse(pStr2);
 
                 // calculate number of shared bigrams
-                int sharedBigrams = 0;
-                foreach (var s1 in bigram1)
-                {
-                    foreach (var s2 in bigram2)
-                    {
-                        if (s1.Equals(s2))
-                            sharedBigrams++;
-                    }
-                }
+                var sharedBigrams = bigram1.Sum(s1 => bigram2.Count(s1.Equals));
 
                 // calculate dice coefficient
-                double dice = Convert.ToDouble(sharedBigrams * 2) / Convert.ToDouble(bigram1.Length + bigram2.Length);
-                return dice;
+                return Convert.ToDouble(sharedBigrams * 2) / Convert.ToDouble(bigram1.Length + bigram2.Length);
             }
 
             /// <summary>
@@ -78,7 +70,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             /// <param name="pStr1">First string to compare</param>
             /// <param name="pStr2">Second string to compare</param>
             /// <returns>Levenshtein Edit Distance divided by the length of the longest strings</returns>
-            internal static double LevenshteinEditDistance(String pStr1, String pStr2)
+            internal static double LevenshteinEditDistance(string pStr1, string pStr2)
             {
                 // faulty input parameters
                 if (string.IsNullOrEmpty(pStr1) || string.IsNullOrEmpty(pStr1))
@@ -88,44 +80,44 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 char[] string2 = pStr2.ToCharArray();
 
                 // initilize the matrix
-                int n = string1.Length;
-                int m = string2.Length;
+                var n = string1.Length;
+                var m = string2.Length;
                 int[,] matrix = new int[n + 1, m + 1];
-                for (int i = 0; i < n + 1; i++)
+                for (var i = 0; i < n + 1; i++)
                     matrix[i, 0] = i;
-                for (int j = 0; j < m + 1; j++)
+                for (var j = 0; j < m + 1; j++)
                     matrix[0, j] = j;
 
                 // cost calculation
-                for (int i = 1; i < n + 1; i++)
+                for (var i = 1; i < n + 1; i++)
                 {
-                    for (int j = 1; j < m + 1; j++)
+                    for (var j = 1; j < m + 1; j++)
                     {
-                        int cost;
-                        if (!string1[i - 1].Equals(string2[j - 1]))
-                            cost = 1;
-                        else
-                            cost = 0;
-                        int above = matrix[i - 1, j];
-                        int left = matrix[i, j - 1];
-                        int diag = matrix[i - 1, j - 1];
-                        int cell = Math.Min(Math.Min(above + 1, left + 1), diag + cost);
+                        var cost = !string1[i - 1].Equals(string2[j - 1]) ? 1 : 0;
+                        var above = matrix[i - 1, j];
+                        var left = matrix[i, j - 1];
+                        var diag = matrix[i - 1, j - 1];
+                        var cell = Math.Min(Math.Min(above + 1, left + 1), diag + cost);
+
                         if (i > 1 && j > 1)
                         {
-                            int trans = matrix[i - 2, j - 2] + 1;
+                            var trans = matrix[i - 2, j - 2] + 1;
+
                             if (!string1[i - 2].Equals(string2[j - 1]))
                                 trans++;
+
                             if (!string1[i - 1].Equals(string2[j - 2]))
                                 trans++;
+
                             if (cell > trans)
                                 cell = trans;
                         }
+
                         matrix[i, j] = cell;
                     }
                 }
-                double result = 1.0 - Convert.ToDouble(matrix[n, m]) / Convert.ToDouble(Math.Max(pStr1.Length, pStr2.Length));
 
-                return result;
+                return 1.0 - Convert.ToDouble(matrix[n, m]) / Convert.ToDouble(Math.Max(pStr1.Length, pStr2.Length));
             }
 
             /// <summary>
@@ -140,7 +132,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             /// <param name="pStr1">First string to compare</param>
             /// <param name="pStr2">Second string to compare</param>
             /// <returns>Longest Common Subsequence length divided by the average lenght of the two input strings</returns>
-            internal static double LongestCommonSubsequence(String pStr1, String pStr2)
+            internal static double LongestCommonSubsequence(string pStr1, string pStr2)
             {
                 // faulty input parameters
                 if (string.IsNullOrEmpty(pStr1) || string.IsNullOrEmpty(pStr1))
@@ -160,15 +152,15 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                     Y = pStr1.ToCharArray();
                 }
 
-                int n = Math.Min(X.Length, Y.Length);
-                int m = Math.Max(X.Length, Y.Length);
+                var n = Math.Min(X.Length, Y.Length);
+                var m = Math.Max(X.Length, Y.Length);
 
                 int[,] c = new int[m + 1, m + 1];
                 int[,] b = new int[m + 1, m + 1];
 
-                for (int i = 1; i < m + 1; i++)
+                for (var i = 1; i < m + 1; i++)
                 {
-                    for (int j = 1; j < n + 1; j++)
+                    for (var j = 1; j < n + 1; j++)
                     {
                         if (X[i - 1] == Y[j - 1])
                         {
@@ -188,10 +180,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                     }
                 }
 
-                if (c[m, n] > 0)
-                    return Convert.ToDouble(c[m, n] / Convert.ToDouble((X.Length + Y.Length) / 2));
-
-                return 0.00;
+                return c[m, n] > 0
+                    ? Convert.ToDouble(c[m, n] / Convert.ToDouble((X.Length + Y.Length) / 2))
+                    : 0.00;
             }
         }
 
@@ -203,17 +194,16 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             /// </summary>
             /// <param name="pStr">the string to break into bigram segments</param>
             /// <returns>an array of bigrams</returns>
-            public static String[] Parse(String pStr)
+            public static string[] Parse(string pStr)
             {
                 if (pStr == null)
                     return null;
 
                 pStr = "%" + pStr + "#";
-                String[] parsed = new String[pStr.Length - 1];
-                for (int i = 0; i < pStr.Length - 1; i++)
-                {
+                string[] parsed = new string[pStr.Length - 1];
+                for (var i = 0; i < pStr.Length - 1; i++)
                     parsed[i] = pStr.Substring(i, 2);
-                }
+
                 return parsed;
             }
         }

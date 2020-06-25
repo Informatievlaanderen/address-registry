@@ -10,16 +10,14 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
     /// <typeparam name="TProp"></typeparam>
     public class PropertyEqualityComparer<T, TProp> : IEqualityComparer<T>
     {
-        private Func<T, TProp> _propertyGetter;
+        private readonly Func<T, TProp> _propertyGetter;
 
         /// <summary>
         /// Creates a new instance of PropertyEqualityComparer
         /// </summary>
         /// <param name="propertyGetter">A func that calculates the value required for comparison</param>
         public PropertyEqualityComparer(Func<T, TProp> propertyGetter)
-        {
-            _propertyGetter = propertyGetter;
-        }
+            => _propertyGetter = propertyGetter;
 
         bool IEqualityComparer<T>.Equals(T x, T y) => _propertyGetter(x).Equals(_propertyGetter(y));
 

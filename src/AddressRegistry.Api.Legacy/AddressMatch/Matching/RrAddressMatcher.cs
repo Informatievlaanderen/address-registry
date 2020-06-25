@@ -12,7 +12,11 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
         private readonly int _maxNumberOfResults;
         private readonly IWarningLogger _warnings;
 
-        public RrAddressMatcher(IKadRrService kadRrService, IMapper<AddressDetailItem, TResult> mapper, int maxNumberOfResults, IWarningLogger warnings)
+        public RrAddressMatcher(
+            IKadRrService kadRrService,
+            IMapper<AddressDetailItem, TResult> mapper,
+            int maxNumberOfResults,
+            IWarningLogger warnings)
         {
             _kadRrService = kadRrService;
             _mapper = mapper;
@@ -20,30 +24,45 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             _warnings = warnings;
         }
 
-        public override IReadOnlyList<TResult> BuildResults(AddressMatchBuilder builder)
+        protected override AddressMatchBuilder? DoMatchInternal(AddressMatchBuilder? builder)
         {
-            List<TResult> results = builder.AllAddresses().Take(_maxNumberOfResults).Select(_mapper.Map).ToList();
-            results.ForEach(s => s.Score = 100);
+            if (string.IsNullOrEmpty(builder?.Query.HouseNumber) || string.IsNullOrEmpty(builder?.Query.RrStreetCode))
+                return builder;
 
-            return results;
-        }
+            var rrAddresses = _kadRrService
+                .GetAddressesBy(
+                    builder.Query.HouseNumber,
+                    builder.Query.Index,
+                    builder.Query.RrStreetCode,
+                    builder.Query.PostalCode)
+                .ToList();
 
-        protected override AddressMatchBuilder DoMatchInternal(AddressMatchBuilder builder)
-        {
-            if (!string.IsNullOrEmpty(builder.Query.HouseNumber) && !string.IsNullOrEmpty(builder.Query.RrStreetCode))
-            {
-                IEnumerable<AddressDetailItem> rrAddresses = _kadRrService.GetAddressesBy(builder.Query.HouseNumber, builder.Query.Index, builder.Query.RrStreetCode, builder.Query.PostalCode).ToList();
-                if (rrAddresses.Any())
-                {
-                    builder.AddRrAddresses(rrAddresses);
-                    _warnings.AddWarning("21", "De adressen in het resultaat werden gevonden via een rechtstreekse link naar het opgegeven rijksregister adres.");
-                }
-            }
+            if (!rrAddresses.Any())
+                return builder;
+
+            _warnings.AddWarning("21", "De adressen in het resultaat werden gevonden via een rechtstreekse link naar het opgegeven rijksregister adres.");
+            builder.AddRrAddresses(rrAddresses);
+
             return builder;
         }
 
-        protected override bool IsValidMatch(AddressMatchBuilder builder) => builder.AllAddresses().Any();
+        protected override bool? ShouldProceed(AddressMatchBuilder? builder)
+            => !IsValidMatch(builder);
 
-        protected override bool ShouldProceed(AddressMatchBuilder builder) => !IsValidMatch(builder);
+        protected override bool? IsValidMatch(AddressMatchBuilder? builder)
+            => builder?.AllAddresses().Any();
+
+        public override IReadOnlyList<TResult>? BuildResults(AddressMatchBuilder? builder)
+        {
+            var results = builder?
+                .AllAddresses()
+                .Take(_maxNumberOfResults)
+                .Select(_mapper.Map)
+                .ToList();
+
+            results?.ForEach(s => s.Score = 100);
+
+            return results;
+        }
     }
 }

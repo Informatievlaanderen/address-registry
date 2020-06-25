@@ -12,14 +12,14 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
         where TMatchBuilder : class
     {
         private int _currentStepIndex;
-        private IMatcher<TMatchBuilder, TResult>[] _matchingSteps;
+        private readonly IMatcher<TMatchBuilder, TResult>[] _matchingSteps;
 
-        private IMatcher<TMatchBuilder, TResult> CurrentStep
-        {
-            get { return _currentStepIndex >= 0 && _currentStepIndex < _matchingSteps.Length ? _matchingSteps[_currentStepIndex] : null; }
-        }
+        private IMatcher<TMatchBuilder, TResult>? CurrentStep =>
+            _currentStepIndex >= 0 && _currentStepIndex < _matchingSteps.Length
+                ? _matchingSteps[_currentStepIndex]
+                : null;
 
-        public MatchingAlgorithm(params IMatcher<TMatchBuilder, TResult>[] matchingSteps)
+        protected MatchingAlgorithm(params IMatcher<TMatchBuilder, TResult>[] matchingSteps)
         {
             if (matchingSteps == null || matchingSteps.Length == 0)
                 throw new ArgumentException("Provide at least 1 step");
@@ -28,14 +28,14 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             _matchingSteps = matchingSteps;
         }
 
-        public virtual IReadOnlyList<TResult> Process(TMatchBuilder builder)
+        public virtual IReadOnlyList<TResult>? Process(TMatchBuilder builder)
         {
-            TMatchBuilder next = CurrentStep?.DoMatch(builder);
-            while (CurrentStep.Proceed && _matchingSteps.Length > ++_currentStepIndex)
+            var next = CurrentStep?.DoMatch(builder);
+            while (CurrentStep?.Proceed != null && CurrentStep.Proceed.Value && _matchingSteps.Length > ++_currentStepIndex)
                 next = CurrentStep.DoMatch(next);
 
             //go back to the last succesfull step
-            while (CurrentStep != null && !CurrentStep.IsMatch)
+            while (CurrentStep?.IsMatch != null && !CurrentStep.IsMatch.Value)
                 _currentStepIndex--;
 
             return CurrentStep?.BuildResults(next);

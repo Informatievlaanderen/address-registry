@@ -52,8 +52,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                     .Select(Map),
                 () => GetStreetNamesByKadStreetFromCrab(kadStreetCode, nisCode));
 
-        public StreetNameLatestItem? GetStreetNameByRrStreet(string rrStreetCode, string postalCode) =>
-            GetOrAdd(
+        public StreetNameLatestItem? GetStreetNameByRrStreet(string rrStreetCode, string postalCode)
+            => GetOrAdd(
                 GetStreetNamesByRrStreetCacheKey,
                 GetAllRrStreetNamesMappingsFromCrab,
                 AllRrStreetMappingsCacheDuration,
@@ -114,8 +114,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 ? null
                 : FindById(source.StreetNameId);
 
-        private StreetNameLatestItem? Map(RRStreetName source) =>
-            source == null
+        private StreetNameLatestItem? Map(RRStreetName source)
+            => source == null
                 ? null
                 : FindById(source.StreetNameId);
 

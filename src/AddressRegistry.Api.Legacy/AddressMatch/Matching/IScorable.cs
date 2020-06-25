@@ -4,7 +4,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 
     public interface IScoreable
     {
-        string ScoreableProperty { get; }
+        string? ScoreableProperty { get; }
         double Score { get; set; }
     }
 

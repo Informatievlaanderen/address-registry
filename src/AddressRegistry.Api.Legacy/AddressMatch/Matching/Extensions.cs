@@ -32,7 +32,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
         public static string RemoveDiacritics(this string text)
         {
             var normalizedString = text.Normalize(NormalizationForm.FormD);
-            var stringBuilder = new StringBuilder();
+            var stringBuilder = new StringBuilder(normalizedString.Length);
 
             foreach (var c in normalizedString)
             {

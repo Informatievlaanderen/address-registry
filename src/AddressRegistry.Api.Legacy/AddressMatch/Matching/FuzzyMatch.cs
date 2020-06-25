@@ -3,7 +3,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
     using System;
     using System.Linq;
 
-    public class FuzzyMatch
+    public static class FuzzyMatch
     {
         /// <summary>
         /// Calculates the similarity between two strings based on a weighted average of the Dice Coefficient,
@@ -21,14 +21,14 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             pStr2 = pStr2.ToUpper();
 
             var dice = Math.Min(FuzzyMatchAlgorithms.DiceCoefficient(pStr1, pStr2), 1.00);
-            var LED = FuzzyMatchAlgorithms.LevenshteinEditDistance(pStr1, pStr2);
-            var LCS = FuzzyMatchAlgorithms.LongestCommonSubsequence(pStr1, pStr2);
+            var levenshteinDistance = FuzzyMatchAlgorithms.LevenshteinEditDistance(pStr1, pStr2);
+            var longestCommonSubsequence = FuzzyMatchAlgorithms.LongestCommonSubsequence(pStr1, pStr2);
 
-            var similarity = (3 * dice + LED / 0.8 + LCS / 0.8) / 5.5;
+            var similarity = (3 * dice + levenshteinDistance / 0.8 + longestCommonSubsequence / 0.8) / 5.5;
             return similarity * 100;
         }
 
-        private class FuzzyMatchAlgorithms
+        private static class FuzzyMatchAlgorithms
         {
             /// <summary>
             /// Calculates the Dice Coefficient for two given strings.
@@ -138,22 +138,22 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 if (string.IsNullOrEmpty(pStr1) || string.IsNullOrEmpty(pStr1))
                     return 0.0;
 
-                char[] X;
-                char[] Y;
+                char[] x;
+                char[] y;
 
                 if (pStr1.Length > pStr2.Length)
                 {
-                    X = pStr1.ToCharArray();
-                    Y = pStr2.ToCharArray();
+                    x = pStr1.ToCharArray();
+                    y = pStr2.ToCharArray();
                 }
                 else
                 {
-                    X = pStr2.ToCharArray();
-                    Y = pStr1.ToCharArray();
+                    x = pStr2.ToCharArray();
+                    y = pStr1.ToCharArray();
                 }
 
-                var n = Math.Min(X.Length, Y.Length);
-                var m = Math.Max(X.Length, Y.Length);
+                var n = Math.Min(x.Length, y.Length);
+                var m = Math.Max(x.Length, y.Length);
 
                 int[,] c = new int[m + 1, m + 1];
                 int[,] b = new int[m + 1, m + 1];
@@ -162,7 +162,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 {
                     for (var j = 1; j < n + 1; j++)
                     {
-                        if (X[i - 1] == Y[j - 1])
+                        if (x[i - 1] == y[j - 1])
                         {
                             c[i, j] = c[i - 1, j - 1] + 1;
                             b[i, j] = 1; // from north west
@@ -181,12 +181,12 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 }
 
                 return c[m, n] > 0
-                    ? Convert.ToDouble(c[m, n] / Convert.ToDouble((X.Length + Y.Length) / 2))
+                    ? Convert.ToDouble(c[m, n] / Convert.ToDouble((x.Length + y.Length) / 2))
                     : 0.00;
             }
         }
 
-        private class Bigram
+        private static class Bigram
         {
             /// <summary>
             /// Breaks pStr into bigram segments.

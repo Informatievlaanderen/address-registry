@@ -51,9 +51,10 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 => _streetNames = _streetNames
                     .Concat(
                         streetNames
+                            .Where(streetName => streetName != null)
                             .Select(streetName => new StreetNameWrapper
                             {
-                                StreetName = streetName
+                                StreetName = streetName!
                             }))
                     .Distinct(StreetNameWrapper.Comparer)
                     .ToList();
@@ -108,6 +109,10 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             string? postalCodes)
         {
             foreach (var municipality in municipalities)
+            {
+                if (string.IsNullOrWhiteSpace(municipality.NisCode))
+                    continue;
+
                 _municipalities[municipality.NisCode] = new MunicipalityWrapper
                 {
                     Name = municipality.DefaultName.Value,
@@ -115,6 +120,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                     PostalCode = postalCodes,
                     Municipality = municipality
                 };
+            }
         }
 
         public void AddRrAddresses(IEnumerable<AddressDetailItem> rrAddresses)
@@ -185,14 +191,14 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                             foreach (var houseNumberWithSubaddress in houseNumbers)
                                 yield return CreateRepresentation(
                                     municipalityName,
-                                    streetName,
+                                    streetName ?? string.Empty,
                                     houseNumberWithSubaddress.HouseNumber);
                         }
                         else
                         {
                             yield return CreateRepresentation(
                                 municipalityName,
-                                streetName,
+                                streetName ?? string.Empty,
                                 Query.HouseNumber);
                         }
                     }

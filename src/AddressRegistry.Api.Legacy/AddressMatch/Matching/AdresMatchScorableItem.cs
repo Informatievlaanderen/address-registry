@@ -25,7 +25,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
         public bool? OfficieelToegekend { get; set; }
         public double Score { get; set; }
 
-        public string ScoreableProperty
+        public string? ScoreableProperty
         {
             get
             {

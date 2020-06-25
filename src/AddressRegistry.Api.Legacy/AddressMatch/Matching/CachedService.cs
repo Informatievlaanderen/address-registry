@@ -19,11 +19,11 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             Func<T2> ifCacheNotHit)
             where T : class
         {
-            if (_cache.Get(key) is T cached)
-                return ifCacheHit(cached);
-
             lock (CacheLock)
             {
+                if (_cache.Get(key) is T cached)
+                    return ifCacheHit(cached);
+
                 cached = _cache.Get(key) as T;
                 if (cached != null)
                     return ifCacheNotHit();
@@ -48,11 +48,11 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             TimeSpan cacheDuration)
             where T : class
         {
-            if (_cache.Get(key) is T cached)
-                return cached;
-
             lock (CacheLock)
             {
+                if (_cache.Get(key) is T cached)
+                    return cached;
+
                 cached = _cache.Get(key) as T;
                 if (cached != null)
                     return cached;

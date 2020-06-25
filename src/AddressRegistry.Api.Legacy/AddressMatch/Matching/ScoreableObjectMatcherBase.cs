@@ -17,7 +17,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 
             foreach (var scoreableObject in results)
                 scoreableObject.Score = representationsForScoring
-                    .Average(a => scoreableObject.ScoreableProperty.FuzzyScore(a));
+                    .Where(representationForScoring => !string.IsNullOrWhiteSpace(scoreableObject.ScoreableProperty))
+                    .Average(representationForScoring => scoreableObject.ScoreableProperty!.FuzzyScore(representationForScoring));
 
             return results;
         }

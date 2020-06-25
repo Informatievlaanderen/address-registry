@@ -14,7 +14,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
         IEnumerable<MunicipalityLatestItem> GetAllLatestMunicipalities();
         IEnumerable<StreetNameLatestItem> GetLatestStreetNamesBy(params string[] municipalityNames);
         IEnumerable<StreetNameLatestItem> GetAllLatestStreetNames();
-        IEnumerable<AddressDetailItem> GetLatestAddressesBy(string streetNamePersistentLocalId, string houseNumber, string boxNumber);
+        IEnumerable<AddressDetailItem> GetLatestAddressesBy(string streetNamePersistentLocalId, string? houseNumber, string? boxNumber);
         StreetNameLatestItem FindLatestStreetNameById(string streetNamePersistentLocalId);
         IEnumerable<AddressDetailItem> FindLatestAddressesByCrabSubaddressIds(IEnumerable<int> crabSubaddressIds);
         IEnumerable<AddressDetailItem> FindLatestAddressesByCrabHouseNumberIds(IEnumerable<int> crabHouseNumberIds);
@@ -68,7 +68,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 .StreetNameLatestItems
                 .Where(x => x.IsComplete && !x.IsRemoved);
 
-        public IEnumerable<AddressDetailItem> GetLatestAddressesBy(string streetNamePersistentLocalId, string houseNumber, string boxNumber)
+        public IEnumerable<AddressDetailItem> GetLatestAddressesBy(string streetNamePersistentLocalId, string? houseNumber, string? boxNumber)
         {
             var streetName = FindLatestStreetNameById(streetNamePersistentLocalId);
 

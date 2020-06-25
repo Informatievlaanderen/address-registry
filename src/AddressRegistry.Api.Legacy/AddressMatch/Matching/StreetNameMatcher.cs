@@ -176,6 +176,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
         {
             foreach (var municipalityWrapper in results)
             {
+                if (string.IsNullOrWhiteSpace(municipalityWrapper.NisCode))
+                    continue;
+
                 if (!municipalitiesWithStreetNames.ContainsKey(municipalityWrapper.NisCode))
                     continue;
 

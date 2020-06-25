@@ -21,7 +21,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             pStr2 = pStr2.ToUpper();
 
             var dice = Math.Min(FuzzyMatchAlgorithms.DiceCoefficient(pStr1, pStr2), 1.00);
-            var levenshteinDistance = FuzzyMatchAlgorithms.LevenshteinEditDistance(pStr1, pStr2);
+            var levenshteinDistance = FuzzyMatchAlgorithms.LevenshteinDistance(pStr1, pStr2);
             var longestCommonSubsequence = FuzzyMatchAlgorithms.LongestCommonSubsequence(pStr1, pStr2);
 
             var similarity = (3 * dice + levenshteinDistance / 0.8 + longestCommonSubsequence / 0.8) / 5.5;
@@ -60,7 +60,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             }
 
             /// <summary>
-            /// Calculates the Levenshtein Edit Distance for two given strings.
+            /// Calculates the Levenshtein Distance for two given strings.
             /// This is the number of insertions, deletions or replacements of
             /// a single character or transposition of two characters that are
             /// required to convert one string to the other.
@@ -69,8 +69,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             /// without evaluating the lengths with the two comparison strings as well.</remarks>
             /// <param name="pStr1">First string to compare</param>
             /// <param name="pStr2">Second string to compare</param>
-            /// <returns>Levenshtein Edit Distance divided by the length of the longest strings</returns>
-            internal static double LevenshteinEditDistance(string pStr1, string pStr2)
+            /// <returns>Levenshtein Distance divided by the length of the longest strings</returns>
+            internal static double LevenshteinDistance(string pStr1, string pStr2)
             {
                 // faulty input parameters
                 if (string.IsNullOrEmpty(pStr1) || string.IsNullOrEmpty(pStr1))

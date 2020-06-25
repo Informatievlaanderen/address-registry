@@ -190,7 +190,7 @@ If `BoxNumber` query is not given:
 
 * Take `StreetName`, `HouseNumber` and `Index` queries and `Sanitize` them.
 
-With the results of this, it will fetch the BuildingRegistry stored address and return this.
+With the results of this, it will fetch the BuildingRegistry stored addresses and return them.
 
 This is the last matcher, it's now or nothing :)
 

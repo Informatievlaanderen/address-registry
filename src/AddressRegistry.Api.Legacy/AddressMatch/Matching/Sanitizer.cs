@@ -26,21 +26,21 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             string? houseNumber,
             string? index)
         {
-            int hnr;
-
             // huisnummer formatteren
-            var houseNumber0 = FormatRrHouseNumber(houseNumber);
-            if (houseNumber0 == "00000000")
+            var formattedHouseNumber = FormatRrHouseNumber(houseNumber);
+            if (formattedHouseNumber == "00000000")
                 Warnings.AddWarning("1", "Ongeldig 'Huisnummer'.");
 
             // rrindex formatteren
-            var rrindex0 = FormatRrIndex(index);
+            var formattedRrIndex = FormatRrIndex(index);
 
             // huisnummer in straatnaam
-            if ((string.IsNullOrEmpty(houseNumber) || houseNumber0 == "00000000") &&
+            if ((string.IsNullOrEmpty(houseNumber) || formattedHouseNumber == "00000000") &&
                 string.IsNullOrEmpty(index) &&
                 !string.IsNullOrEmpty(streetName))
             {
+                int hnr;
+
                 var requestStraatnaamWithoutStraatnaam = streetName
                     .Replace(StripStreetName(streetName), string.Empty)
                     .Replace(",", string.Empty)
@@ -58,7 +58,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                         && int.TryParse(possibleNumberInStreet, out hnr)
                         && hnr != 0)
                     {
-                        houseNumber0 = possibleNumberInStreet;
+                        formattedHouseNumber = possibleNumberInStreet;
                     }
                 }
 
@@ -72,15 +72,15 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                         // TODO: [0-9]+ ?
                         && new Regex("[0-9][a-zA-Z]$").IsMatch(requestStraatnaamWithoutStraatnaam))
                     {
-                        houseNumber0 = possibleNumberInStreet;
-                        rrindex0 = possibleIndexInStreet.ToUpper();
+                        formattedHouseNumber = possibleNumberInStreet;
+                        formattedRrIndex = possibleIndexInStreet.ToUpper();
                     }
                 }
 
                 // huisnummer als suffix in straatnaam
                 if (new Regex(" [0-9]+$").IsMatch(streetName))
                 {
-                    houseNumber0 = FormatRrHouseNumber(new Regex(" [0-9]+$").Match(streetName).Value);
+                    formattedHouseNumber = FormatRrHouseNumber(new Regex(" [0-9]+$").Match(streetName).Value);
                     Warnings.AddWarning("2", "'Huisnummer' in 'Straatnaam' gevonden.");
                 }
 
@@ -94,8 +94,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                         // TODO: [0-9]+ ?
                         && new Regex("[0-9][a-zA-Z]$").IsMatch(requestStraatnaamWithoutStraatnaam))
                     {
-                        houseNumber0 = possibleNumberInStreet;
-                        rrindex0 = possibleIndexInStreet.ToUpper();
+                        formattedHouseNumber = possibleNumberInStreet;
+                        formattedRrIndex = possibleIndexInStreet.ToUpper();
                         Warnings.AddWarning("3", "Niet-numeriek 'Huisnummer' in 'Straatnaam' gevonden.");
                     }
                 }
@@ -104,9 +104,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             // huisnummer zonder RR-index
             // Het huisnummer wordt een CRAB-huisnummer. Er is geen CRAB-subadres.
             // *******************************************************************
-            if (HouseNumberWithoutIndex(rrindex0))
+            if (HouseNumberWithoutIndex(formattedRrIndex))
             {
-                var potentialMatch = MatchHouseNumberWithoutIndex(houseNumber0);
+                var potentialMatch = MatchHouseNumberWithoutIndex(formattedHouseNumber);
 
                 if (potentialMatch.Any())
                     return potentialMatch;
@@ -117,35 +117,35 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             // Als deel1 een aanduiding is van een subadres wordt enkel het RR-huisnummer als huisnummer weggeschreven.
             // Als deel1 een aanduiding is van een verdiep wordt enkel het RR-huisnummer als huisnummer weggeschreven en een subadres 0.0 met aard appartementnummer.
             // ******************************************************************************************************************************************************
-            if (HouseNumberWithIndex_Part1NonNumeric_Part2Zero(houseNumber0, rrindex0))
-                return MatchHouseNumberWithIndex_Part1NonNumeric_Part2Zero(houseNumber0, rrindex0);
+            if (HouseNumberWithIndex_Part1NonNumeric_Part2Zero(formattedHouseNumber, formattedRrIndex))
+                return MatchHouseNumberWithIndex_Part1NonNumeric_Part2Zero(formattedHouseNumber, formattedRrIndex);
 
             // huisnummers met RR-index waarvan deel1 niet-numeriek is en waarvan deel2 numeriek is en > 0
             // Het huisnummer wordt een CRAB-huisnummer, deel2 van de RR-index wordt een CRAB-subadres van type busnummer of appartementnummer.
             // Als deel1 een aanduiding is van een subadres wordt enkel het huisnummer als huisnummer weggeschreven.
             // *****************************************************************************************************
-            if (HouseNumberWithIndex_Part1NonNumeric_Part2NumericNonZero(houseNumber0, rrindex0))
-                return MatchHouseNumberWithIndex_Part1NonNumeric_Part2NumericNonZero(houseNumber0, rrindex0);
+            if (HouseNumberWithIndex_Part1NonNumeric_Part2NumericNonZero(formattedHouseNumber, formattedRrIndex))
+                return MatchHouseNumberWithIndex_Part1NonNumeric_Part2NumericNonZero(formattedHouseNumber, formattedRrIndex);
 
             // huisnummers met RR-index waarvan deel1 begint met een cijfer en zonder deel 3.
             // Het huisnummer wordt een CRAB-huisnummer, deel1 van de RR-index wordt een CRAB-subadres van type busnummer.
             // ***********************************************************************************************************
-            if (HouseNumberWithIndex_Part1StartNumber_Part3Missing(houseNumber0, rrindex0))
-                return MatchHouseNumberWithIndex_Part1StartNumber_Part3Missing(houseNumber0, rrindex0);
+            if (HouseNumberWithIndex_Part1StartNumber_Part3Missing(formattedHouseNumber, formattedRrIndex))
+                return MatchHouseNumberWithIndex_Part1StartNumber_Part3Missing(formattedHouseNumber, formattedRrIndex);
 
             // huisnummers met RR-index waarvan deel1 begint met een cijfer en met numeriek deel 3 en zonder deel 4
             // Het huisnummer wordt een CRAB-huisnummer, de RR-index wordt een CRAB-subadres van type appartementnummer.
             // *********************************************************************************************************
-            if (HouseNumberWithIndex_Part1StartNumber_Part3Numeric_Part4Missing(houseNumber0, rrindex0))
-                return MatchHouseNumberWithIndex_Part1StartNumber_Part3Numeric_Part4Missing(houseNumber0, rrindex0);
+            if (HouseNumberWithIndex_Part1StartNumber_Part3Numeric_Part4Missing(formattedHouseNumber, formattedRrIndex))
+                return MatchHouseNumberWithIndex_Part1StartNumber_Part3Numeric_Part4Missing(formattedHouseNumber, formattedRrIndex);
 
             // huisnummers met RR-index waarvan deel1 begint met een cijfer en met niet-numeriek deel 3 en numeriek deel 4
             // Het huisnummer + deel1 wordt een CRAB-huisnummer met een numeriek bisnummer, deel4 van de RR-index wordt een CRAB-subadres van type busnummer of appartementnummer.
             // Als deel3 een aanduiding is van een verdiepnummer wordt enkel het RR-huisnummer als huisnummer weggeschreven en worden deel1 en deel4 samengevoegd tot een appartementnummer.
             // *****************************************************************************************************************************************************************************
-            if (HouseNumberWithIndex_Part1StartNumber_Part3NonNumeric_Part4Numeric(houseNumber0, rrindex0))
+            if (HouseNumberWithIndex_Part1StartNumber_Part3NonNumeric_Part4Numeric(formattedHouseNumber, formattedRrIndex))
             {
-                var potentialMatch = MatchHouseNumberWithIndex_Part1StartNumber_Part3NonNumeric_Part4Numeric(houseNumber0, rrindex0);
+                var potentialMatch = MatchHouseNumberWithIndex_Part1StartNumber_Part3NonNumeric_Part4Numeric(formattedHouseNumber, formattedRrIndex);
 
                 if (potentialMatch.Any())
                     return potentialMatch;
@@ -155,85 +155,21 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             // Het RR-huisnummer+deel1 wordt een CRAB-huisnummer met numeriek bisnummer, deel1 van de RR-index wordt een CRAB-subadres van type busnummer.
             // Als deel2 een aanduiding is van een verdiepnummer wordt enkel het RR-huisnummer als huisnummer weggeschreven en worden deel1 het verdiepnummer van appartementnummer 0.
             // ***********************************************************************************************************************************************************************
-            if (Int32.TryParse(houseNumber0, out _) && !string.IsNullOrEmpty(rrindex0) && rrindex0 != "0000" && new Regex("^[0-9]").IsMatch(rrindex0)
-                && new Regex("^[a-zA-Z]").IsMatch(LeftIndex(RightIndex(rrindex0))) && RightIndex(RightIndex(rrindex0)) == string.Empty)
-            {
-                if (IndexWordsFloorNumber.Contains(RightIndex(rrindex0)))
-                {
-                    // verdiepnummer
-                    return new List<HouseNumberWithSubaddress> { new HouseNumberWithSubaddress(RemovePrecedingZeros(houseNumber0), null, RemovePrecedingZeros(LeftIndex(rrindex0)) + ".0") };
-                }
-                else
-                {
-                    //geen verdiepnummer
-                    return new List<HouseNumberWithSubaddress> { new HouseNumberWithSubaddress(RemovePrecedingZeros(houseNumber0) + "_" + RemovePrecedingZeros(LeftIndex(rrindex0)), RightIndex(rrindex0), null) };
-                }
-            }
+            if (HouseNumberWithIndex_Part1StartNumber_Part3NonNumeric_Part4Missing(formattedHouseNumber, formattedRrIndex))
+                return MatchHouseNumberWithIndex_Part1StartNumber_Part3NonNumeric_Part4Missing(formattedHouseNumber, formattedRrIndex);
 
-            /* bereiken                        */
-            /***********************************/
             // detecteer bereikachtige records
-            string houseNumber1 = null;
-            string houseNumber2 = null;
-            if (rrindex0 == "0000" || IndexWordsWithoutBisNumber.Contains(rrindex0))
-            {
-                if (houseNumber != null && houseNumber.Contains("-") && Int32.TryParse(houseNumber.Split('-')[0].Trim(), out hnr))
-                {
-                    houseNumber1 = houseNumber.Split('-')[0].Trim();
-                    houseNumber2 = houseNumber.Substring(houseNumber.IndexOf('-') + 1).Trim();
-                }
-                if (houseNumber != null && houseNumber.Contains("/") && Int32.TryParse(houseNumber.Split('/')[0].Trim(), out hnr))
-                {
-                    houseNumber1 = houseNumber.Split('/')[0].Trim();
-                    houseNumber2 = houseNumber.Substring(houseNumber.IndexOf('/') + 1).Trim();
-                }
-                if (houseNumber != null && houseNumber.Contains("+") && Int32.TryParse(houseNumber.Split('+')[0].Trim(), out hnr))
-                {
-                    houseNumber1 = houseNumber.Split('+')[0].Trim();
-                    houseNumber2 = houseNumber.Substring(houseNumber.IndexOf('+') + 1).Trim();
-                }
-                if (houseNumber != null && new Regex("[0-9] [0-9]").IsMatch(houseNumber) && Int32.TryParse(houseNumber.Split(' ')[0].Trim(), out hnr))
-                {
-                    houseNumber1 = houseNumber.Split(' ')[0].Trim();
-                    houseNumber2 = houseNumber.Substring(houseNumber.IndexOf(' ') + 1).Trim();
-                }
-                if (streetName != null && new Regex("[0-9]+-[0-9]+").IsMatch(streetName))
-                {
-                    var range = new Regex("[0-9]+-[0-9]+").Match(streetName);
-                    houseNumber1 = range.Value.Split('-')[0];
-                    houseNumber2 = range.Value.Substring(range.Value.IndexOf('-') + 1);
-                }
-            }
-
-            // omzetten van bereik naar adres
-            if (houseNumber1 != null)
-            {
-                if (!int.TryParse(houseNumber2, out hnr))
-                {
-                    // niet-numeriek bisnummer genoteerd als bereik
-                    if (new Regex("[a-zA-Z]").IsMatch(houseNumber2))
-                        return new List<HouseNumberWithSubaddress> { new HouseNumberWithSubaddress(houseNumber1, houseNumber2.ToUpper(), null) };
-
-                    // enkel huisnummer genoteerd als bereik
-                    return new List<HouseNumberWithSubaddress> { new HouseNumberWithSubaddress(houseNumber1, null, null) };
-                }
-
-                // subadres genoteerd als bereik
-                if (int.Parse(houseNumber1) > hnr)
-                    return new List<HouseNumberWithSubaddress> { new HouseNumberWithSubaddress(houseNumber1, houseNumber2, null) };
-
-                return new List<HouseNumberWithSubaddress> {
-                    new HouseNumberWithSubaddress(houseNumber1, null, null),
-                    new HouseNumberWithSubaddress(houseNumber2, null, null)
-                };
-            }
+            // *******************************
+            var potentialRange = MatchHouseNumberRanges(streetName, houseNumber, formattedRrIndex);
+            if (potentialRange.Any())
+                return potentialRange;
 
             // last fallback
-            if (rrindex0 == "0000" && new Regex("[0-9]+").IsMatch(RemovePrecedingZeros(houseNumber0)))
+            if (formattedRrIndex == "0000" && new Regex("[0-9]+").IsMatch(RemovePrecedingZeros(formattedHouseNumber)))
                 return new List<HouseNumberWithSubaddress>
                 {
                     new HouseNumberWithSubaddress(
-                        new Regex("[0-9]+").Match(RemovePrecedingZeros(houseNumber0)).Value,
+                        new Regex("[0-9]+").Match(RemovePrecedingZeros(formattedHouseNumber)).Value,
                         null,
                         null)
                 };
@@ -474,6 +410,130 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             }
 
             return new List<HouseNumberWithSubaddress>();
+        }
+
+        private static bool HouseNumberWithIndex_Part1StartNumber_Part3NonNumeric_Part4Missing(string houseNumber, string rrIndex)
+            => int.TryParse(houseNumber, out _) &&
+               !string.IsNullOrEmpty(rrIndex) &&
+               rrIndex != "0000" &&
+               new Regex("^[0-9]").IsMatch(rrIndex) &&
+               new Regex("^[a-zA-Z]").IsMatch(LeftIndex(RightIndex(rrIndex))) &&
+               RightIndex(RightIndex(rrIndex)) == string.Empty;
+
+        private static List<HouseNumberWithSubaddress> MatchHouseNumberWithIndex_Part1StartNumber_Part3NonNumeric_Part4Missing(string houseNumber, string rrIndex)
+        {
+            if (IndexWordsFloorNumber.Contains(RightIndex(rrIndex)))
+            {
+                // verdiepnummer
+                return new List<HouseNumberWithSubaddress>
+                {
+                    new HouseNumberWithSubaddress(
+                        RemovePrecedingZeros(houseNumber),
+                        null,
+                        $"{RemovePrecedingZeros(LeftIndex(rrIndex))}.0")
+                };
+            }
+
+            // geen verdiepnummer
+            return new List<HouseNumberWithSubaddress>
+            {
+                new HouseNumberWithSubaddress(
+                    $"{RemovePrecedingZeros(houseNumber)}_{RemovePrecedingZeros(LeftIndex(rrIndex))}",
+                    RightIndex(rrIndex),
+                    null)
+            };
+        }
+
+        private static List<HouseNumberWithSubaddress> MatchHouseNumberRanges(string? streetName, string? houseNumber, string rrindex0)
+        {
+            string? houseNumber1 = null;
+            string? houseNumber2 = null;
+
+            if (rrindex0 == "0000" || IndexWordsWithoutBisNumber.Contains(rrindex0))
+            {
+                if (houseNumber != null && houseNumber.Contains("-") && int.TryParse(houseNumber.Split('-')[0].Trim(), out _))
+                {
+                    houseNumber1 = houseNumber.Split('-')[0].Trim();
+                    houseNumber2 = houseNumber.Substring(houseNumber.IndexOf('-') + 1).Trim();
+                }
+
+                if (houseNumber != null && houseNumber.Contains("/") && int.TryParse(houseNumber.Split('/')[0].Trim(), out _))
+                {
+                    houseNumber1 = houseNumber.Split('/')[0].Trim();
+                    houseNumber2 = houseNumber.Substring(houseNumber.IndexOf('/') + 1).Trim();
+                }
+
+                if (houseNumber != null && houseNumber.Contains("+") && int.TryParse(houseNumber.Split('+')[0].Trim(), out _))
+                {
+                    houseNumber1 = houseNumber.Split('+')[0].Trim();
+                    houseNumber2 = houseNumber.Substring(houseNumber.IndexOf('+') + 1).Trim();
+                }
+
+                // TODO: [0-9]+ [0-9]+ ?
+                if (houseNumber != null && new Regex("[0-9] [0-9]").IsMatch(houseNumber) &&
+                    int.TryParse(houseNumber.Split(' ')[0].Trim(), out _))
+                {
+                    houseNumber1 = houseNumber.Split(' ')[0].Trim();
+                    houseNumber2 = houseNumber.Substring(houseNumber.IndexOf(' ') + 1).Trim();
+                }
+
+                if (streetName != null && new Regex("[0-9]+-[0-9]+").IsMatch(streetName))
+                {
+                    var matchedRange = new Regex("[0-9]+-[0-9]+").Match(streetName);
+                    houseNumber1 = matchedRange.Value.Split('-')[0];
+                    houseNumber2 = matchedRange.Value.Substring(matchedRange.Value.IndexOf('-') + 1);
+                }
+            }
+
+            if (houseNumber1 == null)
+                return new List<HouseNumberWithSubaddress>();
+
+            // omzetten van bereik naar adres
+            if (!int.TryParse(houseNumber2, out var hnr))
+            {
+                // niet-numeriek bisnummer genoteerd als bereik
+                if (new Regex("[a-zA-Z]").IsMatch(houseNumber2))
+                {
+                    return new List<HouseNumberWithSubaddress>
+                    {
+                        new HouseNumberWithSubaddress(
+                            houseNumber1,
+                            houseNumber2?.ToUpper(),
+                            null)
+                    };
+                }
+
+                // enkel huisnummer genoteerd als bereik
+                return new List<HouseNumberWithSubaddress>
+                {
+                    new HouseNumberWithSubaddress(
+                        houseNumber1,
+                        null,
+                        null)
+                };
+            }
+
+            // subadres genoteerd als bereik
+            if (int.Parse(houseNumber1) > hnr)
+            {
+                return new List<HouseNumberWithSubaddress>
+                {
+                    new HouseNumberWithSubaddress(
+                        houseNumber1,
+                        houseNumber2,
+                        null)
+                };
+            }
+
+            var range = new List<HouseNumberWithSubaddress>
+            {
+                new HouseNumberWithSubaddress(houseNumber1, null, null)
+            };
+
+            if (houseNumber2 != null)
+                range.Add(new HouseNumberWithSubaddress(houseNumber2, null, null));
+
+            return range;
         }
 
         private static string FormatRrHouseNumber(string? rrHouseNumber)

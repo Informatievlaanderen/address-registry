@@ -4,21 +4,24 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
     using System.Linq;
 
     internal abstract class ScoreableObjectMatcherBase<TBuilder, TResult> : MatcherBase<TBuilder, TResult>
-        where TBuilder : IProvidesRepresentationsForScoring
-        where TResult : IScoreable
+        where TBuilder : class, IProvidesRepresentationsForScoring?
+        where TResult : class, IScoreable
     {
-        public override IReadOnlyList<TResult> BuildResults(TBuilder builder)
+        public override IReadOnlyList<TResult>? BuildResults(TBuilder? builder)
         {
-            IReadOnlyList<TResult> results = BuildResultsInternal(builder);
+            var results = BuildResultsInternal(builder) ?? new List<TResult>();
 
-            List<string> representationsForScoring = builder.GetMatchRepresentationsForScoring().ToList();
+            var representationsForScoring = builder?
+                .GetMatchRepresentationsForScoring()
+                .ToList();
 
-            foreach (IScoreable scoreableObject in results)
-                scoreableObject.Score = representationsForScoring.Average(a => scoreableObject.ScoreableProperty.FuzzyScore(a));
+            foreach (var scoreableObject in results)
+                scoreableObject.Score = representationsForScoring
+                    .Average(a => scoreableObject.ScoreableProperty.FuzzyScore(a));
 
             return results;
         }
 
-        protected abstract IReadOnlyList<TResult> BuildResultsInternal(TBuilder builder);
+        protected abstract IReadOnlyList<TResult>? BuildResultsInternal(TBuilder? builder);
     }
 }

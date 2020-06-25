@@ -6,27 +6,13 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
     using Projections.Syndication.StreetName;
 
     internal class StreetNameMatcher<TResult> : ScoreableObjectMatcherBase<AddressMatchBuilder, TResult>
-        where TResult : IScoreable
+        where TResult : class, IScoreable
     {
-        private enum StraatnaamMatchLevel
-        {
-            KadStraatCode = 1,
-            RrStraatCode = 2,
-            ExactMatch = 3,
-            ExactMatchReplaceAbbreviations = 4,
-            FuzzyMatch = 5,
-            FuzzyMatchReplaceAbbreviations = 6,
-            MatchStraatnaamContainsInput = 7,
-            MatchInputContainsStraatnaam = 8,
-            NoMatch = 9,
-        }
-
         private readonly ILatestQueries _latestQueries;
         private readonly IKadRrService _streetNameService;
         private readonly ManualAddressMatchConfig _config;
         private readonly IMapper<StreetNameLatestItem, TResult> _mapper;
         private readonly IWarningLogger _warnings;
-        //private readonly ITelemetry _telemetry;
 
         public StreetNameMatcher(
             ILatestQueries latestQueries,
@@ -34,53 +20,63 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             ManualAddressMatchConfig config,
             IMapper<StreetNameLatestItem, TResult> mapper,
             IWarningLogger warnings)
-            //ITelemetry telemetry) TODO: Datadog
         {
             _latestQueries = latestQueries;
             _streetNameService = streetNameService;
             _config = config;
             _mapper = mapper;
             _warnings = warnings;
-            //_telemetry = telemetry;
         }
 
-        protected override IReadOnlyList<TResult> BuildResultsInternal(AddressMatchBuilder results) =>
-            results.AllStreetNames().Select(w => _mapper.Map(w.StreetName)).ToList();
-
-        protected override AddressMatchBuilder DoMatchInternal(AddressMatchBuilder results)
+        protected override AddressMatchBuilder? DoMatchInternal(AddressMatchBuilder? results)
         {
-            if (!string.IsNullOrEmpty(results.Query.KadStreetNameCode))
+            if (!string.IsNullOrEmpty(results?.Query.KadStreetNameCode))
                 FindStreetNamesByKadStreetCode(results);
 
-            if (!string.IsNullOrEmpty(results.Query.RrStreetCode) && !string.IsNullOrEmpty(results.Query.PostalCode))
+            if (!string.IsNullOrEmpty(results?.Query.RrStreetCode) && !string.IsNullOrEmpty(results.Query.PostalCode))
                 FindStreetNamesByRrStreetCode(results);
 
-            if (!string.IsNullOrEmpty(results.Query.StreetName))
+            if (!string.IsNullOrEmpty(results?.Query.StreetName))
             {
-                Dictionary<string, List<StreetNameLatestItem>> municipalityWithStreetNames =
-                    _latestQueries.GetLatestStreetNamesBy(results.Select(g => g.Name).ToArray()).GroupBy(s => s.NisCode).ToDictionary(g => g.Key, g => g.ToList());
+                var municipalityWithStreetNames =
+                    _latestQueries
+                        .GetLatestStreetNamesBy(
+                            results
+                                .Select(g => g.Name)
+                                .ToArray())
+                        .Where(s => s.NisCode != null)
+                        .GroupBy(s => s.NisCode!)
+                        .ToDictionary(g => g.Key, g => g.ToList());
 
                 FindStreetNamesByName(results, municipalityWithStreetNames);
 
-                if (!IsValidMatch(results))
+                var isValidStreetnameMatch = IsValidMatch(results);
+                if (isValidStreetnameMatch.HasValue && !isValidStreetnameMatch.Value)
                     FindStreetNamesByNameToggleAbreviations(results, municipalityWithStreetNames);
-                if (!IsValidMatch(results))
+
+                isValidStreetnameMatch = IsValidMatch(results);
+                if (isValidStreetnameMatch.HasValue && !isValidStreetnameMatch.Value)
                     FindStreetNamesByFuzzyMatch(results, municipalityWithStreetNames);
-                if (!IsValidMatch(results))
+
+                isValidStreetnameMatch = IsValidMatch(results);
+                if (isValidStreetnameMatch.HasValue && !isValidStreetnameMatch.Value)
                     FindStreetNamesByFuzzyMatchToggleAbreviations(results, municipalityWithStreetNames);
-                if (!IsValidMatch(results) && results.Query.StreetName.Length > 3)
+
+                isValidStreetnameMatch = IsValidMatch(results);
+                if (isValidStreetnameMatch.HasValue && !isValidStreetnameMatch.Value && results.Query.StreetName.Length > 3)
                     FindStreetNamesByStreetNameContainsInput(results, municipalityWithStreetNames);
-                if (!IsValidMatch(results) && results.Query.StreetName.Length > 3)
+
+                isValidStreetnameMatch = IsValidMatch(results);
+                if (isValidStreetnameMatch.HasValue && !isValidStreetnameMatch.Value && results.Query.StreetName.Length > 3)
                     FindStreetNamesByInputContainsStreetName(results, municipalityWithStreetNames);
             }
 
-            if (!IsValidMatch(results))
+            var validMatch = IsValidMatch(results);
+            if (validMatch.HasValue && !validMatch.Value)
             {
                 _warnings.AddWarning("10", "'Straatnaam' niet interpreteerbaar.");
-                //foreach (var gemeente in results)
-                //    _telemetry.TrackStraatnaamMatch(gemeente.Naam, results.Query.Straatnaam, results.Query.KadStraatcode, results.Query.RrStraatcode, 0, (int)StraatnaamMatchLevel.NoMatch);
             }
-            else if (results.AllStreetNames().Count() > _config.MaxStreetNamesThreshold)
+            else if (results?.AllStreetNames().Count() > _config.MaxStreetNamesThreshold)
             {
                 _warnings.AddWarning("100", "Uw zoekopdracht is te generiek");
                 results.ClearAllStreetNames();
@@ -89,73 +85,109 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             return results;
         }
 
-        protected override bool IsValidMatch(AddressMatchBuilder matchResult) => matchResult.AllStreetNames().Any();
+        protected override bool? IsValidMatch(AddressMatchBuilder? matchResult)
+            => matchResult?.AllStreetNames().Any();
 
-        protected override bool ShouldProceed(AddressMatchBuilder matchResult) => IsValidMatch(matchResult);
+        protected override bool? ShouldProceed(AddressMatchBuilder? matchResult)
+            => IsValidMatch(matchResult);
+
+        protected override IReadOnlyList<TResult>? BuildResultsInternal(AddressMatchBuilder? results)
+            => results?
+                .AllStreetNames()
+                .Select(w => _mapper.Map(w.StreetName))
+                .ToList();
 
         private void FindStreetNamesByKadStreetCode(AddressMatchBuilder results)
         {
-            foreach (var municipalityWrapper in results)
-            {
-                municipalityWrapper.AddStreetNames(_streetNameService.GetStreetNamesByKadStreet(results.Query.KadStreetNameCode, municipalityWrapper.NisCode));
-                //_telemetry.TrackStraatnaamMatch(gemeente.Naam, results.Query.Straatnaam, results.Query.KadStraatcode, results.Query.RrStraatcode, gemeente.Count(), (int)StraatnaamMatchLevel.KadStraatCode);
-            }
+            // TODO: Can't we skip this entire bit if there is no KadStreetNameCode query?
 
-            if (!string.IsNullOrEmpty(results.Query.StreetName) && !results.AllStreetNames().Any(w => w.StreetName.NameDutch.EqIgnoreCase(results.Query.StreetName)))
+            foreach (var municipalityWrapper in results)
+                municipalityWrapper
+                    .AddStreetNames(
+                        _streetNameService
+                            .GetStreetNamesByKadStreet(
+                                results.Query.KadStreetNameCode,
+                                municipalityWrapper.NisCode));
+
+            // TODO: Shouldnt we be matching on w.StreetName.GetDefaultName()?
+            if (!string.IsNullOrEmpty(results.Query.StreetName) &&
+                !results.AllStreetNames().Any(w => w.StreetName.NameDutch != null && w.StreetName.NameDutch.EqIgnoreCase(results.Query.StreetName)))
                 _warnings.AddWarning("7", "Geen overeenkomst tussen 'KadStraatcode' en 'Straatnaam'.");
         }
 
         private void FindStreetNamesByRrStreetCode(AddressMatchBuilder results)
         {
-            var streetName = _streetNameService.GetStreetNameByRrStreet(results.Query.RrStreetCode, results.Query.PostalCode);
-            if (streetName != null)
-            {
-                results.Where(g => g.PostalCode == results.Query.PostalCode).ToList().ForEach(g => g.AddStreetName(streetName));
-                //_telemetry.TrackStraatnaamMatch(results.Where(g => g.Postcode == results.Query.Postcode).FirstOrDefault()?.Naam, results.Query.Straatnaam, results.Query.KadStraatcode, results.Query.RrStraatcode, 1, (int)StraatnaamMatchLevel.RrStraatCode);
-            }
+            var streetName = _streetNameService
+                .GetStreetNameByRrStreet(
+                    results.Query.RrStreetCode,
+                    results.Query.PostalCode);
 
-            if (!string.IsNullOrEmpty(results.Query.StreetName) && !results.AllStreetNames().Any(w => w.StreetName.NameDutch.EqIgnoreCase(results.Query.StreetName)))
+            if (streetName != null)
+                results
+                    .Where(g => g.PostalCode == results.Query.PostalCode)
+                    .ToList()
+                    .ForEach(g => g.AddStreetName(streetName));
+
+            // TODO: Shouldnt we be matching on w.StreetName.GetDefaultName()?
+            if (!string.IsNullOrEmpty(results.Query.StreetName) && !results.AllStreetNames().Any(w => w.StreetName.NameDutch != null && w.StreetName.NameDutch.EqIgnoreCase(results.Query.StreetName)))
                 _warnings.AddWarning("7", "Geen overeenkomst tussen 'RrStraatcode' en 'Straatnaam'.");
         }
 
-        private void FindStreetNamesByName(AddressMatchBuilder results, Dictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames) =>
-            FindStreetNamesBy(results, municipalitiesWithStreetNames,
-                (exisitingStreetName, requestedStreetName) => exisitingStreetName.EqIgnoreCase(requestedStreetName), StraatnaamMatchLevel.ExactMatch);
+        private static void FindStreetNamesByName(AddressMatchBuilder results, IReadOnlyDictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames)
+            => FindStreetNamesBy(
+                results,
+                municipalitiesWithStreetNames,
+                (exisitingStreetName, requestedStreetName) => exisitingStreetName.EqIgnoreCase(requestedStreetName));
 
-        private void FindStreetNamesByNameToggleAbreviations(AddressMatchBuilder results, Dictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames) =>
-            FindStreetNamesBy(results, municipalitiesWithStreetNames,
-                (exisitingStreetName, requestedStreetName) => exisitingStreetName.EqIgnoreCase(requestedStreetName.ToggleAbbreviations()), StraatnaamMatchLevel.ExactMatchReplaceAbbreviations);
+        private static void FindStreetNamesByNameToggleAbreviations(AddressMatchBuilder results, IReadOnlyDictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames)
+            => FindStreetNamesBy(
+                results,
+                municipalitiesWithStreetNames,
+                (exisitingStreetName, requestedStreetName) => exisitingStreetName.EqIgnoreCase(requestedStreetName.ToggleAbbreviations()));
 
-        private void FindStreetNamesByFuzzyMatch(AddressMatchBuilder results, Dictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames) =>
-            FindStreetNamesBy(results, municipalitiesWithStreetNames,
-                (exisitingStreetName, requestedStreetName) => exisitingStreetName.EqFuzzyMatch(requestedStreetName, _config.FuzzyMatchThreshold), StraatnaamMatchLevel.FuzzyMatch);
+        private void FindStreetNamesByFuzzyMatch(AddressMatchBuilder results, IReadOnlyDictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames)
+            => FindStreetNamesBy(
+                results,
+                municipalitiesWithStreetNames,
+                (exisitingStreetName, requestedStreetName) => exisitingStreetName.EqFuzzyMatch(requestedStreetName, _config.FuzzyMatchThreshold));
 
-        private void FindStreetNamesByFuzzyMatchToggleAbreviations(AddressMatchBuilder results, Dictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames) =>
-            FindStreetNamesBy(results, municipalitiesWithStreetNames,
-                (exisitingStreetName, requestedStreetName) => exisitingStreetName.EqFuzzyMatchToggleAbreviations(requestedStreetName, _config.FuzzyMatchThreshold), StraatnaamMatchLevel.FuzzyMatchReplaceAbbreviations);
+        private void FindStreetNamesByFuzzyMatchToggleAbreviations(AddressMatchBuilder results, IReadOnlyDictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames)
+            => FindStreetNamesBy(
+                results,
+                municipalitiesWithStreetNames,
+                (exisitingStreetName, requestedStreetName) => exisitingStreetName.EqFuzzyMatchToggleAbreviations(requestedStreetName, _config.FuzzyMatchThreshold));
 
-        private void FindStreetNamesByStreetNameContainsInput(AddressMatchBuilder results, Dictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames) =>
-            FindStreetNamesBy(results, municipalitiesWithStreetNames,
-                (exisitingStreetName, requestedStreetName) => exisitingStreetName.ContainsIgnoreCase(requestedStreetName), StraatnaamMatchLevel.MatchStraatnaamContainsInput);
+        private static void FindStreetNamesByStreetNameContainsInput(AddressMatchBuilder results, IReadOnlyDictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames)
+            => FindStreetNamesBy(
+                results,
+                municipalitiesWithStreetNames,
+                (exisitingStreetName, requestedStreetName) => exisitingStreetName.ContainsIgnoreCase(requestedStreetName));
 
-        private void FindStreetNamesByInputContainsStreetName(AddressMatchBuilder results, Dictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames) =>
-            FindStreetNamesBy(results, municipalitiesWithStreetNames,
-                (exisitingStreetName, requestedStreetName) => requestedStreetName.ContainsIgnoreCase(exisitingStreetName), StraatnaamMatchLevel.MatchInputContainsStraatnaam);
+        private static void FindStreetNamesByInputContainsStreetName(AddressMatchBuilder results, IReadOnlyDictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames)
+            => FindStreetNamesBy(
+                results,
+                municipalitiesWithStreetNames,
+                (exisitingStreetName, requestedStreetName) => requestedStreetName.ContainsIgnoreCase(exisitingStreetName));
 
-        private void FindStreetNamesBy(AddressMatchBuilder results, Dictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames, Func<string, string, bool> comparer, StraatnaamMatchLevel level)
+        private static void FindStreetNamesBy(
+            AddressMatchBuilder results,
+            IReadOnlyDictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames,
+            Func<string, string, bool> comparer)
         {
             foreach (var municipalityWrapper in results)
             {
-                if (municipalitiesWithStreetNames.ContainsKey(municipalityWrapper.NisCode))
-                {
-                    var municipalityWithStreetNames = municipalitiesWithStreetNames[municipalityWrapper.NisCode];
+                if (!municipalitiesWithStreetNames.ContainsKey(municipalityWrapper.NisCode))
+                    continue;
 
-                    var matchingStreetName = municipalityWithStreetNames.Where(s => comparer(s.GetDefaultName(municipalityWrapper.Municipality.PrimaryLanguage), results.Query.StreetName));
-                    municipalityWrapper.AddStreetNames(matchingStreetName);
+                var municipalityWithStreetNames = municipalitiesWithStreetNames[municipalityWrapper.NisCode];
 
-                    //if (matchingStreetName.Any())
-                    //    _telemetry.TrackStraatnaamMatch(municipalityWrapper.Naam, results.Query.Straatnaam, results.Query.KadStraatcode, results.Query.RrStraatcode, matchingStreetName.Count(), (int)level);
-                }
+                var matchingStreetName = municipalityWithStreetNames
+                    .Where(s =>
+                        comparer(
+                            s.GetDefaultName(municipalityWrapper.Municipality.PrimaryLanguage),
+                            results.Query.StreetName));
+
+                municipalityWrapper.AddStreetNames(matchingStreetName);
             }
         }
     }

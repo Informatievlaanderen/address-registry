@@ -1,0 +1,230 @@
+# AddressMatch
+
+This guide is intended to better understand the flow of the `AdresMatch` component.
+
+## Usage
+
+The starting point is the creation of an `AddressMatchMatchingAlgorithm`.
+
+```csharp
+var warningLogger = new ValidationMessageWarningLogger();
+var maxNumberOfResults = 10;
+var addressMatch = new AddressMatchMatchingAlgorithm<AdresMatchScorableItem>(
+    kadRrService,
+    new ManualAddressMatchConfig(responseOptions.Value.SimilarityThreshold, responseOptions.Value.MaxStreetNamesThreshold),
+    latestQueries,
+    new GemeenteMapper(responseOptions.Value),
+    new StreetNameMapper(responseOptions.Value, latestQueries),
+    new AdresMapper(responseOptions.Value, latestQueries),
+    maxNumberOfResults,
+    warningLogger);
+```
+
+To get results out the algorithm, `Process` is called:
+
+```csharp
+public AddressMatchQueryComponents Map(AddressMatchRequest request)
+    => new AddressMatchQueryComponents
+    {
+        MunicipalityName = request.Gemeentenaam,
+        HouseNumber = request.Huisnummer,
+        BoxNumber = request.Busnummer,
+        Index = request.Index,
+        KadStreetNameCode = request.KadStraatcode,
+        NisCode = request.Niscode,
+        PostalCode = request.Postcode,
+        RrStreetCode = request.RrStraatcode,
+        StreetName = request.Straatnaam
+    };
+
+var result = addressMatch.Process(new AddressMatchBuilder(Map(addressMatchRequest))).Take(maxNumberOfResults);
+```
+
+## Internal Workings
+
+### AddressMatchBuilder
+
+This gets passed in to `Process` and is a container to be passed around to all other matchers.
+
+This stores:
+
+* The query parameters.
+* Various intermediary results.
+
+### AddressMatchMatchingAlgorithm
+
+This simply combines 4 matchers:
+
+```csharp
+  new RrAddressMatcher<TResult>(kadRrService, addressMapper, maxNumberOfResults, warnings),
+  new MunicipalityMatcher<TResult>(latestQueries, config, municipalityMapper, warnings),
+  new StreetNameMatcher<TResult>(latestQueries, kadRrService, config, streetNameMapper, warnings),
+  new AddressMatcher<TResult>(latestQueries, addressMapper, warnings)
+```
+
+The `Process` simply goes to the base class. This base class (`MatchingAlgorithm`) iterates over every step, trying to find a match.
+
+If no match has found, it returns a step to the previous matcher to get the result from there.
+
+In short the logic is:
+
+> Do a match!
+> Should we continue?
+> Do another match!
+> Should we continue?
+> Do another match!
+> Should we continue?
+> No, we're done.
+> Was the last match succesfull?
+> Yes! (If not, then we trace back the previous matcher till there was a match)
+> Build the result for this match!
+
+### Matchers
+
+All matchers derive from `MatcherBase` which sole job is to provide some abstract methods, template pattern style.
+
+It enforces people to first run `DoMatch` before they can call `Proceed`.
+
+The order matchers are executed is:
+
+* `DoMatchInternal`
+* Pass the result to `ShouldProceed` and `IsValidMatch` and store it.
+
+An `AddressMatchBuilder` is passed from matcher to matcher.
+
+### RrAddressMatcher
+
+The first matcher checks on _RijksRegister_ addresses.
+
+It will only match if a housenumber and _rijksregister_ street code has been passed.
+
+If those are passed, it will query the _rijksregister_ addresses and find an **exact** match on:
+
+* _Rijksregister_ Housenumber
+* _Rijksregister_ Index
+* Streetcode
+* Postalcode
+
+It will then map the result with the building registry addresses and store it in the `AddressMatchBuilder` container.
+
+If it found addresses, it will stop the matching flow and return to the user.
+
+### MunicipalityMatcher
+
+The second matcher evaluates municipalities.
+
+It starts by getting a list of all municipalities.
+
+* Then it takes the default name of each municipality (NL/FR/DE/EN) and checks for an **exact** case insensitive match with the `MunicipalityName` query.
+* Then it takes the NIS Code of each municipality and checks for an **exact** match with the `NisCode` query.
+* Then it stores the combined results in the `AddressMatchBuilder` container. It wraps the result in another container to add future streetnames to.
+
+If there is more than 1 result, it means the `MunicipalityName` and `NisCode` parameters pointed to a different municipality and a warning is added.
+
+* If a `PostalCode` query is passed, it looks up the municipalities by **exact** match on postal code and adds them to the `AddressMatchBuilder` as well.
+
+If there are results, but they don't match the NIS codes found earlier, it adds a warning.
+
+If there are results at this point, it means there is an exact match and it stops the matching.
+
+If the `MunicipalityName` query was empty, it stops the match at this point too.
+
+If there are no results yet, and `MunicipalityName` was passed in, it looks for partial matches:
+
+* It checks for an **exact** case and diacritics insensitive match on the `MunicipalityName` query and the `PostalName` (from bPost).
+* If it finds any, it adds them to the `AddressMatchBuilder` as well.
+
+If there are result at this point, it counts as a perfect match too and the matching stops.
+
+If there are no results yet, we move on to fuzzy matching:
+
+* Given the default municipality name it does a **fuzzy** match with the `MunicipalityName` query.
+* It adds the results to the `AddressMatchBuilder`.
+
+After the entire match flow, it will proceed onto the next matcher if it has found any result. Otherwise the matching stops and returns to the user.
+
+### StreetNameMatcher
+
+This is the first matcher to add scoring to the results.
+
+If the `KadStreetNameCode` query is given it will:
+
+* For each municipality it has previously found get all the streets with an **exact** match on `KadStreetNameCode` and `NisCode`.
+* Add these streets to the `AddressMatchBuilder` container per municipality.
+* If the `StreetName` query was given, and none of the streets that are found match the name, it adds a warning.
+
+If the `RrStreetCode` and `PostalCode` queries is given it will:
+
+* Find the _rijksregister_ street by **exact** match on `RrStreetCode` and `PostalCode`.
+* Add the streetname to the `AddressMatchBuilder` container based on the `PostalCode` municipality.
+* If the `StreetName` query was given, and none of the streets that are found match the name, it adds a warning.
+
+If the `StreetName` query is given it will:
+
+* For every municipality that was previously found, fetch all streetnames.
+* Look for an **exact** case insensitive match on the streetname.
+* If it did not find a match, look for an **exact** case insensitive match on the streetname with common abreviations replaced.
+* If it did not find a match, look for a **fuzzy** match on the streetname.
+* If it did not find a match, look for a **fuzzy** match on the streetname with common abreviations replaced.
+* If it did not find a match, look for a streetnames which partially contain the `StreetName` query, case insensitive.
+* If it did not find a match, look for a streetnames which are part of the `StreetName` query, case insensitive.
+
+If there are still no results at this point, it will add a warning.
+
+If there are too many results, it will not return them and add a warning.
+
+After the entire match flow, it will proceed onto the next matcher if it has found any result. Otherwise the matching stops and returns to the user.
+
+For all the results that have been found calculate the score.
+
+### AddressMatcher
+
+This is another matcher which adds scoring to the results.
+
+If `BoxNumber` query is given:
+
+* It takes the given `HouseNumber` and `BoxNumber` queries and adds it to the results.
+* This will result in an **exact** match on `HouseNumber` and `BoxNumber` only.
+
+If `BoxNumber` query is not given:
+
+* Take `StreetName`, `HouseNumber` and `Index` queries and `Sanitize` them.
+
+With the results of this, it will fetch the BuildingRegistry stored address and return this.
+
+This is the last matcher, it's now or nothing :)
+
+### Score calculation
+
+To calculate the score for each item:
+
+* It builds a list of strings representing each result.
+* For each result it then fuzzy matches it against each representation and takes the average value.
+
+### Sanitize Logic
+
+This is a monster of a method, the amount of business logic in this is huge.
+
+It begins with some cleanup:
+
+* It starts by left padding the given `HouseNumber` query with `0`s to get to a length of 8.
+* Then it takes the `Index` query, removes the preceding zeroes and checks if it is a number. If it is a number, it will left-pad it with `0`'s till 4. Otherwise it will right-pad it with `0`'s till 4.
+
+Then it checks whether the `StreetName` query is supplied and tries to parse things out of it:
+
+* First it removes all commas, spaces and the streetname itself.
+* Then it checks if the street starts with a number and stores it as the new housenumber.
+* Then it checks if the street starts with a number + a letter, but not `e` and stores it as the new housenumber and _rijksregister_ index.
+* Then it checks if the street ends with a number and stores it as the new housenumber.
+* Then it checks if the street ends with a number + a letter, but not `e` and stores it as the new housenumber and _rijksregister_ index.
+
+After this cleanup, we start checking the new housenumber for results which didn't have an index.
+
+* If it is completely numeric, do an **exact** match on the number. e.g.: `42`
+* If it is all numbers, followed by spaces and a single letter, do an **exact** match on the number + the letter. e.g.: `42B` (_bisnummer_)
+* If it is 1 letter and ends with `bis`, do an **exact** match on the letter + `BIS`. e.g.: `XBIS`.
+
+
+## Notes
+
+* What about the caching that is being done? Where is the cache updated?

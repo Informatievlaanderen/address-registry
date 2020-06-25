@@ -31,12 +31,11 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             {
                 if (VolledigAdres != null)
                     return VolledigAdres.GeografischeNaam?.Spelling;
-                else if (Gemeente != null && Straatnaam != null)
+
+                if (Gemeente != null && Straatnaam != null)
                     return $"{Straatnaam.Straatnaam?.GeografischeNaam?.Spelling}, {Gemeente.Gemeentenaam?.GeografischeNaam?.Spelling}";
-                else if (Gemeente != null)
-                    return Gemeente.Gemeentenaam?.GeografischeNaam?.Spelling;
-                else
-                    return null;
+
+                return Gemeente?.Gemeentenaam?.GeografischeNaam?.Spelling;
             }
         }
     }

@@ -9,40 +9,46 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
         private readonly IMemoryCache _cache;
 
         protected CachedService(IMemoryCache memoryCache)
-        {
-            _cache = memoryCache;
-        }
+            => _cache = memoryCache;
 
-        protected T2 GetOrAdd<T, T2>(string key, Func<T> getter, TimeSpan cacheDuration, Func<T, T2> ifCacheHit, Func<T2> ifCacheNotHit)
+        protected T2 GetOrAdd<T, T2>(
+            string key,
+            Func<T> getter,
+            TimeSpan cacheDuration,
+            Func<T, T2> ifCacheHit,
+            Func<T2> ifCacheNotHit)
             where T : class
         {
-            T cached = _cache.Get(key) as T;
-            if (cached != null)
-            {
+            if (_cache.Get(key) is T cached)
                 return ifCacheHit(cached);
-            }
-            else
-            {
-                lock (CacheLock)
-                {
-                    cached = _cache.Get(key) as T;
-                    if (cached == null)
-                    {
-                        T item = getter();
-                        if (item != null)
-                            _cache.Set(key, item, new MemoryCacheEntryOptions { AbsoluteExpiration = new DateTimeOffset(DateTime.Now.Add(cacheDuration)) });
-                    }
-                }
 
-                return ifCacheNotHit();
+            lock (CacheLock)
+            {
+                cached = _cache.Get(key) as T;
+                if (cached != null)
+                    return ifCacheNotHit();
+
+                T item = getter();
+                if (item != null)
+                    _cache.Set(
+                        key,
+                        item,
+                        new MemoryCacheEntryOptions
+                        {
+                            AbsoluteExpiration = new DateTimeOffset(DateTime.Now.Add(cacheDuration))
+                        });
             }
+
+            return ifCacheNotHit();
         }
 
-        protected T GetOrAdd<T>(string key, Func<T> getter, TimeSpan cacheDuration)
+        protected T GetOrAdd<T>(
+            string key,
+            Func<T> getter,
+            TimeSpan cacheDuration)
             where T : class
         {
-            T cached = _cache.Get(key) as T;
-            if (cached != null)
+            if (_cache.Get(key) is T cached)
                 return cached;
 
             lock (CacheLock)
@@ -53,7 +59,13 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 
                 T item = getter();
                 if (item != null)
-                    _cache.Set(key, item, new MemoryCacheEntryOptions { AbsoluteExpiration = new DateTimeOffset(DateTime.Now.Add(cacheDuration)) });
+                    _cache.Set(
+                        key,
+                        item,
+                        new MemoryCacheEntryOptions
+                        {
+                            AbsoluteExpiration = new DateTimeOffset(DateTime.Now.Add(cacheDuration))
+                        });
 
                 return item;
             }

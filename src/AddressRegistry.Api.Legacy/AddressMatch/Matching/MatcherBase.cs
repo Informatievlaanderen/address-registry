@@ -3,22 +3,23 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
     using System;
     using System.Collections.Generic;
 
-    public interface IMatcher<TMatchBuilder, out TResult>
+    public interface IMatcher<TMatchBuilder, out TResult> where TMatchBuilder : class
     {
-        TMatchBuilder DoMatch(TMatchBuilder input);
+        bool? IsMatch { get; }
+        bool? Proceed { get; }
 
-        bool IsMatch { get; }
-        bool Proceed { get; }
+        TMatchBuilder? DoMatch(TMatchBuilder? input);
 
-        IReadOnlyList<TResult> BuildResults(TMatchBuilder input);
+        IReadOnlyList<TResult>? BuildResults(TMatchBuilder? input);
     }
 
     internal abstract class MatcherBase<TMatchBuilder, TResult> : IMatcher<TMatchBuilder, TResult>
+        where TMatchBuilder : class
     {
-        private bool? _isMatch = null;
-        private bool? _proceed = null;
+        private bool? _isMatch;
+        private bool? _proceed;
 
-        public bool IsMatch
+        public bool? IsMatch
         {
             get
             {
@@ -30,7 +31,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             private set => _isMatch = value;
         }
 
-        public bool Proceed
+        public bool? Proceed
         {
             get
             {
@@ -42,15 +43,15 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             private set => _proceed = value;
         }
 
-        public abstract IReadOnlyList<TResult> BuildResults(TMatchBuilder builder);
+        public abstract IReadOnlyList<TResult>? BuildResults(TMatchBuilder? builder);
 
-        protected abstract TMatchBuilder DoMatchInternal(TMatchBuilder builder);
+        protected abstract TMatchBuilder? DoMatchInternal(TMatchBuilder? builder);
 
-        protected abstract bool IsValidMatch(TMatchBuilder builder);
+        protected abstract bool? IsValidMatch(TMatchBuilder? builder);
 
-        protected abstract bool ShouldProceed(TMatchBuilder builder);
+        protected abstract bool? ShouldProceed(TMatchBuilder? builder);
 
-        public TMatchBuilder DoMatch(TMatchBuilder builder)
+        public TMatchBuilder? DoMatch(TMatchBuilder? builder)
         {
             var nextBuilder = DoMatchInternal(builder);
 

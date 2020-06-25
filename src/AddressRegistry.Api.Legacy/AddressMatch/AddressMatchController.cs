@@ -41,8 +41,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
             await new AddressMatchRequestValidator()
                 .ValidateAndThrowAsync(addressMatchRequest, cancellationToken: cancellationToken);
 
+            const int maxNumberOfResults = 10;
+
             var warningLogger = new ValidationMessageWarningLogger();
-            var maxNumberOfResults = 10;
             var addressMatch = new AddressMatchMatchingAlgorithm<AdresMatchScorableItem>(
                 kadRrService,
                 new ManualAddressMatchConfig(responseOptions.Value.SimilarityThreshold, responseOptions.Value.MaxStreetNamesThreshold),
@@ -53,7 +54,10 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
                 maxNumberOfResults,
                 warningLogger);
 
-            var result = addressMatch.Process(new AddressMatchBuilder(Map(addressMatchRequest))).Take(maxNumberOfResults);
+            var result = addressMatch
+                .Process(new AddressMatchBuilder(Map(addressMatchRequest)))
+                .Take(maxNumberOfResults);
+
             return Ok(new AddressMatchCollection
             {
                 AdresMatches = result.ToList().Select(x => AdresMatchItem.Create(x, buildingContext, context, responseOptions.Value)).ToList(),

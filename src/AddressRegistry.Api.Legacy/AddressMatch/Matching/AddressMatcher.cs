@@ -5,46 +5,71 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
     using Projections.Legacy.AddressDetail;
 
     internal class AddressMatcher<TResult> : ScoreableObjectMatcherBase<AddressMatchBuilder, TResult>
-        where TResult : IScoreable
+        where TResult : class, IScoreable
     {
         private readonly ILatestQueries _latestQueries;
         private readonly IMapper<AddressDetailItem, TResult> _mapper;
         private readonly Sanitizer _sanitizer;
 
-        public AddressMatcher(ILatestQueries latestQueries, IMapper<AddressDetailItem, TResult> mapper, IWarningLogger warnings)
+        public AddressMatcher(
+            ILatestQueries latestQueries,
+            IMapper<AddressDetailItem, TResult> mapper,
+            IWarningLogger warnings)
         {
             _latestQueries = latestQueries;
             _mapper = mapper;
             _sanitizer = new Sanitizer { Warnings = warnings };
         }
 
-        protected override IReadOnlyList<TResult> BuildResultsInternal(AddressMatchBuilder results) => results.AllAddresses().Select(_mapper.Map).ToList();
-
-        protected override AddressMatchBuilder DoMatchInternal(AddressMatchBuilder results)
+        protected override AddressMatchBuilder? DoMatchInternal(AddressMatchBuilder? results)
         {
-            List<HouseNumberWithSubaddress> houseNumberWithSubaddresses = new List<HouseNumberWithSubaddress>();
-            if (!string.IsNullOrEmpty(results.Query.BoxNumber))
-                houseNumberWithSubaddresses.Add(new HouseNumberWithSubaddress(results.Query.HouseNumber, results.Query.BoxNumber, null));
+            var houseNumberWithSubaddresses = new List<HouseNumberWithSubaddress>();
+
+            if (string.IsNullOrEmpty(results?.Query.BoxNumber))
+            {
+                houseNumberWithSubaddresses.AddRange(
+                    _sanitizer.Sanitize(
+                        results?.Query.StreetName,
+                        results?.Query.HouseNumber,
+                        results?.Query.Index));
+            }
             else
-                houseNumberWithSubaddresses.AddRange(_sanitizer.Sanitize(results.Query.StreetName, results.Query.HouseNumber, results.Query.Index));
+            {
+                houseNumberWithSubaddresses.Add(
+                    new HouseNumberWithSubaddress(
+                        results.Query.HouseNumber,
+                        results.Query.BoxNumber,
+                        null));
+            }
+
+            if (results == null)
+                return results;
 
             foreach (var municipalityWrapper in results)
-            {
-                foreach (var streetNameWrapper in municipalityWrapper)
-                {
-                    foreach (var houseNumberWithSubaddress in houseNumberWithSubaddresses)
-                    {
-                        streetNameWrapper.AddAddresses(_latestQueries.GetLatestAddressesBy(streetNameWrapper.StreetName.PersistentLocalId, houseNumberWithSubaddress.HouseNumber, houseNumberWithSubaddress.BoxNumber).ToList());
-                    }
-                }
-            }
+            foreach (var streetNameWrapper in municipalityWrapper)
+            foreach (var houseNumberWithSubaddress in houseNumberWithSubaddresses)
+                streetNameWrapper.AddAddresses(
+                    _latestQueries
+                        .GetLatestAddressesBy(
+                            streetNameWrapper.StreetName.PersistentLocalId,
+                            houseNumberWithSubaddress.HouseNumber,
+                            houseNumberWithSubaddress.BoxNumber)
+                        .ToList());
 
             return results;
         }
 
-        protected override bool IsValidMatch(AddressMatchBuilder matchResult) => matchResult.AllAddresses().Any();
+        protected override bool? IsValidMatch(AddressMatchBuilder? matchResult)
+            => matchResult?.AllAddresses().Any();
 
         //adresmatcher is the latest, so should never proceed
-        protected override bool ShouldProceed(AddressMatchBuilder matchResult) => false;
+        protected override bool? ShouldProceed(AddressMatchBuilder? matchResult)
+            => false;
+
+        protected override IReadOnlyList<TResult>? BuildResultsInternal(AddressMatchBuilder? results)
+            => results?
+                .AllAddresses()
+                .Select(_mapper.Map)
+                .ToList();
     }
 }

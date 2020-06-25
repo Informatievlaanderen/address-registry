@@ -45,3 +45,5 @@ Thumbs.db
 
 crabimport-request-*.json
 structurizr-*.json
+
+~$*

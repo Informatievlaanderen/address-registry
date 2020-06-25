@@ -218,11 +218,58 @@ Then it checks whether the `StreetName` query is supplied and tries to parse thi
 * Then it checks if the street ends with a number and stores it as the new housenumber.
 * Then it checks if the street ends with a number + a letter, but not `e` and stores it as the new housenumber and _rijksregister_ index.
 
-After this cleanup, we start checking the new housenumber for results which didn't have an index.
+After this cleanup, we start checking the new housenumber for results which didn't have a _rijksregister_ index.
 
-* If it is completely numeric, do an **exact** match on the number. e.g.: `42`
-* If it is all numbers, followed by spaces and a single letter, do an **exact** match on the number + the letter. e.g.: `42B` (_bisnummer_)
-* If it is 1 letter and ends with `bis`, do an **exact** match on the letter + `BIS`. e.g.: `XBIS`.
+* If it is completely numeric, do an **exact** match on the number, without preceding zeroes. e.g.: `42`.
+* If it is all numbers, followed by spaces and a single letter, do an **exact** match on the number (without preceding zeroes) + the letter. e.g.: `42B` (_bisnummer_).
+* If it is not exactly 1 letter and ends with `bis`, do an **exact** match on the number (without preceding zeroes) + `BIS`. e.g.: `42BIS`.
+* If any of these matched, the parsing of streetname stops.
+
+Otherwise we move on to cases which have a _rijksregister_ index with a text part, optionally appended with `0`'s.
+
+As input we have a list with special words:
+
+```csharp
+private static readonly HashSet<string> IndexWordsBoxNumber = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase) { "BUS", "bte", "BT", "bu", "bs" };
+private static readonly HashSet<string> IndexWordsAppartementNumber = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase) { "AP", "APP", "apt" };
+private static readonly HashSet<string> IndexWordsFloorNumber = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase) { "et", "eta", "éta", "VER", "VDP", "VD", "Vr", "Vrd", "V", "Etg", "ét", "et", "ev", "eme", "ème", "STE", "de", "dev", "e", "E", "é", "links", "rechts" };
+private static readonly HashSet<string> IndexWordsFloor = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase) { "RC", "RCAR", "GV", "Rch", "RDC", "HAL", "rez", "RCH", "GV", "GVL", "GLV", "GEL", "GL" };
+private static readonly HashSet<string> IndexWordsWithoutBisNumber = new HashSet<string>(IndexWordsBoxNumber.Concat(IndexWordsAppartementNumber).Concat(IndexWordsFloorNumber).Concat(IndexWordsFloor), StringComparer.InvariantCultureIgnoreCase);
+```
+
+* If the index contains none of these words, do an **exact** match on the housenumber (without preceding zeroes) + _rijksregister_ index. e.g.: `42WTF`.
+* Otherwise do an **exact** match on housenumber, without preceding zeroes. e.g.: `42`.
+* If any of these matched, the parsing of streetname stops.
+
+Now we move on to cases which have a _rijksregister_ index with a text part, and appended with a numeric part.
+
+As input we again have the same special words lists.
+
+* If the index contains none of these words, do an **exact** match on the housenumber (without preceding zeroes) + _rijksregister_ index and on the boxnumber (numeric part of the _rijksregister_ without preceding zeroes). e.g.: `42WTF` + box `5`.
+* If the index contains any of the `BoxNumber` words, do an **exact** match on the housenumber (without preceding zeroes) and on the boxnumber (numeric part of the _rijksregister_ without preceding zeroes). e.g.: `42` + box `5`.
+* Otherwise do an **exact** match on the housenumber (without preceding zeroes) only. e.g.: `42`.
+* If any of these matched, the parsing of streetname stops.
+
+Next case is some special CRAB case with an index which starts with a number and does not contain a _part 3_.
+
+* If this is the case, do an **exact** match on the housenumber (without preceding zeroes) and on the boxnumber (numeric part of the _rijksregister_ without preceding zeroes). e.g.: `42` + box `5`.
+* If this matches, the parsing of streetname stops.
+
+Next case is another special CRAB case with an index which starts with a number, a numeric _part 3_ and no _part 4_.
+
+* If this is the case, do an **exact** match on the housenumber (without preceding zeroes). e.g.: `42`.
+* If this matches, the parsing of streetname stops.
+
+We're getting into the more special things. Next one is index which starts with a number, a non-numeric _part 3_ and a numeric _part 4_.
+
+As input we again have the same special words lists.
+
+* If the index contains none of these words, do an **exact** match on the housenumber (without preceding zeroes) + non-numeric part of _rijksregister_ index and on the boxnumber (numeric part of the _rijksregister_ without preceding zeroes). e.g.: `42WTF` + box `5`.
+* If the index contains any of the `FloorNumber` words, do an **exact** match on the housenumber (without preceding zeroes) only. e.g.: `42`.
+* If the index contains any of the `Appartement` words, do an **exact** match on the housenumber (without preceding zeroes) + _rijksregister_ index. e.g.: `42A`.
+* If the index contains any of the `BoxNumber` words, do an **exact** match on the housenumber (without preceding zeroes) + _rijksregister_ index and on the boxnumber (numeric part of the _rijksregister_ without preceding zeroes). e.g.: `42A` + box `5`.
+* If any of these matched, the parsing of streetname stops.
+
 
 
 ## Notes

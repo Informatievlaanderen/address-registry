@@ -26,7 +26,6 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             string? houseNumber,
             string? index)
         {
-            //TODO: clean up Sammy code
             int hnr;
 
             // huisnummer formatteren
@@ -105,142 +104,58 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             // huisnummer zonder RR-index
             // Het huisnummer wordt een CRAB-huisnummer. Er is geen CRAB-subadres.
             // *******************************************************************
-            if (rrindex0 == "0000" && TryMatchHouseNumberWithoutIndex(houseNumber0, out var sanitizedResult))
-                return sanitizedResult;
+            if (HouseNumberWithoutIndex(rrindex0))
+            {
+                var potentialMatch = MatchHouseNumberWithoutIndex(houseNumber0);
+
+                if (potentialMatch.Any())
+                    return potentialMatch;
+            }
 
             // huisnummers met RR-index waarvan deel1 niet-numeriek is en waarvan deel2 numeriek is en gelijk aan 0
             // Het huisnummer + deel1 wordt een CRAB-huisnummer met een niet-numeriek bisnummer. Er is geen CRAB-subadres.
-            //   Als deel1 een aanduiding is van een subadres wordt enkel het RR-huisnummer als huisnummer weggeschreven.
-            //   Als deel1 een aanduiding is van een verdiep wordt enkel het RR-huisnummer als huisnummer weggeschreven en een subadres 0.0 met aard appartementnummer.
-            // ********************************************************************************************************************************************************
+            // Als deel1 een aanduiding is van een subadres wordt enkel het RR-huisnummer als huisnummer weggeschreven.
+            // Als deel1 een aanduiding is van een verdiep wordt enkel het RR-huisnummer als huisnummer weggeschreven en een subadres 0.0 met aard appartementnummer.
+            // ******************************************************************************************************************************************************
+            if (HouseNumberWithIndex_Part1NonNumeric_Part2Zero(houseNumber0, rrindex0))
+                return MatchHouseNumberWithIndex_Part1NonNumeric_Part2Zero(houseNumber0, rrindex0);
 
-            if (int.TryParse(houseNumber0, out _) &&
-                new Regex("^[a-zA-Z]").IsMatch(rrindex0) &&
-                (RightIndex(rrindex0) == string.Empty || RemovePrecedingZeros(RightIndex(rrindex0)) == string.Empty))
+            // huisnummers met RR-index waarvan deel1 niet-numeriek is en waarvan deel2 numeriek is en > 0
+            // Het huisnummer wordt een CRAB-huisnummer, deel2 van de RR-index wordt een CRAB-subadres van type busnummer of appartementnummer.
+            // Als deel1 een aanduiding is van een subadres wordt enkel het huisnummer als huisnummer weggeschreven.
+            // *****************************************************************************************************
+            if (HouseNumberWithIndex_Part1NonNumeric_Part2NumericNonZero(houseNumber0, rrindex0))
+                return MatchHouseNumberWithIndex_Part1NonNumeric_Part2NumericNonZero(houseNumber0, rrindex0);
+
+            // huisnummers met RR-index waarvan deel1 begint met een cijfer en zonder deel 3.
+            // Het huisnummer wordt een CRAB-huisnummer, deel1 van de RR-index wordt een CRAB-subadres van type busnummer.
+            // ***********************************************************************************************************
+            if (HouseNumberWithIndex_Part1StartNumber_Part3Missing(houseNumber0, rrindex0))
+                return MatchHouseNumberWithIndex_Part1StartNumber_Part3Missing(houseNumber0, rrindex0);
+
+            // huisnummers met RR-index waarvan deel1 begint met een cijfer en met numeriek deel 3 en zonder deel 4
+            // Het huisnummer wordt een CRAB-huisnummer, de RR-index wordt een CRAB-subadres van type appartementnummer.
+            // *********************************************************************************************************
+            if (HouseNumberWithIndex_Part1StartNumber_Part3Numeric_Part4Missing(houseNumber0, rrindex0))
+                return MatchHouseNumberWithIndex_Part1StartNumber_Part3Numeric_Part4Missing(houseNumber0, rrindex0);
+
+            // huisnummers met RR-index waarvan deel1 begint met een cijfer en met niet-numeriek deel 3 en numeriek deel 4
+            // Het huisnummer + deel1 wordt een CRAB-huisnummer met een numeriek bisnummer, deel4 van de RR-index wordt een CRAB-subadres van type busnummer of appartementnummer.
+            // Als deel3 een aanduiding is van een verdiepnummer wordt enkel het RR-huisnummer als huisnummer weggeschreven en worden deel1 en deel4 samengevoegd tot een appartementnummer.
+            // *****************************************************************************************************************************************************************************
+            if (HouseNumberWithIndex_Part1StartNumber_Part3NonNumeric_Part4Numeric(houseNumber0, rrindex0))
             {
-                if (!IndexWordsWithoutBisNumber.Contains(LeftIndex(rrindex0)))
-                {
-                    // niet-numeriek bisnummer
-                    return new List<HouseNumberWithSubaddress>
-                    {
-                        new HouseNumberWithSubaddress(
-                            RemovePrecedingZeros(houseNumber0) + LeftIndex(rrindex0),
-                            null,
-                            null)
-                    };
-                }
+                var potentialMatch = MatchHouseNumberWithIndex_Part1StartNumber_Part3NonNumeric_Part4Numeric(houseNumber0, rrindex0);
 
-                // geen niet-numeriek bisnummer
-                if (!IndexWordsFloorNumber.Contains(LeftIndex(rrindex0)))
-                {
-                    //appartementnummer 0
-                    return IndexWordsFloor.Contains(LeftIndex(rrindex0))
-                        ? new List<HouseNumberWithSubaddress>
-                        {
-                            new HouseNumberWithSubaddress(
-                                RemovePrecedingZeros(houseNumber0),
-                                null,
-                                "0.0")
-                        }
-                        : new List<HouseNumberWithSubaddress>
-                        {
-                            new HouseNumberWithSubaddress(
-                                RemovePrecedingZeros(houseNumber0),
-                                null,
-                                null)
-                        };
-                }
-
-                return new List<HouseNumberWithSubaddress>
-                {
-                    new HouseNumberWithSubaddress(
-                        RemovePrecedingZeros(houseNumber0),
-                        null,
-                        null)
-                };
+                if (potentialMatch.Any())
+                    return potentialMatch;
             }
 
-            /* huisnummers met RR-index waarvan deel1 niet-numeriek is en waarvan deel2 numeriek is en > 0 */
-            /* Het huisnummer wordt een CRAB-huisnummer, deel2 van de RR-index wordt een CRAB-subadres van type busnummer of appartementnummer.
-               Als deel1 een aanduiding is van een subadres wordt enkel het huisnummer als huisnummer weggeschreven. */
-            /*********************************************************************************************************/
-            if (Int32.TryParse(houseNumber0, out hnr) && new Regex("^[a-zA-Z]").IsMatch(rrindex0) && Int32.TryParse(RightIndex(rrindex0), out var bnr) && bnr > 0)
-            {
-                if (!IndexWordsWithoutBisNumber.Contains(LeftIndex(rrindex0)))
-                {
-                    //niet-numeriek bisnummer
-                    return new List<HouseNumberWithSubaddress> { new HouseNumberWithSubaddress(RemovePrecedingZeros(houseNumber0) + LeftIndex(rrindex0), RemovePrecedingZeros(RightIndex(rrindex0)), null) };
-                }
-                else
-                {
-                    //geen niet-numeriek bisnummer
-                    if (IndexWordsBoxNumber.Contains(LeftIndex(rrindex0)))
-                    {
-                        return new List<HouseNumberWithSubaddress> { new HouseNumberWithSubaddress(RemovePrecedingZeros(houseNumber0), RemovePrecedingZeros(RightIndex(rrindex0)), null) };
-                    }
-                    else
-                    {
-                        return new List<HouseNumberWithSubaddress> { new HouseNumberWithSubaddress(RemovePrecedingZeros(houseNumber0), null, LeftIndex(rrindex0) + RemovePrecedingZeros(RightIndex(rrindex0))) };
-                    }
-                }
-            }
-
-            /* huisnummers met RR-index waarvan deel1 begint met een cijfer en zonder deel 3. */
-            /* Het huisnummer wordt een CRAB-huisnummer, deel1 van de RR-index wordt een CRAB-subadres van type busnummer.*/
-            /**************************************************************************************************************/
-            if (Int32.TryParse(houseNumber0, out hnr) && !string.IsNullOrEmpty(rrindex0) && rrindex0 != "0000" && new Regex("^[0-9]").IsMatch(rrindex0) && LeftIndex(RightIndex(rrindex0)) == string.Empty)
-            {
-                return new List<HouseNumberWithSubaddress> { new HouseNumberWithSubaddress(RemovePrecedingZeros(houseNumber0), RemovePrecedingZeros(LeftIndex(rrindex0)), null) };
-            }
-
-            /* huisnummers met RR-index waarvan deel1 begint met een cijfer en met numeriek deel 3 en zonder deel 4 */
-            /* Het huisnummer wordt een CRAB-huisnummer, de RR-index wordt een CRAB-subadres van type appartementnummer. */
-            /*************************************************************************************************************/
-            if (Int32.TryParse(houseNumber0, out hnr) && !string.IsNullOrEmpty(rrindex0) && rrindex0 != "0000" && new Regex("^[0-9]").IsMatch(rrindex0) && Int32.TryParse(LeftIndex(RightIndex(rrindex0)), out bnr) && RightIndex(RightIndex(rrindex0)) == string.Empty)
-            {
-                return new List<HouseNumberWithSubaddress> { new HouseNumberWithSubaddress(RemovePrecedingZeros(houseNumber0), null, index) };
-            }
-
-            /* huisnummers met RR-index waarvan deel1 begint met een cijfer en met niet-numeriek deel 3 en numeriek deel 4 */
-            /* Het huisnummer + deel1 wordt een CRAB-huisnummer met een numeriek bisnummer, deel4 van de RR-index wordt een CRAB-subadres van type busnummer of appartementnummer.
-               Als deel3 een aanduiding is van een verdiepnummer wordt enkel het RR-huisnummer als huisnummer weggeschreven en worden deel1 en deel4 samengevoegd tot een appartementnummer.*/
-            /***************************************************************************************************************/
-            if (Int32.TryParse(houseNumber0, out hnr) && !string.IsNullOrEmpty(rrindex0) && rrindex0 != "0000" && new Regex("^[a-zA-Z]").IsMatch(LeftIndex(RightIndex(rrindex0)))
-                && Int32.TryParse(RightIndex(RightIndex(rrindex0)), out bnr))
-            {
-                if (!IndexWordsWithoutBisNumber.Contains(LeftIndex(RightIndex(rrindex0))))
-                {
-                    // niet-numeriek bisnummer
-                    var bus = RemovePrecedingZeros(RightIndex(RightIndex(rrindex0)));
-                    bus = bus == string.Empty ? "0" : bus;
-                    return new List<HouseNumberWithSubaddress> { new HouseNumberWithSubaddress(RemovePrecedingZeros(houseNumber0) + LeftIndex(RightIndex(rrindex0)), bus, null) };
-                }
-                else if (IndexWordsFloorNumber.Contains(LeftIndex(RightIndex(rrindex0))))
-                {
-                    // verdiepnummer
-                    var part1 = RemovePrecedingZeros(LeftIndex(rrindex0));
-                    part1 = part1 == string.Empty ? "0" : part1;
-                    var part2 = RemovePrecedingZeros(RightIndex(RightIndex(rrindex0)));
-                    part2 = part2 == string.Empty ? "0" : part2;
-                    return new List<HouseNumberWithSubaddress> { new HouseNumberWithSubaddress(RemovePrecedingZeros(houseNumber0), null, part1 + "." + part2) };
-                }
-                else if (IndexWordsAppartementNumber.Contains(LeftIndex(RightIndex(rrindex0))))
-                {
-                    // appartementnummer
-                    return new List<HouseNumberWithSubaddress> { new HouseNumberWithSubaddress(RemovePrecedingZeros(houseNumber0) + RemovePrecedingZeros(LeftIndex(rrindex0)), null, RemovePrecedingZeros(RightIndex(RightIndex(rrindex0)))) };
-                }
-                else if (IndexWordsBoxNumber.Contains(LeftIndex(RightIndex(rrindex0))))
-                {
-                    // busnummer
-                    return new List<HouseNumberWithSubaddress> { new HouseNumberWithSubaddress(RemovePrecedingZeros(houseNumber0) + RemovePrecedingZeros(LeftIndex(rrindex0)), RemovePrecedingZeros(RightIndex(RightIndex(rrindex0))), null) };
-                }
-            }
-
-            /* RR-huisnummers met RR-index waarvan deel1 begint met een cijfer en met niet-numeriek deel 3 en zonder deel 4
-	           Het RR-huisnummer+deel1 wordt een CRAB-huisnummer met numeriek bisnummer, deel1 van de RR-index wordt een CRAB-subadres van type busnummer.
-	           Als deel2 een aanduiding is van een verdiepnummer wordt enkel het RR-huisnummer als huisnummer weggeschreven en worden deel1 het verdiepnummer van appartementnummer 0.*/
-            /*****************************************************************************************************************/
-            if (Int32.TryParse(houseNumber0, out hnr) && !string.IsNullOrEmpty(rrindex0) && rrindex0 != "0000" && new Regex("^[0-9]").IsMatch(rrindex0)
+            // RR-huisnummers met RR-index waarvan deel1 begint met een cijfer en met niet-numeriek deel 3 en zonder deel 4
+            // Het RR-huisnummer+deel1 wordt een CRAB-huisnummer met numeriek bisnummer, deel1 van de RR-index wordt een CRAB-subadres van type busnummer.
+            // Als deel2 een aanduiding is van een verdiepnummer wordt enkel het RR-huisnummer als huisnummer weggeschreven en worden deel1 het verdiepnummer van appartementnummer 0.
+            // ***********************************************************************************************************************************************************************
+            if (Int32.TryParse(houseNumber0, out _) && !string.IsNullOrEmpty(rrindex0) && rrindex0 != "0000" && new Regex("^[0-9]").IsMatch(rrindex0)
                 && new Regex("^[a-zA-Z]").IsMatch(LeftIndex(RightIndex(rrindex0))) && RightIndex(RightIndex(rrindex0)) == string.Empty)
             {
                 if (IndexWordsFloorNumber.Contains(RightIndex(rrindex0)))
@@ -326,54 +241,239 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             return new List<HouseNumberWithSubaddress>();
         }
 
-        private static bool TryMatchHouseNumberWithoutIndex(string houseNumber0, out List<HouseNumberWithSubaddress> sanitizedResult)
-        {
-            sanitizedResult = new List<HouseNumberWithSubaddress>();
+        private static bool HouseNumberWithoutIndex(string rrIndex)
+            => rrIndex == "0000";
 
+        private static List<HouseNumberWithSubaddress> MatchHouseNumberWithoutIndex(string houseNumber)
+        {
             // volledig numerisch
-            if (new Regex("^[0-9]+$").IsMatch(houseNumber0))
+            if (new Regex("^[0-9]+$").IsMatch(houseNumber))
             {
-                sanitizedResult = new List<HouseNumberWithSubaddress>
+                return new List<HouseNumberWithSubaddress>
                 {
                     new HouseNumberWithSubaddress(
-                        RemovePrecedingZeros(houseNumber0),
+                        RemovePrecedingZeros(houseNumber),
                         null,
                         null)
                 };
-
-                return true;
             }
 
             // niet-numeriek bisnummer: enkele letter
-            if (new Regex(@"^[0-9]+\s*[a-zA-Z]$").IsMatch(houseNumber0))
+            if (new Regex(@"^[0-9]+\s*[a-zA-Z]$").IsMatch(houseNumber))
             {
-                sanitizedResult = new List<HouseNumberWithSubaddress>
+                return new List<HouseNumberWithSubaddress>
                 {
                     new HouseNumberWithSubaddress(
-                        RemovePrecedingZeros(houseNumber0[..^1].Trim()) + houseNumber0.Last().ToString().ToUpper(),
+                        RemovePrecedingZeros(houseNumber[..^1].Trim()) + houseNumber.Last().ToString().ToUpper(),
                         null,
                         null)
                 };
-
-                return true;
             }
 
             // niet-numeriek bisnummer: 'bis'
-            if (houseNumber0.EndsWith("bis", StringComparison.InvariantCultureIgnoreCase) &&
-                !new Regex("[a-zA-Z]").IsMatch(houseNumber0[..^3]))
+            if (houseNumber.EndsWith("bis", StringComparison.InvariantCultureIgnoreCase) &&
+                !new Regex("[a-zA-Z]").IsMatch(houseNumber[..^3]))
             {
-                sanitizedResult = new List<HouseNumberWithSubaddress>
+                return new List<HouseNumberWithSubaddress>
                 {
                     new HouseNumberWithSubaddress(
-                        RemovePrecedingZeros(houseNumber0[..^3]) + "BIS",
+                        RemovePrecedingZeros(houseNumber[..^3]) + "BIS",
                         null,
                         null)
                 };
-
-                return true;
             }
 
-            return false;
+            return new List<HouseNumberWithSubaddress>();
+        }
+
+        private static bool HouseNumberWithIndex_Part1NonNumeric_Part2Zero(string houseNumber, string rrIndex)
+            => int.TryParse(houseNumber, out _) &&
+               new Regex("^[a-zA-Z]").IsMatch(rrIndex) &&
+               (RightIndex(rrIndex) == string.Empty || RemovePrecedingZeros(RightIndex(rrIndex)) == string.Empty);
+
+        private static List<HouseNumberWithSubaddress> MatchHouseNumberWithIndex_Part1NonNumeric_Part2Zero(string houseNumber, string rrIndex)
+        {
+            if (!IndexWordsWithoutBisNumber.Contains(LeftIndex(rrIndex)))
+            {
+                // niet-numeriek bisnummer
+                return new List<HouseNumberWithSubaddress>
+                {
+                    new HouseNumberWithSubaddress(
+                        RemovePrecedingZeros(houseNumber) + LeftIndex(rrIndex),
+                        null,
+                        null)
+                };
+            }
+
+            // TODO: It seems this entire chunk is being ignored later, because AppNumber is never used. So basically, we always return the housenumber.
+
+            // geen niet-numeriek bisnummer
+            if (!IndexWordsFloorNumber.Contains(LeftIndex(rrIndex)))
+            {
+                // appartementnummer 0
+                return IndexWordsFloor.Contains(LeftIndex(rrIndex))
+                    ? new List<HouseNumberWithSubaddress>
+                    {
+                        new HouseNumberWithSubaddress(
+                            RemovePrecedingZeros(houseNumber),
+                            null,
+                            "0.0")
+                    }
+                    : new List<HouseNumberWithSubaddress>
+                    {
+                        new HouseNumberWithSubaddress(
+                            RemovePrecedingZeros(houseNumber),
+                            null,
+                            null)
+                    };
+            }
+
+            return new List<HouseNumberWithSubaddress>
+            {
+                new HouseNumberWithSubaddress(
+                    RemovePrecedingZeros(houseNumber),
+                    null,
+                    null)
+            };
+        }
+
+        private static bool HouseNumberWithIndex_Part1NonNumeric_Part2NumericNonZero(string houseNumber, string rrIndex)
+            => int.TryParse(houseNumber, out _) &&
+               new Regex("^[a-zA-Z]").IsMatch(rrIndex) &&
+               int.TryParse(RightIndex(rrIndex), out var bnr) &&
+               bnr > 0;
+
+        private static List<HouseNumberWithSubaddress> MatchHouseNumberWithIndex_Part1NonNumeric_Part2NumericNonZero(string houseNumber, string rrIndex)
+        {
+            if (!IndexWordsWithoutBisNumber.Contains(LeftIndex(rrIndex)))
+            {
+                //niet-numeriek bisnummer
+                return new List<HouseNumberWithSubaddress>
+                {
+                    new HouseNumberWithSubaddress(
+                        RemovePrecedingZeros(houseNumber) + LeftIndex(rrIndex),
+                        RemovePrecedingZeros(RightIndex(rrIndex)),
+                        null)
+                };
+            }
+
+            // geen niet-numeriek bisnummer
+            // note: appnumber is not used anywhere later...
+            return IndexWordsBoxNumber.Contains(LeftIndex(rrIndex))
+                ? new List<HouseNumberWithSubaddress>
+                {
+                    new HouseNumberWithSubaddress(
+                        RemovePrecedingZeros(houseNumber),
+                        RemovePrecedingZeros(RightIndex(rrIndex)),
+                        null)
+                }
+                : new List<HouseNumberWithSubaddress>
+                {
+                    new HouseNumberWithSubaddress(
+                        RemovePrecedingZeros(houseNumber),
+                        null,
+                        LeftIndex(rrIndex) + RemovePrecedingZeros(RightIndex(rrIndex)))
+                };
+        }
+
+        private static bool HouseNumberWithIndex_Part1StartNumber_Part3Missing(string houseNumber, string rrIndex)
+            => int.TryParse(houseNumber, out _) &&
+               !string.IsNullOrEmpty(rrIndex) &&
+               rrIndex != "0000" &&
+               new Regex("^[0-9]").IsMatch(rrIndex) &&
+               LeftIndex(RightIndex(rrIndex)) == string.Empty;
+
+        private static List<HouseNumberWithSubaddress> MatchHouseNumberWithIndex_Part1StartNumber_Part3Missing(string houseNumber, string rrIndex)
+        {
+            return new List<HouseNumberWithSubaddress>
+            {
+                new HouseNumberWithSubaddress(
+                    RemovePrecedingZeros(houseNumber),
+                    RemovePrecedingZeros(LeftIndex(rrIndex)),
+                    null)
+            };
+        }
+
+        private static bool HouseNumberWithIndex_Part1StartNumber_Part3Numeric_Part4Missing(string houseNumber, string rrIndex)
+            => int.TryParse(houseNumber, out _) &&
+               !string.IsNullOrEmpty(rrIndex) &&
+               rrIndex != "0000" &&
+               new Regex("^[0-9]").IsMatch(rrIndex) &&
+               int.TryParse(LeftIndex(RightIndex(rrIndex)), out _) &&
+               RightIndex(RightIndex(rrIndex)) == string.Empty;
+
+        private static List<HouseNumberWithSubaddress> MatchHouseNumberWithIndex_Part1StartNumber_Part3Numeric_Part4Missing(string houseNumber, string rrIndex)
+        {
+            return new List<HouseNumberWithSubaddress>
+            {
+                new HouseNumberWithSubaddress(
+                    RemovePrecedingZeros(houseNumber),
+                    null,
+                    rrIndex)
+            };
+        }
+
+        private static bool HouseNumberWithIndex_Part1StartNumber_Part3NonNumeric_Part4Numeric(string houseNumber, string rrIndex)
+            => int.TryParse(houseNumber, out _) &&
+               !string.IsNullOrEmpty(rrIndex) &&
+               rrIndex != "0000" &&
+               new Regex("^[a-zA-Z]").IsMatch(LeftIndex(RightIndex(rrIndex))) &&
+               int.TryParse(RightIndex(RightIndex(rrIndex)), out _);
+
+        private static List<HouseNumberWithSubaddress> MatchHouseNumberWithIndex_Part1StartNumber_Part3NonNumeric_Part4Numeric(string houseNumber, string rrIndex)
+        {
+            if (!IndexWordsWithoutBisNumber.Contains(LeftIndex(RightIndex(rrIndex))))
+            {
+                // niet-numeriek bisnummer
+                var bus = RemovePrecedingZeros(RightIndex(RightIndex(rrIndex))).PadLeft(1, '0');
+                return new List<HouseNumberWithSubaddress>
+                {
+                    new HouseNumberWithSubaddress(
+                        RemovePrecedingZeros(houseNumber) + LeftIndex(RightIndex(rrIndex)),
+                        bus,
+                        null)
+                };
+            }
+
+            if (IndexWordsFloorNumber.Contains(LeftIndex(RightIndex(rrIndex))))
+            {
+                // verdiepnummer
+                var part1 = RemovePrecedingZeros(LeftIndex(rrIndex)).PadLeft(1, '0');
+                var part2 = RemovePrecedingZeros(RightIndex(RightIndex(rrIndex))).PadLeft(1, '0');
+                return new List<HouseNumberWithSubaddress>
+                {
+                    new HouseNumberWithSubaddress(
+                        RemovePrecedingZeros(houseNumber),
+                        null,
+                        $"{part1}.{part2}")
+                };
+            }
+
+            if (IndexWordsAppartementNumber.Contains(LeftIndex(RightIndex(rrIndex))))
+            {
+                // appartementnummer
+                return new List<HouseNumberWithSubaddress>
+                {
+                    new HouseNumberWithSubaddress(
+                        RemovePrecedingZeros(houseNumber) + RemovePrecedingZeros(LeftIndex(rrIndex)),
+                        null,
+                        RemovePrecedingZeros(RightIndex(RightIndex(rrIndex))))
+                };
+            }
+
+            if (IndexWordsBoxNumber.Contains(LeftIndex(RightIndex(rrIndex))))
+            {
+                // busnummer
+                return new List<HouseNumberWithSubaddress>
+                {
+                    new HouseNumberWithSubaddress(
+                        RemovePrecedingZeros(houseNumber) + RemovePrecedingZeros(LeftIndex(rrIndex)),
+                        RemovePrecedingZeros(RightIndex(RightIndex(rrIndex))),
+                        null)
+                };
+            }
+
+            return new List<HouseNumberWithSubaddress>();
         }
 
         private static string FormatRrHouseNumber(string? rrHouseNumber)

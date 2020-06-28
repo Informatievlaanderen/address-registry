@@ -446,6 +446,13 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
         // *******************************
         public void HouseNumberRanges()
         {
+            // TODO: Rewrite these as they are wrong
+            // Expected:
+            // 20 - 26 : 20,22,24,26
+            // 21 - 25 : 21,23,25
+            // 20 - 25 : 20,21,22,23,24,25
+            // 21 - 24 : 21,22,23,24
+
             Add(MockedSanitizationTest("teststraat", "30/20", "links")
                 .Should().HaveCount(1)
                 .And.First().Should().HaveHuisnummer("30").And.HaveBusnummer("20").And.HaveNoAppnummer()

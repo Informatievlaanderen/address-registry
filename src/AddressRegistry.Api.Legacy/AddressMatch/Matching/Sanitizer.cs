@@ -176,8 +176,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             }
 
             // huisnummer met niet-numeriek bisnummer als suffix in straatnaam
-            // TODO: We dont care about excluding [0-9]e anymore?
-            if (new Regex(" [0-9]+[a-zA-Z]$").IsMatch(streetName))
+            if (new Regex(" [0-9]+[a-zA-Z]$").IsMatch(streetName) && !new Regex("[0-9]e ").IsMatch(streetName))
             {
                 if (possibleNumberInStreet != null
                     && int.TryParse(possibleNumberInStreet, out hnr)

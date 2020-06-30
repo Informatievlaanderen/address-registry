@@ -60,6 +60,17 @@ namespace AddressRegistry.Api.Legacy.Tests.Framework.Mocking
                 (when, x) => when.LatestGemeentesExist(x));
         }
 
+        public static IEnumerable<MunicipalityLatestItem> ArrangeLatestGemeenteWithRandomNisCodes(
+            this Mocking<ILatestQueries, LatestQueriesSetup, LatestQueriesVerification> mock,
+            string gemeentenaam,
+            int count)
+        {
+            return mock.Arrange(
+                Produce.Exactly(count, Generate.TblGemeente
+                    .Select(g => g.WithGemeenteNaam(gemeentenaam))),
+                (when, x) => when.LatestGemeentes(x));
+        }
+
         public static IEnumerable<PostalInfoLatestItem> ArrangeLatestPostInfo(
             this Mocking<ILatestQueries, LatestQueriesSetup, LatestQueriesVerification> mock,
             string nisCode,

@@ -1,7 +1,6 @@
 namespace AddressRegistry.Api.Legacy.AddressMatch
 {
     using System.Reflection;
-    using Address.Query;
     using AddressRegistry.Infrastructure;
     using Be.Vlaanderen.Basisregisters.EntityFrameworkCore.EntityTypeConfiguration;
     using Microsoft.EntityFrameworkCore;

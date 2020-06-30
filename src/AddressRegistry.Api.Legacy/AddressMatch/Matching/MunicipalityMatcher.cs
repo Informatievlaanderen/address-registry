@@ -5,6 +5,19 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
     using System.Collections.Generic;
     using System.Linq;
 
+    internal class MunicipalityNameComparer : EqualityComparer<AddressMatchBuilder.MunicipalityWrapper>
+    {
+        public override bool Equals(
+            AddressMatchBuilder.MunicipalityWrapper x,
+            AddressMatchBuilder.MunicipalityWrapper y)
+            => x.Name.Equals(y.Name);
+
+        public override int GetHashCode(AddressMatchBuilder.MunicipalityWrapper obj)
+            => obj == null
+                ? 0
+                : obj.Name.GetHashCode();
+    }
+
     internal class MunicipalityMatcher<TResult> : ScoreableObjectMatcherBase<AddressMatchBuilder, TResult>
         where TResult : class, IScoreable
     {
@@ -37,7 +50,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 
             results?.AddMunicipalities(municipalitiesByName.Union(municipalitiesByNisCode));
 
-            if (results.Count() > 1)
+            if (results.Distinct(new MunicipalityNameComparer()).Count() > 1)
                 _warnings.AddWarning("9", "Geen overeenkomst tussen 'Niscode' en 'Gemeentenaam'.");
 
             if (!string.IsNullOrEmpty(results?.Query.PostalCode))

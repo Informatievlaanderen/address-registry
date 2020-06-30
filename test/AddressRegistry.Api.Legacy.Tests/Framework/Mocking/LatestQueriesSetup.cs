@@ -16,7 +16,7 @@ namespace AddressRegistry.Api.Legacy.Tests.Framework.Mocking
         {
             var municipalityLatestItems = gemeentes.ToList();
 
-            When($"[{municipalityLatestItems.Count()}] gemeentes exist\r\n[{municipalityLatestItems.ToLoggableString(LogFormatting)}]");
+            When($"[{municipalityLatestItems.Count}] gemeentes exist\r\n[{municipalityLatestItems.ToLoggableString(LogFormatting)}]");
 
             Moq.Setup(m => m.GetAllLatestMunicipalities()).Returns(municipalityLatestItems.AsQueryable());
 
@@ -60,7 +60,7 @@ namespace AddressRegistry.Api.Legacy.Tests.Framework.Mocking
         {
             var addressDetailItems = adressen.ToList();
 
-            When($"[{addressDetailItems.Count()}] adressen exist for straatnaamId [{straatnaamId}], huisnummer [{huisnummer}] and busnummer [{busnummer}]\r\n{addressDetailItems.ToLoggableString(LogFormatting)}");
+            When($"[{addressDetailItems.Count}] adressen exist for straatnaamId [{straatnaamId}], huisnummer [{huisnummer}] and busnummer [{busnummer}]\r\n{addressDetailItems.ToLoggableString(LogFormatting)}");
 
             Moq.Setup(m => m.GetLatestAddressesBy(straatnaamId, huisnummer, busnummer)).Returns(addressDetailItems.AsQueryable());
 
@@ -69,7 +69,7 @@ namespace AddressRegistry.Api.Legacy.Tests.Framework.Mocking
 
         internal LatestQueriesSetup InterceptingLatestAdresQuery(Action<string, string, string> callback, IEnumerable<AddressDetailItem> returnResult)
         {
-            When($"intercepting the adres search query");
+            When("intercepting the adres search query");
 
             Moq.Setup(m => m.GetLatestAddressesBy(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(returnResult.AsQueryable()).Callback(callback);
 

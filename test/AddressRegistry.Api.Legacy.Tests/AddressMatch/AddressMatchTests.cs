@@ -68,7 +68,7 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
         {
             var existingNisCode = Generate.NisCode.Generate(Random);
             var existingGemeentenaam = "Springfield";
-            var requestedPostcode = "49007";
+            var requestedPostcode = "4900";
 
             //Arrange
             var request = new AddressMatchRequest().WithPostcodeAndStraatnaam();
@@ -130,14 +130,10 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
         [Fact]
         public async Task CanFindGemeenteByNiscode()
         {
-            var existingGemeentenaam = "Springfield";
-            var requestedNiscode = "12345";
-
             //Arrange
-            var request = new AddressMatchRequest().WithNisCodeAndStraatnaam();
-            request.Niscode = requestedNiscode;
+            var request = new AddressMatchRequest().WithGemeenteAndNisCodeAndStraatnaam();
 
-            Latest.ArrangeLatestGemeente(requestedNiscode, existingGemeentenaam);
+            Latest.ArrangeLatestGemeente(request.Niscode, request.Gemeentenaam);
 
             //Act
             var response = (AddressMatchCollection)((OkObjectResult)await Send(request)).Value;
@@ -149,12 +145,45 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
             var firstMatch = response.AdresMatches.First();
 
             firstMatch.Should().HaveGemeente()
-                .Which.Should().HaveGemeentenaam(existingGemeentenaam)
-                .And.HaveObjectId(requestedNiscode);
+                .Which.Should().HaveGemeentenaam(request.Gemeentenaam)
+                .And.HaveObjectId(request.Niscode);
 
             firstMatch.Should().NotHaveVolledigAdres();
 
             response.Should().ContainWarning("'Straatnaam' niet interpreteerbaar.");
+        }
+
+        [Fact]
+        public async Task CanFindFusieGemeenteByNiscode()
+        {
+            //Arrange
+            var request = new AddressMatchRequest().WithGemeenteAndNisCodeAndStraatnaam();
+
+            Latest.ArrangeLatestGemeenteWithRandomNisCodes(request.Gemeentenaam, 2);
+
+            //Act
+            var response = (AddressMatchCollection)((OkObjectResult)await Send(request)).Value;
+
+            //Assert
+            response.Should().NotBeNull();
+            response.Should().HaveMatches(2);
+
+            var firstMatch = response.AdresMatches.First();
+
+            firstMatch.Should().HaveGemeente()
+                .Which.Should().HaveGemeentenaam(request.Gemeentenaam);
+
+            firstMatch.Should().NotHaveVolledigAdres();
+
+            var secondMatch = response.AdresMatches.First();
+
+            secondMatch.Should().HaveGemeente()
+                .Which.Should().HaveGemeentenaam(request.Gemeentenaam);
+
+            secondMatch.Should().NotHaveVolledigAdres();
+
+            response.Should().ContainWarning("'Straatnaam' niet interpreteerbaar.");
+            response.Should().NotContainWarning("Geen overeenkomst tussen 'Niscode' en 'Gemeentenaam'.");
         }
 
         [Theory]

@@ -28,6 +28,15 @@ namespace AddressRegistry.Api.Legacy.Tests.Framework.Assert
             return And();
         }
 
+        public AndConstraint<AdresMatchCollectieAssertions> NotContainWarning(string warningMessagePart)
+        {
+            AssertingThat($"a warning containing [{warningMessagePart}] was present");
+
+            Subject.Warnings.Should().NotContain(w => w.Message.Contains(warningMessagePart));
+
+            return And();
+        }
+
         public void BeEquivalentTo(AddressMatchCollection addressMatchCollection)
         {
             JsonConvert.SerializeObject(Subject).Should().Be(JsonConvert.SerializeObject(addressMatchCollection));

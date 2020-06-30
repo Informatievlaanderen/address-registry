@@ -73,5 +73,19 @@ namespace AddressRegistry.Api.Legacy.Tests.Framework.Generate
                 RrStraatcode = "987",
                 Straatnaam = request.Straatnaam
             };
+
+        public static AddressMatchRequest WithGemeenteAndNisCodeAndStraatnaam(this AddressMatchRequest request)
+            => new AddressMatchRequest
+            {
+                Busnummer = request.Busnummer,
+                Gemeentenaam = "Springfield",
+                Huisnummer = request.Huisnummer,
+                Index = request.Index,
+                KadStraatcode = request.KadStraatcode,
+                Niscode = "12345",
+                Postcode = request.Postcode,
+                RrStraatcode = request.RrStraatcode,
+                Straatnaam = "Evergreen Terrace"
+            };
     }
 }

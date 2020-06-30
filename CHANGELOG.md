@@ -1,3 +1,14 @@
+## [2.15.10](https://github.com/informatievlaanderen/address-registry/compare/v2.15.9...v2.15.10) (2020-06-30)
+
+
+### Bug Fixes
+
+* clarify required fields validation error GRAR-385 ([432d29e](https://github.com/informatievlaanderen/address-registry/commit/432d29ea81a09c12457a1896fef5789a26f66134))
+* dont throw warning for municipalities with identical names GRAR-406 ([a9dd168](https://github.com/informatievlaanderen/address-registry/commit/a9dd16840a1605af8c30e2ce3349b69760f5ca93))
+* throw validation error if boxnumber is 40+ GRAR-364 ([8f8fa4d](https://github.com/informatievlaanderen/address-registry/commit/8f8fa4d7fefd21a5600cc20a66c947b8d5488a4f))
+* throw validation error if niscode is 5+ GRAR-362 ([5473915](https://github.com/informatievlaanderen/address-registry/commit/54739150d6759fae3182a2d8be88a94d587a966b))
+* throw validation error if postcode is 4+ GRAR-361 ([58b858c](https://github.com/informatievlaanderen/address-registry/commit/58b858c987bd6261323e36bca56a5cfc578a69d3))
+
 ## [2.15.9](https://github.com/informatievlaanderen/address-registry/compare/v2.15.8...v2.15.9) (2020-06-30)
 
 

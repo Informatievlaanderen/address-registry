@@ -8,9 +8,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Requests
 
     public class AddressMatchRequestValidator : AbstractValidator<AddressMatchRequest>
     {
-        private const string MINIMUM_ONE_NL = "Gelieve minstens een van volgende velden op te geven, '{PropertyNames}'.";
+        private const string MINIMUM_ONE_NL = "Gelieve minstens één van de volgende velden op te geven: {PropertyNames}.";
         private const string MINIMUM_ONE_ARGS = "PropertyNames";
-        private const string MAXIMUM_ONE_NL = "Gelieve hoogstens een van volgende velden op te geven, '{PropertyNames}'.";
+        private const string MAXIMUM_ONE_NL = "Gelieve hoogstens één van de volgende velden op te geven: {PropertyNames}.";
         private const string MAXIMUM_ONE_ARGS = "PropertyNames";
         private const string REQUIRED_NL = "'{PropertyName}' is verplicht.";
         private const string MAX_LENGTH_NL = "'{PropertyName}' mag maximaal {MaxLength} karakters lang zijn. U gaf {TotalLength} karakters op.";
@@ -54,19 +54,19 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Requests
             RuleFor(r => r.Gemeentenaam).MaximumLength(40).WithMessage(MAX_LENGTH_NL).WithErrorCode("18");
         }
 
-        private bool BeNumeric(string input) => int.TryParse(input, out var number);
+        private static bool BeNumeric(string input) => int.TryParse(input, out var _);
 
-        private Func<AddressMatchRequest, AddressMatchRequest, PropertyValidatorContext, bool> HaveMinimumOne(params Expression<Func<AddressMatchRequest, string>>[] propertySelectors) =>
+        private static Func<AddressMatchRequest, AddressMatchRequest, PropertyValidatorContext, bool> HaveMinimumOne(params Expression<Func<AddressMatchRequest, string>>[] propertySelectors) =>
             (request, request2, ct) =>
             {
-                ct.MessageFormatter.AppendArgument(MINIMUM_ONE_ARGS, string.Join(", ", propertySelectors.Select(selector => (selector.Body as MemberExpression)?.Member?.Name)));
+                ct.MessageFormatter.AppendArgument(MINIMUM_ONE_ARGS, string.Join(", ", propertySelectors.Select(selector => $"'{(selector.Body as MemberExpression)?.Member?.Name}'")));
                 return propertySelectors.Any(selector => !string.IsNullOrEmpty(selector.Compile().Invoke(request)));
             };
 
         private Func<AddressMatchRequest, AddressMatchRequest, PropertyValidatorContext, bool> HaveMaximumOne(params Expression<Func<AddressMatchRequest, string>>[] propertySelectors) =>
             (request, request2, ct) =>
             {
-                ct.MessageFormatter.AppendArgument(MAXIMUM_ONE_ARGS, string.Join(", ", propertySelectors.Select(selector => (selector.Body as MemberExpression)?.Member?.Name)));
+                ct.MessageFormatter.AppendArgument(MAXIMUM_ONE_ARGS, string.Join(", ", propertySelectors.Select(selector => $"'{(selector.Body as MemberExpression)?.Member?.Name}'")));
                 return propertySelectors.Count(selector => !string.IsNullOrEmpty(selector.Compile().Invoke(request))) <= 1;
             };
     }

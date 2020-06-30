@@ -1,3 +1,17 @@
+## [2.15.9](https://github.com/informatievlaanderen/address-registry/compare/v2.15.8...v2.15.9) (2020-06-30)
+
+
+### Bug Fixes
+
+* add some dutch docs ([eea9704](https://github.com/informatievlaanderen/address-registry/commit/eea97047003062124dcc26b5250cc53e153c21c6))
+* exclude trailing e on bisnummer suffix check ([ee2caf6](https://github.com/informatievlaanderen/address-registry/commit/ee2caf6dd9753673c9478fbea40f7ff512e84683))
+* remove offset and add from to next uri GRAR-1418 ([4ff948f](https://github.com/informatievlaanderen/address-registry/commit/4ff948fcc7c07bed9f21dede03f40d019672b686))
+* support housenumber ranges GRAR-1401 ([965b414](https://github.com/informatievlaanderen/address-registry/commit/965b414090f68842f6c471e2d4e08aa3f5753ebe))
+* support lower scored matches when matching with boxnumber ([572e135](https://github.com/informatievlaanderen/address-registry/commit/572e135d31f06fd7c0a243e79cc8f6744e663a31))
+* support matching 10 when you pass 10a GRAR-1461 ([fde94d0](https://github.com/informatievlaanderen/address-registry/commit/fde94d016fbc37e08cfa7e16d018c698e7b2af0e))
+* support returning 10a when searching for 10 GRAR-1458 ([1d068bf](https://github.com/informatievlaanderen/address-registry/commit/1d068bf95e22bc87dc1f1136d3d8e0fe765d882e))
+* support suffix e for housenumber GRAR-1461 ([ca583ef](https://github.com/informatievlaanderen/address-registry/commit/ca583efe25a8f1b0757a7abbf3a5a88d57cf4e67))
+
 ## [2.15.8](https://github.com/informatievlaanderen/address-registry/compare/v2.15.7...v2.15.8) (2020-06-30)
 
 

@@ -213,6 +213,10 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 return new List<HouseNumberWithSubaddress>
                 {
                     new HouseNumberWithSubaddress(
+                        RemovePrecedingZeros(houseNumber[..^1].Trim()),
+                        null,
+                        null),
+                    new HouseNumberWithSubaddress(
                         RemovePrecedingZeros(houseNumber[..^1].Trim()) + houseNumber.Last().ToString().ToUpper(),
                         null,
                         null)

@@ -46,6 +46,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Requests
                 .Must(HaveMaximumOne(r => r.Busnummer, r => r.Index)).WithMessage(MAXIMUM_ONE_NL).WithErrorCode("20");
 
             RuleFor(r => r.Niscode).MaximumLength(5).WithMessage(MAX_LENGTH_NL).WithErrorCode("18");
+            RuleFor(r => r.Postcode).MaximumLength(4).WithMessage(MAX_LENGTH_NL).WithErrorCode("18");
             RuleFor(r => r.Straatnaam).MaximumLength(80).WithMessage(MAX_LENGTH_NL).WithErrorCode("18");
             RuleFor(r => r.Huisnummer).MaximumLength(40).WithMessage(MAX_LENGTH_NL).WithErrorCode("18");
             RuleFor(r => r.Index).MaximumLength(40).WithMessage(MAX_LENGTH_NL).WithErrorCode("18");

@@ -63,25 +63,25 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
         public void ParseHouseNumberFromStreetName_HouseNumberNonNumericBisNumberAsPrefix()
         {
             //huisnummer met niet - numeriek bisnummer als prefix in straatnaam
-            Add(MockedSanitizationTest("4b teststraat", null, null)
-                .Should().HaveCount(1)
-                .And.First().Should().HaveHuisnummer("4B").And.HaveNoAppnummer().And.HaveNoBusnummer()
-                .Continuation);
+            var testAssertion1 = MockedSanitizationTest("4b teststraat", null, null).Should().HaveCount(2);
+            Add(Task.WhenAll(
+                testAssertion1.And.First().Should().HaveHuisnummer("4").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation,
+                testAssertion1.And.Second().Should().HaveHuisnummer("4B").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation));
 
-            Add(MockedSanitizationTest("10b teststraat", null, null)
-                .Should().HaveCount(1)
-                .And.First().Should().HaveHuisnummer("10B").And.HaveNoAppnummer().And.HaveNoBusnummer()
-                .Continuation);
+            var testAssertion2 = MockedSanitizationTest("10b teststraat", null, null).Should().HaveCount(2);
+            Add(Task.WhenAll(
+                testAssertion2.And.First().Should().HaveHuisnummer("10").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation,
+                testAssertion2.And.Second().Should().HaveHuisnummer("10B").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation));
 
-            Add(MockedSanitizationTest("10e teststraat", null, null)
-                .Should().HaveCount(1)
-                .And.First().Should().HaveHuisnummer("10E").And.HaveNoAppnummer().And.HaveNoBusnummer()
-                .Continuation);
+            var testAssertion3 = MockedSanitizationTest("10e teststraat", null, null).Should().HaveCount(2);
+            Add(Task.WhenAll(
+                testAssertion3.And.First().Should().HaveHuisnummer("10").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation,
+                testAssertion3.And.Second().Should().HaveHuisnummer("10E").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation));
 
-            Add(MockedSanitizationTest("10E teststraat", null, null)
-                .Should().HaveCount(1)
-                .And.First().Should().HaveHuisnummer("10E").And.HaveNoAppnummer().And.HaveNoBusnummer()
-                .Continuation);
+            var testAssertion4 = MockedSanitizationTest("10E teststraat", null, null).Should().HaveCount(2);
+            Add(Task.WhenAll(
+                testAssertion4.And.First().Should().HaveHuisnummer("10").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation,
+                testAssertion4.And.Second().Should().HaveHuisnummer("10E").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation));
 
             Add(MockedSanitizationTest("10bis teststraat", null, null)
                 .Should().HaveCount(0)
@@ -123,30 +123,30 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
         public void ParseHouseNumberFromStreetName_HouseNumberNonNumericBisNumberAsSuffix()
         {
             //huisnummer met niet-numeriek bisnummer als suffix in straatnaam
-            Add(MockedSanitizationTest("teststraat 5b", null, null)
-                .Should().HaveCount(1)
-                .And.First().Should().HaveHuisnummer("5B").And.HaveNoAppnummer().And.HaveNoBusnummer()
-                .Continuation);
+            var testAssertion1 = MockedSanitizationTest("teststraat 5b", null, null).Should().HaveCount(2);
+            Add(Task.WhenAll(
+                testAssertion1.And.First().Should().HaveHuisnummer("5").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation,
+                testAssertion1.And.Second().Should().HaveHuisnummer("5B").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation));
 
-            Add(MockedSanitizationTest("teststraat 5B", null, null)
-                .Should().HaveCount(1)
-                .And.First().Should().HaveHuisnummer("5B").And.HaveNoAppnummer().And.HaveNoBusnummer()
-                .Continuation);
+            var testAssertion2 = MockedSanitizationTest("teststraat 5B", null, null).Should().HaveCount(2);
+            Add(Task.WhenAll(
+                testAssertion2.And.First().Should().HaveHuisnummer("5").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation,
+                testAssertion2.And.Second().Should().HaveHuisnummer("5B").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation));
 
-            Add(MockedSanitizationTest("teststraat 10b", null, null)
-                .Should().HaveCount(1)
-                .And.First().Should().HaveHuisnummer("10B").And.HaveNoAppnummer().And.HaveNoBusnummer()
-                .Continuation);
+            var testAssertion3 = MockedSanitizationTest("teststraat 10b", null, null).Should().HaveCount(2);
+            Add(Task.WhenAll(
+                testAssertion3.And.First().Should().HaveHuisnummer("10").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation,
+                testAssertion3.And.Second().Should().HaveHuisnummer("10B").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation));
 
-            Add(MockedSanitizationTest("teststraat 10e", null, null)
-                .Should().HaveCount(1)
-                .And.First().Should().HaveHuisnummer("10E").And.HaveNoAppnummer().And.HaveNoBusnummer()
-                .Continuation);
+            var testAssertion4 = MockedSanitizationTest("teststraat 10e", null, null).Should().HaveCount(2);
+            Add(Task.WhenAll(
+                testAssertion4.And.First().Should().HaveHuisnummer("10").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation,
+                testAssertion4.And.Second().Should().HaveHuisnummer("10E").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation));
 
-            Add(MockedSanitizationTest("teststraat 10E", null, null)
-                .Should().HaveCount(1)
-                .And.First().Should().HaveHuisnummer("10E").And.HaveNoAppnummer().And.HaveNoBusnummer()
-                .Continuation);
+            var testAssertion5 = MockedSanitizationTest("teststraat 10E", null, null).Should().HaveCount(2);
+            Add(Task.WhenAll(
+                testAssertion5.And.First().Should().HaveHuisnummer("10").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation,
+                testAssertion5.And.Second().Should().HaveHuisnummer("10E").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation));
 
             Add(MockedSanitizationTest("teststraat 10bis", null, null)
                 .Should().HaveCount(0)
@@ -576,10 +576,6 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
             Add(MockedSanitizationTest("teststraat", "10", "-800")
               .Should().HaveCount(0)
               .Continuation);
-
-            Add(MockedSanitizationTest("teststraat", "10A", null)
-                .Should().HaveCount(0)
-                .Continuation);
 
             Run();
         }

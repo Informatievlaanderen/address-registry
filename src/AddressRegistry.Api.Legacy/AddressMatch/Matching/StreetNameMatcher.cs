@@ -111,6 +111,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                                 municipalityWrapper.NisCode));
 
             // TODO: Shouldnt we be matching on w.StreetName.GetDefaultName()?
+            // There is a story on the backlog for this change
             if (!string.IsNullOrEmpty(results.Query.StreetName) &&
                 !results.AllStreetNames().Any(w => w.StreetName.NameDutch != null && w.StreetName.NameDutch.EqIgnoreCase(results.Query.StreetName)))
                 _warnings.AddWarning("7", "Geen overeenkomst tussen 'KadStraatcode' en 'Straatnaam'.");
@@ -130,6 +131,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                     .ForEach(g => g.AddStreetName(streetName));
 
             // TODO: Shouldnt we be matching on w.StreetName.GetDefaultName()?
+            // There is a story on the backlog for this change
             if (!string.IsNullOrEmpty(results.Query.StreetName) && !results.AllStreetNames().Any(w => w.StreetName.NameDutch != null && w.StreetName.NameDutch.EqIgnoreCase(results.Query.StreetName)))
                 _warnings.AddWarning("7", "Geen overeenkomst tussen 'RrStraatcode' en 'Straatnaam'.");
         }

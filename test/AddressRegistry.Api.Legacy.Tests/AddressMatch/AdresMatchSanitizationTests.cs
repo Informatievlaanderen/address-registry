@@ -621,8 +621,7 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
 
                                 }), x));
 
-                    // TODO: Why are we doing this?
-                    var notImportant = (OkObjectResult)Send(request).Result;
+                    var _ = (OkObjectResult)Send(request).GetAwaiter().GetResult();
 
                     if (filters.Any())
                     {

@@ -87,7 +87,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             IEnumerable<MunicipalityLatestItem> municipalities,
             AddressMatchBuilder? results)
         {
-            // TODO: Can't we skip this entire bit if there is no MunicipalityName query?
+            if (string.IsNullOrWhiteSpace(results?.Query.MunicipalityName))
+                return new List<MunicipalityLatestItem>();
 
             var municipalitiesByName = municipalities
                 .Where(g => g.DefaultName.Value.EqIgnoreCase(results?.Query.MunicipalityName))
@@ -103,7 +104,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             IEnumerable<MunicipalityLatestItem> municipalities,
             AddressMatchBuilder? results)
         {
-            // TODO: Can't we skip this entire bit if there is no NisCode query?
+            if (string.IsNullOrWhiteSpace(results?.Query.NisCode))
+                return new List<MunicipalityLatestItem>();
 
             var municipalitiesByNisCode = municipalities
                 .Where(g => !string.IsNullOrWhiteSpace(g.NisCode) && g.NisCode.Equals(results?.Query.NisCode))
@@ -119,7 +121,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             IEnumerable<MunicipalityLatestItem> municipalities,
             AddressMatchBuilder results)
         {
-            // TODO: Can't we skip this entire bit if there is no PostalCode query?
+            if (string.IsNullOrWhiteSpace(results?.Query.PostalCode))
+                return new List<MunicipalityLatestItem>();
 
             var postalInfo = _latestQueries
                 .GetAllPostalInfo()

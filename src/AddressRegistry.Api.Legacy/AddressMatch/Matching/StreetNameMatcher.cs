@@ -99,7 +99,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 
         private void FindStreetNamesByKadStreetCode(AddressMatchBuilder results)
         {
-            // TODO: Can't we skip this entire bit if there is no KadStreetNameCode query?
+            if (string.IsNullOrWhiteSpace(results?.Query.KadStreetNameCode))
+                return;
 
             foreach (var municipalityWrapper in results)
                 municipalityWrapper

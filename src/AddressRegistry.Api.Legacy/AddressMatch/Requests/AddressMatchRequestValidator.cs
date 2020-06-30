@@ -49,6 +49,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Requests
             RuleFor(r => r.Postcode).MaximumLength(4).WithMessage(MAX_LENGTH_NL).WithErrorCode("18");
             RuleFor(r => r.Straatnaam).MaximumLength(80).WithMessage(MAX_LENGTH_NL).WithErrorCode("18");
             RuleFor(r => r.Huisnummer).MaximumLength(40).WithMessage(MAX_LENGTH_NL).WithErrorCode("18");
+            RuleFor(r => r.Busnummer).MaximumLength(40).WithMessage(MAX_LENGTH_NL).WithErrorCode("18");
             RuleFor(r => r.Index).MaximumLength(40).WithMessage(MAX_LENGTH_NL).WithErrorCode("18");
             RuleFor(r => r.Gemeentenaam).MaximumLength(40).WithMessage(MAX_LENGTH_NL).WithErrorCode("18");
         }

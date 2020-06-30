@@ -1,3 +1,10 @@
+## [2.15.8](https://github.com/informatievlaanderen/address-registry/compare/v2.15.7...v2.15.8) (2020-06-30)
+
+
+### Bug Fixes
+
+* correct CRAB naming GRAR-1386 ([4144170](https://github.com/informatievlaanderen/address-registry/commit/41441701ef053ad4df534be09503f0e1fb0d2371))
+
 ## [2.15.7](https://github.com/informatievlaanderen/address-registry/compare/v2.15.6...v2.15.7) (2020-06-23)
 
 

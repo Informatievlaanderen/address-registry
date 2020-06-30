@@ -146,11 +146,12 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 
             var relevantStreetNames = AllStreetNames();
 
-            // if addresses are found, forget about the streetnames without addresses
+            // If addresses are found, forget about the streetnames without addresses
             if (AllAddresses().Any())
                 relevantStreetNames = relevantStreetNames.Where(s => s.Any());
 
             // TODO: Use GetDefaultName() instead of NameDutch?
+            // There is a story on the backlog for this change
             var streetNames = relevantStreetNames
                 .Select(sn => sn.StreetName.NameDutch)
                 .Concat(new[] { Query.StreetName })

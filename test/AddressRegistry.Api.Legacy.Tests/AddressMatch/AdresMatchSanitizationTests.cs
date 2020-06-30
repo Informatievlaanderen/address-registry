@@ -487,18 +487,22 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
             Run();
         }
 
+        private void AddHouseNumberRangeCheck(Task<List<AdresListFilterStub>> test, IReadOnlyList<string> expectedHouseNumbers)
+        {
+            var testAssertion = test.Should().HaveCount(expectedHouseNumbers.Count);
+
+            var tests = new List<Task>();
+            for (var i = 0; i < expectedHouseNumbers.Count; i++)
+                tests.Add(testAssertion.And.Element(i).Should().HaveHuisnummer(expectedHouseNumbers[i]).And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation);
+
+            Add(Task.WhenAll(tests));
+        }
+
         [Fact]
         // detecteer bereikachtige records
         // *******************************
         public void HouseNumberRanges()
         {
-            // TODO: Rewrite these as they are wrong
-            // Expected:
-            // 20 - 26 : 20,22,24,26
-            // 21 - 25 : 21,23,25
-            // 20 - 25 : 20,21,22,23,24,25
-            // 21 - 24 : 21,22,23,24
-
             Add(MockedSanitizationTest("teststraat", "30/20", "links")
                 .Should().HaveCount(1)
                 .And.First().Should().HaveHuisnummer("30").And.HaveBusnummer("20").And.HaveNoAppnummer()
@@ -509,55 +513,31 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
                 .And.First().Should().HaveHuisnummer("30").And.HaveBusnummer("20").And.HaveNoAppnummer()
                 .Continuation);
 
-            {
-                var testAssertion = MockedSanitizationTest("teststraat", "20/30", null).Should().HaveCount(2);
-                var testSubAssertionFirst = testAssertion.And.First().Should().HaveHuisnummer("20").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation;
-                var testSubAssertionSecond = testAssertion.And.Second().Should().HaveHuisnummer("30").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation;
-                Add(Task.WhenAll(testSubAssertionFirst, testSubAssertionSecond));
-            }
-
             Add(MockedSanitizationTest("teststraat", "30-20", null)
                .Should().HaveCount(1)
                .And.First().Should().HaveHuisnummer("30").And.HaveBusnummer("20").And.HaveNoAppnummer()
                .Continuation);
 
-            {
-                var testAssertion = MockedSanitizationTest("teststraat", "20-30", null).Should().HaveCount(2);
-                var testSubAssertionFirst = testAssertion.And.First().Should().HaveHuisnummer("20").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation;
-                var testSubAssertionSecond = testAssertion.And.Second().Should().HaveHuisnummer("30").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation;
-                Add(Task.WhenAll(testSubAssertionFirst, testSubAssertionSecond));
-            }
-
             Add(MockedSanitizationTest("teststraat", "30+20", null)
-               .Should().HaveCount(1)
-               .And.First().Should().HaveHuisnummer("30").And.HaveBusnummer("20").And.HaveNoAppnummer()
-               .Continuation);
-
-            {
-                var testAssertion = MockedSanitizationTest("teststraat", "20+30", null).Should().HaveCount(2);
-                var testSubAssertionFirst = testAssertion.And.First().Should().HaveHuisnummer("20").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation;
-                var testSubAssertionSecond = testAssertion.And.Second().Should().HaveHuisnummer("30").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation;
-                Add(Task.WhenAll(testSubAssertionFirst, testSubAssertionSecond));
-            }
+                .Should().HaveCount(1)
+                .And.First().Should().HaveHuisnummer("30").And.HaveBusnummer("20").And.HaveNoAppnummer()
+                .Continuation);
 
             Add(MockedSanitizationTest("teststraat", "30 20", null)
-               .Should().HaveCount(1)
-               .And.First().Should().HaveHuisnummer("30").And.HaveBusnummer("20").And.HaveNoAppnummer()
-               .Continuation);
+                .Should().HaveCount(1)
+                .And.First().Should().HaveHuisnummer("30").And.HaveBusnummer("20").And.HaveNoAppnummer()
+                .Continuation);
 
-            {
-                var testAssertion = MockedSanitizationTest("teststraat", "20 30", null).Should().HaveCount(2);
-                var testSubAssertionFirst = testAssertion.And.First().Should().HaveHuisnummer("20").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation;
-                var testSubAssertionSecond = testAssertion.And.Second().Should().HaveHuisnummer("30").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation;
-                Add(Task.WhenAll(testSubAssertionFirst, testSubAssertionSecond));
-            }
+            AddHouseNumberRangeCheck(MockedSanitizationTest("teststraat", "20/30", null), new[] { "20", "22", "24", "26", "28", "30" });
+            AddHouseNumberRangeCheck(MockedSanitizationTest("teststraat", "20+30", null), new[] { "20", "22", "24", "26", "28", "30" });
+            AddHouseNumberRangeCheck(MockedSanitizationTest("teststraat", "20-30", null), new[] { "20", "22", "24", "26", "28", "30" });
+            AddHouseNumberRangeCheck(MockedSanitizationTest("teststraat", "20 30", null), new[] { "20", "22", "24", "26", "28", "30" });
+            AddHouseNumberRangeCheck(MockedSanitizationTest("teststraat20-30", null, null), new[] { "20", "22", "24", "26", "28", "30" });
 
-            {
-                var testAssertion = MockedSanitizationTest("teststraat20-30", null, null).Should().HaveCount(2);
-                var testSubAssertionFirst = testAssertion.And.First().Should().HaveHuisnummer("20").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation;
-                var testSubAssertionSecond = testAssertion.And.Second().Should().HaveHuisnummer("30").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation;
-                Add(Task.WhenAll(testSubAssertionFirst, testSubAssertionSecond));
-            }
+            AddHouseNumberRangeCheck(MockedSanitizationTest("teststraat", "20-26", null), new[] { "20", "22", "24", "26" });
+            AddHouseNumberRangeCheck(MockedSanitizationTest("teststraat", "21-27", null), new[] { "21", "23", "25", "27" });
+            AddHouseNumberRangeCheck(MockedSanitizationTest("teststraat", "20-25", null), new[] { "20", "21", "22", "23", "24", "25" });
+            AddHouseNumberRangeCheck(MockedSanitizationTest("teststraat", "21-24", null), new[] { "21", "22", "23", "24" });
 
             // niet-numeriek bisnummer genoteerd als bereik
             Add(MockedSanitizationTest("teststraat", "30-b", null)

@@ -482,8 +482,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                     houseNumber2 = houseNumber.Substring(houseNumber.IndexOf('+') + 1).Trim();
                 }
 
-                // TODO: [0-9]+ [0-9]+ ?
-                if (houseNumber != null && new Regex("[0-9] [0-9]").IsMatch(houseNumber) &&
+                if (houseNumber != null && new Regex("[0-9]+ [0-9]+").IsMatch(houseNumber) &&
                     int.TryParse(houseNumber.Split(' ')[0].Trim(), out _))
                 {
                     houseNumber1 = houseNumber.Split(' ')[0].Trim();
@@ -538,15 +537,39 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 };
             }
 
-            var range = new List<HouseNumberWithSubaddress>
+            return PopulateHouseNumberRange(houseNumber1, houseNumber2);
+        }
+
+        private static List<HouseNumberWithSubaddress> PopulateHouseNumberRange(
+            string? from,
+            string? to)
+        {
+            if (from == null || to == null)
+                return new List<HouseNumberWithSubaddress>();
+
+            if (!int.TryParse(from, out var fromHouseNumber))
+                return new List<HouseNumberWithSubaddress>();
+
+            if (!int.TryParse(to, out var toHouseNumber))
+                return new List<HouseNumberWithSubaddress>();
+
+            static bool IsEven(int number) => number % 2 == 0;
+            static bool IsOdd(int number) => number % 2 != 0;
+            static IEnumerable<int> RangedEnumeration(int min, int max, int step)
+                => Enumerable.Range(min, max - min + 1).Where(i => (i - min) % step == 0);
+
+            return (fromHouseNumber, toHouseNumber) switch
             {
-                new HouseNumberWithSubaddress(houseNumber1, null, null)
+                (int f, int t) when (IsEven(f) && IsEven(t)) || (IsOdd(f) && IsOdd(t)) =>
+                    RangedEnumeration(f, t, 2)
+                        .Select(x => new HouseNumberWithSubaddress(x.ToString(), null, null))
+                        .ToList(),
+
+                (int f, int t) =>
+                    RangedEnumeration(f, t, 1)
+                        .Select(x => new HouseNumberWithSubaddress(x.ToString(), null, null))
+                        .ToList()
             };
-
-            if (houseNumber2 != null)
-                range.Add(new HouseNumberWithSubaddress(houseNumber2, null, null));
-
-            return range;
         }
 
         private static string FormatRrHouseNumber(string? rrHouseNumber)

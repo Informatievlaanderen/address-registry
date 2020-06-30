@@ -183,21 +183,21 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
         public void HouseNumberWithoutIndex_SingleCharacter()
         {
             // niet-numeriek bisnummer: enkele letter
-            Add(MockedSanitizationTest("teststraat", "10b", null)
-                .Should().HaveCount(1)
-                .And.First().Should().HaveHuisnummer("10B").And.HaveNoAppnummer().And.HaveNoBusnummer()
-                .Continuation);
+            var testAssertion1 = MockedSanitizationTest("teststraat", "10b", null).Should().HaveCount(2);
+            Add(Task.WhenAll(
+                testAssertion1.And.First().Should().HaveHuisnummer("10").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation,
+                testAssertion1.And.Second().Should().HaveHuisnummer("10B").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation));
 
-            Add(MockedSanitizationTest("teststraat", "10e", null) // hier is e wel ondersteund als niet-numeriek bisnummer
-                .Should().HaveCount(1)
-                .And.First().Should().HaveHuisnummer("10E").And.HaveNoAppnummer().And.HaveNoBusnummer()
-                .Continuation);
+            var testAssertion2 = MockedSanitizationTest("teststraat", "10e", null).Should().HaveCount(2);
+            Add(Task.WhenAll(
+                testAssertion2.And.First().Should().HaveHuisnummer("10").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation,
+                testAssertion2.And.Second().Should().HaveHuisnummer("10E").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation));
 
             //niet-numeriek bisnummer: enkele letter, gescheiden door spatie
-            Add(MockedSanitizationTest("teststraat", "10 b", null)
-                .Should().HaveCount(1)
-                .And.First().Should().HaveHuisnummer("10B").And.HaveNoAppnummer().And.HaveNoBusnummer()
-                .Continuation);
+            var testAssertion3 = MockedSanitizationTest("teststraat", "10 b", null).Should().HaveCount(2);
+            Add(Task.WhenAll(
+                testAssertion3.And.First().Should().HaveHuisnummer("10").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation,
+                testAssertion3.And.Second().Should().HaveHuisnummer("10B").And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation));
 
             Run();
         }
@@ -487,17 +487,6 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
             Run();
         }
 
-        private void AddHouseNumberRangeCheck(Task<List<AdresListFilterStub>> test, IReadOnlyList<string> expectedHouseNumbers)
-        {
-            var testAssertion = test.Should().HaveCount(expectedHouseNumbers.Count);
-
-            var tests = new List<Task>();
-            for (var i = 0; i < expectedHouseNumbers.Count; i++)
-                tests.Add(testAssertion.And.Element(i).Should().HaveHuisnummer(expectedHouseNumbers[i]).And.HaveNoBusnummer().And.HaveNoAppnummer().Continuation);
-
-            Add(Task.WhenAll(tests));
-        }
-
         [Fact]
         // detecteer bereikachtige records
         // *******************************
@@ -553,6 +542,21 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
             Run();
         }
 
+        private void AddHouseNumberRangeCheck(Task<List<AdresListFilterStub>> test, IReadOnlyCollection<string> expectedHouseNumbers)
+        {
+            var testAssertion = test.Should().HaveCount(expectedHouseNumbers.Count);
+
+            Add(Task.WhenAll(
+                expectedHouseNumbers
+                    .Select((t, i) =>
+                        testAssertion.And.Element(i).Should()
+                            .HaveHuisnummer(t).And
+                            .HaveNoBusnummer().And
+                            .HaveNoAppnummer().Continuation)
+                    .Cast<Task>()
+                    .ToList()));
+        }
+
         [Fact]
         public void ExtraSanitizeCases()
         {
@@ -572,6 +576,10 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
             Add(MockedSanitizationTest("teststraat", "10", "-800")
               .Should().HaveCount(0)
               .Continuation);
+
+            Add(MockedSanitizationTest("teststraat", "10A", null)
+                .Should().HaveCount(0)
+                .Continuation);
 
             Run();
         }

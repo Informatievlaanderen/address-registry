@@ -27,5 +27,8 @@ namespace AddressRegistry.Api.Legacy.Tests.Framework.Assert
 
         public Task<T> Second()
             => Subject.ContinueWith(previous => previous.Result.ElementAt(1));
+
+        public Task<T> Element(int index)
+            => Subject.ContinueWith(previous => previous.Result.ElementAt(index));
     }
 }

@@ -41,6 +41,11 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
         public void ParseHouseNumberFromStreetName_HouseNumberAsPrefix()
         {
             // huisnummer als prefix in straatnaam
+            Add(MockedSanitizationTest("5 teststraat", null, null)
+                .Should().HaveCount(1)
+                .And.First().Should().HaveHuisnummer("5").And.HaveNoAppnummer().And.HaveNoBusnummer()
+                .Continuation);
+
             Add(MockedSanitizationTest("10 teststraat", null, null)
                 .Should().HaveCount(1)
                 .And.First().Should().HaveHuisnummer("10").And.HaveNoAppnummer().And.HaveNoBusnummer()
@@ -57,14 +62,25 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
         // huisnummer in straatnaam
         public void ParseHouseNumberFromStreetName_HouseNumberNonNumericBisNumberAsPrefix()
         {
-            //huisnummer met niet-numeriek bisnummer als prefix in straatnaam
+            //huisnummer met niet - numeriek bisnummer als prefix in straatnaam
+            Add(MockedSanitizationTest("4b teststraat", null, null)
+                .Should().HaveCount(1)
+                .And.First().Should().HaveHuisnummer("4B").And.HaveNoAppnummer().And.HaveNoBusnummer()
+                .Continuation);
+
             Add(MockedSanitizationTest("10b teststraat", null, null)
                 .Should().HaveCount(1)
                 .And.First().Should().HaveHuisnummer("10B").And.HaveNoAppnummer().And.HaveNoBusnummer()
                 .Continuation);
 
-            Add(MockedSanitizationTest("10e teststraat", null, null)//special case, "e" niet ondersteund als niet-numeriek bisnummer
-                .Should().HaveCount(0)
+            Add(MockedSanitizationTest("10e teststraat", null, null)
+                .Should().HaveCount(1)
+                .And.First().Should().HaveHuisnummer("10E").And.HaveNoAppnummer().And.HaveNoBusnummer()
+                .Continuation);
+
+            Add(MockedSanitizationTest("10E teststraat", null, null)
+                .Should().HaveCount(1)
+                .And.First().Should().HaveHuisnummer("10E").And.HaveNoAppnummer().And.HaveNoBusnummer()
                 .Continuation);
 
             Add(MockedSanitizationTest("10bis teststraat", null, null)
@@ -79,6 +95,11 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
         public void ParseHouseNumberFromStreetName_HouseNumberAsSuffix()
         {
             //huisnummer als suffix in straatnaam
+            Add(MockedSanitizationTest("teststraat 5", null, null)
+                .Should().HaveCount(1)
+                .And.First().Should().HaveHuisnummer("5").And.HaveNoAppnummer().And.HaveNoBusnummer()
+                .Continuation);
+
             Add(MockedSanitizationTest("teststraat 10", null, null)
                 .Should().HaveCount(1)
                 .And.First().Should().HaveHuisnummer("10").And.HaveNoAppnummer().And.HaveNoBusnummer()
@@ -102,9 +123,29 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
         public void ParseHouseNumberFromStreetName_HouseNumberNonNumericBisNumberAsSuffix()
         {
             //huisnummer met niet-numeriek bisnummer als suffix in straatnaam
+            Add(MockedSanitizationTest("teststraat 5b", null, null)
+                .Should().HaveCount(1)
+                .And.First().Should().HaveHuisnummer("5B").And.HaveNoAppnummer().And.HaveNoBusnummer()
+                .Continuation);
+
+            Add(MockedSanitizationTest("teststraat 5B", null, null)
+                .Should().HaveCount(1)
+                .And.First().Should().HaveHuisnummer("5B").And.HaveNoAppnummer().And.HaveNoBusnummer()
+                .Continuation);
+
             Add(MockedSanitizationTest("teststraat 10b", null, null)
                 .Should().HaveCount(1)
                 .And.First().Should().HaveHuisnummer("10B").And.HaveNoAppnummer().And.HaveNoBusnummer()
+                .Continuation);
+
+            Add(MockedSanitizationTest("teststraat 10e", null, null)
+                .Should().HaveCount(1)
+                .And.First().Should().HaveHuisnummer("10E").And.HaveNoAppnummer().And.HaveNoBusnummer()
+                .Continuation);
+
+            Add(MockedSanitizationTest("teststraat 10E", null, null)
+                .Should().HaveCount(1)
+                .And.First().Should().HaveHuisnummer("10E").And.HaveNoAppnummer().And.HaveNoBusnummer()
                 .Continuation);
 
             Add(MockedSanitizationTest("teststraat 10bis", null, null)
@@ -147,7 +188,7 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
                 .And.First().Should().HaveHuisnummer("10B").And.HaveNoAppnummer().And.HaveNoBusnummer()
                 .Continuation);
 
-            Add(MockedSanitizationTest("teststraat", "10e", null)//hier is e wel ondersteund als niet-numeriek bisnummer
+            Add(MockedSanitizationTest("teststraat", "10e", null) // hier is e wel ondersteund als niet-numeriek bisnummer
                 .Should().HaveCount(1)
                 .And.First().Should().HaveHuisnummer("10E").And.HaveNoAppnummer().And.HaveNoBusnummer()
                 .Continuation);
@@ -208,10 +249,15 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
                .And.First().Should().HaveHuisnummer("10").And.HaveAppnummer("0.0").And.HaveNoBusnummer()
                .Continuation);
 
-            Add(MockedSanitizationTest("teststraat", "10", "et")//of et00 //verdiepnummer => mogelijke varianten: "et", "eta", "éta", "VER", "VDP", "VD", "Vr", "Vrd", "V", "Etg", "ét", "et", "ev", "eme", "ème", "STE", "de", "dev", "e", "E", "é", "links", "rechts"
+            Add(MockedSanitizationTest("teststraat", "10", "et") //of et00 // verdiepnummer => mogelijke varianten: "et", "eta", "éta", "VER", "VDP", "VD", "Vr", "Vrd", "V", "Etg", "ét", "et", "ev", "eme", "ème", "STE", "de", "dev", "e", "E", "é", "links", "rechts"
                .Should().HaveCount(1)
                .And.First().Should().HaveHuisnummer("10").And.HaveNoAppnummer().And.HaveNoBusnummer()
                .Continuation);
+
+            Add(MockedSanitizationTest("teststraat", "10", "E") //of et00 // verdiepnummer => mogelijke varianten: "et", "eta", "éta", "VER", "VDP", "VD", "Vr", "Vrd", "V", "Etg", "ét", "et", "ev", "eme", "ème", "STE", "de", "dev", "e", "E", "é", "links", "rechts"
+                .Should().HaveCount(1)
+                .And.First().Should().HaveHuisnummer("10").And.HaveNoAppnummer().And.HaveNoBusnummer()
+                .Continuation);
 
             Add(MockedSanitizationTest("teststraat", "10", "E000")
                .Should().HaveCount(1)

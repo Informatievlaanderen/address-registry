@@ -41,8 +41,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             {
                 var formattedParts = ParseHouseNumberFromStreetName(streetName, formattedHouseNumber, formattedRrIndex);
 
-                formattedHouseNumber = formattedParts.HouseNumber;
-                formattedRrIndex = formattedParts.RrIndex;
+                formattedHouseNumber = FormatRrHouseNumber(formattedParts.HouseNumber);
+                formattedRrIndex = FormatRrIndex(formattedParts.RrIndex);
             }
 
             // huisnummer zonder RR-index
@@ -140,8 +140,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             var possibleIndexInStreet = FormatRrIndex(RightIndex(requestStraatnaamWithoutStraatnaam));
 
             // huisnummer als prefix in straatnaam
-            // TODO: [0-9]+ ?
-            if (new Regex("[0-9] ").IsMatch(streetName))
+            if (new Regex("[0-9]+ ").IsMatch(streetName))
             {
                 if (possibleIndexInStreet == "0000"
                     && possibleNumberInStreet != null
@@ -153,17 +152,15 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             }
 
             // huisnummer met niet-numeriek bisnummer als prefix in straatnaam
-            // TODO: [0-9]+ ?
-            if (new Regex("[0-9][a-zA-Z] ").IsMatch(streetName) && !new Regex("[0-9]e ").IsMatch(streetName))
+            if (new Regex("[0-9]+[a-zA-Z] ").IsMatch(streetName))
             {
                 if (possibleNumberInStreet != null
                     && int.TryParse(possibleNumberInStreet, out hnr)
                     && hnr != 0
-                    // TODO: [0-9]+ ?
-                    && new Regex("[0-9][a-zA-Z]$").IsMatch(requestStraatnaamWithoutStraatnaam))
+                    && new Regex("[0-9]+[a-zA-Z]$").IsMatch(requestStraatnaamWithoutStraatnaam))
                 {
-                    formattedParts.HouseNumber = possibleNumberInStreet;
-                    formattedParts.RrIndex = possibleIndexInStreet.ToUpper();
+                    formattedParts.HouseNumber = possibleNumberInStreet + LeftIndex(possibleIndexInStreet).ToUpper();
+                    formattedParts.RrIndex = string.Empty;
                 }
             }
 
@@ -176,16 +173,15 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             }
 
             // huisnummer met niet-numeriek bisnummer als suffix in straatnaam
-            if (new Regex(" [0-9]+[a-zA-Z]$").IsMatch(streetName) && !new Regex("[0-9]e ").IsMatch(streetName))
+            if (new Regex(" [0-9]+[a-zA-Z]$").IsMatch(streetName))
             {
                 if (possibleNumberInStreet != null
                     && int.TryParse(possibleNumberInStreet, out hnr)
                     && hnr != 0
-                    // TODO: [0-9]+ ?
-                    && new Regex("[0-9][a-zA-Z]$").IsMatch(requestStraatnaamWithoutStraatnaam))
+                    && new Regex("[0-9]+[a-zA-Z]$").IsMatch(requestStraatnaamWithoutStraatnaam))
                 {
-                    formattedParts.HouseNumber = possibleNumberInStreet;
-                    formattedParts.RrIndex = possibleIndexInStreet.ToUpper();
+                    formattedParts.HouseNumber = possibleNumberInStreet + LeftIndex(possibleIndexInStreet).ToUpper();
+                    formattedParts.RrIndex = string.Empty;
 
                     Warnings.AddWarning("3", "Niet-numeriek 'Huisnummer' in 'Straatnaam' gevonden.");
                 }

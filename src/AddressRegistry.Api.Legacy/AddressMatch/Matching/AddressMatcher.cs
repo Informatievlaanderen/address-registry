@@ -25,17 +25,15 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
         {
             var houseNumberWithSubaddresses = new List<HouseNumberWithSubaddress>();
 
-            if (string.IsNullOrEmpty(results?.Query.BoxNumber))
+            houseNumberWithSubaddresses.AddRange(
+                _sanitizer.Sanitize(
+                    results?.Query.StreetName,
+                    results?.Query.HouseNumber,
+                    results?.Query.Index));
+
+            if (!string.IsNullOrEmpty(results?.Query.BoxNumber))
             {
-                houseNumberWithSubaddresses.AddRange(
-                    _sanitizer.Sanitize(
-                        results?.Query.StreetName,
-                        results?.Query.HouseNumber,
-                        results?.Query.Index));
-            }
-            else
-            {
-                houseNumberWithSubaddresses.Add(
+                houseNumberWithSubaddresses.Insert(0,
                     new HouseNumberWithSubaddress(
                         results.Query.HouseNumber,
                         results.Query.BoxNumber,

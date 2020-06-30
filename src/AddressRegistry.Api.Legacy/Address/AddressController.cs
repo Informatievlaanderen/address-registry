@@ -279,13 +279,12 @@ namespace AddressRegistry.Api.Legacy.Address
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
-            var pagedAddresses = new AddressSyndicationQuery(
-                context,
-                filtering.Filter?.ContainsEvent ?? false,
-                filtering.Filter?.ContainsObject ?? false)
+            var pagedAddresses =
+                new AddressSyndicationQuery(
+                    context,
+                    filtering.Filter?.ContainsEvent ?? false,
+                    filtering.Filter?.ContainsObject ?? false)
                 .Fetch(filtering, sorting, pagination);
-
-            Response.AddPagedQueryResultHeaders(pagedAddresses);
 
             return new ContentResult
             {
@@ -417,17 +416,30 @@ namespace AddressRegistry.Api.Legacy.Address
                     new Uri(syndicationConfiguration["Self"]),
                     syndicationConfiguration.GetSection("Related").GetChildren().Select(c => c.Value).ToArray());
 
-                var nextUri = pagedAddresses.PaginationInfo.BuildNextUri(syndicationConfiguration["NextUri"]);
+                var addresses = pagedAddresses.Items.ToList();
+
+                var nextFrom = addresses.Any()
+                    ? addresses.Max(x => x.Position) + 1
+                    : (long?) null;
+
+                var nextUri = BuildNextSyncUri(pagedAddresses.PaginationInfo.Limit, nextFrom, syndicationConfiguration["NextUri"]);
                 if (nextUri != null)
                     await writer.Write(new SyndicationLink(nextUri, "next"));
 
-                foreach (var address in pagedAddresses.Items)
+                foreach (var address in addresses)
                     await writer.WriteAddress(responseOptions, formatter, syndicationConfiguration["Category"], address);
 
                 xmlWriter.Flush();
             }
 
             return sw.ToString();
+        }
+
+        private static Uri BuildNextSyncUri(int limit, long? from, string nextUrlBase)
+        {
+            return from.HasValue
+                ? new Uri(string.Format(nextUrlBase, from, limit))
+                : null;
         }
     }
 }

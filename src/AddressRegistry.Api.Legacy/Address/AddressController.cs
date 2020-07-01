@@ -34,6 +34,7 @@ namespace AddressRegistry.Api.Legacy.Address
     using System.Threading.Tasks;
     using System.Xml;
     using Be.Vlaanderen.Basisregisters.Api.Search;
+    using Infrastructure;
     using Projections.Legacy.AddressList;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
@@ -408,13 +409,9 @@ namespace AddressRegistry.Api.Legacy.Address
                 var formatter = new AtomFormatter(null, xmlWriter.Settings) { UseCDATA = true };
                 var writer = new AtomFeedWriter(xmlWriter, null, formatter);
                 var syndicationConfiguration = configuration.GetSection("Syndication");
+                var atomFeedConfig = AtomFeedConfigurationBuilder.CreateFrom(syndicationConfiguration, DateTimeOffset.Now);
 
-                await writer.WriteDefaultMetadata(
-                    syndicationConfiguration["Id"],
-                    syndicationConfiguration["Title"],
-                    Assembly.GetEntryAssembly().GetName().Version.ToString(),
-                    new Uri(syndicationConfiguration["Self"]),
-                    syndicationConfiguration.GetSection("Related").GetChildren().Select(c => c.Value).ToArray());
+                await writer.WriteDefaultMetadata(atomFeedConfig);
 
                 var addresses = pagedAddresses.Items.ToList();
 

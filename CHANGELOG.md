@@ -1,3 +1,10 @@
+## [2.16.1](https://github.com/informatievlaanderen/address-registry/compare/v2.16.0...v2.16.1) (2020-07-01)
+
+
+### Bug Fixes
+
+* add index on addresscomplete extract buildingunit ([84130f8](https://github.com/informatievlaanderen/address-registry/commit/84130f8ab21c1bd77f6639043c9a9047fb7f75d9))
+
 # [2.16.0](https://github.com/informatievlaanderen/address-registry/compare/v2.15.10...v2.16.0) (2020-07-01)
 
 

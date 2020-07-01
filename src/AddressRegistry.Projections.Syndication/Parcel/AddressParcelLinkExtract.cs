@@ -35,6 +35,7 @@ namespace AddressRegistry.Projections.Syndication.Parcel
             builder.HasIndex(p => p.AddressId);
             builder.HasIndex(p => p.ParcelId);
             builder.HasIndex(p => p.AddressPersistentLocalId).IsClustered();
+            builder.HasIndex(p => p.AddressComplete).IncludeProperties(p => p.ParcelId);
         }
     }
 }

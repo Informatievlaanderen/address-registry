@@ -1,3 +1,10 @@
+## [2.16.2](https://github.com/informatievlaanderen/address-registry/compare/v2.16.1...v2.16.2) (2020-07-01)
+
+
+### Bug Fixes
+
+* add/remake indexes for extract addresslinks ([2066394](https://github.com/informatievlaanderen/address-registry/commit/206639488df8ce249c5d860a0fa1a6b10c299e1f))
+
 ## [2.16.1](https://github.com/informatievlaanderen/address-registry/compare/v2.16.0...v2.16.1) (2020-07-01)
 
 

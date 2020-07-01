@@ -1,3 +1,10 @@
+# [2.16.0](https://github.com/informatievlaanderen/address-registry/compare/v2.15.10...v2.16.0) (2020-07-01)
+
+
+### Features
+
+* refactor metadata for atom feed GRAR-1436 GRAR-1445 GRAR-1453 GRAR-1455 ([f6c1579](https://github.com/informatievlaanderen/address-registry/commit/f6c1579eb9d31cc1c8c6439f2e13d70f1e9777b5))
+
 ## [2.15.10](https://github.com/informatievlaanderen/address-registry/compare/v2.15.9...v2.15.10) (2020-06-30)
 
 

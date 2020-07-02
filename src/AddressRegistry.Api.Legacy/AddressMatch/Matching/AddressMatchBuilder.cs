@@ -159,23 +159,21 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 .Distinct(StringComparer.InvariantCultureIgnoreCase)
                 .ToList();
 
-            string CreateRepresentation(string municipalityName, string streetName, string houseNumber)
-                => string.Format("{0}{1}{2}{3},{4}{5}",
+            string CreateRepresentation(string? postalCode, string municipalityName, string streetName, string? houseNumber, string? boxNumber)
+                => string.Format("{0}{1}{2},{3}{4}",
                     streetName,
                     !string.IsNullOrEmpty(houseNumber)
                         ? string.Concat(" ", houseNumber)
                         : string.Empty,
-                    !string.IsNullOrEmpty(Query.Index)
-                        ? string.Concat(" bus ", Query.Index)
+                    !string.IsNullOrEmpty(boxNumber)
+                        ? string.Concat(" bus ", boxNumber)
                         : string.Empty,
-                    !string.IsNullOrEmpty(Query.BoxNumber)
-                        ? string.Concat(" bus ", Query.BoxNumber)
-                        : string.Empty,
-                    !string.IsNullOrEmpty(Query.PostalCode)
-                        ? string.Concat(" ", Query.PostalCode)
+                    !string.IsNullOrEmpty(postalCode)
+                        ? string.Concat(" ", postalCode)
                         : string.Empty,
                     string.Concat(" ", municipalityName));
 
+            // TODO: Probably some bugs here when a person passes in a boxnumber
             foreach (var municipalityName in municipalityNames)
             {
                 if (streetNames.Any())
@@ -185,22 +183,38 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                         var houseNumbers = _sanitizer.Sanitize(
                             streetName,
                             Query.HouseNumber,
-                            Query.Index);
+                            Query.Index,
+                            true);
 
-                        if (houseNumbers.Count > 1) // create a representation per sanitized housenumber
+                        if (houseNumbers.Count > 1)
                         {
+                            // create a representation per sanitized housenumber
                             foreach (var houseNumberWithSubaddress in houseNumbers)
                                 yield return CreateRepresentation(
+                                    Query.PostalCode,
                                     municipalityName,
                                     streetName ?? string.Empty,
-                                    houseNumberWithSubaddress.HouseNumber);
+                                    houseNumberWithSubaddress.HouseNumber ?? Query.HouseNumber,
+                                    houseNumberWithSubaddress.BoxNumber ?? Query.BoxNumber);
+                        }
+                        else if (houseNumbers.Count == 1)
+                        {
+                            var houseNumber = houseNumbers.First();
+                            yield return CreateRepresentation(
+                                Query.PostalCode,
+                                municipalityName,
+                                streetName ?? string.Empty,
+                                houseNumber.HouseNumber ?? Query.HouseNumber,
+                                houseNumber.BoxNumber ?? Query.BoxNumber);
                         }
                         else
                         {
                             yield return CreateRepresentation(
+                                Query.PostalCode,
                                 municipalityName,
                                 streetName ?? string.Empty,
-                                Query.HouseNumber);
+                                Query.HouseNumber,
+                                Query.BoxNumber);
                         }
                     }
                 }

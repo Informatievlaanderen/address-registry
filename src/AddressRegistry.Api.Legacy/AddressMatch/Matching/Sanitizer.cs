@@ -24,7 +24,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
         public List<HouseNumberWithSubaddress> Sanitize(
             string? streetName,
             string? houseNumber,
-            string? index)
+            string? index,
+            bool strictMatch = false)
         {
             // huisnummer formatteren
             var formattedHouseNumber = FormatRrHouseNumber(houseNumber);
@@ -50,7 +51,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             // *******************************************************************
             if (HouseNumberWithoutIndex(formattedRrIndex))
             {
-                var potentialMatch = MatchHouseNumberWithoutIndex(formattedHouseNumber);
+                var potentialMatch = MatchHouseNumberWithoutIndex(formattedHouseNumber, strictMatch);
 
                 if (potentialMatch.Any())
                     return potentialMatch;
@@ -193,7 +194,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
         private static bool HouseNumberWithoutIndex(string rrIndex)
             => rrIndex == "0000";
 
-        private static List<HouseNumberWithSubaddress> MatchHouseNumberWithoutIndex(string houseNumber)
+        private static List<HouseNumberWithSubaddress> MatchHouseNumberWithoutIndex(string houseNumber, bool strictMatch = false)
         {
             // volledig numerisch
             if (new Regex("^[0-9]+$").IsMatch(houseNumber))
@@ -210,17 +211,23 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             // niet-numeriek bisnummer: enkele letter
             if (new Regex(@"^[0-9]+\s*[a-zA-Z]$").IsMatch(houseNumber))
             {
-                return new List<HouseNumberWithSubaddress>
+                var result = new List<HouseNumberWithSubaddress>
                 {
-                    new HouseNumberWithSubaddress(
-                        RemovePrecedingZeros(houseNumber[..^1].Trim()),
-                        null,
-                        null),
                     new HouseNumberWithSubaddress(
                         RemovePrecedingZeros(houseNumber[..^1].Trim()) + houseNumber.Last().ToString().ToUpper(),
                         null,
                         null)
                 };
+
+                if (!strictMatch)
+                {
+                    result.Add(new HouseNumberWithSubaddress(
+                        RemovePrecedingZeros(houseNumber[..^1].Trim()),
+                        null,
+                        null));
+                }
+
+                return result;
             }
 
             // niet-numeriek bisnummer: 'bis'

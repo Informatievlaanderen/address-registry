@@ -1,3 +1,10 @@
+## [2.16.4](https://github.com/informatievlaanderen/address-registry/compare/v2.16.3...v2.16.4) (2020-07-02)
+
+
+### Bug Fixes
+
+* extract address links add condition to join + stream parcel links ([78f5fdd](https://github.com/informatievlaanderen/address-registry/commit/78f5fdd914715fb95fbf84f4c3dddad75bef29b7))
+
 ## [2.16.3](https://github.com/informatievlaanderen/address-registry/compare/v2.16.2...v2.16.3) (2020-07-02)
 
 

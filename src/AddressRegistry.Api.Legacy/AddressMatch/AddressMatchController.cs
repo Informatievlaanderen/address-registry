@@ -56,11 +56,14 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
 
             var result = addressMatch
                 .Process(new AddressMatchBuilder(Map(addressMatchRequest)))
-                .Take(maxNumberOfResults);
+                .OrderByDescending(x => x.Score)
+                .Take(maxNumberOfResults)
+                .Select(x => AdresMatchItem.Create(x, buildingContext, context, responseOptions.Value))
+                .ToList();
 
             return Ok(new AddressMatchCollection
             {
-                AdresMatches = result.ToList().Select(x => AdresMatchItem.Create(x, buildingContext, context, responseOptions.Value)).ToList(),
+                AdresMatches = result,
                 Warnings = warningLogger.Warnings
             });
         }

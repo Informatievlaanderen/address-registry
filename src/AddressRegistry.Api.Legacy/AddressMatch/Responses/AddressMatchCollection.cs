@@ -181,30 +181,39 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
                 VolledigAdres = scorableItem.VolledigAdres,
                 OfficieelToegekend = scorableItem.OfficieelToegekend,
                 Score = scorableItem.Score,
-                AdresseerbareObjecten = buildingContext.BuildingUnits
-                        .Include(x => x.Addresses)
-                        .Where(x => x.Addresses.Any(y => y.AddressId == scorableItem.AddressId) && !x.IsRemoved && x.IsBuildingComplete && x.IsComplete && x.PersistentLocalId.HasValue)
-                        .Select(x => new { x.PersistentLocalId })
-                        .ToList()
-                        .Select(matchLatestItem => new AdresseerbaarObject
-                        {
-                            ObjectId = matchLatestItem.PersistentLocalId.ToString(),
-                            ObjectType = ObjectType.Gebouweenheid,
-                            Detail = string.Format(responseOptions.GebouweenheidDetailUrl, matchLatestItem.PersistentLocalId.ToString()),
-                        })
-                        .ToList()
-                        .Concat(
-                            addressMatchContext.ParcelAddressMatchLatestItems
+                AdresseerbareObjecten = buildingContext
+                    .BuildingUnits
+                    .Include(x => x.Addresses)
+                    .Where(x => x.Addresses.Any(y => y.AddressId == scorableItem.AddressId) &&
+                                !x.IsRemoved &&
+                                x.IsBuildingComplete &&
+                                x.IsComplete &&
+                                x.PersistentLocalId.HasValue)
+                    .Select(x => new { x.PersistentLocalId })
+                    .ToList()
+                    .Select(matchLatestItem => new AdresseerbaarObject
+                    {
+                        ObjectId = matchLatestItem.PersistentLocalId.ToString(),
+                        ObjectType = ObjectType.Gebouweenheid,
+                        Detail = string.Format(
+                            responseOptions.GebouweenheidDetailUrl,
+                            matchLatestItem.PersistentLocalId.ToString()),
+                    })
+                    .ToList()
+                    .Concat(
+                        addressMatchContext.ParcelAddressMatchLatestItems
                             .Where(x => x.AddressId == scorableItem.AddressId && !x.IsRemoved)
                             .ToList()
                             .Select(matchLatestItem => new AdresseerbaarObject
                             {
                                 ObjectId = matchLatestItem.ParcelPersistentLocalId,
                                 ObjectType = ObjectType.Perceel,
-                                Detail = string.Format(responseOptions.PerceelDetailUrl, matchLatestItem.ParcelPersistentLocalId),
+                                Detail = string.Format(
+                                    responseOptions.PerceelDetailUrl,
+                                    matchLatestItem.ParcelPersistentLocalId),
                             })
                             .ToList())
-                        .ToList()
+                    .ToList()
             };
         }
     }

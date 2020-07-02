@@ -1,3 +1,10 @@
+## [2.16.3](https://github.com/informatievlaanderen/address-registry/compare/v2.16.2...v2.16.3) (2020-07-02)
+
+
+### Bug Fixes
+
+* always sort adresmatch results from best score to worst GRAR-1469 ([a95efd0](https://github.com/informatievlaanderen/address-registry/commit/a95efd0941737daa2fbe362a9c7dc4aabe39ba19))
+
 ## [2.16.2](https://github.com/informatievlaanderen/address-registry/compare/v2.16.1...v2.16.2) (2020-07-01)
 
 

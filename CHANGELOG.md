@@ -1,3 +1,11 @@
+## [2.16.6](https://github.com/informatievlaanderen/address-registry/compare/v2.16.5...v2.16.6) (2020-07-02)
+
+
+### Bug Fixes
+
+* improve adresmatch for merged municipalities ([b711ba7](https://github.com/informatievlaanderen/address-registry/commit/b711ba7abd2755085619454f173ffd57aafc471a))
+* refactor tests to work with multilanguage GRAR-181 ([05e3397](https://github.com/informatievlaanderen/address-registry/commit/05e339704e7c7e43f65fd13661bd15c75fbda1b2))
+
 ## [2.16.5](https://github.com/informatievlaanderen/address-registry/compare/v2.16.4...v2.16.5) (2020-07-02)
 
 

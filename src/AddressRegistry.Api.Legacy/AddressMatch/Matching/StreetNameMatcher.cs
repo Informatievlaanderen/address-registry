@@ -3,6 +3,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Projections.Syndication.StreetName;
 
     internal class StreetNameMatcher<TResult> : ScoreableObjectMatcherBase<AddressMatchBuilder, TResult>
@@ -110,9 +111,12 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                                 results.Query.KadStreetNameCode,
                                 municipalityWrapper.NisCode));
 
-            var searchName = results.Query.StreetName.RemoveDiacritics().ToLowerInvariant();
+            var searchName = results
+                ?.Query
+                ?.StreetName
+                ?.RemoveDiacritics();
 
-            if (!string.IsNullOrEmpty(results.Query.StreetName) &&
+            if (!string.IsNullOrEmpty(results?.Query?.StreetName) &&
                 !results.AllStreetNames().Any(w =>
                     !string.IsNullOrWhiteSpace(w.StreetName.NameDutchSearch) && w.StreetName.NameDutchSearch.EqIgnoreCase(searchName) ||
                     !string.IsNullOrWhiteSpace(w.StreetName.NameFrenchSearch) && w.StreetName.NameFrenchSearch.EqIgnoreCase(searchName) ||
@@ -136,9 +140,12 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                     .ToList()
                     .ForEach(g => g.AddStreetName(streetName));
 
-            var searchName = results.Query.StreetName.RemoveDiacritics().ToLowerInvariant();
+            var searchName = results
+                ?.Query
+                ?.StreetName
+                ?.RemoveDiacritics();
 
-            if (!string.IsNullOrEmpty(results.Query.StreetName) &&
+            if (!string.IsNullOrEmpty(results?.Query?.StreetName) &&
                 !results.AllStreetNames().Any(w =>
                     !string.IsNullOrWhiteSpace(w.StreetName.NameDutchSearch) && w.StreetName.NameDutchSearch.EqIgnoreCase(searchName) ||
                     !string.IsNullOrWhiteSpace(w.StreetName.NameFrenchSearch) && w.StreetName.NameFrenchSearch.EqIgnoreCase(searchName) ||
@@ -200,7 +207,13 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 
                 var municipalityWithStreetNames = municipalitiesWithStreetNames[municipalityWrapper.NisCode];
 
-                var searchName = results.Query.StreetName.RemoveDiacritics().ToLowerInvariant();
+                var searchName = results
+                    ?.Query
+                    ?.StreetName
+                    ?.RemoveDiacritics();
+
+                if (string.IsNullOrWhiteSpace(searchName))
+                    return;
 
                 var matchingStreetName = municipalityWithStreetNames
                         .Where(s =>

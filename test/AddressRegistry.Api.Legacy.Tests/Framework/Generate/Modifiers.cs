@@ -3,6 +3,7 @@ namespace AddressRegistry.Api.Legacy.Tests.Framework.Generate
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using NodaTime;
     using Projections.Legacy.AddressDetail;
@@ -22,8 +23,8 @@ namespace AddressRegistry.Api.Legacy.Tests.Framework.Generate
                 PrimaryLanguage = original.PrimaryLanguage,
                 NameDutch = original.NameDutch,
                 NameDutchSearch = original.NameDutchSearch,
-                NameFrenchSearch = original.NameFrenchSearch,
                 NameFrench = original.NameFrench,
+                NameFrenchSearch = original.NameFrenchSearch,
                 Version = original.Version
             };
 
@@ -37,8 +38,8 @@ namespace AddressRegistry.Api.Legacy.Tests.Framework.Generate
                 PrimaryLanguage = original.PrimaryLanguage,
                 NameDutch = original.NameDutch,
                 NameDutchSearch = original.NameDutchSearch,
-                NameFrenchSearch = original.NameFrenchSearch,
                 NameFrench = original.NameFrench,
+                NameFrenchSearch = original.NameFrenchSearch,
                 Version = version
             };
 
@@ -52,8 +53,8 @@ namespace AddressRegistry.Api.Legacy.Tests.Framework.Generate
                 PrimaryLanguage = original.PrimaryLanguage,
                 NameDutch = original.NameDutch,
                 NameDutchSearch = original.NameDutchSearch,
-                NameFrenchSearch = original.NameFrenchSearch,
                 NameFrench = original.NameFrench,
+                NameFrenchSearch = original.NameFrenchSearch,
                 Version = original.Version
             };
 
@@ -66,9 +67,9 @@ namespace AddressRegistry.Api.Legacy.Tests.Framework.Generate
                 NisCode = original.NisCode,
                 PrimaryLanguage = original.PrimaryLanguage,
                 NameDutch = gemeenteNaam,
-                NameDutchSearch = gemeenteNaam.ToLowerInvariant(),
-                NameFrenchSearch = original.NameFrenchSearch,
+                NameDutchSearch = gemeenteNaam.RemoveDiacritics(),
                 NameFrench = original.NameFrench,
+                NameFrenchSearch = original.NameFrenchSearch,
                 Version = original.Version
             };
 
@@ -80,7 +81,9 @@ namespace AddressRegistry.Api.Legacy.Tests.Framework.Generate
                 StreetNameId = original.StreetNameId,
                 NisCode = nisCode,
                 NameDutch = original.NameDutch,
+                NameDutchSearch = original.NameDutchSearch,
                 NameFrench = original.NameFrench,
+                NameFrenchSearch = original.NameFrenchSearch,
                 PersistentLocalId = original.PersistentLocalId,
                 IsComplete = original.IsComplete,
                 Version = original.Version,
@@ -94,7 +97,9 @@ namespace AddressRegistry.Api.Legacy.Tests.Framework.Generate
                 StreetNameId = original.StreetNameId,
                 NisCode = original.NisCode,
                 NameDutch = original.NameDutch,
+                NameDutchSearch = original.NameDutchSearch,
                 NameFrench = original.NameFrench,
+                NameFrenchSearch = original.NameFrenchSearch,
                 PersistentLocalId = persistentLocalId,
                 IsComplete = original.IsComplete,
                 Version = original.Version,
@@ -108,7 +113,9 @@ namespace AddressRegistry.Api.Legacy.Tests.Framework.Generate
                 StreetNameId = straatnaamId,
                 NisCode = original.NisCode,
                 NameDutch = original.NameDutch,
+                NameDutchSearch = original.NameDutchSearch,
                 NameFrench = original.NameFrench,
+                NameFrenchSearch = original.NameFrenchSearch,
                 PersistentLocalId = original.PersistentLocalId,
                 IsComplete = original.IsComplete,
                 Version = original.Version,
@@ -122,7 +129,9 @@ namespace AddressRegistry.Api.Legacy.Tests.Framework.Generate
                 StreetNameId = original.StreetNameId,
                 NisCode = original.NisCode,
                 NameDutch = original.NameDutch,
+                NameDutchSearch = original.NameDutchSearch,
                 NameFrench = original.NameFrench,
+                NameFrenchSearch = original.NameFrenchSearch,
                 PersistentLocalId = original.PersistentLocalId,
                 IsComplete = original.IsComplete,
                 Version = version,
@@ -136,7 +145,9 @@ namespace AddressRegistry.Api.Legacy.Tests.Framework.Generate
                 StreetNameId = original.StreetNameId,
                 NisCode = original.NisCode,
                 NameDutch = straatNaam,
+                NameDutchSearch = straatNaam.RemoveDiacritics(),
                 NameFrench = original.NameFrench,
+                NameFrenchSearch = original.NameFrenchSearch,
                 PersistentLocalId = original.PersistentLocalId,
                 IsComplete = original.IsComplete,
                 Version = original.Version,

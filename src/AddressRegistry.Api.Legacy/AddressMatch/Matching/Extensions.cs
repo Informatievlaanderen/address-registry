@@ -5,6 +5,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
     using System.Globalization;
     using System.Linq;
     using System.Text;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
 
     public static class Extensions
     {
@@ -15,10 +16,10 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             => a.Equals(b, StringComparison.InvariantCultureIgnoreCase);
 
         public static bool EqIgnoreDiacritics(this string a, string b)
-            => a.RemoveDiacritics().Equals(b.RemoveDiacritics());
+            => a.RemoveDiacritics(false).Equals(b.RemoveDiacritics(false));
 
         public static bool EqIgnoreCaseAndDiacritics(this string a, string b)
-            => a.RemoveDiacritics().EqIgnoreCase(b.RemoveDiacritics());
+            => a.RemoveDiacritics(false).EqIgnoreCase(b.RemoveDiacritics(false));
 
         public static bool EqFuzzyMatch(this string a, string b, double threshold)
             => a.FuzzyScore(b) > threshold;
@@ -28,21 +29,6 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 
         public static bool ContainsIgnoreCase(this string a, string b)
             => CultureInfo.CurrentCulture.CompareInfo.IndexOf(a, b, CompareOptions.IgnoreCase) >= 0;
-
-        public static string RemoveDiacritics(this string text)
-        {
-            var normalizedString = text.Normalize(NormalizationForm.FormD);
-            var stringBuilder = new StringBuilder(normalizedString.Length);
-
-            foreach (var c in normalizedString)
-            {
-                var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
-                if (unicodeCategory != UnicodeCategory.NonSpacingMark)
-                    stringBuilder.Append(c);
-            }
-
-            return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
-        }
 
         public static double FuzzyScore(this string a, string b)
             => FuzzyMatch.Calculate(a, b);

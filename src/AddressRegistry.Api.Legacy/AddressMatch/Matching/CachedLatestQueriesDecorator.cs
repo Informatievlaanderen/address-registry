@@ -8,6 +8,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Microsoft.EntityFrameworkCore;
 
     public interface ILatestQueries
@@ -111,7 +112,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
         public IEnumerable<StreetNameLatestItem> GetLatestStreetNamesBy(params string[] municipalityNames)
         {
             var lowerMunicipalityNames = municipalityNames
-                .Select(x => x.RemoveDiacritics().ToLowerInvariant())
+                .Select(x => x.RemoveDiacritics())
                 .ToList();
 
             var nisCodes = GetAllLatestMunicipalities()

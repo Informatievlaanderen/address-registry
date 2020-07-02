@@ -4,6 +4,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
 
     internal class MunicipalityNameComparer : EqualityComparer<AddressMatchBuilder.MunicipalityWrapper>
     {
@@ -105,11 +106,10 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             if (string.IsNullOrWhiteSpace(results?.Query.MunicipalityName))
                 return new List<MunicipalityLatestItem>();
 
-            var searchName = results?
-                .Query
-                .MunicipalityName
-                .RemoveDiacritics()
-                .ToLowerInvariant();
+            var searchName = results
+                ?.Query
+                ?.MunicipalityName
+                ?.RemoveDiacritics();
 
             var municipalitiesByName = municipalities
                 .Where(municipality =>
@@ -119,7 +119,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                     !string.IsNullOrWhiteSpace(municipality.NameEnglishSearch) && municipality.NameEnglishSearch == searchName)
                 .ToList();
 
-            if (!string.IsNullOrEmpty(results?.Query.MunicipalityName) && !municipalitiesByName.Any())
+            if (!string.IsNullOrEmpty(results?.Query?.MunicipalityName) && !municipalitiesByName.Any())
                 _warnings.AddWarning("6", "Onbekende 'Gemeentenaam'.");
 
             return municipalitiesByName;

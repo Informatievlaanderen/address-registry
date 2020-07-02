@@ -1,3 +1,10 @@
+## [2.16.5](https://github.com/informatievlaanderen/address-registry/compare/v2.16.4...v2.16.5) (2020-07-02)
+
+
+### Bug Fixes
+
+* improve scoring for bisnumbers GRAR-1463 ([6eb6d63](https://github.com/informatievlaanderen/address-registry/commit/6eb6d63cda6281d0f9f05c66491f57e7c4ec9d60))
+
 ## [2.16.4](https://github.com/informatievlaanderen/address-registry/compare/v2.16.3...v2.16.4) (2020-07-02)
 
 

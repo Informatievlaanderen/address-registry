@@ -16,7 +16,7 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
         public bool IsRemoved { get; set; }
     }
 
-    public class ParcelAddressLatestItemConfiguration : IEntityTypeConfiguration<BuildingUnitAddressMatchLatestItem>
+    public class BuildingUnitAddressMatchLatestItemConfiguration : IEntityTypeConfiguration<BuildingUnitAddressMatchLatestItem>
     {
         private const string TableName = "BuildingUnitAddressMatchLatestItemSyndication";
 
@@ -37,7 +37,8 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
             builder.Property(x => x.IsRemoved);
 
             builder.HasIndex(x => x.AddressId).IsClustered();
-            builder.HasIndex(x => new { x.IsComplete, x.IsRemoved, x.IsBuildingComplete }).IncludeProperties(x => x.BuildingUnitId);
+            builder.HasIndex(x => new { x.IsComplete, x.IsRemoved, x.IsBuildingComplete })
+                .IncludeProperties(x => new { x.AddressId, x.BuildingUnitId });
             builder.HasIndex(x => x.BuildingId);
         }
     }

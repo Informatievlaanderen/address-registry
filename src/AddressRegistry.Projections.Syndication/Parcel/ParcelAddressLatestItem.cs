@@ -15,7 +15,7 @@ namespace AddressRegistry.Projections.Syndication.Parcel
 
     public class ParcelAddressLatestItemConfiguration : IEntityTypeConfiguration<ParcelAddressMatchLatestItem>
     {
-        private const string TableName = "ParcelAddressMatchLatestItemSyndication";
+        public const string TableName = "ParcelAddressMatchLatestItemSyndication";
 
         public void Configure(EntityTypeBuilder<ParcelAddressMatchLatestItem> builder)
         {
@@ -32,7 +32,8 @@ namespace AddressRegistry.Projections.Syndication.Parcel
 
             builder.HasIndex(x => x.ParcelId);
             builder.HasIndex(x => x.AddressId).IsClustered();
-            builder.HasIndex(x => x.IsRemoved).IncludeProperties(x => x.ParcelId);
+            builder.HasIndex(x => x.IsRemoved)
+                .IncludeProperties(p => new { p.AddressId, p.ParcelId });
         }
     }
 }

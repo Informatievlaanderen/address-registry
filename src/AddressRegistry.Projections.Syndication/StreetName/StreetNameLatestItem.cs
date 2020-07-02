@@ -38,20 +38,14 @@ namespace AddressRegistry.Projections.Syndication.StreetName
             !string.IsNullOrEmpty(HomonymAdditionGerman);
 
         public string GetDefaultName(Taal? primaryLanguageMunicipality)
-        {
-            switch (primaryLanguageMunicipality)
+            => primaryLanguageMunicipality switch
             {
-                default:
-                case Taal.NL:
-                    return NameDutch;
-                case Taal.FR:
-                    return NameFrench;
-                case Taal.DE:
-                    return NameGerman;
-                case Taal.EN:
-                    return NameEnglish;
-            }
-        }
+                Taal.NL => NameDutch,
+                Taal.FR => NameFrench,
+                Taal.DE => NameGerman,
+                Taal.EN => NameEnglish,
+                _ => NameDutch
+            };
     }
 
     public class StreetNameLatestItemConfiguration : IEntityTypeConfiguration<StreetNameLatestItem>

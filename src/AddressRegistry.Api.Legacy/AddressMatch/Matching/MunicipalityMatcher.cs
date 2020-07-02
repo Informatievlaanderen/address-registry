@@ -75,9 +75,11 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 return results;
 
             var municipalitiesByFuzzyMatch = municipalities
-                .Where(g => g
-                    .DefaultName.Value
-                    .EqFuzzyMatch(results.Query.MunicipalityName, _config.FuzzyMatchThreshold));
+                .Where(municipality =>
+                    !string.IsNullOrWhiteSpace(municipality.NameDutchSearch) && municipality.NameDutchSearch.EqFuzzyMatch(results.Query.MunicipalityName, _config.FuzzyMatchThreshold)||
+                    !string.IsNullOrWhiteSpace(municipality.NameFrenchSearch) && municipality.NameFrenchSearch.EqFuzzyMatch(results.Query.MunicipalityName, _config.FuzzyMatchThreshold) ||
+                    !string.IsNullOrWhiteSpace(municipality.NameGermanSearch) && municipality.NameGermanSearch.EqFuzzyMatch(results.Query.MunicipalityName, _config.FuzzyMatchThreshold) ||
+                    !string.IsNullOrWhiteSpace(municipality.NameEnglishSearch) && municipality.NameEnglishSearch.EqFuzzyMatch(results.Query.MunicipalityName, _config.FuzzyMatchThreshold));
 
             results.AddMunicipalities(municipalitiesByFuzzyMatch);
 
@@ -103,8 +105,18 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             if (string.IsNullOrWhiteSpace(results?.Query.MunicipalityName))
                 return new List<MunicipalityLatestItem>();
 
+            var searchName = results?
+                .Query
+                .MunicipalityName
+                .RemoveDiacritics()
+                .ToLowerInvariant();
+
             var municipalitiesByName = municipalities
-                .Where(g => g.DefaultName.Value.EqIgnoreCase(results?.Query.MunicipalityName))
+                .Where(municipality =>
+                    !string.IsNullOrWhiteSpace(municipality.NameDutchSearch) && municipality.NameDutchSearch == searchName ||
+                    !string.IsNullOrWhiteSpace(municipality.NameFrenchSearch) && municipality.NameFrenchSearch == searchName ||
+                    !string.IsNullOrWhiteSpace(municipality.NameGermanSearch) && municipality.NameGermanSearch == searchName ||
+                    !string.IsNullOrWhiteSpace(municipality.NameEnglishSearch) && municipality.NameEnglishSearch == searchName)
                 .ToList();
 
             if (!string.IsNullOrEmpty(results?.Query.MunicipalityName) && !municipalitiesByName.Any())

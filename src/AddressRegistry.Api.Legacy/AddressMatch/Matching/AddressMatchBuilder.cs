@@ -139,7 +139,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
         {
             var municipalityNames = _municipalities
                 .Values
-                .Select(g => g.Name)
+                .Select(g => g.Municipality.GetDefaultName())
                 .Concat(new[] { Query.MunicipalityName })
                 .Where(x => x != null)
                 .Distinct(StringComparer.InvariantCultureIgnoreCase);
@@ -150,10 +150,18 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             if (AllAddresses().Any())
                 relevantStreetNames = relevantStreetNames.Where(s => s.Any());
 
-            // TODO: Use GetDefaultName() instead of NameDutch?
-            // There is a story on the backlog for this change
+            string GetStreetName(StreetNameLatestItem streetName)
+            {
+                var nisCode = streetName.NisCode;
+                if (string.IsNullOrWhiteSpace(nisCode))
+                    return string.Empty;
+
+                var municipality = _municipalities[nisCode];
+                return streetName.GetDefaultName(municipality.Municipality.PrimaryLanguage);
+            }
+
             var streetNames = relevantStreetNames
-                .Select(sn => sn.StreetName.NameDutch)
+                .Select(sn => GetStreetName(sn.StreetName))
                 .Concat(new[] { Query.StreetName })
                 .Where(x => x != null)
                 .Distinct(StringComparer.InvariantCultureIgnoreCase)
@@ -173,7 +181,6 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                         : string.Empty,
                     string.Concat(" ", municipalityName));
 
-            // TODO: Probably some bugs here when a person passes in a boxnumber
             foreach (var municipalityName in municipalityNames)
             {
                 if (streetNames.Any())

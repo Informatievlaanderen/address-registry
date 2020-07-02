@@ -110,11 +110,17 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                                 results.Query.KadStreetNameCode,
                                 municipalityWrapper.NisCode));
 
-            // TODO: Shouldnt we be matching on w.StreetName.GetDefaultName()?
-            // There is a story on the backlog for this change
+            var searchName = results.Query.StreetName.RemoveDiacritics().ToLowerInvariant();
+
             if (!string.IsNullOrEmpty(results.Query.StreetName) &&
-                !results.AllStreetNames().Any(w => w.StreetName.NameDutch != null && w.StreetName.NameDutch.EqIgnoreCase(results.Query.StreetName)))
+                !results.AllStreetNames().Any(w =>
+                    !string.IsNullOrWhiteSpace(w.StreetName.NameDutchSearch) && w.StreetName.NameDutchSearch.EqIgnoreCase(searchName) ||
+                    !string.IsNullOrWhiteSpace(w.StreetName.NameFrenchSearch) && w.StreetName.NameFrenchSearch.EqIgnoreCase(searchName) ||
+                    !string.IsNullOrWhiteSpace(w.StreetName.NameGermanSearch) && w.StreetName.NameGermanSearch.EqIgnoreCase(searchName) ||
+                    !string.IsNullOrWhiteSpace(w.StreetName.NameEnglishSearch) && w.StreetName.NameEnglishSearch.EqIgnoreCase(searchName)))
+            {
                 _warnings.AddWarning("7", "Geen overeenkomst tussen 'KadStraatcode' en 'Straatnaam'.");
+            }
         }
 
         private void FindStreetNamesByRrStreetCode(AddressMatchBuilder results)
@@ -130,10 +136,17 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                     .ToList()
                     .ForEach(g => g.AddStreetName(streetName));
 
-            // TODO: Shouldnt we be matching on w.StreetName.GetDefaultName()?
-            // There is a story on the backlog for this change
-            if (!string.IsNullOrEmpty(results.Query.StreetName) && !results.AllStreetNames().Any(w => w.StreetName.NameDutch != null && w.StreetName.NameDutch.EqIgnoreCase(results.Query.StreetName)))
+            var searchName = results.Query.StreetName.RemoveDiacritics().ToLowerInvariant();
+
+            if (!string.IsNullOrEmpty(results.Query.StreetName) &&
+                !results.AllStreetNames().Any(w =>
+                    !string.IsNullOrWhiteSpace(w.StreetName.NameDutchSearch) && w.StreetName.NameDutchSearch.EqIgnoreCase(searchName) ||
+                    !string.IsNullOrWhiteSpace(w.StreetName.NameFrenchSearch) && w.StreetName.NameFrenchSearch.EqIgnoreCase(searchName) ||
+                    !string.IsNullOrWhiteSpace(w.StreetName.NameGermanSearch) && w.StreetName.NameGermanSearch.EqIgnoreCase(searchName) ||
+                    !string.IsNullOrWhiteSpace(w.StreetName.NameEnglishSearch) && w.StreetName.NameEnglishSearch.EqIgnoreCase(searchName)))
+            {
                 _warnings.AddWarning("7", "Geen overeenkomst tussen 'RrStraatcode' en 'Straatnaam'.");
+            }
         }
 
         private static void FindStreetNamesByName(AddressMatchBuilder results, IReadOnlyDictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames)
@@ -187,11 +200,14 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 
                 var municipalityWithStreetNames = municipalitiesWithStreetNames[municipalityWrapper.NisCode];
 
+                var searchName = results.Query.StreetName.RemoveDiacritics().ToLowerInvariant();
+
                 var matchingStreetName = municipalityWithStreetNames
-                    .Where(s =>
-                        comparer(
-                            s.GetDefaultName(municipalityWrapper.Municipality.PrimaryLanguage),
-                            results.Query.StreetName));
+                        .Where(s =>
+                            !string.IsNullOrWhiteSpace(s.NameDutchSearch) && comparer(s.NameDutchSearch, searchName) ||
+                            !string.IsNullOrWhiteSpace(s.NameFrenchSearch) && comparer(s.NameFrenchSearch, searchName) ||
+                            !string.IsNullOrWhiteSpace(s.NameGermanSearch) && comparer(s.NameGermanSearch, searchName) ||
+                            !string.IsNullOrWhiteSpace(s.NameEnglishSearch) && comparer(s.NameEnglishSearch, searchName));
 
                 municipalityWrapper.AddStreetNames(matchingStreetName);
             }

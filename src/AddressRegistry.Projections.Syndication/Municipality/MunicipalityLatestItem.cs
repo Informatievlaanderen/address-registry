@@ -24,27 +24,25 @@ namespace AddressRegistry.Projections.Syndication.Municipality
         public string? Version { get; set; }
         public long Position { get; set; }
 
-        public KeyValuePair<Taal, string> DefaultName
-        {
-            get
+        public string GetDefaultName()
+            => PrimaryLanguage switch
             {
-                switch (PrimaryLanguage)
-                {
-                    default:
-                    case Taal.NL:
-                        return new KeyValuePair<Taal, string>(Taal.NL, NameDutch);
+                Taal.NL => NameDutch,
+                Taal.FR => NameFrench,
+                Taal.DE => NameGerman,
+                Taal.EN => NameEnglish,
+                _ => NameDutch
+            };
 
-                    case Taal.FR:
-                        return new KeyValuePair<Taal, string>(Taal.FR, NameFrench);
-
-                    case Taal.DE:
-                        return new KeyValuePair<Taal, string>(Taal.DE, NameGerman);
-
-                    case Taal.EN:
-                        return new KeyValuePair<Taal, string>(Taal.EN, NameEnglish);
-                }
-            }
-        }
+        public KeyValuePair<Taal, string> DefaultName
+            => PrimaryLanguage switch
+            {
+                Taal.NL => new KeyValuePair<Taal, string>(Taal.NL, NameDutch),
+                Taal.FR => new KeyValuePair<Taal, string>(Taal.FR, NameFrench),
+                Taal.DE => new KeyValuePair<Taal, string>(Taal.DE, NameGerman),
+                Taal.EN => new KeyValuePair<Taal, string>(Taal.EN, NameEnglish),
+                _ => new KeyValuePair<Taal, string>(Taal.NL, NameDutch)
+            };
     }
 
     public class MunicipalityLatestItemConfiguration : IEntityTypeConfiguration<MunicipalityLatestItem>

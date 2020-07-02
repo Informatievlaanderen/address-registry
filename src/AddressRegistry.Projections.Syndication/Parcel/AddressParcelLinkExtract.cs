@@ -17,7 +17,7 @@ namespace AddressRegistry.Projections.Syndication.Parcel
 
     public class AddressParcelLinkExtractItemConfiguration : IEntityTypeConfiguration<AddressParcelLinkExtractItem>
     {
-        private const string TableName = "AddressParcelLinksExtract";
+        public const string TableName = "AddressParcelLinksExtract";
 
         public void Configure(EntityTypeBuilder<AddressParcelLinkExtractItem> builder)
         {
@@ -35,7 +35,8 @@ namespace AddressRegistry.Projections.Syndication.Parcel
             builder.HasIndex(p => p.AddressId);
             builder.HasIndex(p => p.ParcelId);
             builder.HasIndex(p => p.AddressPersistentLocalId).IsClustered();
-            builder.HasIndex(p => p.AddressComplete).IncludeProperties(p => p.ParcelId);
+            builder.HasIndex(p => p.AddressComplete)
+                .IncludeProperties(p => new { p.AddressId, p.ParcelId });
         }
     }
 }

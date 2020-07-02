@@ -9,7 +9,9 @@ namespace AddressRegistry.Api.Extract.Extracts
     using Responses;
     using Swashbuckle.AspNetCore.Filters;
     using System.Threading;
+    using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api.Extract;
+    using Microsoft.Extensions.Configuration;
     using Projections.Syndication;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
@@ -47,7 +49,7 @@ namespace AddressRegistry.Api.Extract.Extracts
         /// <summary>
         /// Vraag een dump van alle adreskoppelingen op.
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="configuration"></param>
         /// <param name="syndicationContext"></param>
         /// <param name="cancellationToken"></param>
         /// <response code="200">Als adreskoppelingen kan gedownload worden.</response>
@@ -57,16 +59,17 @@ namespace AddressRegistry.Api.Extract.Extracts
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(AddressRegistryResponseExample), jsonConverter: typeof(StringEnumConverter))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples), jsonConverter: typeof(StringEnumConverter))]
-        public IActionResult GetAddressLinks(
+        public async Task<IActionResult> GetAddressLinks(
+            [FromServices] IConfiguration configuration,
             [FromServices] SyndicationContext syndicationContext,
             CancellationToken cancellationToken = default)
         {
-            var extractBuilder = new LinkedAddressExtractBuilder(syndicationContext);
+            var extractBuilder = new LinkedAddressExtractBuilder(syndicationContext, configuration.GetConnectionString("SyndicationProjections"));
 
             return new ExtractArchive(ExtractFileNames.GetAddressLinksZip())
                 {
                     extractBuilder.CreateLinkedBuildingUnitAddressFiles(),
-                    extractBuilder.CreateLinkedParcelAddressFiles()
+                    await extractBuilder.CreateLinkedParcelAddressFiles(cancellationToken)
                 }
                 .CreateFileCallbackResult(cancellationToken);
         }

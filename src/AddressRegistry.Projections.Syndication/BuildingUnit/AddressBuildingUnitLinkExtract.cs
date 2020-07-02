@@ -37,7 +37,8 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
             builder.HasIndex(p => p.AddressId);
             builder.HasIndex(p => p.BuildingUnitId);
             builder.HasIndex(p => p.BuildingId);
-            builder.HasIndex(p => p.AddressComplete).IncludeProperties(x => x.BuildingUnitId);
+            builder.HasIndex(p => p.AddressComplete)
+                .IncludeProperties(x => new { x.AddressId, x.BuildingUnitId });
             builder.HasIndex(p => p.AddressPersistentLocalId).IsClustered();
         }
     }

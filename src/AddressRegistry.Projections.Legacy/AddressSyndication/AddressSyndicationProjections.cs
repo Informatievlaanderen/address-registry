@@ -1,5 +1,6 @@
 namespace AddressRegistry.Projections.Legacy.AddressSyndication
 {
+    using System;
     using Address.Events;
     using Address.Events.Crab;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
@@ -22,7 +23,8 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     HouseNumber = message.Message.HouseNumber,
                     RecordCreatedAt = message.Message.Provenance.Timestamp,
                     LastChangedOn = message.Message.Provenance.Timestamp,
-                    ChangeType = message.EventName
+                    ChangeType = message.EventName,
+                    SyndicationItemCreatedAt = DateTimeOffset.UtcNow
                 };
 
                 addressSyndicationItem.ApplyProvenance(message.Message.Provenance);

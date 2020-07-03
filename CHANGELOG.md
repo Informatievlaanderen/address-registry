@@ -1,3 +1,12 @@
+## [2.16.7](https://github.com/informatievlaanderen/address-registry/compare/v2.16.6...v2.16.7) (2020-07-03)
+
+
+### Bug Fixes
+
+* add SyndicationItemCreatedAt GRAR-1442 ([81b5525](https://github.com/informatievlaanderen/address-registry/commit/81b5525a4960f30f28dc42256a06851f293b387d))
+* get updated value from projections GRAR-1442 ([c555e57](https://github.com/informatievlaanderen/address-registry/commit/c555e57586dd2bc1f486723a9be27038c30641c7))
+* update dependencies ([2c4a6df](https://github.com/informatievlaanderen/address-registry/commit/2c4a6dffcd70e901d23cb54f34cae2cafcb1f10b))
+
 ## [2.16.6](https://github.com/informatievlaanderen/address-registry/compare/v2.16.5...v2.16.6) (2020-07-02)
 
 

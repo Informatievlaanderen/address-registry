@@ -26,6 +26,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using AddressRegistry.Projections.Legacy.AddressSyndication;
     using AddressRegistry.Projections.Legacy.AddressVersion;
     using AddressRegistry.Projections.Legacy.CrabIdToPersistentLocalId;
+    using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
     using Microsoft.Extensions.Options;
     using NetTopologySuite.IO;
 
@@ -85,11 +86,17 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                     _configuration,
                     _loggerFactory)
                 .RegisterProjections<AddressExtractProjection, ExtractContext>(
-                    context => new AddressExtractProjection(context.Resolve<IOptions<ExtractConfig>>(), DbaseCodePage.Western_European_ANSI.ToEncoding(), new WKBReader()))
+                    context => new AddressExtractProjection(context.Resolve<IOptions<ExtractConfig>>(), DbaseCodePage.Western_European_ANSI.ToEncoding(), new WKBReader()),
+                    RetryPolicy.NoRetries)
                 .RegisterProjections<AddressLinkExtractProjection, ExtractContext>(
-                    context => new AddressLinkExtractProjection(context.Resolve<IOptions<ExtractConfig>>(), DbaseCodePage.Western_European_ANSI.ToEncoding(), new WKBReader()))
-                .RegisterProjections<AddressCrabHouseNumberIdExtractProjection, ExtractContext>(context => new AddressCrabHouseNumberIdExtractProjection(DbaseCodePage.Western_European_ANSI.ToEncoding()))
-                .RegisterProjections<AddressCrabSubaddressIdExtractProjection, ExtractContext>(context => new AddressCrabSubaddressIdExtractProjection(DbaseCodePage.Western_European_ANSI.ToEncoding()));
+                    context => new AddressLinkExtractProjection(context.Resolve<IOptions<ExtractConfig>>(), DbaseCodePage.Western_European_ANSI.ToEncoding(), new WKBReader()),
+                    RetryPolicy.NoRetries)
+                .RegisterProjections<AddressCrabHouseNumberIdExtractProjection, ExtractContext>(
+                    context => new AddressCrabHouseNumberIdExtractProjection(DbaseCodePage.Western_European_ANSI.ToEncoding()),
+                    RetryPolicy.NoRetries)
+                .RegisterProjections<AddressCrabSubaddressIdExtractProjection, ExtractContext>(
+                    context => new AddressCrabSubaddressIdExtractProjection(DbaseCodePage.Western_European_ANSI.ToEncoding()),
+                    RetryPolicy.NoRetries);
         }
 
         private void RegisterLastChangedProjections(ContainerBuilder builder)
@@ -105,7 +112,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .RegisterProjectionMigrator<AddressRegistry.Projections.LastChangedList.LastChangedListContextMigrationFactory>(
                     _configuration,
                     _loggerFactory)
-                .RegisterProjections<LastChangedListProjections, LastChangedListContext>();
+                .RegisterProjections<LastChangedListProjections, LastChangedListContext>(RetryPolicy.NoRetries);
         }
 
         private void RegisterLegacyProjections(ContainerBuilder builder)
@@ -120,11 +127,17 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .RegisterProjectionMigrator<LegacyContextMigrationFactory>(
                     _configuration,
                     _loggerFactory)
-                .RegisterProjections<AddressDetailProjections, LegacyContext>(() => new AddressDetailProjections(WKBReaderFactory.Create()))
-                .RegisterProjections<AddressListProjections, LegacyContext>()
-                .RegisterProjections<AddressSyndicationProjections, LegacyContext>(() => new AddressSyndicationProjections())
-                .RegisterProjections<AddressVersionProjections, LegacyContext>(() => new AddressVersionProjections())
-                .RegisterProjections<CrabIdToPersistentLocalIdProjections, LegacyContext>();
+                .RegisterProjections<AddressDetailProjections, LegacyContext>(
+                    () => new AddressDetailProjections(WKBReaderFactory.Create()),
+                    RetryPolicy.NoRetries)
+                .RegisterProjections<AddressListProjections, LegacyContext>(RetryPolicy.NoRetries)
+                .RegisterProjections<AddressSyndicationProjections, LegacyContext>(
+                    () => new AddressSyndicationProjections(),
+                    RetryPolicy.NoRetries)
+                .RegisterProjections<AddressVersionProjections, LegacyContext>(
+                    () => new AddressVersionProjections(),
+                    RetryPolicy.NoRetries)
+                .RegisterProjections<CrabIdToPersistentLocalIdProjections, LegacyContext>(RetryPolicy.NoRetries);
         }
     }
 }

@@ -81,7 +81,8 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                 Modification = Modification,
                 Operator = Operator,
                 Organisation = Organisation,
-                Reason = Reason
+                Reason = Reason,
+                SyndicationItemCreatedAt = DateTimeOffset.UtcNow
             };
 
             editFunc(newItem);

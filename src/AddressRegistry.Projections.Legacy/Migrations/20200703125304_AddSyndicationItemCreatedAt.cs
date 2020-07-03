@@ -13,7 +13,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                 schema: "AddressRegistryLegacy",
                 table: "AddressSyndication",
                 nullable: false,
-                defaultValue: new DateTimeOffset(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)));
+                defaultValue: DateTimeOffset.UtcNow);
 
             // remove the default value
             migrationBuilder.AlterColumn<DateTimeOffset>(

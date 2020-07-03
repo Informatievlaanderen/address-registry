@@ -50,6 +50,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
         public Organisation? Organisation { get; set; }
         public string? Reason { get; set; }
         public string? EventDataAsXml { get; set; }
+        public DateTimeOffset SyndicationItemCreatedAt { get; set; }
 
         public AddressSyndicationItem CloneAndApplyEventInfo(
             long position,
@@ -127,6 +128,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             b.Property(x => x.Organisation);
             b.Property(x => x.Reason);
             b.Property(x => x.EventDataAsXml);
+            b.Property(x => x.SyndicationItemCreatedAt).IsRequired();
 
             b.Ignore(x => x.RecordCreatedAt);
             b.Ignore(x => x.LastChangedOn);

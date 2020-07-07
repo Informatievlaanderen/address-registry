@@ -4,6 +4,8 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
     using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Framework;
     using Framework.Assert;
     using Framework.Generate;
@@ -338,6 +340,7 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
             var mappedAdressen = KadRrService
                 .Arrange(Produce.Many(Generate.TblHuisNummer.Select(x => x.WithStraatNaamId(streetNameId))),
                     (when, x) => when.AdresMappingExistsFor(x, request.Huisnummer, request.Index, request.RrStraatcode, request.Postcode))
+                .OrderBy(x => new VolledigAdres(existingStraatnaam, x.HouseNumber, x.BoxNumber, x.PostalCode, existingGemeentenaam, Taal.NL).GeografischeNaam.Spelling)
                 .ToList();
 
             //Act
@@ -347,7 +350,7 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
             response.Should().NotBeNull();
             response.Should().HaveMatches(Math.Min(mappedAdressen.Count, 10));
 
-            var firstMatch = response.AdresMatches.First();
+            var firstMatch = response.AdresMatches.OrderBy(x => x.Score).ThenBy(x => x.VolledigAdres?.GeografischeNaam?.Spelling).First();
 
             firstMatch.Should().HaveGemeente()
                 .Which.Should().HaveGemeentenaam(existingGemeentenaam)

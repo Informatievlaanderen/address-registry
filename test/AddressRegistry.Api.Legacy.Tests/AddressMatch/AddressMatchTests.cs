@@ -371,7 +371,7 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
             var streetNameId = Guid.NewGuid();
 
             //Arrange
-            AddressMatchRequest request = new AddressMatchRequest().WithGemeenteAndStraatnaam();
+            var request = new AddressMatchRequest().WithGemeenteAndStraatnaam();
             request.Huisnummer = "742";
 
             var existingGemeente = Latest.ArrangeLatestGemeente(existingNisCode, existingGemeentenaam).Single();
@@ -408,7 +408,7 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
             var postcode = Generate.Postcode.Generate(Random);
 
             //Arrange
-            AddressMatchRequest request = new AddressMatchRequest().WithGemeenteAndStraatnaam();
+            var request = new AddressMatchRequest().WithGemeenteAndStraatnaam();
             request.Postcode = postcode;
             request.Huisnummer = "742";
             request.Busnummer = "C2";

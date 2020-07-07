@@ -57,6 +57,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
             var result = addressMatch
                 .Process(new AddressMatchBuilder(Map(addressMatchRequest)))
                 .OrderByDescending(x => x.Score)
+                .ThenBy(x => x.VolledigAdres.GeografischeNaam.Spelling)
                 .Take(maxNumberOfResults)
                 .Select(x => AdresMatchItem.Create(x, buildingContext, context, responseOptions.Value))
                 .ToList();

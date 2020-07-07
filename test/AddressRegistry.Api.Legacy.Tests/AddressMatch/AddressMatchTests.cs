@@ -338,7 +338,7 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
             var straat = Latest.ArrangeLatestStraatnaam(existingNisCode, existingGemeentenaam, existingStraatnaamId.ToString(), existingStraatnaam, streetNameId).First();
 
             var mappedAdressen = KadRrService
-                .Arrange(Produce.Many(Generate.TblHuisNummer.Select(x => x.WithStraatNaamId(streetNameId))),
+                .Arrange(Produce.Exactly(6, Generate.TblHuisNummer.Select(x => x.WithStraatNaamId(streetNameId))),
                     (when, x) => when.AdresMappingExistsFor(x, request.Huisnummer, request.Index, request.RrStraatcode, request.Postcode))
                 .OrderBy(x => new VolledigAdres(existingStraatnaam, x.HouseNumber, x.BoxNumber, x.PostalCode, existingGemeentenaam, Taal.NL).GeografischeNaam.Spelling)
                 .ToList();

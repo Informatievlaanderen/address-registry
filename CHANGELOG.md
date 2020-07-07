@@ -1,3 +1,10 @@
+## [2.16.8](https://github.com/informatievlaanderen/address-registry/compare/v2.16.7...v2.16.8) (2020-07-07)
+
+
+### Bug Fixes
+
+* testbestand adres representation GRAR-1481 ([1ef2492](https://github.com/informatievlaanderen/address-registry/commit/1ef24920bc6a039eff69ad6f3d420d9d1ce672af))
+
 ## [2.16.7](https://github.com/informatievlaanderen/address-registry/compare/v2.16.6...v2.16.7) (2020-07-03)
 
 

@@ -9,6 +9,7 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
     using AddressLink;
     using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication;
     using Microsoft.EntityFrameworkCore;
 
@@ -167,9 +168,16 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
                     break;
             }
 
-            return string.IsNullOrEmpty(address.BoxNumber)
-                ? $"{streetNameName} {address.HouseNumber}, {address.PostalCode}, {municipalityName}"
-                : $"{streetNameName} {address.HouseNumber} bus {address.BoxNumber}, {address.PostalCode}, {municipalityName}";
+            return
+                new VolledigAdres(
+                    streetNameName,
+                    address.HouseNumber,
+                    address.BoxNumber,
+                    address.PostalCode,
+                    municipalityName,
+                    Taal.NL)
+                .GeografischeNaam
+                .Spelling;
         }
     }
 }

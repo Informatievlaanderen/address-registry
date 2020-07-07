@@ -1,3 +1,10 @@
+## [2.16.10](https://github.com/informatievlaanderen/address-registry/compare/v2.16.9...v2.16.10) (2020-07-07)
+
+
+### Bug Fixes
+
+* perform exact match before doing search match on street and muni GRAR-1482 ([bc71887](https://github.com/informatievlaanderen/address-registry/commit/bc71887ed64d6deb66a7f2e217cb5ae2c2ecd3c8))
+
 ## [2.16.9](https://github.com/informatievlaanderen/address-registry/compare/v2.16.8...v2.16.9) (2020-07-07)
 
 

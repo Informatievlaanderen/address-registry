@@ -100,7 +100,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 .ToList();
 
         private IEnumerable<MunicipalityLatestItem> FilterByName(
-            IEnumerable<MunicipalityLatestItem> municipalities,
+            List<MunicipalityLatestItem> municipalities,
             AddressMatchBuilder? results)
         {
             if (string.IsNullOrWhiteSpace(results?.Query.MunicipalityName))
@@ -108,16 +108,28 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 
             var searchName = results
                 ?.Query
-                ?.MunicipalityName
-                ?.RemoveDiacritics();
+                ?.MunicipalityName;
 
             var municipalitiesByName = municipalities
                 .Where(municipality =>
-                    !string.IsNullOrWhiteSpace(municipality.NameDutchSearch) && municipality.NameDutchSearch == searchName ||
-                    !string.IsNullOrWhiteSpace(municipality.NameFrenchSearch) && municipality.NameFrenchSearch == searchName ||
-                    !string.IsNullOrWhiteSpace(municipality.NameGermanSearch) && municipality.NameGermanSearch == searchName ||
-                    !string.IsNullOrWhiteSpace(municipality.NameEnglishSearch) && municipality.NameEnglishSearch == searchName)
+                    !string.IsNullOrWhiteSpace(municipality.NameDutch) && municipality.NameDutch == searchName ||
+                    !string.IsNullOrWhiteSpace(municipality.NameFrench) && municipality.NameFrench == searchName ||
+                    !string.IsNullOrWhiteSpace(municipality.NameGerman) && municipality.NameGerman == searchName ||
+                    !string.IsNullOrWhiteSpace(municipality.NameEnglish) && municipality.NameEnglish == searchName)
                 .ToList();
+
+            if (!municipalitiesByName.Any())
+            {
+                searchName = searchName.RemoveDiacritics();
+
+                municipalitiesByName = municipalities
+                    .Where(municipality =>
+                        !string.IsNullOrWhiteSpace(municipality.NameDutchSearch) && municipality.NameDutchSearch == searchName ||
+                        !string.IsNullOrWhiteSpace(municipality.NameFrenchSearch) && municipality.NameFrenchSearch == searchName ||
+                        !string.IsNullOrWhiteSpace(municipality.NameGermanSearch) && municipality.NameGermanSearch == searchName ||
+                        !string.IsNullOrWhiteSpace(municipality.NameEnglishSearch) && municipality.NameEnglishSearch == searchName)
+                    .ToList();
+            }
 
             if (!string.IsNullOrEmpty(results?.Query?.MunicipalityName) && !municipalitiesByName.Any())
                 _warnings.AddWarning("6", "Onbekende 'Gemeentenaam'.");

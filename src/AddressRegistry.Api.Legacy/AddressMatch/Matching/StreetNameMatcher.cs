@@ -209,20 +209,35 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 
                 var searchName = results
                     ?.Query
-                    ?.StreetName
-                    ?.RemoveDiacritics();
+                    ?.StreetName;
 
                 if (string.IsNullOrWhiteSpace(searchName))
                     return;
 
                 var matchingStreetName = municipalityWithStreetNames
+                    .Where(s =>
+                        !string.IsNullOrWhiteSpace(s.NameDutch) && comparer(s.NameDutch, searchName) ||
+                        !string.IsNullOrWhiteSpace(s.NameFrench) && comparer(s.NameFrench, searchName) ||
+                        !string.IsNullOrWhiteSpace(s.NameGerman) && comparer(s.NameGerman, searchName) ||
+                        !string.IsNullOrWhiteSpace(s.NameEnglish) && comparer(s.NameEnglish, searchName))
+                    .ToList();
+
+                municipalityWrapper.AddStreetNames(matchingStreetName);
+
+                if (matchingStreetName.Any())
+                    return;
+
+                searchName = searchName.RemoveDiacritics()!;
+
+                municipalityWrapper.AddStreetNames(
+                    municipalityWithStreetNames
                         .Where(s =>
                             !string.IsNullOrWhiteSpace(s.NameDutchSearch) && comparer(s.NameDutchSearch, searchName) ||
                             !string.IsNullOrWhiteSpace(s.NameFrenchSearch) && comparer(s.NameFrenchSearch, searchName) ||
                             !string.IsNullOrWhiteSpace(s.NameGermanSearch) && comparer(s.NameGermanSearch, searchName) ||
-                            !string.IsNullOrWhiteSpace(s.NameEnglishSearch) && comparer(s.NameEnglishSearch, searchName));
+                            !string.IsNullOrWhiteSpace(s.NameEnglishSearch) && comparer(s.NameEnglishSearch, searchName))
+                        .ToList());
 
-                municipalityWrapper.AddStreetNames(matchingStreetName);
             }
         }
     }

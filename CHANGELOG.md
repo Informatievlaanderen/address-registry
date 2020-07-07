@@ -1,3 +1,11 @@
+## [2.16.9](https://github.com/informatievlaanderen/address-registry/compare/v2.16.8...v2.16.9) (2020-07-07)
+
+
+### Bug Fixes
+
+* cleanup user input on scoring GRAR-1478 ([3470a56](https://github.com/informatievlaanderen/address-registry/commit/3470a5673154bb833377e53fc2e08291b0da90ab))
+* sort adresmatch on address after score GRAR-1477 ([0cbad2e](https://github.com/informatievlaanderen/address-registry/commit/0cbad2ee27c58fd0fd9f48cf1eae078c43c04c24))
+
 ## [2.16.8](https://github.com/informatievlaanderen/address-registry/compare/v2.16.7...v2.16.8) (2020-07-07)
 
 

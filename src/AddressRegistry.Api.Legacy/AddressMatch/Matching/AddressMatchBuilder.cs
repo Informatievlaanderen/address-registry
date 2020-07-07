@@ -167,7 +167,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 .Distinct(StringComparer.InvariantCultureIgnoreCase)
                 .ToList();
 
-            string CreateRepresentation(string? postalCode, string municipalityName, string streetName, string? houseNumber, string? boxNumber)
+            static string CreateRepresentation(string? postalCode, string municipalityName, string streetName, string? houseNumber, string? boxNumber)
                 => string.Format("{0}{1}{2},{3}{4}",
                     streetName,
                     !string.IsNullOrEmpty(houseNumber)
@@ -180,6 +180,37 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                         ? string.Concat(" ", postalCode)
                         : string.Empty,
                     string.Concat(" ", municipalityName));
+
+            static string CleanupStreetName(string street, string housenumber, string boxnumber)
+            {
+                // This method is not perfect, but it helps clean some user input to get to a better score
+                if (!string.IsNullOrWhiteSpace(housenumber) && !string.IsNullOrWhiteSpace(boxnumber))
+                {
+                    // If one replace is a subset of the other, flip them.
+                    if (housenumber.Contains(boxnumber))
+                    {
+                        street = street
+                            .Replace(housenumber, string.Empty, StringComparison.OrdinalIgnoreCase)
+                            .Replace(boxnumber, string.Empty, StringComparison.OrdinalIgnoreCase);
+                    }
+                    else
+                    {
+                        street = street
+                            .Replace(boxnumber, string.Empty, StringComparison.OrdinalIgnoreCase)
+                            .Replace(housenumber, string.Empty, StringComparison.OrdinalIgnoreCase);
+                    }
+                }
+                else if (!string.IsNullOrWhiteSpace(housenumber))
+                {
+                    street = street.Replace(housenumber, string.Empty, StringComparison.OrdinalIgnoreCase);
+                }
+                else if (!string.IsNullOrWhiteSpace(boxnumber))
+                {
+                    street = street.Replace(boxnumber, string.Empty, StringComparison.OrdinalIgnoreCase);
+                }
+
+                return street.Trim();
+            }
 
             foreach (var municipalityName in municipalityNames)
             {
@@ -200,7 +231,10 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                                 yield return CreateRepresentation(
                                     Query.PostalCode,
                                     municipalityName,
-                                    streetName ?? string.Empty,
+                                    CleanupStreetName(
+                                        streetName ?? string.Empty,
+                                        houseNumberWithSubaddress.HouseNumber ?? Query.HouseNumber,
+                                        houseNumberWithSubaddress.BoxNumber ?? Query.BoxNumber),
                                     houseNumberWithSubaddress.HouseNumber ?? Query.HouseNumber,
                                     houseNumberWithSubaddress.BoxNumber ?? Query.BoxNumber);
                         }
@@ -210,7 +244,10 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                             yield return CreateRepresentation(
                                 Query.PostalCode,
                                 municipalityName,
-                                streetName ?? string.Empty,
+                                CleanupStreetName(
+                                    streetName ?? string.Empty,
+                                    houseNumber.HouseNumber ?? Query.HouseNumber,
+                                    houseNumber.BoxNumber ?? Query.BoxNumber),
                                 houseNumber.HouseNumber ?? Query.HouseNumber,
                                 houseNumber.BoxNumber ?? Query.BoxNumber);
                         }

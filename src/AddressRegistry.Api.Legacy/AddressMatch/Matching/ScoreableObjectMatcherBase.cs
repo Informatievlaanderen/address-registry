@@ -15,10 +15,21 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 .GetMatchRepresentationsForScoring()
                 .ToList();
 
+            // representationsForScoring are all possible strings of the input
+            // scoreableObject are all objects found by the matchers
+            // if one of the fuzzy scores is 100, it means the scoreableObject was a perfect match with the input,
+            // in which case we should not take the average but set it at a 100
+
             foreach (var scoreableObject in results)
-                scoreableObject.Score = representationsForScoring
+            {
+                var scores = representationsForScoring
                     .Where(representationForScoring => !string.IsNullOrWhiteSpace(scoreableObject.ScoreableProperty))
-                    .Average(representationForScoring => scoreableObject.ScoreableProperty!.FuzzyScore(representationForScoring));
+                    .Select(representationForScoring => scoreableObject.ScoreableProperty!.FuzzyScore(representationForScoring))
+                    .ToList();
+
+                scoreableObject.Score = scores.Any(x => x == 100) ? 100 : scores.Average(x => x);
+            }
+               
 
             return results;
         }

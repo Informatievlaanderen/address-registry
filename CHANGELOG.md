@@ -1,3 +1,10 @@
+## [2.16.11](https://github.com/informatievlaanderen/address-registry/compare/v2.16.10...v2.16.11) (2020-07-09)
+
+
+### Bug Fixes
+
+* use natural sorting for equal scores GRAR-1477 ([e13b39a](https://github.com/informatievlaanderen/address-registry/commit/e13b39ab3c3e9b6e695aefe3814722554e83725f))
+
 ## [2.16.10](https://github.com/informatievlaanderen/address-registry/compare/v2.16.9...v2.16.10) (2020-07-07)
 
 

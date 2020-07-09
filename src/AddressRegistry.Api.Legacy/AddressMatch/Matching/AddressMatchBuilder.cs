@@ -171,10 +171,10 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 => string.Format("{0}{1}{2},{3}{4}",
                     streetName,
                     !string.IsNullOrEmpty(houseNumber)
-                        ? string.Concat(" ", houseNumber)
+                        ? string.Concat(" ", houseNumber.PadLeft(10, '0'))
                         : string.Empty,
                     !string.IsNullOrEmpty(boxNumber)
-                        ? string.Concat(" bus ", boxNumber)
+                        ? string.Concat(" bus ", boxNumber.PadLeft(10, '0'))
                         : string.Empty,
                     !string.IsNullOrEmpty(postalCode)
                         ? string.Concat(" ", postalCode)

@@ -6,6 +6,19 @@ namespace AddressRegistry.Api.Legacy.Infrastructure
 
     public static class StringReplaceExtension
     {
+        public static string ReplaceFirst(
+            this string str,
+            string oldValue,
+            string newValue,
+            StringComparison comparisonType)
+        {
+            var pos = str.IndexOf(oldValue, comparisonType);
+            if (pos < 0)
+                return str;
+
+            return str.Substring(0, pos) + newValue + str.Substring(pos + oldValue.Length);
+        }
+
         /// <summary>
         /// Returns a new string in which all occurrences of a specified string in the current instance are replaced with another 
         /// specified string according the type of search to use for the specified string.
@@ -41,7 +54,7 @@ namespace AddressRegistry.Api.Legacy.Infrastructure
             if (oldValue.Length == 0)
                 // Same as original .NET C# string.Replace behavior.
                 throw new ArgumentException("String cannot be of zero length.");
-            
+
             // Prepare string builder for storing the processed string.
             // Note: StringBuilder has a better performance than String by 30-40%.
             var resultStringBuilder = new StringBuilder(str.Length);

@@ -4,6 +4,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
+    using Infrastructure;
     using Responses;
 
     public class AdresMatchScorableItem : IScoreable
@@ -30,7 +31,27 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             get
             {
                 if (VolledigAdres != null)
-                    return VolledigAdres.GeografischeNaam?.Spelling;
+                {
+                    var completeAddress = VolledigAdres.GeografischeNaam?.Spelling;
+
+                    if (!string.IsNullOrWhiteSpace(Huisnummer))
+                    {
+                        completeAddress = completeAddress?.ReplaceFirst(
+                            Huisnummer,
+                            Huisnummer.PadLeft(10, '0'),
+                            StringComparison.OrdinalIgnoreCase);
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(Busnummer))
+                    {
+                        completeAddress = completeAddress?.ReplaceFirst(
+                            $"{Busnummer},",
+                            $"{Busnummer.PadLeft(10, '0')},",
+                            StringComparison.OrdinalIgnoreCase);
+                    }
+
+                    return completeAddress;
+                }
 
                 if (Gemeente != null && Straatnaam != null)
                     return $"{Straatnaam.Straatnaam?.GeografischeNaam?.Spelling}, {Gemeente.Gemeentenaam?.GeografischeNaam?.Spelling}";

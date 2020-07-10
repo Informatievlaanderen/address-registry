@@ -1,3 +1,10 @@
+## [2.16.12](https://github.com/informatievlaanderen/address-registry/compare/v2.16.11...v2.16.12) (2020-07-10)
+
+
+### Bug Fixes
+
+* enums were not correctly serialized in syndication event GRAR-1490 ([c211b04](https://github.com/informatievlaanderen/address-registry/commit/c211b04db3b836558a8a6cf048decab465d67d9d))
+
 ## [2.16.11](https://github.com/informatievlaanderen/address-registry/compare/v2.16.10...v2.16.11) (2020-07-09)
 
 

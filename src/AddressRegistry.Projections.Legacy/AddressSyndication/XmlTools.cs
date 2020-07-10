@@ -39,7 +39,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             "Operator"
         };
 
-        private static bool IsSimpleType(this Type type) => type.IsPrimitive || WriteTypes.Contains(type);
+        private static bool IsSimpleType(this Type type) => type.IsPrimitive || WriteTypes.Contains(type) || WriteTypes.Contains(type.BaseType);
 
         private static bool IsExcludedType(this Type type) => ExcludeTypes.Contains(type);
 

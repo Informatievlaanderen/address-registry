@@ -1,3 +1,10 @@
+## [2.16.13](https://github.com/informatievlaanderen/address-registry/compare/v2.16.12...v2.16.13) (2020-07-10)
+
+
+### Bug Fixes
+
+* correct author, links entry atom feed + example GRAR-1443 GRAR-1447 ([1839aca](https://github.com/informatievlaanderen/address-registry/commit/1839acaa5d294b9a9223759025905a84fd39cbd8))
+
 ## [2.16.12](https://github.com/informatievlaanderen/address-registry/compare/v2.16.11...v2.16.12) (2020-07-10)
 
 

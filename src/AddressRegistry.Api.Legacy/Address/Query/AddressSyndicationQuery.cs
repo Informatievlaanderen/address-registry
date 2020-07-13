@@ -195,11 +195,11 @@ namespace AddressRegistry.Api.Legacy.Address.Query
         private readonly bool _embedEvent;
         private readonly bool _embedObject;
 
-        public AddressSyndicationQuery(LegacyContext context, bool embedEvent, bool embedObject)
+        public AddressSyndicationQuery(LegacyContext context, EmbedValue embed)
         {
             _context = context;
-            _embedEvent = embedEvent;
-            _embedObject = embedObject;
+            _embedEvent = embed?.Event ?? false;
+            _embedObject = embed?.Object ?? false;
         }
 
         protected override ISorting Sorting => new AddressSyndicationSorting();
@@ -307,12 +307,6 @@ namespace AddressRegistry.Api.Legacy.Address.Query
     public class AddressSyndicationFilter
     {
         public long? Position { get; set; }
-        public string Embed { get; set; }
-
-        public bool ContainsEvent =>
-            Embed.Contains("event", StringComparison.OrdinalIgnoreCase);
-
-        public bool ContainsObject =>
-            Embed.Contains("object", StringComparison.OrdinalIgnoreCase);
+        public EmbedValue Embed { get; set; }
     }
 }

@@ -293,8 +293,7 @@ namespace AddressRegistry.Api.Legacy.Address
             var pagedAddresses =
                 new AddressSyndicationQuery(
                     context,
-                    filtering.Filter?.ContainsEvent ?? false,
-                    filtering.Filter?.ContainsObject ?? false)
+                    filtering.Filter?.Embed)
                 .Fetch(filtering, sorting, pagination);
 
             return new ContentResult

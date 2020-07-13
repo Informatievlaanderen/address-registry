@@ -1,3 +1,11 @@
+## [2.16.14](https://github.com/informatievlaanderen/address-registry/compare/v2.16.13...v2.16.14) (2020-07-13)
+
+
+### Bug Fixes
+
+* update dependencies ([91ac594](https://github.com/informatievlaanderen/address-registry/commit/91ac594d68ccc3594ec0027807dcf38c579fad9e))
+* use typed embed value GRAR-1465 ([0727a1c](https://github.com/informatievlaanderen/address-registry/commit/0727a1cd1a637db98976dae6328f00f1aff62652))
+
 ## [2.16.13](https://github.com/informatievlaanderen/address-registry/compare/v2.16.12...v2.16.13) (2020-07-10)
 
 

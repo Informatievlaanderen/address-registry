@@ -232,7 +232,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             IsComplete = isComplete;
             IsOfficiallyAssigned = isOfficiallyAssigned;
 
-            Provenance = new Provenance(organisation, new Reason(reason));
+            Provenance = new Provenance(version, organisation, new Reason(reason));
         }
     }
 

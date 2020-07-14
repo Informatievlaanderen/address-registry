@@ -1,3 +1,10 @@
+# [2.17.0](https://github.com/informatievlaanderen/address-registry/compare/v2.16.14...v2.17.0) (2020-07-14)
+
+
+### Features
+
+* add timestamp to sync provenance GRAR-1451 ([461520a](https://github.com/informatievlaanderen/address-registry/commit/461520aad3697430690be1f04539dbdc4435413a))
+
 ## [2.16.14](https://github.com/informatievlaanderen/address-registry/compare/v2.16.13...v2.16.14) (2020-07-13)
 
 

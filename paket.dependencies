@@ -2,13 +2,13 @@ framework: netcoreapp31, net472
 source https://api.nuget.org/v3/index.json
 
 // PRODUCTION STUFF
-nuget Microsoft.Extensions.Configuration 3.1.5
-nuget Microsoft.Extensions.Configuration.CommandLine 3.1.5
-nuget Microsoft.Extensions.Configuration.FileExtensions 3.1.5
-nuget Microsoft.Extensions.Configuration.EnvironmentVariables 3.1.5
-nuget Microsoft.Extensions.Configuration.Json 3.1.5
+nuget Microsoft.Extensions.Configuration 3.1.6
+nuget Microsoft.Extensions.Configuration.CommandLine 3.1.6
+nuget Microsoft.Extensions.Configuration.FileExtensions 3.1.6
+nuget Microsoft.Extensions.Configuration.EnvironmentVariables 3.1.6
+nuget Microsoft.Extensions.Configuration.Json 3.1.6
 
-nuget Microsoft.Extensions.Http.Polly 3.1.5
+nuget Microsoft.Extensions.Http.Polly 3.1.6
 
 // For more healtchecks, look at https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks
 nuget AspNetCore.HealthChecks.SqlServer 3.1.1
@@ -19,54 +19,54 @@ nuget CsvHelper 15.0.5
 
 nuget NetTopologySuite 2.0.0
 
-nuget Microsoft.EntityFrameworkCore.Design 3.1.5
+nuget Microsoft.EntityFrameworkCore.Design 3.1.6
 
 // VBR STUFF
-nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 4.2.1
-nuget Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events 2.2.4 content: true, copy_content_to_output_dir: always, copy_local: true
+nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 4.2.2
+nuget Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events 2.2.5 content: true, copy_content_to_output_dir: always, copy_local: true
 
-nuget Be.Vlaanderen.Basisregisters.AggregateSource 5.0.7
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.ExplicitRouting 5.0.7
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore.Autofac 5.0.7
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing 5.0.7
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.CommandHandling 5.0.7
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac 5.0.7
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit 5.0.7
+nuget Be.Vlaanderen.Basisregisters.AggregateSource 5.0.8
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.ExplicitRouting 5.0.8
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore.Autofac 5.0.8
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing 5.0.8
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.CommandHandling 5.0.8
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac 5.0.8
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit 5.0.8
 
-nuget Be.Vlaanderen.Basisregisters.Api 11.7.1
+nuget Be.Vlaanderen.Basisregisters.Api 11.7.5
 
-nuget Be.Vlaanderen.Basisregisters.Aws.DistributedMutex 2.2.6
+nuget Be.Vlaanderen.Basisregisters.Aws.DistributedMutex 2.2.7
 
-nuget Be.Vlaanderen.Basisregisters.CommandHandling 5.0.7
-nuget Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency 5.0.7
-nuget Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore 5.0.7
+nuget Be.Vlaanderen.Basisregisters.CommandHandling 5.0.8
+nuget Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency 5.0.8
+nuget Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore 5.0.8
 
-nuget Be.Vlaanderen.Basisregisters.EventHandling 2.2.4
-nuget Be.Vlaanderen.Basisregisters.EventHandling.Autofac 2.2.4
+nuget Be.Vlaanderen.Basisregisters.EventHandling 2.2.5
+nuget Be.Vlaanderen.Basisregisters.EventHandling.Autofac 2.2.5
 
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList 6.0.6
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore 6.0.6
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac 6.0.6
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner 6.0.6
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing 6.0.6
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit 6.0.6
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication 6.0.6
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList 6.0.7
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore 6.0.7
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac 6.0.7
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner 6.0.7
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing 6.0.7
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit 6.0.7
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication 6.0.7
 
-nuget Be.Vlaanderen.Basisregisters.Projector 5.4.3
+nuget Be.Vlaanderen.Basisregisters.Projector 5.4.4
 
-nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac 4.5.2
-nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.AspNetCore 4.5.2
-nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.SqlStreamStore 4.5.2
+nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac 4.5.3
+nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.AspNetCore 4.5.3
+nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.SqlStreamStore 4.5.3
 
-nuget Be.Vlaanderen.Basisregisters.Crab 2.1.4
+nuget Be.Vlaanderen.Basisregisters.Crab 2.1.5
 
-nuget Be.Vlaanderen.Basisregisters.GrAr.Common 16.0.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Import 16.0.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Legacy 16.0.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance 16.0.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Extracts 16.0.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Common 16.0.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Import 16.0.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Legacy 16.0.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance 16.0.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Extracts 16.0.1
 
-nuget Be.Vlaanderen.Basisregisters.Shaperon 8.0.1
+nuget Be.Vlaanderen.Basisregisters.Shaperon 8.0.2
 
 // .NET CLASSIC STUFF
 nuget EntityFramework 6.4.4
@@ -79,7 +79,7 @@ nuget Structurizr.AdrTools 0.9.3
 
 // TEST STUFF
 nuget Microsoft.NET.Test.Sdk 16.6.1
-nuget Microsoft.EntityFrameworkCore.InMemory 3.1.5
+nuget Microsoft.EntityFrameworkCore.InMemory 3.1.6
 nuget xunit 2.4.1
 nuget xunit.runner.visualstudio 2.4.2
 nuget xunit.categories 2.0.4

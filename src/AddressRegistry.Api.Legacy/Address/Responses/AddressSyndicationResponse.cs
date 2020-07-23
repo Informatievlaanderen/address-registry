@@ -82,7 +82,8 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
 
             var content = new SyndicationContent();
             if (address.ContainsObject)
-                content.Object = new AddressSyndicationContent(address.AddressId,
+                content.Object = new AddressSyndicationContent(
+                    address.AddressId,
                     naamruimte,
                     address.StreetNameId,
                     address.PersistentLocalId,

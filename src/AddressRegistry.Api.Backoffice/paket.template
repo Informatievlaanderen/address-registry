@@ -1,0 +1,24 @@
+type file
+version 1.0.0
+
+id Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Backoffice
+title Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Backoffice
+
+authors Basisregisters.Vlaanderen
+owners Vlaamse overheid
+copyright Copyright (c) Vlaamse overheid
+requireLicenseAcceptance false
+projectUrl https://vlaanderen.be/informatie-vlaanderen
+iconUrl https://raw.githubusercontent.com/Informatievlaanderen/build-pipeline/master/logo.png
+licenseUrl https://opensource.org/licenses/EUPL-1.2
+
+description Address Registry.
+
+files
+  AddressRegistry.Api.Backoffice.dll => lib\netcoreapp3.1
+  AddressRegistry.Api.Backoffice.pdb => lib\netcoreapp3.1
+  AddressRegistry.Api.Backoffice.xml => lib\netcoreapp3.1
+  AddressRegistry.Api.Backoffice.xml => content
+   
+  AddressRegistry.dll => lib\netcoreapp3.1
+  AddressRegistry.pdb => lib\netcoreapp3.1

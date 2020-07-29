@@ -46,6 +46,7 @@ Target.create "Publish_Solution" (fun _ ->
     "AddressRegistry.Projector"
     "AddressRegistry.Api.Legacy"
     "AddressRegistry.Api.Extract"
+    "AddressRegistry.Api.Backoffice"
     "AddressRegistry.Api.CrabImport"
     "AddressRegistry.Projections.Legacy"
     "AddressRegistry.Projections.Extract"
@@ -65,6 +66,7 @@ Target.create "Pack_Solution" (fun _ ->
     "AddressRegistry.Projector"
     "AddressRegistry.Api.Legacy"
     "AddressRegistry.Api.Extract"
+    "AddressRegistry.Api.Backoffice"
     "AddressRegistry.Api.CrabImport"
   ] |> List.iter pack)
 
@@ -76,6 +78,9 @@ Target.create "PushContainer_ApiLegacy" (fun _ -> push "api-legacy")
 
 Target.create "Containerize_ApiExtract" (fun _ -> containerize "AddressRegistry.Api.Extract" "api-extract")
 Target.create "PushContainer_ApiExtract" (fun _ -> push "api-extract")
+
+Target.create "Containerize_ApiBackoffice" (fun _ -> containerize "AddressRegistry.Api.Backoffice" "api-backoffice")
+Target.create "PushContainer_ApiBackoffice" (fun _ -> push "api-backoffice")
 
 Target.create "Containerize_ApiCrabImport" (fun _ -> containerize "AddressRegistry.Api.CrabImport" "api-crab-import")
 Target.create "PushContainer_ApiCrabImport" (fun _ -> push "api-crab-import")
@@ -118,6 +123,7 @@ Target.create "Push" ignore
   ==> "Containerize_Projector"
   ==> "Containerize_ApiLegacy"
   ==> "Containerize_ApiExtract"
+  ==> "Containerize_ApiBackoffice"
   ==> "Containerize_ApiCrabImport"
   ==> "Containerize_ProjectionsSyndication"
   ==> "Containerize_CacheWarmer"
@@ -129,6 +135,7 @@ Target.create "Push" ignore
   ==> "PushContainer_Projector"
   ==> "PushContainer_ApiLegacy"
   ==> "PushContainer_ApiExtract"
+  ==> "PushContainer_ApiBackoffice"
   ==> "PushContainer_ApiCrabImport"
   ==> "PushContainer_ProjectionsSyndication"
   ==> "PushContainer_CacheWarmer"

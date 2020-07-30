@@ -3,6 +3,7 @@ namespace AddressRegistry.Api.Backoffice.Infrastructure.Modules
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
+    using CrabEdit.Client;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -26,7 +27,8 @@ namespace AddressRegistry.Api.Backoffice.Infrastructure.Modules
         protected override void Load(ContainerBuilder containerBuilder)
         {
             containerBuilder
-                .RegisterModule(new DataDogModule(_configuration));
+                .RegisterModule(new DataDogModule(_configuration))
+                .RegisterModule(new CrabEditModule(_configuration));
 
             containerBuilder.Populate(_services);
         }

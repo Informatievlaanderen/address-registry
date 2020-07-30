@@ -32,5 +32,12 @@
     <Compile Include="..\..\SolutionInfo.cs" Link="Properties\SolutionInfo.cs" />
   </ItemGroup>
 
+  <!-- ToDo: remove and include as nuget package -->
+  <ItemGroup>
+    <Reference Include="CrabEdit.Client">
+      <HintPath>..\..\..\poc-crab-edit\src\CrabEdit.Client\bin\Debug\netstandard2.0\CrabEdit.Client.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

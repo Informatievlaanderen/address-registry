@@ -1,25 +1,32 @@
 namespace AddressRegistry.Address
 {
-    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using System;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using NodaTime;
 
-    public class AddressProvenanceFactory : CrabProvenanceFactory, IProvenanceFactory<Address>
+    public class AddressProvenanceFactory : IProvenanceFactory<Address>
     {
-        public bool CanCreateFrom<TCommand>() => typeof(IHasCrabProvenance).IsAssignableFrom(typeof(TCommand));
+        // TODO: Do we introduce an IHasProvenance?
+        public bool CanCreateFrom<TCommand>() => true; 
 
         public Provenance CreateFrom(
             object provenanceHolder,
             Address aggregate)
         {
-            if (!(provenanceHolder is IHasCrabProvenance crabProvenance))
-                throw new ApplicationException($"Cannot create provenance from {provenanceHolder.GetType().Name}");
+#if DEBUG
+            // Todo: this should be a debug-config flag, so you can run development without GeoSecure
+            return new Provenance(
+                SystemClock.Instance.GetCurrentInstant(),
+                Application.Unknown,
+                new Reason("DUMMY PROVENANCE"),
+                new Operator($"DUMMY OPERATOR: {Environment.MachineName}"),
+                Modification.Unknown,
+                Organisation.Unknown);
+#endif
 
-            return CreateFrom(
-                aggregate.LastModificationBasedOnCrab,
-                crabProvenance.Timestamp,
-                crabProvenance.Modification,
-                crabProvenance.Operator,
-                crabProvenance.Organisation);
+            // TODO: Get from Geosecure
+            throw new NotImplementedException($"{nameof(AddressProvenanceFactory)}.{nameof(CreateFrom)}: Creating provenance from GeoSecure is not implemented yet");
+
         }
     }
 }

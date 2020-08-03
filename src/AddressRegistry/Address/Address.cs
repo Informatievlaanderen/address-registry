@@ -290,7 +290,9 @@ namespace AddressRegistry.Address
         public void RequestPersistentLocalId(IPersistentLocalIdGenerator persistentLocalIdGenerator)
         {
             if (_persistentLocalId == null)
-                AssignPersistentLocalId(persistentLocalIdGenerator.GenerateNextPersistentLocalId(), new PersistentLocalIdAssignmentDate(Instant.FromDateTimeOffset(DateTimeOffset.Now)));
+                AssignPersistentLocalId(
+                    persistentLocalIdGenerator.GenerateNextPersistentLocalId(),
+                    new PersistentLocalIdAssignmentDate(Instant.FromDateTimeOffset(DateTimeOffset.Now))); // TODO: Refactor this to use IClock
         }
 
         private void EvaluatePositionChange()

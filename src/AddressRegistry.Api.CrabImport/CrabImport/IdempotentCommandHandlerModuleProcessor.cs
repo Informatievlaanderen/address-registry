@@ -27,11 +27,12 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
             Func<IStreamStore> getStreamStore,
             EventMapping eventMapping,
             EventSerializer eventSerializer,
-            AddressProvenanceFactory provenanceFactory)
+            AddressProvenanceFactory addressProvenanceFactory,
+            CrabAddressProvenanceFactory crabProvenanceFactory)
         {
             _getAddresses = getAddresses;
             _concurrentUnitOfWork = concurrentUnitOfWork;
-            _provenanceFactory = provenanceFactory.CreateFrom;
+            _provenanceFactory = crabProvenanceFactory.CreateFrom;
 
             _addressCommandHandlerModule = new AddressCommandHandlerModule(
                 _getAddresses,
@@ -40,7 +41,8 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
                 getStreamStore,
                 eventMapping,
                 eventSerializer,
-                provenanceFactory);
+                addressProvenanceFactory,
+                crabProvenanceFactory);
         }
 
         public async Task<CommandMessage> Process(

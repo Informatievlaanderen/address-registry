@@ -2,9 +2,10 @@ AspNetCore.HealthChecks.SqlServer
 
 Be.Vlaanderen.Basisregisters.Api
 
-
 Be.Vlaanderen.Basisregisters.GrAr.Common
 Be.Vlaanderen.Basisregisters.GrAr.Legacy
+
+RestSharp
 
 SourceLink.Embed.AllSourceFiles
 SourceLink.Copy.PdbFiles

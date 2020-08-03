@@ -1,10 +1,8 @@
-namespace AddressRegistry.Api.CrabImport.CrabImport
+namespace AddressRegistry.Infrastructure
 {
-    using Address;
-    using AddressRegistry.Infrastructure;
-    using Infrastructure;
-    using Microsoft.EntityFrameworkCore;
     using System.Data;
+    using Address;
+    using Microsoft.EntityFrameworkCore;
 
     public class SqlPersistentLocalIdGenerator : IPersistentLocalIdGenerator
     {

@@ -801,6 +801,7 @@ NUGET
     Polly.Extensions.Http (3.0)
       Polly (>= 7.1)
     Portable.BouncyCastle (1.8.6.7) - restriction: || (&& (== net472) (>= netcoreapp3.1)) (== netcoreapp3.1)
+    RestSharp (106.11.4)
     runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl (4.3.3) - restriction: || (&& (== net472) (< net45)) (== netcoreapp3.1)
     runtime.debian.9-x64.runtime.native.System.Security.Cryptography.OpenSsl (4.3.3) - restriction: || (&& (== net472) (< net45)) (== netcoreapp3.1)
     runtime.fedora.23-x64.runtime.native.System.Security.Cryptography.OpenSsl (4.3.3) - restriction: || (&& (== net472) (< net45)) (== netcoreapp3.1)

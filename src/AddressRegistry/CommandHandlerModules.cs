@@ -9,6 +9,10 @@ namespace AddressRegistry
         public static void Register(ContainerBuilder containerBuilder)
         {
             containerBuilder
+                .RegisterType<CrabAddressProvenanceFactory>()
+                .SingleInstance();
+
+            containerBuilder
                 .RegisterType<AddressProvenanceFactory>()
                 .SingleInstance();
 

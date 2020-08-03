@@ -3,44 +3,67 @@ namespace AddressRegistry.Api.Backoffice.Address
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using AddressRegistry.Address.Commands;
     using Be.Vlaanderen.Basisregisters.Api;
-    using CrabEdit.Client;
-    using CrabEdit.Client.Contexts.Address;
-    using CrabEdit.Client.Contexts.Address.Requests;
+    using Be.Vlaanderen.Basisregisters.CommandHandling;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
+    using Infrastructure;
     using Microsoft.AspNetCore.Mvc;
+    using Requests;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
     [ApiRoute("adressen")]
     [ApiExplorerSettings(GroupName = "Adressen")]
-    public class AddressController : ApiController
+    public class AddressController : EditApiController
     {
-        [HttpPost("huisnummer")]
-        public async Task<IActionResult> AddHouseNumber(
-            [FromServices] CrabEditClient editClient,
-            //[FromBody] AddHouseNumberRequest addHouseNumber,
-            CancellationToken cancellationToken)
-        {
-            // todo, don't hard-code this
-            var addHouseNumber = new AddHouseNumber
+        private static AddHouseNumberRequest DummyRequest
+            => new AddHouseNumberRequest
             {
-                StreetNameId = 1,
-                HouseNumber = "5x",
-                PostalCode = "2630",
-                Status = AddressStatus.InUse,
+                StreetNameId = "https://data.vlaanderen.be/id/straatnaam/3",
+                HouseNumber = "2C",
+                PostalCode = "https://data.vlaanderen.be/id/postinfo/1005",
+                Status = AdresStatus.InGebruik,
                 OfficiallyAssigned = true,
-                Position = new AddressPosition
+                Position = new AddressPositionRequest
                 {
-                    Method = AddressPositionMethod.AppointedByAdministrator,
-                    Specification = AddressPositionSpecification.Lot,
-                    Wkt = "POINT (150647.25 200188.74)"
+                    Method = PositieGeometrieMethode.AangeduidDoorBeheerder,
+                    Specification = PositieSpecificatie.Lot,
+                    Point = new GeoJSONPoint { Coordinates = new [] { 150647.25, 200188.74 } }
                 }
             };
 
-            var crabAddressId = await editClient.Add(addHouseNumber, cancellationToken);
-            await editClient.Delete(new RemoveHouseNumber { AddressId = crabAddressId }, cancellationToken);
+        [HttpPost("huisnummer")]
+        public async Task<IActionResult> AddHouseNumber(
+            [FromServices] ICommandHandlerResolver bus,
+            [FromServices] AddressCrabEditClient editClient,
+            [FromBody] AddHouseNumberRequest request,
+            CancellationToken cancellationToken)
+        {
+            // override request with dummy
+            request = DummyRequest;
 
-            return new OkObjectResult("Congrats, we made you think you added a house number.");
+            var crabHouseNumberId = await editClient.AddHouseNumberToCrab(request, cancellationToken);
+            var addressId = AddressId.CreateFor(crabHouseNumberId);
+
+            var command = new RegisterAddress(
+                addressId,
+                StreetNameId.CreateForPersistentId(request.StreetNameId),
+                PostalCode.CreateForPersistentId(request.PostalCode),
+                new HouseNumber(request.HouseNumber),
+                null);
+
+            var position = await bus.Dispatch(
+                Guid.NewGuid(),
+                command,
+                GetMetadata(),
+                cancellationToken);
+
+            // TODO: Insert into Operations - Guid + Position + Url Placeholder
+
+            return Accepted($"/v1/operaties/{position}");
         }
     }
 }

@@ -1,6 +1,5 @@
-namespace AddressRegistry.Api.CrabImport.Migrations
+namespace AddressRegistry.Infrastructure.Migrations
 {
-    using AddressRegistry.Infrastructure;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore.Migrations;
 

@@ -1,6 +1,7 @@
 namespace AddressRegistry.Api.Backoffice.Infrastructure.Modules
 {
     using Address;
+    using AddressRegistry.Infrastructure.Modules;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
@@ -29,7 +30,8 @@ namespace AddressRegistry.Api.Backoffice.Infrastructure.Modules
         {
             containerBuilder
                 .RegisterModule(new DataDogModule(_configuration))
-                .RegisterModule(new CrabEditModule(_configuration));
+                .RegisterModule(new CrabEditModule(_configuration))
+                .RegisterModule(new EditModule(_configuration, _services, _loggerFactory));
 
             containerBuilder
                 .RegisterType<AddressCrabEditClient>();

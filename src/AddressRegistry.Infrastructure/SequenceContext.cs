@@ -1,11 +1,10 @@
-namespace AddressRegistry.Api.CrabImport.Infrastructure
+namespace AddressRegistry.Infrastructure
 {
-    using AddressRegistry.Infrastructure;
+    using System;
+    using System.IO;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Design;
     using Microsoft.Extensions.Configuration;
-    using System;
-    using System.IO;
 
     public class SequenceContext : DbContext
     {

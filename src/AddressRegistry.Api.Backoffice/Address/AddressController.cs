@@ -6,8 +6,6 @@ namespace AddressRegistry.Api.Backoffice.Address
     using AddressRegistry.Address.Commands;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
     using Infrastructure;
     using Microsoft.AspNetCore.Mvc;
@@ -22,15 +20,15 @@ namespace AddressRegistry.Api.Backoffice.Address
         private static AddHouseNumberRequest DummyRequest
             => new AddHouseNumberRequest
             {
-                StreetNameId = "https://data.vlaanderen.be/id/straatnaam/3",
+                StreetNameId = new Uri("https://data.vlaanderen.be/id/straatnaam/3"),
                 HouseNumber = "2C",
-                PostalCode = "https://data.vlaanderen.be/id/postinfo/1005",
-                Status = AdresStatus.InGebruik,
+                PostalCode = new Uri("https://data.vlaanderen.be/id/postinfo/1005"),
+                Status = new Uri("https://data.vlaanderen.be/id/concept/adresstatus/inGebruik"),
                 OfficiallyAssigned = true,
                 Position = new AddressPositionRequest
                 {
-                    Method = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                    Specification = PositieSpecificatie.Lot,
+                    Method = new Uri("https://data.vlaanderen.be/id/concept/geometriemethode/aangeduidDoorBeheerder"),
+                    Specification = new Uri("https://data.vlaanderen.be/id/concept/geometriespecificatie/lot"),
                     Point = new GeoJSONPoint { Coordinates = new [] { 150647.25, 200188.74 } }
                 }
             };

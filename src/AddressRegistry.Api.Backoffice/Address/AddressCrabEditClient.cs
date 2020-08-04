@@ -9,6 +9,8 @@ namespace AddressRegistry.Api.Backoffice.Address
     using CrabEdit.Client.Contexts.Address;
     using CrabEdit.Client.Contexts.Address.Requests;
     using Requests;
+    using TODO_MOVE_TO;
+    using TODO_MOVE_TO.Grar.Common;
 
     public class AddressCrabEditClient
     {
@@ -22,11 +24,10 @@ namespace AddressRegistry.Api.Backoffice.Address
             CancellationToken cancellationToken)
         {
             // ToDo: refactor
-            var streetNameId =
-                int.Parse(request.StreetNameId.Replace("https://data.vlaanderen.be/id/straatnaam/", string.Empty));
+            var streetNameId = int.Parse(request.StreetNameId.AsIdentifier().Value);
 
             // ToDo: refactor
-            var postalCode = request.PostalCode.Replace("https://data.vlaanderen.be/id/postinfo/", string.Empty);
+            var postalCode = request.PostalCode.AsIdentifier().Value;
 
             var crabHouseNumberId = await _client.Add(
                 new AddHouseNumber
@@ -34,12 +35,12 @@ namespace AddressRegistry.Api.Backoffice.Address
                     StreetNameId = streetNameId,
                     HouseNumber = request.HouseNumber,
                     PostalCode = postalCode,
-                    Status = request.Status.Map(),
+                    Status = request.AddressStatus.MapToCrabEditValue(),
                     OfficiallyAssigned = request.OfficiallyAssigned,
                     Position = new AddressPosition
                     {
-                        Method = request.Position.Method.Map(),
-                        Specification = request.Position.Specification.Map(),
+                        Method = request.Position.AddressPositionMethod.MapToCrabEditValue(),
+                        Specification = request.Position.AddressPositionSpecification.MapToCrabEditValue(),
                         Wkt = $"POINT ({string.Join(" ", request.Position.Point.Coordinates.Take(2))})"
                     }
                 },

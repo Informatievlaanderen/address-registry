@@ -3,7 +3,7 @@ namespace AddressRegistry.Api.Backoffice.Address.Requests
     using System;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
+    using GeoJSON.Net.Geometry;
     using Newtonsoft.Json;
     using TODO_MOVE_TO.Grar.Common;
 
@@ -43,7 +43,7 @@ namespace AddressRegistry.Api.Backoffice.Address.Requests
         public Uri Specification { get; set; }
 
         [JsonProperty("geometrie")]
-        public GeoJSONPoint Point { get; set; }
+        public Point Point { get; set; }
 
         internal PositieGeometrieMethode AddressPositionMethod
             => Method.AsIdentifier().AsAddressPositionMethod();

@@ -6,7 +6,6 @@ namespace AddressRegistry.Api.Backoffice.Address
     using AddressRegistry.Address.Commands;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
     using Infrastructure;
     using Microsoft.AspNetCore.Mvc;
     using Requests;
@@ -17,21 +16,24 @@ namespace AddressRegistry.Api.Backoffice.Address
     [ApiExplorerSettings(GroupName = "Adressen")]
     public class AddressController : EditApiController
     {
-        private static AddHouseNumberRequest DummyRequest
-            => new AddHouseNumberRequest
-            {
-                StreetNameId = new Uri("https://data.vlaanderen.be/id/straatnaam/3"),
-                HouseNumber = "2C",
-                PostalCode = new Uri("https://data.vlaanderen.be/id/postinfo/1005"),
-                Status = new Uri("https://data.vlaanderen.be/id/concept/adresstatus/inGebruik"),
-                OfficiallyAssigned = true,
-                Position = new AddressPositionRequest
-                {
-                    Method = new Uri("https://data.vlaanderen.be/id/concept/geometriemethode/aangeduidDoorBeheerder"),
-                    Specification = new Uri("https://data.vlaanderen.be/id/concept/geometriespecificatie/lot"),
-                    Point = new GeoJSONPoint { Coordinates = new [] { 150647.25, 200188.74 } }
-                }
-            };
+        /* Post-huisnummer example:
+{
+    "heeftStraatnaam": "https://data.vlaanderen.be/id/straatnaam/3",
+    "huisnummer": "2C",
+    "busnummer": null,
+    "heeftPostinfo": "https://data.vlaanderen.be/id/postinfo/2630",
+    "status": "inGebruik",
+    "officieelToegekend": true,
+    "positie": {
+        "methode": "aangeduidDoorBeheerder",
+        "specificatie": "lot",
+        "geometrie": {
+            "coordinates": [-2.124156, 51.899523],
+            "type": "Point"
+        }
+    }
+}
+         */
 
         [HttpPost("huisnummer")]
         public async Task<IActionResult> AddHouseNumber(
@@ -40,8 +42,9 @@ namespace AddressRegistry.Api.Backoffice.Address
             [FromBody] AddHouseNumberRequest request,
             CancellationToken cancellationToken)
         {
-            // override request with dummy
-            request = DummyRequest;
+            // TODO: Turn this into proper VBR API Validation
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
             var crabHouseNumberId = await editClient.AddHouseNumberToCrab(request, cancellationToken);
             var addressId = AddressId.CreateFor(crabHouseNumberId);

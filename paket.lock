@@ -472,6 +472,8 @@ NUGET
       FSharp.Core (>= 4.7.2)
       System.Reactive (>= 4.4.1)
     FSharp.Core (4.7.2)
+    GeoJSON.NET (1.2.19)
+      Newtonsoft.Json (>= 10.0.2)
     MailKit (2.8) - restriction: || (&& (== net472) (>= netcoreapp3.1)) (== netcoreapp3.1)
       MimeKit (>= 2.9.1)
       System.Net.NameResolution (>= 4.3) - restriction: || (&& (== net472) (< net45)) (== netcoreapp3.1)

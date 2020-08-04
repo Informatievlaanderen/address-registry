@@ -17,10 +17,10 @@ namespace AddressRegistry.Api.Backoffice.TODO_MOVE_TO.Grar.Common
             => _uri = uri;
 
         public override bool Equals(object obj)
-            => _uri.Equals(obj);
+            => Equals(obj as IdentifierUri);
 
         protected bool Equals(IdentifierUri other)
-            => Equals(_uri, other._uri);
+            => Equals(_uri, other?._uri);
 
         public override int GetHashCode()
             => _uri != null ? _uri.GetHashCode() : 0;

@@ -22,13 +22,13 @@ namespace AddressRegistry.Api.Backoffice.Address
     "huisnummer": "2C",
     "busnummer": null,
     "heeftPostinfo": "https://data.vlaanderen.be/id/postinfo/2630",
-    "status": "inGebruik",
+    "status": "https://data.vlaanderen.be/id/concept/adresstatus/inGebruik",
     "officieelToegekend": true,
     "positie": {
-        "methode": "aangeduidDoorBeheerder",
-        "specificatie": "lot",
+        "methode": "https://data.vlaanderen.be/id/concept/geometriemethode/aangeduidDoorBeheerder",
+        "specificatie": "https://data.vlaanderen.be/id/concept/geometriespecificatie/lot",
         "geometrie": {
-            "coordinates": [-2.124156, 51.899523],
+            "coordinates": [150647.25, 200188.74],
             "type": "Point"
         }
     }

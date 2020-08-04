@@ -4,6 +4,7 @@ namespace AddressRegistry
     using Be.Vlaanderen.Basisregisters.Crab;
     using Newtonsoft.Json;
     using System;
+    using System.IO;
 
     public class StreetNameId : GuidValueObject<StreetNameId>
     {
@@ -12,11 +13,9 @@ namespace AddressRegistry
         public static StreetNameId CreateFor(CrabStreetNameId crabStreetNameId)
             => new StreetNameId(crabStreetNameId.CreateDeterministicId());
 
-        // TODO: Refactor parsing of id, something with a url class?
-        public static StreetNameId CreateForPersistentId(string persistentId)
-            => CreateFor(
-                new CrabStreetNameId(
-                    int.Parse(persistentId.Replace("https://data.vlaanderen.be/id/straatnaam/", string.Empty))));
+        // TODO: Use IdentifierUri instead of Uri as parameter
+        public static StreetNameId CreateForPersistentId(Uri persistentId)
+            => CreateFor(new CrabStreetNameId(int.Parse(Path.GetFileName(persistentId.AbsolutePath))));
 
         public StreetNameId([JsonProperty("value")] Guid streetNameId) : base(streetNameId) { }
 

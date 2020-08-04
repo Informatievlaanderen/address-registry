@@ -1,4 +1,4 @@
-namespace AddressRegistry.Api.Backoffice.Address
+namespace AddressRegistry.Api.Backoffice.TODO_MOVE_TO
 {
     using System;
     using System.Collections.Generic;
@@ -8,24 +8,24 @@ namespace AddressRegistry.Api.Backoffice.Address
 
     public static class GrarToCrabEditMappings
     {
-        public static AddressStatus Map(this AdresStatus status)
-            => Map(StatusMapping, status);
+        public static AddressStatus MapToCrabEditValue(this AdresStatus status)
+            => MapToCrabEditValue(StatusMapping, status);
 
-        public static AddressPositionMethod Map(this PositieGeometrieMethode positionMethod)
-            => Map(GeometryMethodMapping, positionMethod);
+        public static AddressPositionMethod MapToCrabEditValue(this PositieGeometrieMethode positionMethod)
+            => MapToCrabEditValue(GeometryMethodMapping, positionMethod);
 
-        public static AddressPositionSpecification Map(this PositieSpecificatie positionSpecification)
-            => Map(PositionSpecificationMapping, positionSpecification);
+        public static AddressPositionSpecification MapToCrabEditValue(this PositieSpecificatie positionSpecification)
+            => MapToCrabEditValue(PositionSpecificationMapping, positionSpecification);
 
-        private static TMapped Map<TValue, TMapped>(
+        private static TMapped MapToCrabEditValue<TValue, TMapped>(
             IDictionary<TValue, TMapped> mapping,
             TValue value)
             => mapping.ContainsKey(value)
                 ? mapping[value]
                 : throw new ArgumentException($"No mapping defined for value {value}");
-        
-        private static readonly Dictionary<AdresStatus, AddressStatus> StatusMapping =
-            new Dictionary<AdresStatus, AddressStatus>
+
+        private static IDictionary<AdresStatus, AddressStatus> StatusMapping
+            => new Dictionary<AdresStatus, AddressStatus>
             {
                 { AdresStatus.Voorgesteld, AddressStatus.Proposed },
                 { AdresStatus.InGebruik, AddressStatus.InUse },
@@ -35,8 +35,8 @@ namespace AddressRegistry.Api.Backoffice.Address
         private static IDictionary<PositieGeometrieMethode, AddressPositionMethod> GeometryMethodMapping
             => new Dictionary<PositieGeometrieMethode, AddressPositionMethod>
             {
-                {PositieGeometrieMethode.AangeduidDoorBeheerder, AddressPositionMethod.AppointedByAdministrator  },
-                {PositieGeometrieMethode.AfgeleidVanObject, AddressPositionMethod.DerivedFromObject  }
+                { PositieGeometrieMethode.AangeduidDoorBeheerder, AddressPositionMethod.AppointedByAdministrator },
+                { PositieGeometrieMethode.AfgeleidVanObject, AddressPositionMethod.DerivedFromObject }
             };
 
         private static IDictionary<PositieSpecificatie, AddressPositionSpecification> PositionSpecificationMapping

@@ -1,7 +1,6 @@
 namespace AddressRegistry.Api.Backoffice.Address
 {
     using System;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Crab;
@@ -23,11 +22,9 @@ namespace AddressRegistry.Api.Backoffice.Address
             AddHouseNumberRequest request,
             CancellationToken cancellationToken)
         {
-            // ToDo: refactor
             var streetNameId = int.Parse(request.StreetNameId.AsIdentifier().Value);
-
-            // ToDo: refactor
             var postalCode = request.PostalCode.AsIdentifier().Value;
+            var coordinates = request.Position.Point.Coordinates;
 
             var crabHouseNumberId = await _client.Add(
                 new AddHouseNumber
@@ -41,7 +38,7 @@ namespace AddressRegistry.Api.Backoffice.Address
                     {
                         Method = request.Position.AddressPositionMethod.MapToCrabEditValue(),
                         Specification = request.Position.AddressPositionSpecification.MapToCrabEditValue(),
-                        Wkt = $"POINT ({string.Join(" ", request.Position.Point.Coordinates.Take(2))})"
+                        Wkt = $"POINT ({coordinates.Longitude} {coordinates.Latitude})"
                     }
                 },
                 cancellationToken);

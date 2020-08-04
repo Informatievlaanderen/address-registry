@@ -5,6 +5,8 @@ Be.Vlaanderen.Basisregisters.Api
 Be.Vlaanderen.Basisregisters.GrAr.Common
 Be.Vlaanderen.Basisregisters.GrAr.Legacy
 
+GeoJSON.NET
+
 RestSharp
 
 SourceLink.Embed.AllSourceFiles

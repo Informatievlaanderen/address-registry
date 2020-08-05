@@ -8,7 +8,7 @@ namespace AddressRegistry.Api.Backoffice.Infrastructure
     {
         protected IDictionary<string, object> GetMetadata()
         {
-            // TODO: Move to generic part as well? This is usefull!
+            // TODO: Move to generic part as well? This is useful!
             if (User == null)
                 return new Dictionary<string, object>();
 

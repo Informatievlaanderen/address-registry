@@ -283,13 +283,13 @@ namespace AddressRegistry.Address
             PersistentLocalId persistentLocalId,
             PersistentLocalIdAssignmentDate assignmentDate)
         {
-            if (_persistentLocalId == null)
+            if (PersistentLocalId == null)
                 ApplyChange(new AddressPersistentLocalIdWasAssigned(_addressId, persistentLocalId, assignmentDate));
         }
 
         public void RequestPersistentLocalId(IPersistentLocalIdGenerator persistentLocalIdGenerator)
         {
-            if (_persistentLocalId == null)
+            if (PersistentLocalId == null)
                 AssignPersistentLocalId(
                     persistentLocalIdGenerator.GenerateNextPersistentLocalId(),
                     new PersistentLocalIdAssignmentDate(Instant.FromDateTimeOffset(DateTimeOffset.Now))); // TODO: Refactor this to use IClock

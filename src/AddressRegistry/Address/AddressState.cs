@@ -35,7 +35,6 @@ namespace AddressRegistry.Address
         private AddressGeometry _geometry;
         private bool _isComplete;
         private bool? _officiallyAssigned;
-        private PersistentLocalId _persistentLocalId;
         private PostalCode _postalCode;
         private AddressStatus? _previousStatus;
         private AddressStatus? _status;
@@ -43,6 +42,7 @@ namespace AddressRegistry.Address
 
         public StreetNameId StreetNameId { get; private set; }
         public HouseNumber HouseNumber { get; private set; }
+        public PersistentLocalId PersistentLocalId { get; private set; }
 
         public bool IsRemoved { get; private set; }
 
@@ -274,7 +274,7 @@ namespace AddressRegistry.Address
 
         private void When(AddressPersistentLocalIdWasAssigned @event)
         {
-            _persistentLocalId = new PersistentLocalId(@event.PersistentLocalId);
+            PersistentLocalId = new PersistentLocalId(@event.PersistentLocalId);
         }
 
         #region CRAB

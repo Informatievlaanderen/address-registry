@@ -3,10 +3,13 @@ namespace AddressRegistry.Api.Backoffice.Address
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using AddressRegistry.Address;
     using AddressRegistry.Address.Commands;
     using Be.Vlaanderen.Basisregisters.Api;
+    using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Infrastructure;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Requests;
 
@@ -39,6 +42,7 @@ namespace AddressRegistry.Api.Backoffice.Address
         public async Task<IActionResult> AddHouseNumber(
             [FromServices] ICommandHandlerResolver bus,
             [FromServices] AddressCrabEditClient editClient,
+            [FromServices] Func<IAddresses> getAddresses,
             [FromBody] AddHouseNumberRequest request,
             CancellationToken cancellationToken)
         {
@@ -62,9 +66,21 @@ namespace AddressRegistry.Api.Backoffice.Address
                 GetMetadata(),
                 cancellationToken);
 
-            // TODO: Insert into Operations - Guid + Position + Url Placeholder
+            // Because we don't use the addressId as an identifier, we are stuck with the mess of retrieving our aggregate
+            // and getting the surrogate identifier from it.... PersistentLocalIdentifier
+            var addresses = getAddresses();
 
-            return Accepted($"/v1/operaties/{position}");
+            var address = await addresses.GetOptionalAsync(addressId, cancellationToken);
+            if (!address.HasValue)
+                throw new ApiException("Er is een fout opgetreden.", StatusCodes.Status500InternalServerError);
+
+            return Created($"/v1/adressen/{address.Value.PersistentLocalId}", new { position = position }); // TODO: Add E-Tag values
         }
+        
+        // TODO: For updates, we do insert into Operations - Guid + Position + Url Placeholder
+        // New Guid, Last observed position,
+        // If you request /operaties/guid/ and it is imported/ 200 ok + location where to find it
+        // If you request /operaties/guid/ and it is not imported - 412 etag stuff
+        //return Accepted($"/v1/operaties/{position}");
     }
 }

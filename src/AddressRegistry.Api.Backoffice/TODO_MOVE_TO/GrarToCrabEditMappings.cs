@@ -2,9 +2,9 @@ namespace AddressRegistry.Api.Backoffice.TODO_MOVE_TO
 {
     using System;
     using System.Collections.Generic;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using CrabEdit.Client.Contexts.Address;
+    using global::Be.Vlaanderen.Basisregisters.GrAr.Legacy;
+    using global::Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
 
     public static class GrarToCrabEditMappings
     {

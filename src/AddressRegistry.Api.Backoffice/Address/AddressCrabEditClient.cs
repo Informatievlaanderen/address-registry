@@ -5,8 +5,9 @@ namespace AddressRegistry.Api.Backoffice.Address
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Crab;
     using CrabEdit.Client;
-    using CrabEdit.Client.Contexts.Address;
-    using CrabEdit.Client.Contexts.Address.Requests;
+    using CrabEdit.Infrastructure;
+    using CrabEdit.Infrastructure.Address;
+    using CrabEdit.Infrastructure.Address.Requests;
     using Requests;
     using TODO_MOVE_TO;
     using TODO_MOVE_TO.Be.Vlaanderen.Basisregisters.Grar.Common;

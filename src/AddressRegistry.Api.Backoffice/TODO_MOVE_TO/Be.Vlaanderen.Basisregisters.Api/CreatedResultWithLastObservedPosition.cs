@@ -4,7 +4,7 @@ namespace AddressRegistry.Api.Backoffice.TODO_MOVE_TO.Be.Vlaanderen.Basisregiste
 
     public class CreatedResultWithLastObservedPosition : LastObservedPositionResult
     {
-        public CreatedResultWithLastObservedPosition(string location, long lastObservedPosition)
+        public CreatedResultWithLastObservedPosition(string location, LastObservedPosition lastObservedPosition)
             : base(StatusCodes.Status201Created, location, lastObservedPosition) { }
     }
 }

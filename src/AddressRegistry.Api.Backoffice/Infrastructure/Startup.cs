@@ -6,6 +6,7 @@ namespace AddressRegistry.Api.Backoffice.Infrastructure
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api;
+    using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -156,6 +157,10 @@ namespace AddressRegistry.Api.Backoffice.Infrastructure
                         TypeScriptClientOptions =
                         {
                             ClassName = "AddressRegistry"
+                        },
+                        CustomExceptionHandlers = new IExceptionHandler[]
+                        {
+                            new CrabClientValidationExceptionHandler()
                         }
                     },
                     Server =

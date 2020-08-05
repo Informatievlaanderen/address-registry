@@ -18,14 +18,25 @@ namespace AddressRegistry.Api.Backoffice.TODO_MOVE_TO.Be.Vlaanderen.Basisregiste
 
         private static long GetHeaderValueFrom(HttpRequest request)
         {
-            if (request == null)
-                throw new ArgumentNullException(nameof(request));
-
-            request.Headers.TryGetValue(HeaderName, out var headerValues);
-     
-            return headerValues.Count == 1 && long.TryParse(headerValues.First(), out var position)
+            var headerValue = GetHeaderValue(request);
+            return long.TryParse(headerValue, out var position)
                 ? position
                 : 0;
         }
+
+        protected static string GetHeaderValue(HttpRequest request)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            request
+                .Headers
+                .TryGetValue(HeaderName, out var headerValues);
+
+            return headerValues.FirstOrDefault() ?? string.Empty;
+        }
+
+        public override string ToString()
+            => Position.ToString();
     }
 }

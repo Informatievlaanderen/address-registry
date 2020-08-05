@@ -4,7 +4,7 @@ namespace AddressRegistry.Api.Backoffice.TODO_MOVE_TO.Be.Vlaanderen.Basisregiste
 
     public class AcceptedResultWithLastObservedPosition : LastObservedPositionResult
     {
-        public AcceptedResultWithLastObservedPosition(long lastObservedPosition)
+        public AcceptedResultWithLastObservedPosition(LastObservedPosition lastObservedPosition)
             : base(StatusCodes.Status202Accepted, lastObservedPosition) { }
     }
 }

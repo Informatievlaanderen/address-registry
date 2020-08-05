@@ -18,7 +18,7 @@ namespace AddressRegistry.Api.Backoffice.Address
         public AddressCrabEditClient(CrabEditClient crabEditClient)
             => _client = crabEditClient ?? throw new ArgumentNullException(nameof(crabEditClient));
 
-        public async Task<CrabHouseNumberId> AddHouseNumberToCrab(
+        public async Task<CrabEditClientResult<CrabHouseNumberId>> AddHouseNumberToCrab(
             AddHouseNumberRequest request,
             CancellationToken cancellationToken)
         {
@@ -26,7 +26,7 @@ namespace AddressRegistry.Api.Backoffice.Address
             var postalCode = request.PostalCode.AsIdentifier().Value;
             var coordinates = request.Position.Point.Coordinates;
 
-            var crabHouseNumberId = await _client.Add(
+            var addCrabHouseNumberResponse = await _client.Add(
                 new AddHouseNumber
                 {
                     StreetNameId = streetNameId,
@@ -45,7 +45,10 @@ namespace AddressRegistry.Api.Backoffice.Address
 
             //await _client.Delete(new RemoveHouseNumber { AddressId = crabHouseNumberId }, cancellationToken);
 
-            return new CrabHouseNumberId(crabHouseNumberId);
+            return CrabEditClientResult<CrabHouseNumberId>
+                .From(
+                    addCrabHouseNumberResponse,
+                    identifier => new CrabHouseNumberId(addCrabHouseNumberResponse.AddressId));
         }
     }
 }

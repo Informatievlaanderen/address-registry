@@ -4,20 +4,26 @@ namespace AddressRegistry.Api.Backoffice.TODO_MOVE_TO.Be.Vlaanderen.Basisregiste
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Net.Http.Headers;
+    using NodaTime;
 
     public abstract class LastObservedPositionResult : OkObjectResult
     {
         private readonly string _location;
         private readonly LastObservedPosition _lastObservedPosition;
 
-        protected LastObservedPositionResult(int statusCode, long lastObservedPosition)
+        protected LastObservedPositionResult(
+            int statusCode,
+            LastObservedPosition lastObservedPosition)
             : this(statusCode, string.Empty, lastObservedPosition) { }
 
-        protected LastObservedPositionResult(int statusCode, string location, long lastObservedPosition)
-            : base(new { position = lastObservedPosition })
+        protected LastObservedPositionResult(
+            int statusCode,
+            string location,
+            LastObservedPosition lastObservedPosition)
+            : base(new { position = lastObservedPosition?.ToString() })
         {
             _location = location;
-            _lastObservedPosition = new LastObservedPosition(lastObservedPosition);
+            _lastObservedPosition = lastObservedPosition ?? throw new ArgumentNullException(nameof(lastObservedPosition));
 
             StatusCode = statusCode;
         }
@@ -41,14 +47,10 @@ namespace AddressRegistry.Api.Backoffice.TODO_MOVE_TO.Be.Vlaanderen.Basisregiste
 
             var headers = context.HttpContext.Response.Headers;
 
-            headers.Add(
-                LastObservedPosition.HeaderName,
-                _lastObservedPosition.Position.ToString());
+            headers.Add(LastObservedPosition.HeaderName, _lastObservedPosition.ToString());
 
             if (!string.IsNullOrWhiteSpace(_location))
-                headers.Add(
-                    HeaderNames.Location,
-                    _location);
+                headers.Add(HeaderNames.Location, _location);
         }
     }
 }

@@ -50,8 +50,8 @@ namespace AddressRegistry.Api.Backoffice.Address
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var crabHouseNumberId = await editClient.AddHouseNumberToCrab(request, cancellationToken);
-            var addressId = AddressId.CreateFor(crabHouseNumberId);
+            var addHouseNumberResult = await editClient.AddHouseNumberToCrab(request, cancellationToken);
+            var addressId = AddressId.CreateFor(addHouseNumberResult.Result);
 
             var command = new RegisterAddress(
                 addressId,
@@ -76,7 +76,8 @@ namespace AddressRegistry.Api.Backoffice.Address
 
             return CreatedWithPosition(
                 $"/v1/adressen/{address.Value.PersistentLocalId}",
-                position);
+                position,
+                addHouseNumberResult.ExecutionTime);
         }
         
         // TODO: For updates, we do insert into Operations - Guid + Position + Url Placeholder

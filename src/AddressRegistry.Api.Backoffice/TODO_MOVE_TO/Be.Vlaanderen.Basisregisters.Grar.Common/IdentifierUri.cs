@@ -1,4 +1,4 @@
-namespace AddressRegistry.Api.Backoffice.TODO_MOVE_TO.Grar.Common
+namespace AddressRegistry.Api.Backoffice.TODO_MOVE_TO.Be.Vlaanderen.Basisregisters.Grar.Common
 {
     using System;
     using System.IO;

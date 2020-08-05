@@ -5,7 +5,7 @@ namespace AddressRegistry.Api.Backoffice.Address.Requests
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using GeoJSON.Net.Geometry;
     using Newtonsoft.Json;
-    using TODO_MOVE_TO.Grar.Common;
+    using TODO_MOVE_TO.Be.Vlaanderen.Basisregisters.Grar.Common;
 
     public class AddHouseNumberRequest
     {

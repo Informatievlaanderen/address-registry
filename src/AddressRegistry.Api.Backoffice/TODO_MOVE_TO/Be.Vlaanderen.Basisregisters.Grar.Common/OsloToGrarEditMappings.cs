@@ -1,9 +1,9 @@
-namespace AddressRegistry.Api.Backoffice.TODO_MOVE_TO.Grar.Common
+namespace AddressRegistry.Api.Backoffice.TODO_MOVE_TO.Be.Vlaanderen.Basisregisters.Grar.Common
 {
     using System;
     using System.Collections.Generic;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
+    using global::Be.Vlaanderen.Basisregisters.GrAr.Legacy;
+    using global::Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
 
     public static class OsloToGrarEditMappings
     {

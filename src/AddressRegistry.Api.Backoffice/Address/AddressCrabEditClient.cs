@@ -9,7 +9,7 @@ namespace AddressRegistry.Api.Backoffice.Address
     using CrabEdit.Client.Contexts.Address.Requests;
     using Requests;
     using TODO_MOVE_TO;
-    using TODO_MOVE_TO.Grar.Common;
+    using TODO_MOVE_TO.Be.Vlaanderen.Basisregisters.Grar.Common;
 
     public class AddressCrabEditClient
     {

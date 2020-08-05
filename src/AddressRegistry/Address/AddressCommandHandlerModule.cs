@@ -45,7 +45,7 @@ namespace AddressRegistry.Address
                             Address.Register(
                                 addressId,
                                 message.Command.StreetNameId,
-                                message.Command.HouseNumber));
+                                message.Command.HouseNumber)); // TODO: Add BoxNumber
 
                         addresses.Add(addressId, address.Value);
                     }

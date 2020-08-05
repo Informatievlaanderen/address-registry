@@ -74,7 +74,9 @@ namespace AddressRegistry.Api.Backoffice.Address
             if (!address.HasValue)
                 throw new ApiException("Er is een fout opgetreden.", StatusCodes.Status500InternalServerError);
 
-            return Created($"/v1/adressen/{address.Value.PersistentLocalId}", new { position = position }); // TODO: Add E-Tag values
+            return CreatedWithPosition(
+                $"/v1/adressen/{address.Value.PersistentLocalId}",
+                position);
         }
         
         // TODO: For updates, we do insert into Operations - Guid + Position + Url Placeholder

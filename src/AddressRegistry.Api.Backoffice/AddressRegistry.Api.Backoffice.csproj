@@ -41,6 +41,9 @@
       <HintPath>..\..\..\poc-crab-edit\src\CrabEdit.Client\bin\Debug\netstandard2.0\CrabEdit.Infrastructure.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="RestSharp.Serializers.NewtonsoftJson" Version="106.11.4" />
+  </ItemGroup>
 
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

@@ -54,7 +54,7 @@ namespace AddressRegistry.Api.Backoffice.Address
                 },
                 cancellationToken);
 
-            //await _client.Delete(new RemoveHouseNumber { AddressId = crabHouseNumberId }, cancellationToken);
+            //await _client.Delete(new RemoveHouseNumber { AddressId = addCrabHouseNumberResponse.AddressId }, cancellationToken);
 
             return CrabEditClientResult<CrabHouseNumberId>
                 .From(

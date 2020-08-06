@@ -14,7 +14,7 @@ namespace AddressRegistry.Api.Backoffice.TODO_MOVE_TO.Be.Vlaanderen.Basisregiste
             : this(new Uri(uri)) { }
 
         public IdentifierUri(Uri uri)
-            => _uri = uri;
+            => _uri = uri ?? throw new ArgumentNullException(nameof(uri));
 
         public override bool Equals(object obj)
             => Equals(obj as IdentifierUri);

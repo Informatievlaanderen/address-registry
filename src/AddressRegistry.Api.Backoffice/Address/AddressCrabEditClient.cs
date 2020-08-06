@@ -8,24 +8,34 @@ namespace AddressRegistry.Api.Backoffice.Address
     using CrabEdit.Infrastructure;
     using CrabEdit.Infrastructure.Address;
     using CrabEdit.Infrastructure.Address.Requests;
+    using GeoJSON.Net.Geometry;
     using Requests;
     using TODO_MOVE_TO;
+    using TODO_MOVE_TO.Be.Vlaanderen.Basisregisters.Crab.GeoJsonMapping;
     using TODO_MOVE_TO.Be.Vlaanderen.Basisregisters.Grar.Common;
 
     public class AddressCrabEditClient
     {
         private readonly CrabEditClient _client;
+        private readonly GeoJsonMapper _geoJsonMapper;
 
-        public AddressCrabEditClient(CrabEditClient crabEditClient)
-            => _client = crabEditClient ?? throw new ArgumentNullException(nameof(crabEditClient));
+        public AddressCrabEditClient(
+            CrabEditClient crabEditClient,
+            GeoJsonMapper geoJsonMapper)
+        {
+            _client = crabEditClient ?? throw new ArgumentNullException(nameof(crabEditClient));
+            _geoJsonMapper = geoJsonMapper ?? throw new ArgumentNullException(nameof(geoJsonMapper));
+        }
 
         public async Task<CrabEditClientResult<CrabHouseNumberId>> AddHouseNumberToCrab(
             AddHouseNumberRequest request,
             CancellationToken cancellationToken)
         {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
             var streetNameId = int.Parse(request.StreetNameId.AsIdentifier().Value);
             var postalCode = request.PostalCode.AsIdentifier().Value;
-            var coordinates = request.Position.Point.Coordinates;
 
             var addCrabHouseNumberResponse = await _client.Add(
                 new AddHouseNumber
@@ -39,7 +49,7 @@ namespace AddressRegistry.Api.Backoffice.Address
                     {
                         Method = request.Position.AddressPositionMethod.MapToCrabEditValue(),
                         Specification = request.Position.AddressPositionSpecification.MapToCrabEditValue(),
-                        Wkt = $"POINT ({coordinates.Longitude} {coordinates.Latitude})"
+                        Wkt = _geoJsonMapper.ToWkt(request.Position?.Point)
                     }
                 },
                 cancellationToken);

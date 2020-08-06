@@ -9,6 +9,7 @@ namespace AddressRegistry.Api.Backoffice.Infrastructure.Modules
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using TODO_MOVE_TO.Be.Vlaanderen.Basisregisters.Crab.Modules;
 
     public class ApiModule : Module
     {
@@ -31,7 +32,8 @@ namespace AddressRegistry.Api.Backoffice.Infrastructure.Modules
             containerBuilder
                 .RegisterModule(new DataDogModule(_configuration))
                 .RegisterModule(new CrabEditModule(_configuration))
-                .RegisterModule(new EditModule(_configuration, _services, _loggerFactory));
+                .RegisterModule(new EditModule(_configuration, _services, _loggerFactory))
+                .RegisterModule(new CrabMappingModule());
 
             containerBuilder
                 .RegisterType<AddressCrabEditClient>();

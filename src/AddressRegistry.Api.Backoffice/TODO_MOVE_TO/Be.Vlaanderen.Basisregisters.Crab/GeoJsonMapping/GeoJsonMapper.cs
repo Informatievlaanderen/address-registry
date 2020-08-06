@@ -17,6 +17,9 @@ namespace AddressRegistry.Api.Backoffice.TODO_MOVE_TO.Be.Vlaanderen.Basisregiste
         public string ToWkt<T>(T geoJson)
             where T : GeoJSONObject
         {
+            if (geoJson == null)
+                throw new ArgumentNullException(nameof(geoJson));
+
             var geoJsonType = typeof(T);
             if (!_mappers.ContainsKey(geoJsonType))
                 throw new NotImplementedException($"No WKT conversion for type {typeof(T).FullName}");

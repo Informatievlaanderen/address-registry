@@ -34,6 +34,10 @@ namespace AddressRegistry.Api.Backoffice.Address
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
+            var position = request.Position;
+            if (position == null)
+                throw new ArgumentNullException(nameof(request));
+
             var streetNameId = int.Parse(request.StreetNameId.AsIdentifier().Value);
             var postalCode = request.PostalCode.AsIdentifier().Value;
 
@@ -47,9 +51,9 @@ namespace AddressRegistry.Api.Backoffice.Address
                     OfficiallyAssigned = request.OfficiallyAssigned,
                     Position = new AddressPosition
                     {
-                        Method = request.Position.AddressPositionMethod.MapToCrabEditValue(),
-                        Specification = request.Position.AddressPositionSpecification.MapToCrabEditValue(),
-                        Wkt = _geoJsonMapper.ToWkt(request.Position?.Point)
+                        Method = position.AddressPositionMethod.MapToCrabEditValue(),
+                        Specification = position.AddressPositionSpecification.MapToCrabEditValue(),
+                        Wkt = _geoJsonMapper.ToWkt(position.Point)
                     }
                 },
                 cancellationToken);

@@ -1,11 +1,8 @@
 namespace AddressRegistry.Api.Backoffice.Address.Requests
 {
     using System;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using GeoJSON.Net.Geometry;
     using Newtonsoft.Json;
-    using TODO_MOVE_TO.Be.Vlaanderen.Basisregisters.Grar.Common;
 
     public class AddHouseNumberRequest
     {
@@ -29,9 +26,6 @@ namespace AddressRegistry.Api.Backoffice.Address.Requests
 
         [JsonProperty("positie")]
         public AddressPositionRequest Position { get; set; }
-
-        internal AdresStatus AddressStatus
-            => Status.AsIdentifier().AsAddressStatus();
     }
 
     public class AddressPositionRequest
@@ -44,11 +38,5 @@ namespace AddressRegistry.Api.Backoffice.Address.Requests
 
         [JsonProperty("geometrie")]
         public Point Point { get; set; }
-
-        internal PositieGeometrieMethode AddressPositionMethod
-            => Method.AsIdentifier().AsAddressPositionMethod();
-
-        internal PositieSpecificatie AddressPositionSpecification
-            => Specification.AsIdentifier().AsAddressPositionSpecification();
     }
 }

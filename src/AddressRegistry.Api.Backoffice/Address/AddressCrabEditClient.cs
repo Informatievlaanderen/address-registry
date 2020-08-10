@@ -4,15 +4,14 @@ namespace AddressRegistry.Api.Backoffice.Address
     using System.Threading;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Crab;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo.Extensions;
     using CrabEdit.Client;
     using CrabEdit.Infrastructure;
     using CrabEdit.Infrastructure.Address;
     using CrabEdit.Infrastructure.Address.Requests;
-    using GeoJSON.Net.Geometry;
     using Requests;
     using TODO_MOVE_TO;
     using TODO_MOVE_TO.Be.Vlaanderen.Basisregisters.Crab.GeoJsonMapping;
-    using TODO_MOVE_TO.Be.Vlaanderen.Basisregisters.Grar.Common;
 
     public class AddressCrabEditClient
     {
@@ -38,21 +37,18 @@ namespace AddressRegistry.Api.Backoffice.Address
             if (position == null)
                 throw new ArgumentNullException(nameof(request));
 
-            var streetNameId = int.Parse(request.StreetNameId.AsIdentifier().Value);
-            var postalCode = request.PostalCode.AsIdentifier().Value;
-
             var addCrabHouseNumberResponse = await _client.Add(
                 new AddHouseNumber
                 {
-                    StreetNameId = streetNameId,
+                    StreetNameId = request.StreetNameId.AsIdentifier().Map(int.Parse),
                     HouseNumber = request.HouseNumber,
-                    PostalCode = postalCode,
-                    Status = request.AddressStatus.MapToCrabEditValue(),
+                    PostalCode = request.PostalCode.AsIdentifier().Value,
+                    Status = request.Status.AsIdentifier().Map(IdentifierMappings.AddressStatus),
                     OfficiallyAssigned = request.OfficiallyAssigned,
                     Position = new AddressPosition
                     {
-                        Method = position.AddressPositionMethod.MapToCrabEditValue(),
-                        Specification = position.AddressPositionSpecification.MapToCrabEditValue(),
+                        Method = position.Method.AsIdentifier().Map(IdentifierMappings.PositionGeometryMethod),
+                        Specification = position.Specification.AsIdentifier().Map(IdentifierMappings.PositionSpecification),
                         Wkt = _geoJsonMapper.ToWkt(position.Point)
                     }
                 },

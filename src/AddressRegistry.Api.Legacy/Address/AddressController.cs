@@ -28,14 +28,12 @@ namespace AddressRegistry.Api.Legacy.Address
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Mime;
-    using System.Reflection;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
     using Be.Vlaanderen.Basisregisters.Api.Search;
     using Infrastructure;
-    using Projections.Legacy.AddressList;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
     [ApiVersion("1.0")]

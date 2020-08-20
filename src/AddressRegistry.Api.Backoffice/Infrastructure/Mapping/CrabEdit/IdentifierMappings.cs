@@ -1,7 +1,5 @@
-namespace AddressRegistry.Api.Backoffice.TODO_MOVE_TO
+namespace AddressRegistry.Api.Backoffice.Infrastructure.Mapping.CrabEdit
 {
-    using Infrastructure.Mapping.CrabEdit;
-
     public static class IdentifierMappings
     {
         public static readonly IdentifierAddressStatusMapper AddressStatus = new IdentifierAddressStatusMapper();

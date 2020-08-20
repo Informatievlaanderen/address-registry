@@ -4,12 +4,12 @@ namespace AddressRegistry.Api.Backoffice.Infrastructure.Modules
     using AddressRegistry.Infrastructure.Modules;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
+    using Be.Vlaanderen.Basisregisters.Crab.Autofac;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using CrabEdit.Client;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using TODO_MOVE_TO.Be.Vlaanderen.Basisregisters.Crab.Modules;
 
     public class ApiModule : Module
     {

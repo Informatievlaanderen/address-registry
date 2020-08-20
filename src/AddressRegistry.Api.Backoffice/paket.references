@@ -5,6 +5,9 @@ Be.Vlaanderen.Basisregisters.Api
 Be.Vlaanderen.Basisregisters.GrAr.Common
 Be.Vlaanderen.Basisregisters.GrAr.Legacy
 
+Be.Vlaanderen.Basisregisters.Crab
+Be.Vlaanderen.Basisregisters.Crab.Autofac
+
 GeoJSON.NET
 
 RestSharp

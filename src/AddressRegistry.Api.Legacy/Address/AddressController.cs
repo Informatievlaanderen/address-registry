@@ -72,6 +72,11 @@ namespace AddressRegistry.Api.Legacy.Address
             [FromRoute] Taal? taal,
             CancellationToken cancellationToken = default)
         {
+            // TODO: Check if an etag is provided, if it is: check if the projections have caught up
+            //       and temporarily for crab, check if the crab position has caught up as well
+            // -> could possibly also be done in an filter attribute
+
+
             var address = await context
                 .AddressDetail
                 .AsNoTracking()

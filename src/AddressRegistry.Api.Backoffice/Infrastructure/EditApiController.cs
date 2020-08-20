@@ -2,10 +2,11 @@ namespace AddressRegistry.Api.Backoffice.Infrastructure
 {
     using System.Collections.Generic;
     using Be.Vlaanderen.Basisregisters.Api;
+    using Be.Vlaanderen.Basisregisters.Api.LastObservedPosition;
+    using Be.Vlaanderen.Basisregisters.Api.LastObservedPosition.ActionResults;
     using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Middleware;
     using Microsoft.AspNetCore.Mvc;
     using NodaTime;
-    using TODO_MOVE_TO.Be.Vlaanderen.Basisregisters.Api;
 
     public class EditApiController : ApiController
     {
@@ -13,12 +14,12 @@ namespace AddressRegistry.Api.Backoffice.Infrastructure
             string location,
             long position,
             Instant executionTime)
-            => new CreatedResultWithLastObservedPosition(location, new CrabLastObservedPosition(position, executionTime));
+            => new Created(location, new LastObservedPositionWithCrabDependency(position, executionTime));
 
         public IActionResult AcceptedWithPosition(
             long position,
             Instant executionTime)
-            => new AcceptedResultWithLastObservedPosition(new CrabLastObservedPosition(position, executionTime));
+            => new Accepted(new LastObservedPositionWithCrabDependency(position, executionTime));
 
         protected IDictionary<string, object> GetMetadata()
         {

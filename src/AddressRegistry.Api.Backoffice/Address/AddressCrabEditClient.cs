@@ -4,23 +4,23 @@ namespace AddressRegistry.Api.Backoffice.Address
     using System.Threading;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Crab;
+    using Be.Vlaanderen.Basisregisters.Crab.GeoJson;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo.Extensions;
     using CrabEdit.Client;
     using CrabEdit.Infrastructure;
     using CrabEdit.Infrastructure.Address;
     using CrabEdit.Infrastructure.Address.Requests;
+    using Infrastructure.Mapping.CrabEdit;
     using Requests;
-    using TODO_MOVE_TO;
-    using TODO_MOVE_TO.Be.Vlaanderen.Basisregisters.Crab.GeoJsonMapping;
 
     public class AddressCrabEditClient
     {
         private readonly CrabEditClient _client;
-        private readonly GeoJsonMapper _geoJsonMapper;
+        private readonly ICrabGeoJsonMapper _geoJsonMapper;
 
         public AddressCrabEditClient(
             CrabEditClient crabEditClient,
-            GeoJsonMapper geoJsonMapper)
+            ICrabGeoJsonMapper geoJsonMapper)
         {
             _client = crabEditClient ?? throw new ArgumentNullException(nameof(crabEditClient));
             _geoJsonMapper = geoJsonMapper ?? throw new ArgumentNullException(nameof(geoJsonMapper));
@@ -60,6 +60,13 @@ namespace AddressRegistry.Api.Backoffice.Address
                 .From(
                     addCrabHouseNumberResponse,
                     identifier => new CrabHouseNumberId(addCrabHouseNumberResponse.AddressId));
+        }
+
+        public Task Delete()
+        {
+            //await _client.Delete(new RemoveHouseNumber { AddressId = crabAddressId }, cancellationToken);
+
+            throw new NotImplementedException();
         }
     }
 }

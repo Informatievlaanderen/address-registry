@@ -11,6 +11,7 @@ namespace AddressRegistry.Api.Backoffice.Address
     using CrabEdit.Infrastructure.Address;
     using CrabEdit.Infrastructure.Address.Requests;
     using Infrastructure.Mapping.CrabEdit;
+    using Projections.Legacy.CrabIdToPersistentLocalId;
     using Requests;
 
     public class AddressCrabEditClient
@@ -54,19 +55,24 @@ namespace AddressRegistry.Api.Backoffice.Address
                 },
                 cancellationToken);
 
-            //await _client.Delete(new RemoveHouseNumber { AddressId = addCrabHouseNumberResponse.AddressId }, cancellationToken);
-
             return CrabEditClientResult<CrabHouseNumberId>
                 .From(
                     addCrabHouseNumberResponse,
                     identifier => new CrabHouseNumberId(addCrabHouseNumberResponse.AddressId));
         }
 
-        public Task Delete()
+        public async Task Delete(
+            CrabIdToPersistentLocalIdItem addressId,
+            CancellationToken cancellationToken)
         {
-            //await _client.Delete(new RemoveHouseNumber { AddressId = crabAddressId }, cancellationToken);
+            if(addressId == null)
+                return;
 
-            throw new NotImplementedException();
+            if (addressId.HouseNumberId.HasValue)
+                await _client.Delete(new RemoveHouseNumber { HouseNumberId = addressId.HouseNumberId.Value }, cancellationToken);
+
+            if (addressId.SubaddressId.HasValue)
+                await _client.Delete(new RemoveSubaddress { SubaddressId = addressId.SubaddressId.Value }, cancellationToken);
         }
     }
 }

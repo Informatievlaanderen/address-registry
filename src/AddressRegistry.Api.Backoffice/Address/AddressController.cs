@@ -1,6 +1,7 @@
 namespace AddressRegistry.Api.Backoffice.Address
 {
     using System;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Address;
@@ -11,6 +12,7 @@ namespace AddressRegistry.Api.Backoffice.Address
     using Infrastructure;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Projections.Legacy;
     using Requests;
 
     [ApiVersion("1.0")]
@@ -38,7 +40,7 @@ namespace AddressRegistry.Api.Backoffice.Address
 }
          */
 
-        [HttpPost("huisnummer")]
+        [HttpPost("")]
         public async Task<IActionResult> AddHouseNumber(
             [FromServices] ICommandHandlerResolver bus,
             [FromServices] AddressCrabEditClient editClient,
@@ -79,7 +81,32 @@ namespace AddressRegistry.Api.Backoffice.Address
                 position,
                 addHouseNumberResult.ExecutionTime);
         }
-        
+
+        [HttpDelete("{lokaleIdentificator}")]
+        public async Task<IActionResult> Delete(
+            [FromServices] AddressCrabEditClient editClient,
+            [FromServices] LegacyContext context,
+            [FromRoute] string lokaleIdentificator,
+            CancellationToken cancellationToken)
+        {
+            // TODO: Turn this into proper VBR API Validation
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!int.TryParse(lokaleIdentificator, out var persistentLocalId))
+                return BadRequest(ModelState);
+
+            var addressId = context
+                .CrabIdToPersistentLocalIds
+                .SingleOrDefault(item => item.PersistentLocalId == persistentLocalId);
+
+            if (addressId != null)
+                await editClient.Delete(addressId, cancellationToken);
+
+            return NoContent();
+        }
+
+
         // TODO: For updates, we do insert into Operations - Guid + Position + Url Placeholder
         // New Guid, Last observed position,
         // If you request /operaties/guid/ and it is imported/ 200 ok + location where to find it

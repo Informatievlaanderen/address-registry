@@ -8,11 +8,12 @@ namespace AddressRegistry.Api.Backoffice.Address
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo.Extensions;
     using CrabEdit.Client;
     using CrabEdit.Infrastructure;
-    using CrabEdit.Infrastructure.Address;
     using CrabEdit.Infrastructure.Address.Requests;
     using Infrastructure.Mapping.CrabEdit;
+    using NodaTime;
     using Projections.Legacy.CrabIdToPersistentLocalId;
     using Requests;
+    using AddressPosition = CrabEdit.Infrastructure.Address.AddressPosition;
 
     public class AddressCrabEditClient
     {
@@ -28,7 +29,7 @@ namespace AddressRegistry.Api.Backoffice.Address
         }
 
         public async Task<CrabEditClientResult<CrabHouseNumberId>> AddHouseNumberToCrab(
-            AddHouseNumberRequest request,
+            AddAddressRequest request,
             CancellationToken cancellationToken)
         {
             if (request == null)
@@ -61,18 +62,17 @@ namespace AddressRegistry.Api.Backoffice.Address
                     identifier => new CrabHouseNumberId(addCrabHouseNumberResponse.AddressId));
         }
 
-        public async Task Delete(
+        public async Task<CrabEditResponse> Delete(
             CrabIdToPersistentLocalIdItem addressId,
             CancellationToken cancellationToken)
         {
-            if(addressId == null)
-                return;
+            if (addressId?.HouseNumberId.HasValue ?? false)
+                return await _client.Delete(new RemoveHouseNumber { HouseNumberId = addressId.HouseNumberId.Value }, cancellationToken);
 
-            if (addressId.HouseNumberId.HasValue)
-                await _client.Delete(new RemoveHouseNumber { HouseNumberId = addressId.HouseNumberId.Value }, cancellationToken);
+            if (addressId?.SubaddressId.HasValue ?? false)
+                return await _client.Delete(new RemoveSubaddress { SubaddressId = addressId.SubaddressId.Value }, cancellationToken);
 
-            if (addressId.SubaddressId.HasValue)
-                await _client.Delete(new RemoveSubaddress { SubaddressId = addressId.SubaddressId.Value }, cancellationToken);
+            return new CrabEditResponse(Instant.MinValue);
         }
     }
 }

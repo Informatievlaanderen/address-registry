@@ -9,11 +9,13 @@ namespace AddressRegistry.Api.Backoffice.Address
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
+    using CrabEdit.Infrastructure;
     using Infrastructure;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Projections.Legacy;
     using Requests;
+    using SqlStreamStore;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
@@ -45,7 +47,7 @@ namespace AddressRegistry.Api.Backoffice.Address
             [FromServices] ICommandHandlerResolver bus,
             [FromServices] AddressCrabEditClient editClient,
             [FromServices] Func<IAddresses> getAddresses,
-            [FromBody] AddHouseNumberRequest request,
+            [FromBody] AddAddressRequest request,
             CancellationToken cancellationToken)
         {
             // TODO: Turn this into proper VBR API Validation
@@ -85,6 +87,7 @@ namespace AddressRegistry.Api.Backoffice.Address
         [HttpDelete("{lokaleIdentificator}")]
         public async Task<IActionResult> Delete(
             [FromServices] AddressCrabEditClient editClient,
+            [FromServices] IStreamStore streamStore,
             [FromServices] LegacyContext context,
             [FromRoute] string lokaleIdentificator,
             CancellationToken cancellationToken)
@@ -93,17 +96,22 @@ namespace AddressRegistry.Api.Backoffice.Address
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!int.TryParse(lokaleIdentificator, out var persistentLocalId))
-                return BadRequest(ModelState);
+            var persistentLocalId = int.Parse(lokaleIdentificator);
+
+            // todo: should become position from bus.Dispatch
+            var position = await streamStore.ReadHeadPosition(cancellationToken);
 
             var addressId = context
                 .CrabIdToPersistentLocalIds
                 .SingleOrDefault(item => item.PersistentLocalId == persistentLocalId);
 
-            if (addressId != null)
-                await editClient.Delete(addressId, cancellationToken);
+            CrabEditResponse deleteResponse = addressId != null
+                ? await editClient.Delete(addressId, cancellationToken)
+                : CrabEditResponse.NothingExecuted;
 
-            return NoContent();
+            return AcceptedWithPosition(
+                position,
+                deleteResponse.ExecutionTime);
         }
 
 

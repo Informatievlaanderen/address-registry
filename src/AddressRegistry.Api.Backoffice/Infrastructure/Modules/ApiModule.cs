@@ -10,6 +10,7 @@ namespace AddressRegistry.Api.Backoffice.Infrastructure.Modules
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Projections.Legacy;
 
     public class ApiModule : Module
     {
@@ -33,6 +34,7 @@ namespace AddressRegistry.Api.Backoffice.Infrastructure.Modules
                 .RegisterModule(new DataDogModule(_configuration))
                 .RegisterModule(new CrabEditModule(_configuration))
                 .RegisterModule(new EditModule(_configuration, _services, _loggerFactory))
+                .RegisterModule(new LegacyModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new CrabMappingModule());
 
             containerBuilder

@@ -84,6 +84,39 @@ namespace AddressRegistry.Api.Backoffice.Address
                 addHouseNumberResult.ExecutionTime);
         }
 
+        [HttpPost("{lokaleIdentificator}/wijzigingen")]
+        public async Task<IActionResult> Change(
+            [FromServices] AddressCrabEditClient editClient,
+            [FromServices] LegacyContext context,
+            [FromServices] IStreamStore streamStore,
+            [FromRoute] string lokaleIdentificator,
+            [FromBody] ChangeAddressRequest request,
+            CancellationToken cancellationToken)
+        {
+            // TODO: Turn this into proper VBR API Validation
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var persistentLocalId = int.Parse(lokaleIdentificator);
+
+            // todo: should become position from bus.Dispatch
+            var position = await streamStore.ReadHeadPosition(cancellationToken);
+
+            var addressId = context
+                .CrabIdToPersistentLocalIds
+                .Single(item => item.PersistentLocalId == persistentLocalId);
+
+            CrabEditClientResult crabEditResult;
+            if(addressId.HouseNumberId.HasValue)
+                crabEditResult = await editClient.ChangeHouseNumber(addressId.HouseNumberId.Value, request, cancellationToken);
+            else
+                crabEditResult = await editClient.ChangeSubaddress(request, cancellationToken);
+
+            return AcceptedWithPosition(
+                position,
+                crabEditResult.ExecutionTime);
+        }
+
         [HttpDelete("{lokaleIdentificator}")]
         public async Task<IActionResult> Delete(
             [FromServices] AddressCrabEditClient editClient,

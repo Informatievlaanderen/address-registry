@@ -8,6 +8,7 @@ namespace AddressRegistry.Api.Backoffice.Address
     using AddressRegistry.Address.Commands;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
+    using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using CrabEdit.Infrastructure;
     using Infrastructure;
@@ -43,7 +44,7 @@ namespace AddressRegistry.Api.Backoffice.Address
          */
 
         [HttpPost("")]
-        public async Task<IActionResult> AddHouseNumber(
+        public async Task<IActionResult> AddAddress(
             [FromServices] ICommandHandlerResolver bus,
             [FromServices] AddressCrabEditClient editClient,
             [FromServices] Func<IAddresses> getAddresses,
@@ -54,15 +55,16 @@ namespace AddressRegistry.Api.Backoffice.Address
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var addHouseNumberResult = await editClient.AddHouseNumberToCrab(request, cancellationToken);
-            var addressId = AddressId.CreateFor(addHouseNumberResult.Result);
+            var crabAddAddress = await AddToCrab(editClient, request, cancellationToken);
+            var addressId = crabAddAddress.Result;
 
+            // todo: add command implementation for BoxNumber
             var command = new RegisterAddress(
                 addressId,
                 StreetNameId.CreateForPersistentId(request.StreetNameId),
                 PostalCode.CreateForPersistentId(request.PostalCode),
                 new HouseNumber(request.HouseNumber),
-                null);
+                new BoxNumber(request.BoxNumber));
 
             var position = await bus.Dispatch(
                 Guid.NewGuid(),
@@ -81,7 +83,26 @@ namespace AddressRegistry.Api.Backoffice.Address
             return CreatedWithPosition(
                 $"/v1/adressen/{address.Value.PersistentLocalId}",
                 position,
-                addHouseNumberResult.ExecutionTime);
+                crabAddAddress.ExecutionTime);
+        }
+
+        private static async Task<CrabEditClientResult<AddressId>> AddToCrab(
+            AddressCrabEditClient editClient,
+            AddAddressRequest request,
+            CancellationToken cancellationToken)
+        {
+            if (request.BoxNumber.IsNullOrWhiteSpace())
+            {
+                var addHouseNumberResult = await editClient.AddHouseNumberToCrab(request, cancellationToken);
+                return new CrabEditClientResult<AddressId>(
+                    AddressId.CreateFor(addHouseNumberResult.Result),
+                    addHouseNumberResult.ExecutionTime);
+            }
+
+            var addSubaddressResult = await editClient.AddSubaddressToCrab(request, cancellationToken);
+            return new CrabEditClientResult<AddressId>(
+                AddressId.CreateFor(addSubaddressResult.Result),
+                addSubaddressResult.ExecutionTime);
         }
 
         [HttpPost("{lokaleIdentificator}/wijzigingen")]

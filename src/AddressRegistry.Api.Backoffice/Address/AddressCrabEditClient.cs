@@ -10,7 +10,6 @@ namespace AddressRegistry.Api.Backoffice.Address
     using CrabEdit.Infrastructure;
     using CrabEdit.Infrastructure.Address.Requests;
     using Infrastructure.Mapping.CrabEdit;
-    using NodaTime;
     using Projections.Legacy.CrabIdToPersistentLocalId;
     using Requests;
     using AddressPosition = CrabEdit.Infrastructure.Address.AddressPosition;
@@ -53,6 +52,32 @@ namespace AddressRegistry.Api.Backoffice.Address
                     identifier => new CrabHouseNumberId(addCrabHouseNumberResponse.AddressId));
         }
 
+        public async Task<CrabEditClientResult<CrabSubaddressId>> AddSubaddressToCrab(
+            AddAddressRequest request,
+            CancellationToken cancellationToken)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            var addCrabSubaddressResponse = await _client.Add(
+                new AddSubaddress
+                {
+                    StreetNameId = request.StreetNameId.AsIdentifier().Map(IdentifierMappings.StreetNameId),
+                    HouseNumber = request.HouseNumber,
+                    BoxNumber = request.BoxNumber,
+                    PostalCode = request.PostalCode.AsIdentifier().Map(IdentifierMappings.PostalCode),
+                    Status = request.Status.AsIdentifier().Map(IdentifierMappings.AddressStatus),
+                    OfficiallyAssigned = request.OfficiallyAssigned,
+                    Position = MapPosition(request.Position)
+                },
+                cancellationToken);
+
+            return CrabEditClientResult<CrabSubaddressId>
+                .From(
+                    addCrabSubaddressResponse,
+                    identifier => new CrabSubaddressId(addCrabSubaddressResponse.AddressId));
+        }
+
         public async Task<CrabEditResponse> Delete(
             CrabIdToPersistentLocalIdItem addressId,
             CancellationToken cancellationToken)
@@ -63,7 +88,7 @@ namespace AddressRegistry.Api.Backoffice.Address
             if (addressId?.SubaddressId.HasValue ?? false)
                 return await _client.Delete(new RemoveSubaddress { SubaddressId = addressId.SubaddressId.Value }, cancellationToken);
 
-            return new CrabEditResponse(Instant.MinValue);
+            return CrabEditResponse.NothingExecuted;
         }
 
         public async Task<CrabEditClientResult> ChangeHouseNumber(

@@ -81,7 +81,31 @@ namespace AddressRegistry.Api.Backoffice.Address
                     OfficiallyAssigned = request.OfficiallyAssigned,
                     Position = MapPosition(request.Position),
                     PostalCode = request.PostalCode.AsIdentifier().Map(IdentifierMappings.PostalCode),
-                    Status = request.Status.AsIdentifier().Map(IdentifierMappings.AddressStatus)
+                    Status = request.Status.AsIdentifier().Map(IdentifierMappings.AddressStatus),
+                    IsCorrection = false,
+                },
+                cancellationToken);
+
+            return CrabEditClientResult.From(updateResponse);
+        }
+
+        public async Task<CrabEditClientResult> CorrectHouseNumber(
+            int houseNumberId,
+            CorrectAddressRequest request,
+            CancellationToken cancellationToken)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            var updateResponse = await _client.Update(
+                new EditHouseNumber
+                {
+                    HouseNumberId = houseNumberId,
+                    OfficiallyAssigned = request.OfficiallyAssigned,
+                    Position = MapPosition(request.Position),
+                    PostalCode = request.PostalCode.AsIdentifier().Map(IdentifierMappings.PostalCode),
+                    Status = request.Status.AsIdentifier().Map(IdentifierMappings.AddressStatus),
+                    IsCorrection = true,
                 },
                 cancellationToken);
 
@@ -102,6 +126,10 @@ namespace AddressRegistry.Api.Backoffice.Address
         }
 
         public async Task<CrabEditClientResult> ChangeSubaddress(ChangeAddressRequest request,
+            CancellationToken cancellationToken)
+            => throw new NotImplementedException();
+
+        public async Task<CrabEditClientResult> CorrectSubaddress(CorrectAddressRequest request,
             CancellationToken cancellationToken)
             => throw new NotImplementedException();
     }

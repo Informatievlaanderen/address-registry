@@ -35,24 +35,15 @@ namespace AddressRegistry.Api.Backoffice.Address
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            var position = request.Position;
-            if (position == null)
-                throw new ArgumentNullException(nameof(request));
-
             var addCrabHouseNumberResponse = await _client.Add(
                 new AddHouseNumber
                 {
-                    StreetNameId = request.StreetNameId.AsIdentifier().Map(int.Parse),
+                    StreetNameId = request.StreetNameId.AsIdentifier().Map(IdentifierMappings.StreetNameId),
                     HouseNumber = request.HouseNumber,
-                    PostalCode = request.PostalCode.AsIdentifier().Value,
+                    PostalCode = request.PostalCode.AsIdentifier().Map(IdentifierMappings.PostalCode),
                     Status = request.Status.AsIdentifier().Map(IdentifierMappings.AddressStatus),
                     OfficiallyAssigned = request.OfficiallyAssigned,
-                    Position = new AddressPosition
-                    {
-                        Method = position.Method.AsIdentifier().Map(IdentifierMappings.PositionGeometryMethod),
-                        Specification = position.Specification.AsIdentifier().Map(IdentifierMappings.PositionSpecification),
-                        Wkt = _geoJsonMapper.ToWkt(position.Point)
-                    }
+                    Position = MapPosition(request.Position)
                 },
                 cancellationToken);
 
@@ -74,5 +65,44 @@ namespace AddressRegistry.Api.Backoffice.Address
 
             return new CrabEditResponse(Instant.MinValue);
         }
+
+        public async Task<CrabEditClientResult> ChangeHouseNumber(
+            int houseNumberId,
+            ChangeAddressRequest request,
+            CancellationToken cancellationToken)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            var updateResponse = await _client.Update(
+                new EditHouseNumber
+                {
+                    HouseNumberId = houseNumberId,
+                    OfficiallyAssigned = request.OfficiallyAssigned,
+                    Position = MapPosition(request.Position),
+                    PostalCode = request.PostalCode.AsIdentifier().Map(IdentifierMappings.PostalCode),
+                    Status = request.Status.AsIdentifier().Map(IdentifierMappings.AddressStatus)
+                },
+                cancellationToken);
+
+            return CrabEditClientResult.From(updateResponse);
+        }
+
+        private AddressPosition MapPosition(Requests.AddressPosition position)
+        {
+            if (position == null)
+                throw new ArgumentNullException(nameof(position));
+
+            return new AddressPosition
+            {
+                Method = position.Method.AsIdentifier().Map(IdentifierMappings.PositionGeometryMethod),
+                Specification = position.Specification.AsIdentifier().Map(IdentifierMappings.PositionSpecification),
+                Wkt = _geoJsonMapper.ToWkt(position.Point)
+            };
+        }
+
+        public async Task<CrabEditClientResult> ChangeSubaddress(ChangeAddressRequest request,
+            CancellationToken cancellationToken)
+            => throw new NotImplementedException();
     }
 }

@@ -130,8 +130,10 @@ namespace AddressRegistry.Api.Backoffice.Address
             CrabEditClientResult crabEditResult;
             if(addressId.HouseNumberId.HasValue)
                 crabEditResult = await editClient.ChangeHouseNumber(addressId.HouseNumberId.Value, request, cancellationToken);
+            else if(addressId.SubaddressId.HasValue)
+                crabEditResult = await editClient.ChangeSubaddress(addressId.SubaddressId.Value, request, cancellationToken);
             else
-                crabEditResult = await editClient.ChangeSubaddress(request, cancellationToken);
+                throw new InvalidOperationException();
 
             return AcceptedWithPosition(
                 position,
@@ -163,8 +165,10 @@ namespace AddressRegistry.Api.Backoffice.Address
             CrabEditClientResult crabEditResult;
             if (addressId.HouseNumberId.HasValue)
                 crabEditResult = await editClient.CorrectHouseNumber(addressId.HouseNumberId.Value, request, cancellationToken);
+            else if(addressId.SubaddressId.HasValue)
+                crabEditResult = await editClient.CorrectSubaddress(addressId.SubaddressId.Value, request, cancellationToken);
             else
-                crabEditResult = await editClient.CorrectSubaddress(request, cancellationToken);
+                throw new InvalidOperationException();
 
             return AcceptedWithPosition(
                 position,

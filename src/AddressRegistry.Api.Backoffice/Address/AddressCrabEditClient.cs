@@ -150,12 +150,50 @@ namespace AddressRegistry.Api.Backoffice.Address
             };
         }
 
-        public async Task<CrabEditClientResult> ChangeSubaddress(ChangeAddressRequest request,
+        public async Task<CrabEditClientResult> ChangeSubaddress(
+            int subaddressId,
+            ChangeAddressRequest request,
             CancellationToken cancellationToken)
-            => throw new NotImplementedException();
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
 
-        public async Task<CrabEditClientResult> CorrectSubaddress(CorrectAddressRequest request,
+            var updateResponse = await _client.Update(
+                new EditSubaddress
+                {
+                    SubaddressId = subaddressId,
+                    OfficiallyAssigned = request.OfficiallyAssigned,
+                    Position = MapPosition(request.Position),
+                    PostalCode = request.PostalCode.AsIdentifier().Map(IdentifierMappings.PostalCode),
+                    Status = request.Status.AsIdentifier().Map(IdentifierMappings.AddressStatus),
+                    IsCorrection = false,
+                },
+                cancellationToken);
+
+            return CrabEditClientResult.From(updateResponse);
+        }
+
+        public async Task<CrabEditClientResult> CorrectSubaddress(
+            int subaddressId,
+            CorrectAddressRequest request,
             CancellationToken cancellationToken)
-            => throw new NotImplementedException();
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            var updateResponse = await _client.Update(
+                new EditSubaddress
+                {
+                    SubaddressId = subaddressId,
+                    OfficiallyAssigned = request.OfficiallyAssigned,
+                    Position = MapPosition(request.Position),
+                    PostalCode = request.PostalCode.AsIdentifier().Map(IdentifierMappings.PostalCode),
+                    Status = request.Status.AsIdentifier().Map(IdentifierMappings.AddressStatus),
+                    IsCorrection = true,
+                },
+                cancellationToken);
+
+            return CrabEditClientResult.From(updateResponse);
+        }
     }
 }

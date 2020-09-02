@@ -1,3 +1,10 @@
+## [2.18.1](https://github.com/informatievlaanderen/address-registry/compare/v2.18.0...v2.18.1) (2020-09-02)
+
+
+### Bug Fixes
+
+* upgrade common to fix sync author ([dc790dd](https://github.com/informatievlaanderen/address-registry/commit/dc790ddae06f1bdf12dae3d0d447fabb0fc53ff0))
+
 # [2.18.0](https://github.com/informatievlaanderen/address-registry/compare/v2.17.1...v2.18.0) (2020-09-02)
 
 

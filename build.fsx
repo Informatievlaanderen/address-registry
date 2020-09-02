@@ -46,7 +46,6 @@ Target.create "Publish_Solution" (fun _ ->
     "AddressRegistry.Projector"
     "AddressRegistry.Api.Legacy"
     "AddressRegistry.Api.Extract"
-    "AddressRegistry.Api.Backoffice"
     "AddressRegistry.Api.CrabImport"
     "AddressRegistry.Projections.Legacy"
     "AddressRegistry.Projections.Extract"
@@ -66,7 +65,6 @@ Target.create "Pack_Solution" (fun _ ->
     "AddressRegistry.Projector"
     "AddressRegistry.Api.Legacy"
     "AddressRegistry.Api.Extract"
-    "AddressRegistry.Api.Backoffice"
     "AddressRegistry.Api.CrabImport"
   ] |> List.iter pack)
 

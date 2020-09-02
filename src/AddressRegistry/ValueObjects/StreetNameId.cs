@@ -2,9 +2,9 @@ namespace AddressRegistry
 {
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Crab;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo;
     using Newtonsoft.Json;
     using System;
-    using System.IO;
 
     public class StreetNameId : GuidValueObject<StreetNameId>
     {
@@ -13,9 +13,8 @@ namespace AddressRegistry
         public static StreetNameId CreateFor(CrabStreetNameId crabStreetNameId)
             => new StreetNameId(crabStreetNameId.CreateDeterministicId());
 
-        // TODO: Use IdentifierUri instead of Uri as parameter
-        public static StreetNameId CreateForPersistentId(Uri persistentId)
-            => CreateFor(new CrabStreetNameId(int.Parse(Path.GetFileName(persistentId.AbsolutePath))));
+        public static StreetNameId CreateForPersistentId(IdentifierUri<int> persistentId)
+            => CreateFor(new CrabStreetNameId(persistentId.Value));
 
         public StreetNameId([JsonProperty("value")] Guid streetNameId) : base(streetNameId) { }
 

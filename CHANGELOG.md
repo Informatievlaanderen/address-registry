@@ -1,3 +1,36 @@
+# [2.18.0](https://github.com/informatievlaanderen/address-registry/compare/v2.17.1...v2.18.0) (2020-09-02)
+
+
+### Bug Fixes
+
+* add crabvalidation exception handling ([6e56578](https://github.com/informatievlaanderen/address-registry/commit/6e56578c6e6eca739e288617ca08977e7cfcab87))
+* add executionTime to lastobservedPosition ([be34106](https://github.com/informatievlaanderen/address-registry/commit/be34106225ce55b5ede7f10de4b40c7be18009aa))
+* add lastobservedpostion to delete ([b4a00cb](https://github.com/informatievlaanderen/address-registry/commit/b4a00cb04ca7c3743c6929e3805753b5ee372aa5))
+* add null checks ([4fa6ee4](https://github.com/informatievlaanderen/address-registry/commit/4fa6ee4ade3b9e0fad3e1e92cad51888e7d3ab7f))
+* comment backoffice.api out for now ([0db86b8](https://github.com/informatievlaanderen/address-registry/commit/0db86b8b7cdf0a3b762c63132d7fdbca225a5acc))
+* compare identifier on uri ([33ceaab](https://github.com/informatievlaanderen/address-registry/commit/33ceaaba5b0034e5f5a7a1920b55c4067dcade53))
+* don't push backoffice container yet ([1111258](https://github.com/informatievlaanderen/address-registry/commit/1111258c54d66a118c00c6e870d055d0a7094df8))
+* move geojson mapping to Crab ([d1c28ff](https://github.com/informatievlaanderen/address-registry/commit/d1c28ff97a9e046dc1519dadd7b898267eddaba9))
+* move last observed position to API package ([218318f](https://github.com/informatievlaanderen/address-registry/commit/218318f148c80231f75f8160f632e202f0736bf5))
+* update crabedit dependcies ([90739d0](https://github.com/informatievlaanderen/address-registry/commit/90739d07a0b83f467b191f6441f3dd08f4a587f3))
+* update dependencies ([db36bcf](https://github.com/informatievlaanderen/address-registry/commit/db36bcf2c5ed7ecf82eac8c4c06b4dfc68fc5982))
+* use geojson in request model ([f7f6d71](https://github.com/informatievlaanderen/address-registry/commit/f7f6d711e404e9f7de8e4fa9bd47a06bcf3472c2))
+* use Oslo code list identifiers ([e5053cf](https://github.com/informatievlaanderen/address-registry/commit/e5053cf92e571d878647b85fab20bbe930a759e7))
+
+
+### Features
+
+* add basic change address ([59d5b07](https://github.com/informatievlaanderen/address-registry/commit/59d5b07805bced7bbb9a2bb5231e235c5cb48e71))
+* add basic correct address ([a638926](https://github.com/informatievlaanderen/address-registry/commit/a63892612e566491badee1d7795edcdc6966be64))
+* add delete address ([e765313](https://github.com/informatievlaanderen/address-registry/commit/e765313f93164d626fa2374ea9c574f7ec8deea1))
+* add geojson to wkt mapping ([1c49d76](https://github.com/informatievlaanderen/address-registry/commit/1c49d761c7f4d2a4496d5616e61209ca500fd207))
+* add last observed position to responses ([9afbb1b](https://github.com/informatievlaanderen/address-registry/commit/9afbb1bf2d0d2b8c0688fa0f0d8ddd1c530a2ac6))
+* add subaddress ([62fdc3f](https://github.com/informatievlaanderen/address-registry/commit/62fdc3fdb07e73b1aec62377aae0b483e35c956b))
+* add update/correct subaddress ([4aef66e](https://github.com/informatievlaanderen/address-registry/commit/4aef66e2a0de7277565299076dfb50b8f3a460c9))
+* implement basic add housenumber request ([8f4617f](https://github.com/informatievlaanderen/address-registry/commit/8f4617fca180d842eb4ed36ecdfebc1cd98b87b0))
+* return created address uri ([07fa827](https://github.com/informatievlaanderen/address-registry/commit/07fa827fbaa1da634f54dbf5b91e63d98e2a0cb5))
+* setup backoffice api ([93d69bd](https://github.com/informatievlaanderen/address-registry/commit/93d69bd15db7986bdcdd89bd7272ea38daf14eb7))
+
 ## [2.17.1](https://github.com/informatievlaanderen/address-registry/compare/v2.17.0...v2.17.1) (2020-07-19)
 
 

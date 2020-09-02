@@ -10,8 +10,10 @@ namespace AddressRegistry.Api.Backoffice.Address
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo.Extensions;
     using CrabEdit.Infrastructure;
     using Infrastructure;
+    using Infrastructure.Mapping.CrabEdit;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Projections.Legacy;
@@ -25,22 +27,22 @@ namespace AddressRegistry.Api.Backoffice.Address
     public class AddressController : EditApiController
     {
         /* Post-huisnummer example:
-{
-    "heeftStraatnaam": "https://data.vlaanderen.be/id/straatnaam/3",
-    "huisnummer": "2C",
-    "busnummer": null,
-    "heeftPostinfo": "https://data.vlaanderen.be/id/postinfo/2630",
-    "status": "https://data.vlaanderen.be/id/concept/adresstatus/inGebruik",
-    "officieelToegekend": true,
-    "positie": {
-        "methode": "https://data.vlaanderen.be/id/concept/geometriemethode/aangeduidDoorBeheerder",
-        "specificatie": "https://data.vlaanderen.be/id/concept/geometriespecificatie/lot",
-        "geometrie": {
-            "coordinates": [150647.25, 200188.74],
-            "type": "Point"
+        {
+            "heeftStraatnaam": "https://data.vlaanderen.be/id/straatnaam/3",
+            "huisnummer": "2C",
+            "busnummer": null,
+            "heeftPostinfo": "https://data.vlaanderen.be/id/postinfo/2630",
+            "status": "https://data.vlaanderen.be/id/concept/adresstatus/inGebruik",
+            "officieelToegekend": true,
+            "positie": {
+                "methode": "https://data.vlaanderen.be/id/concept/geometriemethode/aangeduidDoorBeheerder",
+                "specificatie": "https://data.vlaanderen.be/id/concept/geometriespecificatie/lot",
+                "geometrie": {
+                    "coordinates": [150647.25, 200188.74],
+                    "type": "Point"
+                }
+            }
         }
-    }
-}
          */
 
         [HttpPost("")]
@@ -61,8 +63,8 @@ namespace AddressRegistry.Api.Backoffice.Address
             // todo: add command implementation for BoxNumber
             var command = new RegisterAddress(
                 addressId,
-                StreetNameId.CreateForPersistentId(request.StreetNameId),
-                PostalCode.CreateForPersistentId(request.PostalCode),
+                StreetNameId.CreateForPersistentId(request.StreetNameId.AsIdentifier().Map(IdentifierMappings.StreetNameId)),
+                PostalCode.CreateForPersistentId(request.PostalCode.AsIdentifier().Map(IdentifierMappings.PostalCode)),
                 new HouseNumber(request.HouseNumber),
                 new BoxNumber(request.BoxNumber));
 
@@ -128,12 +130,18 @@ namespace AddressRegistry.Api.Backoffice.Address
                 .Single(item => item.PersistentLocalId == persistentLocalId);
 
             CrabEditClientResult crabEditResult;
-            if(addressId.HouseNumberId.HasValue)
+            if (addressId.HouseNumberId.HasValue)
+            {
                 crabEditResult = await editClient.ChangeHouseNumber(addressId.HouseNumberId.Value, request, cancellationToken);
-            else if(addressId.SubaddressId.HasValue)
+            }
+            else if (addressId.SubaddressId.HasValue)
+            {
                 crabEditResult = await editClient.ChangeSubaddress(addressId.SubaddressId.Value, request, cancellationToken);
+            }
             else
+            {
                 throw new InvalidOperationException();
+            }
 
             return AcceptedWithPosition(
                 position,
@@ -164,11 +172,17 @@ namespace AddressRegistry.Api.Backoffice.Address
 
             CrabEditClientResult crabEditResult;
             if (addressId.HouseNumberId.HasValue)
+            {
                 crabEditResult = await editClient.CorrectHouseNumber(addressId.HouseNumberId.Value, request, cancellationToken);
-            else if(addressId.SubaddressId.HasValue)
+            }
+            else if (addressId.SubaddressId.HasValue)
+            {
                 crabEditResult = await editClient.CorrectSubaddress(addressId.SubaddressId.Value, request, cancellationToken);
+            }
             else
+            {
                 throw new InvalidOperationException();
+            }
 
             return AcceptedWithPosition(
                 position,
@@ -204,12 +218,5 @@ namespace AddressRegistry.Api.Backoffice.Address
                 position,
                 deleteResponse.ExecutionTime);
         }
-
-
-        // TODO: For updates, we do insert into Operations - Guid + Position + Url Placeholder
-        // New Guid, Last observed position,
-        // If you request /operaties/guid/ and it is imported/ 200 ok + location where to find it
-        // If you request /operaties/guid/ and it is not imported - 412 etag stuff
-        //return Accepted($"/v1/operaties/{position}");
     }
 }

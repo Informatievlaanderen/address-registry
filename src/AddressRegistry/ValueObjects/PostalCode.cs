@@ -1,15 +1,13 @@
 namespace AddressRegistry
 {
-    using System;
-    using System.IO;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo;
     using Newtonsoft.Json;
 
     public class PostalCode : StringValueObject<PostalCode>
     {
-        // TODO: Use IdentifierUri instead of Uri as parameter
-        public static PostalCode CreateForPersistentId(Uri persistentId)
-            => new PostalCode(Path.GetFileName(persistentId.AbsolutePath));
+        public static PostalCode CreateForPersistentId(IdentifierUri<string> persistentId)
+            => new PostalCode(persistentId.Value);
 
         public PostalCode([JsonProperty("value")] string postCode) : base(postCode) { }
     }

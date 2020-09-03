@@ -68,7 +68,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
 
             item.AddContributor(
                 new SyndicationPerson(
-                    address.Organisation?.ToName(),
+                    address.Organisation == null ? Organisation.Unknown.ToName() : address.Organisation.Value.ToName(),
                     string.Empty,
                     AtomContributorTypes.Author));
 

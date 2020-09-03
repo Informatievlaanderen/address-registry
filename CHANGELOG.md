@@ -1,3 +1,10 @@
+## [2.18.2](https://github.com/informatievlaanderen/address-registry/compare/v2.18.1...v2.18.2) (2020-09-03)
+
+
+### Bug Fixes
+
+* sync null organisation defaults to unknown ([062002f](https://github.com/informatievlaanderen/address-registry/commit/062002f5aa81e8b48710579b4a8d53d817c7f698))
+
 ## [2.18.1](https://github.com/informatievlaanderen/address-registry/compare/v2.18.0...v2.18.1) (2020-09-02)
 
 

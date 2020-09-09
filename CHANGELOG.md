@@ -1,3 +1,11 @@
+## [2.18.3](https://github.com/informatievlaanderen/address-registry/compare/v2.18.2...v2.18.3) (2020-09-09)
+
+
+### Bug Fixes
+
+* add provenance when assigning PersistentLocalIdentifier GRAR-1532 ([33bca22](https://github.com/informatievlaanderen/address-registry/commit/33bca22796716919db30e416f4f76cc7e11263c7))
+* correct provenance for CrabHouseNumberId GRAR-1532 ([d39729f](https://github.com/informatievlaanderen/address-registry/commit/d39729f1c40a0dfb0b2974987ad4e59aea39f55e))
+
 ## [2.18.2](https://github.com/informatievlaanderen/address-registry/compare/v2.18.1...v2.18.2) (2020-09-03)
 
 

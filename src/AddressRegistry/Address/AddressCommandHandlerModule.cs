@@ -101,7 +101,7 @@ namespace AddressRegistry.Address
 
             For<AssignPersistentLocalIdForCrabHouseNumberId>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
-                //.AddProvenance(getUnitOfWork, crabProvenanceFactory)
+                .AddProvenance(getUnitOfWork, addressPersistentLocalIdentifierProvenanceFactory)
                 .Handle(async (message, ct) => await AssignPersistentLocalIdForCrabHouseNumberId(getAddresses, message, ct));
 
             For<AssignPersistentLocalIdForCrabSubaddressId>()

@@ -19,6 +19,7 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
         private readonly AddressCommandHandlerModule _addressCommandHandlerModule;
         private readonly Func<IHasCrabProvenance, Address, Provenance> _provenanceFactory;
         private readonly Func<IAddresses> _getAddresses;
+        private readonly Func<object, Address, Provenance> _addressPersistentLocalIdProvenanceFactory;
 
         public IdempotentCommandHandlerModuleProcessor(
             Func<IAddresses> getAddresses,
@@ -28,11 +29,13 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
             EventMapping eventMapping,
             EventSerializer eventSerializer,
             AddressProvenanceFactory addressProvenanceFactory,
-            CrabAddressProvenanceFactory crabProvenanceFactory)
+            CrabAddressProvenanceFactory crabProvenanceFactory,
+            AddressPersistentLocalIdentifierProvenanceFactory addressPersistentLocalIdentifierProvenanceFactory)
         {
             _getAddresses = getAddresses;
             _concurrentUnitOfWork = concurrentUnitOfWork;
             _provenanceFactory = crabProvenanceFactory.CreateFrom;
+            _addressPersistentLocalIdProvenanceFactory = addressPersistentLocalIdentifierProvenanceFactory.CreateFrom;
 
             _addressCommandHandlerModule = new AddressCommandHandlerModule(
                 _getAddresses,
@@ -42,7 +45,8 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
                 eventMapping,
                 eventSerializer,
                 addressProvenanceFactory,
-                crabProvenanceFactory);
+                crabProvenanceFactory,
+                addressPersistentLocalIdentifierProvenanceFactory);
         }
 
         public async Task<CommandMessage> Process(
@@ -110,21 +114,25 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
                 case AssignPersistentLocalIdForCrabHouseNumberId command:
                     var commandAssignPersistentLocalIdForCrabHouseNumberId = new CommandMessage<AssignPersistentLocalIdForCrabHouseNumberId>(command.CreateCommandId(), command, metadata);
                     await _addressCommandHandlerModule.AssignPersistentLocalIdForCrabHouseNumberId(_getAddresses, commandAssignPersistentLocalIdForCrabHouseNumberId, cancellationToken);
+                    AddProvenancePipe.AddProvenance(() => _concurrentUnitOfWork, commandAssignPersistentLocalIdForCrabHouseNumberId, _addressPersistentLocalIdProvenanceFactory, currentPosition);
                     return commandAssignPersistentLocalIdForCrabHouseNumberId;
 
                 case AssignPersistentLocalIdForCrabSubaddressId command:
                     var commandAssignPersistentLocalIdForCrabSubaddressId = new CommandMessage<AssignPersistentLocalIdForCrabSubaddressId>(command.CreateCommandId(), command, metadata);
                     await _addressCommandHandlerModule.AssignPersistentLocalIdForCrabSubaddressId(_getAddresses, commandAssignPersistentLocalIdForCrabSubaddressId, cancellationToken);
+                    AddProvenancePipe.AddProvenance(() => _concurrentUnitOfWork, commandAssignPersistentLocalIdForCrabSubaddressId, _addressPersistentLocalIdProvenanceFactory, currentPosition);
                     return commandAssignPersistentLocalIdForCrabSubaddressId;
 
                 case RequestPersistentLocalIdForCrabHouseNumberId command:
                     var commandRequestPersistentLocalIdForCrabHouseNumberId = new CommandMessage<RequestPersistentLocalIdForCrabHouseNumberId>(command.CreateCommandId(), command, metadata);
                     await _addressCommandHandlerModule.RequestPersistentLocalIdForCrabHouseNumberId(_getAddresses, commandRequestPersistentLocalIdForCrabHouseNumberId, cancellationToken);
+                    AddProvenancePipe.AddProvenance(() => _concurrentUnitOfWork, commandRequestPersistentLocalIdForCrabHouseNumberId, _addressPersistentLocalIdProvenanceFactory, currentPosition);
                     return commandRequestPersistentLocalIdForCrabHouseNumberId;
 
                 case RequestPersistentLocalIdForCrabSubaddressId command:
                     var commandRequestPersistentLocalIdForCrabSubaddressId = new CommandMessage<RequestPersistentLocalIdForCrabSubaddressId>(command.CreateCommandId(), command, metadata);
                     await _addressCommandHandlerModule.RequestPersistentLocalIdForCrabSubaddressId(_getAddresses, commandRequestPersistentLocalIdForCrabSubaddressId, cancellationToken);
+                    AddProvenancePipe.AddProvenance(() => _concurrentUnitOfWork, commandRequestPersistentLocalIdForCrabSubaddressId, _addressPersistentLocalIdProvenanceFactory, currentPosition);
                     return commandRequestPersistentLocalIdForCrabSubaddressId;
 
                 default:

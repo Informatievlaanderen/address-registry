@@ -13,6 +13,10 @@ namespace AddressRegistry
                 .SingleInstance();
 
             containerBuilder
+                .RegisterType<AddressPersistentLocalIdentifierProvenanceFactory>()
+                .SingleInstance();
+
+            containerBuilder
                 .RegisterType<AddressProvenanceFactory>()
                 .SingleInstance();
 

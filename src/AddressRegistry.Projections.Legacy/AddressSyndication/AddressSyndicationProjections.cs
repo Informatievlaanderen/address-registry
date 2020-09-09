@@ -313,25 +313,11 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
 
             When<Envelope<AddressPersistentLocalIdWasAssigned>>(async (context, message, ct) =>
             {
-                var addressSyndicationItem = await context.AddressSyndication.LatestPosition(message.Message.AddressId, ct);
-
-                if (addressSyndicationItem == null)
-                    throw AddressSyndicationExtensions.DatabaseItemNotFound(message.Message.AddressId);
-
-                if (addressSyndicationItem.Position >= message.Position)
-                    return;
-
-                var newAddressSyndicationItem = addressSyndicationItem.CloneAndApplyEventInfo(
-                    message.Position,
-                    message.EventName,
-                    message.Message.AssignmentDate,
-                    x => x.PersistentLocalId = message.Message.PersistentLocalId);
-
-                newAddressSyndicationItem.SetEventData(message.Message);
-
-                await context
-                    .AddressSyndication
-                    .AddAsync(newAddressSyndicationItem, ct);
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressId,
+                    message,
+                    x => x.PersistentLocalId = message.Message.PersistentLocalId,
+                    ct);
             });
 
             When<Envelope<AddressHouseNumberWasImportedFromCrab>>(async (context, message, ct) => DoNothing());

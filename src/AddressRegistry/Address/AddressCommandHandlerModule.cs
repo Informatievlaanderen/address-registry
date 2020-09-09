@@ -25,7 +25,8 @@ namespace AddressRegistry.Address
             EventMapping eventMapping,
             EventSerializer eventSerializer,
             AddressProvenanceFactory addressProvenanceFactory,
-            CrabAddressProvenanceFactory crabProvenanceFactory)
+            CrabAddressProvenanceFactory crabProvenanceFactory,
+            AddressPersistentLocalIdentifierProvenanceFactory addressPersistentLocalIdentifierProvenanceFactory)
         {
             _persistentLocalIdGenerator = persistentLocalIdGenerator;
 
@@ -105,22 +106,22 @@ namespace AddressRegistry.Address
 
             For<AssignPersistentLocalIdForCrabSubaddressId>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
-                //.AddProvenance(getUnitOfWork, crabProvenanceFactory)
+                .AddProvenance(getUnitOfWork, addressPersistentLocalIdentifierProvenanceFactory)
                 .Handle(async (message, ct) => await AssignPersistentLocalIdForCrabSubaddressId(getAddresses, message, ct));
 
             For<RequestPersistentLocalIdForCrabHouseNumberId>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
-                //.AddProvenance(getUnitOfWork, crabProvenanceFactory)
+                .AddProvenance(getUnitOfWork, addressPersistentLocalIdentifierProvenanceFactory)
                 .Handle(async (message, ct) => await RequestPersistentLocalIdForCrabHouseNumberId(getAddresses, message, ct));
 
             For<RequestPersistentLocalIdForCrabSubaddressId>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
-                //.AddProvenance(getUnitOfWork, crabProvenanceFactory)
+                .AddProvenance(getUnitOfWork, addressPersistentLocalIdentifierProvenanceFactory)
                 .Handle(async (message, ct) => await RequestPersistentLocalIdForCrabSubaddressId(getAddresses, message, ct));
 
             For<AssignPersistentLocalIdToAddress>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
-                .AddProvenance(getUnitOfWork, crabProvenanceFactory)
+                .AddProvenance(getUnitOfWork, addressPersistentLocalIdentifierProvenanceFactory)
                 .Handle(async (message, ct) => await AssignPersistentLocalIdToAddress(getAddresses, message, ct));
         }
 

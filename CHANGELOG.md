@@ -1,3 +1,10 @@
+## [2.18.4](https://github.com/informatievlaanderen/address-registry/compare/v2.18.3...v2.18.4) (2020-09-10)
+
+
+### Bug Fixes
+
+* add generator version GRAR-1540 ([4e0bc17](https://github.com/informatievlaanderen/address-registry/commit/4e0bc1798ff185dc17426046d0b2a82c15223b64))
+
 ## [2.18.3](https://github.com/informatievlaanderen/address-registry/compare/v2.18.2...v2.18.3) (2020-09-09)
 
 

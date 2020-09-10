@@ -4,6 +4,7 @@ namespace AddressRegistry.Api.Legacy.Infrastructure
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Mime;
+    using System.Reflection;
     using Be.Vlaanderen.Basisregisters.Api.Syndication;
     using Microsoft.Extensions.Configuration;
     using Microsoft.SyndicationFeed;
@@ -19,7 +20,7 @@ namespace AddressRegistry.Api.Legacy.Infrastructure
                 configuration["Subtitle"],
                 configuration["GeneratorTitle"],
                 configuration["GeneratorUri"],
-                string.Empty,
+                Assembly.GetEntryAssembly().GetName().Version.ToString(),
                 configuration["Rights"],
                 lastUpdated,
                 new SyndicationPerson(configuration["AuthorName"], configuration["AuthorEmail"], AtomContributorTypes.Author),

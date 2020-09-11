@@ -1,3 +1,10 @@
+## [2.18.5](https://github.com/informatievlaanderen/address-registry/compare/v2.18.4...v2.18.5) (2020-09-11)
+
+
+### Bug Fixes
+
+* remove Modification from xml GRAR-1529 ([1d58a54](https://github.com/informatievlaanderen/address-registry/commit/1d58a5404056ec09fe3f01e603c9b3e725e5aaa4))
+
 ## [2.18.4](https://github.com/informatievlaanderen/address-registry/compare/v2.18.3...v2.18.4) (2020-09-10)
 
 

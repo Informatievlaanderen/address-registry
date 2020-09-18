@@ -4,6 +4,8 @@ namespace AddressRegistry.Tests.WhenImportSubaddressFromCrab
     using Address.Events;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using AutoFixture;
+    using Be.Vlaanderen.Basisregisters.Crab;
+    using WhenImportHouseNumberSubaddressFromCrab;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -26,6 +28,43 @@ namespace AddressRegistry.Tests.WhenImportSubaddressFromCrab
                     addressWasRemoved)
                 .When(importSubaddressFromCrab)
                 .Throws(new AddressRemovedException($"Cannot change removed address for address id {addressId}")));
+        }
+
+        [Theory, DefaultDataForSubaddress]
+        public void RemoveViaHouseNumberThenAddressRemovedException(
+            AddressId addressId,
+            AddressWasRegistered addressWasRegistered,
+            AddressWasRemoved addressWasRemoved,
+            ImportHouseNumberSubaddressFromCrab importHouseNumberFromCrab,
+            ImportSubaddressFromCrab importSubaddressFromCrab)
+        {
+            importHouseNumberFromCrab = importHouseNumberFromCrab.WithCrabModification(CrabModification.Delete);
+
+            Assert(new Scenario()
+                .Given(addressId,
+                    addressWasRegistered,
+                    importSubaddressFromCrab.ToLegacyEvent(),
+                    addressWasRemoved)
+                .When(importHouseNumberFromCrab)
+                .Then(addressId, importHouseNumberFromCrab.ToLegacyEvent()));
+        }
+
+        [Theory, DefaultDataForSubaddress]
+        public void RemoveViaSubaddressThenAddressRemovedException(
+            AddressId addressId,
+            AddressWasRegistered addressWasRegistered,
+            AddressWasRemoved addressWasRemoved,
+            ImportSubaddressFromCrab importSubaddressFromCrab)
+        {
+            var importSubaddressFromCrab2 = importSubaddressFromCrab.WithCrabModification(CrabModification.Delete);
+
+            Assert(new Scenario()
+                .Given(addressId,
+                    addressWasRegistered,
+                    importSubaddressFromCrab.ToLegacyEvent(),
+                    addressWasRemoved)
+                .When(importSubaddressFromCrab2)
+                .Then(addressId, importSubaddressFromCrab2.ToLegacyEvent()));
         }
     }
 }

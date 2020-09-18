@@ -175,7 +175,8 @@ namespace AddressRegistry.Address
 
             if (modification == CrabModification.Delete)
             {
-                ApplyChange(new AddressWasRemoved(_addressId));
+                if(!IsRemoved)
+                    ApplyChange(new AddressWasRemoved(_addressId));
             }
             else
             {
@@ -192,7 +193,7 @@ namespace AddressRegistry.Address
                 EvaluateRetirement(lifetime, modification);
             }
 
-            if (_coupledHouseNumberId != null && _coupledHouseNumberId != houseNumberId)
+            if (_coupledHouseNumberId != null && _coupledHouseNumberId != houseNumberId && !IsRemoved)
             {
                 var lastEvent = _lastHouseNumberEventsForSubaddress[houseNumberId];
 

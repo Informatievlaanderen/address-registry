@@ -1,3 +1,12 @@
+## [2.18.6](https://github.com/informatievlaanderen/address-registry/compare/v2.18.5...v2.18.6) (2020-09-22)
+
+
+### Bug Fixes
+
+* AddressWasRemoved event is only applied once ([2bbee88](https://github.com/informatievlaanderen/address-registry/commit/2bbee88aa2b84f4537b1ac47af52311e2487e34e))
+* move dockerfiles to 3.1.8 ([e07a8e0](https://github.com/informatievlaanderen/address-registry/commit/e07a8e085e1c563dda926cf71bfac46c30664996))
+* move to 3.1.8 ([20dbe0c](https://github.com/informatievlaanderen/address-registry/commit/20dbe0cfc938566947f0363d9855e5b0ac8c9625))
+
 ## [2.18.5](https://github.com/informatievlaanderen/address-registry/compare/v2.18.4...v2.18.5) (2020-09-11)
 
 

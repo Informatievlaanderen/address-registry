@@ -3,6 +3,7 @@ name: CI
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -158,7 +159,7 @@ jobs:
 
         docker tag  $BUILD_DOCKER_REGISTRY/address-registry/projections-syndication:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/projections-syndication:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/projections-syndication:$SEMVER
-  
+
         docker tag  $BUILD_DOCKER_REGISTRY/address-registry/cache-warmer:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/cache-warmer:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/cache-warmer:$SEMVER
       env:

@@ -1,0 +1,37 @@
+version: 2
+
+updates:
+- package-ecosystem: github-actions
+  directory: "/"
+  schedule:
+    interval: daily
+
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: daily
+
+- package-ecosystem: docker
+  directory: "/src/AddressRegistry.Api.CrabImport"
+  schedule:
+    interval: daily
+
+- package-ecosystem: docker
+  directory: "/src/AddressRegistry.Api.Extract"
+  schedule:
+    interval: daily
+
+- package-ecosystem: docker
+  directory: "/src/AddressRegistry.Api.Legacy"
+  schedule:
+    interval: daily
+
+- package-ecosystem: docker
+  directory: "/src/AddressRegistry.Projections.Syndication"
+  schedule:
+    interval: daily
+
+- package-ecosystem: docker
+  directory: "/src/AddressRegistry.Projector"
+  schedule:
+    interval: daily

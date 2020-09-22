@@ -1,3 +1,10 @@
+# [2.19.0](https://github.com/informatievlaanderen/address-registry/compare/v2.18.6...v2.19.0) (2020-09-22)
+
+
+### Features
+
+* add import status endpoint GRAR-1400 ([37a2a75](https://github.com/informatievlaanderen/address-registry/commit/37a2a75a438d9985fd1ca139a362a32742602193))
+
 ## [2.18.6](https://github.com/informatievlaanderen/address-registry/compare/v2.18.5...v2.18.6) (2020-09-22)
 
 

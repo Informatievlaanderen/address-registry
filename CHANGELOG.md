@@ -1,3 +1,10 @@
+## [2.19.1](https://github.com/informatievlaanderen/address-registry/compare/v2.19.0...v2.19.1) (2020-09-28)
+
+
+### Bug Fixes
+
+* add null check to persistentlocalid addresslink syncs ([941eab7](https://github.com/informatievlaanderen/address-registry/commit/941eab7f86a4bd5c678527dcea102fbb3678c7a3))
+
 # [2.19.0](https://github.com/informatievlaanderen/address-registry/compare/v2.18.6...v2.19.0) (2020-09-22)
 
 

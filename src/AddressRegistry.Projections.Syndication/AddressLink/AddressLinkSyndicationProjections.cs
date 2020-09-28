@@ -89,8 +89,9 @@ namespace AddressRegistry.Projections.Syndication.AddressLink
 
                 UpdateBuildingUnitDbaseRecordField(addressBuildingUnitLinkExtractItem, record =>
                 {
-                    if(!string.IsNullOrEmpty(latestItem.PersistentLocalId))
+                    if (!string.IsNullOrEmpty(latestItem.PersistentLocalId))
                         record.adresid.Value = Convert.ToInt32(latestItem.PersistentLocalId);
+                        
                     record.voladres.Value = completeAddress;
                 });
             }
@@ -110,6 +111,7 @@ namespace AddressRegistry.Projections.Syndication.AddressLink
                 {
                     if (!string.IsNullOrEmpty(latestItem.PersistentLocalId))
                         record.adresid.Value = Convert.ToInt32(latestItem.PersistentLocalId);
+                        
                     record.voladres.Value = completeAddress;
                 });
             }

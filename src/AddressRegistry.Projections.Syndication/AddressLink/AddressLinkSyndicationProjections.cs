@@ -89,25 +89,27 @@ namespace AddressRegistry.Projections.Syndication.AddressLink
 
                 UpdateBuildingUnitDbaseRecordField(addressBuildingUnitLinkExtractItem, record =>
                 {
-                    record.adresid.Value = Convert.ToInt32(latestItem.PersistentLocalId);
+                    if(!string.IsNullOrEmpty(latestItem.PersistentLocalId))
+                        record.adresid.Value = Convert.ToInt32(latestItem.PersistentLocalId);
                     record.voladres.Value = completeAddress;
                 });
             }
 
-            var addreesAddressParcelLinkExtractItems =
+            var addressAddressParcelLinkExtractItems =
                 context.AddressParcelLinkExtract
                     .Where(x => x.AddressId == latestItem.AddressId)
                     .AsEnumerable()
                     .Concat(context.AddressParcelLinkExtract.Local.Where(x => x.AddressId == latestItem.AddressId));
 
-            foreach (var addressParcelLinkExtractItem in addreesAddressParcelLinkExtractItems)
+            foreach (var addressParcelLinkExtractItem in addressAddressParcelLinkExtractItems)
             {
                 addressParcelLinkExtractItem.AddressPersistentLocalId = latestItem.PersistentLocalId;
                 var completeAddress = AddressBuildingUnitLinkProjections.CreateCompleteAddress(latestItem, context);
 
                 UpdateParcelDbaseRecordField(addressParcelLinkExtractItem, record =>
                 {
-                    record.adresid.Value = Convert.ToInt32(latestItem.PersistentLocalId);
+                    if (!string.IsNullOrEmpty(latestItem.PersistentLocalId))
+                        record.adresid.Value = Convert.ToInt32(latestItem.PersistentLocalId);
                     record.voladres.Value = completeAddress;
                 });
             }

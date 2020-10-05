@@ -1,3 +1,10 @@
+## [2.19.2](https://github.com/informatievlaanderen/address-registry/compare/v2.19.1...v2.19.2) (2020-10-05)
+
+
+### Bug Fixes
+
+* run projection using the feedprojector GRAR-1562 ([c90d054](https://github.com/informatievlaanderen/address-registry/commit/c90d05495f093692c0d9a90623898f6b5832c929))
+
 ## [2.19.1](https://github.com/informatievlaanderen/address-registry/compare/v2.19.0...v2.19.1) (2020-09-28)
 
 

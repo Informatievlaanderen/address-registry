@@ -68,10 +68,10 @@ namespace AddressRegistry.Projections.Syndication
                                 container.GetService<ILoggerFactory>(),
                                 ct);
 
-                            await Task.WhenAll(StartRunners(configuration, container, ct));
-
-                            Log.Information("Running... Press CTRL + C to exit.");
-                            Closing.WaitOne();
+                            await container
+                                .GetService<FeedProjector<SyndicationContext>>()
+                                .Register(BuildProjectionRunners(configuration, container))
+                                .Start(ct);
                         }
                         catch (Exception e)
                         {
@@ -96,8 +96,12 @@ namespace AddressRegistry.Projections.Syndication
             Closing.Close();
         }
 
-        private static IEnumerable<Task> StartRunners(IConfiguration configuration, IServiceProvider container, CancellationToken ct)
+        private static IEnumerable<IFeedProjectionRunner<SyndicationContext>> BuildProjectionRunners(IConfiguration configuration, IServiceProvider container)
         {
+            ILogger<Program> CreateLogger() => container
+                .GetService<ILoggerFactory>()
+                .CreateLogger<Program>();
+
             var municipalityRunner = new FeedProjectionRunner<MunicipalityEvent, SyndicationItem<Municipality.Municipality>, SyndicationContext>(
                 "municipality",
                 configuration.GetValue<Uri>("SyndicationFeeds:Municipality"),
@@ -106,7 +110,7 @@ namespace AddressRegistry.Projections.Syndication
                 configuration.GetValue<int>("SyndicationFeeds:MunicipalityPollingInMilliseconds"),
                 false,
                 true,
-                container.GetService<ILogger<Program>>(),
+                CreateLogger(),
                 container.GetService<IRegistryAtomFeedReader>(),
                 new MunicipalitySyndiciationItemProjections(),
                 new MunicipalityLatestProjections(),
@@ -120,7 +124,7 @@ namespace AddressRegistry.Projections.Syndication
                 configuration.GetValue<int>("SyndicationFeeds:PostalInfoPollingInMilliseconds"),
                 false,
                 true,
-                container.GetService<ILogger<Program>>(),
+                CreateLogger(),
                 container.GetService<IRegistryAtomFeedReader>(),
                 new PostalInfoLatestProjections());
 
@@ -132,7 +136,7 @@ namespace AddressRegistry.Projections.Syndication
                 configuration.GetValue<int>("SyndicationFeeds:StreetNamePollingInMilliseconds"),
                 false,
                 true,
-                container.GetService<ILogger<Program>>(),
+                CreateLogger(),
                 container.GetService<IRegistryAtomFeedReader>(),
                 new StreetNameSyndicationItemProjections(),
                 new StreetNameLatestProjections(),
@@ -146,7 +150,7 @@ namespace AddressRegistry.Projections.Syndication
                 configuration.GetValue<int>("SyndicationFeeds:ParcelPollingInMilliseconds"),
                 false,
                 true,
-                container.GetService<ILogger<Program>>(),
+                CreateLogger(),
                 container.GetService<IRegistryAtomFeedReader>(),
                 new ParcelAddressMatchProjections());
 
@@ -158,7 +162,7 @@ namespace AddressRegistry.Projections.Syndication
                 configuration.GetValue<int>("SyndicationFeeds:BuildingPollingInMilliseconds"),
                 true,
                 true,
-                container.GetService<ILogger<Program>>(),
+                CreateLogger(),
                 container.GetService<IRegistryAtomFeedReader>(),
                 new BuildingUnitAddressMatchProjections());
 
@@ -172,7 +176,7 @@ namespace AddressRegistry.Projections.Syndication
                 configuration.GetValue<int>("LinkedFeedRetryPolicy:NumberOfRetryAttempts"),
                 configuration.GetValue<int>("LinkedFeedRetryPolicy:JittererMinSeconds"),
                 configuration.GetValue<int>("LinkedFeedRetryPolicy:JittererMaxSeconds"),
-                container.GetService<ILogger<Program>>(),
+                CreateLogger(),
                 container.GetService<IRegistryAtomFeedReader>(),
                 new AddressBuildingUnitLinkProjections(DbaseCodePage.Western_European_ANSI.ToEncoding()));
 
@@ -186,7 +190,7 @@ namespace AddressRegistry.Projections.Syndication
                 configuration.GetValue<int>("LinkedFeedRetryPolicy:NumberOfRetryAttempts"),
                 configuration.GetValue<int>("LinkedFeedRetryPolicy:JittererMinSeconds"),
                 configuration.GetValue<int>("LinkedFeedRetryPolicy:JittererMaxSeconds"),
-                container.GetService<ILogger<Program>>(),
+                CreateLogger(),
                 container.GetService<IRegistryAtomFeedReader>(),
                 new AddressParcelLinkProjections(DbaseCodePage.Western_European_ANSI.ToEncoding()));
 
@@ -200,29 +204,9 @@ namespace AddressRegistry.Projections.Syndication
                 configuration.GetValue<int>("LinkedFeedRetryPolicy:NumberOfRetryAttempts"),
                 configuration.GetValue<int>("LinkedFeedRetryPolicy:JittererMinSeconds"),
                 configuration.GetValue<int>("LinkedFeedRetryPolicy:JittererMaxSeconds"),
-                container.GetService<ILogger<Program>>(),
+                CreateLogger(),
                 container.GetService<IRegistryAtomFeedReader>(),
                 new AddressLinkSyndicationProjections(DbaseCodePage.Western_European_ANSI.ToEncoding()));
-
-            yield return municipalityRunner.CatchUpAsync(
-                container.GetService<Func<Owned<SyndicationContext>>>(),
-                ct);
-
-            yield return postalInfoRunner.CatchUpAsync(
-                container.GetService<Func<Owned<SyndicationContext>>>(),
-                ct);
-
-            yield return streetNameRunner.CatchUpAsync(
-                container.GetService<Func<Owned<SyndicationContext>>>(),
-                ct);
-
-            yield return parcelRunner.CatchUpAsync(
-                container.GetService<Func<Owned<SyndicationContext>>>(),
-                ct);
-
-            yield return buildingUnitRunner.CatchUpAsync(
-                container.GetService<Func<Owned<SyndicationContext>>>(),
-                ct);
 
             var linkedFeedManager = new LinkedFeedProjectionManager<SyndicationContext>(
                 new List<ILinkedFeedProjectionRunner<SyndicationContext>>
@@ -232,7 +216,15 @@ namespace AddressRegistry.Projections.Syndication
                    parcelAddressRunner
                 });
 
-            yield return linkedFeedManager.CatchUpAsync(container.GetService<Func<Owned<SyndicationContext>>>(), ct);
+            return new IFeedProjectionRunner<SyndicationContext>[]
+            {
+                municipalityRunner,
+                postalInfoRunner,
+                streetNameRunner,
+                parcelRunner,
+                buildingUnitRunner,
+                linkedFeedManager
+            };
         }
 
         private static IServiceProvider ConfigureServices(IConfiguration configuration)

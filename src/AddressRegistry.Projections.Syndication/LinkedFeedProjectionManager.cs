@@ -7,8 +7,10 @@ namespace AddressRegistry.Projections.Syndication
     using System.Threading.Tasks;
     using Autofac.Features.OwnedInstances;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication;
 
-    public class LinkedFeedProjectionManager<TContext> where TContext : RunnerDbContext<TContext>
+    public class LinkedFeedProjectionManager<TContext>: IFeedProjectionRunner<TContext>
+        where TContext : RunnerDbContext<TContext>
     {
         private readonly IEnumerable<ILinkedFeedProjectionRunner<TContext>> _linkedFeedProjectionRunners;
 

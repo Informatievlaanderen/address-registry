@@ -17,6 +17,7 @@ namespace AddressRegistry.Projections.Legacy.AddressList
         public string? PostalCode { get; set; }
         public string? HouseNumber { get; set; }
         public string? BoxNumber { get; set; }
+        public AddressStatus? Status { get; set; }
 
         public bool Complete { get; set; }
         public bool Removed { get; set; }
@@ -50,6 +51,7 @@ namespace AddressRegistry.Projections.Legacy.AddressList
             b.Property(p => p.PostalCode);
             b.Property(p => p.HouseNumber);
             b.Property(p => p.BoxNumber);
+            b.Property(p => p.Status);
             b.Property(p => p.Complete);
             b.Property(p => p.Removed);
 

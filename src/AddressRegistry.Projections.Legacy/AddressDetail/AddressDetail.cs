@@ -36,7 +36,7 @@ namespace AddressRegistry.Projections.Legacy.AddressDetail
 
     public class AddressDetailItemConfiguration : IEntityTypeConfiguration<AddressDetailItem>
     {
-        private const string TableName = "AddressDetails";
+        internal const string TableName = "AddressDetails";
 
         public void Configure(EntityTypeBuilder<AddressDetailItem> b)
         {

@@ -1,3 +1,10 @@
+# [2.20.0](https://github.com/informatievlaanderen/address-registry/compare/v2.19.2...v2.20.0) (2020-10-14)
+
+
+### Features
+
+* add status to api legacy list ([3a4b1d4](https://github.com/informatievlaanderen/address-registry/commit/3a4b1d46ab463a8139ee0994c3bcb08f411a6c03))
+
 ## [2.19.2](https://github.com/informatievlaanderen/address-registry/compare/v2.19.1...v2.19.2) (2020-10-05)
 
 

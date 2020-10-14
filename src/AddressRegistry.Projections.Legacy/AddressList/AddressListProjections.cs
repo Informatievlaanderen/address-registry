@@ -185,14 +185,99 @@ namespace AddressRegistry.Projections.Legacy.AddressList
                     ct);
             });
 
-            When<Envelope<AddressBecameCurrent>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressWasCorrectedToCurrent>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressWasProposed>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressWasCorrectedToProposed>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressWasRetired>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressWasCorrectedToRetired>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressStatusWasRemoved>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressStatusWasCorrectedToRemoved>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressBecameCurrent>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateAddressListItem(
+                    message.Message.AddressId,
+                    item =>
+                    {
+                        item.Status = AddressStatus.Current;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasCorrectedToCurrent>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateAddressListItem(
+                    message.Message.AddressId,
+                    item =>
+                    {
+                        item.Status = AddressStatus.Current;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasProposed>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateAddressListItem(
+                    message.Message.AddressId,
+                    item =>
+                    {
+                        item.Status = AddressStatus.Proposed;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasCorrectedToProposed>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateAddressListItem(
+                    message.Message.AddressId,
+                    item =>
+                    {
+                        item.Status = AddressStatus.Proposed;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasRetired>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateAddressListItem(
+                    message.Message.AddressId,
+                    item =>
+                    {
+                        item.Status = AddressStatus.Retired;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasCorrectedToRetired>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateAddressListItem(
+                    message.Message.AddressId,
+                    item =>
+                    {
+                        item.Status = AddressStatus.Retired;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressStatusWasRemoved>>(async (context, message, ct) => {
+                await context.FindAndUpdateAddressListItem(
+                    message.Message.AddressId,
+                    item =>
+                    {
+                        item.Status = null;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressStatusWasCorrectedToRemoved>>(async (context, message, ct) => {
+                await context.FindAndUpdateAddressListItem(
+                    message.Message.AddressId,
+                    item =>
+                    {
+                        item.Status = null;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+            });
 
             When<Envelope<AddressWasPositioned>>(async (context, message, ct) => DoNothing());
             When<Envelope<AddressPositionWasCorrected>>(async (context, message, ct) => DoNothing());

@@ -73,6 +73,13 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         [JsonProperty(Required = Required.DisallowNull)]
         public VolledigAdres VolledigAdres { get; set; }
 
+        /// <summary>
+        /// De fase in het leven van het adres.
+        /// </summary>
+        [DataMember(Name = "AdresStatus", Order = 6)]
+        [JsonProperty(Required = Required.DisallowNull)]
+        public AdresStatus AdresStatus { get; set; }
+
         public AddressListItemResponse(
             int id,
             string naamruimte,
@@ -80,6 +87,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             string huisnummer,
             string busnummer,
             VolledigAdres volledigAdres,
+            AdresStatus status,
             DateTimeOffset version)
         {
             Identificator = new AdresIdentificator(naamruimte, id.ToString(), version);
@@ -87,6 +95,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             Huisnummer = huisnummer;
             Busnummer = busnummer;
             VolledigAdres = volledigAdres;
+            AdresStatus = status;
         }
     }
 
@@ -108,6 +117,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
                     "70",
                     null,
                     new VolledigAdres("Koningin Maria Hendrikaplein", "70", null, "9000", "Gent", Taal.NL),
+                    AdresStatus.Voorgesteld,
                     DateTimeOffset.Now),
                 new AddressListItemResponse(
                     14874,
@@ -116,6 +126,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
                     "30",
                     "30",
                     new VolledigAdres("Boudewijnlaan", "30", "30", "1000", "Brussel", Taal.NL),
+                    AdresStatus.InGebruik,
                     DateTimeOffset.Now.AddDays(-2))
             };
 

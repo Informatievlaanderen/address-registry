@@ -173,6 +173,7 @@ namespace AddressRegistry.Api.Legacy.Address
                     a.HouseNumber,
                     a.BoxNumber,
                     a.PostalCode,
+                    a.Status,
                     a.VersionTimestamp
                 })
                 .ToListAsync(cancellationToken);
@@ -209,6 +210,7 @@ namespace AddressRegistry.Api.Legacy.Address
                         a.HouseNumber,
                         a.BoxNumber,
                         AddressMapper.GetVolledigAdres(a.HouseNumber, a.BoxNumber, a.PostalCode, streetName, municipality),
+                        AddressMapper.ConvertFromAddressStatus(a.Status),
                         a.VersionTimestamp.ToBelgianDateTimeOffset());
                 })
                 .ToList();

@@ -1,3 +1,10 @@
+# [2.21.0](https://github.com/informatievlaanderen/address-registry/compare/v2.20.0...v2.21.0) (2020-10-16)
+
+
+### Features
+
+* add cache status to projector api ([55759ad](https://github.com/informatievlaanderen/address-registry/commit/55759ade0fddc7d6bc3cefd0db2f1f77bdc0516c))
+
 # [2.20.0](https://github.com/informatievlaanderen/address-registry/compare/v2.19.2...v2.20.0) (2020-10-14)
 
 

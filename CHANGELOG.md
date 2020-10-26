@@ -1,3 +1,10 @@
+# [2.22.0](https://github.com/informatievlaanderen/address-registry/compare/v2.21.0...v2.22.0) (2020-10-26)
+
+
+### Features
+
+* update projector with gap detection and extended status api ([8925d9c](https://github.com/informatievlaanderen/address-registry/commit/8925d9c4a75897b63aa7de65c67dc10ad84af633))
+
 # [2.21.0](https://github.com/informatievlaanderen/address-registry/compare/v2.20.0...v2.21.0) (2020-10-16)
 
 

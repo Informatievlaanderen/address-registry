@@ -14,7 +14,9 @@ namespace AddressRegistry.Projector.Projections
         public ProjectionsController(
             IConnectedProjectionsManager connectedProjectionsManager,
             IConfiguration configuration)
-            : base(connectedProjectionsManager)
+            : base(
+                connectedProjectionsManager,
+                configuration.GetValue<string>("BaseUrl"))
         {
             RegisterConnectionString(Schema.Legacy, configuration.GetConnectionString("LegacyProjections"));
             RegisterConnectionString(Schema.Extract, configuration.GetConnectionString("ExtractProjections"));

@@ -47,15 +47,15 @@ nuget Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore 5.0.9
 nuget Be.Vlaanderen.Basisregisters.EventHandling 2.2.6
 nuget Be.Vlaanderen.Basisregisters.EventHandling.Autofac 2.2.6
 
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList 6.2.0
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore 6.2.0
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac 6.2.0
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner 6.2.0
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing 6.2.0
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit 6.2.0
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication 6.2.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList 7.0.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore 7.0.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac 7.0.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner 7.0.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing 7.0.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit 7.0.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication 7.0.0
 
-nuget Be.Vlaanderen.Basisregisters.Projector 5.4.5
+nuget Be.Vlaanderen.Basisregisters.Projector 6.1.2
 
 nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac 4.5.4
 nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.AspNetCore 4.5.4

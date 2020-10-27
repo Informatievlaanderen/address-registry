@@ -1,3 +1,10 @@
+# [2.23.0](https://github.com/informatievlaanderen/address-registry/compare/v2.22.0...v2.23.0) (2020-10-27)
+
+
+### Features
+
+* add error message for syndication projections ([e9710b9](https://github.com/informatievlaanderen/address-registry/commit/e9710b9ca8e9c46b41e912392bd24144edd15d64))
+
 # [2.22.0](https://github.com/informatievlaanderen/address-registry/compare/v2.21.0...v2.22.0) (2020-10-26)
 
 

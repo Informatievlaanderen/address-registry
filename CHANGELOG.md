@@ -1,3 +1,18 @@
+## [2.23.1](https://github.com/informatievlaanderen/address-registry/compare/v2.23.0...v2.23.1) (2020-11-06)
+
+
+### Bug Fixes
+
+* logging ([f6564ea](https://github.com/informatievlaanderen/address-registry/commit/f6564ea1b05be39e6f8d39ab524ed6382f857dbb))
+* logging ([0d65a72](https://github.com/informatievlaanderen/address-registry/commit/0d65a72376258f9c3a97cdba782b6c064e28d9bb))
+* logging ([8cadbbc](https://github.com/informatievlaanderen/address-registry/commit/8cadbbca8a52acc675c43be5814fa6b843f39869))
+* logging ([70c6056](https://github.com/informatievlaanderen/address-registry/commit/70c6056f3f0d71c1534ea315f464e4cdd7903faa))
+* logging ([2a2af98](https://github.com/informatievlaanderen/address-registry/commit/2a2af98a48a0069cee20c78c9c2e8744bbe8fc80))
+* logging ([7b47aa6](https://github.com/informatievlaanderen/address-registry/commit/7b47aa60785e47fa7746637ee0ce1d4dd64e0cfb))
+* logging ([a910bda](https://github.com/informatievlaanderen/address-registry/commit/a910bda88f813a86787b5d399e7818868466f506))
+* logging ([fd89541](https://github.com/informatievlaanderen/address-registry/commit/fd8954116e5636f4b1a37f153adcb376d9c072e4))
+* serilog ([d6438c2](https://github.com/informatievlaanderen/address-registry/commit/d6438c263b8bfdb9b8a67c6197e54576e3c035aa))
+
 # [2.23.0](https://github.com/informatievlaanderen/address-registry/compare/v2.22.0...v2.23.0) (2020-10-27)
 
 

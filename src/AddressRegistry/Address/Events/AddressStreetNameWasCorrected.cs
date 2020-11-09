@@ -9,7 +9,7 @@ namespace AddressRegistry.Address.Events
     [EventDescription("De straat van het adres werd gewijzigd via correctie.")]
     public class AddressStreetNameWasCorrected : IHasProvenance, ISetProvenance
     {
-        public Guid StreetNameId;
+        public Guid StreetNameId { get; }
         public Guid AddressId { get; }
         public ProvenanceData Provenance { get; private set; }
 

@@ -106,6 +106,17 @@ namespace Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events
             }
         }
 
+        [Fact]
+        public void HasNoPublicFields()
+        {
+            foreach (var type in _eventTypes)
+            {
+                type.GetFields(BindingFlags.Public | BindingFlags.Instance)
+                    .Should()
+                    .BeEmpty($"{type.FullName} has a public field");
+            }
+        }
+
         public static IEnumerable<Type> GetParentTypes(Type type)
         {
             // is there any base type?

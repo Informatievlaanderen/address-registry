@@ -1,3 +1,10 @@
+## [2.23.2](https://github.com/informatievlaanderen/address-registry/compare/v2.23.1...v2.23.2) (2020-11-09)
+
+
+### Bug Fixes
+
+* correct null objectid in sync object GRAR-1627 ([3afdd9d](https://github.com/informatievlaanderen/address-registry/commit/3afdd9d14ede623d20d40ff2c155c8a5034688eb))
+
 ## [2.23.1](https://github.com/informatievlaanderen/address-registry/compare/v2.23.0...v2.23.1) (2020-11-06)
 
 

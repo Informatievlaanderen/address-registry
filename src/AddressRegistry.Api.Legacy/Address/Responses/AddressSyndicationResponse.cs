@@ -221,7 +221,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             string reason)
         {
             AddressId = addressId;
-            Identificator = new AdresIdentificator(naamruimte, persistentLocalId.HasValue ? persistentLocalId.ToString() : string.Empty, version);
+            Identificator = new AdresIdentificator(naamruimte, persistentLocalId?.ToString(CultureInfo.InvariantCulture), version);
             SteetnameId = streetNameId;
             PostalCode = postalCode;
             Point = point == null ? null : new SyndicationPoint { XmlPoint = point.XmlPoint };

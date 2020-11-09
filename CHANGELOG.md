@@ -1,3 +1,11 @@
+## [2.23.3](https://github.com/informatievlaanderen/address-registry/compare/v2.23.2...v2.23.3) (2020-11-09)
+
+
+### Bug Fixes
+
+* change public field to property GRAR-1636 ([7c799c4](https://github.com/informatievlaanderen/address-registry/commit/7c799c47471ed1f135bbea020dab5fe2b165922b))
+* correct null status in sync object GRAR-1629 ([afd0a9c](https://github.com/informatievlaanderen/address-registry/commit/afd0a9cff86d3e6aea404fdc1a9ed7764dd0076b))
+
 ## [2.23.2](https://github.com/informatievlaanderen/address-registry/compare/v2.23.1...v2.23.2) (2020-11-09)
 
 

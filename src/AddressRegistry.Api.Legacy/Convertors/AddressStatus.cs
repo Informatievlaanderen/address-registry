@@ -5,8 +5,8 @@ namespace AddressRegistry.Api.Legacy.Convertors
 
     public static class AddressStatusExtensions
     {
-        public static AdresStatus ConvertFromAddressStatus(this AddressStatus? status)
-            => ConvertFromAddressStatus(status ?? AddressStatus.Current);
+        public static AdresStatus? ConvertFromAddressStatus(this AddressStatus? status)
+            => status == null ? (AdresStatus?)null : ConvertFromAddressStatus(status.Value);
 
         public static AdresStatus ConvertFromAddressStatus(this AddressStatus status)
         {

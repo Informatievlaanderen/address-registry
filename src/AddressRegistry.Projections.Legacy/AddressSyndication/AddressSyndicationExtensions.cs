@@ -1,13 +1,11 @@
 namespace AddressRegistry.Projections.Legacy.AddressSyndication
 {
     using System;
-    using System.IO;
     using System.Linq;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
-    using System.Xml.Linq;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
@@ -37,7 +35,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                 applyEventInfoOn);
 
             newAddressSyndicationItem.ApplyProvenance(provenance);
-            newAddressSyndicationItem.SetEventData(message.Message);
+            newAddressSyndicationItem.SetEventData(message.Message, message.EventName);
 
             await context
                 .AddressSyndication
@@ -67,9 +65,9 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             item.Reason = provenance.Reason;
         }
 
-        public static void SetEventData<T>(this AddressSyndicationItem syndicationItem, T message)
+        public static void SetEventData<T>(this AddressSyndicationItem syndicationItem, T message, string eventName)
         {
-            var xmlElement = message.ToXml(message.GetType().Name);
+            var xmlElement = message.ToXml(eventName);
             using (var stringWriter = new StringWriterWithEncoding(Encoding.UTF8))
             {
                 using (var xmlWriter = new XmlTextWriter(stringWriter) { Formatting = Formatting.None })

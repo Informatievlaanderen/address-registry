@@ -6,8 +6,6 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
-    using NetTopologySuite.IO;
-    using NodaTime;
 
     public class AddressSyndicationProjections : ConnectedProjection<LegacyContext>
     {
@@ -28,7 +26,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                 };
 
                 addressSyndicationItem.ApplyProvenance(message.Message.Provenance);
-                addressSyndicationItem.SetEventData(message.Message);
+                addressSyndicationItem.SetEventData(message.Message, message.EventName);
 
                 await context
                     .AddressSyndication

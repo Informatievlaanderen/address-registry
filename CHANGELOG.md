@@ -1,3 +1,11 @@
+## [2.23.4](https://github.com/informatievlaanderen/address-registry/compare/v2.23.3...v2.23.4) (2020-11-12)
+
+
+### Bug Fixes
+
+* set event name for register sync ([eb04ad5](https://github.com/informatievlaanderen/address-registry/commit/eb04ad5db41b8fa60a0b51af9b1e36bcd1fb3b69))
+* use event name instead of event type name for xml sync element ([5a90be4](https://github.com/informatievlaanderen/address-registry/commit/5a90be46c36e33e0cd4680ea5e92239288995a79))
+
 ## [2.23.3](https://github.com/informatievlaanderen/address-registry/compare/v2.23.2...v2.23.3) (2020-11-09)
 
 

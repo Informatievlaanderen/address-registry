@@ -255,7 +255,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
     <link href=""https://api.basisregisters.dev-vlaanderen.be/v1/feeds/adressen.atom"" rel=""alternate"" type=""application/atom+xml"" />
     <link href=""https://api.basisregisters.dev-vlaanderen.be/v1/feeds/adressen.xml"" rel=""alternate"" type=""application/xml"" />
     <link href=""https://docs.basisregisters.dev-vlaanderen.be/"" rel=""related"" />
-    <link href=""https://api.basisregisters.dev-vlaanderen.be/v1/feeds/adressen?from=3&amp;limit=2&amp;embed=event,object"" rel=""next"" />
+    <link href=""https://api.basisregisters.dev-vlaanderen.be/v1/feeds/adressen?from=3&amp;limit=100&amp;embed=event,object"" rel=""next"" />
     <entry>
         <id>0</id>
         <title>AddressWasRegistered-0</title>

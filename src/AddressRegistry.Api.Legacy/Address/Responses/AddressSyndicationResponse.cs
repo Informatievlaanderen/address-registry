@@ -237,67 +237,64 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         }
     }
 
-    public class AddressSyndicationResponseExamples : IExamplesProvider<object>
+    public class AddressSyndicationResponseExamples : IExamplesProvider<XmlElement>
     {
-        private SyndicationContent ContentExample =>
-            new SyndicationContent
-            {
-                Object = new AddressSyndicationContent(
-                    Guid.NewGuid(),
-                    _responseOptions.Naamruimte,
-                    Guid.NewGuid(),
-                    13023,
-                    "70",
-                    null,
-                    "9000",
-                    new Point { XmlPoint = new GmlPoint { Pos = "188473.52 193390.22" } },
-                    PositieGeometrieMethode.AfgeleidVanObject,
-                    PositieSpecificatie.Gebouweenheid,
-                    AdresStatus.InGebruik,
-                    DateTimeOffset.Now,
-                    true,
-                    true,
-                    Organisation.Agiv,
-                    Reason.CentralManagementCrab)
-            };
-
-        private readonly ResponseOptions _responseOptions;
-
-        public AddressSyndicationResponseExamples(IOptions<ResponseOptions> responseOptionsProvider)
-            => _responseOptions = responseOptionsProvider.Value;
-
-        public object GetExamples()
-        {
-            return $@"<?xml version=""1.0"" encoding=""utf-8""?>
+        private const string RawXml = @"<?xml version=""1.0"" encoding=""utf-8""?>
 <feed xmlns=""http://www.w3.org/2005/Atom"">
-  <id>https://api.basisregisters.vlaanderen.be/v1/feeds/adressen.atom</id>
-  <title>Basisregisters Vlaanderen - feed 'adressen'</title>
-  <subtitle>Deze Atom feed geeft leestoegang tot events op de resource 'adressen'.</subtitle>
-  <generator>Basisregisters Vlaanderen</generator>
-  <rights>Gratis hergebruik volgens https://overheid.vlaanderen.be/sites/default/files/documenten/ict-egov/licenties/hergebruik/modellicentie_gratis_hergebruik_v1_0.html</rights>
-  <updated>2018-10-05T14:06:53Z</updated>
-  <author>
-    <name>agentschap Informatie Vlaanderen</name>
-    <email>informatie.vlaanderen@vlaanderen.be</email>
-  </author>
-  <link href=""https://api.basisregisters.dev-vlaanderen.be/v1/feeds/adressen"" rel=""self""/>
-  <link href=""https://api.basisregisters.dev-vlaanderen.be/v1/feeds/adressen.atom"" rel=""alternate"" type=""application/atom+xml""/>
-  <link href=""https://api.basisregisters.dev-vlaanderen.be/v1/feeds/adressen.xml"" rel=""alternate"" type=""application/xml""/>
-  <link href=""https://docs.basisregisters.dev-vlaanderen.be/"" rel=""related""/>
-  <link href=""https://api.basisregisters.dev-vlaanderen.be/v1/feeds/adressen?from=100&limit=100"" rel=""next""/>
-  <entry>
-    <id>4</id>
-    <title>AddressWasRegistered-4</title>
-    <updated>2018-10-04T13:12:17Z</updated>
-    <published>2018-10-04T13:12:17Z</published>
-    <link href=""{_responseOptions.Naamruimte}/13023"" rel=""related"" />
+    <id>https://api.basisregisters.dev-vlaanderen.be/v1/feeds/adressen.atom</id>
+    <title>Basisregisters Vlaanderen - feed 'adressen'</title>
+    <subtitle>Deze Atom feed geeft leestoegang tot events op de resource 'adressen'.</subtitle>
+    <generator uri=""https://basisregisters.dev-vlaanderen.be"" version=""2.2.23.4"">Basisregisters Vlaanderen</generator>
+    <rights>Gratis hergebruik volgens https://overheid.vlaanderen.be/sites/default/files/documenten/ict-egov/licenties/hergebruik/modellicentie_gratis_hergebruik_v1_0.html</rights>
+    <updated>2020-11-07T01:22:17Z</updated>
     <author>
-      <name>agentschap Informatie Vlaanderen</name>
+        <name>agentschap Informatie Vlaanderen</name>
+        <email>informatie.vlaanderen@vlaanderen.be</email>
+    </author>
+    <link href=""https://api.basisregisters.dev-vlaanderen.be/v1/feeds/adressen"" rel=""self"" />
+    <link href=""https://api.basisregisters.dev-vlaanderen.be/v1/feeds/adressen.atom"" rel=""alternate"" type=""application/atom+xml"" />
+    <link href=""https://api.basisregisters.dev-vlaanderen.be/v1/feeds/adressen.xml"" rel=""alternate"" type=""application/xml"" />
+    <link href=""https://docs.basisregisters.dev-vlaanderen.be/"" rel=""related"" />
+    <link href=""https://api.basisregisters.dev-vlaanderen.be/v1/feeds/adressen?from=3&amp;limit=2&amp;embed=event,object"" rel=""next"" />
+    <entry>
+        <id>0</id>
+        <title>AddressWasRegistered-0</title>
+        <updated>2003-12-07T04:19:50+01:00</updated>
+        <published>2003-12-07T04:19:50+01:00</published>
+        <author>
+            <name>Federale Overheidsdienst Financiën (Algemene Administratie van de Patrimoniumdocumentatie)</name>
+        </author>
+        <category term=""adressen"" />
+        <content>
+            <![CDATA[<Content xmlns:i=""http://www.w3.org/2001/XMLSchema-instance""><Event><AddressWasRegistered><AddressId>e45d2dea-56ed-5009-bea2-218d3f10b7a3</AddressId><StreetNameId>a8a7a581-20d4-5331-9271-c4c6198b2909</StreetNameId><HouseNumber>16</HouseNumber><Provenance><Timestamp>2003-12-07T03:19:50Z</Timestamp><Organisation>Akred</Organisation><Reason>Centrale bijhouding CRAB</Reason></Provenance>
+    </AddressWasRegistered>
+  </Event><Object><Id>e45d2dea-56ed-5009-bea2-218d3f10b7a3</Id><Identificator><Id>https://data.vlaanderen.be/id/adres/</Id><Naamruimte>https://data.vlaanderen.be/id/adres</Naamruimte><ObjectId i:nil=""true"" /><VersieId>2003-12-07T04:19:50+01:00</VersieId></Identificator><StraatnaamId>a8a7a581-20d4-5331-9271-c4c6198b2909</StraatnaamId><PostCode i:nil=""true"" /><Huisnummer>16</Huisnummer><Busnummer i:nil=""true"" /><AdresStatus i:nil=""true"" /><AdresPositie i:nil=""true"" /><PositieGeometrieMethode i:nil=""true"" /><PositieSpecificatie i:nil=""true"" /><IsCompleet>false</IsCompleet><OfficieelToegekend>false</OfficieelToegekend><Creatie><Tijdstip>2003-12-07T04:19:50+01:00</Tijdstip><Organisatie>Federale Overheidsdienst Financiën (Algemene Administratie van de Patrimoniumdocumentatie)</Organisatie><Reden>Centrale bijhouding CRAB</Reden></Creatie>
+  </Object></Content>]]>
+</content>
+</entry>
+<entry>
+    <id>2</id>
+    <title>AddressPostalCodeWasChanged-2</title>
+    <updated>2003-12-08T09:11:49+01:00</updated>
+    <published>2003-12-07T04:19:50+01:00</published>
+    <author>
+        <name>Federale Overheidsdienst Financiën (Algemene Administratie van de Patrimoniumdocumentatie)</name>
     </author>
     <category term=""adressen"" />
-    <content><![CDATA[{ContentExample.ToXml()}]]></content>
-  </entry>
+    <content>
+        <![CDATA[<Content xmlns:i=""http://www.w3.org/2001/XMLSchema-instance""><Event><AddressPostalCodeWasChanged><AddressId>e45d2dea-56ed-5009-bea2-218d3f10b7a3</AddressId><PostalCode>8730</PostalCode><Provenance><Timestamp>2003-12-08T08:11:49Z</Timestamp><Organisation>Akred</Organisation><Reason>Centrale bijhouding CRAB</Reason></Provenance>
+    </AddressPostalCodeWasChanged>
+  </Event><Object><Id>e45d2dea-56ed-5009-bea2-218d3f10b7a3</Id><Identificator><Id>https://data.vlaanderen.be/id/adres/</Id><Naamruimte>https://data.vlaanderen.be/id/adres</Naamruimte><ObjectId i:nil=""true"" /><VersieId>2003-12-08T09:11:49+01:00</VersieId></Identificator><StraatnaamId>a8a7a581-20d4-5331-9271-c4c6198b2909</StraatnaamId><PostCode>8730</PostCode><Huisnummer>16</Huisnummer><Busnummer i:nil=""true"" /><AdresStatus i:nil=""true"" /><AdresPositie i:nil=""true"" /><PositieGeometrieMethode i:nil=""true"" /><PositieSpecificatie i:nil=""true"" /><IsCompleet>false</IsCompleet><OfficieelToegekend>false</OfficieelToegekend><Creatie><Tijdstip>2003-12-08T09:11:49+01:00</Tijdstip><Organisatie>Federale Overheidsdienst Financiën (Algemene Administratie van de Patrimoniumdocumentatie)</Organisatie><Reden>Centrale bijhouding CRAB</Reden></Creatie>
+  </Object></Content>]]>
+</content>
+</entry>
 </feed>";
+
+        public XmlElement GetExamples()
+        {
+            var example = new XmlDocument();
+            example.LoadXml(RawXml);
+            return example.DocumentElement;
         }
     }
 }

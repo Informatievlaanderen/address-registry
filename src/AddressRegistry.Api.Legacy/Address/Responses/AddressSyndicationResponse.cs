@@ -241,21 +241,21 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
     {
         private const string RawXml = @"<?xml version=""1.0"" encoding=""utf-8""?>
 <feed xmlns=""http://www.w3.org/2005/Atom"">
-    <id>https://api.basisregisters.dev-vlaanderen.be/v1/feeds/adressen.atom</id>
+    <id>https://api.basisregisters.vlaanderen.be/v1/feeds/adressen.atom</id>
     <title>Basisregisters Vlaanderen - feed 'adressen'</title>
     <subtitle>Deze Atom feed geeft leestoegang tot events op de resource 'adressen'.</subtitle>
-    <generator uri=""https://basisregisters.dev-vlaanderen.be"" version=""2.2.23.4"">Basisregisters Vlaanderen</generator>
+    <generator uri=""https://basisregisters.vlaanderen.be"" version=""2.2.23.4"">Basisregisters Vlaanderen</generator>
     <rights>Gratis hergebruik volgens https://overheid.vlaanderen.be/sites/default/files/documenten/ict-egov/licenties/hergebruik/modellicentie_gratis_hergebruik_v1_0.html</rights>
     <updated>2020-11-07T01:22:17Z</updated>
     <author>
         <name>agentschap Informatie Vlaanderen</name>
         <email>informatie.vlaanderen@vlaanderen.be</email>
     </author>
-    <link href=""https://api.basisregisters.dev-vlaanderen.be/v1/feeds/adressen"" rel=""self"" />
-    <link href=""https://api.basisregisters.dev-vlaanderen.be/v1/feeds/adressen.atom"" rel=""alternate"" type=""application/atom+xml"" />
-    <link href=""https://api.basisregisters.dev-vlaanderen.be/v1/feeds/adressen.xml"" rel=""alternate"" type=""application/xml"" />
-    <link href=""https://docs.basisregisters.dev-vlaanderen.be/"" rel=""related"" />
-    <link href=""https://api.basisregisters.dev-vlaanderen.be/v1/feeds/adressen?from=3&amp;limit=100&amp;embed=event,object"" rel=""next"" />
+    <link href=""https://api.basisregisters.vlaanderen.be/v1/feeds/adressen"" rel=""self"" />
+    <link href=""https://api.basisregisters.vlaanderen.be/v1/feeds/adressen.atom"" rel=""alternate"" type=""application/atom+xml"" />
+    <link href=""https://api.basisregisters.vlaanderen.be/v1/feeds/adressen.xml"" rel=""alternate"" type=""application/xml"" />
+    <link href=""https://docs.basisregisters.vlaanderen.be/"" rel=""related"" />
+    <link href=""https://api.basisregisters.vlaanderen.be/v1/feeds/adressen?from=3&amp;limit=100&amp;embed=event,object"" rel=""next"" />
     <entry>
         <id>0</id>
         <title>AddressWasRegistered-0</title>

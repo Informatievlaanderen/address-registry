@@ -1,3 +1,13 @@
+## [2.23.5](https://github.com/informatievlaanderen/address-registry/compare/v2.23.4...v2.23.5) (2020-11-13)
+
+
+### Bug Fixes
+
+* display sync response example as correct xml GRAR-1599 ([4761102](https://github.com/informatievlaanderen/address-registry/commit/4761102b0dae9efa66278fcee9bdb27e6084114c))
+* set limit to default in example ([9879a20](https://github.com/informatievlaanderen/address-registry/commit/9879a207cad386d146ab75a4cf7dc28b16a4dd2c))
+* upgrade swagger GRAR-1599 ([2f6de3e](https://github.com/informatievlaanderen/address-registry/commit/2f6de3e2bd68f45331f63e1da34c2c971cac149c))
+* use production url for sync examples ([7ea8c56](https://github.com/informatievlaanderen/address-registry/commit/7ea8c56e01d059f0283c295f99610e5bcb606649))
+
 ## [2.23.4](https://github.com/informatievlaanderen/address-registry/compare/v2.23.3...v2.23.4) (2020-11-12)
 
 

@@ -10,7 +10,6 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Options;
-    using Newtonsoft.Json.Converters;
     using Requests;
     using Responses;
     using Swashbuckle.AspNetCore.Filters;
@@ -26,9 +25,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
         [ProducesResponseType(typeof(AddressMatchCollection), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(AddressMatchResponseExamples), jsonConverter: typeof(StringEnumConverter))]
-        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ValidationErrorResponseExamples), jsonConverter: typeof(StringEnumConverter))]
-        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples), jsonConverter: typeof(StringEnumConverter))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(AddressMatchResponseExamples))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ValidationErrorResponseExamples))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
         public async Task<IActionResult> Get(
             [FromServices] IKadRrService kadRrService,
             [FromServices] ILatestQueries latestQueries,
@@ -69,7 +68,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
             });
         }
 
-        public AddressMatchQueryComponents Map(AddressMatchRequest request) =>
+        private AddressMatchQueryComponents Map(AddressMatchRequest request) =>
             new AddressMatchQueryComponents
             {
                 MunicipalityName = request.Gemeentenaam,

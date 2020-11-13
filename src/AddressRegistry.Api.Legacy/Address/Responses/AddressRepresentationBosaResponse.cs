@@ -7,7 +7,9 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using System.Runtime.Serialization;
 
+    [DataContract]
     public class AddressRepresentationBosaResponse
     {
         /// <summary>
@@ -23,6 +25,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         public List<BosaAddressRepresentation> AdresVoorstellingen { get; set; }
     }
 
+    [DataContract]
     public class BosaAddressRepresentation
     {
         [Required]

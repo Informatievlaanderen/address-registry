@@ -20,6 +20,7 @@ namespace AddressRegistry.Projections.Syndication.Parcel
             _encoding = encoding;
 
             When(ParcelEvent.ParcelWasRegistered, AddSyndicationItemEntry);
+            When(ParcelEvent.ParcelWasRecovered, AddSyndicationItemEntry);
             When(ParcelEvent.ParcelWasRemoved, RemoveParcel);
             When(ParcelEvent.ParcelAddressWasAttached, AddSyndicationItemEntry);
             When(ParcelEvent.ParcelAddressWasDetached, AddSyndicationItemEntry);

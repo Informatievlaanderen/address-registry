@@ -12,6 +12,7 @@ namespace AddressRegistry.Projections.Syndication.Parcel
         {
             When(ParcelEvent.ParcelWasRegistered, AddSyndicationItemEntry);
             When(ParcelEvent.ParcelWasRemoved, RemoveParcel);
+            When(ParcelEvent.ParcelWasRecovered, AddSyndicationItemEntry);
             When(ParcelEvent.ParcelWasRealized, AddSyndicationItemEntry);
             When(ParcelEvent.ParcelWasCorrectedToRealized, AddSyndicationItemEntry);
             When(ParcelEvent.ParcelWasRetired, AddSyndicationItemEntry);

@@ -1,3 +1,10 @@
+## [2.23.6](https://github.com/informatievlaanderen/address-registry/compare/v2.23.5...v2.23.6) (2020-11-16)
+
+
+### Bug Fixes
+
+* handle ParcelWasRecovered in syndication ([6d96182](https://github.com/informatievlaanderen/address-registry/commit/6d96182a1dc93e351e67b3a6be4675e282be69f8))
+
 ## [2.23.5](https://github.com/informatievlaanderen/address-registry/compare/v2.23.4...v2.23.5) (2020-11-13)
 
 

@@ -4,6 +4,7 @@ namespace AddressRegistry.Projections.Syndication.Parcel
     {
         ParcelWasRegistered,
         ParcelWasRemoved,
+        ParcelWasRecovered,
         ParcelWasRealized,
         ParcelWasRetired,
         ParcelWasCorrectedToRealized,

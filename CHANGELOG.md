@@ -1,3 +1,11 @@
+## [2.23.7](https://github.com/informatievlaanderen/address-registry/compare/v2.23.6...v2.23.7) (2020-11-18)
+
+
+### Bug Fixes
+
+* reattached parcel addresses didn't get synced ([ac5a714](https://github.com/informatievlaanderen/address-registry/commit/ac5a71430e838da2e521d028d11a27564b1d63b8))
+* remove set-env usage in gh-actions ([9027fe7](https://github.com/informatievlaanderen/address-registry/commit/9027fe753bfa09b23af7664358032bc79c141026))
+
 ## [2.23.6](https://github.com/informatievlaanderen/address-registry/compare/v2.23.5...v2.23.6) (2020-11-16)
 
 

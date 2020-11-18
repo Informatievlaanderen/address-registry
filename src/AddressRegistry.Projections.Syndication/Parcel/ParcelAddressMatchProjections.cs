@@ -59,12 +59,14 @@ namespace AddressRegistry.Projections.Syndication.Parcel
             foreach (var addressId in entry.Content.Object.AddressIds)
             {
                 if (parcelAddressMatchLatestItems.All(x => x.AddressId != addressId))
+                {
                     await context.ParcelAddressMatchLatestItems.AddAsync(new ParcelAddressMatchLatestItem
                     {
                         ParcelId = entry.Content.Object.Id,
                         AddressId = addressId,
                         ParcelPersistentLocalId = entry.Content.Object.Identificator.ObjectId
                     }, ct);
+                }
                 else if (removedParcelAddressMatchItems.Any(x => x.AddressId == addressId))
                 {
                     var parcel = removedParcelAddressMatchItems.First(x => x.AddressId == addressId);

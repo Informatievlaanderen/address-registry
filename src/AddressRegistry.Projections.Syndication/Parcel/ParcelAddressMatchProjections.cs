@@ -44,6 +44,8 @@ namespace AddressRegistry.Projections.Syndication.Parcel
                     .Concat(context.ParcelAddressMatchLatestItems.Local.Where(x => x.ParcelId == entry.Content.Object.Id))
                     .ToList();
 
+            var removedParcelAddressMatchItems = parcelAddressMatchLatestItems.Where(p => p.IsRemoved).ToList();
+
             var itemsToRemove = new List<ParcelAddressMatchLatestItem>();
             foreach (var parcelAddressMatchLatestItem in parcelAddressMatchLatestItems)
             {
@@ -63,6 +65,12 @@ namespace AddressRegistry.Projections.Syndication.Parcel
                         AddressId = addressId,
                         ParcelPersistentLocalId = entry.Content.Object.Identificator.ObjectId
                     }, ct);
+                else if (removedParcelAddressMatchItems.Any(x => x.AddressId == addressId))
+                {
+                    var parcel = removedParcelAddressMatchItems.First(x => x.AddressId == addressId);
+                    parcel.IsRemoved = false;
+                }
+
             }
         }
     }

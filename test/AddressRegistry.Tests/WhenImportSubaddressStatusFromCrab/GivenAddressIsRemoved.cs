@@ -27,7 +27,7 @@ namespace AddressRegistry.Tests.WhenImportSubaddressStatusFromCrab
                     addressWasRemoved
                 )
                 .When(importSubaddressStatusFromCrab)
-                .Throws(new AddressRemovedException($"Cannot change removed address for address id {addressId}")));
+                .ThenNone()); //Changed due to in some edge cases modify events occur after delete and deletes of those properties occurred too
         }
     }
 }

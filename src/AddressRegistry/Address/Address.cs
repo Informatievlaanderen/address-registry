@@ -228,7 +228,8 @@ namespace AddressRegistry.Address
             CrabModification? modification,
             CrabOrganisation? organisation)
         {
-            GuardRemoved(modification);
+            if (IsRemoved && modification != CrabModification.Delete)
+                return;
 
             var legacyEvent = new AddressSubaddressStatusWasImportedFromCrab(
                 subaddressStatusId,
@@ -259,7 +260,8 @@ namespace AddressRegistry.Address
             CrabModification? modification,
             CrabOrganisation? organisation)
         {
-            GuardRemoved(modification);
+            if (IsRemoved && modification != CrabModification.Delete)
+                return;
 
             var legacyEvent = new AddressSubaddressPositionWasImportedFromCrab(
                 addressPositionId,

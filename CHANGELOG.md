@@ -1,3 +1,11 @@
+## [2.23.8](https://github.com/informatievlaanderen/address-registry/compare/v2.23.7...v2.23.8) (2020-11-23)
+
+
+### Bug Fixes
+
+* ignore deleted crab subaddress edit specific subaddress commands ([1a06a28](https://github.com/informatievlaanderen/address-registry/commit/1a06a28d845f8c9d308ff48824992b4e55ff4667))
+* tests to reflect changes in commit 1a06a28d84 ([aa137c4](https://github.com/informatievlaanderen/address-registry/commit/aa137c49d6a10bb2995c51a6323837580cb06e70))
+
 ## [2.23.7](https://github.com/informatievlaanderen/address-registry/compare/v2.23.6...v2.23.7) (2020-11-18)
 
 

@@ -11,7 +11,7 @@ namespace AddressRegistry.Projections.Syndication.PostalInfo
         public PostalInfoLatestProjections()
         {
             When(PostalInfoEvent.PostalInformationWasRegistered, AddSyndicationItemEntry);
-            When(PostalInfoEvent.PostalInformationBecameCurrent, AddSyndicationItemEntry);
+            When(PostalInfoEvent.PostalInformationWasRealized, AddSyndicationItemEntry);
             When(PostalInfoEvent.PostalInformationWasRetired, AddSyndicationItemEntry);
             When(PostalInfoEvent.PostalInformationPostalNameWasAdded, AddSyndicationItemEntry);
             When(PostalInfoEvent.PostalInformationPostalNameWasRemoved, AddSyndicationItemEntry);

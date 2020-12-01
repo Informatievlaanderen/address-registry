@@ -26,8 +26,8 @@ namespace AddressRegistry.Projections.Syndication.Municipality
             When(MunicipalityEvent.MunicipalityWasCorrectedToCurrent, DoNothing);
             When(MunicipalityEvent.MunicipalityWasRetired, DoNothing);
             When(MunicipalityEvent.MunicipalityWasCorrectedToRetired, DoNothing);
-            When(MunicipalityEvent.MunicipalityFacilitiesLanguageWasAdded, DoNothing);
-            When(MunicipalityEvent.MunicipalityFacilitiesLanguageWasRemoved, DoNothing);
+            When(MunicipalityEvent.MunicipalityFacilityLanguageWasAdded, DoNothing);
+            When(MunicipalityEvent.MunicipalityFacilityLanguageWasRemoved, DoNothing);
         }
 
         private static async Task AddSyndicationItemEntry(AtomEntry<SyndicationItem<Municipality>> entry, SyndicationContext context, CancellationToken ct)

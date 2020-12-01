@@ -3,7 +3,7 @@ namespace AddressRegistry.Projections.Syndication.PostalInfo
     public enum PostalInfoEvent
     {
         PostalInformationWasRegistered,
-        PostalInformationBecameCurrent,
+        PostalInformationWasRealized,
         PostalInformationWasRetired,
         MunicipalityWasAttached,
         PostalInformationPostalNameWasAdded,

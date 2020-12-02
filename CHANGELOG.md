@@ -1,3 +1,11 @@
+## [2.23.9](https://github.com/informatievlaanderen/address-registry/compare/v2.23.8...v2.23.9) (2020-12-02)
+
+
+### Bug Fixes
+
+* rename Municipality syndication event GRAR-1650 ([ae7ba1b](https://github.com/informatievlaanderen/address-registry/commit/ae7ba1b14a18d59045c4616f357c39c31a5673df))
+* rename Postal syndication event ([f511fcc](https://github.com/informatievlaanderen/address-registry/commit/f511fcc0007f0e2db12519c27083e801c14ff37d))
+
 ## [2.23.8](https://github.com/informatievlaanderen/address-registry/compare/v2.23.7...v2.23.8) (2020-11-23)
 
 

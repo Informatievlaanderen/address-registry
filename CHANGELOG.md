@@ -1,3 +1,10 @@
+## [2.23.10](https://github.com/informatievlaanderen/address-registry/compare/v2.23.9...v2.23.10) (2020-12-03)
+
+
+### Bug Fixes
+
+* remove IsComplete from parcel sync GRAR-1652 ([71e7326](https://github.com/informatievlaanderen/address-registry/commit/71e73264aa7ec9ac5865f4cb8b253afb8ef52e22))
+
 ## [2.23.9](https://github.com/informatievlaanderen/address-registry/compare/v2.23.8...v2.23.9) (2020-12-02)
 
 

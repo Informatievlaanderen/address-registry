@@ -21,9 +21,6 @@ namespace AddressRegistry.Projections.Syndication.Parcel
         [DataMember(Name = "AdressenIds", Order = 4)]
         public List<Guid> AddressIds { get; set; }
 
-        [DataMember(Name = "IsCompleet", Order = 5)]
-        public bool IsComplete { get; set; }
-
         public Parcel()
         {
             AddressIds = new List<Guid>();

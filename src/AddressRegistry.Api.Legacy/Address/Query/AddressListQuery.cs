@@ -55,15 +55,23 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             {
                 var searchName = filtering.Filter.MunicipalityName.RemoveDiacritics();
 
-                streetnames =
-                    from s in streetnames
-                    join m in municipalities.Where(m =>
-                            m.NameDutchSearch == searchName ||
-                            m.NameFrenchSearch == searchName ||
-                            m.NameGermanSearch == searchName ||
-                            m.NameEnglishSearch == searchName)
-                        on s.NisCode equals m.NisCode
-                    select s;
+                var niscode = municipalities.SingleOrDefault(m =>
+                    m.NameDutchSearch == searchName ||
+                    m.NameFrenchSearch == searchName ||
+                    m.NameGermanSearch == searchName ||
+                    m.NameEnglishSearch == searchName)?.NisCode ?? "XXX";
+
+                streetnames = streetnames.Where(x => x.NisCode == niscode);
+
+                //streetnames =
+                //    from s in streetnames
+                //    join m in municipalities.Where(m =>
+                //            m.NameDutchSearch == searchName ||
+                //            m.NameFrenchSearch == searchName ||
+                //            m.NameGermanSearch == searchName ||
+                //            m.NameEnglishSearch == searchName)
+                //        on s.NisCode equals m.NisCode
+                //    select s;
 
                 filterStreet = true;
             }
@@ -71,6 +79,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             if (!string.IsNullOrEmpty(filtering.Filter.StreetName))
             {
                 var searchName = filtering.Filter.StreetName.RemoveDiacritics();
+
                 streetnames = streetnames.Where(s =>
                     s.NameDutchSearch == searchName ||
                     s.NameFrenchSearch == searchName ||
@@ -93,11 +102,15 @@ namespace AddressRegistry.Api.Legacy.Address.Query
 
             if (filterStreet)
             {
-                addresses =
-                    from a in addresses
-                    join s in streetnames
-                        on a.StreetNameId equals s.StreetNameId
-                    select a;
+                addresses = addresses
+                    .Where(x => streetnames
+                        .Select(y => y.StreetNameId).Contains(x.StreetNameId));
+
+                //addresses =
+                //    from a in addresses
+                //    join s in streetnames
+                //        on a.StreetNameId equals s.StreetNameId
+                //    select a;
             }
 
             return addresses;

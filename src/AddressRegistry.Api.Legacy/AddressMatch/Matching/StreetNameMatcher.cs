@@ -212,7 +212,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                     ?.StreetName;
 
                 if (string.IsNullOrWhiteSpace(searchName))
-                    return;
+                    continue;
 
                 var matchingStreetName = municipalityWithStreetNames
                     .Where(s =>
@@ -225,7 +225,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 municipalityWrapper.AddStreetNames(matchingStreetName);
 
                 if (matchingStreetName.Any())
-                    return;
+                    continue;
 
                 searchName = searchName.RemoveDiacritics()!;
 

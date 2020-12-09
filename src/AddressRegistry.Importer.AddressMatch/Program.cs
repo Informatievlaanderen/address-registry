@@ -7,6 +7,7 @@ namespace AddressRegistry.Importer.AddressMatch
     using Serilog;
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using Microsoft.Data.SqlClient;
     using System.IO;
     using System.IO.Compression;
@@ -23,7 +24,7 @@ namespace AddressRegistry.Importer.AddressMatch
 
         private static string _crabConnectionString;
 
-        private static readonly Configuration CsvConfiguration = new Configuration { Encoding = Encoding.UTF8, Delimiter = ";" };
+        private static readonly CsvConfiguration CsvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture) { Encoding = Encoding.UTF8, Delimiter = ";" };
         private const string RrStreetNamesPath = "RRStreetNames.csv";
         private const string KadStreetNamesPath = "KadStreetNames.csv";
         private const string RrAddressesPath = "RRAddresses.csv";

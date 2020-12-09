@@ -1,3 +1,10 @@
+## [2.23.13](https://github.com/informatievlaanderen/address-registry/compare/v2.23.12...v2.23.13) (2020-12-09)
+
+
+### Bug Fixes
+
+* addressmatch fusion municipality with same street lookup GRAR-1642 ([20e2dc5](https://github.com/informatievlaanderen/address-registry/commit/20e2dc519ff7434a26dc03881818ca739c420dae))
+
 ## [2.23.12](https://github.com/informatievlaanderen/address-registry/compare/v2.23.11...v2.23.12) (2020-12-09)
 
 

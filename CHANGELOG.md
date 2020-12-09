@@ -1,3 +1,10 @@
+## [2.23.12](https://github.com/informatievlaanderen/address-registry/compare/v2.23.11...v2.23.12) (2020-12-09)
+
+
+### Bug Fixes
+
+* build corrected of bump csv helper ([102690a](https://github.com/informatievlaanderen/address-registry/commit/102690a5f1b02464f4bc2ac29d08b83253eb6306))
+
 ## [2.23.11](https://github.com/informatievlaanderen/address-registry/compare/v2.23.10...v2.23.11) (2020-12-08)
 
 ## [2.23.10](https://github.com/informatievlaanderen/address-registry/compare/v2.23.9...v2.23.10) (2020-12-03)

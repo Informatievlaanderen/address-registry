@@ -55,13 +55,16 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             {
                 var searchName = filtering.Filter.MunicipalityName.RemoveDiacritics();
 
-                var niscode = municipalities.SingleOrDefault(m =>
+                var municipalityLatestItem = municipalities.SingleOrDefault(m =>
                     m.NameDutchSearch == searchName ||
                     m.NameFrenchSearch == searchName ||
                     m.NameGermanSearch == searchName ||
-                    m.NameEnglishSearch == searchName)?.NisCode ?? "XXX";
+                    m.NameEnglishSearch == searchName);
 
-                streetnames = streetnames.Where(x => x.NisCode == niscode);
+                if (municipalityLatestItem == null)
+                    return new List<AddressListItem>().AsQueryable();
+
+                streetnames = streetnames.Where(x => x.NisCode == municipalityLatestItem.NisCode);
 
                 //streetnames =
                 //    from s in streetnames

@@ -1,3 +1,10 @@
+## [2.23.14](https://github.com/informatievlaanderen/address-registry/compare/v2.23.13...v2.23.14) (2020-12-10)
+
+
+### Bug Fixes
+
+* address list when no municipality is found break early ([1c8e171](https://github.com/informatievlaanderen/address-registry/commit/1c8e171d81685ecc59c21540af3fd9927ddaf536))
+
 ## [2.23.13](https://github.com/informatievlaanderen/address-registry/compare/v2.23.12...v2.23.13) (2020-12-09)
 
 

@@ -1,3 +1,10 @@
+## [2.23.15](https://github.com/informatievlaanderen/address-registry/compare/v2.23.14...v2.23.15) (2020-12-10)
+
+
+### Bug Fixes
+
+* correct 7cffb606 to allow multiple niscodes ([aed36e3](https://github.com/informatievlaanderen/address-registry/commit/aed36e383828403cf06d5619cf349121b44bb608))
+
 ## [2.23.14](https://github.com/informatievlaanderen/address-registry/compare/v2.23.13...v2.23.14) (2020-12-10)
 
 

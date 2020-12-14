@@ -59,7 +59,7 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
         [DataMember(Name = "Functie", Order = 6)]
         public GebouweenheidFunctie? Function { get; set; }
 
-        [DataMember(Name = "Addressen", Order = 7)]
+        [DataMember(Name = "AdressenIds", Order = 7)]
         public List<Guid> Addresses { get; set; }
 
         [DataMember(Name = "IsCompleet", Order = 8)]

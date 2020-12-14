@@ -1,3 +1,10 @@
+## [2.23.16](https://github.com/informatievlaanderen/address-registry/compare/v2.23.15...v2.23.16) (2020-12-14)
+
+
+### Bug Fixes
+
+* rename addressen to adressenIds in sync building ([09f4a92](https://github.com/informatievlaanderen/address-registry/commit/09f4a92a2aff091f050ba6a45d0c77e255787abe))
+
 ## [2.23.15](https://github.com/informatievlaanderen/address-registry/compare/v2.23.14...v2.23.15) (2020-12-10)
 
 

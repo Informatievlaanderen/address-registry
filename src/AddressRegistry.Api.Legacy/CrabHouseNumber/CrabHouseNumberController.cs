@@ -15,8 +15,10 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Address.Responses;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.Api.Search;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Microsoft.AspNetCore.Http;
     using Swashbuckle.AspNetCore.Filters;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
@@ -93,6 +95,29 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
                 Addresses = addressListItemResponses,
                 Volgende = pagedAddresses.PaginationInfo.BuildNextUri(responseOptions.Value.CrabHuisnummersVolgendeUrl)
             });
+        }
+
+        /// <summary>
+        /// Vraag het totaal aantal crab huisnummers op.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="cancellationToken"></param>
+        /// <response code="200">Als de opvraging van het totaal aantal gelukt is.</response>
+        /// <response code="500">Als er een interne fout is opgetreden.</response>
+        [HttpGet("totaal-aantal")]
+        [ProducesResponseType(typeof(TotaalAantalResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(TotalCountResponseExample))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
+        public async Task<IActionResult> Count(
+            [FromServices] LegacyContext context,
+            CancellationToken cancellationToken = default)
+        {
+            return Ok(
+                new TotaalAantalResponse
+                {
+                    Aantal = new CrabHouseNumberQuery(context).Count()
+                });
         }
     }
 }

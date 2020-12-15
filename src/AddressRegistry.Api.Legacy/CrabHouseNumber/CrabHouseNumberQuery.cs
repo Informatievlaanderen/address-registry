@@ -28,6 +28,13 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
             return query;
         }
 
+        public int Count()
+        {
+            return _context
+                .CrabIdToPersistentLocalIds
+                .Count(x => x.HouseNumberId.HasValue && x.PersistentLocalId.HasValue);
+        }
+
         protected override ISorting Sorting => new CrabHouseNumberAddressSorting();
     }
 

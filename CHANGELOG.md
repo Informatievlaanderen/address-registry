@@ -1,3 +1,10 @@
+# [2.24.0](https://github.com/informatievlaanderen/address-registry/compare/v2.23.16...v2.24.0) (2020-12-15)
+
+
+### Features
+
+* add total count for crab endpoints ([bc648e7](https://github.com/informatievlaanderen/address-registry/commit/bc648e74941956eacf2e48de57994df8822279cb))
+
 ## [2.23.16](https://github.com/informatievlaanderen/address-registry/compare/v2.23.15...v2.23.16) (2020-12-14)
 
 

@@ -28,6 +28,13 @@ namespace AddressRegistry.Api.Legacy.CrabSubaddress
             return query;
         }
 
+        public int Count()
+        {
+            return _context
+                .CrabIdToPersistentLocalIds
+                .Count(x => x.SubaddressId.HasValue && x.PersistentLocalId.HasValue);
+        }
+
         protected override ISorting Sorting => new CrabSubaddressAddressSorting();
     }
 

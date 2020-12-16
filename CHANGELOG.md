@@ -1,3 +1,10 @@
+## [2.24.1](https://github.com/informatievlaanderen/address-registry/compare/v2.24.0...v2.24.1) (2020-12-16)
+
+
+### Bug Fixes
+
+* unescape filter box- and housenumber for list address GRAR-1678 ([4886779](https://github.com/informatievlaanderen/address-registry/commit/4886779d232bc38cf6a2343e0824cde26795445c))
+
 # [2.24.0](https://github.com/informatievlaanderen/address-registry/compare/v2.23.16...v2.24.0) (2020-12-15)
 
 

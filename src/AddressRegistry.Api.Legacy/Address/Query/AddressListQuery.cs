@@ -1,5 +1,6 @@
 namespace AddressRegistry.Api.Legacy.Address.Query
 {
+    using System;
     using Be.Vlaanderen.Basisregisters.Api.Search;
     using Be.Vlaanderen.Basisregisters.Api.Search.Filtering;
     using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
@@ -43,10 +44,16 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 return addresses;
 
             if (!string.IsNullOrEmpty(filtering.Filter.BoxNumber))
-                addresses = addresses.Where(a => a.BoxNumber == filtering.Filter.BoxNumber);
+            {
+                var unescapedBoxNumber = Uri.UnescapeDataString(filtering.Filter.BoxNumber);
+                addresses = addresses.Where(a => a.BoxNumber == unescapedBoxNumber);
+            }
 
             if (!string.IsNullOrEmpty(filtering.Filter.HouseNumber))
-                addresses = addresses.Where(a => a.HouseNumber == filtering.Filter.HouseNumber);
+            {
+                var unescapedHouseNumber = Uri.UnescapeDataString(filtering.Filter.HouseNumber);
+                addresses = addresses.Where(a => a.HouseNumber == unescapedHouseNumber);
+            }
 
             if (!string.IsNullOrEmpty(filtering.Filter.PostalCode))
                 addresses = addresses.Where(a => a.PostalCode == filtering.Filter.PostalCode);

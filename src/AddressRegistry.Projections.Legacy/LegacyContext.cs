@@ -20,11 +20,11 @@ namespace AddressRegistry.Projections.Legacy
         public DbSet<AddressDetailItem> AddressDetail { get; set; }
         public DbSet<AddressListItem> AddressList { get; set; }
         public DbSet<AddressSyndicationItem> AddressSyndication { get; set; }
-        public DbQuery<RRStreetName> RRStreetNames { get; set; }
-        public DbQuery<KadStreetName> KadStreetNames { get; set; }
-        public DbQuery<RRAddress> RRAddresses { get; set; }
+        public DbSet<RRStreetName> RRStreetNames { get; set; }
+        public DbSet<KadStreetName> KadStreetNames { get; set; }
+        public DbSet<RRAddress> RRAddresses { get; set; }
 
-        public DbQuery<AddressListViewCount> AddressListViewCount { get; set; }
+        public DbSet<AddressListViewCount> AddressListViewCount { get; set; }
 
         public LegacyContext() { }
 

@@ -1,8 +1,8 @@
 #r "paket:
-version 5.247.4
+version 6.0.0-beta8
 framework: netstandard20
 source https://api.nuget.org/v3/index.json
-nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 4.2.3 //"
+nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 5.0.1 //"
 
 #load "packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/build-generic.fsx"
 
@@ -21,10 +21,11 @@ let dockerRepository = "address-registry"
 let assemblyVersionNumber = (sprintf "2.%s")
 let nugetVersionNumber = (sprintf "%s")
 
-let build = buildSolution assemblyVersionNumber
+let buildSource = build assemblyVersionNumber
+let buildTest = buildTest assemblyVersionNumber
 let setVersions = (setSolutionVersions assemblyVersionNumber product copyright company)
 let test = testSolution
-let publish = publish assemblyVersionNumber
+let publishSource = publish assemblyVersionNumber
 let pack = pack nugetVersionNumber
 let containerize = containerize dockerRepository
 let push = push dockerRepository
@@ -37,9 +38,24 @@ Target.create "Restore_Solution" (fun _ -> restore "AddressRegistry")
 
 Target.create "Build_Solution" (fun _ ->
   setVersions "SolutionInfo.cs"
-  build "AddressRegistry")
+  buildSource "AddressRegistry.Projector"
+  buildSource "AddressRegistry.Api.Legacy"
+  buildSource "AddressRegistry.Api.Extract"
+  buildSource "AddressRegistry.Api.CrabImport"
+  buildSource "AddressRegistry.Projections.Legacy"
+  buildSource "AddressRegistry.Projections.Extract"
+  buildSource "AddressRegistry.Projections.LastChangedList"
+  buildSource "AddressRegistry.Projections.Syndication"
+  buildTest "AddressRegistry.Tests"
+  buildTest "AddressRegistry.Api.Legacy.Tests"
+)
 
-Target.create "Test_Solution" (fun _ -> test "AddressRegistry")
+Target.create "Test_Solution" (fun _ ->
+    [
+        "test" @@ "AddressRegistry.Tests"
+        "test" @@ "AddressRegistry.Api.Legacy.Tests"
+    ] |> List.iter testWithDotNet
+)
 
 Target.create "Publish_Solution" (fun _ ->
   [
@@ -51,7 +67,7 @@ Target.create "Publish_Solution" (fun _ ->
     "AddressRegistry.Projections.Extract"
     "AddressRegistry.Projections.LastChangedList"
     "AddressRegistry.Projections.Syndication"
-  ] |> List.iter publish
+  ] |> List.iter publishSource
 
   let dist = (buildDir @@ "AddressRegistry.CacheWarmer" @@ "linux")
   let source = "src" @@ "AddressRegistry.CacheWarmer"

@@ -1,3 +1,10 @@
+## [2.24.2](https://github.com/informatievlaanderen/address-registry/compare/v2.24.1...v2.24.2) (2020-12-21)
+
+
+### Bug Fixes
+
+* move to 5.0.1 ([52339b0](https://github.com/informatievlaanderen/address-registry/commit/52339b0a634079192e23a5f8e6a4153535305ab3))
+
 ## [2.24.1](https://github.com/informatievlaanderen/address-registry/compare/v2.24.0...v2.24.1) (2020-12-16)
 
 

@@ -15,10 +15,10 @@ licenseUrl https://opensource.org/licenses/EUPL-1.2
 description Address Registry.
 
 files
-  AddressRegistry.Api.Backoffice.dll => lib\netcoreapp3.1
-  AddressRegistry.Api.Backoffice.pdb => lib\netcoreapp3.1
-  AddressRegistry.Api.Backoffice.xml => lib\netcoreapp3.1
+  AddressRegistry.Api.Backoffice.dll => lib\net5.0
+  AddressRegistry.Api.Backoffice.pdb => lib\net5.0
+  AddressRegistry.Api.Backoffice.xml => lib\net5.0
   AddressRegistry.Api.Backoffice.xml => content
    
-  AddressRegistry.dll => lib\netcoreapp3.1
-  AddressRegistry.pdb => lib\netcoreapp3.1
+  AddressRegistry.dll => lib\net5.0
+  AddressRegistry.pdb => lib\net5.0

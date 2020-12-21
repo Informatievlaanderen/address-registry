@@ -87,16 +87,16 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                     _loggerFactory)
                 .RegisterProjections<AddressExtractProjection, ExtractContext>(
                     context => new AddressExtractProjection(context.Resolve<IOptions<ExtractConfig>>(), DbaseCodePage.Western_European_ANSI.ToEncoding(), new WKBReader()),
-                    RetryPolicy.NoRetries)
+                    ConnectedProjectionSettings.Default)
                 .RegisterProjections<AddressLinkExtractProjection, ExtractContext>(
                     context => new AddressLinkExtractProjection(context.Resolve<IOptions<ExtractConfig>>(), DbaseCodePage.Western_European_ANSI.ToEncoding(), new WKBReader()),
-                    RetryPolicy.NoRetries)
+                    ConnectedProjectionSettings.Default)
                 .RegisterProjections<AddressCrabHouseNumberIdExtractProjection, ExtractContext>(
                     context => new AddressCrabHouseNumberIdExtractProjection(DbaseCodePage.Western_European_ANSI.ToEncoding()),
-                    RetryPolicy.NoRetries)
+                    ConnectedProjectionSettings.Default)
                 .RegisterProjections<AddressCrabSubaddressIdExtractProjection, ExtractContext>(
                     context => new AddressCrabSubaddressIdExtractProjection(DbaseCodePage.Western_European_ANSI.ToEncoding()),
-                    RetryPolicy.NoRetries);
+                    ConnectedProjectionSettings.Default);
         }
 
         private void RegisterLastChangedProjections(ContainerBuilder builder)
@@ -112,7 +112,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .RegisterProjectionMigrator<AddressRegistry.Projections.LastChangedList.LastChangedListContextMigrationFactory>(
                     _configuration,
                     _loggerFactory)
-                .RegisterProjections<LastChangedListProjections, LastChangedListContext>(RetryPolicy.NoRetries);
+                .RegisterProjections<LastChangedListProjections, LastChangedListContext>(ConnectedProjectionSettings.Default);
         }
 
         private void RegisterLegacyProjections(ContainerBuilder builder)
@@ -129,15 +129,15 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                     _loggerFactory)
                 .RegisterProjections<AddressDetailProjections, LegacyContext>(
                     () => new AddressDetailProjections(WKBReaderFactory.Create()),
-                    RetryPolicy.NoRetries)
-                .RegisterProjections<AddressListProjections, LegacyContext>(RetryPolicy.NoRetries)
+                    ConnectedProjectionSettings.Default)
+                .RegisterProjections<AddressListProjections, LegacyContext>(ConnectedProjectionSettings.Default)
                 .RegisterProjections<AddressSyndicationProjections, LegacyContext>(
                     () => new AddressSyndicationProjections(),
-                    RetryPolicy.NoRetries)
+                    ConnectedProjectionSettings.Default)
                 .RegisterProjections<AddressVersionProjections, LegacyContext>(
                     () => new AddressVersionProjections(),
-                    RetryPolicy.NoRetries)
-                .RegisterProjections<CrabIdToPersistentLocalIdProjections, LegacyContext>(RetryPolicy.NoRetries);
+                    ConnectedProjectionSettings.Default)
+                .RegisterProjections<CrabIdToPersistentLocalIdProjections, LegacyContext>(ConnectedProjectionSettings.Default);
         }
     }
 }

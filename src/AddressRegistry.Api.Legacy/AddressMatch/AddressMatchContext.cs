@@ -25,9 +25,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
         public DbSet<ParcelAddressMatchLatestItem> ParcelAddressMatchLatestItems { get; set; }
         public DbSet<CrabIdToPersistentLocalIdItem> CrabIdToPersistentLocalIds { get; set; }
 
-        public DbQuery<RRStreetName> RRStreetNames { get; set; }
-        public DbQuery<KadStreetName> KadStreetNames { get; set; }
-        public DbQuery<RRAddress> RRAddresses { get; set; }
+        public DbSet<RRStreetName> RRStreetNames { get; set; }
+        public DbSet<KadStreetName> KadStreetNames { get; set; }
+        public DbSet<RRAddress> RRAddresses { get; set; }
 
         public AddressMatchContext()
         {

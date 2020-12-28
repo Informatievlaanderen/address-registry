@@ -1,3 +1,10 @@
+## [2.24.3](https://github.com/informatievlaanderen/address-registry/compare/v2.24.2...v2.24.3) (2020-12-28)
+
+
+### Bug Fixes
+
+* update basisregisters api dependency ([a8b840c](https://github.com/informatievlaanderen/address-registry/commit/a8b840c4bf4909df372c74897053f7ca4461db4d))
+
 ## [2.24.2](https://github.com/informatievlaanderen/address-registry/compare/v2.24.1...v2.24.2) (2020-12-21)
 
 

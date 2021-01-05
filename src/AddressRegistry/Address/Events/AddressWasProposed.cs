@@ -6,10 +6,13 @@ namespace AddressRegistry.Address.Events
     using System;
 
     [EventName("AddressWasProposed")]
-    [EventDescription("Het adres werd voorgesteld.")]
+    [EventDescription("Het adres kreeg status 'voorgesteld'.")]
     public class AddressWasProposed : IHasProvenance, ISetProvenance
     {
+        [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }
+        
+        [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
         public AddressWasProposed(AddressId addressId) => AddressId = addressId;

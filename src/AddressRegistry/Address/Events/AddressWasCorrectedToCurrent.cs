@@ -7,10 +7,13 @@ namespace AddressRegistry.Address.Events
     using System;
 
     [EventName("AddressWasCorrectedToCurrent")]
-    [EventDescription("Het adres werd in gebruik genomen via correctie.")]
+    [EventDescription("Het adres kreeg status 'in gebruik' (via correctie).")]
     public class AddressWasCorrectedToCurrent : IHasProvenance, ISetProvenance
     {
+        [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }
+        
+        [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
         public AddressWasCorrectedToCurrent(AddressId addressId) => AddressId = addressId;

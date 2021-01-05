@@ -6,10 +6,13 @@ namespace AddressRegistry.Address.Events
     using System;
 
     [EventName("AddressOfficialAssignmentWasRemoved")]
-    [EventDescription("De (niet) officiele toekenning werd verwijderd.")]
+    [EventDescription("De aanduiding 'officieel toegekend' van het adres werd verwijderd.")]
     public class AddressOfficialAssignmentWasRemoved : IHasProvenance, ISetProvenance
     {
+        [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }
+        
+        [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
         public AddressOfficialAssignmentWasRemoved(AddressId addressId) => AddressId = addressId;

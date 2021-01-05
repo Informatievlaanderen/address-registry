@@ -6,11 +6,16 @@ namespace AddressRegistry.Address.Events
     using System;
 
     [EventName("AddressPostalCodeWasCorrected")]
-    [EventDescription("De postcode van het adres werd gewijzigd via correctie.")]
+    [EventDescription("De postcode van het adres werd gecorrigeerd.")]
     public class AddressPostalCodeWasCorrected : IHasProvenance, ISetProvenance
     {
+        [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }
+        
+        [EventPropertyDescription("Postcode (= objectidentificator) van het PostInfo-object dat deel uitmaakt van het adres.")]
         public string PostalCode { get; }
+        
+        [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
         public AddressPostalCodeWasCorrected(

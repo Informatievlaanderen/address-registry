@@ -6,12 +6,19 @@ namespace AddressRegistry.Address.Events
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
 
     [EventName("AddressWasRegistered")]
-    [EventDescription("Het adres werd geregistreerd.")]
+    [EventDescription("Het adres werd aangemaakt in het register.")]
     public class AddressWasRegistered : IHasProvenance, ISetProvenance
     {
+        [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }
+        
+        [EventPropertyDescription("Interne GUID van de straatnaam die deel uitmaakt van het adres.")]
         public Guid StreetNameId { get; }
+        
+        [EventPropertyDescription("Huisnummer van het adres.")]
         public string HouseNumber { get; }
+        
+        [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
         public AddressWasRegistered(

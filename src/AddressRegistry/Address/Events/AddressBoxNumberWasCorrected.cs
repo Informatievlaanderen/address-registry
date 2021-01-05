@@ -6,11 +6,16 @@ namespace AddressRegistry.Address.Events
     using System;
 
     [EventName("AddressBoxNumberWasCorrected")]
-    [EventDescription("Het busnummer van het adres werd gewijzigd via correctie.")]
+    [EventDescription("Het busnummer van het adres werd gecorrigeerd.")]
     public class AddressBoxNumberWasCorrected : IHasProvenance, ISetProvenance
     {
+        [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }
+        
+        [EventPropertyDescription("Busnummer van het adres.")]
         public string BoxNumber { get; }
+        
+        [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
         public AddressBoxNumberWasCorrected(

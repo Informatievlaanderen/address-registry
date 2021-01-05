@@ -6,10 +6,13 @@ namespace AddressRegistry.Address.Events
     using System;
 
     [EventName("AddressWasRetired")]
-    [EventDescription("Het adres werd gehistoreerd.")]
+    [EventDescription("Het adres kreeg status 'gehistoreerd'.")]
     public class AddressWasRetired : IHasProvenance, ISetProvenance
     {
+        [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }
+        
+        [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
         public AddressWasRetired(AddressId addressId) => AddressId = addressId;

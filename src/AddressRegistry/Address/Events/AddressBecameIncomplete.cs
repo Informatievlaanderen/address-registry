@@ -6,10 +6,13 @@ namespace AddressRegistry.Address.Events
     using System;
 
     [EventName("AddressBecameIncomplete")]
-    [EventDescription("Het adres werd onvolledig.")]
+    [EventDescription("Het adres voldoet niet meer aan het informatiemodel (wegens niet volledig).")]
     public class AddressBecameIncomplete : IHasProvenance, ISetProvenance
     {
+        [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }
+        
+        [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
         public AddressBecameIncomplete(AddressId addressId) => AddressId = addressId;

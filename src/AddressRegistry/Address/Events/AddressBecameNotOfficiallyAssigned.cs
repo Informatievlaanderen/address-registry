@@ -6,10 +6,13 @@ namespace AddressRegistry.Address.Events
     using System;
 
     [EventName("AddressBecameNotOfficiallyAssigned")]
-    [EventDescription("Het adres werd niet officieel toegekend.")]
+    [EventDescription("Het adres kreeg aanduiding 'officieel toegekend=NIET WAAR'.")]
     public class AddressBecameNotOfficiallyAssigned : IHasProvenance, ISetProvenance
     {
+        [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }
+        
+        [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
         public AddressBecameNotOfficiallyAssigned(AddressId addressId) => AddressId = addressId;

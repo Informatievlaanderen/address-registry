@@ -6,10 +6,13 @@ namespace AddressRegistry.Address.Events
     using System;
 
     [EventName("AddressBecameCurrent")]
-    [EventDescription("Het adres werd in gebruik genomen.")]
+    [EventDescription("Het adres kreeg status 'in gebruik'.")]
     public class AddressBecameCurrent : IHasProvenance, ISetProvenance
     {
+        [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }
+        
+        [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
         public AddressBecameCurrent(AddressId addressId) => AddressId = addressId;

@@ -9,7 +9,10 @@ namespace AddressRegistry.Address.Events
     [EventDescription("De adrespositie werd verwijderd.")]
     public class AddressPositionWasRemoved : IHasProvenance, ISetProvenance
     {
+        [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }
+        
+        [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
         public AddressPositionWasRemoved(AddressId addressId) => AddressId = addressId;

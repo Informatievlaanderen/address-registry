@@ -7,13 +7,22 @@ namespace AddressRegistry.Address.Events
     using System;
 
     [EventName("AddressPositionWasCorrected")]
-    [EventDescription("Het adres werd gepositioneerd via correctie.")]
+    [EventDescription("De adrespositie werd gecorrigeerd.")]
     public class AddressPositionWasCorrected : IHasProvenance, ISetProvenance
     {
+        [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; set; }
+        
+        [EventPropertyDescription("Geometriemethode van de adrespositie.")]
         public GeometryMethod GeometryMethod { get; set; }
+        
+        [EventPropertyDescription("Specificatie van het object dat voorgesteld wordt door de adrespositie.")]
         public GeometrySpecification GeometrySpecification { get; set; }
+        
+        [EventPropertyDescription("Extended WKB-voorstelling van de adrespositie.")]
         public string ExtendedWkbGeometry { get; set; }
+        
+        [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
         public AddressPositionWasCorrected(

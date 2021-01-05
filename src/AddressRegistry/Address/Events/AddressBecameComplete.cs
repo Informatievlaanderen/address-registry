@@ -6,10 +6,13 @@ namespace AddressRegistry.Address.Events
     using System;
 
     [EventName("AddressBecameComplete")]
-    [EventDescription("Het adres werd vervolledigd.")]
+    [EventDescription("Het adres voldoet aan het informatiemodel (wegens volledig).")]
     public class AddressBecameComplete : IHasProvenance, ISetProvenance
     {
+        [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }
+        
+        [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
         public AddressBecameComplete(AddressId addressId) => AddressId = addressId;

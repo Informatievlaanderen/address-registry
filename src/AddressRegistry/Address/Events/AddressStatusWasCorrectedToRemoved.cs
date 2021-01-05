@@ -6,10 +6,13 @@ namespace AddressRegistry.Address.Events
     using System;
 
     [EventName("AddressStatusWasCorrectedToRemoved")]
-    [EventDescription("Het adres werd verwijderd via correctie.")]
+    [EventDescription("De adresstatus werd verwijderd (via correctie).")]
     public class AddressStatusWasCorrectedToRemoved : IHasProvenance, ISetProvenance
     {
+        [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }
+        
+        [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
         public AddressStatusWasCorrectedToRemoved(AddressId addressId) => AddressId = addressId;

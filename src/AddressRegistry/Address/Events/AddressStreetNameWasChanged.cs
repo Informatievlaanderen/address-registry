@@ -6,11 +6,16 @@ namespace AddressRegistry.Address.Events
     using System;
 
     [EventName("AddressStreetNameWasChanged")]
-    [EventDescription("De straat van het adres werd gewijzigd.")]
+    [EventDescription("Het adres werd aan een andere straatnaam toegekend.")]
     public class AddressStreetNameWasChanged : IHasProvenance, ISetProvenance
     {
+        [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }
+        
+        [EventPropertyDescription("Interne GUID van de straatnaam die deel uitmaakt van het adres.")]
         public Guid StreetNameId { get; }
+        
+        [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
         public AddressStreetNameWasChanged(

@@ -6,10 +6,13 @@ namespace AddressRegistry.Address.Events
     using System;
 
     [EventName("AddressWasCorrectedToProposed")]
-    [EventDescription("Het adres werd voorgesteld via correctie.")]
+    [EventDescription("Het adres kreeg status 'voorgesteld' (via correctie).")]
     public class AddressWasCorrectedToProposed : IHasProvenance, ISetProvenance
     {
+        [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }
+        
+        [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
         public AddressWasCorrectedToProposed(AddressId addressId) => AddressId = addressId;

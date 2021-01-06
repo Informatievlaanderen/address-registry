@@ -6,7 +6,7 @@ namespace AddressRegistry.Address.Events
     using System;
 
     [EventName("AddressWasCorrectedToOfficiallyAssigned")]
-    [EventDescription("Het adres kreeg aanduiding 'officieel toegekend=WAAR' (via correctie).")]
+    [EventDescription("Het adres kreeg aanduiding 'officieel toegekend' (via correctie).")]
     public class AddressWasCorrectedToOfficiallyAssigned : IHasProvenance, ISetProvenance
     {
         [EventPropertyDescription("Interne GUID van het adres.")]

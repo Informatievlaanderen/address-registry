@@ -1,3 +1,10 @@
+## [2.24.4](https://github.com/informatievlaanderen/address-registry/compare/v2.24.3...v2.24.4) (2021-01-07)
+
+
+### Bug Fixes
+
+* update deps ([455e47b](https://github.com/informatievlaanderen/address-registry/commit/455e47b9363851878faf3b6d72bb106d527c4573))
+
 ## [2.24.3](https://github.com/informatievlaanderen/address-registry/compare/v2.24.2...v2.24.3) (2020-12-28)
 
 

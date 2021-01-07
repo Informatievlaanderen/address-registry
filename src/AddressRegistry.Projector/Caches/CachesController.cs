@@ -26,7 +26,7 @@ namespace AddressRegistry.Projector.Caches
             var numberOfRecords = await lastChangedListContext
                 .LastChangedList
                 .OrderBy(x => x.Id)
-                .Where(r => r.ToBeIndexed && (r.LastError == null || r.LastError < maxErrorTime)
+                .Where(r => r.ToBeIndexed && (r.LastError == null || r.LastError < maxErrorTime))
                 .CountAsync(cancellationToken);
 
             return Ok(new[]

@@ -1,3 +1,11 @@
+## [2.24.5](https://github.com/informatievlaanderen/address-registry/compare/v2.24.4...v2.24.5) (2021-01-07)
+
+
+### Bug Fixes
+
+* add missing brace ([a0f5ca8](https://github.com/informatievlaanderen/address-registry/commit/a0f5ca807f829964fd5ec624ad491bc144b17f1e))
+* improve cache status page GRAR-1734 ([ea44c52](https://github.com/informatievlaanderen/address-registry/commit/ea44c5251c9923a43fc13dcda5fafffa119299f2))
+
 ## [2.24.4](https://github.com/informatievlaanderen/address-registry/compare/v2.24.3...v2.24.4) (2021-01-07)
 
 

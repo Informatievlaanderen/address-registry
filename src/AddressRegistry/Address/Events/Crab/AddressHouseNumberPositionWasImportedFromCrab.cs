@@ -11,16 +11,37 @@ namespace AddressRegistry.Address.Events.Crab
     [EventDescription("Legacy event om tblAdrespositie en tblAdrespositie_hist te importeren voor huisnummers.")]
     public class AddressHouseNumberPositionWasImportedFromCrab : ICrabEvent, IHasCrabPosition, IHasCrabKey<int>
     {
+        [EventPropertyDescription("CRAB-identificator van de adrespositie.")]
         public int AddressPositionId { get; }
+        
+        [EventPropertyDescription("CRAB-identificator van het huisnummer.")]
         public int HouseNumberId { get; }
+        
+        [EventPropertyDescription("Adrespositie.")]
         public string AddressPosition { get; }
+        
+        [EventPropertyDescription("Herkomst van de adrespositie.")]
         public CrabAddressPositionOrigin AddressPositionOrigin { get; }
+        
+        [EventPropertyDescription("Aard van het adres waarvoor de positie werd aangemaakt.")]
         public string AddressNature { get; }
+        
+        [EventPropertyDescription("Datum waarop het object is ontstaan in werkelijkheid.")]
         public LocalDateTime? BeginDateTime { get; }
+        
+        [EventPropertyDescription("Datum waarop het object in werkelijkheid ophoudt te bestaan.")]
         public LocalDateTime? EndDateTime { get; }
+        
+        [EventPropertyDescription("Tijdstip waarop het object werd ingevoerd in de databank.")] 
         public Instant Timestamp { get; }
+        
+        [EventPropertyDescription("Operator door wie het object werd ingevoerd in de databank.")]
         public string Operator { get; }
+        
+        [EventPropertyDescription("Bewerking waarmee het object werd ingevoerd in de databank.")] 
         public CrabModification? Modification { get; }
+        
+        [EventPropertyDescription("Organisatie die het object heeft ingevoerd in de databank.")]
         public CrabOrganisation? Organisation { get; }
 
         public int Key => AddressPositionId;

@@ -1,3 +1,10 @@
+# [2.25.0](https://github.com/informatievlaanderen/address-registry/compare/v2.24.5...v2.25.0) (2021-01-12)
+
+
+### Features
+
+* add syndication status to projector api GRAR-1567 ([20b445f](https://github.com/informatievlaanderen/address-registry/commit/20b445f20efdcba984f8292db73bc6fddea5848b))
+
 ## [2.24.5](https://github.com/informatievlaanderen/address-registry/compare/v2.24.4...v2.24.5) (2021-01-07)
 
 

@@ -89,7 +89,7 @@ namespace AddressRegistry.Api.CrabImport.CrabImport
                 catch
                 {
                     var x = registerCrabImports.Select(RegisterCrabImportRequestMapping.Map).ToList();
-                    Console.WriteLine($"Boom, {x}");
+                    Console.WriteLine($"Boom, {x.First()}");
                     throw;
                 }
 

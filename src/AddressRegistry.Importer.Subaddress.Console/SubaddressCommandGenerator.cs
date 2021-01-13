@@ -170,23 +170,26 @@ namespace AddressRegistry.Importer.Subaddress.Console
 
             addressCommands = addressCommands.OrderBy(x => x.Item1.Timestamp)
                 .ThenBy(x => x.Item2)
-                .ThenBy(x => x.Item3);
+                .ThenBy(x => x.Item3)
+                .ToList();
 
             var commands = new List<dynamic>();
 
             ImportHouseNumberSubaddressFromCrab initialImportHouseNumberSubaddressFromCrab = null;
-            if (importMode == ImportMode.Init)
+            var insertRoot = importSubaddressCommands.FirstOrDefault(x => x.Modification == CrabModification.Insert) ?? importSubaddressHistCommands.Single(x => x.Modification == CrabModification.Insert);
+
+            if (importMode == ImportMode.Init || addressCommands.Any(x => ((Instant)x.Item1.Timestamp) < insertRoot.Timestamp))
             {
                 initialImportHouseNumberSubaddressFromCrab = importHouseNumberSubaddressCommands
                     .Concat(importHouseNumberSubaddressCommandsHist)
                     .OrderBy(x => (Instant)x.Timestamp)
-                    .First(x => x.HouseNumberId == addressCommands.First<ImportSubaddressFromCrab>().HouseNumberId);
+                    .First(x => x.HouseNumberId == insertRoot.HouseNumberId);
 
-                commands.Add(initialImportHouseNumberSubaddressFromCrab);
+                commands.Add(initialImportHouseNumberSubaddressFromCrab); //possible to be sent twice, but idempotency takes care of it and only when something is added to address before the root was added in CRAB.
             }
 
             foreach (var adresCommand in addressCommands)
-                if (importMode == ImportMode.Update || !adresCommand.Item1.Equals(initialImportHouseNumberSubaddressFromCrab))
+                if (!adresCommand.Item1.Equals(initialImportHouseNumberSubaddressFromCrab))
                     commands.Add(adresCommand.Item1);
 
             return commands;

@@ -1,3 +1,10 @@
+## [2.25.1](https://github.com/informatievlaanderen/address-registry/compare/v2.25.0...v2.25.1) (2021-01-13)
+
+
+### Bug Fixes
+
+* import from crab relations before root are now handled correctly GRAR-1749 ([3c05c48](https://github.com/informatievlaanderen/address-registry/commit/3c05c489c9242f97b3a0d46588d78f343bdf1a2f))
+
 # [2.25.0](https://github.com/informatievlaanderen/address-registry/compare/v2.24.5...v2.25.0) (2021-01-12)
 
 

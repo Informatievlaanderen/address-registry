@@ -36,7 +36,8 @@ namespace AddressRegistry.Address.Events.Crab
         
         [EventPropertyDescription("Organisatie die het object heeft ingevoerd in de databank.")]
         public CrabOrganisation? Organisation { get; }
-
+        
+        [EventPropertyDescription("Unieke sleutel.")]
         public int Key => SubaddressStatusId;
 
         public AddressSubaddressStatusWasImportedFromCrab(

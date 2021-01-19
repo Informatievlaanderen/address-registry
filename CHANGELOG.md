@@ -1,3 +1,10 @@
+## [2.25.2](https://github.com/informatievlaanderen/address-registry/compare/v2.25.1...v2.25.2) (2021-01-19)
+
+
+### Bug Fixes
+
+* xml date serialization sync projection ([471e31e](https://github.com/informatievlaanderen/address-registry/commit/471e31e353572247104dd4ffbc8f7d6379f090ce))
+
 ## [2.25.1](https://github.com/informatievlaanderen/address-registry/compare/v2.25.0...v2.25.1) (2021-01-13)
 
 

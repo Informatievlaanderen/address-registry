@@ -2,6 +2,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
 {
     using System;
     using System.Collections;
+    using System.Globalization;
     using System.Linq;
     using System.Reflection;
     using System.Xml;
@@ -74,13 +75,30 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                 let val = pType.IsArray ? "array" : prop.GetValue(input, null)
                 let value = pType.IsEnumerable()
                     ? GetEnumerableElements(prop, (IEnumerable)prop.GetValue(input, null))
-                    : pType.IsSimpleType() ? new XElement(name, val) : val.ToXml(name)
+                    : pType.IsSimpleType() ? new XElement(name, GetValue(val)) : val.ToXml(name)
                 where value != null && !pType.IsExcludedType() && !name.IsExcludedPropertyName()
                 select value;
 
             ret.Add(elements);
 
             return ret;
+        }
+
+        private static object? GetValue(object? val)
+        {
+            switch (val)
+            {
+                case LocalDate localDate:
+                    return localDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+                case LocalDateTime localDateTime:
+                    return localDateTime.ToString("o", CultureInfo.InvariantCulture);
+                case DateTime dateTime:
+                    return dateTime.ToString("o", CultureInfo.InvariantCulture);
+                case DateTimeOffset dateTimeOffset:
+                    return dateTimeOffset.ToString("o", CultureInfo.InvariantCulture);
+                default:
+                    return val;
+            }
         }
 
         private static readonly Type[] FlatternTypes = {

@@ -3,7 +3,6 @@ namespace AddressRegistry.Api.Legacy.Infrastructure
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Net.Mime;
     using System.Reflection;
     using Be.Vlaanderen.Basisregisters.Api.Syndication;
     using Microsoft.Extensions.Configuration;
@@ -25,11 +24,7 @@ namespace AddressRegistry.Api.Legacy.Infrastructure
                 lastUpdated,
                 new SyndicationPerson(configuration["AuthorName"], configuration["AuthorEmail"], AtomContributorTypes.Author),
                 new SyndicationLink(new Uri(configuration["Self"]), AtomLinkTypes.Self),
-                new List<SyndicationLink>
-                {
-                    new SyndicationLink(new Uri(configuration["AlternateAtom"]), AtomLinkTypes.Alternate){ MediaType = "application/atom+xml"},
-                    new SyndicationLink(new Uri(configuration["AlternateXml"]), AtomLinkTypes.Alternate){ MediaType = MediaTypeNames.Application.Xml}
-                },
+                new List<SyndicationLink>(),
                 configuration
                     .GetSection("Related")
                     .GetChildren()

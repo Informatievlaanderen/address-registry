@@ -1,3 +1,10 @@
+## [2.25.3](https://github.com/informatievlaanderen/address-registry/compare/v2.25.2...v2.25.3) (2021-01-29)
+
+
+### Bug Fixes
+
+* remove alternate sync links ([9759a31](https://github.com/informatievlaanderen/address-registry/commit/9759a3192611671702803679be7313ad352bff9d))
+
 ## [2.25.2](https://github.com/informatievlaanderen/address-registry/compare/v2.25.1...v2.25.2) (2021-01-19)
 
 

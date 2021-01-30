@@ -5,13 +5,14 @@ namespace AddressRegistry.Address.Events
     using Newtonsoft.Json;
     using System;
 
+    [EventTags(EventTag.For.Sync)]
     [EventName("AddressWasCorrectedToNotOfficiallyAssigned")]
     [EventDescription("Het adres kreeg aanduiding 'niet officieel toegekend' (via correctie).")]
     public class AddressWasCorrectedToNotOfficiallyAssigned : IHasProvenance, ISetProvenance
     {
         [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }
-        
+
         [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 

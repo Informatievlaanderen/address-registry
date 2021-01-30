@@ -6,19 +6,20 @@ namespace AddressRegistry.Address.Events
     using System;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
 
+    [EventTags(EventTag.For.Sync)]
     [EventName("AddressPersistentLocalIdentifierWasAssigned")]
     [EventDescription("Het adres kreeg een persistente lokale identificator toegekend.")]
     public class AddressPersistentLocalIdWasAssigned : IHasProvenance, ISetProvenance
     {
         [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }
-        
+
         [EventPropertyDescription("Objectidentificator van het adres.")]
         public int PersistentLocalId { get; }
-        
+
         [EventPropertyDescription("Tijdstip waarop de objectidentificator van het adres werd toegekend.")]
         public Instant AssignmentDate { get; }
-        
+
         [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 

@@ -1,3 +1,10 @@
+# [2.26.0](https://github.com/informatievlaanderen/address-registry/compare/v2.25.3...v2.26.0) (2021-01-30)
+
+
+### Features
+
+* add sync tag to events ([f6e1ca1](https://github.com/informatievlaanderen/address-registry/commit/f6e1ca15c2439f76b8baa8bcb7ae0538fe95eb03))
+
 ## [2.25.3](https://github.com/informatievlaanderen/address-registry/compare/v2.25.2...v2.25.3) (2021-01-29)
 
 

@@ -5,16 +5,17 @@ namespace AddressRegistry.Address.Events
     using Newtonsoft.Json;
     using System;
 
+    [EventTags(EventTag.For.Sync)]
     [EventName("AddressBoxNumberWasChanged")]
     [EventDescription("Het busnummer van het adres werd gewijzigd.")]
     public class AddressBoxNumberWasChanged : IHasProvenance, ISetProvenance
     {
         [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }
-        
+
         [EventPropertyDescription("Busnummer van het adres.")]
         public string BoxNumber { get; }
-        
+
         [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 

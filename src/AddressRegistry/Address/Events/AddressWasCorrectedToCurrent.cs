@@ -6,13 +6,14 @@ namespace AddressRegistry.Address.Events
     using Newtonsoft.Json;
     using System;
 
+    [EventTags(EventTag.For.Sync)]
     [EventName("AddressWasCorrectedToCurrent")]
     [EventDescription("Het adres kreeg status 'in gebruik' (via correctie).")]
     public class AddressWasCorrectedToCurrent : IHasProvenance, ISetProvenance
     {
         [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }
-        
+
         [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 

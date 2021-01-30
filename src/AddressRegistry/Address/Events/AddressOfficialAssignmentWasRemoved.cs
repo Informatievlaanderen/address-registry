@@ -5,13 +5,14 @@ namespace AddressRegistry.Address.Events
     using Newtonsoft.Json;
     using System;
 
+    [EventTags(EventTag.For.Sync)]
     [EventName("AddressOfficialAssignmentWasRemoved")]
     [EventDescription("De aanduiding 'officieel toegekend' van het adres werd verwijderd.")]
     public class AddressOfficialAssignmentWasRemoved : IHasProvenance, ISetProvenance
     {
         [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }
-        
+
         [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 

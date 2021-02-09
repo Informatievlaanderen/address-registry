@@ -21,7 +21,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
                 Gemeente = new AdresMatchItemGemeente
                 {
                     ObjectId = source.NisCode,
-                    Detail = string.Format(_responseOptions.DetailUrl, source.NisCode),
+                    Detail = string.Format(_responseOptions.GemeenteDetailUrl, source.NisCode),
                     Gemeentenaam = new Gemeentenaam(new GeografischeNaam(source.DefaultName.Value, source.DefaultName.Key))
                 },
             };

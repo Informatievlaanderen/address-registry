@@ -1,3 +1,10 @@
+## [2.26.2](https://github.com/informatievlaanderen/address-registry/compare/v2.26.1...v2.26.2) (2021-02-09)
+
+
+### Bug Fixes
+
+* correct puri for addressmatch when no streetname was found GRAR-1819 ([84500ef](https://github.com/informatievlaanderen/address-registry/commit/84500ef4ad221d4000d3c1fe6a94e711bce91253))
+
 ## [2.26.1](https://github.com/informatievlaanderen/address-registry/compare/v2.26.0...v2.26.1) (2021-02-02)
 
 

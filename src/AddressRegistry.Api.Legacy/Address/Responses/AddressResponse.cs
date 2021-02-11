@@ -189,9 +189,15 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
     public class AddressNotFoundResponseExamples : IExamplesProvider<ProblemDetails>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ProblemDetailsHelper _problemDetailsHelper;
 
-        public AddressNotFoundResponseExamples(IHttpContextAccessor httpContextAccessor)
-            => _httpContextAccessor = httpContextAccessor;
+        public AddressNotFoundResponseExamples(
+            IHttpContextAccessor httpContextAccessor,
+            ProblemDetailsHelper problemDetailsHelper)
+        {
+            _httpContextAccessor = httpContextAccessor;
+            _problemDetailsHelper = problemDetailsHelper;
+        }
 
         public ProblemDetails GetExamples() =>
             new ProblemDetails
@@ -200,16 +206,22 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
                 HttpStatus = StatusCodes.Status404NotFound,
                 Title = ProblemDetails.DefaultTitle,
                 Detail = "Onbestaand adres.",
-                ProblemInstanceUri = _httpContextAccessor.HttpContext.GetProblemInstanceUri()
+                ProblemInstanceUri = _problemDetailsHelper.GetInstanceUri(_httpContextAccessor.HttpContext)
             };
     }
 
     public class AddressGoneResponseExamples : IExamplesProvider<ProblemDetails>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ProblemDetailsHelper _problemDetailsHelper;
 
-        public AddressGoneResponseExamples(IHttpContextAccessor httpContextAccessor)
-            => _httpContextAccessor = httpContextAccessor;
+        public AddressGoneResponseExamples(
+            IHttpContextAccessor httpContextAccessor,
+            ProblemDetailsHelper problemDetailsHelper)
+        {
+            _httpContextAccessor = httpContextAccessor;
+            _problemDetailsHelper = problemDetailsHelper;
+        }
 
         public ProblemDetails GetExamples() =>
             new ProblemDetails
@@ -218,7 +230,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
                 HttpStatus = StatusCodes.Status410Gone,
                 Title = ProblemDetails.DefaultTitle,
                 Detail = "Adres werd verwijderd.",
-                ProblemInstanceUri = _httpContextAccessor.HttpContext.GetProblemInstanceUri()
+                ProblemInstanceUri = _problemDetailsHelper.GetInstanceUri(_httpContextAccessor.HttpContext)
             };
     }
 }

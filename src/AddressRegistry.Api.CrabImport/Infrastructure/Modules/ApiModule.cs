@@ -4,6 +4,7 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure.Modules
     using AddressRegistry.Infrastructure.Modules;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
+    using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Api;
@@ -68,6 +69,10 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure.Modules
             containerBuilder
                 .RegisterType<IdempotentCommandHandlerModuleProcessor>()
                 .As<IIdempotentCommandHandlerModuleProcessor>();
+
+            containerBuilder
+                .RegisterType<ProblemDetailsHelper>()
+                .AsSelf();
 
             containerBuilder.Populate(_services);
         }

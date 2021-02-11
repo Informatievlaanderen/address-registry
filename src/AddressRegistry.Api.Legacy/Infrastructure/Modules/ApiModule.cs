@@ -7,6 +7,7 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
     using AddressMatch.Matching;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
+    using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
@@ -57,6 +58,10 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
             containerBuilder
                 .RegisterAssemblyTypes(typeof(IKadRrService).Assembly)
                 .AsImplementedInterfaces();
+
+            containerBuilder
+                .RegisterType<ProblemDetailsHelper>()
+                .AsSelf();
 
             containerBuilder.Populate(_services);
         }

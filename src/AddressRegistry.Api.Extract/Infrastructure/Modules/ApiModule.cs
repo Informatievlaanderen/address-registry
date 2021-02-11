@@ -3,6 +3,7 @@ namespace AddressRegistry.Api.Extract.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
+    using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -35,6 +36,10 @@ namespace AddressRegistry.Api.Extract.Infrastructure.Modules
 
             containerBuilder
                 .RegisterModule(new SyndicationModule(_configuration, _services, _loggerFactory));
+
+            containerBuilder
+                .RegisterType<ProblemDetailsHelper>()
+                .AsSelf();
 
             containerBuilder.Populate(_services);
         }

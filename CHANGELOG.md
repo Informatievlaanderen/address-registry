@@ -1,3 +1,10 @@
+## [2.26.3](https://github.com/informatievlaanderen/address-registry/compare/v2.26.2...v2.26.3) (2021-02-11)
+
+
+### Bug Fixes
+
+* update api with use of problemdetailshelper GRAR-1814 ([54cc7ce](https://github.com/informatievlaanderen/address-registry/commit/54cc7ced81b068ac3b1e45661560738d712e2b27))
+
 ## [2.26.2](https://github.com/informatievlaanderen/address-registry/compare/v2.26.1...v2.26.2) (2021-02-09)
 
 

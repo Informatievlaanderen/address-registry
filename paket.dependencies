@@ -36,7 +36,7 @@ nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.CommandHandling 5.0.1
 nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac 5.0.13
 nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit 5.0.13
 
-nuget Be.Vlaanderen.Basisregisters.Api 14.0.0
+nuget Be.Vlaanderen.Basisregisters.Api 14.1.2
 
 nuget Be.Vlaanderen.Basisregisters.Aws.DistributedMutex 2.2.11
 

@@ -1,3 +1,10 @@
+## [2.26.4](https://github.com/informatievlaanderen/address-registry/compare/v2.26.3...v2.26.4) (2021-02-15)
+
+
+### Bug Fixes
+
+* register problem details helper for projector GRAR-1814 ([1bbbfe6](https://github.com/informatievlaanderen/address-registry/commit/1bbbfe63938ead1807724c938863b3213a4eb646))
+
 ## [2.26.3](https://github.com/informatievlaanderen/address-registry/compare/v2.26.2...v2.26.3) (2021-02-11)
 
 

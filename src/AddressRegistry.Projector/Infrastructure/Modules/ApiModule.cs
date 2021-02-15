@@ -26,6 +26,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using AddressRegistry.Projections.Legacy.AddressSyndication;
     using AddressRegistry.Projections.Legacy.AddressVersion;
     using AddressRegistry.Projections.Legacy.CrabIdToPersistentLocalId;
+    using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
     using Microsoft.Extensions.Options;
     using NetTopologySuite.IO;
@@ -50,6 +51,10 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
         {
             builder.RegisterModule(new DataDogModule(_configuration));
             RegisterProjectionSetup(builder);
+
+            builder
+                .RegisterType<ProblemDetailsHelper>()
+                .AsSelf();
 
             builder.Populate(_services);
         }

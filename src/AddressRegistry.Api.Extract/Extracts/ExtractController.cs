@@ -1,5 +1,6 @@
 namespace AddressRegistry.Api.Extract.Extracts
 {
+    using System.Data;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Microsoft.AspNetCore.Http;
@@ -10,6 +11,7 @@ namespace AddressRegistry.Api.Extract.Extracts
     using System.Threading;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api.Extract;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Projections.Syndication;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
@@ -33,17 +35,22 @@ namespace AddressRegistry.Api.Extract.Extracts
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(AddressRegistryResponseExample))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
-        public IActionResult Get(
+        public async Task<IActionResult> Get(
             [FromServices] ExtractContext context,
             [FromServices] SyndicationContext syndicationContext,
-            CancellationToken cancellationToken = default) =>
-            new ExtractArchive(ExtractFileNames.GetAddressZip())
-                {
-                    AddressRegistryExtractBuilder.CreateAddressFiles(context, syndicationContext),
-                    AddressCrabHouseNumberIdExtractBuilder.CreateAddressCrabHouseNumberIdFile(context),
-                    AddressCrabSubaddressIdExtractBuilder.CreateAddressSubaddressIdFile(context)
-                }
-                .CreateFileCallbackResult(cancellationToken);
+            CancellationToken cancellationToken = default)
+        {
+            using (await context.Database.BeginTransactionAsync(IsolationLevel.Snapshot, cancellationToken))
+            {
+                return new ExtractArchive(ExtractFileNames.GetAddressZip())
+                    {
+                        AddressRegistryExtractBuilder.CreateAddressFiles(context, syndicationContext),
+                        AddressCrabHouseNumberIdExtractBuilder.CreateAddressCrabHouseNumberIdFile(context),
+                        AddressCrabSubaddressIdExtractBuilder.CreateAddressSubaddressIdFile(context)
+                    }
+                    .CreateFileCallbackResult(cancellationToken);
+            }
+        }
 
         /// <summary>
         /// Vraag een dump van alle adreskoppelingen op.

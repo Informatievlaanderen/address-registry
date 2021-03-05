@@ -1,3 +1,10 @@
+# [2.27.0](https://github.com/informatievlaanderen/address-registry/compare/v2.26.4...v2.27.0) (2021-03-05)
+
+
+### Features
+
+* add transaction isolation snapshot to extract GRAR-1796 ([543868a](https://github.com/informatievlaanderen/address-registry/commit/543868acf9f32bce6e04aaaf0c9bb062d4ff6f48))
+
 ## [2.26.4](https://github.com/informatievlaanderen/address-registry/compare/v2.26.3...v2.26.4) (2021-02-15)
 
 

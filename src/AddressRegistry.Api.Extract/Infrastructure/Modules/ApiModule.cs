@@ -32,7 +32,7 @@ namespace AddressRegistry.Api.Extract.Infrastructure.Modules
                 .RegisterModule(new DataDogModule(_configuration));
 
             containerBuilder
-                .RegisterModule(new ExtractModule(_configuration, _services, _loggerFactory));
+                .RegisterModule(new ExtractModule(_configuration, _services, _loggerFactory, false));
 
             containerBuilder
                 .RegisterModule(new SyndicationModule(_configuration, _services, _loggerFactory));

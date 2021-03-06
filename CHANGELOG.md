@@ -1,3 +1,10 @@
+## [2.27.1](https://github.com/informatievlaanderen/address-registry/compare/v2.27.0...v2.27.1) (2021-03-06)
+
+
+### Bug Fixes
+
+* disable retry strategy in extract ([23d87f5](https://github.com/informatievlaanderen/address-registry/commit/23d87f50469145e6c0bd53f78c17f2c0776351e5))
+
 # [2.27.0](https://github.com/informatievlaanderen/address-registry/compare/v2.26.4...v2.27.0) (2021-03-05)
 
 

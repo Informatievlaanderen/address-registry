@@ -53,8 +53,9 @@ namespace AddressRegistry.Projections.Extract
                     .UseLoggerFactory(loggerFactory)
                     .UseSqlServer(provider.GetRequiredService<TraceDbConnection<ExtractContext>>(), sqlServerOptions =>
                     {
-                        if(enableRetry)
+                        if (enableRetry)
                             sqlServerOptions.EnableRetryOnFailure();
+                            
                         sqlServerOptions.MigrationsHistoryTable(MigrationTables.Extract, Schema.Extract);
                     })
                     .UseExtendedSqlServerMigrations());

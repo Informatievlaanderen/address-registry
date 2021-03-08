@@ -16,7 +16,6 @@ namespace AddressRegistry.Projections.Legacy
 
         public DbSet<CrabIdToPersistentLocalIdItem> CrabIdToPersistentLocalIds { get; set; }
 
-        public DbSet<AddressVersion.AddressVersion> AddressVersions { get; set; }
         public DbSet<AddressDetailItem> AddressDetail { get; set; }
         public DbSet<AddressListItem> AddressList { get; set; }
         public DbSet<AddressSyndicationItem> AddressSyndication { get; set; }

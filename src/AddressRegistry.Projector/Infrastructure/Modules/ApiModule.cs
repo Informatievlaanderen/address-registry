@@ -24,7 +24,6 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using AddressRegistry.Projections.Legacy.AddressDetail;
     using AddressRegistry.Projections.Legacy.AddressList;
     using AddressRegistry.Projections.Legacy.AddressSyndication;
-    using AddressRegistry.Projections.Legacy.AddressVersion;
     using AddressRegistry.Projections.Legacy.CrabIdToPersistentLocalId;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
@@ -138,9 +137,6 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .RegisterProjections<AddressListProjections, LegacyContext>(ConnectedProjectionSettings.Default)
                 .RegisterProjections<AddressSyndicationProjections, LegacyContext>(
                     () => new AddressSyndicationProjections(),
-                    ConnectedProjectionSettings.Default)
-                .RegisterProjections<AddressVersionProjections, LegacyContext>(
-                    () => new AddressVersionProjections(),
                     ConnectedProjectionSettings.Default)
                 .RegisterProjections<CrabIdToPersistentLocalIdProjections, LegacyContext>(ConnectedProjectionSettings.Default);
         }

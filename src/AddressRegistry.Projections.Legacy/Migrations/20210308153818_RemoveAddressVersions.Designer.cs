@@ -4,14 +4,16 @@ using AddressRegistry.Projections.Legacy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AddressRegistry.Projections.Legacy.Migrations
 {
     [DbContext(typeof(LegacyContext))]
-    partial class LegacyContextModelSnapshot : ModelSnapshot
+    [Migration("20210308153818_RemoveAddressVersions")]
+    partial class RemoveAddressVersions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,8 +64,8 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("VersionTimestampAsDateTimeOffset")
-                        .HasColumnName("VersionTimestamp")
-                        .HasColumnType("datetimeoffset");
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("VersionTimestamp");
 
                     b.HasKey("AddressId")
                         .IsClustered(false);
@@ -119,8 +121,8 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("VersionTimestampAsDateTimeOffset")
-                        .HasColumnName("VersionTimestamp")
-                        .HasColumnType("datetimeoffset");
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("VersionTimestamp");
 
                     b.HasKey("AddressId")
                         .IsClustered(false);
@@ -238,8 +240,8 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                         .HasColumnType("bit");
 
                     b.Property<DateTimeOffset>("LastChangedOnAsDateTimeOffset")
-                        .HasColumnName("LastChangedOn")
-                        .HasColumnType("datetimeoffset");
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("LastChangedOn");
 
                     b.Property<int?>("Modification")
                         .HasColumnType("int");
@@ -269,8 +271,8 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset>("RecordCreatedAtAsDateTimeOffset")
-                        .HasColumnName("RecordCreatedAt")
-                        .HasColumnType("datetimeoffset");
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("RecordCreatedAt");
 
                     b.Property<int?>("Status")
                         .HasColumnType("int");
@@ -329,8 +331,8 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTimeOffset>("VersionTimestampAsDateTimeOffset")
-                        .HasColumnName("VersionTimestamp")
-                        .HasColumnType("datetimeoffset");
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("VersionTimestamp");
 
                     b.HasKey("AddressId")
                         .IsClustered(false);

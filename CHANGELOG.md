@@ -1,3 +1,10 @@
+## [2.27.2](https://github.com/informatievlaanderen/address-registry/compare/v2.27.1...v2.27.2) (2021-03-08)
+
+
+### Bug Fixes
+
+* remove addressversions GRAR-1876 ([5cdad4d](https://github.com/informatievlaanderen/address-registry/commit/5cdad4ded573317bcac8bae4ecd68d1863208b44))
+
 ## [2.27.1](https://github.com/informatievlaanderen/address-registry/compare/v2.27.0...v2.27.1) (2021-03-06)
 
 

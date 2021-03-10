@@ -1,6 +1,5 @@
 namespace AddressRegistry.Api.Extract.Extracts
 {
-    using System.Data;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Microsoft.AspNetCore.Http;
@@ -11,7 +10,6 @@ namespace AddressRegistry.Api.Extract.Extracts
     using System.Threading;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api.Extract;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Projections.Syndication;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
@@ -40,16 +38,13 @@ namespace AddressRegistry.Api.Extract.Extracts
             [FromServices] SyndicationContext syndicationContext,
             CancellationToken cancellationToken = default)
         {
-            using (await context.Database.BeginTransactionAsync(IsolationLevel.Snapshot, cancellationToken))
-            {
-                return new ExtractArchive(ExtractFileNames.GetAddressZip())
-                    {
-                        AddressRegistryExtractBuilder.CreateAddressFiles(context, syndicationContext),
-                        AddressCrabHouseNumberIdExtractBuilder.CreateAddressCrabHouseNumberIdFile(context),
-                        AddressCrabSubaddressIdExtractBuilder.CreateAddressSubaddressIdFile(context)
-                    }
-                    .CreateFileCallbackResult(cancellationToken);
-            }
+            return new IsolationExtractArchive(ExtractFileNames.GetAddressZip(), context)
+                {
+                    AddressRegistryExtractBuilder.CreateAddressFiles(context, syndicationContext),
+                    AddressCrabHouseNumberIdExtractBuilder.CreateAddressCrabHouseNumberIdFile(context),
+                    AddressCrabSubaddressIdExtractBuilder.CreateAddressSubaddressIdFile(context)
+                }
+                .CreateFileCallbackResult(cancellationToken);
         }
 
         /// <summary>

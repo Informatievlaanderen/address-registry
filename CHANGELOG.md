@@ -1,3 +1,10 @@
+## [2.27.3](https://github.com/informatievlaanderen/address-registry/compare/v2.27.2...v2.27.3) (2021-03-10)
+
+
+### Bug Fixes
+
+* use isolation extract archive for extracts ([9d8d0b3](https://github.com/informatievlaanderen/address-registry/commit/9d8d0b32f78665e8c5b762dc7efaf87adfd18954))
+
 ## [2.27.2](https://github.com/informatievlaanderen/address-registry/compare/v2.27.1...v2.27.2) (2021-03-08)
 
 

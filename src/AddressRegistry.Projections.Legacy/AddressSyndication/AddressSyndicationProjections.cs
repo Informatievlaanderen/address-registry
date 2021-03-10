@@ -7,6 +7,8 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
 
+    [ConnectedProjectionName("Legacy - AddressSyndication")]
+    [ConnectedProjectionDescription("Adres data voor de feed.")]
     public class AddressSyndicationProjections : ConnectedProjection<LegacyContext>
     {
         public AddressSyndicationProjections()

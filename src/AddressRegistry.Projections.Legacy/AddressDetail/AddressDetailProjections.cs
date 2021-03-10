@@ -8,6 +8,8 @@ namespace AddressRegistry.Projections.Legacy.AddressDetail
     using NetTopologySuite.IO;
     using NodaTime;
 
+    [ConnectedProjectionName("Legacy - AddressDetail")]
+    [ConnectedProjectionDescription("Adres detail data.")]
     public class AddressDetailProjections : ConnectedProjection<LegacyContext>
     {
         public AddressDetailProjections(WKBReader wkbReader)

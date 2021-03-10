@@ -9,6 +9,8 @@ namespace AddressRegistry.Projections.Extract.AddressCrabHouseNumberIdExtract
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
 
+    [ConnectedProjectionName("Extract - AddressCrabHouseNumberIdExtractProjection")]
+    [ConnectedProjectionDescription("CRAB huisnummer data voor testbestand.")]
     public class AddressCrabHouseNumberIdExtractProjection : ConnectedProjection<ExtractContext>
     {
         private readonly Encoding _encoding;

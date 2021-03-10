@@ -6,6 +6,8 @@ namespace AddressRegistry.Projections.Legacy.AddressList
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using NodaTime;
 
+    [ConnectedProjectionName("Legacy - AddressList")]
+    [ConnectedProjectionDescription("Adres lijst data.")]
     public class AddressListProjections : ConnectedProjection<LegacyContext>
     {
         public AddressListProjections()

@@ -1,3 +1,15 @@
+# [2.28.0](https://github.com/informatievlaanderen/address-registry/compare/v2.27.3...v2.28.0) (2021-03-11)
+
+
+### Bug Fixes
+
+* update projector dependency GRAR-1876 ([801eb15](https://github.com/informatievlaanderen/address-registry/commit/801eb15de1a4882ae2b9de92cc154f49f39f676e))
+
+
+### Features
+
+* add projection attributes GRAR-1876 ([7da8c91](https://github.com/informatievlaanderen/address-registry/commit/7da8c91758feb4eaa96fa3fbad0cefa80664cd3b))
+
 ## [2.27.3](https://github.com/informatievlaanderen/address-registry/compare/v2.27.2...v2.27.3) (2021-03-10)
 
 

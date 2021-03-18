@@ -14,10 +14,10 @@ namespace AddressRegistry.Address.Events
         [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }
 
-        [EventPropertyDescription("Geometriemethode van de adrespositie.")]
+        [EventPropertyDescription("Geometriemethode van de adrespositie. Mogelijkheden: DerivedFromObject, AppointedByAdministrator of Interpolated.")]
         public GeometryMethod GeometryMethod { get; }
 
-        [EventPropertyDescription("Specificatie van het object dat voorgesteld wordt door de adrespositie.")]
+        [EventPropertyDescription("Specificatie van het object dat voorgesteld wordt door de adrespositie. Mogelijkheden: BuildingUnit, Stand, Parcel, Lot, Entry, RoadSegment, Municipality of Berth.")]
         public GeometrySpecification GeometrySpecification { get; }
 
         [EventPropertyDescription("Extended WKB-voorstelling van de adrespositie.")]

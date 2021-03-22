@@ -1,3 +1,10 @@
+## [2.28.1](https://github.com/informatievlaanderen/address-registry/compare/v2.28.0...v2.28.1) (2021-03-22)
+
+
+### Bug Fixes
+
+* remove ridingwolf, collaboration ended ([251496d](https://github.com/informatievlaanderen/address-registry/commit/251496dcbcae28779dfbeb230d30c71ae4917bd1))
+
 # [2.28.0](https://github.com/informatievlaanderen/address-registry/compare/v2.27.3...v2.28.0) (2021-03-11)
 
 

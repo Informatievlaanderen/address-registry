@@ -10,8 +10,8 @@ namespace AddressRegistry.Projections.Legacy.CrabIdToPersistentLocalId
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using NodaTime;
 
-    [ConnectedProjectionName("Legacy - CrabIdToPersistentLocalId")]
-    [ConnectedProjectionDescription("Linking the CRAB-id to the GRAR-id")]
+    [ConnectedProjectionName("API endpoint CRAB-huisnummers & CRAB-subadressen")]
+    [ConnectedProjectionDescription("Projectie die de data voor de link tussen CRAB en gebouwen- en adressenregister voorziet.")]
     public class CrabIdToPersistentLocalIdProjections : ConnectedProjection<LegacyContext>
     {
         public CrabIdToPersistentLocalIdProjections()

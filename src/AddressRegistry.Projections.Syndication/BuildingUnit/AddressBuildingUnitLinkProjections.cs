@@ -76,8 +76,7 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
                     var addressItem = unitItems.FirstOrDefault(x => x.AddressId == addressId);
                     if (addressItem == null)
                     {
-                        await context.AddressBuildingUnitLinkExtract.AddAsync(await
-                            CreateAddressBuildingUnitLinkExtractItem(entry, addressId, buildingUnit, context), ct);
+                        await context.AddressBuildingUnitLinkExtract.AddAsync(CreateAddressBuildingUnitLinkExtractItem(entry, addressId, buildingUnit, context), ct);
                     }
                     else
                     {
@@ -90,9 +89,9 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
             }
         }
 
-        private async Task<AddressBuildingUnitLinkExtractItem> CreateAddressBuildingUnitLinkExtractItem(AtomEntry<SyndicationItem<Building>> entry, Guid addressId, BuildingUnitSyndicationContent buildingUnit, SyndicationContext context)
+        private AddressBuildingUnitLinkExtractItem CreateAddressBuildingUnitLinkExtractItem(AtomEntry<SyndicationItem<Building>> entry, Guid addressId, BuildingUnitSyndicationContent buildingUnit, SyndicationContext context)
         {
-            var address = await context.AddressLinkAddresses.FindAsync(addressId);
+            var address = context.AddressLinkAddresses.Find(addressId);
 
             var dbaseRecord = CreateDbaseRecord(buildingUnit, address, context);
             return new AddressBuildingUnitLinkExtractItem

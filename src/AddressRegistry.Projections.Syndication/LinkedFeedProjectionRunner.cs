@@ -139,9 +139,11 @@ namespace AddressRegistry.Projections.Syndication
                         }
                     }
                 }
-                catch (Exception e) when (e is InvalidOperationException || e is ApplicationException)
+                catch(AtomResolveHandlerException) { } //not all events should be resolved
+                catch (Exception e)
                 {
-                    _logger.LogWarning(e.Message, e);
+                    _logger.LogError(e.Message, e);
+                    throw;
                 }
             }
         }

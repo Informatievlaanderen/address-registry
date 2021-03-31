@@ -6,8 +6,8 @@ namespace AddressRegistry.Projections.LastChangedList
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
 
-    [ConnectedProjectionName("LastChangedList")]
-    [ConnectedProjectionDescription("Markeert de adressen waarvan de cached data moet geupdate worden.")]
+    [ConnectedProjectionName("Cache markering adressen")]
+    [ConnectedProjectionDescription("Projectie die markeert voor hoeveel adressen de gecachte data nog geüpdated moeten worden.")]
     public class LastChangedListProjections : LastChangedListConnectedProjection
     {
         protected override string CacheKeyFormat => "legacy/address:{{0}}.{1}";

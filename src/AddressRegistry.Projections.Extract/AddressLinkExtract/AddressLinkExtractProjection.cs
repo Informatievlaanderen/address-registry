@@ -11,8 +11,9 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
     using AddressLinkExtract;
     using Microsoft.Extensions.Options;
 
-    [ConnectedProjectionName("Extract - AddressLinkExtractProjection")]
-    [ConnectedProjectionDescription("Adres-link data voor testbestand.")]
+    // TODO: Check if not obsolete
+    [ConnectedProjectionName("Extract adreskoppelingen")]
+    [ConnectedProjectionDescription("Projectie die de adreskoppelingen data voor het adreskoppelingen extract voorziet.")]
     public class AddressLinkExtractProjection : ConnectedProjection<ExtractContext>
     {
         private readonly Encoding _encoding;

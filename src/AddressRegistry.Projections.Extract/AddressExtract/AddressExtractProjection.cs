@@ -14,8 +14,8 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
     using Address.Events.Crab;
     using Microsoft.Extensions.Options;
 
-    [ConnectedProjectionName("Extract - AddressExtractProjection")]
-    [ConnectedProjectionDescription("Adres data voor testbestand.")]
+    [ConnectedProjectionName("Extract adressen")]
+    [ConnectedProjectionDescription("Projectie die de adressen data voor het adressen extract voorziet.")]
     public class AddressExtractProjection : ConnectedProjection<ExtractContext>
     {
         //TODO: should these translations also be used in other places?

@@ -1,3 +1,16 @@
+# [2.29.0](https://github.com/informatievlaanderen/address-registry/compare/v2.28.1...v2.29.0) (2021-03-31)
+
+
+### Bug Fixes
+
+* only swallow specific exception ([d341cf4](https://github.com/informatievlaanderen/address-registry/commit/d341cf48f2b3d9d234ec2075afde42518a04c2c1))
+* update docs projections ([02a4593](https://github.com/informatievlaanderen/address-registry/commit/02a459358c983080bd42d5f63d3daad477c92fa7))
+
+
+### Features
+
+* bump projector & projection handling ([dd77602](https://github.com/informatievlaanderen/address-registry/commit/dd77602c424d1ddf923dab533c3cad1e2ddab378))
+
 ## [2.28.1](https://github.com/informatievlaanderen/address-registry/compare/v2.28.0...v2.28.1) (2021-03-22)
 
 

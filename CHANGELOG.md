@@ -1,3 +1,10 @@
+## [2.29.1](https://github.com/informatievlaanderen/address-registry/compare/v2.29.0...v2.29.1) (2021-04-26)
+
+
+### Bug Fixes
+
+* rename cache status endpoint in projector ([6e82d03](https://github.com/informatievlaanderen/address-registry/commit/6e82d036ad48f43ab447dde6c6b41b3ae3917d02))
+
 # [2.29.0](https://github.com/informatievlaanderen/address-registry/compare/v2.28.1...v2.29.0) (2021-03-31)
 
 

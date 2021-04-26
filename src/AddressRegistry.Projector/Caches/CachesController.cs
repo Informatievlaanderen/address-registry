@@ -32,7 +32,7 @@ namespace AddressRegistry.Projector.Caches
             return Ok(new[]
             {
                 new {
-                    name = "LastChangedList",
+                    name = "Cache detail adressen",
                     numberOfRecordsToProcess = numberOfRecords
                 }
             });

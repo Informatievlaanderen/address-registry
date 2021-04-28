@@ -8,6 +8,8 @@ namespace AddressRegistry.Api.Legacy.Address.Query
     using System.Collections.Generic;
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
+    using Convertors;
     using Microsoft.EntityFrameworkCore;
 
     public class AddressListQuery : Query<AddressListItem, AddressFilter>
@@ -57,6 +59,18 @@ namespace AddressRegistry.Api.Legacy.Address.Query
 
             if (!string.IsNullOrEmpty(filtering.Filter.PostalCode))
                 addresses = addresses.Where(a => a.PostalCode == filtering.Filter.PostalCode);
+
+            if (!string.IsNullOrEmpty(filtering.Filter.Status))
+            {
+                if (Enum.TryParse(typeof(AdresStatus), filtering.Filter.Status, true, out var status))
+                {
+                    var addressStatus = ((AdresStatus)status).ConvertFromAdresStatus();
+                    addresses = addresses.Where(a => a.Status.HasValue && a.Status.Value == addressStatus);
+                }
+                else
+                    //have to filter on EF cannot return new List<>().AsQueryable() cause non-EF provider does not support .CountAsync()
+                    addresses = addresses.Where(m => m.Status.HasValue && (int)m.Status.Value == -1);
+            }
 
             if (!string.IsNullOrEmpty(filtering.Filter.MunicipalityName))
             {
@@ -150,5 +164,6 @@ namespace AddressRegistry.Api.Legacy.Address.Query
         public string MunicipalityName { get; set; }
         public string StreetName { get; set; }
         public string HomonymAddition { get; set; }
+        public string Status { get; set; }
     }
 }

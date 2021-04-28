@@ -58,6 +58,7 @@ namespace AddressRegistry.Projections.Legacy.AddressList
             b.HasIndex(p => p.BoxNumber);
             b.HasIndex(p => p.HouseNumber);
             b.HasIndex(p => p.PostalCode);
+            b.HasIndex(p => p.Status);
             b.HasIndex(p => new { p.Complete, p.Removed });
             b.HasIndex(p => new { p.Complete, p.Removed, p.PersistentLocalId }).IncludeProperties(p => p.StreetNameId);
             b.HasIndex(p => p.StreetNameId);

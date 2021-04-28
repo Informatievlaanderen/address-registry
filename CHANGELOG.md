@@ -1,3 +1,10 @@
+# [2.30.0](https://github.com/informatievlaanderen/address-registry/compare/v2.29.1...v2.30.0) (2021-04-28)
+
+
+### Features
+
+* add status filter to legacy list ([2b96062](https://github.com/informatievlaanderen/address-registry/commit/2b960620a65e5b8e56711430ae08a030045867ab))
+
 ## [2.29.1](https://github.com/informatievlaanderen/address-registry/compare/v2.29.0...v2.29.1) (2021-04-26)
 
 

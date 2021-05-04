@@ -1,3 +1,10 @@
+# [2.31.0](https://github.com/informatievlaanderen/address-registry/compare/v2.30.0...v2.31.0) (2021-05-04)
+
+
+### Features
+
+* bump packages ([39a8f47](https://github.com/informatievlaanderen/address-registry/commit/39a8f478903642afb6774ac74bf13d1c262d07ca))
+
 # [2.30.0](https://github.com/informatievlaanderen/address-registry/compare/v2.29.1...v2.30.0) (2021-04-28)
 
 

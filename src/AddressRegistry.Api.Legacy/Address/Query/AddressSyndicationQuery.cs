@@ -195,7 +195,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
         private readonly bool _embedEvent;
         private readonly bool _embedObject;
 
-        public AddressSyndicationQuery(LegacyContext context, EmbedValue embed)
+        public AddressSyndicationQuery(LegacyContext context, SyncEmbedValue embed)
         {
             _context = context;
             _embedEvent = embed?.Event ?? false;
@@ -307,6 +307,6 @@ namespace AddressRegistry.Api.Legacy.Address.Query
     public class AddressSyndicationFilter
     {
         public long? Position { get; set; }
-        public EmbedValue Embed { get; set; }
+        public SyncEmbedValue Embed { get; set; }
     }
 }

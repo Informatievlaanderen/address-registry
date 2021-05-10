@@ -31,7 +31,7 @@ namespace AddressRegistry.Address
                     new Reason("Stabiele en unieke objectidentificatie"),
                     new Operator("AddressRegistry"),
                     Modification.Update,
-                    Organisation.Aiv);
+                    Organisation.DigitaalVlaanderen);
 
             throw new ApplicationException($"Cannot create provenance for {command.GetType().Name}");
         }

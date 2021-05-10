@@ -1,3 +1,10 @@
+## [2.31.1](https://github.com/informatievlaanderen/address-registry/compare/v2.31.0...v2.31.1) (2021-05-10)
+
+
+### Bug Fixes
+
+* correct provenance for persistentlocalid ([ee69223](https://github.com/informatievlaanderen/address-registry/commit/ee69223c2337a031a509ec9ffe4d67d0bf4e5c5f))
+
 # [2.31.0](https://github.com/informatievlaanderen/address-registry/compare/v2.30.0...v2.31.0) (2021-05-04)
 
 

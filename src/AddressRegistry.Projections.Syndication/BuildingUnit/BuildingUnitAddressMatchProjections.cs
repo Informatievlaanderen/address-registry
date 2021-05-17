@@ -127,6 +127,7 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
                         addressItem.BuildingUnitPersistentLocalId = buildingUnit.Identificator.ObjectId;
                         addressItem.IsComplete = buildingUnit.IsComplete;
                         addressItem.IsBuildingComplete = entry.Content.Object.IsComplete;
+                        addressItem.IsRemoved = false;
                     }
                 }
 

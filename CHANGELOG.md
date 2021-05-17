@@ -1,3 +1,10 @@
+## [2.31.2](https://github.com/informatievlaanderen/address-registry/compare/v2.31.1...v2.31.2) (2021-05-17)
+
+
+### Bug Fixes
+
+* correct syndication removed buildingunit ([4f9283b](https://github.com/informatievlaanderen/address-registry/commit/4f9283b06378fecdf6d355dea1024f1096faa08e))
+
 ## [2.31.1](https://github.com/informatievlaanderen/address-registry/compare/v2.31.0...v2.31.1) (2021-05-10)
 
 

@@ -1,3 +1,10 @@
+## [2.31.3](https://github.com/informatievlaanderen/address-registry/compare/v2.31.2...v2.31.3) (2021-05-26)
+
+
+### Bug Fixes
+
+* volledig adres optioneel maken GRAR-1904 ([207ef99](https://github.com/informatievlaanderen/address-registry/commit/207ef99543a1c1f6b1089658f0b9343d85793f2b))
+
 ## [2.31.2](https://github.com/informatievlaanderen/address-registry/compare/v2.31.1...v2.31.2) (2021-05-17)
 
 

@@ -12,8 +12,10 @@ namespace AddressRegistry.Api.Legacy.Address
     {
         public static VolledigAdres GetVolledigAdres(string houseNumber, string boxNumber, string postalCode, StreetNameLatestItem streetName, MunicipalityLatestItem municipality)
         {
-            var defaultMunicipalityName = GetDefaultMunicipalityName(municipality);
+            if (streetName == null || municipality == null)
+                return null;
 
+            var defaultMunicipalityName = GetDefaultMunicipalityName(municipality);
             return new VolledigAdres(
                 GetDefaultStreetNameName(streetName, municipality.PrimaryLanguage).Value,
                 houseNumber,

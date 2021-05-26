@@ -33,6 +33,7 @@ namespace AddressRegistry.Api.Legacy.Address
     using System.Xml;
     using Be.Vlaanderen.Basisregisters.Api.Search;
     using Infrastructure;
+    using Projections.Syndication.Municipality;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
     [ApiVersion("1.0")]
@@ -200,8 +201,10 @@ namespace AddressRegistry.Api.Legacy.Address
             var addressListItemResponses = addresses
                 .Select(a =>
                 {
-                    var streetName = streetNames.Single(x => x.StreetNameId == a.StreetNameId);
-                    var municipality = municipalities.Single(x => x.NisCode == streetName.NisCode);
+                    var streetName = streetNames.SingleOrDefault(x => x.StreetNameId == a.StreetNameId);
+                    MunicipalityLatestItem municipality = null;
+                    if (streetName != null)
+                        municipality = municipalities.SingleOrDefault(x => x.NisCode == streetName.NisCode);
                     return new AddressListItemResponse(
                         a.PersistentLocalId,
                         responseOptions.Value.Naamruimte,

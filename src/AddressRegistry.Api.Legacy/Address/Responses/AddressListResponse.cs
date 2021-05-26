@@ -70,8 +70,8 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         /// De voorstelling van een adres in het Nederlands.
         /// </summary>
         [DataMember(Name = "VolledigAdres", Order = 5)]
-        [JsonProperty(Required = Required.DisallowNull)]
-        public VolledigAdres VolledigAdres { get; set; }
+        [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public VolledigAdres? VolledigAdres { get; set; }
 
         /// <summary>
         /// De fase in het leven van het adres.

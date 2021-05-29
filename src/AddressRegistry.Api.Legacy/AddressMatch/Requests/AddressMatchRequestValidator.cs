@@ -53,14 +53,14 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Requests
 
         private static bool BeNumeric(string input) => int.TryParse(input, out var _);
 
-        private static Func<AddressMatchRequest, AddressMatchRequest, PropertyValidatorContext, bool> HaveMinimumOne(params Expression<Func<AddressMatchRequest, string>>[] propertySelectors) =>
+        private static Func<AddressMatchRequest, AddressMatchRequest, ValidationContext<AddressMatchRequest>, bool> HaveMinimumOne(params Expression<Func<AddressMatchRequest, string>>[] propertySelectors) =>
             (request, request2, ct) =>
             {
                 ct.MessageFormatter.AppendArgument(MinimumOneArg, string.Join(", ", propertySelectors.Select(selector => $"'{(selector.Body as MemberExpression)?.Member?.Name}'")));
                 return propertySelectors.Any(selector => !string.IsNullOrEmpty(selector.Compile().Invoke(request)));
             };
 
-        private Func<AddressMatchRequest, AddressMatchRequest, PropertyValidatorContext, bool> HaveMaximumOne(params Expression<Func<AddressMatchRequest, string>>[] propertySelectors) =>
+        private Func<AddressMatchRequest, AddressMatchRequest, ValidationContext<AddressMatchRequest>, bool> HaveMaximumOne(params Expression<Func<AddressMatchRequest, string>>[] propertySelectors) =>
             (request, request2, ct) =>
             {
                 ct.MessageFormatter.AppendArgument(MaximumOneArg, string.Join(", ", propertySelectors.Select(selector => $"'{(selector.Body as MemberExpression)?.Member?.Name}'")));

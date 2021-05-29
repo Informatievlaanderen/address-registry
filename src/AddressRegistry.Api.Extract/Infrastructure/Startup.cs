@@ -70,8 +70,8 @@ namespace AddressRegistry.Api.Extract.Infrastructure
                             Description = GetApiLeadingText(description),
                             Contact = new OpenApiContact
                             {
-                                Name = "Informatie Vlaanderen",
-                                Email = "informatie.vlaanderen@vlaanderen.be",
+                                Name = "Digitaal Vlaanderen",
+                                Email = "digitaal.vlaanderen@vlaanderen.be",
                                 Url = new Uri("https://extract.basisregisters.vlaanderen")
                             }
                         },
@@ -162,7 +162,7 @@ namespace AddressRegistry.Api.Extract.Infrastructure
                     Server =
                     {
                         PoweredByName = "Vlaamse overheid - Basisregisters Vlaanderen",
-                        ServerName = "agentschap Informatie Vlaanderen"
+                        ServerName = "Digitaal Vlaanderen"
                     },
                     MiddlewareHooks =
                     {

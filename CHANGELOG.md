@@ -1,3 +1,10 @@
+## [2.31.6](https://github.com/informatievlaanderen/address-registry/compare/v2.31.5...v2.31.6) (2021-05-31)
+
+
+### Bug Fixes
+
+* update api and pipeline ([2570780](https://github.com/informatievlaanderen/address-registry/commit/2570780e782d6085de0c65e6b16f6e3a08878b1c))
+
 ## [2.31.5](https://github.com/informatievlaanderen/address-registry/compare/v2.31.4...v2.31.5) (2021-05-29)
 
 

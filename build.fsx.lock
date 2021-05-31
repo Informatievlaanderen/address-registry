@@ -2,7 +2,7 @@ STORAGE: NONE
 RESTRICTION: == netstandard2.0
 NUGET
   remote: https://api.nuget.org/v3/index.json
-    Be.Vlaanderen.Basisregisters.Build.Pipeline (5.0.3)
+    Be.Vlaanderen.Basisregisters.Build.Pipeline (5.0.4)
       Fake.Core.Environment (>= 5.20.4)
       Fake.Core.Process (>= 5.20.4)
       Fake.Core.Target (>= 5.20.4)

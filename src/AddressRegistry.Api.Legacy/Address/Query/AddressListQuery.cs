@@ -35,6 +35,9 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 .MunicipalityLatestItems
                 .AsNoTracking();
 
+            if (!string.IsNullOrEmpty(filtering.Filter.NisCode))
+                municipalities = municipalities.Where(m => m.NisCode.Contains(filtering.Filter.NisCode));
+
             var streetnames = _context
                 .StreetNameLatestItems
                 .AsNoTracking()
@@ -165,5 +168,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
         public string StreetName { get; set; }
         public string HomonymAddition { get; set; }
         public string Status { get; set; }
+        public string? NisCode { get; set; }
+
     }
 }

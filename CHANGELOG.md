@@ -1,3 +1,10 @@
+## [2.31.8](https://github.com/informatievlaanderen/address-registry/compare/v2.31.7...v2.31.8) (2021-06-09)
+
+
+### Bug Fixes
+
+*  add niscode filter ([8dc4e77](https://github.com/informatievlaanderen/address-registry/commit/8dc4e776c98ad84609c0708722f25758bfe8442b))
+
 ## [2.31.7](https://github.com/informatievlaanderen/address-registry/compare/v2.31.6...v2.31.7) (2021-05-31)
 
 

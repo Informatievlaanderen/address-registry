@@ -1,3 +1,10 @@
+## [2.31.9](https://github.com/informatievlaanderen/address-registry/compare/v2.31.8...v2.31.9) (2021-06-11)
+
+
+### Bug Fixes
+
+* get list of addresses without passing any filter ([ef22f92](https://github.com/informatievlaanderen/address-registry/commit/ef22f928301036aeff98613916dc2dc5e5e7a093))
+
 ## [2.31.8](https://github.com/informatievlaanderen/address-registry/compare/v2.31.7...v2.31.8) (2021-06-09)
 
 

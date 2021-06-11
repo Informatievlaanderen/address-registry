@@ -35,9 +35,6 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 .MunicipalityLatestItems
                 .AsNoTracking();
 
-            if (!string.IsNullOrEmpty(filtering.Filter.NisCode))
-                municipalities = municipalities.Where(m => m.NisCode.Contains(filtering.Filter.NisCode));
-
             var streetnames = _context
                 .StreetNameLatestItems
                 .AsNoTracking()
@@ -73,6 +70,13 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 else
                     //have to filter on EF cannot return new List<>().AsQueryable() cause non-EF provider does not support .CountAsync()
                     addresses = addresses.Where(m => m.Status.HasValue && (int)m.Status.Value == -1);
+            }
+
+            if (!string.IsNullOrEmpty(filtering.Filter.NisCode))
+            {
+                streetnames = streetnames.Where(x => x.NisCode == filtering.Filter.NisCode);
+                municipalities = municipalities.Where(m => m.NisCode == filtering.Filter.NisCode);
+                filterStreet = true;
             }
 
             if (!string.IsNullOrEmpty(filtering.Filter.MunicipalityName))

@@ -1,3 +1,10 @@
+## [2.31.10](https://github.com/informatievlaanderen/address-registry/compare/v2.31.9...v2.31.10) (2021-06-17)
+
+
+### Bug Fixes
+
+* addressmatch validation now returns correct responsecode ([5a99304](https://github.com/informatievlaanderen/address-registry/commit/5a99304034b306080b39acb08e45d04ed9f88954))
+
 ## [2.31.9](https://github.com/informatievlaanderen/address-registry/compare/v2.31.8...v2.31.9) (2021-06-11)
 
 

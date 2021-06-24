@@ -62,6 +62,11 @@ namespace AddressRegistry.Projections.Legacy.AddressDetail
             b.Property(p => p.Removed);
 
             b.HasIndex(p => p.PersistentLocalId)
+                .IsUnique()
+                .HasFilter($"([{nameof(AddressDetailItem.PersistentLocalId)}] IS NOT NULL)")
+                .HasDatabaseName("IX_AddressDetails_PersistentLocalId_1");;
+
+            b.HasIndex(p => p.PersistentLocalId)
                 .IsClustered();
 
             // This speeds up AddressBosaQuery's huge StreetNameId IN (...) AND Complete = 1 query

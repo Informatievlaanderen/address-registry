@@ -4,14 +4,16 @@ using AddressRegistry.Projections.Legacy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AddressRegistry.Projections.Legacy.Migrations
 {
     [DbContext(typeof(LegacyContext))]
-    partial class LegacyContextModelSnapshot : ModelSnapshot
+    [Migration("20210624123513_AddNullableUniqueConstraint")]
+    partial class AddNullableUniqueConstraint
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -73,13 +75,14 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                     b.HasIndex("HouseNumber");
 
                     b.HasIndex("PersistentLocalId")
-                        .IsClustered();
+                        .HasDatabaseName("IX_AddressDetails_PersistentLocalId")
+                        .IsClustered(true);
 
                     b.HasIndex("PersistentLocalId")
-                        .IsClustered(false)
                         .IsUnique()
                         .HasDatabaseName("IX_AddressDetails_PersistentLocalId_1")
-                        .HasFilter("([PersistentLocalId] IS NOT NULL)");
+                        .HasFilter("([PersistentLocalId] IS NOT NULL)")
+                        .IsClustered(false);
 
                     b.HasIndex("PostalCode");
 
@@ -136,13 +139,14 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                     b.HasIndex("HouseNumber");
 
                     b.HasIndex("PersistentLocalId")
-                        .IsClustered();
+                        .HasDatabaseName("IX_AddressList_PersistentLocalId")
+                        .IsClustered(true);
 
                     b.HasIndex("PersistentLocalId")
-                        .IsClustered(false)
                         .IsUnique()
                         .HasDatabaseName("IX_AddressList_PersistentLocalId_1")
-                        .HasFilter("([PersistentLocalId] IS NOT NULL)");
+                        .HasFilter("([PersistentLocalId] IS NOT NULL)")
+                        .IsClustered(false);
 
                     b.HasIndex("PostalCode");
 
@@ -355,6 +359,10 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                     b.HasIndex("IsRemoved");
 
                     b.HasIndex("PersistentLocalId")
+                        .IsClustered(true);
+
+                    b.HasIndex("PersistentLocalId")
+                        .IsClustered(false)
                         .IsUnique()
                         .HasFilter("[PersistentLocalId] IS NOT NULL");
 

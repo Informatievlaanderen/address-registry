@@ -62,7 +62,14 @@ namespace AddressRegistry.Projections.Legacy.AddressList
             b.HasIndex(p => new { p.Complete, p.Removed });
             b.HasIndex(p => new { p.Complete, p.Removed, p.PersistentLocalId }).IncludeProperties(p => p.StreetNameId);
             b.HasIndex(p => p.StreetNameId);
-            b.HasIndex(p => p.PersistentLocalId).IsClustered();
+
+            b.HasIndex(p => p.PersistentLocalId)
+                .IsUnique()
+                .HasFilter($"([{nameof(AddressListItem.PersistentLocalId)}] IS NOT NULL)")
+                .HasDatabaseName("IX_AddressList_PersistentLocalId_1");
+
+            b.HasIndex(p => p.PersistentLocalId)
+                .IsClustered();
         }
     }
 }

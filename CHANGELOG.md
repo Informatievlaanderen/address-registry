@@ -1,3 +1,10 @@
+## [2.31.11](https://github.com/informatievlaanderen/address-registry/compare/v2.31.10...v2.31.11) (2021-06-25)
+
+
+### Bug Fixes
+
+* added unique constraint to the persistentlocalid ([0df1298](https://github.com/informatievlaanderen/address-registry/commit/0df12989c6509e9650c62cddcf11acbcc3d82b6d))
+
 ## [2.31.10](https://github.com/informatievlaanderen/address-registry/compare/v2.31.9...v2.31.10) (2021-06-17)
 
 

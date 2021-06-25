@@ -1,3 +1,10 @@
+## [2.31.12](https://github.com/informatievlaanderen/address-registry/compare/v2.31.11...v2.31.12) (2021-06-25)
+
+
+### Bug Fixes
+
+* update aws DistributedMutex package ([b14e2db](https://github.com/informatievlaanderen/address-registry/commit/b14e2dbe8bd6ad74c4e4ab02fe4ec94a73be975f))
+
 ## [2.31.11](https://github.com/informatievlaanderen/address-registry/compare/v2.31.10...v2.31.11) (2021-06-25)
 
 

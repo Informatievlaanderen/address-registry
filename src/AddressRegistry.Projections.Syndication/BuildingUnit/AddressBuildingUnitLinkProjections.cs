@@ -30,11 +30,17 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
             When(BuildingEvent.BuildingUnitWasAddedToRetiredBuilding, AddSyndicationItemEntry);
             When(BuildingEvent.BuildingUnitWasReaddedByOtherUnitRemoval, AddSyndicationItemEntry);
             When(BuildingEvent.BuildingUnitWasReaddressed, AddSyndicationItemEntry);
-            When(BuildingEvent.BuildingUnitWasRemoved, RemoveBuildingUnit);
+            When(BuildingEvent.BuildingUnitWasRemoved, AddSyndicationItemEntry);
             When(BuildingEvent.CommonBuildingUnitWasAdded, AddSyndicationItemEntry);
+
+            When(BuildingEvent.BuildingWasRemoved, RemoveBuilding);
+            When(BuildingEvent.BuildingWasRetired, AddSyndicationItemEntry);
+            When(BuildingEvent.BuildingWasCorrectedToRetired, AddSyndicationItemEntry);
+            When(BuildingEvent.BuildingWasNotRealized, AddSyndicationItemEntry);
+            When(BuildingEvent.BuildingWasCorrectedToNotRealized, AddSyndicationItemEntry);
         }
 
-        private static async Task RemoveBuildingUnit(AtomEntry<SyndicationItem<Building>> entry, SyndicationContext context, CancellationToken ct)
+        private static async Task RemoveBuilding(AtomEntry<SyndicationItem<Building>> entry, SyndicationContext context, CancellationToken ct)
         {
             var addressBuildingUnitLinkExtractItems =
                 context

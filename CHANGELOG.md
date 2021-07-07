@@ -1,3 +1,10 @@
+## [2.31.13](https://github.com/informatievlaanderen/address-registry/compare/v2.31.12...v2.31.13) (2021-07-07)
+
+
+### Bug Fixes
+
+* correct remove building and add other buildingunit building actions GRAR-1912 ([0aacea3](https://github.com/informatievlaanderen/address-registry/commit/0aacea3c9c4a20cf72f254c5f10e952fbd884d88))
+
 ## [2.31.12](https://github.com/informatievlaanderen/address-registry/compare/v2.31.11...v2.31.12) (2021-06-25)
 
 

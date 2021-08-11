@@ -49,6 +49,7 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
         {
             var addressBuildingUnitLinkExtractItems = GetBuildingUnitItemsByBuilding(entry, context);
 
+            //TODO: Remove logging
             if (addressBuildingUnitLinkExtractItems.Any(x => x.BuildingUnitId == new Guid("F152384D-B701-5030-BEAE-00DBBA062CF0") || x.BuildingUnitId == new Guid("5785DCCE-1DA1-51A0-9087-6519D0406686")))
                 _logger.LogWarning($"Removed building for {entry.Content.Object.Id}");
 

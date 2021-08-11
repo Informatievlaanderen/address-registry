@@ -103,7 +103,7 @@ namespace AddressRegistry.Projections.Syndication
                 if (!long.TryParse(entries.Last().Id, out var lastEntryId))
                     break;
 
-                using (var context = contextFactory().Value)
+                await using (var context = contextFactory().Value)
                 {
                     await ProjectAtomEntriesAsync(entries, context, cancellationToken);
 

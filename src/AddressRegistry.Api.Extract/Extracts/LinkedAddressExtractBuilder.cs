@@ -29,9 +29,7 @@ namespace AddressRegistry.Api.Extract.Extracts
         {
             var extractItems =
                 from extractItem in _syndicationContext.AddressBuildingUnitLinkExtract
-                join buildingUnit in _syndicationContext.BuildingUnitAddressMatchLatestItems
-                    on new { extractItem.AddressId, extractItem.BuildingUnitId } equals new { buildingUnit.AddressId, buildingUnit.BuildingUnitId }
-                where extractItem.AddressComplete && !buildingUnit.IsRemoved && buildingUnit.IsComplete && buildingUnit.IsBuildingComplete
+                where extractItem.AddressComplete && !extractItem.IsBuildingUnitRemoved && extractItem.IsBuildingUnitComplete && extractItem.IsBuildingComplete
                 select extractItem.DbaseRecord;
 
             return ExtractBuilder.CreateDbfFile<AddressLinkDbaseRecord>(

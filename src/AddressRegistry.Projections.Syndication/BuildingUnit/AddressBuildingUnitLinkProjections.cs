@@ -34,6 +34,8 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
             When(BuildingEvent.CommonBuildingUnitWasAdded, AddSyndicationItemEntry);
 
             When(BuildingEvent.BuildingWasRemoved, RemoveBuilding);
+            When(BuildingEvent.BuildingBecameComplete, (entry, context, ct) => CompleteBuilding(entry, context, true, ct));
+            When(BuildingEvent.BuildingBecameIncomplete, (entry, context, ct) => CompleteBuilding(entry, context, false, ct));
             When(BuildingEvent.BuildingWasRetired, AddSyndicationItemEntry);
             When(BuildingEvent.BuildingWasCorrectedToRetired, AddSyndicationItemEntry);
             When(BuildingEvent.BuildingWasNotRealized, AddSyndicationItemEntry);
@@ -42,41 +44,37 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
 
         private static async Task RemoveBuilding(AtomEntry<SyndicationItem<Building>> entry, SyndicationContext context, CancellationToken ct)
         {
-            var addressBuildingUnitLinkExtractItems =
-                context
-                    .AddressBuildingUnitLinkExtract
-                    .Where(x => x.BuildingId == entry.Content.Object.Id)
-                    .AsEnumerable()
-                    .Concat(context.AddressBuildingUnitLinkExtract.Local.Where(x => x.BuildingId == entry.Content.Object.Id))
-                    .ToList();
+            var addressBuildingUnitLinkExtractItems = GetBuildingUnitItemsByBuilding(entry, context);
 
-            context.AddressBuildingUnitLinkExtract.RemoveRange(addressBuildingUnitLinkExtractItems);
+                context.AddressBuildingUnitLinkExtract.RemoveRange(addressBuildingUnitLinkExtractItems);
+        }
+        private static async Task CompleteBuilding(AtomEntry<SyndicationItem<Building>> entry, SyndicationContext context, bool isComplete, CancellationToken ct)
+        {
+            var addressBuildingUnitLinkExtractItems = GetBuildingUnitItemsByBuilding(entry, context);
+
+            addressBuildingUnitLinkExtractItems.ForEach(buildingUnitItem => buildingUnitItem.IsBuildingComplete = isComplete);
         }
 
         private async Task AddSyndicationItemEntry(AtomEntry<SyndicationItem<Building>> entry, SyndicationContext context, CancellationToken ct)
         {
-            var addressBuildingUnitLinkExtractItems =
-                context
-                    .AddressBuildingUnitLinkExtract
-                    .Where(x => x.BuildingId == entry.Content.Object.Id)
-                    .AsEnumerable()
-                    .Concat(context.AddressBuildingUnitLinkExtract.Local.Where(x => x.BuildingId == entry.Content.Object.Id))
-                    .Distinct()
-                    .ToList();
+            var addressBuildingUnitLinkExtractItems = GetBuildingUnitItemsByBuilding(entry, context);
 
-            var itemsToRemove = new List<AddressBuildingUnitLinkExtractItem>();
+            //Remove buildingunits which are not present in the feed but present in the DB
             foreach (var buildingUnitAddressMatchLatestItem in addressBuildingUnitLinkExtractItems)
             {
                 if (!entry.Content.Object.BuildingUnits.Select(x => x.BuildingUnitId).Contains(buildingUnitAddressMatchLatestItem.BuildingUnitId))
-                    itemsToRemove.Add(buildingUnitAddressMatchLatestItem);
+                    buildingUnitAddressMatchLatestItem.IsBuildingUnitRemoved = true;
             }
-
-            context.AddressBuildingUnitLinkExtract.RemoveRange(itemsToRemove);
 
             foreach (var buildingUnit in entry.Content.Object.BuildingUnits)
             {
                 var unitItems = addressBuildingUnitLinkExtractItems.Where(x => x.BuildingUnitId == buildingUnit.BuildingUnitId).ToList();
-                var addressItemsToRemove = unitItems.Where(x => !buildingUnit.Addresses.Contains(x.AddressId));
+
+                unitItems
+                    .Where(x => !buildingUnit.Addresses.Contains(x.AddressId))
+                    .ToList()
+                    .ForEach(x => x.IsAddressLinkRemoved = true);
+
                 foreach (var addressId in buildingUnit.Addresses)
                 {
                     var addressItem = unitItems.FirstOrDefault(x => x.AddressId == addressId);
@@ -86,12 +84,17 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
                     }
                     else
                     {
+                        addressItem.IsBuildingUnitRemoved = false;
+                        addressItem.IsAddressLinkRemoved = false;
+                        addressItem.IsBuildingUnitComplete = buildingUnit.IsComplete;
+
+                        if (string.Equals(addressItem.BuildingUnitPersistentLocalId, buildingUnit.Identificator.ObjectId))
+                            continue;
+
                         addressItem.BuildingUnitPersistentLocalId = buildingUnit.Identificator.ObjectId;
                         UpdateDbaseRecordField(addressItem, record => record.adresobjid.Value = buildingUnit.Identificator.ObjectId);
                     }
                 }
-
-                context.AddressBuildingUnitLinkExtract.RemoveRange(addressItemsToRemove);
             }
         }
 
@@ -109,7 +112,23 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
                 DbaseRecord = dbaseRecord, //Add address info
                 AddressComplete = address?.IsComplete ?? false,
                 AddressPersistentLocalId = address?.PersistentLocalId,
+                IsAddressLinkRemoved = false,
+                IsBuildingUnitComplete = buildingUnit.IsComplete,
+                IsBuildingUnitRemoved = false,
+                IsBuildingComplete = entry.Content.Object.IsComplete,
             };
+        }
+
+        private static List<AddressBuildingUnitLinkExtractItem> GetBuildingUnitItemsByBuilding(AtomEntry<SyndicationItem<Building>> entry, SyndicationContext context)
+        {
+            var addressBuildingUnitLinkExtractItems =
+                context
+                    .AddressBuildingUnitLinkExtract
+                    .Where(x => x.BuildingId == entry.Content.Object.Id)
+                    .AsEnumerable()
+                    .Concat(context.AddressBuildingUnitLinkExtract.Local.Where(x => x.BuildingId == entry.Content.Object.Id))
+                    .ToList();
+            return addressBuildingUnitLinkExtractItems;
         }
 
         private byte[] CreateDbaseRecord(BuildingUnitSyndicationContent buildingUnit, AddressLinkSyndicationItem address, SyndicationContext context)

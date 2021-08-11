@@ -12,14 +12,17 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
 
     public class AddressBuildingUnitLinkProjections : AtomEntryProjectionHandlerModule<BuildingEvent, SyndicationItem<Building>, SyndicationContext>
     {
         private readonly Encoding _encoding;
+        private readonly ILogger _logger;
 
-        public AddressBuildingUnitLinkProjections(Encoding encoding)
+        public AddressBuildingUnitLinkProjections(Encoding encoding, ILogger logger)
         {
             _encoding = encoding;
+            _logger = logger;
 
             When(BuildingEvent.BuildingUnitAddressWasAttached, AddSyndicationItemEntry);
             When(BuildingEvent.BuildingUnitAddressWasDetached, AddSyndicationItemEntry);
@@ -34,64 +37,89 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
             When(BuildingEvent.CommonBuildingUnitWasAdded, AddSyndicationItemEntry);
 
             When(BuildingEvent.BuildingWasRemoved, RemoveBuilding);
+            When(BuildingEvent.BuildingBecameComplete, (entry, context, ct) => CompleteBuilding(entry, context, true, ct));
+            When(BuildingEvent.BuildingBecameIncomplete, (entry, context, ct) => CompleteBuilding(entry, context, false, ct));
             When(BuildingEvent.BuildingWasRetired, AddSyndicationItemEntry);
             When(BuildingEvent.BuildingWasCorrectedToRetired, AddSyndicationItemEntry);
             When(BuildingEvent.BuildingWasNotRealized, AddSyndicationItemEntry);
             When(BuildingEvent.BuildingWasCorrectedToNotRealized, AddSyndicationItemEntry);
         }
 
-        private static async Task RemoveBuilding(AtomEntry<SyndicationItem<Building>> entry, SyndicationContext context, CancellationToken ct)
+        private async Task RemoveBuilding(AtomEntry<SyndicationItem<Building>> entry, SyndicationContext context, CancellationToken ct)
         {
-            var addressBuildingUnitLinkExtractItems =
-                context
-                    .AddressBuildingUnitLinkExtract
-                    .Where(x => x.BuildingId == entry.Content.Object.Id)
-                    .AsEnumerable()
-                    .Concat(context.AddressBuildingUnitLinkExtract.Local.Where(x => x.BuildingId == entry.Content.Object.Id))
-                    .ToList();
+            var addressBuildingUnitLinkExtractItems = GetBuildingUnitItemsByBuilding(entry, context);
+
+            //TODO: Remove logging
+            if (addressBuildingUnitLinkExtractItems.Any(x => x.BuildingUnitId == new Guid("F152384D-B701-5030-BEAE-00DBBA062CF0") || x.BuildingUnitId == new Guid("5785DCCE-1DA1-51A0-9087-6519D0406686")))
+                _logger.LogWarning($"Removed building for {entry.Content.Object.Id}");
 
             context.AddressBuildingUnitLinkExtract.RemoveRange(addressBuildingUnitLinkExtractItems);
+        }
+        private async Task CompleteBuilding(AtomEntry<SyndicationItem<Building>> entry, SyndicationContext context, bool isComplete, CancellationToken ct)
+        {
+            var addressBuildingUnitLinkExtractItems = GetBuildingUnitItemsByBuilding(entry, context);
+
+            if (addressBuildingUnitLinkExtractItems.Any(x => x.BuildingUnitId == new Guid("F152384D-B701-5030-BEAE-00DBBA062CF0") || x.BuildingUnitId == new Guid("5785DCCE-1DA1-51A0-9087-6519D0406686")))
+                _logger.LogWarning($"Completed building ({isComplete}) for {entry.Content.Object.Id}");
+
+            addressBuildingUnitLinkExtractItems.ForEach(buildingUnitItem => buildingUnitItem.IsBuildingComplete = isComplete);
         }
 
         private async Task AddSyndicationItemEntry(AtomEntry<SyndicationItem<Building>> entry, SyndicationContext context, CancellationToken ct)
         {
-            var addressBuildingUnitLinkExtractItems =
-                context
-                    .AddressBuildingUnitLinkExtract
-                    .Where(x => x.BuildingId == entry.Content.Object.Id)
-                    .AsEnumerable()
-                    .Concat(context.AddressBuildingUnitLinkExtract.Local.Where(x => x.BuildingId == entry.Content.Object.Id))
-                    .Distinct()
-                    .ToList();
+            var addressBuildingUnitLinkExtractItems = GetBuildingUnitItemsByBuilding(entry, context);
 
-            var itemsToRemove = new List<AddressBuildingUnitLinkExtractItem>();
+            //Remove buildingunits which are not present in the feed but present in the DB
             foreach (var buildingUnitAddressMatchLatestItem in addressBuildingUnitLinkExtractItems)
             {
                 if (!entry.Content.Object.BuildingUnits.Select(x => x.BuildingUnitId).Contains(buildingUnitAddressMatchLatestItem.BuildingUnitId))
-                    itemsToRemove.Add(buildingUnitAddressMatchLatestItem);
-            }
+                {
+                    if (buildingUnitAddressMatchLatestItem.BuildingUnitId == new Guid("F152384D-B701-5030-BEAE-00DBBA062CF0") || buildingUnitAddressMatchLatestItem.BuildingUnitId == new Guid("5785DCCE-1DA1-51A0-9087-6519D0406686"))
+                        _logger.LogWarning($"Removed buildingunit for {buildingUnitAddressMatchLatestItem.BuildingUnitId}");
 
-            context.AddressBuildingUnitLinkExtract.RemoveRange(itemsToRemove);
+                    buildingUnitAddressMatchLatestItem.IsBuildingUnitRemoved = true;
+                }
+            }
 
             foreach (var buildingUnit in entry.Content.Object.BuildingUnits)
             {
                 var unitItems = addressBuildingUnitLinkExtractItems.Where(x => x.BuildingUnitId == buildingUnit.BuildingUnitId).ToList();
-                var addressItemsToRemove = unitItems.Where(x => !buildingUnit.Addresses.Contains(x.AddressId));
+
+                unitItems
+                    .Where(x => !buildingUnit.Addresses.Contains(x.AddressId))
+                    .ToList()
+                    .ForEach(x =>
+                    {
+                        x.IsAddressLinkRemoved = true;
+                        if (buildingUnit.BuildingUnitId == new Guid("F152384D-B701-5030-BEAE-00DBBA062CF0") || buildingUnit.BuildingUnitId == new Guid("5785DCCE-1DA1-51A0-9087-6519D0406686"))
+                            _logger.LogWarning($"Removed address link for {x.BuildingUnitId}");
+                    });
+
                 foreach (var addressId in buildingUnit.Addresses)
                 {
                     var addressItem = unitItems.FirstOrDefault(x => x.AddressId == addressId);
                     if (addressItem == null)
                     {
+                        if (buildingUnit.BuildingUnitId == new Guid("F152384D-B701-5030-BEAE-00DBBA062CF0") || buildingUnit.BuildingUnitId == new Guid("5785DCCE-1DA1-51A0-9087-6519D0406686"))
+                            _logger.LogWarning($"Add buildingunit {buildingUnit.BuildingUnitId}");
                         await context.AddressBuildingUnitLinkExtract.AddAsync(CreateAddressBuildingUnitLinkExtractItem(entry, addressId, buildingUnit, context), ct);
                     }
                     else
                     {
+                        if (buildingUnit.BuildingUnitId == new Guid("F152384D-B701-5030-BEAE-00DBBA062CF0") || buildingUnit.BuildingUnitId == new Guid("5785DCCE-1DA1-51A0-9087-6519D0406686"))
+                            _logger.LogWarning($"update buildingunit {buildingUnit.BuildingUnitId}, IsBURemoved: {addressItem.IsBuildingUnitRemoved} to false, IsALRemoved: {addressItem.IsAddressLinkRemoved} to false, IsBUComplete: {addressItem.IsBuildingUnitComplete} to {buildingUnit.IsComplete}, IsBComplete: {addressItem.IsBuildingComplete}");
+
+                        addressItem.IsBuildingUnitRemoved = false;
+                        addressItem.IsAddressLinkRemoved = false;
+                        addressItem.IsBuildingUnitComplete = buildingUnit.IsComplete;
+
+                        if (string.Equals(addressItem.BuildingUnitPersistentLocalId, buildingUnit.Identificator.ObjectId))
+                            continue;
+
                         addressItem.BuildingUnitPersistentLocalId = buildingUnit.Identificator.ObjectId;
                         UpdateDbaseRecordField(addressItem, record => record.adresobjid.Value = buildingUnit.Identificator.ObjectId);
                     }
                 }
-
-                context.AddressBuildingUnitLinkExtract.RemoveRange(addressItemsToRemove);
             }
         }
 
@@ -109,7 +137,23 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
                 DbaseRecord = dbaseRecord, //Add address info
                 AddressComplete = address?.IsComplete ?? false,
                 AddressPersistentLocalId = address?.PersistentLocalId,
+                IsAddressLinkRemoved = false,
+                IsBuildingUnitComplete = buildingUnit.IsComplete,
+                IsBuildingUnitRemoved = false,
+                IsBuildingComplete = entry.Content.Object.IsComplete,
             };
+        }
+
+        private static List<AddressBuildingUnitLinkExtractItem> GetBuildingUnitItemsByBuilding(AtomEntry<SyndicationItem<Building>> entry, SyndicationContext context)
+        {
+            var addressBuildingUnitLinkExtractItems =
+                context
+                    .AddressBuildingUnitLinkExtract
+                    .Where(x => x.BuildingId == entry.Content.Object.Id)
+                    .AsEnumerable()
+                    .Concat(context.AddressBuildingUnitLinkExtract.Local.Where(x => x.BuildingId == entry.Content.Object.Id))
+                    .ToList();
+            return addressBuildingUnitLinkExtractItems;
         }
 
         private byte[] CreateDbaseRecord(BuildingUnitSyndicationContent buildingUnit, AddressLinkSyndicationItem address, SyndicationContext context)

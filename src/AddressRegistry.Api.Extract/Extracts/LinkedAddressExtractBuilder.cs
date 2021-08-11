@@ -29,9 +29,7 @@ namespace AddressRegistry.Api.Extract.Extracts
         {
             var extractItems =
                 from extractItem in _syndicationContext.AddressBuildingUnitLinkExtract
-                join buildingUnit in _syndicationContext.BuildingUnitAddressMatchLatestItems
-                    on new { extractItem.AddressId, extractItem.BuildingUnitId } equals new { buildingUnit.AddressId, buildingUnit.BuildingUnitId }
-                where extractItem.AddressComplete && !buildingUnit.IsRemoved && buildingUnit.IsComplete && buildingUnit.IsBuildingComplete
+                where extractItem.AddressComplete && !extractItem.IsBuildingUnitRemoved && extractItem.IsBuildingUnitComplete && extractItem.IsBuildingComplete
                 select extractItem.DbaseRecord;
 
             return ExtractBuilder.CreateDbfFile<AddressLinkDbaseRecord>(
@@ -46,8 +44,7 @@ namespace AddressRegistry.Api.Extract.Extracts
             string BuildCommandText(string select)
             {
                 return $"SELECT {select} FROM [{Schema.Syndication}].[{AddressParcelLinkExtractItemConfiguration.TableName}] [apl] " +
-                    $"INNER JOIN [{Schema.Syndication}].[{ParcelAddressLatestItemConfiguration.TableName}] [pal] on [pal].ParcelId = [apl].ParcelId and [pal].AddressId = [apl].AddressId " +
-                    "WHERE [apl].AddressComplete = 1 AND [pal].IsRemoved = 0";
+                       "WHERE [apl].AddressComplete = 1 AND [apl].IsAddressLinkRemoved = 0 AND [apl].IsParcelRemoved = 0";
             }
 
             IEnumerable<byte[]> GetDbaseRecordBytes()

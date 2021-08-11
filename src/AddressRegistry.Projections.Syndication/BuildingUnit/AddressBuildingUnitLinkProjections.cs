@@ -12,14 +12,17 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
 
     public class AddressBuildingUnitLinkProjections : AtomEntryProjectionHandlerModule<BuildingEvent, SyndicationItem<Building>, SyndicationContext>
     {
         private readonly Encoding _encoding;
+        private readonly ILogger _logger;
 
-        public AddressBuildingUnitLinkProjections(Encoding encoding)
+        public AddressBuildingUnitLinkProjections(Encoding encoding, ILogger logger)
         {
             _encoding = encoding;
+            _logger = logger;
 
             When(BuildingEvent.BuildingUnitAddressWasAttached, AddSyndicationItemEntry);
             When(BuildingEvent.BuildingUnitAddressWasDetached, AddSyndicationItemEntry);
@@ -42,15 +45,21 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
             When(BuildingEvent.BuildingWasCorrectedToNotRealized, AddSyndicationItemEntry);
         }
 
-        private static async Task RemoveBuilding(AtomEntry<SyndicationItem<Building>> entry, SyndicationContext context, CancellationToken ct)
+        private async Task RemoveBuilding(AtomEntry<SyndicationItem<Building>> entry, SyndicationContext context, CancellationToken ct)
         {
             var addressBuildingUnitLinkExtractItems = GetBuildingUnitItemsByBuilding(entry, context);
 
-                context.AddressBuildingUnitLinkExtract.RemoveRange(addressBuildingUnitLinkExtractItems);
+            if (addressBuildingUnitLinkExtractItems.Any(x => x.BuildingUnitId == new Guid("F152384D-B701-5030-BEAE-00DBBA062CF0") || x.BuildingUnitId == new Guid("5785DCCE-1DA1-51A0-9087-6519D0406686")))
+                _logger.LogWarning($"Removed building for {entry.Content.Object.Id}");
+
+            context.AddressBuildingUnitLinkExtract.RemoveRange(addressBuildingUnitLinkExtractItems);
         }
-        private static async Task CompleteBuilding(AtomEntry<SyndicationItem<Building>> entry, SyndicationContext context, bool isComplete, CancellationToken ct)
+        private async Task CompleteBuilding(AtomEntry<SyndicationItem<Building>> entry, SyndicationContext context, bool isComplete, CancellationToken ct)
         {
             var addressBuildingUnitLinkExtractItems = GetBuildingUnitItemsByBuilding(entry, context);
+
+            if (addressBuildingUnitLinkExtractItems.Any(x => x.BuildingUnitId == new Guid("F152384D-B701-5030-BEAE-00DBBA062CF0") || x.BuildingUnitId == new Guid("5785DCCE-1DA1-51A0-9087-6519D0406686")))
+                _logger.LogWarning($"Completed building ({isComplete}) for {entry.Content.Object.Id}");
 
             addressBuildingUnitLinkExtractItems.ForEach(buildingUnitItem => buildingUnitItem.IsBuildingComplete = isComplete);
         }
@@ -63,7 +72,12 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
             foreach (var buildingUnitAddressMatchLatestItem in addressBuildingUnitLinkExtractItems)
             {
                 if (!entry.Content.Object.BuildingUnits.Select(x => x.BuildingUnitId).Contains(buildingUnitAddressMatchLatestItem.BuildingUnitId))
+                {
+                    if (buildingUnitAddressMatchLatestItem.BuildingUnitId == new Guid("F152384D-B701-5030-BEAE-00DBBA062CF0") || buildingUnitAddressMatchLatestItem.BuildingUnitId == new Guid("5785DCCE-1DA1-51A0-9087-6519D0406686"))
+                        _logger.LogWarning($"Removed buildingunit for {buildingUnitAddressMatchLatestItem.BuildingUnitId}");
+
                     buildingUnitAddressMatchLatestItem.IsBuildingUnitRemoved = true;
+                }
             }
 
             foreach (var buildingUnit in entry.Content.Object.BuildingUnits)
@@ -73,17 +87,27 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
                 unitItems
                     .Where(x => !buildingUnit.Addresses.Contains(x.AddressId))
                     .ToList()
-                    .ForEach(x => x.IsAddressLinkRemoved = true);
+                    .ForEach(x =>
+                    {
+                        x.IsAddressLinkRemoved = true;
+                        if (buildingUnit.BuildingUnitId == new Guid("F152384D-B701-5030-BEAE-00DBBA062CF0") || buildingUnit.BuildingUnitId == new Guid("5785DCCE-1DA1-51A0-9087-6519D0406686"))
+                            _logger.LogWarning($"Removed address link for {x.BuildingUnitId}");
+                    });
 
                 foreach (var addressId in buildingUnit.Addresses)
                 {
                     var addressItem = unitItems.FirstOrDefault(x => x.AddressId == addressId);
                     if (addressItem == null)
                     {
+                        if (buildingUnit.BuildingUnitId == new Guid("F152384D-B701-5030-BEAE-00DBBA062CF0") || buildingUnit.BuildingUnitId == new Guid("5785DCCE-1DA1-51A0-9087-6519D0406686"))
+                            _logger.LogWarning($"Add buildingunit {buildingUnit.BuildingUnitId}");
                         await context.AddressBuildingUnitLinkExtract.AddAsync(CreateAddressBuildingUnitLinkExtractItem(entry, addressId, buildingUnit, context), ct);
                     }
                     else
                     {
+                        if (buildingUnit.BuildingUnitId == new Guid("F152384D-B701-5030-BEAE-00DBBA062CF0") || buildingUnit.BuildingUnitId == new Guid("5785DCCE-1DA1-51A0-9087-6519D0406686"))
+                            _logger.LogWarning($"update buildingunit {buildingUnit.BuildingUnitId}, IsBURemoved: {addressItem.IsBuildingUnitRemoved} to false, IsALRemoved: {addressItem.IsAddressLinkRemoved} to false, IsBUComplete: {addressItem.IsBuildingUnitComplete} to {buildingUnit.IsComplete}, IsBComplete: {addressItem.IsBuildingComplete}");
+
                         addressItem.IsBuildingUnitRemoved = false;
                         addressItem.IsAddressLinkRemoved = false;
                         addressItem.IsBuildingUnitComplete = buildingUnit.IsComplete;

@@ -1,3 +1,10 @@
+## [2.31.14](https://github.com/informatievlaanderen/address-registry/compare/v2.31.13...v2.31.14) (2021-08-11)
+
+
+### Bug Fixes
+
+* add logger to buildingunit sync ([67c7484](https://github.com/informatievlaanderen/address-registry/commit/67c748489cda0224161bfdcbe471a0d2a9d675f6))
+
 ## [2.31.13](https://github.com/informatievlaanderen/address-registry/compare/v2.31.12...v2.31.13) (2021-07-07)
 
 

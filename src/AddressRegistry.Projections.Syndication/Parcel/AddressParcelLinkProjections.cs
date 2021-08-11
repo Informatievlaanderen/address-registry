@@ -1,7 +1,6 @@
 namespace AddressRegistry.Projections.Syndication.Parcel
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Text;
     using System.Threading;
@@ -20,7 +19,7 @@ namespace AddressRegistry.Projections.Syndication.Parcel
             _encoding = encoding;
 
             When(ParcelEvent.ParcelWasRegistered, AddSyndicationItemEntry);
-            When(ParcelEvent.ParcelWasRecovered, AddSyndicationItemEntry);
+            When(ParcelEvent.ParcelWasRecovered, AddRecoveredSyndicationItemEntry);
             When(ParcelEvent.ParcelWasRemoved, RemoveParcel);
             When(ParcelEvent.ParcelAddressWasAttached, AddSyndicationItemEntry);
             When(ParcelEvent.ParcelAddressWasDetached, AddSyndicationItemEntry);
@@ -36,7 +35,20 @@ namespace AddressRegistry.Projections.Syndication.Parcel
                     .Concat(context.AddressParcelLinkExtract.Local.Where(x => x.ParcelId == entry.Content.Object.Id))
                     .ToList();
 
-            context.AddressParcelLinkExtract.RemoveRange(addressParcelLinkExtractItems);
+            addressParcelLinkExtractItems.ForEach(parcel => parcel.IsParcelRemoved = true);
+        }
+
+        private static async Task AddRecoveredSyndicationItemEntry(AtomEntry<SyndicationItem<Parcel>> entry, SyndicationContext context, CancellationToken ct)
+        {
+            var addressParcelLinkExtractItems =
+                context
+                    .AddressParcelLinkExtract
+                    .Where(x => x.ParcelId == entry.Content.Object.Id)
+                    .AsEnumerable()
+                    .Concat(context.AddressParcelLinkExtract.Local.Where(x => x.ParcelId == entry.Content.Object.Id))
+                    .ToList();
+
+            addressParcelLinkExtractItems.ForEach(parcel => parcel.IsParcelRemoved = false);
         }
 
         private async Task AddSyndicationItemEntry(AtomEntry<SyndicationItem<Parcel>> entry, SyndicationContext context, CancellationToken ct)
@@ -49,14 +61,11 @@ namespace AddressRegistry.Projections.Syndication.Parcel
                     .Concat(context.AddressParcelLinkExtract.Local.Where(x => x.ParcelId == entry.Content.Object.Id))
                     .ToList();
 
-            var itemsToRemove = new List<AddressParcelLinkExtractItem>();
             foreach (var addressParcelLinkExtractItem in addressParcelLinkExtractItems)
             {
                 if (!entry.Content.Object.AddressIds.Contains(addressParcelLinkExtractItem.AddressId))
-                    itemsToRemove.Add(addressParcelLinkExtractItem);
+                    addressParcelLinkExtractItem.IsAddressLinkRemoved = true;
             }
-
-            context.AddressParcelLinkExtract.RemoveRange(itemsToRemove);
 
             foreach (var addressId in entry.Content.Object.AddressIds)
             {
@@ -68,6 +77,11 @@ namespace AddressRegistry.Projections.Syndication.Parcel
                 }
                 else
                 {
+                    addressItem.IsAddressLinkRemoved = false;
+
+                    if(string.Equals(addressItem.ParcelPersistentLocalId, entry.Content.Object.Identificator.ObjectId))
+                        continue;
+
                     addressItem.ParcelPersistentLocalId = entry.Content.Object.Identificator.ObjectId;
                     UpdateDbaseRecordField(addressItem, record => record.adresobjid.Value = entry.Content.Object.Identificator.ObjectId);
                 }
@@ -88,6 +102,8 @@ namespace AddressRegistry.Projections.Syndication.Parcel
                 DbaseRecord = dbaseRecord, //Add address info
                 AddressComplete = address?.IsComplete ?? false,
                 AddressPersistentLocalId = address?.PersistentLocalId,
+                IsAddressLinkRemoved = false,
+                IsParcelRemoved = false
             };
         }
 

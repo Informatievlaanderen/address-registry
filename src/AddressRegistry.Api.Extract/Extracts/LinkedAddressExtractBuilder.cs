@@ -46,8 +46,7 @@ namespace AddressRegistry.Api.Extract.Extracts
             string BuildCommandText(string select)
             {
                 return $"SELECT {select} FROM [{Schema.Syndication}].[{AddressParcelLinkExtractItemConfiguration.TableName}] [apl] " +
-                    $"INNER JOIN [{Schema.Syndication}].[{ParcelAddressLatestItemConfiguration.TableName}] [pal] on [pal].ParcelId = [apl].ParcelId and [pal].AddressId = [apl].AddressId " +
-                    "WHERE [apl].AddressComplete = 1 AND [pal].IsRemoved = 0";
+                       "WHERE [apl].AddressComplete = 1 AND [apl].IsAddressLinkRemoved = 0 AND [apl].IsParcelRemoved = 0";
             }
 
             IEnumerable<byte[]> GetDbaseRecordBytes()

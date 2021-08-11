@@ -178,7 +178,7 @@ namespace AddressRegistry.Projections.Syndication
                 configuration.GetValue<int>("LinkedFeedRetryPolicy:JittererMaxSeconds"),
                 CreateLogger(),
                 container.GetService<IRegistryAtomFeedReader>(),
-                new AddressBuildingUnitLinkProjections(DbaseCodePage.Western_European_ANSI.ToEncoding()));
+                new AddressBuildingUnitLinkProjections(DbaseCodePage.Western_European_ANSI.ToEncoding(), CreateLogger()));
 
             var parcelAddressRunner = new LinkedFeedProjectionRunner<ParcelEvent, SyndicationItem<Parcel.Parcel>, SyndicationContext>(
                 "parcelAddressLink",

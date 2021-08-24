@@ -1,3 +1,10 @@
+## [2.31.15](https://github.com/informatievlaanderen/address-registry/compare/v2.31.14...v2.31.15) (2021-08-24)
+
+
+### Bug Fixes
+
+* extract links no longer gives empty linkedaddress id's GRAR-1912 ([7127bef](https://github.com/informatievlaanderen/address-registry/commit/7127bef9803ed3621d1601d4763a2bd1e7d8d1c9))
+
 ## [2.31.14](https://github.com/informatievlaanderen/address-registry/compare/v2.31.13...v2.31.14) (2021-08-11)
 
 

@@ -21,6 +21,15 @@ namespace AddressRegistry.Api.Extract.Extracts
                 .Where(m => m.Complete)
                 .OrderBy(m => m.AddressPersistentLocalId);
 
+            var addressProjectionState = context
+                .ProjectionStates
+                .AsNoTracking()
+                .Single(m => m.Name == typeof(AddressExtractProjection).FullName);
+            var extractMetadata = new Dictionary<string,string>
+            {
+                { ExtractMetadataKeys.LatestEventId, addressProjectionState.Position.ToString()}
+            };
+
             var cachedMunicipalities = syndicationContext.MunicipalityLatestItems.AsNoTracking().ToList();
             var cachedStreetNames = syndicationContext.StreetNameLatestItems.AsNoTracking().ToList();
 
@@ -69,6 +78,10 @@ namespace AddressRegistry.Api.Extract.Extracts
                 extractItems,
                 extractItems.Count,
                 TransformRecord);
+
+            yield return ExtractBuilder.CreateMetadataDbfFile(
+                ExtractFileNames.Address,
+                extractMetadata);
 
             var boundingBox = new BoundingBox3D(
                 extractItems.Where(x => x.MinimumX > 0).Min(record => record.MinimumX),

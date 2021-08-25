@@ -1,3 +1,10 @@
+# [2.32.0](https://github.com/informatievlaanderen/address-registry/compare/v2.31.15...v2.32.0) (2021-08-25)
+
+
+### Features
+
+* **extractcontroller:** add metadata file with latest event id to address extract ([b3dabea](https://github.com/informatievlaanderen/address-registry/commit/b3dabea8a406a059e306ce35efd9922e46133e6c))
+
 ## [2.31.15](https://github.com/informatievlaanderen/address-registry/compare/v2.31.14...v2.31.15) (2021-08-24)
 
 

@@ -1,3 +1,10 @@
+## [2.32.1](https://github.com/informatievlaanderen/address-registry/compare/v2.32.0...v2.32.1) (2021-08-26)
+
+
+### Bug Fixes
+
+* update grar-common dependencies GRAR-2060 ([ac632fd](https://github.com/informatievlaanderen/address-registry/commit/ac632fde16b3f30c1b6e350456d16c3ae0070cac))
+
 # [2.32.0](https://github.com/informatievlaanderen/address-registry/compare/v2.31.15...v2.32.0) (2021-08-25)
 
 

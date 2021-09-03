@@ -1,0 +1,36 @@
+name: CD Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version'     
+        required: true
+
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: 
+        services: ['address-registry-api', 'address-registry-import-api', 'address-registry-projections', 'address-registry-cache-warmer']
+    steps:
+    - name: CD
+      env:
+        BUILD_URL: ${{ secrets.VBR_AWS_BUILD_API }}/${{matrix.services}}
+        STATUS_URL: ${{ secrets.VBR_AWS_BUILD_STATUS_API }}/${{matrix.services}}
+      uses: informatievlaanderen/awscurl-polling-action@main
+      with:
+          environment: prd
+          version: ${{ github.event.inputs.version }}
+          status-url: $STATUS_URL
+          deploy-url: $BUILD_URL
+          access-key: ${{ secrets.VBR_AWS_BUILD_USER_ACCESS_KEY_ID }}
+          secret-key: ${{ secrets.VBR_AWS_BUILD_USER_SECRET_ACCESS_KEY }}
+          region: eu-west-1
+          interval: 2
+    - name: output
+      shell: bash
+      run: |
+        echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
+        echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
+        echo ${{ steps.awscurl-polling-action.outputs.final-message }}

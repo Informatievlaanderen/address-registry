@@ -1,3 +1,10 @@
+## [2.32.2](https://github.com/informatievlaanderen/address-registry/compare/v2.32.1...v2.32.2) (2021-09-16)
+
+
+### Bug Fixes
+
+* change jsonproperty to not required GAWR-613 ([065988e](https://github.com/informatievlaanderen/address-registry/commit/065988e9dacab54c7d80fbe8d2053bfd012ea8b9))
+
 ## [2.32.1](https://github.com/informatievlaanderen/address-registry/compare/v2.32.0...v2.32.1) (2021-08-26)
 
 

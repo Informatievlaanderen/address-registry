@@ -34,7 +34,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         /// Een PostInfo object dat deel uitmaakt van het adres.
         /// </summary>
         [DataMember(Name = "Postinfo", Order = 3)]
-        [JsonProperty(Required = Required.DisallowNull)]
+        [JsonProperty(Required = Required.Default)]
         public AdresDetailPostinfo Postinfo { get; set; }
 
         /// <summary>

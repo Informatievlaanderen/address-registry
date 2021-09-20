@@ -1,3 +1,10 @@
+## [2.32.3](https://github.com/informatievlaanderen/address-registry/compare/v2.32.2...v2.32.3) (2021-09-20)
+
+
+### Bug Fixes
+
+* summary docs for postal ([f549be2](https://github.com/informatievlaanderen/address-registry/commit/f549be260020aa7be5a27f321c9d3adfd73070b9))
+
 ## [2.32.2](https://github.com/informatievlaanderen/address-registry/compare/v2.32.1...v2.32.2) (2021-09-16)
 
 

@@ -21,7 +21,7 @@ namespace AddressRegistry.Projections.Syndication.PostalInfo
         public PostinfoIdentificator Identificator { get; set; }
 
         /// <summary>
-        /// De namen van het gebied dat de postcode beslaat, in meerdere talen.
+        /// De namen van het gebied dat de postcode beslaat, in de taal afkomstig uit het bPost bestand.
         /// </summary>
         [DataMember(Name = "Postnamen", Order = 2)]
         public List<Postnaam> PostalNames { get; set; }

@@ -1,3 +1,10 @@
+## [2.32.4](https://github.com/informatievlaanderen/address-registry/compare/v2.32.3...v2.32.4) (2021-09-22)
+
+
+### Bug Fixes
+
+* gawr-611 fix exception detail ([edd157f](https://github.com/informatievlaanderen/address-registry/commit/edd157f9b272e1a3178310e850a99c97d1bce12d))
+
 ## [2.32.3](https://github.com/informatievlaanderen/address-registry/compare/v2.32.2...v2.32.3) (2021-09-20)
 
 

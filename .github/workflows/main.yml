@@ -199,5 +199,5 @@ jobs:
         CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
         CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
         JIRA_PREFIX: Address
-        JIRA_PROJECT: GRAR
+        JIRA_PROJECT: GAWR
         JIRA_VERSION: ${{ env.RELEASE_VERSION }}

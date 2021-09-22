@@ -229,7 +229,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
                 ProblemTypeUri = "urn:be.vlaanderen.basisregisters.api:address:gone",
                 HttpStatus = StatusCodes.Status410Gone,
                 Title = ProblemDetails.DefaultTitle,
-                Detail = "Adres werd verwijderd.",
+                Detail = "Verwijderd adres.",
                 ProblemInstanceUri = _problemDetailsHelper.GetInstanceUri(_httpContextAccessor.HttpContext)
             };
     }

@@ -15,7 +15,7 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
     public class CrabHouseNumberAddressListResponse
     {
         /// <summary>
-        /// De verzameling van adressen.
+        /// De verzameling van CRAB huisnummers.
         /// </summary>
         [DataMember(Name = "CrabHuisnummers", Order = 1)]
         [JsonProperty(Required = Required.DisallowNull)]

@@ -16,7 +16,7 @@ namespace AddressRegistry.Api.Legacy.CrabSubaddress
     public class CrabSubAddressListResponse
     {
         /// <summary>
-        /// De verzameling van adressen.
+        /// De verzameling van CRAB subadressen.
         /// </summary>
         [DataMember(Name = "CrabSubadressen", Order = 1)]
         [JsonProperty(Required = Required.DisallowNull)]

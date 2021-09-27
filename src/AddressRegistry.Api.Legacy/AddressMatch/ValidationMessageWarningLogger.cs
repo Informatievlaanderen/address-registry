@@ -24,13 +24,13 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
     public class ValidationMessage
     {
         /// <summary>
-        /// A code
+        /// Code van de warning.
         /// </summary>
         [DataMember(Name = "Code", Order = 1)]
         public string Code { get; set; }
 
         /// <summary>
-        /// A descriptive message. Preferably in Dutch and English
+        /// Een beschrijvende boodschap van de warning in het Nederlands.
         /// </summary>
         [DataMember(Name = "Message", Order = 2)]
         public string Message { get; set; }

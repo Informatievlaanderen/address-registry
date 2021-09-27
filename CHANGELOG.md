@@ -1,3 +1,10 @@
+## [2.32.5](https://github.com/informatievlaanderen/address-registry/compare/v2.32.4...v2.32.5) (2021-09-27)
+
+
+### Bug Fixes
+
+* GAWR 604 doc fix crab huisnummer/subadres ([3c2138f](https://github.com/informatievlaanderen/address-registry/commit/3c2138f3666e4665797173c72d3c90984ad1d606))
+
 ## [2.32.4](https://github.com/informatievlaanderen/address-registry/compare/v2.32.3...v2.32.4) (2021-09-22)
 
 

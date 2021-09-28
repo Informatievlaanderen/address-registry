@@ -75,6 +75,9 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
         }
     }
 
+    /// <summary>
+    ///	Het corresponderende adres uit het Adressenregister.
+    /// </summary>
     [DataContract(Name = "CrabHuisnummerSubadresAdres", Namespace = "")]
     public class CrabAddressListItemAddress
     {
@@ -114,7 +117,7 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
         public string Busnummer { get; set; }
 
         /// <summary>
-        /// De voorstelling van een adres in het Nederlands.
+        /// Adresvoorstelling in de eerste officiële taal van de gemeente.
         /// </summary>
         [DataMember(Name = "VolledigAdres", Order = 6)]
         [JsonProperty(Required = Required.DisallowNull)]

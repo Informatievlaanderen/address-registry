@@ -13,7 +13,6 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
         public string? AddressPersistentLocalId { get; set; }
         public string? BuildingUnitPersistentLocalId { get; set; }
         public byte[]? DbaseRecord { get; set; }
-        public bool AddressComplete { get; set; }
         public bool IsAddressLinkRemoved { get; set; }
         public bool IsBuildingUnitComplete { get; set; }
         public bool IsBuildingUnitRemoved { get; set; }
@@ -36,7 +35,6 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
             builder.Property(p => p.AddressPersistentLocalId);
             builder.Property(p => p.BuildingUnitPersistentLocalId);
             builder.Property(p => p.DbaseRecord);
-            builder.Property(p => p.AddressComplete);
             builder.Property(p => p.IsAddressLinkRemoved);
             builder.Property(p => p.IsBuildingUnitComplete);
             builder.Property(p => p.IsBuildingUnitRemoved);
@@ -45,7 +43,7 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
             builder.HasIndex(p => p.AddressId);
             builder.HasIndex(p => p.BuildingUnitId);
             builder.HasIndex(p => p.BuildingId);
-            builder.HasIndex(p => new { p.AddressComplete, p.IsAddressLinkRemoved, p.IsBuildingUnitComplete, p.IsBuildingUnitRemoved, p.IsBuildingComplete })
+            builder.HasIndex(p => new { p.IsAddressLinkRemoved, p.IsBuildingUnitComplete, p.IsBuildingUnitRemoved, p.IsBuildingComplete })
                 .IncludeProperties(x => new { x.AddressId, x.BuildingUnitId });
             builder.HasIndex(p => p.AddressPersistentLocalId).IsClustered();
         }

@@ -135,7 +135,6 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
                 BuildingUnitPersistentLocalId = buildingUnit.Identificator.ObjectId,
                 BuildingUnitId = buildingUnit.BuildingUnitId,
                 DbaseRecord = dbaseRecord, //Add address info
-                AddressComplete = address?.IsComplete ?? false,
                 AddressPersistentLocalId = address?.PersistentLocalId,
                 IsAddressLinkRemoved = false,
                 IsBuildingUnitComplete = buildingUnit.IsComplete,

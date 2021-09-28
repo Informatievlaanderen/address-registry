@@ -12,7 +12,6 @@ namespace AddressRegistry.Projections.Syndication.Parcel
         public string? AddressPersistentLocalId { get; set; }
         public string? ParcelPersistentLocalId { get; set; }
         public byte[]? DbaseRecord { get; set; }
-        public bool AddressComplete { get; set; }
         public bool IsAddressLinkRemoved { get; set; }
         public bool IsParcelRemoved { get; set; }
     }
@@ -32,14 +31,13 @@ namespace AddressRegistry.Projections.Syndication.Parcel
             builder.Property(p => p.AddressPersistentLocalId);
             builder.Property(p => p.ParcelPersistentLocalId);
             builder.Property(p => p.DbaseRecord);
-            builder.Property(p => p.AddressComplete);
             builder.Property(p => p.IsParcelRemoved);
             builder.Property(p => p.IsAddressLinkRemoved);
 
             builder.HasIndex(p => p.AddressId);
             builder.HasIndex(p => p.ParcelId);
             builder.HasIndex(p => p.AddressPersistentLocalId).IsClustered();
-            builder.HasIndex(p => new { p.AddressComplete, p.IsParcelRemoved, p.IsAddressLinkRemoved })
+            builder.HasIndex(p => new { p.IsParcelRemoved, p.IsAddressLinkRemoved })
                 .IncludeProperties(p => new { p.AddressId, p.ParcelId });
         }
     }

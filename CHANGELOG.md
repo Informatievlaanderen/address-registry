@@ -1,3 +1,11 @@
+## [2.32.6](https://github.com/informatievlaanderen/address-registry/compare/v2.32.5...v2.32.6) (2021-09-28)
+
+
+### Bug Fixes
+
+* extract buildingunitlinks no longer output unlinked buildingunits GAWR-2085 ([e3ff133](https://github.com/informatievlaanderen/address-registry/commit/e3ff133c81dfe1dda55f8b51cda64f5460dcf220))
+* incomplete addresses no longer are included in linked extract GAWR-2088 ([7973b89](https://github.com/informatievlaanderen/address-registry/commit/7973b8957cdc4c09d33d9af8bbe79e01c23a5a69))
+
 ## [2.32.5](https://github.com/informatievlaanderen/address-registry/compare/v2.32.4...v2.32.5) (2021-09-27)
 
 

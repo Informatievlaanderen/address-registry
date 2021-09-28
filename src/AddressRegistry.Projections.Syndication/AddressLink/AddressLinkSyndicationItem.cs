@@ -23,7 +23,7 @@ namespace AddressRegistry.Projections.Syndication.AddressLink
 
     public class AddressPersistentLocalIdItemConfiguration : IEntityTypeConfiguration<AddressLinkSyndicationItem>
     {
-        private const string TableName = "AddressLinksExtract_Addresses";
+        public const string TableName = "AddressLinksExtract_Addresses";
 
         public void Configure(EntityTypeBuilder<AddressLinkSyndicationItem> builder)
         {

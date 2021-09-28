@@ -100,7 +100,6 @@ namespace AddressRegistry.Projections.Syndication.Parcel
                 ParcelId = entry.Content.Object.Id,
                 ParcelPersistentLocalId = parcel.Identificator.ObjectId,
                 DbaseRecord = dbaseRecord, //Add address info
-                AddressComplete = address?.IsComplete ?? false,
                 AddressPersistentLocalId = address?.PersistentLocalId,
                 IsAddressLinkRemoved = false,
                 IsParcelRemoved = false

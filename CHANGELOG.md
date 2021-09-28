@@ -1,3 +1,10 @@
+## [2.32.7](https://github.com/informatievlaanderen/address-registry/compare/v2.32.6...v2.32.7) (2021-09-28)
+
+
+### Bug Fixes
+
+* gawr-652 docfix address warning ([def2f48](https://github.com/informatievlaanderen/address-registry/commit/def2f48992ae617deff8d99a9d2b6c6cc64094a2))
+
 ## [2.32.6](https://github.com/informatievlaanderen/address-registry/compare/v2.32.5...v2.32.6) (2021-09-28)
 
 

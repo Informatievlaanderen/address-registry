@@ -29,7 +29,7 @@ namespace AddressRegistry.Api.Extract.Extracts
         {
             var extractItems =
                 from extractItem in _syndicationContext.AddressBuildingUnitLinkExtract
-                where extractItem.AddressComplete && !extractItem.IsBuildingUnitRemoved && extractItem.IsBuildingUnitComplete && extractItem.IsBuildingComplete && extractItem.BuildingUnitPersistentLocalId != null
+                where extractItem.AddressComplete && !extractItem.IsBuildingUnitRemoved && extractItem.IsBuildingUnitComplete && extractItem.IsBuildingComplete && !extractItem.IsAddressLinkRemoved && extractItem.BuildingUnitPersistentLocalId != null
                 select extractItem.DbaseRecord;
 
             return ExtractBuilder.CreateDbfFile<AddressLinkDbaseRecord>(

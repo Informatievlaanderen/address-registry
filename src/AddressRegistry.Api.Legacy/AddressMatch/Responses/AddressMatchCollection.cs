@@ -22,7 +22,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
     public class AddressMatchCollection
     {
         /// <summary>
-        /// De eerste 10 adres matches.
+        /// De 10 adresmatches met de hoogste score (gesorteerd van hoog naar laag).
         /// </summary>
         [XmlArray(ElementName = "AdresMatches")]
         [XmlArrayItem(ElementName = "AdresMatch")]
@@ -31,7 +31,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         public List<AdresMatchItem> AdresMatches { get; set; }
 
         /// <summary>
-        /// Bevat waarschuwingen met betrekking tot conflicterende input. 
+        /// Bevat waarschuwingen met betrekking tot conflicterende input.
         /// </summary>
         [XmlArray(ElementName = "Warnings")]
         [XmlArrayItem(ElementName = "Warning")]
@@ -79,7 +79,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         public AdresMatchItemStraatnaam Straatnaam { get; set; }
 
         /// <summary>
-        /// De homoniemtoevoeging in het Nederlands.
+        /// De homoniemtoevoeging in de eerste officiële taal van de gemeente.
         /// </summary>
         [DataMember(Name = "HomoniemToevoeging", Order = 6, EmitDefaultValue = false)]
         [JsonProperty(Required = Required.Default)]
@@ -100,7 +100,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         public string Busnummer { get; set; }
 
         /// <summary>
-        /// De voorstelling van een adres in het Nederlands.
+        /// Adresvoorstelling in de eerste officiële taal van de gemeente.
         /// </summary>
         [DataMember(Name = "VolledigAdres", Order = 9, EmitDefaultValue = false)]
         [JsonProperty(Required = Required.Default)]
@@ -218,50 +218,56 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         }
     }
 
+    /// <summary>
+    /// De gemeente die deel uitmaakt van het adres.
+    /// </summary>
     [DataContract(Name = "AdresMatchItemGemeente", Namespace = "")]
     public class AdresMatchItemGemeente
     {
         /// <summary>
-        /// De identificator van de gerelateerde gemeente.
+        /// De identifier van de gekoppelde gemeente.
         /// </summary>
         [DataMember(Name = "ObjectId", Order = 1)]
         [JsonProperty(Required = Required.DisallowNull)]
         public string ObjectId { get; set; }
 
         /// <summary>
-        /// URL waarop de details van de laatste versie van de gerelateerde gemeente gevonden kunnen worden.
+        /// De URL die de details van de meest recente versie van de gekoppelde gemeente weergeeft.
         /// </summary>
         [DataMember(Name = "Detail", Order = 2)]
         [JsonProperty(Required = Required.DisallowNull)]
         public string Detail { get; set; }
 
         /// <summary>
-        /// De Nederlandstalige gemeentenaam.
+        /// De gemeentenaam in de eerste officiële taal van de gemeente.
         /// </summary>
         [DataMember(Name = "Gemeentenaam", Order = 3)]
         [JsonProperty(Required = Required.DisallowNull)]
         public Gemeentenaam Gemeentenaam { get; set; }
     }
 
+    /// <summary>
+    /// Een straatnaam die deel uitmaakt van het adres.
+    /// </summary>
     [DataContract(Name = "AdresMatchItemStraatnaam", Namespace = "")]
     public class AdresMatchItemStraatnaam
     {
         /// <summary>
-        /// De identificator van de gerelateerde straatnaam.
+        /// De identifier van de gekoppelde straatnaam.
         /// </summary>
         [DataMember(Name = "ObjectId", Order = 1)]
         [JsonProperty(Required = Required.DisallowNull)]
         public string ObjectId { get; set; }
 
         /// <summary>
-        /// URL waarop de details van de laatste versie van de gerelateerde straatnaam gevonden kunnen worden.
+        /// De URL die de details van de meest recente versie van de gekoppelde straatnaam weergeeft.
         /// </summary>
         [DataMember(Name = "Detail", Order = 2)]
         [JsonProperty(Required = Required.DisallowNull)]
         public string Detail { get; set; }
 
         /// <summary>
-        /// De Nederlandstalige straatnaam.
+        /// De straatnaam in de eerste officiële taal van de gemeente.
         /// </summary>
         [DataMember(Name = "Straatnaam", Order = 3)]
         [JsonProperty(Required = Required.DisallowNull)]
@@ -276,18 +282,21 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
             };
     }
 
+    /// <summary>
+    /// Een PostInfo object dat deel uitmaakt van het adres.
+    /// </summary>
     [DataContract(Name = "AdresMatchItemPostinfo", Namespace = "")]
     public class AdresMatchItemPostinfo
     {
         /// <summary>
-        /// De identificator van de gerelateerde postinfo.
+        /// De identifier van het gekoppelde PostInfo object.
         /// </summary>
         [DataMember(Name = "ObjectId", Order = 1)]
         [JsonProperty(Required = Required.DisallowNull)]
         public string ObjectId { get; set; }
 
         /// <summary>
-        /// URL waarop de details van de laatste versie van de gerelateerde postinfo gevonden kunnen worden.
+        /// De URL die de details van de meest recente versie van het gekoppelde PostInfo object weergeeft.
         /// </summary>
         [DataMember(Name = "Detail", Order = 2)]
         [JsonProperty(Required = Required.DisallowNull)]
@@ -320,14 +329,14 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         public ObjectType ObjectType { get; set; }
 
         /// <summary>
-        /// De identificator van het gerelateerde object.
+        /// De identificator van het gekoppelde object.
         /// </summary>
         [DataMember(Name = "ObjectId", Order = 2)]
         [JsonProperty(Required = Required.DisallowNull)]
         public string ObjectId { get; set; }
 
         /// <summary>
-        /// URL waarop de details van de laatste versie van het gerelateerde object gevonden kunnen worden.
+        /// De URL die de details van de meest recente versie van het gekoppelde object weergeeft.
         /// </summary>
         [DataMember(Name = "Detail", Order = 3)]
         [JsonProperty(Required = Required.DisallowNull)]

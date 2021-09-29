@@ -141,7 +141,7 @@ namespace AddressRegistry.Api.Legacy.Address
         /// <param name="taal">Gewenste taal van de respons.</param>
         /// <param name="responseOptions"></param>
         /// <param name="cancellationToken"></param>
-        /// <response code="200">Als de opvraging van een lijst met adressen gelukt is.</response>
+        /// <response code="200">Als de adresmatch gelukt is.</response>
         /// <response code="500">Als er een interne fout is opgetreden.</response>
         [HttpGet]
         [ProducesResponseType(typeof(AddressListResponse), StatusCodes.Status200OK)]

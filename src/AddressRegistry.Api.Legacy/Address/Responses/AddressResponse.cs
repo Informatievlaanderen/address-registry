@@ -66,7 +66,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         public string Busnummer { get; set; }
 
         /// <summary>
-        /// De voorstelling van een adres in het Nederlands.
+        /// Adresvoorstelling in de eerste officiële taal van de gemeente.
         /// </summary>
         [DataMember(Name = "VolledigAdres", Order = 8)]
         [JsonProperty(Required = Required.DisallowNull)]

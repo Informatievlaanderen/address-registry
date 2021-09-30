@@ -1,3 +1,10 @@
+## [2.32.9](https://github.com/informatievlaanderen/address-registry/compare/v2.32.8...v2.32.9) (2021-09-30)
+
+
+### Bug Fixes
+
+* add index for extract links and fix query gawr-2085 ([61c3b6e](https://github.com/informatievlaanderen/address-registry/commit/61c3b6e3e4af78790b7620bbccc727243582fff7))
+
 ## [2.32.8](https://github.com/informatievlaanderen/address-registry/compare/v2.32.7...v2.32.8) (2021-09-29)
 
 

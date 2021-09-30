@@ -37,6 +37,8 @@ namespace AddressRegistry.Projections.Syndication.AddressLink
             builder.Property(x => x.Position);
             builder.Property(x => x.IsComplete);
             builder.Property(x => x.IsRemoved);
+
+            builder.HasIndex(x => new {x.IsComplete, x.IsRemoved});
         }
     }
 

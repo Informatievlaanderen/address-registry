@@ -30,7 +30,7 @@ namespace AddressRegistry.Api.Extract.Extracts
             var extractItems =
                 from extractItem in _syndicationContext.AddressBuildingUnitLinkExtract
                 join address in _syndicationContext.AddressLinkAddresses on extractItem.AddressId equals address.AddressId
-                where address.IsComplete && !extractItem.IsBuildingUnitRemoved && extractItem.IsBuildingUnitComplete && extractItem.IsBuildingComplete && !extractItem.IsAddressLinkRemoved && extractItem.BuildingUnitPersistentLocalId != null
+                where address.IsComplete && !address.IsRemoved && !extractItem.IsBuildingUnitRemoved && extractItem.IsBuildingUnitComplete && extractItem.IsBuildingComplete && !extractItem.IsAddressLinkRemoved && extractItem.BuildingUnitPersistentLocalId != null
                 select extractItem.DbaseRecord;
 
             return ExtractBuilder.CreateDbfFile<AddressLinkDbaseRecord>(
@@ -45,8 +45,8 @@ namespace AddressRegistry.Api.Extract.Extracts
             string BuildCommandText(string select)
             {
                 return $"SELECT {select} FROM [{Schema.Syndication}].[{AddressParcelLinkExtractItemConfiguration.TableName}] [apl] " +
-                       $"INNER JOIN [{Schema.Syndication}].[{AddressPersistentLocalIdItemConfiguration.TableName}] [a] on [apl].AddressId = [a].AddressId" +
-                       "WHERE [a].IsComplete = 1 AND [apl].IsAddressLinkRemoved = 0 AND [apl].IsParcelRemoved = 0 AND [apl].ParcelPersistentLocalId IS NOT NULL";
+                       $"INNER JOIN [{Schema.Syndication}].[{AddressPersistentLocalIdItemConfiguration.TableName}] [a] on [apl].AddressId = [a].AddressId " +
+                       "WHERE [a].IsComplete = 1 AND [a].IsRemoved = 0 AND [apl].IsAddressLinkRemoved = 0 AND [apl].IsParcelRemoved = 0 AND [apl].ParcelPersistentLocalId IS NOT NULL";
             }
 
             IEnumerable<byte[]> GetDbaseRecordBytes()

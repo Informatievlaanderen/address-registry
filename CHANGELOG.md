@@ -1,3 +1,10 @@
+## [2.32.10](https://github.com/informatievlaanderen/address-registry/compare/v2.32.9...v2.32.10) (2021-10-01)
+
+
+### Bug Fixes
+
+* update package ([40a2371](https://github.com/informatievlaanderen/address-registry/commit/40a2371a34e0617f66e4ebe178c8ac3e0283c5ff))
+
 ## [2.32.9](https://github.com/informatievlaanderen/address-registry/compare/v2.32.8...v2.32.9) (2021-09-30)
 
 

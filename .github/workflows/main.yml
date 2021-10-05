@@ -202,7 +202,7 @@ jobs:
         docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/cache-warmer:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/cache-warmer:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/cache-warmer:$SEMVER
       env:                
-        BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
+        BUILD_DOCKER_REGISTRY_TST: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
         BUILD_DOCKER_REGISTRY_PRD: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_PRD }}
         SEMVER: ${{ env.RELEASE_VERSION }}
         WORKSPACE: ${{ github.workspace }}

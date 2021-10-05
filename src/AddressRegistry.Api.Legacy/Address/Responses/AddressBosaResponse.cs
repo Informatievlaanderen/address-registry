@@ -9,6 +9,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
     using System;
     using System.Collections.Generic;
     using System.Runtime.Serialization;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.Utilities;
 
     [DataContract]
@@ -150,13 +151,13 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
                     },
                     PositieGeometrieMethode.Geinterpoleerd,
                     PositieSpecificatie.Gebouweenheid,
-                    DateTimeOffset.Now,
+                    DateTimeOffset.Now.ToExampleOffset(),
                     "1",
-                    new Rfc3339SerializableDateTimeOffset(DateTimeOffset.Now).ToString(),
+                    new Rfc3339SerializableDateTimeOffset(DateTimeOffset.Now.ToExampleOffset()).ToString(),
                     "11002",
-                    new Rfc3339SerializableDateTimeOffset(DateTimeOffset.Now).ToString(),
+                    new Rfc3339SerializableDateTimeOffset(DateTimeOffset.Now.ToExampleOffset()).ToString(),
                     "8000",
-                    new Rfc3339SerializableDateTimeOffset(DateTimeOffset.Now).ToString()
+                    new Rfc3339SerializableDateTimeOffset(DateTimeOffset.Now.ToExampleOffset()).ToString()
                    ),
 
                 new AddressBosaResponseItem(

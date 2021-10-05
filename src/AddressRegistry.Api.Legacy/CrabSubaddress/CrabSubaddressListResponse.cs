@@ -7,6 +7,7 @@ namespace AddressRegistry.Api.Legacy.CrabSubaddress
     using System.Collections.Generic;
     using System.Globalization;
     using System.Runtime.Serialization;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Infrastructure.Options;
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
@@ -97,7 +98,7 @@ namespace AddressRegistry.Api.Legacy.CrabSubaddress
                     "70",
                     "1",
                     new VolledigAdres("Koningin Maria Hendrikaplein", "70", null, "9000", "Gent", Taal.NL),
-                    DateTimeOffset.Now,
+                    DateTimeOffset.Now.ToExampleOffset(),
                     true),
                 new CrabSubAddressListItem(
                     157,
@@ -107,7 +108,7 @@ namespace AddressRegistry.Api.Legacy.CrabSubaddress
                     "30",
                     "3",
                     new VolledigAdres("Boudewijnlaan", "30", "30", "1000", "Brussel", Taal.NL),
-                    DateTimeOffset.Now.AddDays(-2),
+                    DateTimeOffset.Now.AddDays(-2).ToExampleOffset(),
                     false)
             };
 

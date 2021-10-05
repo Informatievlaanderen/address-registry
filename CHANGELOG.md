@@ -1,3 +1,10 @@
+## [2.32.11](https://github.com/informatievlaanderen/address-registry/compare/v2.32.10...v2.32.11) (2021-10-05)
+
+
+### Bug Fixes
+
+* gawr-615 versionid datetime offset+2 ([b966f98](https://github.com/informatievlaanderen/address-registry/commit/b966f98ce238014a62edc874f9761b6f2f4cadd9))
+
 ## [2.32.10](https://github.com/informatievlaanderen/address-registry/compare/v2.32.9...v2.32.10) (2021-10-01)
 
 

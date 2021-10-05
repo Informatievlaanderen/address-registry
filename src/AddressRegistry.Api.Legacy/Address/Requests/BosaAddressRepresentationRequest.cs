@@ -4,6 +4,7 @@ namespace AddressRegistry.Api.Legacy.Address.Requests
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Bosa;
     using Swashbuckle.AspNetCore.Filters;
     using System;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
 
     public class BosaAddressRepresentationRequest
     {
@@ -19,7 +20,7 @@ namespace AddressRegistry.Api.Legacy.Address.Requests
                 AdresCode = new ZoekIdentifier
                 {
                     ObjectId = "1",
-                    VersieId = DateTimeOffset.Now
+                    VersieId = DateTimeOffset.Now.ToExampleOffset()
                 },
                 Taal = Taal.NL
             };

@@ -8,6 +8,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.Runtime.Serialization;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
 
     [DataContract]
     public class AddressRepresentationBosaResponse
@@ -70,7 +71,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         public AddressRepresentationBosaResponse GetExamples()
             => new AddressRepresentationBosaResponse
             {
-                Identificator = new AdresIdentificator(_responseOptions.Naamruimte, "12345", DateTimeOffset.Now),
+                Identificator = new AdresIdentificator(_responseOptions.Naamruimte, "12345", DateTimeOffset.Now.ToExampleOffset()),
                 AdresVoorstellingen = new List<BosaAddressRepresentation>
                 {
                     new BosaAddressRepresentation(Taal.NL, "5", "1", "Teststraat 5 bus 1, 9000 Gent", "Gent", "Teststraat", "9000"),

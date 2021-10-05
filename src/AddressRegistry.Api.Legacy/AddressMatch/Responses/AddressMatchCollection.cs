@@ -16,6 +16,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
     using System.Linq;
     using System.Runtime.Serialization;
     using System.Xml.Serialization;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Microsoft.EntityFrameworkCore;
 
     [DataContract(Name = "AdresMatchCollectie", Namespace = "")]
@@ -360,7 +361,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
                 {
                     new AdresMatchItem
                     {
-                        Identificator = new AdresIdentificator(_options.Naamruimte, "36416228", DateTimeOffset.Now),
+                        Identificator = new AdresIdentificator(_options.Naamruimte, "36416228", DateTimeOffset.Now.ToExampleOffset()),
                         Detail = string.Format(_options.DetailUrl, "36416228"),
                         Gemeente = new AdresMatchItemGemeente
                         {

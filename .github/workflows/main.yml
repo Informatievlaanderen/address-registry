@@ -102,6 +102,34 @@ jobs:
         echo RELEASE_VERSION=$(cat semver) >> $GITHUB_ENV
       shell: bash
 
+    - name: Configure AWS credentials (Test)
+      if: env.RELEASE_VERSION != 'none'
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_TST }}
+        aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_TST }}
+        aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
+
+    - name: Login to Amazon ECR (Test)
+      if: env.RELEASE_VERSION != 'none'
+      uses: aws-actions/amazon-ecr-login@v1.3.3
+
+    - name: Push to Test
+      if: env.RELEASE_VERSION != 'none'
+      shell: bash
+      run: |
+        docker push $BUILD_DOCKER_REGISTRY_TST/address-registry/api-legacy:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY_TST/address-registry/api-crab-import:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY_TST/address-registry/api-extract:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY_TST/address-registry/projector:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY_TST/address-registry/projections-syndication:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY_TST/address-registry/cache-warmer:$SEMVER
+      env:
+        BUILD_DOCKER_REGISTRY_TST: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
+        BUILD_DOCKER_REGISTRY_PRD: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_PRD }}
+        SEMVER: ${{ env.RELEASE_VERSION }}
+        WORKSPACE: ${{ github.workspace }}
+
     - name: Configure AWS credentials (Staging)
       if: env.RELEASE_VERSION != 'none'
       uses: aws-actions/configure-aws-credentials@v1

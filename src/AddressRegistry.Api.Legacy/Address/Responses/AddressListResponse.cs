@@ -8,6 +8,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
     using System;
     using System.Collections.Generic;
     using System.Runtime.Serialization;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Newtonsoft.Json;
 
     [DataContract(Name = "AdresCollectie", Namespace = "")]
@@ -118,7 +119,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
                     null,
                     new VolledigAdres("Koningin Maria Hendrikaplein", "70", null, "9000", "Gent", Taal.NL),
                     AdresStatus.Voorgesteld,
-                    DateTimeOffset.Now),
+                    DateTimeOffset.Now.ToExampleOffset()),
                 new AddressListItemResponse(
                     14874,
                     _responseOptions.Naamruimte,
@@ -127,7 +128,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
                     "30",
                     new VolledigAdres("Boudewijnlaan", "30", "30", "1000", "Brussel", Taal.NL),
                     AdresStatus.InGebruik,
-                    DateTimeOffset.Now.AddDays(-2))
+                    DateTimeOffset.Now.AddDays(-2).ToExampleOffset())
             };
 
             return new AddressListResponse

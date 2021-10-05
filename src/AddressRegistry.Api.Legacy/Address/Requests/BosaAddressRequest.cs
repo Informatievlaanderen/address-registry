@@ -5,6 +5,7 @@ namespace AddressRegistry.Api.Legacy.Address.Requests
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Bosa;
     using Swashbuckle.AspNetCore.Filters;
     using System;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
 
     public class BosaAddressRequest
     {
@@ -36,7 +37,7 @@ namespace AddressRegistry.Api.Legacy.Address.Requests
                 AdresCode = new ZoekIdentifier
                 {
                     ObjectId = "1",
-                    VersieId = DateTimeOffset.Now
+                    VersieId = DateTimeOffset.Now.ToExampleOffset()
                 },
                 Huisnummer = "5",
                 Busnummer = "001",
@@ -49,7 +50,7 @@ namespace AddressRegistry.Api.Legacy.Address.Requests
                 StraatnaamCode = new ZoekIdentifier
                 {
                     ObjectId = "2",
-                    VersieId = DateTimeOffset.Now
+                    VersieId = DateTimeOffset.Now.ToExampleOffset()
                 },
                 AdresStatus = AdresStatus.InGebruik,
                 Gemeentenaam = new ZoekGeografischeNaam
@@ -61,12 +62,12 @@ namespace AddressRegistry.Api.Legacy.Address.Requests
                 GemeenteCode = new ZoekIdentifier
                 {
                     ObjectId = "11001",
-                    VersieId = DateTimeOffset.Now
+                    VersieId = DateTimeOffset.Now.ToExampleOffset()
                 },
                 PostCode = new ZoekIdentifier
                 {
                     ObjectId = "9000",
-                    VersieId = DateTimeOffset.Now,
+                    VersieId = DateTimeOffset.Now.ToExampleOffset(),
                 }
             };
     }

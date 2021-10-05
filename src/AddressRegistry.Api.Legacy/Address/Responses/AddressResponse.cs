@@ -10,6 +10,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
     using System;
     using System.Runtime.Serialization;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Newtonsoft.Json;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
@@ -182,7 +183,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
                 AdresStatus.InGebruik,
                 Taal.NL,
                 true,
-                DateTimeOffset.Now);
+                DateTimeOffset.Now.ToExampleOffset());
         }
     }
 

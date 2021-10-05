@@ -1,3 +1,10 @@
+## [2.32.12](https://github.com/informatievlaanderen/address-registry/compare/v2.32.11...v2.32.12) (2021-10-05)
+
+
+### Bug Fixes
+
+* build push to ECR Test ([ca0ec03](https://github.com/informatievlaanderen/address-registry/commit/ca0ec03785f54c39949ff8a71a6cb273601cab3d))
+
 ## [2.32.11](https://github.com/informatievlaanderen/address-registry/compare/v2.32.10...v2.32.11) (2021-10-05)
 
 

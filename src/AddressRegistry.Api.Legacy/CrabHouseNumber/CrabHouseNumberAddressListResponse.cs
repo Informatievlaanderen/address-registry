@@ -6,6 +6,7 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
     using System.Collections.Generic;
     using System.Globalization;
     using System.Runtime.Serialization;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Infrastructure.Options;
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
@@ -142,7 +143,7 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
                     _responseOptions.DetailUrl,
                     "70",
                     new VolledigAdres("Koningin Maria Hendrikaplein", "70", null, "9000", "Gent", Taal.NL),
-                    DateTimeOffset.Now,
+                    DateTimeOffset.Now.ToExampleOffset(),
                     true),
                 new CrabHouseNumberAddressListItem(
                     157,
@@ -151,7 +152,7 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
                     _responseOptions.DetailUrl,
                     "30",
                     new VolledigAdres("Boudewijnlaan", "30", "30", "1000", "Brussel", Taal.NL),
-                    DateTimeOffset.Now.AddDays(-2),
+                    DateTimeOffset.Now.AddDays(-2).ToExampleOffset(),
                     false)
             };
 

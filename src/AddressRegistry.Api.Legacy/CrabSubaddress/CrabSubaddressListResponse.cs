@@ -42,7 +42,7 @@ namespace AddressRegistry.Api.Legacy.CrabSubaddress
     public class CrabSubAddressListItem
     {
         /// <summary>
-        /// De CRAB-SubadresId.
+        /// De CRAB subadresid.
         /// </summary>
         [DataMember(Name = "ObjectId", Order = 1)]
         [JsonProperty(Required = Required.DisallowNull)]

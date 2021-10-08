@@ -41,7 +41,7 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
     public class CrabHouseNumberAddressListItem
     {
         /// <summary>
-        /// De CRAB-HuisnummerId.
+        /// De CRAB huisnummerid.
         /// </summary>
         [DataMember(Name = "ObjectId", Order = 1)]
         [JsonProperty(Required = Required.DisallowNull)]

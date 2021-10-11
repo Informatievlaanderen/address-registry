@@ -1,3 +1,10 @@
+## [2.32.15](https://github.com/informatievlaanderen/address-registry/compare/v2.32.14...v2.32.15) (2021-10-11)
+
+
+### Bug Fixes
+
+* removed dash from crab huisnummer and subadressid ([90d12af](https://github.com/informatievlaanderen/address-registry/commit/90d12af516045b59430252002d27ba527868c3fe))
+
 ## [2.32.14](https://github.com/informatievlaanderen/address-registry/compare/v2.32.13...v2.32.14) (2021-10-05)
 
 

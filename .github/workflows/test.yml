@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix: 
-        services: ['streetname-registry-api', 'streetname-registry-import-api', 'streetname-registry-projections']
+        services: ['address-registry-api', 'address-registry-import-api', 'address-registry-projections', 'address-registry-cache-warmer']
     steps:
     - name: CD
       env:

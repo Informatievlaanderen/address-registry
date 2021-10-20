@@ -1,3 +1,10 @@
+## [2.32.16](https://github.com/informatievlaanderen/address-registry/compare/v2.32.15...v2.32.16) (2021-10-20)
+
+
+### Bug Fixes
+
+* bump projection-handling ([22969dc](https://github.com/informatievlaanderen/address-registry/commit/22969dc9a23de1cf809c5d1110d6276711809134))
+
 ## [2.32.15](https://github.com/informatievlaanderen/address-registry/compare/v2.32.14...v2.32.15) (2021-10-11)
 
 

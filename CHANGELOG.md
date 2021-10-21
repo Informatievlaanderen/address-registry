@@ -1,3 +1,10 @@
+## [2.32.17](https://github.com/informatievlaanderen/address-registry/compare/v2.32.16...v2.32.17) (2021-10-21)
+
+
+### Bug Fixes
+
+* gawr-2202 api docu changes ([29e4e50](https://github.com/informatievlaanderen/address-registry/commit/29e4e50af7964fc843d94cdc8ec16334767ac7df))
+
 ## [2.32.16](https://github.com/informatievlaanderen/address-registry/compare/v2.32.15...v2.32.16) (2021-10-20)
 
 

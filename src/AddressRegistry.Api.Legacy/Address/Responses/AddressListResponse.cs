@@ -54,7 +54,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         public Uri Detail { get; set; }
 
         /// <summary>
-        /// Het huisnummer.
+        /// Het huisnummer van het adres.
         /// </summary>
         [DataMember(Name = "Huisnummer", Order = 3)]
         [JsonProperty(Required = Required.DisallowNull)]

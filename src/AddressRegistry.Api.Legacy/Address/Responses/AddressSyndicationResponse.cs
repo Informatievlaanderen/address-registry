@@ -149,13 +149,13 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         public string PostalCode { get; set; }
 
         /// <summary>
-        /// Het huisnummer.
+        /// Het huisnummer van het adres.
         /// </summary>
         [DataMember(Name = "Huisnummer", Order = 5)]
         public string HouseNumber { get; set; }
 
         /// <summary>
-        /// Het nummer van de bus.
+        /// Het busnummer van het adres. 
         /// </summary>
         [DataMember(Name = "Busnummer", Order = 6)]
         public string BoxNumber { get; set; }

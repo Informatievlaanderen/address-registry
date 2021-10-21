@@ -66,14 +66,14 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         public AdresMatchItemGemeente Gemeente { get; set; }
 
         /// <summary>
-        /// Een PostInfo object dat deel uitmaakt van het adres.
+        /// De postinfo die deel uitmaakt van het adres. 
         /// </summary>
         [DataMember(Name = "Postinfo", Order = 4, EmitDefaultValue = false)]
         [JsonProperty(Required = Required.Default)]
         public AdresMatchItemPostinfo Postinfo { get; set; }
 
         /// <summary>
-        /// Een straatnaam die deel uitmaakt van het adres.
+        /// De straatnaam die deel uitmaakt van het adres.
         /// </summary>
         [DataMember(Name = "Straatnaam", Order = 5, EmitDefaultValue = false)]
         [JsonProperty(Required = Required.Default)]
@@ -87,14 +87,14 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         public HomoniemToevoeging HomoniemToevoeging { get; set; }
 
         /// <summary>
-        /// Het huisnummer.
+        /// Het huisnummer van het adres.
         /// </summary>
         [DataMember(Name = "Huisnummer", Order = 7, EmitDefaultValue = false)]
         [JsonProperty(Required = Required.Default)]
         public string Huisnummer { get; set; }
 
         /// <summary>
-        /// Het nummer van de bus.
+        /// Het busnummer van het adres. 
         /// </summary>
         [DataMember(Name = "Busnummer", Order = 8, EmitDefaultValue = false)]
         [JsonProperty(Required = Required.Default)]
@@ -129,7 +129,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         public PositieGeometrieMethode? PositieGeometrieMethode { get; set; }
 
         /// <summary>
-        /// De status van een adres.
+        /// De status van het adres. 
         /// </summary>
         [DataMember(Name = "AdresStatus", Order = 13, EmitDefaultValue = false)]
         [JsonProperty(Required = Required.Default)]
@@ -143,7 +143,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         public bool? OfficieelToegekend { get; set; }
 
         /// <summary>
-        /// Objecten die gekoppeld zijn aan het adres.
+        /// De aan het adres gekoppelde objecten. 
         /// </summary>
         [XmlArray(ElementName = "AdresseerbareObjecten", Order = 15)]
         [XmlArrayItem(ElementName = "AdresseerbaarObject")]
@@ -226,7 +226,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
     public class AdresMatchItemGemeente
     {
         /// <summary>
-        /// De identifier van de gekoppelde gemeente.
+        /// De objectidentificator van de gekoppelde gemeente.
         /// </summary>
         [DataMember(Name = "ObjectId", Order = 1)]
         [JsonProperty(Required = Required.DisallowNull)]
@@ -248,13 +248,13 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
     }
 
     /// <summary>
-    /// Een straatnaam die deel uitmaakt van het adres.
+    /// De straatnaam die deel uitmaakt van het adres.
     /// </summary>
     [DataContract(Name = "AdresMatchItemStraatnaam", Namespace = "")]
     public class AdresMatchItemStraatnaam
     {
         /// <summary>
-        /// De identifier van de gekoppelde straatnaam.
+        /// De objectidentificator van de gekoppelde straatnaam. 
         /// </summary>
         [DataMember(Name = "ObjectId", Order = 1)]
         [JsonProperty(Required = Required.DisallowNull)]
@@ -284,20 +284,20 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
     }
 
     /// <summary>
-    /// Een PostInfo object dat deel uitmaakt van het adres.
+    /// De postinfo die deel uitmaakt van het adres. 
     /// </summary>
     [DataContract(Name = "AdresMatchItemPostinfo", Namespace = "")]
     public class AdresMatchItemPostinfo
     {
         /// <summary>
-        /// De identifier van het gekoppelde PostInfo object.
+        /// De objectidentificator van de gekoppelde postinfo. 
         /// </summary>
         [DataMember(Name = "ObjectId", Order = 1)]
         [JsonProperty(Required = Required.DisallowNull)]
         public string ObjectId { get; set; }
 
         /// <summary>
-        /// De URL die de details van de meest recente versie van het gekoppelde PostInfo object weergeeft.
+        /// De URL die de details van de meest recente versie van de gekoppelde postinfo weergeeft.
         /// </summary>
         [DataMember(Name = "Detail", Order = 2)]
         [JsonProperty(Required = Required.DisallowNull)]

@@ -104,14 +104,14 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
         public Uri Detail { get; set; }
 
         /// <summary>
-        /// Het huisnummer.
+        /// Het huisnummer van het adres.
         /// </summary>
         [DataMember(Name = "Huisnummer", Order = 4)]
         [JsonProperty(Required = Required.DisallowNull)]
         public string Huisnummer { get; set; }
 
         /// <summary>
-        /// Het nummer van de bus.
+        /// Het busnummer van het adres. 
         /// </summary>
         [DataMember(Name = "Busnummer", Order = 5, EmitDefaultValue = false)]
         [JsonProperty(Required = Required.Default)]

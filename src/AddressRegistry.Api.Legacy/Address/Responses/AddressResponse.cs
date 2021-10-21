@@ -32,14 +32,14 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         public AdresDetailGemeente Gemeente { get; set; }
 
         /// <summary>
-        /// Een PostInfo object dat deel uitmaakt van het adres.
+        /// De postinfo die deel uitmaakt van het adres. 
         /// </summary>
         [DataMember(Name = "Postinfo", Order = 3)]
         [JsonProperty(Required = Required.Default)]
         public AdresDetailPostinfo Postinfo { get; set; }
 
         /// <summary>
-        /// Een straatnaam die deel uitmaakt van het adres.
+        /// De straatnaam die deel uitmaakt van het adres.
         /// </summary>
         [DataMember(Name = "Straatnaam", Order = 4)]
         [JsonProperty(Required = Required.DisallowNull)]
@@ -53,14 +53,14 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         public HomoniemToevoeging HomoniemToevoeging { get; set; }
 
         /// <summary>
-        /// Het huisnummer.
+        /// Het huisnummer van het adres.
         /// </summary>
         [DataMember(Name = "Huisnummer", Order = 6)]
         [JsonProperty(Required = Required.DisallowNull)]
         public string Huisnummer { get; set; }
 
         /// <summary>
-        /// Het nummer van de bus.
+        /// Het busnummer van het adres. 
         /// </summary>
         [DataMember(Name = "Busnummer", Order = 7, EmitDefaultValue = false)]
         [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Ignore)]

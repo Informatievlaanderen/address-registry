@@ -1,3 +1,11 @@
+## [2.32.18](https://github.com/informatievlaanderen/address-registry/compare/v2.32.17...v2.32.18) (2021-10-25)
+
+
+### Bug Fixes
+
+* paket bump ([4a6c1dc](https://github.com/informatievlaanderen/address-registry/commit/4a6c1dcccf3e2c6519ca0822b6443cf3c844a268))
+* removed dotsettings change ([744663a](https://github.com/informatievlaanderen/address-registry/commit/744663ae52dcf18ae280a097f791958ef6d3fcb9))
+
 ## [2.32.17](https://github.com/informatievlaanderen/address-registry/compare/v2.32.16...v2.32.17) (2021-10-21)
 
 

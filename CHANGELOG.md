@@ -1,3 +1,10 @@
+## [2.32.19](https://github.com/informatievlaanderen/address-registry/compare/v2.32.18...v2.32.19) (2021-10-27)
+
+
+### Bug Fixes
+
+* trigger build ([d4c8653](https://github.com/informatievlaanderen/address-registry/commit/d4c865364328aa89f972d78db07893bf31fda9c6))
+
 ## [2.32.18](https://github.com/informatievlaanderen/address-registry/compare/v2.32.17...v2.32.18) (2021-10-25)
 
 

@@ -1,3 +1,10 @@
+## [2.32.20](https://github.com/informatievlaanderen/address-registry/compare/v2.32.19...v2.32.20) (2021-11-02)
+
+
+### Bug Fixes
+
+* changed busnummer docu ([9b1ecdd](https://github.com/informatievlaanderen/address-registry/commit/9b1ecddde47a8826b84de828a46609a5386abe89))
+
 ## [2.32.19](https://github.com/informatievlaanderen/address-registry/compare/v2.32.18...v2.32.19) (2021-10-27)
 
 

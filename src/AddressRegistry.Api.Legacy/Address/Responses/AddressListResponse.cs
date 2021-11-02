@@ -61,7 +61,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         public string Huisnummer { get; set; }
 
         /// <summary>
-        /// Het busnummer.
+        /// Het busnummer van het adres.
         /// </summary>
         [DataMember(Name = "Busnummer", Order = 4, EmitDefaultValue = false)]
         [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Ignore)]

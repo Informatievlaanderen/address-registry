@@ -304,7 +304,7 @@ NUGET
       Microsoft.EntityFrameworkCore (>= 5.0.6) - restriction: || (&& (== net472) (>= net5.0)) (== net5.0)
       Microsoft.Extensions.Logging (>= 5.0) - restriction: || (&& (== net472) (>= net5.0)) (== net5.0)
       xunit (>= 2.4.1) - restriction: || (&& (== net472) (>= net5.0)) (== net5.0)
-    Be.Vlaanderen.Basisregisters.Projector (10.1.2)
+    Be.Vlaanderen.Basisregisters.Projector (10.2.3)
       Autofac (>= 6.2) - restriction: || (&& (== net472) (>= net5.0)) (== net5.0)
       Autofac.Extensions.DependencyInjection (>= 7.1) - restriction: || (&& (== net472) (>= net5.0)) (== net5.0)
       Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector (>= 8.0.3) - restriction: || (&& (== net472) (>= net5.0)) (== net5.0)

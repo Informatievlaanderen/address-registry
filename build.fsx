@@ -39,6 +39,7 @@ Target.create "Restore_Solution" (fun _ -> restore "AddressRegistry")
 Target.create "Build_Solution" (fun _ ->
   setVersions "SolutionInfo.cs"
   buildSource "AddressRegistry.Projector"
+  buildSource "AddressRegistry.Api.Oslo"
   buildSource "AddressRegistry.Api.Legacy"
   buildSource "AddressRegistry.Api.Extract"
   buildSource "AddressRegistry.Api.CrabImport"
@@ -61,6 +62,7 @@ Target.create "Publish_Solution" (fun _ ->
   [
     "AddressRegistry.Projector"
     "AddressRegistry.Api.Legacy"
+    "AddressRegistry.Api.Oslo"
     "AddressRegistry.Api.Extract"
     "AddressRegistry.Api.CrabImport"
     "AddressRegistry.Projections.Legacy"
@@ -80,6 +82,7 @@ Target.create "Pack_Solution" (fun _ ->
   [
     "AddressRegistry.Projector"
     "AddressRegistry.Api.Legacy"
+    "AddressRegistry.Api.Oslo"
     "AddressRegistry.Api.Extract"
     "AddressRegistry.Api.CrabImport"
   ] |> List.iter pack)
@@ -89,6 +92,9 @@ Target.create "PushContainer_Projector" (fun _ -> push "projector")
 
 Target.create "Containerize_ApiLegacy" (fun _ -> containerize "AddressRegistry.Api.Legacy" "api-legacy")
 Target.create "PushContainer_ApiLegacy" (fun _ -> push "api-legacy")
+
+Target.create "Containerize_ApiOslo" (fun _ -> containerize "AddressRegistry.Api.Oslo" "api-oslo")
+Target.create "PushContainer_ApiOslo" (fun _ -> push "api-oslo")
 
 Target.create "Containerize_ApiExtract" (fun _ -> containerize "AddressRegistry.Api.Extract" "api-extract")
 Target.create "PushContainer_ApiExtract" (fun _ -> push "api-extract")
@@ -136,6 +142,7 @@ Target.create "Push" ignore
 "Pack"
   ==> "Containerize_Projector"
   ==> "Containerize_ApiLegacy"
+  ==> "Containerize_ApiOslo"
   ==> "Containerize_ApiExtract"
   //==> "Containerize_ApiBackoffice"
   ==> "Containerize_ApiCrabImport"
@@ -148,6 +155,7 @@ Target.create "Push" ignore
   ==> "DockerLogin"
   ==> "PushContainer_Projector"
   ==> "PushContainer_ApiLegacy"
+  ==> "PushContainer_ApiOslo"
   ==> "PushContainer_ApiExtract"
   //==> "PushContainer_ApiBackoffice"
   ==> "PushContainer_ApiCrabImport"

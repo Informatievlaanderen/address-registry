@@ -55,7 +55,7 @@ nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing 8.0.3
 nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit 8.0.3
 nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication 8.0.3
 
-nuget Be.Vlaanderen.Basisregisters.Projector 10.1.2
+nuget Be.Vlaanderen.Basisregisters.Projector 10.2.3
 
 nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac 4.5.7
 nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.AspNetCore 4.5.7

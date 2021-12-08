@@ -1,3 +1,10 @@
+# [2.33.0](https://github.com/informatievlaanderen/address-registry/compare/v2.32.20...v2.33.0) (2021-12-08)
+
+
+### Features
+
+* use new query/events endpoint ([cd7f696](https://github.com/informatievlaanderen/address-registry/commit/cd7f6967806946490d7560b94ec12f31fc908abd))
+
 ## [2.32.20](https://github.com/informatievlaanderen/address-registry/compare/v2.32.19...v2.32.20) (2021-11-02)
 
 

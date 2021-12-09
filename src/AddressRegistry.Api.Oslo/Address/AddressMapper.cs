@@ -1,16 +1,22 @@
 namespace AddressRegistry.Api.Oslo.Address
 {
+    using System;
     using System.Collections.Generic;
+    using System.Text;
+    using System.Xml;
     using AddressRegistry.Address;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
+    using NetTopologySuite.Geometries;
     using Projections.Syndication.Municipality;
     using Projections.Syndication.StreetName;
+    using Point = Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools.Point;
 
     public static class AddressMapper
     {
-        public static VolledigAdres GetVolledigAdres(string houseNumber, string boxNumber, string postalCode, StreetNameLatestItem streetName, MunicipalityLatestItem municipality)
+        public static VolledigAdres GetVolledigAdres(string houseNumber, string boxNumber, string postalCode,
+            StreetNameLatestItem streetName, MunicipalityLatestItem municipality)
         {
             if (streetName == null || municipality == null)
                 return null;
@@ -25,14 +31,41 @@ namespace AddressRegistry.Api.Oslo.Address
                 defaultMunicipalityName.Key);
         }
 
-        public static Point GetAddressPoint(byte[] point)
+        private static string GetGml(Geometry geometry)
+        {
+            StringBuilder builder = new();
+            XmlWriterSettings settings = new() { Indent = true, OmitXmlDeclaration = true };
+            using var xmlwriter = XmlWriter.Create(builder, settings);
+            xmlwriter.WriteStartElement("gml", "Point", "http://www.opengis.net/gml/3.2");
+            xmlwriter.WriteAttributeString("srsName", "https://www.opengis.net/def/crs/EPSG/0/31370");
+            Write(geometry.Coordinate, xmlwriter);
+            xmlwriter.WriteEndElement();
+            return builder.ToString();
+        }
+
+        private static void Write(Coordinate coordinate, XmlWriter writer)
+        {
+            writer.WriteStartElement("gml", "pos", "http://www.opengis.net/gml/3.2");
+            writer.WriteValue(string.Format(NetTopologySuite.Utilities.Global.GetNfi(), "{0} {1}", coordinate.X,
+                coordinate.Y));
+            writer.WriteEndElement();
+        }
+
+        public static Point GetAddressPoint(byte[] point, GeometryMethod? method, GeometrySpecification? specification)
         {
             var geometry = WKBReaderFactory.Create().Read(point);
-
             return new Point
             {
-                XmlPoint = new GmlPoint { Pos = $"{geometry.Coordinate.X.ToPointGeometryCoordinateValueFormat()} {geometry.Coordinate.Y.ToPointGeometryCoordinateValueFormat()}" },
-                JsonPoint = new GeoJSONPoint { Coordinates = new[] { geometry.Coordinate.X, geometry.Coordinate.Y } }
+                XmlPoint = new GmlPoint
+                {
+                    Pos =
+                        $"{geometry.Coordinate.X.ToPointGeometryCoordinateValueFormat()} {geometry.Coordinate.Y.ToPointGeometryCoordinateValueFormat()}"
+                },
+                JsonPoint = new GeoJSONPoint { Coordinates = new[] { geometry.Coordinate.X, geometry.Coordinate.Y } },
+                //TODO: Uncomment this after installing new nupkg of grar-common
+                // Gml = GetGml(geometry),
+                // PositieSpecificatie = AddressMapper.ConvertFromGeometrySpecification(specification),
+                // PositieGeometrieMethode = AddressMapper.ConvertFromGeometryMethod(method),
             };
         }
 
@@ -124,7 +157,8 @@ namespace AddressRegistry.Api.Oslo.Address
             }
         }
 
-        public static KeyValuePair<Taal, string> GetDefaultStreetNameName(StreetNameLatestItem streetName, Taal? municipalityLanguage)
+        public static KeyValuePair<Taal, string> GetDefaultStreetNameName(StreetNameLatestItem streetName,
+            Taal? municipalityLanguage)
         {
             switch (municipalityLanguage)
             {
@@ -143,7 +177,8 @@ namespace AddressRegistry.Api.Oslo.Address
             }
         }
 
-        public static KeyValuePair<Taal, string>? GetDefaultHomonymAddition(StreetNameLatestItem streetName, Taal? municipalityLanguage)
+        public static KeyValuePair<Taal, string>? GetDefaultHomonymAddition(StreetNameLatestItem streetName,
+            Taal? municipalityLanguage)
         {
             if (!streetName.HasHomonymAddition)
                 return null;

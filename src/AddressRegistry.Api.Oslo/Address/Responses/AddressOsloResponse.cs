@@ -199,30 +199,16 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
         public Point AdresPositie { get; set; }
 
         /// <summary>
-        /// De gebruikte methode om de positie te bepalen.
-        /// </summary>
-        [DataMember(Name = "PositieGeometrieMethode", Order = 11)]
-        [JsonProperty(Required = Required.DisallowNull)]
-        public PositieGeometrieMethode? PositieGeometrieMethode { get; set; }
-
-        /// <summary>
-        /// De specificatie van het object, voorgesteld door de positie.
-        /// </summary>
-        [DataMember(Name = "PositieSpecificatie", Order = 12)]
-        [JsonProperty(Required = Required.DisallowNull)]
-        public PositieSpecificatie PositieSpecificatie { get; set; }
-
-        /// <summary>
         /// De fase in het leven van het adres.
         /// </summary>
-        [DataMember(Name = "AdresStatus", Order = 13)]
+        [DataMember(Name = "AdresStatus", Order = 11)]
         [JsonProperty(Required = Required.DisallowNull)]
         public AdresStatus AdresStatus { get; set; }
 
         /// <summary>
         /// False wanneer het bestaan van het adres niet geweten is ten tijde van administratieve procedures, maar pas na observatie op het terrein.
         /// </summary>
-        [DataMember(Name = "OfficieelToegekend", Order = 14)]
+        [DataMember(Name = "OfficieelToegekend", Order = 12)]
         [JsonProperty(Required = Required.DisallowNull)]
         public bool OfficieelToegekend { get; set; }
 
@@ -236,8 +222,6 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
             HomoniemToevoeging homoniemToevoeging,
             AdresDetailPostinfo postInfo,
             Point adresPositie,
-            PositieGeometrieMethode positieGeometrieMethode,
-            PositieSpecificatie positieSpecificatie,
             AdresStatus status,
             Taal taal,
             bool? officieelToegekend,
@@ -246,8 +230,6 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
             Identificator = new AdresIdentificator(naamruimte, objectId, version);
             Huisnummer = huisnummer;
             Busnummer = busnummer;
-            PositieGeometrieMethode = positieGeometrieMethode;
-            PositieSpecificatie = positieSpecificatie;
             AdresStatus = status;
             OfficieelToegekend = officieelToegekend ?? false;
             Postinfo = postInfo;
@@ -278,7 +260,12 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
             var point = new Point
             {
                 XmlPoint = new GmlPoint { Pos = "140252.76 198794.27" },
-                JsonPoint = new GeoJSONPoint { Coordinates = new[] { 140252.76, 198794.27 } }
+                JsonPoint = new GeoJSONPoint { Coordinates = new[] { 140252.76, 198794.27 },
+                //TODO: Uncomment this after installing new nupkg of grar-common
+                //Gml = "<gml:Point srsName=\"https://www.opengis.net/def/crs/EPSG/0/31370\" xmlns:gml=\"http://www.opengis.net/gml/3.2\"><gml:pos>140252.76 198794.27</gml:pos></gml:Point>",
+                //PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
+                //PositieSpecificatie = PositieSpecificatie.Gebouw,
+                }
             };
 
             var gemeente = new AdresDetailGemeente("9000", string.Format(_responseOptions.GemeenteDetailUrl, "9000"),
@@ -298,8 +285,6 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
                 homoniem,
                 postInfo,
                 point,
-                PositieGeometrieMethode.AangeduidDoorBeheerder,
-                PositieSpecificatie.Gebouw,
                 AdresStatus.InGebruik,
                 Taal.NL,
                 true,

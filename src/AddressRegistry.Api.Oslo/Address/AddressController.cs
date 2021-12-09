@@ -63,11 +63,6 @@ namespace AddressRegistry.Api.Oslo.Address
             [FromRoute] Taal? taal,
             CancellationToken cancellationToken = default)
         {
-            // TODO: Check if an etag is provided, if it is: check if the projections have caught up
-            //       and temporarily for crab, check if the crab position has caught up as well
-            // -> could possibly also be done in an filter attribute
-
-
             var address = await context
                 .AddressDetail
                 .AsNoTracking()
@@ -115,9 +110,7 @@ namespace AddressRegistry.Api.Oslo.Address
                     straat,
                     homoniemToevoeging,
                     postInfo,
-                    AddressMapper.GetAddressPoint(address.Position),
-                    AddressMapper.ConvertFromGeometryMethod(address.PositionMethod),
-                    AddressMapper.ConvertFromGeometrySpecification(address.PositionSpecification),
+                    AddressMapper.GetAddressPoint(address.Position, address.PositionMethod, address.PositionSpecification),
                     AddressMapper.ConvertFromAddressStatus(address.Status),
                     defaultStreetName.Key,
                     address.OfficiallyAssigned,

@@ -11,9 +11,5 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Options
         public string PostInfoDetailUrl { get; set; }
         public string StraatnaamDetailUrl { get; set; }
         public string GemeenteDetailUrl { get; set; }
-        public string GebouweenheidDetailUrl { get; set; }
-        public string PerceelDetailUrl { get; set; }
-        public double SimilarityThreshold { get; set; }
-        public int MaxStreetNamesThreshold { get; set; }
     }
 }

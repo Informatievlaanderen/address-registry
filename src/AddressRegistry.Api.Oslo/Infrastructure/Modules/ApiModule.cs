@@ -3,8 +3,6 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
     using System;
     using Microsoft.Data.SqlClient;
     using Address.Query;
-    using AddressMatch;
-    using AddressMatch.Matching;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
@@ -34,17 +32,14 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
 
             var logger = loggerFactory.CreateLogger<ApiModule>();
             var connectionString = configuration.GetConnectionString("SyndicationProjections");
-            var buildingConnectionString = configuration.GetConnectionString("BuildingLegacyProjections");
 
             var hasConnectionString = !string.IsNullOrWhiteSpace(connectionString);
             if (hasConnectionString)
-                RunOnSqlServer(configuration, services, loggerFactory, connectionString, buildingConnectionString);
+                RunOnSqlServer(configuration, services, loggerFactory, connectionString);
             else
                 RunInMemoryDb(services, loggerFactory, logger);
 
             logger.LogInformation("Added {Context} to services:", nameof(AddressQueryContext));
-            logger.LogInformation("Added {Context} to services:", nameof(AddressMatchContext));
-            logger.LogInformation("Added {Context} to services:", nameof(BuildingContext));
         }
 
         protected override void Load(ContainerBuilder containerBuilder)
@@ -53,10 +48,6 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
                 .RegisterModule(new DataDogModule(_configuration))
                 .RegisterModule(new LegacyModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new SyndicationModule(_configuration, _services, _loggerFactory));
-
-            containerBuilder
-                .RegisterAssemblyTypes(typeof(IKadRrService).Assembly)
-                .AsImplementedInterfaces();
 
             containerBuilder
                 .RegisterType<ProblemDetailsHelper>()
@@ -69,8 +60,7 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
             IConfiguration configuration,
             IServiceCollection services,
             ILoggerFactory loggerFactory,
-            string backofficeProjectionsConnectionString,
-            string buildingProjectionsConnectionString)
+            string backofficeProjectionsConnectionString)
         {
             services
                 .AddScoped(s => new TraceDbConnection<AddressQueryContext>(
@@ -80,20 +70,6 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
                     .EnableSensitiveDataLogging()
                     .UseLoggerFactory(loggerFactory)
                     .UseSqlServer(provider.GetRequiredService<TraceDbConnection<AddressQueryContext>>(),
-                        sqlServerOptions => { sqlServerOptions.EnableRetryOnFailure(); }))
-                .AddScoped(s => new TraceDbConnection<AddressMatchContext>(
-                    new SqlConnection(backofficeProjectionsConnectionString),
-                    configuration["DataDog:ServiceName"]))
-                .AddDbContext<AddressMatchContext>((provider, options) => options
-                    .UseLoggerFactory(loggerFactory)
-                    .UseSqlServer(provider.GetRequiredService<TraceDbConnection<AddressMatchContext>>(),
-                        sqlServerOptions => { sqlServerOptions.EnableRetryOnFailure(); }))
-                .AddScoped(s => new TraceDbConnection<BuildingContext>(
-                    new SqlConnection(buildingProjectionsConnectionString),
-                    configuration["DataDog:ServiceName"]))
-                .AddDbContext<BuildingContext>((provider, options) => options
-                    .UseLoggerFactory(loggerFactory)
-                    .UseSqlServer(provider.GetRequiredService<TraceDbConnection<BuildingContext>>(),
                         sqlServerOptions => { sqlServerOptions.EnableRetryOnFailure(); }));
         }
 
@@ -105,17 +81,9 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
             services
                 .AddDbContext<AddressQueryContext>(options => options
                     .UseLoggerFactory(loggerFactory)
-                    .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { }))
-                .AddDbContext<AddressMatchContext>(options => options
-                    .UseLoggerFactory(loggerFactory)
-                    .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { }))
-                .AddDbContext<BuildingContext>(options => options
-                    .UseLoggerFactory(loggerFactory)
                     .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { }));
 
             logger.LogWarning("Running InMemory for {Context}!", nameof(AddressQueryContext));
-            logger.LogWarning("Running InMemory for {Context}!", nameof(AddressMatchContext));
-            logger.LogWarning("Running InMemory for {Context}!", nameof(BuildingContext));
         }
     }
 }

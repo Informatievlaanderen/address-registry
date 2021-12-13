@@ -1,3 +1,10 @@
+# [2.34.0](https://github.com/informatievlaanderen/address-registry/compare/v2.33.0...v2.34.0) (2021-12-13)
+
+
+### Features
+
+* create oslo api for Address ([40fbac3](https://github.com/informatievlaanderen/address-registry/commit/40fbac3974a769e535355276b931c15992b1cf55))
+
 # [2.33.0](https://github.com/informatievlaanderen/address-registry/compare/v2.32.20...v2.33.0) (2021-12-08)
 
 

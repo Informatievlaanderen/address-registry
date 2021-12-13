@@ -11,7 +11,7 @@ namespace AddressRegistry.Api.Oslo.Address
     using NetTopologySuite.Geometries;
     using Projections.Syndication.Municipality;
     using Projections.Syndication.StreetName;
-    using Point = Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools.Point;
+    using Responses;
 
     public static class AddressMapper
     {
@@ -34,12 +34,14 @@ namespace AddressRegistry.Api.Oslo.Address
         private static string GetGml(Geometry geometry)
         {
             StringBuilder builder = new();
-            XmlWriterSettings settings = new() { Indent = true, OmitXmlDeclaration = true };
-            using var xmlwriter = XmlWriter.Create(builder, settings);
-            xmlwriter.WriteStartElement("gml", "Point", "http://www.opengis.net/gml/3.2");
-            xmlwriter.WriteAttributeString("srsName", "https://www.opengis.net/def/crs/EPSG/0/31370");
-            Write(geometry.Coordinate, xmlwriter);
-            xmlwriter.WriteEndElement();
+            XmlWriterSettings settings = new() { Indent = false, OmitXmlDeclaration = true };
+            using (XmlWriter xmlwriter = XmlWriter.Create(builder, settings))
+            {
+                xmlwriter.WriteStartElement("gml", "Point", "http://www.opengis.net/gml/3.2");
+                xmlwriter.WriteAttributeString("srsName", "https://www.opengis.net/def/crs/EPSG/0/31370");
+                Write(geometry.Coordinate, xmlwriter);
+                xmlwriter.WriteEndElement();
+            }
             return builder.ToString();
         }
 
@@ -51,22 +53,14 @@ namespace AddressRegistry.Api.Oslo.Address
             writer.WriteEndElement();
         }
 
-        public static Point GetAddressPoint(byte[] point, GeometryMethod? method, GeometrySpecification? specification)
+        public static AddressPosition GetAddressPoint(byte[] point, GeometryMethod? method,
+            GeometrySpecification? specification)
         {
             var geometry = WKBReaderFactory.Create().Read(point);
-            return new Point
-            {
-                XmlPoint = new GmlPoint
-                {
-                    Pos =
-                        $"{geometry.Coordinate.X.ToPointGeometryCoordinateValueFormat()} {geometry.Coordinate.Y.ToPointGeometryCoordinateValueFormat()}"
-                },
-                JsonPoint = new GeoJSONPoint { Coordinates = new[] { geometry.Coordinate.X, geometry.Coordinate.Y } },
-                //TODO: Uncomment this after installing new nupkg of grar-common
-                // Gml = GetGml(geometry),
-                // PositieSpecificatie = AddressMapper.ConvertFromGeometrySpecification(specification),
-                // PositieGeometrieMethode = AddressMapper.ConvertFromGeometryMethod(method),
-            };
+            var gml = GetGml(geometry);
+            var positieSpecificatie = ConvertFromGeometrySpecification(specification);
+            var positieGeometrieMethode = ConvertFromGeometryMethod(method);
+            return new AddressPosition(new GmlJsonPoint(gml), positieGeometrieMethode, positieSpecificatie);
         }
 
         public static PositieGeometrieMethode ConvertFromGeometryMethod(GeometryMethod? method)

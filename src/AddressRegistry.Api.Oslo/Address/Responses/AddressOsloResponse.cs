@@ -196,7 +196,7 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
         /// </summary>
         [DataMember(Name = "AdresPositie", Order = 10)]
         [JsonProperty(Required = Required.DisallowNull)]
-        public Point AdresPositie { get; set; }
+        public AddressPosition AdresPositie { get; set; }
 
         /// <summary>
         /// De fase in het leven van het adres.
@@ -221,7 +221,7 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
             AdresDetailStraatnaam straatnaam,
             HomoniemToevoeging homoniemToevoeging,
             AdresDetailPostinfo postInfo,
-            Point adresPositie,
+            AddressPosition adresPositie,
             AdresStatus status,
             Taal taal,
             bool? officieelToegekend,
@@ -257,17 +257,9 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
 
         public AddressOsloResponse GetExamples()
         {
-            var point = new Point
-            {
-                XmlPoint = new GmlPoint { Pos = "140252.76 198794.27" },
-                JsonPoint = new GeoJSONPoint { Coordinates = new[] { 140252.76, 198794.27 },
-                //TODO: Uncomment this after installing new nupkg of grar-common
-                //Gml = "<gml:Point srsName=\"https://www.opengis.net/def/crs/EPSG/0/31370\" xmlns:gml=\"http://www.opengis.net/gml/3.2\"><gml:pos>140252.76 198794.27</gml:pos></gml:Point>",
-                //PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                //PositieSpecificatie = PositieSpecificatie.Gebouw,
-                }
-            };
-
+            var gml = "<gml:Point srsName=\"https://www.opengis.net/def/crs/EPSG/0/31370\" xmlns:gml=\"http://www.opengis.net/gml/3.2\"><gml:pos>140252.76 198794.27</gml:pos></gml:Point>";
+            var addressPosition = new AddressPosition(new GmlJsonPoint(gml),
+                PositieGeometrieMethode.AangeduidDoorBeheerder, PositieSpecificatie.Gebouw);
             var gemeente = new AdresDetailGemeente("9000", string.Format(_responseOptions.GemeenteDetailUrl, "9000"),
                 new GeografischeNaam("Gent", Taal.NL));
             var straat = new AdresDetailStraatnaam("748", string.Format(_responseOptions.StraatnaamDetailUrl, "748"),
@@ -284,7 +276,7 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
                 straat,
                 homoniem,
                 postInfo,
-                point,
+                addressPosition,
                 AdresStatus.InGebruik,
                 Taal.NL,
                 true,

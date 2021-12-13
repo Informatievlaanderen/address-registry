@@ -1,0 +1,30 @@
+type file
+version 1.0.0
+
+id Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Oslo
+title Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Oslo
+
+authors Basisregisters.Vlaanderen
+owners Vlaamse overheid
+copyright Copyright (c) Vlaamse overheid
+requireLicenseAcceptance false
+projectUrl https://vlaanderen.be/informatie-vlaanderen
+iconUrl https://raw.githubusercontent.com/Informatievlaanderen/build-pipeline/master/logo.png
+licenseUrl https://opensource.org/licenses/EUPL-1.2
+
+description Address Registry.
+
+files
+  AddressRegistry.Api.Oslo.dll => lib\net5.0
+  AddressRegistry.Api.Oslo.pdb => lib\net5.0
+  AddressRegistry.Api.Oslo.xml => lib\net5.0
+  AddressRegistry.Api.Oslo.xml => content
+
+  AddressRegistry.Projections.Legacy.dll => lib\net5.0
+  AddressRegistry.Projections.Legacy.pdb => lib\net5.0
+
+  AddressRegistry.Projections.Syndication.dll => lib\net5.0
+  AddressRegistry.Projections.Syndication.pdb => lib\net5.0
+  
+  AddressRegistry.dll => lib\net5.0
+  AddressRegistry.pdb => lib\net5.0

@@ -1,5 +1,6 @@
 namespace AddressRegistry.Projections.LastChangedList
 {
+    using System;
     using Address.Events;
     using Address.Events.Crab;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
@@ -10,10 +11,7 @@ namespace AddressRegistry.Projections.LastChangedList
     [ConnectedProjectionDescription("Projectie die markeert voor hoeveel adressen de gecachte data nog geüpdated moeten worden.")]
     public class LastChangedListProjections : LastChangedListConnectedProjection
     {
-        protected override string CacheKeyFormat => "legacy/address:{{0}}.{1}";
-        protected override string UriFormat => "/v1/adressen/{{0}}";
-
-        private static readonly AcceptType[] SupportedAcceptTypes = { AcceptType.Json, AcceptType.Xml };
+        private static readonly AcceptType[] SupportedAcceptTypes = { AcceptType.Json, AcceptType.Xml, AcceptType.JsonLd };
 
         public LastChangedListProjections()
             : base(SupportedAcceptTypes)
@@ -188,6 +186,28 @@ namespace AddressRegistry.Projections.LastChangedList
             When<Envelope<AddressSubaddressStatusWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
         }
 
+        protected override string BuildCacheKey(AcceptType acceptType, string identifier)
+        {
+            var shortenedAcceptType = acceptType.ToString().ToLowerInvariant();
+            return acceptType switch
+            {
+                AcceptType.Json => string.Format("legacy/address:{{0}}.{1}", identifier, shortenedAcceptType),
+                AcceptType.Xml => string.Format("legacy/address:{{0}}.{1}", identifier, shortenedAcceptType),
+                AcceptType.JsonLd => string.Format("oslo/address:{{0}}.{1}", identifier, shortenedAcceptType),
+                _ => throw new NotImplementedException($"Cannot build CacheKey for type {typeof(AcceptType)}")
+            };
+        }
+
+        protected override string BuildUri(AcceptType acceptType, string identifier)
+        {
+            return acceptType switch
+            {
+                AcceptType.Json => string.Format("/v1/adressen/{{0}}", identifier),
+                AcceptType.Xml => string.Format("/v1/adressen/{{0}}", identifier),
+                AcceptType.JsonLd => string.Format("/v2/adressen/{{0}}", identifier),
+                _ => throw new NotImplementedException($"Cannot build Uri for type {typeof(AcceptType)}")
+            };
+        }
         private static void DoNothing() { }
     }
 }

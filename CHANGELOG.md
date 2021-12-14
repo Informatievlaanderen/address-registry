@@ -1,3 +1,10 @@
+## [2.34.1](https://github.com/informatievlaanderen/address-registry/compare/v2.34.0...v2.34.1) (2021-12-14)
+
+
+### Bug Fixes
+
+* use Projector 10.2.5 ([cadb9bd](https://github.com/informatievlaanderen/address-registry/commit/cadb9bd5f6614f7635f59731948f688bdee46612))
+
 # [2.34.0](https://github.com/informatievlaanderen/address-registry/compare/v2.33.0...v2.34.0) (2021-12-13)
 
 

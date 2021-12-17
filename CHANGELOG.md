@@ -1,3 +1,10 @@
+## [2.34.2](https://github.com/informatievlaanderen/address-registry/compare/v2.34.1...v2.34.2) (2021-12-17)
+
+
+### Bug Fixes
+
+* use async startup of projections to fix hanging migrations ([86380cc](https://github.com/informatievlaanderen/address-registry/commit/86380cc1e32d9b5d249c34f1a19d4160e621587e))
+
 ## [2.34.1](https://github.com/informatievlaanderen/address-registry/compare/v2.34.0...v2.34.1) (2021-12-14)
 
 

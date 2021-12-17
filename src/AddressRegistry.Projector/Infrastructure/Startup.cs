@@ -188,7 +188,7 @@ namespace AddressRegistry.Projector.Infrastructure
                     }
                 })
 
-                .UseProjectionsManager(new ProjectionsManagerOptions
+                .UseProjectionsManagerAsync(new ProjectionsManagerOptions
                 {
                     Common =
                     {

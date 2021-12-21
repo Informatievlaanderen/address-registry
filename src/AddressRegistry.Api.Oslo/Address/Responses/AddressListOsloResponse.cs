@@ -15,11 +15,13 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
     [DataContract(Name = "AdresCollectie", Namespace = "")]
     public class AddressListOsloResponse
     {
+        /// <summary>
+        /// De linked-data context van het adres.
+        /// </summary>
         [DataMember(Name = "@context", Order = 0)]
         [JsonProperty(Required = Required.DisallowNull)]
         [JsonConverter(typeof(PlainStringJsonConverter))]
-        public object Context =>
-            @"https://raw.githubusercontent.com/Informatievlaanderen/OSLOthema-gebouwEnAdres/d44fbba69aeb9f02d10d4e372449c404f3ebd06c/site-skeleton/adressenregister/context/adressen_list.jsonld";
+        public object Context => "[\"https://raw.githubusercontent.com/Informatievlaanderen/OSLOthema-gebouwEnAdres/d44fbba69aeb9f02d10d4e372449c404f3ebd06c/site-skeleton/adressenregister/context/adressen_list.jsonld\"]";
 
         /// <summary>
         /// De verzameling van adressen.
@@ -40,7 +42,7 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
     public class AddressListItemOsloResponse
     {
         /// <summary>
-        /// Het linked-data type van het Adres.
+        /// Het linked-data type van het adres.
         /// </summary>
         [DataMember(Name = "@type", Order = 0)]
         [JsonProperty(Required = Required.DisallowNull)]

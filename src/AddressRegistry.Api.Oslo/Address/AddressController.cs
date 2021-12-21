@@ -246,6 +246,5 @@ namespace AddressRegistry.Api.Oslo.Address
                             .Count)
                 });
         }
-
     }
 }

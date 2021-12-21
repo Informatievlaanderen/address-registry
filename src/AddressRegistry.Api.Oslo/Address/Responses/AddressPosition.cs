@@ -7,13 +7,13 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
     using Newtonsoft.Json;
 
     /// <summary>
-    /// De punt geometrie van het object.
+    /// De geometrie van het object in gml-formaat.
     /// </summary>
     [DataContract(Name = "Adrespositie", Namespace = "")]
     public class AddressPosition
     {
         /// <summary>
-        /// Een geometrie punt.
+        /// De geometrie.
         /// </summary>
         [JsonProperty("geometrie")]
         [XmlIgnore]

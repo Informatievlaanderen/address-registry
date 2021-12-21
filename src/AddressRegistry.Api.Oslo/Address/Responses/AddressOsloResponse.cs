@@ -90,7 +90,7 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
         public VolledigAdres VolledigAdres { get; set; }
 
         /// <summary>
-        /// De positie van het adres.
+        /// De geometrie van het object in gml-formaat.
         /// </summary>
         [DataMember(Name = "AdresPositie", Order = 10)]
         [JsonProperty(Required = Required.DisallowNull)]

@@ -15,55 +15,13 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
     [DataContract(Name = "AdresCollectie", Namespace = "")]
     public class AddressListOsloResponse
     {
+        /// <summary>
+        /// De linked-data context van het adres.
+        /// </summary>
         [DataMember(Name = "@context", Order = 0)]
         [JsonProperty(Required = Required.DisallowNull)]
         [JsonConverter(typeof(PlainStringJsonConverter))]
-        public object Context => @"{
-    ""@base"": ""https://basisregisters.vlaanderen.be/ns/adres"",
-    ""@vocab"": ""#"",
-    ""identificator"": ""@nest"",
-    ""id"": ""@id"",
-    ""versieId"": {
-      ""@id"": ""https://data.vlaanderen.be/ns/generiek#versieIdentificator"",
-      ""@type"": ""http://www.w3.org/2001/XMLSchema#string""
-    },
-    ""naamruimte"": {
-      ""@id"": ""https://data.vlaanderen.be/ns/generiek#naamruimte"",
-      ""@type"": ""http://www.w3.org/2001/XMLSchema#string""
-    },
-    ""objectId"": {
-      ""@id"": ""https://data.vlaanderen.be/ns/generiek#lokaleIdentificator"",
-      ""@type"": ""http://www.w3.org/2001/XMLSchema#string""
-    },
-    ""Adres"": ""https://data.vlaanderen.be/ns/adres#Adres"",
-    ""volledigAdres"": {
-      ""@id"": ""https://data.vlaanderen.be/ns/adres#isVerrijktMet"",
-      ""@type"": ""@id"",
-      ""@context"": {
-        ""geografischeNaam"": {
-          ""@id"": ""https://data.vlaanderen.be/ns/adres#volledigAdres"",
-          ""@context"": {
-            ""spelling"": ""@value"",
-            ""taal"": ""@language""
-          }
-        }
-      }
-    },
-    ""adresStatus"": {
-      ""@id"": ""https://data.vlaanderen.be/ns/adres#Adres.status"",
-      ""@type"": ""@id"",
-      ""@context"": {
-        ""@base"": ""https://data.vlaanderen.be/id/concept/adresstatus/""
-      }
-    },
-    ""huisnummer"": {
-      ""@id"": ""https://data.vlaanderen.be/ns/adres#huisnummer"",
-      ""@type"": ""http://www.w3.org/2001/XMLSchema#string""
-    },
-    ""detail"": ""http://www.iana.org/assignments/relation/self"",
-    ""volgende"": ""http://www.w3.org/ns/hydra/core#next"",
-    ""adressen"": ""@graph""
-  }";
+        public object Context => "[\"https://raw.githubusercontent.com/Informatievlaanderen/OSLOthema-gebouwEnAdres/d44fbba69aeb9f02d10d4e372449c404f3ebd06c/site-skeleton/adressenregister/context/adressen_list.jsonld\"]";
 
         /// <summary>
         /// De verzameling van adressen.
@@ -84,7 +42,7 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
     public class AddressListItemOsloResponse
     {
         /// <summary>
-        /// Het linked-data type van het Adres.
+        /// Het linked-data type van het adres.
         /// </summary>
         [DataMember(Name = "@type", Order = 0)]
         [JsonProperty(Required = Required.DisallowNull)]

@@ -1,3 +1,10 @@
+## [2.34.4](https://github.com/informatievlaanderen/address-registry/compare/v2.34.3...v2.34.4) (2021-12-21)
+
+
+### Bug Fixes
+
+* api docs oslo endpoint ([9a75727](https://github.com/informatievlaanderen/address-registry/commit/9a7572702faa2fbe8d354e642618cbe6d6827690))
+
 ## [2.34.3](https://github.com/informatievlaanderen/address-registry/compare/v2.34.2...v2.34.3) (2021-12-21)
 
 

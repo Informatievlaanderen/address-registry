@@ -1,3 +1,10 @@
+## [2.34.3](https://github.com/informatievlaanderen/address-registry/compare/v2.34.2...v2.34.3) (2021-12-21)
+
+
+### Bug Fixes
+
+* style trigger build ([dcb9092](https://github.com/informatievlaanderen/address-registry/commit/dcb9092a2297c944b000efb692caa2d4e396147d))
+
 ## [2.34.2](https://github.com/informatievlaanderen/address-registry/compare/v2.34.1...v2.34.2) (2021-12-17)
 
 

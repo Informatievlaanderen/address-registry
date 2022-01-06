@@ -17,6 +17,7 @@ namespace AddressRegistry.Projector.Infrastructure
     using Modules;
     using AddressRegistry.Projections.Extract;
     using AddressRegistry.Projections.Legacy;
+    using AddressRegistry.Projections.Wfs;
     using System;
     using System.Linq;
     using System.Reflection;
@@ -109,6 +110,10 @@ namespace AddressRegistry.Projector.Infrastructure
 
                             health.AddDbContextCheck<LastChangedListContext>(
                                 $"dbcontext-{nameof(LastChangedListContext).ToLowerInvariant()}",
+                                tags: new[] {DatabaseTag, "sql", "sqlserver"});
+
+                            health.AddDbContextCheck<WfsContext>(
+                                $"dbcontext-{nameof(WfsContext).ToLowerInvariant()}",
                                 tags: new[] {DatabaseTag, "sql", "sqlserver"});
                         }
                     }

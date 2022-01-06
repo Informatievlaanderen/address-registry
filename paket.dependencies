@@ -14,6 +14,7 @@ nuget Microsoft.Extensions.Http.Polly 5.0.1
 nuget AspNetCore.HealthChecks.SqlServer 5.0.3
 
 nuget AsyncEnumerator 4.0.2
+nuget Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite 5.0.6
 nuget Dapper 2.0.90
 nuget CsvHelper 27.1.0
 

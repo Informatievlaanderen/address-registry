@@ -9,6 +9,7 @@ namespace AddressRegistry.Infrastructure
         public const string Extract = "AddressRegistryExtract";
         public const string Syndication = "AddressRegistrySyndication";
         public const string Sequence = "AddressRegistrySequence";
+        public const string Wfs = "wfs.address";
     }
 
     public static class MigrationTables
@@ -18,6 +19,7 @@ namespace AddressRegistry.Infrastructure
         public const string Syndication = "__EFMigrationsHistorySyndication";
         public const string RedisDataMigration = "__EFMigrationsHistoryDataMigration";
         public const string Sequence = "__EFMigrationsHistorySequence";
+        public const string Wfs = "__EFMigrationsHistoryWfsAddress";
     }
 }
 

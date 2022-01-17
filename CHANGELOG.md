@@ -1,3 +1,10 @@
+## [2.34.5](https://github.com/informatievlaanderen/address-registry/compare/v2.34.4...v2.34.5) (2022-01-17)
+
+
+### Bug Fixes
+
+* gawr-2576 2 kommas na komma bij 0 ([a46b5d6](https://github.com/informatievlaanderen/address-registry/commit/a46b5d6f76c7d3b87e05cd9d9dd65cdbafd71284))
+
 ## [2.34.4](https://github.com/informatievlaanderen/address-registry/compare/v2.34.3...v2.34.4) (2021-12-21)
 
 

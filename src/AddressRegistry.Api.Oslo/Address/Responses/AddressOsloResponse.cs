@@ -24,7 +24,7 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
         [DataMember(Name = "@context", Order = 0)]
         [JsonProperty(Required = Required.DisallowNull)]
         [JsonConverter(typeof(PlainStringJsonConverter))]
-        public object Context => "[\"https://raw.githubusercontent.com/Informatievlaanderen/OSLOthema-gebouwEnAdres/d44fbba69aeb9f02d10d4e372449c404f3ebd06c/site-skeleton/adressenregister/context/adressen_detail.jsonld\"]";
+        public object Context { get; }
 
         /// <summary>
         /// Het linked-data type van het adres.
@@ -112,6 +112,7 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
 
         public AddressOsloResponse(
             string naamruimte,
+            string contextUrlDetail,
             string objectId,
             string huisnummer,
             string busnummer,
@@ -125,6 +126,7 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
             bool? officieelToegekend,
             DateTimeOffset version)
         {
+            Context = contextUrlDetail;
             Identificator = new AdresIdentificator(naamruimte, objectId, version);
             Huisnummer = huisnummer;
             Busnummer = busnummer;
@@ -167,6 +169,7 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
 
             return new AddressOsloResponse(
                 _responseOptions.Naamruimte,
+                _responseOptions.ContextUrlDetail,
                 "60",
                 "42",
                 "5B",

@@ -103,6 +103,7 @@ namespace AddressRegistry.Api.Oslo.Address
             return Ok(
                 new AddressOsloResponse(
                     responseOptions.Value.Naamruimte,
+                    responseOptions.Value.ContextUrlDetail,
                     address.PersistentLocalId.ToString(),
                     address.HouseNumber,
                     address.BoxNumber,
@@ -205,7 +206,8 @@ namespace AddressRegistry.Api.Oslo.Address
             return Ok(new AddressListOsloResponse
             {
                 Adressen = addressListItemResponses,
-                Volgende = pagedAddresses.PaginationInfo.BuildNextUri(responseOptions.Value.VolgendeUrl)
+                Volgende = pagedAddresses.PaginationInfo.BuildNextUri(responseOptions.Value.VolgendeUrl),
+                Context = responseOptions.Value.ContextUrlList
             });
         }
 

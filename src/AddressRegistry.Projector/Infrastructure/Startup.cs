@@ -20,7 +20,8 @@ namespace AddressRegistry.Projector.Infrastructure
     using System;
     using System.Linq;
     using System.Reflection;
-    using Be.Vlaanderen.Basisregisters.Projector;
+    using System.Threading;
+    using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
     using Microsoft.OpenApi.Models;
 
     /// <summary>Represents the startup process for the application.</summary>
@@ -32,6 +33,7 @@ namespace AddressRegistry.Projector.Infrastructure
 
         private readonly IConfiguration _configuration;
         private readonly ILoggerFactory _loggerFactory;
+        private readonly CancellationTokenSource _projectionsCancellationTokenSource = new CancellationTokenSource();
 
         public Startup(
             IConfiguration configuration,
@@ -186,16 +188,14 @@ namespace AddressRegistry.Projector.Infrastructure
                     {
                         AfterMiddleware = x => x.UseMiddleware<AddNoCacheHeadersMiddleware>()
                     }
-                })
-
-                .UseProjectionsManagerAsync(new ProjectionsManagerOptions
-                {
-                    Common =
-                    {
-                        ServiceProvider = serviceProvider,
-                        ApplicationLifetime = appLifetime
-                    }
                 });
+
+            appLifetime.ApplicationStopping.Register(() => _projectionsCancellationTokenSource.Cancel());
+            appLifetime.ApplicationStarted.Register(() =>
+            {
+                var projectionsManager = _applicationContainer.Resolve<IConnectedProjectionsManager>();
+                projectionsManager.Resume(_projectionsCancellationTokenSource.Token);
+            });
         }
 
         private static string GetApiLeadingText(ApiVersionDescription description)

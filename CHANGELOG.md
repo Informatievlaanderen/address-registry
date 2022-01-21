@@ -1,3 +1,10 @@
+## [2.34.7](https://github.com/informatievlaanderen/address-registry/compare/v2.34.6...v2.34.7) (2022-01-21)
+
+
+### Bug Fixes
+
+* correctly resume projections async ([8d476d1](https://github.com/informatievlaanderen/address-registry/commit/8d476d138b5e294d2b653b7ad440f923256543d6))
+
 ## [2.34.6](https://github.com/informatievlaanderen/address-registry/compare/v2.34.5...v2.34.6) (2022-01-18)
 
 ## [2.34.5](https://github.com/informatievlaanderen/address-registry/compare/v2.34.4...v2.34.5) (2022-01-17)

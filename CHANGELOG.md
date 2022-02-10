@@ -1,3 +1,10 @@
+## [2.34.8](https://github.com/informatievlaanderen/address-registry/compare/v2.34.7...v2.34.8) (2022-02-10)
+
+
+### Bug Fixes
+
+* update Api dependency to fix exception handler ([9b65eed](https://github.com/informatievlaanderen/address-registry/commit/9b65eedc0e4be9d4695e3923129957e42af56318))
+
 ## [2.34.7](https://github.com/informatievlaanderen/address-registry/compare/v2.34.6...v2.34.7) (2022-01-21)
 
 

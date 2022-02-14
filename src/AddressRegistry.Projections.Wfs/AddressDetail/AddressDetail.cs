@@ -16,12 +16,12 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
         public string? PostalCode { get; set; }
         public string? HouseNumber { get; set; }
         public string? BoxNumber { get; set; }
-        public AddressStatus? Status { get; set; }
+        public string? Status { get; set; }
         public bool? OfficiallyAssigned { get; set; }
 
         public Point? Position { get; set; }
-        public GeometryMethod? PositionMethod { get; set; }
-        public GeometrySpecification? PositionSpecification { get; set; }
+        public string? PositionMethod { get; set; }
+        public string? PositionSpecification { get; set; }
 
         public bool Complete { get; set; }
         public bool Removed { get; set; }

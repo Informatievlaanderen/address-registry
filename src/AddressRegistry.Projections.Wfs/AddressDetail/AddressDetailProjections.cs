@@ -14,6 +14,11 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
     [ConnectedProjectionDescription("Projectie die de adressen data voor het WFS adresregister voorziet.")]
     public class AddressDetailProjections : ConnectedProjection<WfsContext>
     {
+        private static readonly string AddressStatusUnknown = AddressStatus.Unknown.ToString();
+        private static readonly string AddressStatusCurrent = AddressStatus.Current.ToString();
+        private static readonly string AddressStatusRetired = AddressStatus.Retired.ToString();
+        private static readonly string AddressStatusProposed = AddressStatus.Proposed.ToString();
+
         public AddressDetailProjections(WKBReader wkbReader)
         {
             When<Envelope<AddressWasRegistered>>(async (context, message, ct) =>
@@ -48,7 +53,7 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
                     message.Message.AddressId,
                     item =>
                     {
-                        item.Status = AddressStatus.Current;
+                        item.Status = AddressStatusCurrent;
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);
@@ -128,14 +133,13 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
             When<Envelope<AddressPositionWasCorrected>>(async (context, message, ct) =>
             {
                 TryParsePosition(message.Message.ExtendedWkbGeometry, out var position);
-
                 await context.FindAndUpdateAddressDetail(
                     message.Message.AddressId,
                     item =>
                     {
                         item.Position = position;
-                        item.PositionMethod = message.Message.GeometryMethod;
-                        item.PositionSpecification = message.Message.GeometrySpecification;
+                        item.PositionMethod = message.Message.GeometryMethod.ToString();
+                        item.PositionSpecification = message.Message.GeometrySpecification.ToString();
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);
@@ -245,7 +249,7 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
                     message.Message.AddressId,
                     item =>
                     {
-                        item.Status = AddressStatus.Current;
+                        item.Status = AddressStatusCurrent;
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);
@@ -281,7 +285,7 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
                     message.Message.AddressId,
                     item =>
                     {
-                        item.Status = AddressStatus.Proposed;
+                        item.Status = AddressStatusProposed;
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);
@@ -293,7 +297,7 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
                     message.Message.AddressId,
                     item =>
                     {
-                        item.Status = AddressStatus.Retired;
+                        item.Status = AddressStatusRetired;
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);
@@ -319,8 +323,8 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
                     item =>
                     {
                         item.Position = position;
-                        item.PositionMethod = message.Message.GeometryMethod;
-                        item.PositionSpecification = message.Message.GeometrySpecification;
+                        item.PositionMethod = message.Message.GeometryMethod.ToString();
+                        item.PositionSpecification = message.Message.GeometrySpecification.ToString();
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);
@@ -332,7 +336,7 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
                     message.Message.AddressId,
                     item =>
                     {
-                        item.Status = AddressStatus.Proposed;
+                        item.Status = AddressStatusProposed;
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);
@@ -356,7 +360,7 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
                     message.Message.AddressId,
                     item =>
                     {
-                        item.Status = AddressStatus.Retired;
+                        item.Status = AddressStatusRetired;
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);

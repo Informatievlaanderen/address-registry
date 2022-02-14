@@ -43,7 +43,7 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
         {
             b.ToTable(TableName, Schema.Wfs)
                 .HasKey(p => p.AddressId)
-                .IsClustered(false);
+                .IsClustered(true);
 
             b.Property(p => p.VersionTimestampAsDateTimeOffset)
                 .HasColumnName("VersionTimestamp");

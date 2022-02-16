@@ -7,11 +7,7 @@ namespace AddressRegistry.Projections.Wfs.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
-IF OBJECT_ID('wfs.AdresView', 'V') IS NOT NULL
-    DROP VIEW [wfs].[AdresView]
-GO
-
-CREATE VIEW [wfs].[AdresView] AS
+CREATE VIEW [wfs].[AdresView] WITH SCHEMABINDING AS
 SELECT a.[PersistentLocalId] as 'ObjectId'
       ,CONCAT('https://data.vlaanderen.be/id/adres/',a.[PersistentLocalId]) as 'Id'
       ,CONVERT(VARCHAR(33), a.[VersionTimestamp], 126) as 'VersieId'
@@ -52,7 +48,7 @@ LEFT JOIN
     ) as s
   ON a.[StreetNameId] = s.[StraatnaamId]
 WHERE a.[Removed] = 0 AND a.[Complete] = 1
-GO");
+");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -60,7 +56,7 @@ GO");
             migrationBuilder.Sql(@"
 IF OBJECT_ID('wfs.AdresView', 'V') IS NOT NULL
     DROP VIEW [wfs].[AdresView]
-GO");
+");
         }
     }
 }

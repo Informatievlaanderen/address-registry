@@ -1,3 +1,10 @@
+# [2.35.0](https://github.com/informatievlaanderen/address-registry/compare/v2.34.8...v2.35.0) (2022-02-16)
+
+
+### Features
+
+* create wfs projection proj ([c3007ad](https://github.com/informatievlaanderen/address-registry/commit/c3007ad974f3c386b2b16d1f2fe62e6ae1c24da7))
+
 ## [2.34.8](https://github.com/informatievlaanderen/address-registry/compare/v2.34.7...v2.34.8) (2022-02-10)
 
 

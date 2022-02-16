@@ -1,3 +1,11 @@
+## [2.35.1](https://github.com/informatievlaanderen/address-registry/compare/v2.35.0...v2.35.1) (2022-02-16)
+
+
+### Bug Fixes
+
+* add schemabinding and remove view exists check ([2cbcf62](https://github.com/informatievlaanderen/address-registry/commit/2cbcf62d49fe43094e862cfe9ca36230769ffeef))
+* create adresview sql migration (wfs projection) ([f7e6b00](https://github.com/informatievlaanderen/address-registry/commit/f7e6b0017fd6d2a3113d2b34f1d49535062b26e5))
+
 # [2.35.0](https://github.com/informatievlaanderen/address-registry/compare/v2.34.8...v2.35.0) (2022-02-16)
 
 

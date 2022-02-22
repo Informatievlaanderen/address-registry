@@ -1,6 +1,8 @@
 namespace AddressRegistry.Projections.Wfs.AddressDetail
 {
     using System;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Be.Vlaanderen.Basisregisters.Utilities;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -31,8 +33,14 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
         public Instant VersionTimestamp
         {
             get => Instant.FromDateTimeOffset(VersionTimestampAsDateTimeOffset);
-            set => VersionTimestampAsDateTimeOffset = value.ToDateTimeOffset();
+            set
+            {
+                VersionTimestampAsDateTimeOffset = value.ToDateTimeOffset();
+                VersionAsString = new Rfc3339SerializableDateTimeOffset(value.ToBelgianDateTimeOffset()).ToString();
+            }
         }
+
+        public string? VersionAsString { get; protected set; }
     }
 
     public class AddressDetailItemConfiguration : IEntityTypeConfiguration<AddressDetailItem>
@@ -62,6 +70,7 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
             b.Property(p => p.Complete);
             b.Property(p => p.Status);
             b.Property(p => p.Removed);
+            b.Property(p => p.VersionAsString);
 
             b.HasIndex(p => p.PersistentLocalId);
 

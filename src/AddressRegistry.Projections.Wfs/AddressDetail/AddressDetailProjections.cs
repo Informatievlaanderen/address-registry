@@ -136,7 +136,7 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
                     item =>
                     {
                         item.Position = position;
-                        item.PositionMethod = MapGeometryMethodToPositieGeometrieMethode(message.Message.GeometryMethod)
+                        item.PositionMethod = ConvertGeometryMethodToString(message.Message.GeometryMethod)
                             ?.ToString();
                         item.PositionSpecification =
                             MapGeometrySpecificationToPositieSpecificatie(message.Message.GeometrySpecification)
@@ -324,7 +324,7 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
                     item =>
                     {
                         item.Position = position;
-                        item.PositionMethod = MapGeometryMethodToPositieGeometrieMethode(message.Message.GeometryMethod)
+                        item.PositionMethod = ConvertGeometryMethodToString(message.Message.GeometryMethod)
                             ?.ToString();
                         item.PositionSpecification =
                             MapGeometrySpecificationToPositieSpecificatie(message.Message.GeometrySpecification)
@@ -444,6 +444,11 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
                     return null;
             }
         }
+
+        private static string? ConvertGeometryMethodToString(GeometryMethod? method) =>
+            MapGeometryMethodToPositieGeometrieMethode(method)?
+            .ToString()
+            .Replace("Geinterpoleerd", "Geïnterpoleerd");
 
         private static PositieSpecificatie? MapGeometrySpecificationToPositieSpecificatie(
             GeometrySpecification? geometrySpecification)

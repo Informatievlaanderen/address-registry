@@ -62,6 +62,9 @@ namespace AddressRegistry.Projections.Wfs.Migrations
                     b.Property<Guid>("StreetNameId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("VersionAsString")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<DateTimeOffset>("VersionTimestampAsDateTimeOffset")
                         .HasColumnType("datetimeoffset")
                         .HasColumnName("VersionTimestamp");

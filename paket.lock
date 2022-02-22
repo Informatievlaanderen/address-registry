@@ -162,7 +162,7 @@ NUGET
     Be.Vlaanderen.Basisregisters.Aws.DistributedMutex (2.4)
       AWSSDK.DynamoDBv2 (>= 3.7.0.29) - restriction: || (&& (== net472) (>= net5.0)) (== net5.0)
       Microsoft.Extensions.Logging (>= 5.0) - restriction: || (&& (== net472) (>= net5.0)) (== net5.0)
-    Be.Vlaanderen.Basisregisters.Build.Pipeline (5.0.4)
+    Be.Vlaanderen.Basisregisters.Build.Pipeline (5.1)
       Fake.Core.Environment (>= 5.20.4)
       Fake.Core.Process (>= 5.20.4)
       Fake.Core.Target (>= 5.20.4)

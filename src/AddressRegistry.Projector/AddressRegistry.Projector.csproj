@@ -30,6 +30,7 @@
     <ProjectReference Include="..\AddressRegistry.Projections.LastChangedList\AddressRegistry.Projections.LastChangedList.csproj" />
     <ProjectReference Include="..\AddressRegistry.Projections.Legacy\AddressRegistry.Projections.Legacy.csproj" />
     <ProjectReference Include="..\AddressRegistry.Projections.Wfs\AddressRegistry.Projections.Wfs.csproj" />
+    <ProjectReference Include="..\AddressRegistry.Projections.Wms\AddressRegistry.Projections.Wms.csproj" />
   </ItemGroup>
 
   <ItemGroup>

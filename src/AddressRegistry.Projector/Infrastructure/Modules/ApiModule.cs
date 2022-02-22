@@ -27,6 +27,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using AddressRegistry.Projections.Legacy.AddressSyndication;
     using AddressRegistry.Projections.Legacy.CrabIdToPersistentLocalId;
     using AddressRegistry.Projections.Wfs;
+    using AddressRegistry.Projections.Wms;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
     using Microsoft.Extensions.Options;
@@ -78,6 +79,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
             RegisterLastChangedProjections(builder);
             RegisterLegacyProjections(builder);
             RegisterWfsProjections(builder);
+            RegisterWmsProjections(builder);
         }
 
         private void RegisterExtractProjections(ContainerBuilder builder)
@@ -167,6 +169,29 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
 
             .RegisterProjections<AddressRegistry.Projections.Wfs.AddressDetail.AddressDetailProjections, WfsContext>(() =>
                     new AddressRegistry.Projections.Wfs.AddressDetail.AddressDetailProjections(WKBReaderFactory.Create()),
+                wfsProjectionSettings);
+        }
+
+        private void RegisterWmsProjections(ContainerBuilder builder)
+        {
+            builder
+                .RegisterModule(
+                    new WmsModule(
+                        _configuration,
+                        _services,
+                        _loggerFactory));
+
+            var wfsProjectionSettings = ConnectedProjectionSettings
+                .Configure(settings =>
+                    settings.ConfigureLinearBackoff<SqlException>(_configuration, "Wms"));
+
+            builder
+                .RegisterProjectionMigrator<WmsContextMigrationFactory>(
+                    _configuration,
+                    _loggerFactory)
+
+            .RegisterProjections<AddressRegistry.Projections.Wms.AddressDetail.AddressDetailProjections, WmsContext>(() =>
+                    new AddressRegistry.Projections.Wms.AddressDetail.AddressDetailProjections(WKBReaderFactory.Create()),
                 wfsProjectionSettings);
         }
     }

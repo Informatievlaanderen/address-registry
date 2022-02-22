@@ -1,3 +1,10 @@
+## [2.35.2](https://github.com/informatievlaanderen/address-registry/compare/v2.35.1...v2.35.2) (2022-02-22)
+
+
+### Bug Fixes
+
+* GAWR-2754 & GAWR-2755 WFS AdresView ([6066a49](https://github.com/informatievlaanderen/address-registry/commit/6066a493e067d5a5162a390623cad6263c373fbb))
+
 ## [2.35.1](https://github.com/informatievlaanderen/address-registry/compare/v2.35.0...v2.35.1) (2022-02-16)
 
 

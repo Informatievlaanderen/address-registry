@@ -1,4 +1,4 @@
-namespace AddressRegistry.Projections.Wfs.AddressDetail
+namespace AddressRegistry.Projections.Wms.AddressDetail
 {
     using Address;
     using Address.Events;
@@ -12,9 +12,9 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
     using NodaTime;
 
 
-    [ConnectedProjectionName("WFS adressen")]
+    [ConnectedProjectionName("WMS adressen")]
     [ConnectedProjectionDescription("Projectie die de adressen data voor het WFS adresregister voorziet.")]
-    public class AddressDetailProjections : ConnectedProjection<WfsContext>
+    public class AddressDetailProjections : ConnectedProjection<WmsContext>
     {
         private static readonly string AdresStatusInGebruik = AdresStatus.InGebruik.ToString();
         private static readonly string AdresStatusGehistoreerd = AdresStatus.Gehistoreerd.ToString();
@@ -88,30 +88,6 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
                     ct);
             });
 
-            When<Envelope<AddressHouseNumberWasChanged>>(async (context, message, ct) =>
-            {
-                await context.FindAndUpdateAddressDetail(
-                    message.Message.AddressId,
-                    item =>
-                    {
-                        item.HouseNumber = message.Message.HouseNumber;
-                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-                    },
-                    ct);
-            });
-
-            When<Envelope<AddressHouseNumberWasCorrected>>(async (context, message, ct) =>
-            {
-                await context.FindAndUpdateAddressDetail(
-                    message.Message.AddressId,
-                    item =>
-                    {
-                        item.HouseNumber = message.Message.HouseNumber;
-                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-                    },
-                    ct);
-            });
-
             When<Envelope<AddressOfficialAssignmentWasRemoved>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressDetail(
@@ -129,38 +105,6 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
                 await context.FindAndUpdateAddressDetail(
                     message.Message.AddressId,
                     item => { item.PersistentLocalId = message.Message.PersistentLocalId; },
-                    ct);
-            });
-
-            When<Envelope<AddressPositionWasCorrected>>(async (context, message, ct) =>
-            {
-                var position = ParsePosition(message.Message.ExtendedWkbGeometry);
-                await context.FindAndUpdateAddressDetail(
-                    message.Message.AddressId,
-                    item =>
-                    {
-                        item.Position = position;
-                        item.PositionMethod = ConvertGeometryMethodToString(message.Message.GeometryMethod)
-                            ?.ToString();
-                        item.PositionSpecification =
-                            MapGeometrySpecificationToPositieSpecificatie(message.Message.GeometrySpecification)
-                                ?.ToString();
-                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-                    },
-                    ct);
-            });
-
-            When<Envelope<AddressPositionWasRemoved>>(async (context, message, ct) =>
-            {
-                await context.FindAndUpdateAddressDetail(
-                    message.Message.AddressId,
-                    item =>
-                    {
-                        item.Position = null;
-                        item.PositionMethod = null;
-                        item.PositionSpecification = null;
-                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-                    },
                     ct);
             });
 
@@ -320,24 +264,6 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
                     ct);
             });
 
-            When<Envelope<AddressWasPositioned>>(async (context, message, ct) =>
-            {
-                var position = ParsePosition(message.Message.ExtendedWkbGeometry);
-                await context.FindAndUpdateAddressDetail(
-                    message.Message.AddressId,
-                    item =>
-                    {
-                        item.Position = position;
-                        item.PositionMethod = ConvertGeometryMethodToString(message.Message.GeometryMethod)
-                            ?.ToString();
-                        item.PositionSpecification =
-                            MapGeometrySpecificationToPositieSpecificatie(message.Message.GeometrySpecification)
-                                ?.ToString();
-                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-                    },
-                    ct);
-            });
-
             When<Envelope<AddressWasProposed>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressDetail(
@@ -345,18 +271,6 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
                     item =>
                     {
                         item.Status = AdresStatusVoorgesteld;
-                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-                    },
-                    ct);
-            });
-
-            When<Envelope<AddressWasRemoved>>(async (context, message, ct) =>
-            {
-                await context.FindAndUpdateAddressDetail(
-                    message.Message.AddressId,
-                    item =>
-                    {
-                        item.Removed = true;
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);
@@ -374,6 +288,172 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
                     ct);
             });
 
+            When<Envelope<AddressWasRemoved>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressId,
+                    item =>
+                    {
+                        item.Removed = true;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+
+                await context.FindAndUpdateAddressesBySharedPosition(
+                    message.Message.AddressId,
+                    (addresses, houseNumberLabel) =>
+                    {
+                        foreach (var address in addresses)
+                        {
+                            address.HouseNumberLabel = houseNumberLabel;
+                            UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                        }
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasPositioned>>(async (context, message, ct) =>
+            {
+                var newPosition = ParsePosition(message.Message.ExtendedWkbGeometry);
+                await context.FindAndUpdatePreviousAndNewPositionAddresses(
+                    message.Message.AddressId,
+                    newPosition,
+                    (address, houseNumberLabel) =>
+                    {
+                        //Update current AddressDetailItem
+                        address.Position = newPosition;
+                        address.HouseNumberLabel = houseNumberLabel;
+                        address.PositionMethod = ConvertGeometryMethodToString(message.Message.GeometryMethod)
+                            ?.ToString();
+                        address.PositionSpecification =
+                            MapGeometrySpecificationToPositieSpecificatie(message.Message.GeometrySpecification)
+                                ?.ToString();
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    default,
+                    (newAddresses, houseNumberLabel) =>
+                    {
+                        //Update AddressDetailItems with shared new position
+                        foreach (var address in newAddresses)
+                        {
+                            address.HouseNumber = houseNumberLabel;
+                            UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                        }
+
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressHouseNumberWasChanged>>(async (context, message, ct) =>
+            {
+                var addressId = message.Message.AddressId;
+
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressId,
+                    item =>
+                    {
+                        item.HouseNumber = message.Message.HouseNumber;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+
+                await context.FindAndUpdateAddressesBySharedPosition(
+                    addressId,
+                    (addresses, houseNumberLabel) =>
+                    {
+                        foreach (var address in addresses)
+                        {
+                            address.HouseNumberLabel = houseNumberLabel;
+                            UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                        }
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressHouseNumberWasCorrected>>(async (context, message, ct) =>
+            {
+                var addressId = message.Message.AddressId;
+
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressId,
+                    item =>
+                    {
+                        item.HouseNumber = message.Message.HouseNumber;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+
+                await context.FindAndUpdateAddressesBySharedPosition(
+                    addressId,
+                    (addresses, houseNumberLabel) =>
+                    {
+                        foreach (var address in addresses)
+                        {
+                            address.HouseNumberLabel = houseNumberLabel;
+                            UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                        }
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressPositionWasCorrected>>(async (context, message, ct) =>
+            {
+                var newPosition = ParsePosition(message.Message.ExtendedWkbGeometry);
+                await context.FindAndUpdatePreviousAndNewPositionAddresses(
+                    message.Message.AddressId,
+                    newPosition,
+                    (address, houseNumberLabel) =>
+                    {
+                        //Update current AddressDetailItem
+                        address.Position = newPosition;
+                        address.HouseNumberLabel = houseNumberLabel;
+                        address.PositionMethod = ConvertGeometryMethodToString(message.Message.GeometryMethod)
+                            ?.ToString();
+                        address.PositionSpecification =
+                            MapGeometrySpecificationToPositieSpecificatie(message.Message.GeometrySpecification)
+                                ?.ToString();
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    (oldAddresses, houseNumberLabel) =>
+                    {
+                        //Update AddressDetailItems with shared old position
+                        foreach (var oldAddress in oldAddresses)
+                            oldAddress.HouseNumber = houseNumberLabel;
+                    },
+                    (newAddresses, houseNumberLabel) =>
+                    {
+                        //Update AddressDetailItems with shared new position
+                        foreach (var newAddress in newAddresses)
+                            newAddress.HouseNumber = houseNumberLabel;
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressPositionWasRemoved>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdatePreviousAndNewPositionAddresses(
+                    message.Message.AddressId,
+                    null,
+                    (address, _) =>
+                    {
+                        address.Position = null;
+                        address.HouseNumberLabel = null;
+                        address.PositionMethod = null;
+                        address.PositionSpecification = null;
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    (previousPositionAddresses, houseNumberLabel) =>
+                    {
+                        foreach (var address in previousPositionAddresses)
+                        {
+                            address.HouseNumber = houseNumberLabel;
+                            UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                        }
+                    },
+                    default,
+                    ct);
+            });
+
             When<Envelope<AddressBoxNumberWasChanged>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressDetail(
@@ -381,6 +461,9 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
                     item =>
                     {
                         item.BoxNumber = message.Message.BoxNumber;
+                        item.LabelType = string.IsNullOrWhiteSpace(message.Message.BoxNumber)
+                            ? WmsAddressLabelType.HouseNumber
+                            : WmsAddressLabelType.BusNumber;
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);
@@ -393,10 +476,14 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
                     item =>
                     {
                         item.BoxNumber = message.Message.BoxNumber;
+                        item.LabelType = string.IsNullOrWhiteSpace(message.Message.BoxNumber)
+                            ? WmsAddressLabelType.HouseNumber
+                            : WmsAddressLabelType.BusNumber;
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);
             });
+
             When<Envelope<AddressBoxNumberWasRemoved>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressDetail(
@@ -404,6 +491,7 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
                     item =>
                     {
                         item.BoxNumber = null;
+                        item.LabelType = WmsAddressLabelType.HouseNumber;
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);
@@ -412,7 +500,6 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
 
         private Point ParsePosition(string extendedWkbGeometry)
             => (Point) _wkbReader.Read(extendedWkbGeometry.ToByteArray());
-
 
         private static void UpdateVersionTimestamp(AddressDetailItem addressDetailItem, Instant versionTimestamp)
             => addressDetailItem.VersionTimestamp = versionTimestamp;
@@ -438,8 +525,9 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
 
         private static string? ConvertGeometryMethodToString(GeometryMethod? method) =>
             MapGeometryMethodToPositieGeometrieMethode(method)?
-            .ToString()
-            .Replace("Geinterpoleerd", "Geïnterpoleerd");
+                .ToString()
+                .Replace("Geinterpoleerd", "Geïnterpoleerd");
+
 
         private static PositieSpecificatie? MapGeometrySpecificationToPositieSpecificatie(
             GeometrySpecification? geometrySpecification)

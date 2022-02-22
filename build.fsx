@@ -46,6 +46,7 @@ Target.create "Build_Solution" (fun _ ->
   buildSource "AddressRegistry.Projections.Legacy"
   buildSource "AddressRegistry.Projections.Extract"
   buildSource "AddressRegistry.Projections.Wfs"
+  buildSource "AddressRegistry.Projections.Wms"
   buildSource "AddressRegistry.Projections.LastChangedList"
   buildSource "AddressRegistry.Projections.Syndication"
   buildTest "AddressRegistry.Tests"
@@ -71,6 +72,7 @@ Target.create "Publish_Solution" (fun _ ->
     "AddressRegistry.Projections.LastChangedList"
     "AddressRegistry.Projections.Syndication"
     "AddressRegistry.Projections.Wfs"
+    "AddressRegistry.Projections.Wms"
   ] |> List.iter publishSource
 
   let dist = (buildDir @@ "AddressRegistry.CacheWarmer" @@ "linux")

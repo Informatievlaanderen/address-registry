@@ -4,12 +4,12 @@ namespace AddressRegistry.Infrastructure
     {
         public const string Default = "AddressRegistry";
         public const string Import = "AddressRegistryImport";
-
         public const string Legacy = "AddressRegistryLegacy";
         public const string Extract = "AddressRegistryExtract";
         public const string Syndication = "AddressRegistrySyndication";
         public const string Sequence = "AddressRegistrySequence";
         public const string Wfs = "wfs.address";
+        public const string Wms = "wms.address";
     }
 
     public static class MigrationTables
@@ -20,6 +20,7 @@ namespace AddressRegistry.Infrastructure
         public const string RedisDataMigration = "__EFMigrationsHistoryDataMigration";
         public const string Sequence = "__EFMigrationsHistorySequence";
         public const string Wfs = "__EFMigrationsHistoryWfsAddress";
+        public const string Wms = "__EFMigrationsHistoryWmsAddress";
     }
 }
 

@@ -10,7 +10,7 @@ namespace AddressRegistry.Projections.Wfs.Migrations
 CREATE VIEW [wfs].[AdresView] WITH SCHEMABINDING AS
 SELECT a.[PersistentLocalId] as 'ObjectId'
       ,CONCAT('https://data.vlaanderen.be/id/adres/',a.[PersistentLocalId]) as 'Id'
-      ,a.[VersionAsString] as 'VersionId'
+      ,a.[VersionAsString] as 'VersieId'
       ,s.[straatnaamObjectId] as 'StraatnaamObjectId'
       ,s.[straatnaamNL] as 'Straatnaam'
       ,s.[NisCode] as 'GemeenteObjectId'

@@ -55,7 +55,7 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
         {
             b.ToTable(TableName, Schema.Wms)
                 .HasKey(p => p.AddressId)
-                .IsClustered(true);
+                .IsClustered();
 
             b.Property(p => p.VersionTimestampAsDateTimeOffset)
                 .HasColumnName("VersionTimestamp");
@@ -77,7 +77,7 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
             b.Property(p => p.VersionAsString);
 
             b.HasIndex(p => p.PersistentLocalId);
-
+            b.HasIndex(p => p.Status);
             b.HasIndex(p => p.StreetNameId);
             b.HasIndex(p => new  {p.Removed, p.Complete} );
         }

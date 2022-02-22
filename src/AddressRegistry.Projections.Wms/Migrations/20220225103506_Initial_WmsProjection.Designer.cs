@@ -65,7 +65,7 @@ namespace AddressRegistry.Projections.Wms.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<Guid>("StreetNameId")
                         .HasColumnType("uniqueidentifier");
@@ -81,6 +81,8 @@ namespace AddressRegistry.Projections.Wms.Migrations
                         .IsClustered();
 
                     b.HasIndex("PersistentLocalId");
+
+                    b.HasIndex("Status");
 
                     b.HasIndex("StreetNameId");
 

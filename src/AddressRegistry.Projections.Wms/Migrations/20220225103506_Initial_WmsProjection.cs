@@ -24,7 +24,7 @@ namespace AddressRegistry.Projections.Wms.Migrations
                     HouseNumberLabel = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LabelType = table.Column<int>(type: "int", nullable: false),
                     BoxNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     OfficiallyAssigned = table.Column<bool>(type: "bit", nullable: true),
                     Position = table.Column<Point>(type: "sys.geometry", nullable: true),
                     PositionMethod = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -62,6 +62,12 @@ namespace AddressRegistry.Projections.Wms.Migrations
                 schema: "wms.address",
                 table: "AddressDetails",
                 column: "PersistentLocalId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AddressDetails_Status",
+                schema: "wms.address",
+                table: "AddressDetails",
+                column: "Status");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AddressDetails_Removed_Complete",

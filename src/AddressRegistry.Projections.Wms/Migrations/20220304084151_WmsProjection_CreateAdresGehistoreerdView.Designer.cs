@@ -11,8 +11,8 @@ using NetTopologySuite.Geometries;
 namespace AddressRegistry.Projections.Wms.Migrations
 {
     [DbContext(typeof(WmsContext))]
-    [Migration("20220225103557_WmsProjection_AddSpatialIndexes")]
-    partial class WmsProjection_AddSpatialIndexes
+    [Migration("20220304084151_WmsProjection_CreateAdresGehistoreerdView")]
+    partial class WmsProjection_CreateAdresGehistoreerdView
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

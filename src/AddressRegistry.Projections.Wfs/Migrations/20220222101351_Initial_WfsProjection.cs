@@ -29,7 +29,8 @@ namespace AddressRegistry.Projections.Wfs.Migrations
                     PositionSpecification = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Complete = table.Column<bool>(type: "bit", nullable: false),
                     Removed = table.Column<bool>(type: "bit", nullable: false),
-                    VersionTimestamp = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+                    VersionTimestamp = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    VersionAsString = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {

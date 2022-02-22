@@ -11,8 +11,8 @@ using NetTopologySuite.Geometries;
 namespace AddressRegistry.Projections.Wfs.Migrations
 {
     [DbContext(typeof(WfsContext))]
-    [Migration("20220214124643_WfsProjection_AddSpatialIndexes")]
-    partial class WfsProjection_AddSpatialIndexes
+    [Migration("20220222101604_WfsProjection_CreateAdresView")]
+    partial class WfsProjection_CreateAdresView
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -63,6 +63,9 @@ namespace AddressRegistry.Projections.Wfs.Migrations
 
                     b.Property<Guid>("StreetNameId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("VersionAsString")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTimeOffset>("VersionTimestampAsDateTimeOffset")
                         .HasColumnType("datetimeoffset")

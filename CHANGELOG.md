@@ -1,3 +1,10 @@
+## [2.35.3](https://github.com/informatievlaanderen/address-registry/compare/v2.35.2...v2.35.3) (2022-02-22)
+
+
+### Bug Fixes
+
+* rename AdresView column name VersionId to VersieId ([7fa21dc](https://github.com/informatievlaanderen/address-registry/commit/7fa21dc55e74a5ca5a1a8c66bc63ae5b89a62e5a))
+
 ## [2.35.2](https://github.com/informatievlaanderen/address-registry/compare/v2.35.1...v2.35.2) (2022-02-22)
 
 

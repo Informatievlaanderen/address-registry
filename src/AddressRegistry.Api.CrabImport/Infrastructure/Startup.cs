@@ -192,7 +192,7 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure
                 .GetAwaiter()
                 .GetResult();
 
-            StartupHelpers.CheckDatabases(healthCheckService, DatabaseTag).GetAwaiter().GetResult();
+            StartupHelpers.CheckDatabases(healthCheckService, DatabaseTag, loggerFactory).GetAwaiter().GetResult();
         }
 
         private static string GetApiLeadingText(ApiVersionDescription description)

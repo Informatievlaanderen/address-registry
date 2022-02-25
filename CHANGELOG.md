@@ -1,3 +1,10 @@
+# [2.36.0](https://github.com/informatievlaanderen/address-registry/compare/v2.35.3...v2.36.0) (2022-02-25)
+
+
+### Features
+
+* update api to 17.0.0 ([89658a6](https://github.com/informatievlaanderen/address-registry/commit/89658a643e1b2ecc962071e1779e089c3d9e6579))
+
 ## [2.35.3](https://github.com/informatievlaanderen/address-registry/compare/v2.35.2...v2.35.3) (2022-02-22)
 
 

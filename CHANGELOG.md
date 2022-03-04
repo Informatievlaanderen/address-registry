@@ -1,3 +1,10 @@
+# [2.38.0](https://github.com/informatievlaanderen/address-registry/compare/v2.37.0...v2.38.0) (2022-03-04)
+
+
+### Features
+
+* create wms projection views ([fbc4833](https://github.com/informatievlaanderen/address-registry/commit/fbc4833ac611fcf5a5af1e73fd610652e8672741))
+
 # [2.37.0](https://github.com/informatievlaanderen/address-registry/compare/v2.36.0...v2.37.0) (2022-02-28)
 
 

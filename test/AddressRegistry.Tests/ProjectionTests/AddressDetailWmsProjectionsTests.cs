@@ -195,7 +195,6 @@ namespace AddressRegistry.Tests.ProjectionTests
                     {
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
-                        HouseNumberLabel = addressHouseNumberWasChanged.HouseNumber,
                         HouseNumber = addressHouseNumberWasChanged.HouseNumber,
                         VersionTimestamp = addressHouseNumberWasChanged.Provenance.Timestamp
                     }));
@@ -217,7 +216,6 @@ namespace AddressRegistry.Tests.ProjectionTests
                     {
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
-                        HouseNumberLabel = addressHouseNumberWasCorrected.HouseNumber,
                         HouseNumber = addressHouseNumberWasCorrected.HouseNumber,
                         VersionTimestamp = addressHouseNumberWasCorrected.Provenance.Timestamp
                     }));

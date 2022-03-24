@@ -21,12 +21,12 @@ namespace AddressRegistry.Projections.Wms.Migrations
                     StreetNameId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     PostalCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     HouseNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    HouseNumberLabel = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LabelType = table.Column<int>(type: "int", nullable: false),
                     BoxNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     OfficiallyAssigned = table.Column<bool>(type: "bit", nullable: true),
                     Position = table.Column<Point>(type: "sys.geometry", nullable: true),
+                    PositionAsText = table.Column<string>(type: "nvarchar(max)", nullable: true, computedColumnSql: "[Position].STAsText()", stored: true),
                     PositionMethod = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PositionSpecification = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Complete = table.Column<bool>(type: "bit", nullable: false),
@@ -64,16 +64,16 @@ namespace AddressRegistry.Projections.Wms.Migrations
                 column: "PersistentLocalId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AddressDetails_Status",
-                schema: "wms.address",
-                table: "AddressDetails",
-                column: "Status");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_AddressDetails_Removed_Complete",
                 schema: "wms.address",
                 table: "AddressDetails",
                 columns: new[] { "Removed", "Complete" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AddressDetails_Status",
+                schema: "wms.address",
+                table: "AddressDetails",
+                column: "Status");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AddressDetails_StreetNameId",

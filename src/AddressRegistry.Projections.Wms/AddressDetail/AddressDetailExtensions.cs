@@ -8,105 +8,43 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Internal;
+    using NetTopologySuite.Geometries;
+    using NetTopologySuite.IO;
 
     public static class AddressDetailExtensions
     {
+        private static string? STAsText(this Point point)
+            => point != null ? WKTWriter.ToPoint(point.Coordinate) : null;
+
         private static async Task<AddressDetailItem> FindAddressDetail(
             this WmsContext context,
             Guid addressId,
-            CancellationToken ct)
+            CancellationToken ct,
+            bool allowRemovedAddress = false)
         {
-            var address = await context
-                .Get<AddressDetailItem>()
-                .FindAsync(addressId, cancellationToken: ct);
+            // NOTE: We cannot depend on SQL computed columns when facing with bulk insert that needs to perform queries.
+            var address = await context.AddressDetail.FindAsync(addressId, cancellationToken: ct);
 
             if (address == null)
                 throw DatabaseItemNotFound(addressId);
 
-            return address;
+            // exclude soft deleted entries, unless allowed
+            if(!address.Removed || allowRemovedAddress)
+                return address;
+
+            throw DatabaseItemNotFound(addressId);
         }
 
         public static async Task<AddressDetailItem> FindAndUpdateAddressDetail(
             this WmsContext context,
             Guid addressId,
             Action<AddressDetailItem> updateFunc,
-            CancellationToken ct)
+            CancellationToken ct,
+            bool allowUpdateRemovedAddress = false)
         {
-            var address = await context.FindAddressDetail(addressId, ct);
+            var address = await context.FindAddressDetail(addressId, ct, allowUpdateRemovedAddress);
             updateFunc(address);
             return address;
-        }
-
-        public static async
-            Task<
-                (AddressDetailItem address,
-                IList<AddressDetailItem> previousSharedPositionAddresses,
-                IList<AddressDetailItem> newSharedPositionAddresses
-                )> FindAndUpdatePreviousAndNewPositionAddresses(
-                this WmsContext context,
-                Guid addressId,
-                NetTopologySuite.Geometries.Point? newPosition,
-                Action<AddressDetailItem, string?> updateFuncAddressDetail,
-                Action<IList<AddressDetailItem>, string?>? updateFuncPreviousPositionAddresses,
-                Action<IList<AddressDetailItem>, string?>? updateFuncNewSharedAddressDetails,
-                CancellationToken ct)
-        {
-            var address = await context.FindAddressDetail(addressId, ct);
-
-            // Find common addresses with previous position and invoke update
-            var previousPosition = address.Position;
-            var previousSharedPositionAddresses =
-                await context.FindSharedPositionAddresses(addressId, previousPosition, ct);
-            var previousPositionHouseNumberLabel = previousSharedPositionAddresses.GetHouseNumberLabel();
-            updateFuncPreviousPositionAddresses?.Invoke(previousSharedPositionAddresses, previousPositionHouseNumberLabel);
-
-            // Find common addresses with new position and invoke update
-            var newSharedPositionAddresses =
-                await context.FindSharedPositionAddresses(addressId, newPosition, ct);
-
-            var addresses = newSharedPositionAddresses;
-            addresses.Add(address);
-            var newPositionHouseNumberLabel = addresses.GetHouseNumberLabel();
-            updateFuncNewSharedAddressDetails?.Invoke(newSharedPositionAddresses, newPositionHouseNumberLabel);
-
-            //Update address with matching addressId
-            updateFuncAddressDetail(address, newPositionHouseNumberLabel);
-
-            return (address, previousSharedPositionAddresses, newSharedPositionAddresses);
-        }
-
-        public static async Task<IList<AddressDetailItem>> FindAndUpdateAddressesBySharedPosition(
-                this WmsContext context,
-                Guid addressId,
-                Action<IList<AddressDetailItem>, string?> updateFuncAddresses,
-                CancellationToken ct)
-        {
-            var address = await context.FindAddressDetail(addressId, ct);
-            var addresses = await context.FindSharedPositionAddresses(addressId, address.Position, ct);
-            addresses.Add(address);
-            var houseNumberLabel = addresses.GetHouseNumberLabel();
-            updateFuncAddresses(addresses, houseNumberLabel);
-            return addresses;
-        }
-
-        private static async Task<IList<AddressDetailItem>> FindSharedPositionAddresses(
-            this WmsContext context,
-            Guid addressId,
-            NetTopologySuite.Geometries.Point? position,
-            CancellationToken ct)
-        {
-            var empty = new List<AddressDetailItem>();
-
-            if (position == null)
-                return empty;
-
-            return await context
-                .AddressDetail
-                .Where(i =>
-                    i.Position!.Distance(position) < 1  &&
-                    i.AddressId != addressId &&
-                    i.Removed == false)
-                .ToListAsync(ct);
         }
 
         private static string? GetHouseNumberLabel(this IList<AddressDetailItem>? addresses)
@@ -130,6 +68,7 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
         }
 
         private static ProjectionItemNotFoundException<AddressDetailProjections> DatabaseItemNotFound(Guid addressId)
-            => new ProjectionItemNotFoundException<AddressDetailProjections>(addressId.ToString("D"));
+            => new(addressId.ToString("D"));
+
     }
 }

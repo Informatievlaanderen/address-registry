@@ -1,6 +1,7 @@
 namespace AddressRegistry.Projections.Wms.AddressDetail
 {
     using System;
+    using System.ComponentModel.DataAnnotations.Schema;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.Utilities;
     using Infrastructure;
@@ -17,15 +18,15 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
         public Guid StreetNameId { get; set; }
         public string? PostalCode { get; set; }
         public string? HouseNumber { get; set; }
-
-        public string? HouseNumberLabel { get; set; }
         public WmsAddressLabelType LabelType { get; set; }
 
         public string? BoxNumber { get; set; }
         public string? Status { get; set; }
         public bool? OfficiallyAssigned { get; set; }
-
         public Point? Position { get; set; }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public string? PositionAsText { get; }
         public string? PositionMethod { get; set; }
         public string? PositionSpecification { get; set; }
 
@@ -67,8 +68,13 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
             b.Property(p => p.HouseNumber);
             b.Property(p => p.BoxNumber);
             b.Property(p => p.OfficiallyAssigned);
+
             b.Property(p => p.Position)
                 .HasColumnType("sys.geometry");
+
+            b.Property(p => p.PositionAsText)
+                .HasComputedColumnSql("[Position].STAsText()", stored: true);
+
             b.Property(p => p.PositionSpecification);
             b.Property(p => p.PositionMethod);
             b.Property(p => p.Complete);

@@ -11,7 +11,7 @@ using NetTopologySuite.Geometries;
 namespace AddressRegistry.Projections.Wms.Migrations
 {
     [DbContext(typeof(WmsContext))]
-    [Migration("20220225103557_WmsProjection_AddSpatialIndexes")]
+    [Migration("20220323162455_WmsProjection_AddSpatialIndexes")]
     partial class WmsProjection_AddSpatialIndexes
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,9 +37,6 @@ namespace AddressRegistry.Projections.Wms.Migrations
                     b.Property<string>("HouseNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("HouseNumberLabel")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("LabelType")
                         .HasColumnType("int");
 
@@ -51,6 +48,11 @@ namespace AddressRegistry.Projections.Wms.Migrations
 
                     b.Property<Point>("Position")
                         .HasColumnType("sys.geometry");
+
+                    b.Property<string>("PositionAsText")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("nvarchar(max)")
+                        .HasComputedColumnSql("[Position].STAsText()", true);
 
                     b.Property<string>("PositionMethod")
                         .HasColumnType("nvarchar(max)");

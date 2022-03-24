@@ -35,9 +35,6 @@ namespace AddressRegistry.Projections.Wms.Migrations
                     b.Property<string>("HouseNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("HouseNumberLabel")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("LabelType")
                         .HasColumnType("int");
 
@@ -49,6 +46,11 @@ namespace AddressRegistry.Projections.Wms.Migrations
 
                     b.Property<Point>("Position")
                         .HasColumnType("sys.geometry");
+
+                    b.Property<string>("PositionAsText")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("nvarchar(max)")
+                        .HasComputedColumnSql("[Position].STAsText()", true);
 
                     b.Property<string>("PositionMethod")
                         .HasColumnType("nvarchar(max)");

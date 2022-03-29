@@ -13,12 +13,11 @@ namespace AddressRegistry.Api.Legacy.Tests.Framework.Assert
 
         protected override string Identifier => typeof(T).Name;
 
-        protected Assertions(T subject)
+        protected Assertions(T subject) : base(subject)
 		{
 			Action<string> notNullLogaction = Assertions.LogAction.Value ?? (message => Trace.WriteLine(message));
 			_logAction = message => notNullLogaction($"{"ASSERT",-10}{Identifier}: {message}");
-			Subject = subject;
-		}
+        }
 
         protected void AssertingThat(string message)
 		{

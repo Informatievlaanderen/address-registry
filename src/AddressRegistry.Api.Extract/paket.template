@@ -15,14 +15,14 @@ licenseUrl https://opensource.org/licenses/EUPL-1.2
 description Address Registry.
 
 dependencies
-  framework: net5.0
+  framework: net6.0
     Be.Vlaanderen.Basisregisters.Shaperon >= LOCKEDVERSION
 
 files
-  AddressRegistry.Api.Extract.dll => lib\net5.0
-  AddressRegistry.Api.Extract.pdb => lib\net5.0
-  AddressRegistry.Api.Extract.xml => lib\net5.0
+  AddressRegistry.Api.Extract.dll => lib\net6.0
+  AddressRegistry.Api.Extract.pdb => lib\net6.0
+  AddressRegistry.Api.Extract.xml => lib\net6.0
   AddressRegistry.Api.Extract.xml => content
 
-  AddressRegistry.Projections.Extract.dll => lib\net5.0
-  AddressRegistry.Projections.Extract.pdb => lib\net5.0
+  AddressRegistry.Projections.Extract.dll => lib\net6.0
+  AddressRegistry.Projections.Extract.pdb => lib\net6.0

@@ -1,3 +1,24 @@
+# [3.0.0](https://github.com/informatievlaanderen/address-registry/compare/v2.38.0...v3.0.0) (2022-03-29)
+
+
+### Bug Fixes
+
+* dotnet-ef cli to 6.0.3 ([d06aa99](https://github.com/informatievlaanderen/address-registry/commit/d06aa998210f8121b496163d25ba0b1162591a74))
+* specify parameter for dotnet version in main.yml ([3cd1231](https://github.com/informatievlaanderen/address-registry/commit/3cd123128c2be8f78ca62469054284c42a2857c1))
+* style trigger build ([a2e4171](https://github.com/informatievlaanderen/address-registry/commit/a2e4171eb71e89e3fa971ea70e20f8b53ba12648))
+* temp pin .net version ([212de63](https://github.com/informatievlaanderen/address-registry/commit/212de6355a9afeff25dd2c7dea29c0bdcb82cfd8))
+* wms remove old migrations, add computed column ([0c4e37d](https://github.com/informatievlaanderen/address-registry/commit/0c4e37d269e9e529204e87b316f87fa21ac8f990))
+
+
+### Features
+
+* move to dotnet 6.0.3 ([83a0982](https://github.com/informatievlaanderen/address-registry/commit/83a098203e87e702a2f72bb1b57cc5a93a1f90ec))
+
+
+### BREAKING CHANGES
+
+* move to dotnet 6.0.3
+
 # [2.38.0](https://github.com/informatievlaanderen/address-registry/compare/v2.37.0...v2.38.0) (2022-03-04)
 
 

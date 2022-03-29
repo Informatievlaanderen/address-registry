@@ -53,7 +53,8 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1.8.0
       with:
-        dotnet-version: ${{ secrets.VBR_DOTNET_VERSION }}
+        # dotnet-version: ${{ secrets.VBR_DOTNET_VERSION }}
+        dotnet-version: 5.0.6
 
     - name: Set up Python
       uses: actions/setup-python@v2.2.2

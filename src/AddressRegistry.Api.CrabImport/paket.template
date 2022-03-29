@@ -15,10 +15,10 @@ licenseUrl https://opensource.org/licenses/EUPL-1.2
 description Address Registry.
 
 files
-  AddressRegistry.Api.CrabImport.dll => lib\net5.0
-  AddressRegistry.Api.CrabImport.pdb => lib\net5.0
-  AddressRegistry.Api.CrabImport.xml => lib\net5.0
+  AddressRegistry.Api.CrabImport.dll => lib\net6.0
+  AddressRegistry.Api.CrabImport.pdb => lib\net6.0
+  AddressRegistry.Api.CrabImport.xml => lib\net6.0
   AddressRegistry.Api.CrabImport.xml => content
 
-  AddressRegistry.dll => lib\net5.0
-  AddressRegistry.pdb => lib\net5.0
+  AddressRegistry.dll => lib\net6.0
+  AddressRegistry.pdb => lib\net6.0

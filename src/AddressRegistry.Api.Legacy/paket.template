@@ -15,16 +15,16 @@ licenseUrl https://opensource.org/licenses/EUPL-1.2
 description Address Registry.
 
 files
-  AddressRegistry.Api.Legacy.dll => lib\net5.0
-  AddressRegistry.Api.Legacy.pdb => lib\net5.0
-  AddressRegistry.Api.Legacy.xml => lib\net5.0
+  AddressRegistry.Api.Legacy.dll => lib\net6.0
+  AddressRegistry.Api.Legacy.pdb => lib\net6.0
+  AddressRegistry.Api.Legacy.xml => lib\net6.0
   AddressRegistry.Api.Legacy.xml => content
 
-  AddressRegistry.Projections.Legacy.dll => lib\net5.0
-  AddressRegistry.Projections.Legacy.pdb => lib\net5.0
+  AddressRegistry.Projections.Legacy.dll => lib\net6.0
+  AddressRegistry.Projections.Legacy.pdb => lib\net6.0
 
-  AddressRegistry.Projections.Syndication.dll => lib\net5.0
-  AddressRegistry.Projections.Syndication.pdb => lib\net5.0
+  AddressRegistry.Projections.Syndication.dll => lib\net6.0
+  AddressRegistry.Projections.Syndication.pdb => lib\net6.0
   
-  AddressRegistry.dll => lib\net5.0
-  AddressRegistry.pdb => lib\net5.0
+  AddressRegistry.dll => lib\net6.0
+  AddressRegistry.pdb => lib\net6.0

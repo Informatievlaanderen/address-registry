@@ -20,7 +20,7 @@ namespace AddressRegistry.Api.Legacy.Tests.Framework.Assert
 
         protected void AddAssertion(Action<TResult> assertion)
         {
-            Subject = Subject.ContinueWith(previous =>
+            Subject.ContinueWith(previous =>
             {
                 assertion(previous.Result);
 

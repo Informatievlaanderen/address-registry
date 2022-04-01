@@ -3,6 +3,7 @@ namespace AddressRegistry.Infrastructure.Modules
     using Autofac;
     using Address;
     using Repositories;
+    using StreetName;
 
     public class RepositoriesModule : Module
     {
@@ -12,6 +13,10 @@ namespace AddressRegistry.Infrastructure.Modules
             containerBuilder
                 .RegisterType<Addresses>()
                 .As<IAddresses>();
+
+            containerBuilder
+                .RegisterType<StreetNames>()
+                .As<IStreetNames>();
         }
     }
 }

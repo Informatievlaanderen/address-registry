@@ -3,6 +3,7 @@ namespace AddressRegistry
     using Address;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
+    using StreetName;
 
     public static class CommandHandlerModules
     {
@@ -23,6 +24,15 @@ namespace AddressRegistry
             containerBuilder
                 .RegisterType<AddressCommandHandlerModule>()
                 .Named<CommandHandlerModule>(typeof(AddressCommandHandlerModule).FullName)
+                .As<CommandHandlerModule>();
+
+            containerBuilder
+                .RegisterType<StreetNameProvenanceFactory>()
+                .SingleInstance();
+
+            containerBuilder
+                .RegisterType<StreetNameCommandHandlerModule>()
+                .Named<CommandHandlerModule>(typeof(StreetNameCommandHandlerModule).FullName)
                 .As<CommandHandlerModule>();
         }
     }

@@ -4,15 +4,23 @@ namespace AddressRegistry.Tests
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
     using Autofac;
+    using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore.Autofac;
+    using global::AutoFixture;
     using Infrastructure.Modules;
     using Microsoft.Extensions.Configuration;
+    using Newtonsoft.Json;
     using Xunit.Abstractions;
 
     public class AddressRegistryTest : AutofacBasedTest
     {
+        protected Fixture Fixture { get; }
+        protected JsonSerializerSettings EventSerializerSettings { get; } = EventsJsonSerializerSettingsProvider.CreateSerializerSettings();
+
         public AddressRegistryTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
+            Fixture = new Fixture();
+            Fixture.Register(() => (ISnapshotStrategy)IntervalStrategy.Default);
         }
 
         protected override void ConfigureCommandHandling(ContainerBuilder builder)
@@ -31,5 +39,6 @@ namespace AddressRegistry.Tests
             var eventSerializerSettings = EventsJsonSerializerSettingsProvider.CreateSerializerSettings();
             builder.RegisterModule(new EventHandlingModule(typeof(DomainAssemblyMarker).Assembly, eventSerializerSettings));
         }
+        public string GetSnapshotIdentifier(string identifier) => $"{identifier}-snapshots";
     }
 }

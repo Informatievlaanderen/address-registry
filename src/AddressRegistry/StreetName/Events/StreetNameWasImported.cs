@@ -5,6 +5,7 @@ namespace AddressRegistry.StreetName.Events
     using System.Globalization;
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.EventHandling;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Newtonsoft.Json;
 
@@ -51,7 +52,7 @@ namespace AddressRegistry.StreetName.Events
             return fields;
         }
 
-        public string GetHash() => ""; //this.ToHash(EventName);//TODO: when package pushed to nuget
+        public string GetHash() => this.ToEventHash(EventName);
     }
 }
 

@@ -1,3 +1,10 @@
+## [3.0.1](https://github.com/informatievlaanderen/address-registry/compare/v3.0.0...v3.0.1) (2022-04-04)
+
+
+### Bug Fixes
+
+* set oslo context type to string GAWR-2931 ([dc8e8a1](https://github.com/informatievlaanderen/address-registry/commit/dc8e8a1bcbf584cf2ce36a5d8ab2c361197ef0c7))
+
 # [3.0.0](https://github.com/informatievlaanderen/address-registry/compare/v2.38.0...v3.0.0) (2022-03-29)
 
 

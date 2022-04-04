@@ -29,7 +29,7 @@ namespace AddressRegistry.Consumer
 
         public async Task Start(CancellationToken cancellationToken = default)
         {
-            var commandHandler = new CommandHandler(_container, _loggerFactory.CreateLogger<CommandHandler>());
+            var commandHandler = new CommandHandler(_container, _loggerFactory);
             var projector = new ConnectedProjector<CommandHandler>(Resolve.WhenEqualToHandlerMessageType(new StreetNameKafkaProjection().Handlers));
 
             var consumerGroupId = $"{nameof(AddressRegistry)}.{nameof(Consumer)}.{_consumerOptions.Topic}{_consumerOptions.ConsumerGroupSuffix}";

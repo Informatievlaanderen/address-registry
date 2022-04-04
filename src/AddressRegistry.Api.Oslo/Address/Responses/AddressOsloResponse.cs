@@ -10,7 +10,6 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
     using System;
     using System.Runtime.Serialization;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
-    using Be.Vlaanderen.Basisregisters.Api.JsonConverters;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Newtonsoft.Json;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
@@ -23,8 +22,7 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
         /// </summary>
         [DataMember(Name = "@context", Order = 0)]
         [JsonProperty(Required = Required.DisallowNull)]
-        [JsonConverter(typeof(PlainStringJsonConverter))]
-        public object Context { get; }
+        public string Context { get; }
 
         /// <summary>
         /// Het linked-data type van het adres.

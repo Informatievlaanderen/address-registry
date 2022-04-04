@@ -8,7 +8,6 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
     using System;
     using System.Collections.Generic;
     using System.Runtime.Serialization;
-    using Be.Vlaanderen.Basisregisters.Api.JsonConverters;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Newtonsoft.Json;
 
@@ -20,8 +19,7 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
         /// </summary>
         [DataMember(Name = "@context", Order = 0)]
         [JsonProperty(Required = Required.DisallowNull)]
-        [JsonConverter(typeof(PlainStringJsonConverter))]
-        public object Context { get; set; }
+        public string Context { get; set; }
 
         /// <summary>
         /// De verzameling van adressen.

@@ -4,6 +4,7 @@ Microsoft.NET.Test.Sdk
 FluentAssertions
 AutoFixture.Xunit2
 NetTopologySuite
+Moq
 
 Be.Vlaanderen.Basisregisters.Crab
 

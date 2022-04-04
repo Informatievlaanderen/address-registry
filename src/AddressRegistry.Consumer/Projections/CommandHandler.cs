@@ -12,10 +12,10 @@ namespace AddressRegistry.Consumer.Projections
         private readonly ILifetimeScope _container;
         private readonly ILogger<CommandHandler> _logger;
 
-        public CommandHandler(ILifetimeScope container, ILogger<CommandHandler> logger)
+        public CommandHandler(ILifetimeScope container, ILoggerFactory loggerFactory)
         {
             _container = container;
-            _logger = logger;
+            _logger = loggerFactory.CreateLogger<CommandHandler>();
         }
 
         public virtual async Task Handle<T>(T command, CancellationToken cancellationToken)

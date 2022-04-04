@@ -21,12 +21,18 @@ namespace AddressRegistry.StreetName
 
         public void ApproveStreetName()
         {
-            ApplyChange(new StreetNameWasApproved(PersistentLocalId));
+            if (Status != StreetNameStatus.Current)
+            {
+                ApplyChange(new StreetNameWasApproved(PersistentLocalId));
+            }
         }
 
         public void RemoveStreetName()
         {
-            ApplyChange(new StreetNameWasRemoved(PersistentLocalId));
+            if (!IsRemoved)
+            {
+                ApplyChange(new StreetNameWasRemoved(PersistentLocalId));
+            }
             //TODO: remove addresses?
         }
 

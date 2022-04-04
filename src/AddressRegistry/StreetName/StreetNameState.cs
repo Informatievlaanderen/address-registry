@@ -5,7 +5,7 @@ namespace AddressRegistry.StreetName
     public partial class StreetName
     {
         public StreetNamePersistentLocalId PersistentLocalId { get; private set; }
-        public bool Removed { get; private set; }
+        public bool IsRemoved { get; private set; }
         public StreetNameStatus Status { get; private set; }
 
         private StreetName()
@@ -17,12 +17,12 @@ namespace AddressRegistry.StreetName
 
         private void When(StreetNameWasRemoved @event)
         {
-            Removed = true;
+            IsRemoved = true;
         }
 
         private void When(StreetNameWasApproved @event)
         {
-            Status = StreetNameStatus.Proposed;
+            Status = StreetNameStatus.Current;
         }
 
         private void When(StreetNameWasImported @event)

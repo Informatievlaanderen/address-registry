@@ -9,7 +9,6 @@ namespace AddressRegistry.Consumer.Infrastructure
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple;
-    using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
     using Be.Vlaanderen.Basisregisters.Projector.Modules;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -65,19 +64,16 @@ namespace AddressRegistry.Consumer.Infrastructure
                             var bootstrapServers = configuration["Kafka:BootstrapServers"];
                             var kafkaOptions = new KafkaOptions(bootstrapServers, configuration["Kafka:SaslUserName"], configuration["Kafka:SaslPassword"], EventsJsonSerializerSettingsProvider.CreateSerializerSettings());
 
-                            var topic = $"{configuration["MunicipalityTopic"]}" ?? throw new ArgumentException("Configuration has no MunicipalityTopic.");
-                            var consumerGroupSuffix = configuration["MunicipalityConsumerGroupSuffix"];
+                            var topic = $"{configuration["StreetNameTopic"]}" ?? throw new ArgumentException("Configuration has no MunicipalityTopic.");
+                            var consumerGroupSuffix = configuration["StreetNameConsumerGroupSuffix"];
                             var consumerOptions = new ConsumerOptions(topic, consumerGroupSuffix);
 
                             var actualContainer = container.GetRequiredService<ILifetimeScope>();
 
-                            var projectionsManager = actualContainer.Resolve<IConnectedProjectionsManager>();
-                            var projectionsTask = projectionsManager.Start(cancellationToken);
-
                             var consumer = new Consumer(actualContainer, loggerFactory, kafkaOptions, consumerOptions);
                             var consumerTask = consumer.Start(cancellationToken);
 
-                            await Task.WhenAll(projectionsTask, consumerTask);
+                            await consumerTask;
                         }
                         catch (Exception e)
                         {

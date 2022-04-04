@@ -5,6 +5,7 @@ namespace AddressRegistry.StreetName
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.EventHandling;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common.Pipes;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Commands;
     using SqlStreamStore;
@@ -21,7 +22,7 @@ namespace AddressRegistry.StreetName
         {
             For<ImportStreetName>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
-                //TODO: .AddHash<ImportStreetName, StreetName>(getUnitOfWork)
+                .AddEventHash<ImportStreetName, StreetName>(getUnitOfWork)
                 .AddProvenance(getUnitOfWork, provenanceFactory)
                 .Handle(async (message, ct) =>
                 {
@@ -36,6 +37,30 @@ namespace AddressRegistry.StreetName
                     var newStreetName = StreetName.Register(message.Command.PersistentLocalId, message.Command.MunicipalityId, message.Command.StreetNameStatus);
 
                     getStreetNames().Add(streetNameStreamId, newStreetName);
+                });
+
+            For<ApproveStreetName>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
+                .AddEventHash<ApproveStreetName, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streetNameStreamId = new StreetNameStreamId(message.Command.PersistentLocalId);
+                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+
+                    streetName.ApproveStreetName();
+                });
+
+            For<RemoveStreetName>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
+                .AddEventHash<RemoveStreetName, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streetNameStreamId = new StreetNameStreamId(message.Command.PersistentLocalId);
+                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+
+                    streetName.RemoveStreetName();
                 });
         }
     }

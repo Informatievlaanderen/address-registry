@@ -6,6 +6,9 @@ namespace AddressRegistry.StreetName
 
     public class MunicipalityId : GuidValueObject<MunicipalityId>
     {
+        public static MunicipalityId CreateFor(string municipalityId)
+            => new MunicipalityId(Guid.Parse(municipalityId));
+
         public MunicipalityId([JsonProperty("value")] Guid municipalityId) : base(municipalityId) { }
     }
 }

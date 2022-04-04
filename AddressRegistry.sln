@@ -1,6 +1,7 @@
-﻿Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2027
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32319.34
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C2F8FF63-7A48-4179-A720-86206C42F496}"
 EndProject
@@ -52,11 +53,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddressRegistry.Projector",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddressRegistry.Api.Legacy.Tests", "test\AddressRegistry.Api.Legacy.Tests\AddressRegistry.Api.Legacy.Tests.csproj", "{4F64725C-C892-4255-A424-BF761DCAD974}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AddressRegistry.Api.Oslo", "src\AddressRegistry.Api.Oslo\AddressRegistry.Api.Oslo.csproj", "{605D4BA5-E631-4E36-98E3-9482D95614CE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddressRegistry.Api.Oslo", "src\AddressRegistry.Api.Oslo\AddressRegistry.Api.Oslo.csproj", "{605D4BA5-E631-4E36-98E3-9482D95614CE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AddressRegistry.Projections.Wfs", "src\AddressRegistry.Projections.Wfs\AddressRegistry.Projections.Wfs.csproj", "{938B2F44-ECFF-4412-8BD7-280F039E2E45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddressRegistry.Projections.Wfs", "src\AddressRegistry.Projections.Wfs\AddressRegistry.Projections.Wfs.csproj", "{938B2F44-ECFF-4412-8BD7-280F039E2E45}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AddressRegistry.Projections.Wms", "src\AddressRegistry.Projections.Wms\AddressRegistry.Projections.Wms.csproj", "{84468348-ABDE-47E8-B7E8-CCBA8FAB6D3F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddressRegistry.Projections.Wms", "src\AddressRegistry.Projections.Wms\AddressRegistry.Projections.Wms.csproj", "{84468348-ABDE-47E8-B7E8-CCBA8FAB6D3F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddressRegistry.Consumer", "src\AddressRegistry.Consumer\AddressRegistry.Consumer.csproj", "{39900D30-A0A1-42D2-90E9-50135916D577}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -260,6 +263,18 @@ Global
 		{84468348-ABDE-47E8-B7E8-CCBA8FAB6D3F}.Release|x64.Build.0 = Release|Any CPU
 		{84468348-ABDE-47E8-B7E8-CCBA8FAB6D3F}.Release|x86.ActiveCfg = Release|Any CPU
 		{84468348-ABDE-47E8-B7E8-CCBA8FAB6D3F}.Release|x86.Build.0 = Release|Any CPU
+		{39900D30-A0A1-42D2-90E9-50135916D577}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39900D30-A0A1-42D2-90E9-50135916D577}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39900D30-A0A1-42D2-90E9-50135916D577}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{39900D30-A0A1-42D2-90E9-50135916D577}.Debug|x64.Build.0 = Debug|Any CPU
+		{39900D30-A0A1-42D2-90E9-50135916D577}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{39900D30-A0A1-42D2-90E9-50135916D577}.Debug|x86.Build.0 = Debug|Any CPU
+		{39900D30-A0A1-42D2-90E9-50135916D577}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39900D30-A0A1-42D2-90E9-50135916D577}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39900D30-A0A1-42D2-90E9-50135916D577}.Release|x64.ActiveCfg = Release|Any CPU
+		{39900D30-A0A1-42D2-90E9-50135916D577}.Release|x64.Build.0 = Release|Any CPU
+		{39900D30-A0A1-42D2-90E9-50135916D577}.Release|x86.ActiveCfg = Release|Any CPU
+		{39900D30-A0A1-42D2-90E9-50135916D577}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -281,6 +296,7 @@ Global
 		{605D4BA5-E631-4E36-98E3-9482D95614CE} = {C2F8FF63-7A48-4179-A720-86206C42F496}
 		{938B2F44-ECFF-4412-8BD7-280F039E2E45} = {C2F8FF63-7A48-4179-A720-86206C42F496}
 		{84468348-ABDE-47E8-B7E8-CCBA8FAB6D3F} = {C2F8FF63-7A48-4179-A720-86206C42F496}
+		{39900D30-A0A1-42D2-90E9-50135916D577} = {C2F8FF63-7A48-4179-A720-86206C42F496}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2EB87445-E263-4E1E-89CC-3839170028E5}

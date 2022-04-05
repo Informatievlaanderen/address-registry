@@ -17,7 +17,7 @@ namespace AddressRegistry.Tests.ProjectionTests
 
     public class AddressDetailProjectionsTests : ProjectionTest<LegacyContext, AddressDetailProjections>
     {
-        private readonly WKBReader _wkbReader = WKBReaderFactory.Create();
+        private readonly WKBReader _wkbReader = WKBReaderFactory.CreateForLegacy();
 
         public AddressDetailProjectionsTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {

@@ -20,7 +20,7 @@ namespace AddressRegistry.Tests.ProjectionTests
 
     public class AddressDetailWmsProjectionsTests : ProjectionTest<WmsContext, AddressDetailProjections>
     {
-        private readonly WKBReader _wkbReader = WKBReaderFactory.Create();
+        private readonly WKBReader _wkbReader = WKBReaderFactory.CreateForLegacy();
 
         public AddressDetailWmsProjectionsTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {

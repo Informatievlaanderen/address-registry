@@ -140,7 +140,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                     _configuration,
                     _loggerFactory)
                 .RegisterProjections<AddressDetailProjections, LegacyContext>(
-                    () => new AddressDetailProjections(WKBReaderFactory.Create()),
+                    () => new AddressDetailProjections(WKBReaderFactory.CreateForLegacy()),
                     ConnectedProjectionSettings.Default)
                 .RegisterProjections<AddressListProjections, LegacyContext>(ConnectedProjectionSettings.Default)
                 .RegisterProjections<AddressSyndicationProjections, LegacyContext>(
@@ -168,7 +168,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                     _loggerFactory)
 
             .RegisterProjections<AddressRegistry.Projections.Wfs.AddressDetail.AddressDetailProjections, WfsContext>(() =>
-                    new AddressRegistry.Projections.Wfs.AddressDetail.AddressDetailProjections(WKBReaderFactory.Create()),
+                    new AddressRegistry.Projections.Wfs.AddressDetail.AddressDetailProjections(WKBReaderFactory.CreateForLegacy()),
                 wfsProjectionSettings);
         }
 
@@ -191,7 +191,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                     _loggerFactory)
 
             .RegisterProjections<AddressRegistry.Projections.Wms.AddressDetail.AddressDetailProjections, WmsContext>(() =>
-                    new AddressRegistry.Projections.Wms.AddressDetail.AddressDetailProjections(WKBReaderFactory.Create()),
+                    new AddressRegistry.Projections.Wms.AddressDetail.AddressDetailProjections(WKBReaderFactory.CreateForLegacy()),
                 wfsProjectionSettings);
         }
     }

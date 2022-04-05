@@ -7,7 +7,6 @@ namespace AddressRegistry.Tests.ProjectionTests
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing;
     using Microsoft.EntityFrameworkCore;
-    using Newtonsoft.Json;
     using Xunit.Abstractions;
 
     public abstract class ProjectionTest<TContext, TProjection>

@@ -3,8 +3,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\AddressRegistry.Api.Legacy\AddressRegistry.Api.Legacy.csproj" />
+    <ProjectReference Include="..\..\src\AddressRegistry.Consumer\AddressRegistry.Consumer.csproj" />
     <ProjectReference Include="..\..\src\AddressRegistry.Projections.Wms\AddressRegistry.Projections.Wms.csproj" />
     <ProjectReference Include="..\..\src\AddressRegistry\AddressRegistry.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="AggregateTests\WhenApprovingStreetName\" />
   </ItemGroup>
 
   <Import Project="..\..\.paket\Paket.Restore.targets" />

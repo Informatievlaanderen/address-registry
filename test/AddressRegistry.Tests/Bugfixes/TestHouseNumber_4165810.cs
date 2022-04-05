@@ -1,6 +1,10 @@
 namespace AddressRegistry.Tests.Bugfixes
 {
     using Address.Events;
+    using AggregateTests.Legacy.WhenImportHouseNumberFromCrab;
+    using AggregateTests.Legacy.WhenImportHouseNumberMailCantonFromCrab;
+    using AggregateTests.Legacy.WhenImportHouseNumberPositionFromCrab;
+    using AggregateTests.Legacy.WhenImportHouseNumberStatusFromCrab.WhenImportHousenumberStatusFromCrab;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Formatters.Json;
@@ -8,10 +12,6 @@ namespace AddressRegistry.Tests.Bugfixes
     using global::AutoFixture;
     using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
     using Newtonsoft.Json;
-    using WhenImportHouseNumberFromCrab;
-    using WhenImportHouseNumberMailCantonFromCrab;
-    using WhenImportHouseNumberPositionFromCrab;
-    using WhenImportHouseNumberStatusFromCrab;
     using Xunit;
     using Xunit.Abstractions;
 

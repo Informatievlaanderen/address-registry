@@ -43,6 +43,7 @@ Target.create "Build_Solution" (fun _ ->
   buildSource "AddressRegistry.Api.Legacy"
   buildSource "AddressRegistry.Api.Extract"
   buildSource "AddressRegistry.Api.CrabImport"
+  buildSource "AddressRegistry.Consumer"
   buildSource "AddressRegistry.Projections.Legacy"
   buildSource "AddressRegistry.Projections.Extract"
   buildSource "AddressRegistry.Projections.Wfs"
@@ -67,6 +68,7 @@ Target.create "Publish_Solution" (fun _ ->
     "AddressRegistry.Api.Oslo"
     "AddressRegistry.Api.Extract"
     "AddressRegistry.Api.CrabImport"
+    "AddressRegistry.Consumer"
     "AddressRegistry.Projections.Legacy"
     "AddressRegistry.Projections.Extract"
     "AddressRegistry.Projections.LastChangedList"
@@ -89,6 +91,7 @@ Target.create "Pack_Solution" (fun _ ->
     "AddressRegistry.Api.Oslo"
     "AddressRegistry.Api.Extract"
     "AddressRegistry.Api.CrabImport"
+    "AddressRegistry.Consumer"
   ] |> List.iter pack)
 
 Target.create "Containerize_Projector" (fun _ -> containerize "AddressRegistry.Projector" "projector")
@@ -108,6 +111,9 @@ Target.create "PushContainer_ApiBackoffice" (fun _ -> push "api-backoffice")
 
 Target.create "Containerize_ApiCrabImport" (fun _ -> containerize "AddressRegistry.Api.CrabImport" "api-crab-import")
 Target.create "PushContainer_ApiCrabImport" (fun _ -> push "api-crab-import")
+
+Target.create "Containerize_Consumer" (fun _ -> containerize "AddressRegistry.Consumer" "consumer")
+Target.create "PushContainer_Consumer" (fun _ -> push "consumer")
 
 Target.create "Containerize_ProjectionsSyndication" (fun _ -> containerize "AddressRegistry.Projections.Syndication" "projections-syndication")
 Target.create "PushContainer_ProjectionsSyndication" (fun _ -> push "projections-syndication")
@@ -150,6 +156,7 @@ Target.create "Push" ignore
   ==> "Containerize_ApiExtract"
   //==> "Containerize_ApiBackoffice"
   ==> "Containerize_ApiCrabImport"
+  ==> "Containerize_Consumer"
   ==> "Containerize_ProjectionsSyndication"
   ==> "Containerize_CacheWarmer"
   ==> "Containerize"
@@ -163,6 +170,7 @@ Target.create "Push" ignore
   ==> "PushContainer_ApiExtract"
   //==> "PushContainer_ApiBackoffice"
   ==> "PushContainer_ApiCrabImport"
+  ==> "PushContainer_Consumer"
   ==> "PushContainer_ProjectionsSyndication"
   ==> "PushContainer_CacheWarmer"
   ==> "Push"

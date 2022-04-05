@@ -4,8 +4,7 @@
   <PropertyGroup>
     <ServerGarbageCollection>true</ServerGarbageCollection>
     <EnableDefaultContentItems>false</EnableDefaultContentItems>
-    <LangVersion>8</LangVersion>
-    <UserSecretsId>c44eb86e-d7df-4267-94f5-3449f19ddd08</UserSecretsId>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

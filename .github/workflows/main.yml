@@ -122,6 +122,7 @@ jobs:
         docker push $BUILD_DOCKER_REGISTRY/address-registry/api-oslo:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/api-crab-import:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/api-extract:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY/address-registry/consumer:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/projector:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/projections-syndication:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/cache-warmer:$SEMVER
@@ -157,6 +158,9 @@ jobs:
         
         docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/api-extract:$SEMVER $BUILD_DOCKER_REGISTRY/address-registry/api-extract:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/api-extract:$SEMVER
+
+        docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/consumer:$SEMVER $BUILD_DOCKER_REGISTRY/address-registry/consumer:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY/address-registry/consumer:$SEMVER
         
         docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/projector:$SEMVER $BUILD_DOCKER_REGISTRY/address-registry/projector:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/projector:$SEMVER
@@ -199,6 +203,9 @@ jobs:
 
         docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/api-extract:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/api-extract:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/api-extract:$SEMVER
+
+        docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/consumer:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/consumer:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/consumer:$SEMVER
 
         docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/projector:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/projector:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/projector:$SEMVER

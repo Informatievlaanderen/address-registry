@@ -1,14 +1,14 @@
-namespace AddressRegistry.Address
+namespace AddressRegistry
 {
+    using Address.ValueObjects;
     using NetTopologySuite;
     using NetTopologySuite.Geometries;
     using NetTopologySuite.Geometries.Implementation;
     using NetTopologySuite.IO;
-    using ValueObjects;
 
     public static class WKBReaderFactory
     {
-        public static WKBReader Create() =>
+        public static WKBReader CreateForLegacy() =>
             new WKBReader(
                 new NtsGeometryServices(
                     new DotSpatialAffineCoordinateSequenceFactory(Ordinates.XY),

@@ -41,7 +41,7 @@ namespace AddressRegistry.Api.Legacy.Address
 
         public static Point GetAddressPoint(byte[] point)
         {
-            var geometry = WKBReaderFactory.Create().Read(point);
+            var geometry = WKBReaderFactory.CreateForLegacy().Read(point);
 
             return new Point
             {

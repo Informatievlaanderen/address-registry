@@ -57,7 +57,7 @@ namespace AddressRegistry.Api.Oslo.Address
         public static AddressPosition GetAddressPoint(byte[] point, GeometryMethod? method,
             GeometrySpecification? specification)
         {
-            var geometry = WKBReaderFactory.Create().Read(point);
+            var geometry = WKBReaderFactory.CreateForLegacy().Read(point);
             var gml = GetGml(geometry);
             var positieSpecificatie = ConvertFromGeometrySpecification(specification);
             var positieGeometrieMethode = ConvertFromGeometryMethod(method);

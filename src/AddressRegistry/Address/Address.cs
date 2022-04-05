@@ -407,7 +407,7 @@ namespace AddressRegistry.Address
             if (wkb == null)
                 return null;
 
-            var geometry = WKBReaderFactory.Create()
+            var geometry = WKBReaderFactory.CreateForLegacy()
                 .Read(wkb);
 
             geometry.SRID = SpatialReferenceSystemId.Lambert72;

@@ -1,3 +1,10 @@
+# [3.1.0](https://github.com/informatievlaanderen/address-registry/compare/v3.0.1...v3.1.0) (2022-04-05)
+
+
+### Features
+
+* add consumer ([#556](https://github.com/informatievlaanderen/address-registry/issues/556)) ([cbd6fda](https://github.com/informatievlaanderen/address-registry/commit/cbd6fda4f2d8de139bef0879a451de9c099d5a1a))
+
 ## [3.0.1](https://github.com/informatievlaanderen/address-registry/compare/v3.0.0...v3.0.1) (2022-04-04)
 
 

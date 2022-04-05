@@ -322,7 +322,8 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
                                 ?.ToString();
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct);
+                    ct,
+                    allowUpdateRemovedAddress: true);
             });
 
             When<Envelope<AddressHouseNumberWasChanged>>(async (context, message, ct) =>

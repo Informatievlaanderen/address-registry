@@ -1,11 +1,11 @@
 namespace AddressRegistry.Address.Commands.Crab
 {
-    using AddressRegistry.Crab;
     using Be.Vlaanderen.Basisregisters.Crab;
     using Be.Vlaanderen.Basisregisters.Generators.Guid;
     using Be.Vlaanderen.Basisregisters.Utilities;
     using System;
     using System.Collections.Generic;
+    using ValueObjects.Crab;
 
     public class ImportHouseNumberMailCantonFromCrab : BaseCrabCommand
     {

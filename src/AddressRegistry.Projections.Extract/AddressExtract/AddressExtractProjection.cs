@@ -12,6 +12,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
     using System;
     using System.Text;
     using Address.Events.Crab;
+    using Address.ValueObjects;
     using Microsoft.Extensions.Options;
 
     [ConnectedProjectionName("Extract adressen")]

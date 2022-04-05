@@ -2,8 +2,9 @@ namespace AddressRegistry.Tests.AggregateTests.Legacy.WhenImportSubaddressPositi
 {
     using Address.Commands.Crab;
     using Address.Events.Crab;
+    using Address.ValueObjects;
+    using Address.ValueObjects.Crab;
     using Be.Vlaanderen.Basisregisters.Crab;
-    using Crab;
 
     public static class ImportSubaddressPositionFromCrabExtensions
     {

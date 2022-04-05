@@ -6,6 +6,7 @@ namespace AddressRegistry.Tests.ProjectionTests
     using Microsoft.EntityFrameworkCore;
     using System.Threading.Tasks;
     using Address;
+    using Address.ValueObjects;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;

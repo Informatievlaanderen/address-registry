@@ -9,6 +9,7 @@ namespace AddressRegistry.Tests.ProjectionTests
     using Projections.Legacy.AddressDetail;
     using System.Threading.Tasks;
     using Address;
+    using Address.ValueObjects;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using NetTopologySuite.IO;
     using Xunit;

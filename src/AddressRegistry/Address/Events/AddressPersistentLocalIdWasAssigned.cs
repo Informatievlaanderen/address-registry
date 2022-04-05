@@ -5,6 +5,7 @@ namespace AddressRegistry.Address.Events
     using NodaTime;
     using System;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using ValueObjects;
 
     [EventTags(EventTag.For.Sync)]
     [EventName("AddressPersistentLocalIdentifierWasAssigned")]

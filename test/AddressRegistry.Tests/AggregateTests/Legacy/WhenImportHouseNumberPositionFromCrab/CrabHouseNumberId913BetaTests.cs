@@ -6,10 +6,11 @@ namespace AddressRegistry.Tests.AggregateTests.Legacy.WhenImportHouseNumberPosit
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.Crab;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using Crab;
     using global::AutoFixture;
     using NodaTime;
     using System;
+    using Address.ValueObjects;
+    using Address.ValueObjects.Crab;
     using WhenImportHouseNumberFromCrab;
     using Xunit;
     using Xunit.Abstractions;

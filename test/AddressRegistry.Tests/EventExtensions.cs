@@ -4,8 +4,9 @@ namespace AddressRegistry.Tests
     using Address.Commands.Crab;
     using Address.Events;
     using Address.Events.Crab;
+    using Address.ValueObjects;
+    using Address.ValueObjects.Crab;
     using Be.Vlaanderen.Basisregisters.Crab;
-    using Crab;
     using NodaTime;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
 

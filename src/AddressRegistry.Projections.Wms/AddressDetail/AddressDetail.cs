@@ -2,6 +2,7 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
 {
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
+    using Address.ValueObjects;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.Utilities;
     using Infrastructure;

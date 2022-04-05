@@ -1,6 +1,7 @@
 namespace AddressRegistry.Infrastructure.Repositories
 {
     using Address;
+    using Address.ValueObjects;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.EventHandling;

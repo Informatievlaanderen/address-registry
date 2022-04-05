@@ -4,11 +4,12 @@ namespace AddressRegistry.Tests.AggregateTests.Legacy.WhenImportSubaddressPositi
     using Address.Commands.Crab;
     using Address.Events;
     using Address.Events.Crab;
+    using Address.ValueObjects;
+    using Address.ValueObjects.Crab;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.Crab;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using Crab;
     using global::AutoFixture;
     using NodaTime;
     using Xunit;

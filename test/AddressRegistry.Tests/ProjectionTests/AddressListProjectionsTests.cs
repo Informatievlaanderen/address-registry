@@ -2,6 +2,7 @@ namespace AddressRegistry.Tests.ProjectionTests
 {
     using System.Threading.Tasks;
     using Address.Events;
+    using Address.ValueObjects;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;

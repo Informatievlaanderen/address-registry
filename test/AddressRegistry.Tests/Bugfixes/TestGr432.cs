@@ -7,6 +7,7 @@ namespace AddressRegistry.Tests.Bugfixes
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using System;
+    using Address.ValueObjects;
     using AggregateTests.Legacy.WhenImportHouseNumberMailCantonFromCrab;
     using Xunit;
     using Xunit.Abstractions;

@@ -12,6 +12,7 @@ namespace AddressRegistry.Tests
     using KellermanSoftware.CompareNetObjects;
     using Microsoft.Extensions.Logging;
     using System;
+    using Address.ValueObjects;
     using Newtonsoft.Json;
     using Xunit.Abstractions;
 

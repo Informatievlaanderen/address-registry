@@ -4,10 +4,11 @@ namespace AddressRegistry.Tests.AggregateTests.Legacy.WhenImportHouseNumberStatu
     using Address.Commands.Crab;
     using Address.Events;
     using Address.Events.Crab;
+    using Address.ValueObjects;
+    using Address.ValueObjects.Crab;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.Crab;
-    using Crab;
     using NodaTime;
     using WhenImportHousenumberStatusFromCrab;
     using Xunit;

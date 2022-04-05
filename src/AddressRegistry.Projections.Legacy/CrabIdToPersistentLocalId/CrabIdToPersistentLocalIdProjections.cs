@@ -5,6 +5,7 @@ namespace AddressRegistry.Projections.Legacy.CrabIdToPersistentLocalId
     using System.Threading.Tasks;
     using Address.Events;
     using Address.Events.Crab;
+    using Address.ValueObjects;
     using Be.Vlaanderen.Basisregisters.Crab;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;

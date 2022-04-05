@@ -2,6 +2,7 @@ namespace AddressRegistry.Tests.AggregateTests.Legacy.WhenImportSubaddressStatus
 {
     using Address.Commands.Crab;
     using Address.Events;
+    using Address.ValueObjects;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Xunit;

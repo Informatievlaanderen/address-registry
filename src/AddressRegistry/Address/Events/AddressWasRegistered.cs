@@ -4,6 +4,7 @@ namespace AddressRegistry.Address.Events
     using Newtonsoft.Json;
     using System;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using ValueObjects;
 
     [EventTags(EventTag.For.Sync)]
     [EventName("AddressWasRegistered")]

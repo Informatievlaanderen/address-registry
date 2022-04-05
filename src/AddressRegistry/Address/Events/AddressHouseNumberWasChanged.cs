@@ -4,6 +4,7 @@ namespace AddressRegistry.Address.Events
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Newtonsoft.Json;
     using System;
+    using ValueObjects;
 
     [EventTags(EventTag.For.Sync)]
     [EventName("AddressHouseNumberWasChanged")]

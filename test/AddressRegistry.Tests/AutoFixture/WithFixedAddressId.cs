@@ -1,5 +1,6 @@
 namespace AddressRegistry.Tests.AutoFixture
 {
+    using Address.ValueObjects;
     using Be.Vlaanderen.Basisregisters.Crab;
     using global::AutoFixture;
 

@@ -5,6 +5,7 @@ namespace AddressRegistry.Projections.Legacy.AddressList
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using NodaTime;
     using System;
+    using Address.ValueObjects;
 
     public class AddressListItem
     {

@@ -1,9 +1,9 @@
-namespace AddressRegistry
+namespace AddressRegistry.Address.ValueObjects
 {
+    using System;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Crab;
     using Newtonsoft.Json;
-    using System;
 
     public class AddressId : GuidValueObject<AddressId>
     {

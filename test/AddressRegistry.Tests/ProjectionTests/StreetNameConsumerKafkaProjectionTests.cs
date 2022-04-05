@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Address.ValueObjects;
 using AutoFixture;
 using Be.Vlaanderen.Basisregisters.GrAr.Contracts;
 using Be.Vlaanderen.Basisregisters.GrAr.Contracts.StreetNameRegistry;

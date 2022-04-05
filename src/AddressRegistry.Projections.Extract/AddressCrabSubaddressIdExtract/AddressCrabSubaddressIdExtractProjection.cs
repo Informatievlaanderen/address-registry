@@ -4,6 +4,7 @@ namespace AddressRegistry.Projections.Extract.AddressCrabSubaddressIdExtract
     using System.Text;
     using Address.Events;
     using Address.Events.Crab;
+    using Address.ValueObjects;
     using Be.Vlaanderen.Basisregisters.Crab;
     using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;

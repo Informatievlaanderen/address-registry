@@ -2,6 +2,7 @@ namespace AddressRegistry.Tests.AggregateTests.Legacy.WhenImportHouseNumberSubad
 {
     using Address.Commands.Crab;
     using Address.Events.Crab;
+    using Address.ValueObjects;
     using Be.Vlaanderen.Basisregisters.Crab;
 
     public static class ImportHouseNumberSubaddressFromCrabExtensions

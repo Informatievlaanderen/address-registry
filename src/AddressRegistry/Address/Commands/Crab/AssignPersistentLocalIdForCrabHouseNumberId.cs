@@ -5,6 +5,7 @@ namespace AddressRegistry.Address.Commands.Crab
     using Be.Vlaanderen.Basisregisters.Utilities;
     using System;
     using System.Collections.Generic;
+    using ValueObjects;
 
     public class AssignPersistentLocalIdForCrabHouseNumberId
     {

@@ -1,10 +1,10 @@
 namespace AddressRegistry.Address.Events.Crab
 {
-    using AddressRegistry.Crab;
     using Be.Vlaanderen.Basisregisters.Crab;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Newtonsoft.Json;
     using NodaTime;
+    using ValueObjects.Crab;
 
     [EventName("AddressHouseNumberStatusWasImportedFromCrab")]
     [EventDescription("Legacy event om tblHuisnummerstatus en tblHuisnummerstatus_hist te importeren.")]

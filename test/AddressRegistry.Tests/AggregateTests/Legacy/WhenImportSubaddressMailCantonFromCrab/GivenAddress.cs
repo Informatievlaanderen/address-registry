@@ -2,6 +2,7 @@ namespace AddressRegistry.Tests.AggregateTests.Legacy.WhenImportSubaddressMailCa
 {
     using Address.Commands.Crab;
     using Address.Events;
+    using Address.ValueObjects;
     using AutoFixture;
     using global::AutoFixture;
     using Xunit;

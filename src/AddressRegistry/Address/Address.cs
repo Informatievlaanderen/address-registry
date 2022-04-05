@@ -2,7 +2,6 @@ namespace AddressRegistry.Address
 {
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Crab;
-    using Crab;
     using Events;
     using Events.Crab;
     using NetTopologySuite.IO;
@@ -11,6 +10,8 @@ namespace AddressRegistry.Address
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using NodaTime;
+    using ValueObjects;
+    using ValueObjects.Crab;
 
     public partial class Address : AggregateRootEntity
     {

@@ -2,8 +2,8 @@ namespace AddressRegistry.Tests.AggregateTests.Legacy.WhenImportHouseNumberMailC
 {
     using Address.Commands.Crab;
     using Address.Events.Crab;
+    using Address.ValueObjects.Crab;
     using Be.Vlaanderen.Basisregisters.Crab;
-    using Crab;
 
     public static class ImportHouseNumberMailCantonFromCrabExtensions
     {

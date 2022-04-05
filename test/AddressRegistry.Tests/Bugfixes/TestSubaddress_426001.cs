@@ -2,6 +2,7 @@ namespace AddressRegistry.Tests.Bugfixes
 {
     using Address.Commands.Crab;
     using Address.Events;
+    using Address.ValueObjects;
     using AggregateTests.Legacy.WhenImportHouseNumberSubaddressFromCrab;
     using AggregateTests.Legacy.WhenImportSubaddressFromCrab;
     using AggregateTests.Legacy.WhenImportSubaddressMailCantonFromCrab;

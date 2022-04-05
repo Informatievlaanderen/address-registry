@@ -1,6 +1,7 @@
 namespace AddressRegistry.Tests.Bugfixes
 {
     using Address.Events;
+    using Address.ValueObjects;
     using AggregateTests.Legacy.WhenImportHouseNumberFromCrab;
     using AggregateTests.Legacy.WhenImportHouseNumberMailCantonFromCrab;
     using AggregateTests.Legacy.WhenImportHouseNumberPositionFromCrab;

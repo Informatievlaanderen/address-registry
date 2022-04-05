@@ -2,6 +2,7 @@ namespace AddressRegistry.Infrastructure
 {
     using System.Data;
     using Address;
+    using Address.ValueObjects;
     using Microsoft.EntityFrameworkCore;
 
     public class SqlPersistentLocalIdGenerator : IPersistentLocalIdGenerator

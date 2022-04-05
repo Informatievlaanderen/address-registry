@@ -4,6 +4,7 @@ namespace AddressRegistry.Address.Commands
     using Be.Vlaanderen.Basisregisters.Utilities;
     using System;
     using System.Collections.Generic;
+    using ValueObjects;
 
     public class RegisterAddress
     {

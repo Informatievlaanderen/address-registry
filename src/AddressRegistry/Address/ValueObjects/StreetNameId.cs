@@ -1,10 +1,10 @@
-namespace AddressRegistry
+namespace AddressRegistry.Address.ValueObjects
 {
+    using System;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Crab;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo;
     using Newtonsoft.Json;
-    using System;
 
     public class StreetNameId : GuidValueObject<StreetNameId>
     {

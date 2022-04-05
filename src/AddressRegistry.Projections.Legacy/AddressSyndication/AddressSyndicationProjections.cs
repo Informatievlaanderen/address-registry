@@ -3,6 +3,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
     using System;
     using Address.Events;
     using Address.Events.Crab;
+    using Address.ValueObjects;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;

@@ -12,6 +12,7 @@ namespace AddressRegistry.Address
     using Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using SqlStreamStore;
+    using ValueObjects;
 
     public sealed class AddressCommandHandlerModule : CommandHandlerModule
     {

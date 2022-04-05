@@ -1,7 +1,7 @@
-namespace AddressRegistry
+namespace AddressRegistry.Address.ValueObjects
 {
-    using Be.Vlaanderen.Basisregisters.AggregateSource;
     using System.Collections.Generic;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
 
     public class AddressGeometry : ValueObject<AddressGeometry>
     {

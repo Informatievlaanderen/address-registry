@@ -7,7 +7,6 @@ namespace AddressRegistry.Consumer.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -34,8 +33,6 @@ namespace AddressRegistry.Consumer.Infrastructure.Modules
 
             builder
                 .RegisterModule(new DataDogModule(_configuration))
-
-                .RegisterModule<EnvelopeModule>()
 
                 .RegisterModule(new EventHandlingModule(typeof(DomainAssemblyMarker).Assembly, eventSerializerSettings))
 

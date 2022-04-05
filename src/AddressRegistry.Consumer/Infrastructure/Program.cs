@@ -9,7 +9,6 @@ namespace AddressRegistry.Consumer.Infrastructure
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple;
-    using Be.Vlaanderen.Basisregisters.Projector.Modules;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -109,8 +108,6 @@ namespace AddressRegistry.Consumer.Infrastructure
             var loggerFactory = tempProvider.GetRequiredService<ILoggerFactory>();
 
             builder.RegisterModule(new ApiModule(configuration, services, loggerFactory));
-
-            builder.RegisterModule(new ProjectorModule(configuration));
 
             builder.Populate(services);
 

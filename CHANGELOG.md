@@ -1,3 +1,10 @@
+## [3.1.2](https://github.com/informatievlaanderen/address-registry/compare/v3.1.1...v3.1.2) (2022-04-06)
+
+
+### Bug Fixes
+
+* bugfix paused wms projection, add adres views, scaler & table-valued functions ([ac337c0](https://github.com/informatievlaanderen/address-registry/commit/ac337c0549d48aba23cd22226ac931dfdfe6458f))
+
 ## [3.1.1](https://github.com/informatievlaanderen/address-registry/compare/v3.1.0...v3.1.1) (2022-04-05)
 
 # [3.1.0](https://github.com/informatievlaanderen/address-registry/compare/v3.0.1...v3.1.0) (2022-04-05)

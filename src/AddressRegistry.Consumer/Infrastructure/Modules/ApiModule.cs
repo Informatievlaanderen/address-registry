@@ -29,16 +29,9 @@ namespace AddressRegistry.Consumer.Infrastructure.Modules
 
         protected override void Load(ContainerBuilder builder)
         {
-            var eventSerializerSettings = EventsJsonSerializerSettingsProvider.CreateSerializerSettings();
-
             builder
                 .RegisterModule(new DataDogModule(_configuration))
-
-                .RegisterModule(new EventHandlingModule(typeof(DomainAssemblyMarker).Assembly, eventSerializerSettings))
-
-                .RegisterModule(new CommandHandlingModule(_configuration));
-
-            builder.RegisterEventstreamModule(_configuration);
+                .RegisterModule(new EditModule(_configuration, _services, _loggerFactory));
 
             builder.Populate(_services);
         }

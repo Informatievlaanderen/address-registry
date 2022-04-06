@@ -1,3 +1,10 @@
+## [3.1.4](https://github.com/informatievlaanderen/address-registry/compare/v3.1.3...v3.1.4) (2022-04-06)
+
+
+### Bug Fixes
+
+* consumer ioc registration ([a1cf8c5](https://github.com/informatievlaanderen/address-registry/commit/a1cf8c5560d266f9d824d2697849a55e5081a992))
+
 ## [3.1.3](https://github.com/informatievlaanderen/address-registry/compare/v3.1.2...v3.1.3) (2022-04-06)
 
 

@@ -1,3 +1,10 @@
+## [3.1.5](https://github.com/informatievlaanderen/address-registry/compare/v3.1.4...v3.1.5) (2022-04-06)
+
+
+### Bug Fixes
+
+* Computed column HouseNumberLabel ([3ed535e](https://github.com/informatievlaanderen/address-registry/commit/3ed535e96269a402c38ec7b69bd29d20e5b12639))
+
 ## [3.1.4](https://github.com/informatievlaanderen/address-registry/compare/v3.1.3...v3.1.4) (2022-04-06)
 
 

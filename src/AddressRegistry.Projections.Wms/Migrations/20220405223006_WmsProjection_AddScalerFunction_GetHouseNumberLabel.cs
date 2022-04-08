@@ -13,40 +13,26 @@ CREATE FUNCTION [wms.address].[GetHouseNumberLabel](@Position geometry, @Status 
 RETURNS NVARCHAR(max) WITH SCHEMABINDING
 AS
 BEGIN
-    DECLARE
-        @HouseNumberLabel NVARCHAR(max),
-        @HouseNumberCount INT
-
-    SET @HouseNumberLabel = NULL
-    SET @HouseNumberCount = 0
-
     IF @Removed = 1 OR @Position IS NULL
-        RETURN @HouseNumberLabel;
+        RETURN NULL;
 
-    SET @HouseNumberCount = [wms.address].[CountHouseNumberByPosition](@Position, @Status)
+    DECLARE
+        @Val NVARCHAR(MAX),
+        @Delimiter NVARCHAR = ';'
 
-    SELECT
-        @HouseNumberLabel =
-        CASE
-                WHEN @HouseNumberCount = 0
-                    THEN NULL
-                WHEN @HouseNumberCount = 1
-                    THEN Min(HouseNumber.Label)
-                WHEN Min(HouseNumber.Label) = Max(HouseNumber.Label)
-                    THEN Min(HouseNumber.Label)
-                    ELSE CONCAT(Min(HouseNumber.Label), '-' , Max(HouseNumber.Label))
-            END
-    FROM
-        (
-            SELECT
-                HouseNumber as Label
-            FROM [wms.address].[AddressDetails]
-            WHERE [Position].STDistance(@Position) < 1
-                AND [Status] = @Status
-                AND [Removed] = 0
-                AND [Complete] = 1
-        ) as HouseNumber
-    RETURN @HouseNumberLabel;
+    Select @Val = COALESCE(@Val + @Delimiter + HouseNumber, HouseNumber)
+    FROM (
+      SELECT DISTINCT HouseNumber
+      FROM [wms.address].[AddressDetails]
+      WHERE [Position].STDistance(@Position) < 0.00001
+        AND [Status] = @Status
+        AND [Removed] = 0
+        AND [Complete] = 1
+    ) as HouseNumbers
+
+    DECLARE @Ret NVARCHAR(max)
+    SET @Ret = [wms.address].[GetHouseNoLabel](@Val, @Delimiter)
+    RETURN @Ret
 END");
         }
 

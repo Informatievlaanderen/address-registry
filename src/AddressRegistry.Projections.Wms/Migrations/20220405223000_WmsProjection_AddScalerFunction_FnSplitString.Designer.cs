@@ -13,8 +13,8 @@ using NetTopologySuite.Geometries;
 namespace AddressRegistry.Projections.Wms.Migrations
 {
     [DbContext(typeof(WmsContext))]
-    [Migration("20220405223005_WmsProjection_AddScalerFunction_CountHouseNumberByPosition")]
-    partial class WmsProjection_AddScalerFunction_CountHouseNumberByPosition
+    [Migration("20220405223000_WmsProjection_AddScalerFunction_FnSplitString")]
+    partial class WmsProjection_AddScalerFunction_FnSplitString
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

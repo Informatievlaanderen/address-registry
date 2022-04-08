@@ -1,3 +1,10 @@
+## [3.1.7](https://github.com/informatievlaanderen/address-registry/compare/v3.1.6...v3.1.7) (2022-04-08)
+
+
+### Bug Fixes
+
+* wms house-number-label ([30f2811](https://github.com/informatievlaanderen/address-registry/commit/30f28113c6dbc5a64e92f7a2b22f8c2945dc288e))
+
 ## [3.1.6](https://github.com/informatievlaanderen/address-registry/compare/v3.1.5...v3.1.6) (2022-04-06)
 
 

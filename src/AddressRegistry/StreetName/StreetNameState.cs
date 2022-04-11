@@ -13,9 +13,17 @@ namespace AddressRegistry.StreetName
         private StreetName()
         {
             Register<StreetNameWasImported>(When);
+            Register<MigratedStreetNameWasImported>(When);
+
             Register<StreetNameWasApproved>(When);
             Register<StreetNameWasRemoved>(When);
             Register<AddressWasMigratedToStreetName>(When);
+        }
+
+        private void When(MigratedStreetNameWasImported @event)
+        {
+            PersistentLocalId = new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId);
+            Status = @event.StreetNameStatus;
         }
 
         private void When(StreetNameWasRemoved @event)

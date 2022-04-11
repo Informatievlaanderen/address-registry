@@ -2,6 +2,7 @@ namespace AddressRegistry.Consumer.Infrastructure
 {
     using System;
     using System.IO;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Autofac;
@@ -9,11 +10,17 @@ namespace AddressRegistry.Consumer.Infrastructure
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple;
+    using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
+    using Be.Vlaanderen.Basisregisters.Projector.Modules;
+    using Confluent.Kafka;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Modules;
     using Serilog;
+    using SqlStreamStore;
+    using SqlStreamStore.Streams;
+    using ILogger = Microsoft.Extensions.Logging.ILogger;
 
     public class Program
     {
@@ -58,7 +65,31 @@ namespace AddressRegistry.Consumer.Infrastructure
                     {
                         try
                         {
+                            async Task<Offset?> GetOffset(IServiceProvider serviceProvider, ILogger logger, ConsumerOptions consumerOptions)
+                            {
+                                if (long.TryParse(configuration["StreetNameTopicOffset"], out var offset))
+                                {
+                                    var streamStore = serviceProvider.GetRequiredService<IStreamStore>();
+                                    var lastMessagePage = await streamStore.ReadAllBackwards(StreamVersion.End, 1, false, cancellationToken);
+
+                                    var lastMessage = lastMessagePage.Messages.FirstOrDefault();
+                                    if (lastMessagePage.Messages.Any() && lastMessage.StreamId.StartsWith("streetname-", StringComparison.InvariantCultureIgnoreCase))
+                                    {
+                                        throw new InvalidOperationException(
+                                            "Cannot start migration from offset, because migration is already running. Remove offset to continue.");
+                                    }
+
+                                    logger.LogInformation($"Starting {consumerOptions.Topic} from offset {offset}.");
+                                    return new Offset(offset);
+                                }
+
+                                logger.LogInformation($"Continuing {consumerOptions.Topic} from last offset.");
+                                return null;
+                            }
+
                             var loggerFactory = container.GetRequiredService<ILoggerFactory>();
+
+                            await MigrationsHelper.RunAsync(configuration.GetConnectionString("ConsumerAdmin"), loggerFactory, cancellationToken);
 
                             var bootstrapServers = configuration["Kafka:BootstrapServers"];
                             var kafkaOptions = new KafkaOptions(bootstrapServers, configuration["Kafka:SaslUserName"], configuration["Kafka:SaslPassword"], EventsJsonSerializerSettingsProvider.CreateSerializerSettings());
@@ -69,10 +100,15 @@ namespace AddressRegistry.Consumer.Infrastructure
 
                             var actualContainer = container.GetRequiredService<ILifetimeScope>();
 
-                            var consumer = new Consumer(actualContainer, loggerFactory, kafkaOptions, consumerOptions);
+                            var kafkaOffset = await GetOffset(container, loggerFactory.CreateLogger<Program>(), consumerOptions);
+
+                            var consumer = new Consumer(actualContainer, loggerFactory, kafkaOptions, consumerOptions, kafkaOffset);
                             var consumerTask = consumer.Start(cancellationToken);
 
-                            await consumerTask;
+                            var projectionsManager = actualContainer.Resolve<IConnectedProjectionsManager>();
+                            var projectionsTask = projectionsManager.Start(cancellationToken);
+
+                            await Task.WhenAll(projectionsTask, consumerTask);
                         }
                         catch (Exception e)
                         {
@@ -108,6 +144,8 @@ namespace AddressRegistry.Consumer.Infrastructure
             var loggerFactory = tempProvider.GetRequiredService<ILoggerFactory>();
 
             builder.RegisterModule(new ApiModule(configuration, services, loggerFactory));
+            builder.RegisterModule(new ConsumerModule(configuration, services, loggerFactory));
+            builder.RegisterModule(new ProjectorModule(configuration));
 
             builder.Populate(services);
 

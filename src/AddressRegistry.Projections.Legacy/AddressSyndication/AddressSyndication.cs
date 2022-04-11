@@ -1,7 +1,7 @@
 namespace AddressRegistry.Projections.Legacy.AddressSyndication
 {
     using System;
-    using Address.ValueObjects;
+    using Address;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
     using Infrastructure;

@@ -1,26 +1,84 @@
-namespace AddressRegistry.Tests.ProjectionTests
+namespace AddressRegistry.Tests.ProjectionTests.Legacy
 {
-    using Address.Events;
-    using AutoFixture;
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing;
-    using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
-    using Microsoft.EntityFrameworkCore;
-    using Projections.Legacy;
-    using Projections.Legacy.AddressDetail;
     using System.Threading.Tasks;
     using Address;
-    using Address.ValueObjects;
+    using Address.Events;
+    using AutoFixture;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing;
+    using Microsoft.EntityFrameworkCore;
     using NetTopologySuite.IO;
+    using Projections.Wms;
+    using Projections.Wms.AddressDetail;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class AddressDetailProjectionsTests : ProjectionTest<LegacyContext, AddressDetailProjections>
+    public class AddressDetailWmsProjectionsTests : ProjectionTest<WmsContext, AddressDetailProjections>
     {
         private readonly WKBReader _wkbReader = WKBReaderFactory.CreateForLegacy();
 
-        public AddressDetailProjectionsTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public AddressDetailWmsProjectionsTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
+        }
+
+        [Theory, DefaultData]
+        public async Task AddressBoxNumberWasChangedChangesBoxNumber(
+            AddressWasRegistered addressWasRegistered,
+            AddressBoxNumberWasChanged addressBoxNumberWasChanged)
+        {
+            await Assert(
+                Given(addressWasRegistered,
+                        addressBoxNumberWasChanged)
+                    .Expect(ctx => ctx.AddressDetail, new AddressDetailItem
+                    {
+                        AddressId = addressWasRegistered.AddressId,
+                        StreetNameId = addressWasRegistered.StreetNameId,
+                        HouseNumber = addressWasRegistered.HouseNumber,
+                        BoxNumber = addressBoxNumberWasChanged.BoxNumber,
+                        LabelType = WmsAddressLabelType.BusNumber,
+                        VersionTimestamp = addressBoxNumberWasChanged.Provenance.Timestamp
+                    }));
+        }
+
+        [Theory,DefaultData]
+        public async Task AddressBoxNumberWasCorrectedChangesBoxNumber(
+            AddressWasRegistered addressWasRegistered,
+            AddressBoxNumberWasCorrected addressBoxNumberWasCorrected)
+        {
+            await Assert(
+                Given(addressWasRegistered,
+                        addressBoxNumberWasCorrected)
+                    .Expect(ctx => ctx.AddressDetail, new AddressDetailItem
+                    {
+                        AddressId = addressWasRegistered.AddressId,
+                        StreetNameId = addressWasRegistered.StreetNameId,
+                        HouseNumber = addressWasRegistered.HouseNumber,
+                        BoxNumber = addressBoxNumberWasCorrected.BoxNumber,
+                        LabelType = WmsAddressLabelType.BusNumber,
+                        VersionTimestamp = addressBoxNumberWasCorrected.Provenance.Timestamp
+                    }));
+        }
+
+        [Theory, DefaultData]
+        public async Task AddressBoxNumberWasRemovedClearsBoxNumber(
+            AddressWasRegistered addressWasRegistered,
+            AddressBoxNumberWasChanged addressBoxNumberWasChanged,
+            AddressBoxNumberWasRemoved addressBoxNumberWasRemoved)
+        {
+            await Assert(
+                Given(addressWasRegistered,
+                    addressBoxNumberWasChanged,
+                        addressBoxNumberWasRemoved)
+                    .Expect(ctx => ctx.AddressDetail, new AddressDetailItem
+                    {
+                        AddressId = addressWasRegistered.AddressId,
+                        StreetNameId = addressWasRegistered.StreetNameId,
+                        HouseNumber = addressWasRegistered.HouseNumber,
+                        BoxNumber = null,
+                        LabelType = WmsAddressLabelType.HouseNumber,
+                        VersionTimestamp = addressBoxNumberWasRemoved.Provenance.Timestamp
+                    }));
         }
 
         [Theory]
@@ -71,7 +129,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        Status = AddressStatus.Current,
+                        Status = AdresStatus.InGebruik.ToString(),
                         VersionTimestamp = addressBecameCurrent.Provenance.Timestamp
                     }));
         }
@@ -197,35 +255,6 @@ namespace AddressRegistry.Tests.ProjectionTests
                         HouseNumber = addressWasRegistered.HouseNumber,
                         PersistentLocalId = addressPersistentLocalIdWasAssigned.PersistentLocalId
                     }));
-        }
-
-        [Theory]
-        [DefaultData]
-        public async Task AddressPositionWasCorrectedSetsPosition(
-            AddressId addressId,
-            Provenance provenance,
-            WkbGeometry geometry,
-            AddressWasRegistered addressWasRegistered)
-        {
-            var addressPositionWasCorrected =
-                new AddressPositionWasCorrected(addressId, new AddressGeometry(GeometryMethod.AppointedByAdministrator, GeometrySpecification.Entry, GeometryHelpers.CreateEwkbFrom(geometry)));
-
-            ((ISetProvenance)addressPositionWasCorrected).SetProvenance(provenance);
-
-            await Assert(
-                    Given(addressWasRegistered, addressPositionWasCorrected)
-                    .Expect(new AddressComparer<AddressDetailItem>(),
-                        ctx => ctx.AddressDetail,
-                        new AddressDetailItem
-                        {
-                            AddressId = addressWasRegistered.AddressId,
-                            StreetNameId = addressWasRegistered.StreetNameId,
-                            HouseNumber = addressWasRegistered.HouseNumber,
-                            Position = addressPositionWasCorrected.ExtendedWkbGeometry.ToByteArray(),
-                            PositionMethod = addressPositionWasCorrected.GeometryMethod,
-                            PositionSpecification = addressPositionWasCorrected.GeometrySpecification,
-                            VersionTimestamp = addressPositionWasCorrected.Provenance.Timestamp
-                        }));
         }
 
         [Theory]
@@ -371,7 +400,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        Status = AddressStatus.Current,
+                        Status = AdresStatus.InGebruik.ToString(),
                         VersionTimestamp = addressWasCorrectedToCurrent.Provenance.Timestamp
                     }));
         }
@@ -428,7 +457,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        Status = AddressStatus.Proposed,
+                        Status = AdresStatus.Voorgesteld.ToString(),
                         VersionTimestamp = addressWasCorrectedToProposed.Provenance.Timestamp
                     }));
         }
@@ -447,7 +476,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        Status = AddressStatus.Retired,
+                        Status = AdresStatus.Gehistoreerd.ToString(),
                         VersionTimestamp = addressWasCorrectedToRetired.Provenance.Timestamp
                     }));
         }
@@ -473,34 +502,6 @@ namespace AddressRegistry.Tests.ProjectionTests
 
         [Theory]
         [DefaultData]
-        public async Task AddressWasPositionedSetsPosition(
-            AddressId addressId,
-            WkbGeometry geometry,
-            Provenance provenance,
-            AddressWasRegistered addressWasRegistered)
-        {
-            var addressWasPositioned = new AddressWasPositioned(addressId, new AddressGeometry(GeometryMethod.Interpolated, GeometrySpecification.BuildingUnit, GeometryHelpers.CreateEwkbFrom(geometry)));
-            ((ISetProvenance)addressWasPositioned).SetProvenance(provenance);
-
-            await Assert(
-                    Given(addressWasRegistered, addressWasPositioned)
-                    .Expect(
-                        new AddressComparer<AddressDetailItem>(),
-                        ctx => ctx.AddressDetail,
-                        new AddressDetailItem
-                        {
-                            AddressId = addressWasRegistered.AddressId,
-                            StreetNameId = addressWasRegistered.StreetNameId,
-                            HouseNumber = addressWasRegistered.HouseNumber,
-                            Position = addressWasPositioned.ExtendedWkbGeometry.ToByteArray(),
-                            PositionMethod = addressWasPositioned.GeometryMethod,
-                            PositionSpecification = addressWasPositioned.GeometrySpecification,
-                            VersionTimestamp = addressWasPositioned.Provenance.Timestamp
-                        }));
-        }
-
-        [Theory]
-        [DefaultData]
         public async Task AddressWasProposedSetsStatusToProposed(
             AddressWasRegistered addressWasRegistered,
             AddressWasProposed addressWasProposed)
@@ -513,7 +514,7 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        Status = AddressStatus.Proposed,
+                        Status = AdresStatus.Voorgesteld.ToString(),
                         VersionTimestamp = addressWasProposed.Provenance.Timestamp
                     }));
         }
@@ -551,67 +552,8 @@ namespace AddressRegistry.Tests.ProjectionTests
                         AddressId = addressWasRegistered.AddressId,
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
-                        Status = AddressStatus.Retired,
+                        Status = AdresStatus.Gehistoreerd.ToString(),
                         VersionTimestamp = addressWasRetired.Provenance.Timestamp
-                    }));
-        }
-
-        [Theory]
-        [DefaultData]
-        public async Task AddressBoxNumberWasChangedChangesBoxNumber(
-            AddressWasRegistered addressWasRegistered,
-            AddressBoxNumberWasChanged addressBoxNumberWasChanged)
-        {
-            await Assert(
-                Given(addressWasRegistered,
-                        addressBoxNumberWasChanged)
-                    .Expect(ctx => ctx.AddressDetail, new AddressDetailItem
-                    {
-                        AddressId = addressWasRegistered.AddressId,
-                        StreetNameId = addressWasRegistered.StreetNameId,
-                        HouseNumber = addressWasRegistered.HouseNumber,
-                        BoxNumber = addressBoxNumberWasChanged.BoxNumber,
-                        VersionTimestamp = addressBoxNumberWasChanged.Provenance.Timestamp
-                    }));
-        }
-
-        [Theory]
-        [DefaultData]
-        public async Task AddressBoxNumberWasCorrectedChangesBoxNumber(
-            AddressWasRegistered addressWasRegistered,
-            AddressBoxNumberWasCorrected addressBoxNumberWasCorrected)
-        {
-            await Assert(
-                Given(addressWasRegistered,
-                        addressBoxNumberWasCorrected)
-                    .Expect(ctx => ctx.AddressDetail, new AddressDetailItem
-                    {
-                        AddressId = addressWasRegistered.AddressId,
-                        StreetNameId = addressWasRegistered.StreetNameId,
-                        HouseNumber = addressWasRegistered.HouseNumber,
-                        BoxNumber = addressBoxNumberWasCorrected.BoxNumber,
-                        VersionTimestamp = addressBoxNumberWasCorrected.Provenance.Timestamp
-                    }));
-        }
-
-        [Theory]
-        [DefaultData]
-        public async Task AddressBoxNumberWasRemovedClearsBoxNumber(
-            AddressWasRegistered addressWasRegistered,
-            AddressBoxNumberWasChanged addressBoxNumberWasChanged,
-            AddressBoxNumberWasRemoved addressBoxNumberWasRemoved)
-        {
-            await Assert(
-                Given(addressWasRegistered,
-                    addressBoxNumberWasChanged,
-                        addressBoxNumberWasRemoved)
-                    .Expect(ctx => ctx.AddressDetail, new AddressDetailItem
-                    {
-                        AddressId = addressWasRegistered.AddressId,
-                        StreetNameId = addressWasRegistered.StreetNameId,
-                        HouseNumber = addressWasRegistered.HouseNumber,
-                        BoxNumber = null,
-                        VersionTimestamp = addressBoxNumberWasRemoved.Provenance.Timestamp
                     }));
         }
 
@@ -749,34 +691,8 @@ namespace AddressRegistry.Tests.ProjectionTests
                     }));
         }
 
-        [Theory]
-        [DefaultData]
-        public async Task AddressWasPositionedAfterRemoveIsSet(
-            AddressWasRegistered addressWasRegistered,
-            AddressWasRemoved addressWasRemoved,
-            AddressWasPositioned addressWasPositioned,
-            WkbGeometry geometry)
-        {
-            addressWasPositioned = addressWasPositioned.WithAddressGeometry(new AddressGeometry(GeometryMethod.AppointedByAdministrator, GeometrySpecification.Building, GeometryHelpers.CreateEwkbFrom(geometry)));
-            await Assert(
-                    Given(addressWasRegistered, addressWasRemoved, addressWasPositioned)
-                    .Expect(
-                        new AddressComparer<AddressDetailItem>(),
-                        ctx => ctx.AddressDetail, new AddressDetailItem
-                        {
-                            AddressId = addressWasRegistered.AddressId,
-                            StreetNameId = addressWasRegistered.StreetNameId,
-                            HouseNumber = addressWasRegistered.HouseNumber,
-                            Position = addressWasPositioned.ExtendedWkbGeometry.ToByteArray(),
-                            PositionMethod = addressWasPositioned.GeometryMethod,
-                            PositionSpecification = addressWasPositioned.GeometrySpecification,
-                            Removed = true,
-                            VersionTimestamp = addressWasPositioned.Provenance.Timestamp
-                        }));
-        }
 
-        protected override LegacyContext CreateContext(DbContextOptions<LegacyContext> options) => new LegacyContext(options);
-
-        protected override AddressDetailProjections CreateProjection() => new AddressDetailProjections(_wkbReader);
+        protected override WmsContext CreateContext(DbContextOptions<WmsContext> options) => new(options);
+        protected override AddressDetailProjections CreateProjection() => new(_wkbReader);
     }
 }

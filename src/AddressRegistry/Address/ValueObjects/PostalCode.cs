@@ -1,4 +1,4 @@
-namespace AddressRegistry.Address.ValueObjects
+namespace AddressRegistry.Address
 {
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo;

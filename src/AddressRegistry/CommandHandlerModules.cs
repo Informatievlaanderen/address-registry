@@ -14,6 +14,10 @@ namespace AddressRegistry
                 .SingleInstance();
 
             containerBuilder
+                .RegisterType<AddressLegacyProvenanceFactory>()
+                .SingleInstance();
+
+            containerBuilder
                 .RegisterType<AddressPersistentLocalIdentifierProvenanceFactory>()
                 .SingleInstance();
 
@@ -22,8 +26,8 @@ namespace AddressRegistry
                 .SingleInstance();
 
             containerBuilder
-                .RegisterType<AddressCommandHandlerModule>()
-                .Named<CommandHandlerModule>(typeof(AddressCommandHandlerModule).FullName)
+                .RegisterType<CrabAddressCommandHandlerModule>()
+                .Named<CommandHandlerModule>(typeof(CrabAddressCommandHandlerModule).FullName)
                 .As<CommandHandlerModule>();
 
             containerBuilder
@@ -33,6 +37,11 @@ namespace AddressRegistry
             containerBuilder
                 .RegisterType<StreetNameCommandHandlerModule>()
                 .Named<CommandHandlerModule>(typeof(StreetNameCommandHandlerModule).FullName)
+                .As<CommandHandlerModule>();
+
+            containerBuilder
+                .RegisterType<AddressCommandHandlerModule>()
+                .Named<CommandHandlerModule>(typeof(AddressCommandHandlerModule).FullName)
                 .As<CommandHandlerModule>();
         }
     }

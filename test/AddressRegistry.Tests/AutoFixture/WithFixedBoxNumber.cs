@@ -1,6 +1,6 @@
 namespace AddressRegistry.Tests.AutoFixture
 {
-    using Address.ValueObjects;
+    using Address;
     using global::AutoFixture;
 
     public class WithFixedBoxNumber : ICustomization

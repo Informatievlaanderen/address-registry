@@ -1,8 +1,8 @@
 namespace AddressRegistry.Api.Legacy.Convertors
 {
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using System;
-    using AddressRegistry.Address.ValueObjects;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
+    using AddressRegistry.Address;
 
     public static class AddressStatusExtensions
     {

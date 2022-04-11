@@ -1,6 +1,6 @@
 namespace AddressRegistry.Tests
 {
-    using Address.ValueObjects;
+    using Address;
     using NetTopologySuite.IO;
 
     public static class GeometryHelpers

@@ -1,6 +1,7 @@
 namespace AddressRegistry.Consumer.Projections
 {
     using System;
+    using Address;
     using AddressRegistry.StreetName;
     using AddressRegistry.StreetName.Commands;
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts;
@@ -10,6 +11,7 @@ namespace AddressRegistry.Consumer.Projections
     using NodaTime.Text;
     using Contracts = Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common;
     using Provenance = Be.Vlaanderen.Basisregisters.GrAr.Provenance.Provenance;
+    using StreetNameId = AddressRegistry.StreetName.StreetNameId;
 
     public class StreetNameKafkaProjection : ConnectedProjection<CommandHandler>
     {
@@ -29,7 +31,8 @@ namespace AddressRegistry.Consumer.Projections
             if (type == typeof(StreetNameWasMigratedToMunicipality))
             {
                 var msg = (StreetNameWasMigratedToMunicipality)message;
-                return new ImportStreetName(
+                return new ImportMigratedStreetName(
+                    StreetNameId.CreateFor(msg.StreetNameId),
                     new StreetNamePersistentLocalId(msg.PersistentLocalId),
                     new MunicipalityId(MunicipalityId.CreateFor(msg.MunicipalityId)),
                     Enum.Parse<StreetNameStatus>(msg.Status),

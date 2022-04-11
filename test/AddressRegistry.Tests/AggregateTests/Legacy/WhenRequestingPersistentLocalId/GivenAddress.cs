@@ -1,9 +1,9 @@
 namespace AddressRegistry.Tests.AggregateTests.Legacy.WhenRequestingPersistentLocalId
 {
     using System;
+    using Address;
     using Address.Commands.Crab;
     using Address.Events;
-    using Address.ValueObjects;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using NodaTime;

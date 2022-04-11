@@ -1,38 +1,39 @@
-namespace AddressRegistry.Tests.AggregateTests.WhenImportingStreetName;
-
-using AutoFixture;
-using Be.Vlaanderen.Basisregisters.AggregateSource;
-using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
-using global::AutoFixture;
-using StreetName;
-using StreetName.Commands;
-using StreetName.Events;
-using Xunit;
-using Xunit.Abstractions;
-
-public class GivenStreetNameAlreadyExists : AddressRegistryTest
+namespace AddressRegistry.Tests.AggregateTests.WhenImportingStreetName
 {
-    private readonly StreetNameStreamId _streamId;
+    using AutoFixture;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
+    using global::AutoFixture;
+    using StreetName;
+    using StreetName.Commands;
+    using StreetName.Events;
+    using Xunit;
+    using Xunit.Abstractions;
 
-    public GivenStreetNameAlreadyExists(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+    public class GivenStreetNameAlreadyExists : AddressRegistryTest
     {
-        Fixture.Customize(new InfrastructureCustomization());
-        Fixture.Customize(new WithFixedStreetNamePersistentLocalId());
-        _streamId = Fixture.Create<StreetNameStreamId>();
+        private readonly StreetNameStreamId _streamId;
+
+        public GivenStreetNameAlreadyExists(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        {
+            Fixture.Customize(new InfrastructureCustomization());
+            Fixture.Customize(new WithFixedStreetNamePersistentLocalId());
+            _streamId = Fixture.Create<StreetNameStreamId>();
+        }
+
+        [Fact]
+        public void ThenStreetNameAlreadyExists()
+        {
+            var command = Fixture.Create<ImportStreetName>();
+
+            Assert(new Scenario()
+                .Given(_streamId, new object[]
+                {
+                    Fixture.Create<StreetNameWasImported>()
+                })
+                .When(command)
+                .Throws(new AggregateSourceException($"StreetName with id {command.PersistentLocalId} already exists")));
+        }
+
     }
-
-    [Fact]
-    public void ThenStreetNameAlreadyExists()
-    {
-        var command = Fixture.Create<ImportStreetName>();
-
-        Assert(new Scenario()
-            .Given(_streamId, new object[]
-            {
-                Fixture.Create<StreetNameWasImported>()
-            })
-            .When(command)
-            .Throws(new AggregateSourceException($"StreetName with id {command.PersistentLocalId} already exists")));
-    }
-
 }

@@ -17,12 +17,17 @@ description Address Registry Consumer.
 dependencies
   framework: net6.0
     Be.Vlaanderen.Basisregisters.Aws.DistributedMutex >= LOCKEDVERSION
-    Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac >= LOCKEDVERSION    
+    Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac >= LOCKEDVERSION
+    Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql >= LOCKEDVERSION
+    Be.Vlaanderen.Basisregisters.DataDog.Tracing.SqlStreamStore >= LOCKEDVERSION
+    Be.Vlaanderen.Basisregisters.EntityFrameworkCore.EntityTypeConfiguration >= LOCKEDVERSION
     Be.Vlaanderen.Basisregisters.EventHandling.Autofac >= LOCKEDVERSION
     Be.Vlaanderen.Basisregisters.GrAr.Contracts >= LOCKEDVERSION
     Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple >= LOCKEDVERSION
     Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector >= LOCKEDVERSION
-    Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner >= LOCKEDVERSION        
+    Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner >= LOCKEDVERSION
+    Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac >= LOCKEDVERSION
+    Be.Vlaanderen.Basisregisters.Projector >= LOCKEDVERSION     
 
 files
   AddressRegistry.Consumer.dll => lib\net6.0

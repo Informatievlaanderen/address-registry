@@ -5,7 +5,6 @@ namespace AddressRegistry.Address.Events
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using Newtonsoft.Json;
     using System;
-    using ValueObjects;
 
     [EventTags(EventTag.For.Sync)]
     [EventName("AddressWasPositioned")]

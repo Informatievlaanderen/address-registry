@@ -12,13 +12,14 @@ namespace AddressRegistry.Address
     using Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using SqlStreamStore;
-    using ValueObjects;
+    using StreetName;
+    using StreetName.Commands;
 
-    public sealed class AddressCommandHandlerModule : CommandHandlerModule
+    public sealed class CrabAddressCommandHandlerModule : CommandHandlerModule
     {
         private readonly IPersistentLocalIdGenerator _persistentLocalIdGenerator;
 
-        public AddressCommandHandlerModule(
+        public CrabAddressCommandHandlerModule(
             Func<IAddresses> getAddresses,
             Func<ConcurrentUnitOfWork> getUnitOfWork,
             IPersistentLocalIdGenerator persistentLocalIdGenerator,
@@ -27,6 +28,7 @@ namespace AddressRegistry.Address
             EventSerializer eventSerializer,
             AddressProvenanceFactory addressProvenanceFactory,
             CrabAddressProvenanceFactory crabProvenanceFactory,
+            AddressLegacyProvenanceFactory addressLegacyProvenanceFactory,
             AddressPersistentLocalIdentifierProvenanceFactory addressPersistentLocalIdentifierProvenanceFactory)
         {
             _persistentLocalIdGenerator = persistentLocalIdGenerator;
@@ -124,6 +126,16 @@ namespace AddressRegistry.Address
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
                 .AddProvenance(getUnitOfWork, addressPersistentLocalIdentifierProvenanceFactory)
                 .Handle(async (message, ct) => await AssignPersistentLocalIdToAddress(getAddresses, message, ct));
+
+            For<MarkAddressAsMigrated>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
+                .AddProvenance(getUnitOfWork, addressLegacyProvenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var addresses = getAddresses();
+                    var address = await addresses.GetAsync(message.Command.AddressId, ct);
+                    address.MarkMigrated(message.Command.StreetNamePersistentLocalId);
+                });
         }
 
         public async Task ImportSubaddressMailCantonFromCrab(Func<IAddresses> getAddresses, CommandMessage<ImportSubaddressMailCantonFromCrab> message, CancellationToken ct)

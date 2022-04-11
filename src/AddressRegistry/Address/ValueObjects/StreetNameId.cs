@@ -1,4 +1,4 @@
-namespace AddressRegistry.Address.ValueObjects
+namespace AddressRegistry.Address
 {
     using System;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
@@ -12,6 +12,9 @@ namespace AddressRegistry.Address.ValueObjects
 
         public static StreetNameId CreateFor(CrabStreetNameId crabStreetNameId)
             => new StreetNameId(crabStreetNameId.CreateDeterministicId());
+
+        public static StreetNameId CreateFor(string streetNameId)
+            => new StreetNameId(Guid.Parse(streetNameId));
 
         public static StreetNameId CreateForPersistentId(IdentifierUri<int> persistentId)
             => CreateFor(new CrabStreetNameId(persistentId.Value));

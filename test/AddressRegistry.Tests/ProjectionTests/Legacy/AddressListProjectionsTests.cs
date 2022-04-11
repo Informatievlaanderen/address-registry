@@ -1,11 +1,11 @@
-namespace AddressRegistry.Tests.ProjectionTests
+namespace AddressRegistry.Tests.ProjectionTests.Legacy
 {
     using System.Threading.Tasks;
+    using Address;
     using Address.Events;
-    using Address.ValueObjects;
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing;
     using Microsoft.EntityFrameworkCore;
     using Projections.Legacy;
     using Projections.Legacy.AddressList;

@@ -1,8 +1,8 @@
 namespace AddressRegistry.Projections.Legacy.AddressDetail
 {
+    using Address;
     using Address.Events;
     using Address.Events.Crab;
-    using Address.ValueObjects;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;

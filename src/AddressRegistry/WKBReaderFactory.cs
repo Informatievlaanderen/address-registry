@@ -1,6 +1,6 @@
 namespace AddressRegistry
 {
-    using Address.ValueObjects;
+    using Address;
     using NetTopologySuite;
     using NetTopologySuite.Geometries;
     using NetTopologySuite.Geometries.Implementation;

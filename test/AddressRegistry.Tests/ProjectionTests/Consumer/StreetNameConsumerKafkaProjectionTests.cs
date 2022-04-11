@@ -1,15 +1,14 @@
-namespace AddressRegistry.Tests.ProjectionTests;
+namespace AddressRegistry.Tests.ProjectionTests.Consumer;
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Address.ValueObjects;
+using AddressRegistry.Consumer.Projections;
 using AutoFixture;
 using Be.Vlaanderen.Basisregisters.GrAr.Contracts;
 using Be.Vlaanderen.Basisregisters.GrAr.Contracts.StreetNameRegistry;
 using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-using Consumer.Projections;
 using global::AutoFixture;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -56,7 +55,7 @@ public class StreetNameConsumerKafkaProjectionTests : KafkaProjectionTest<Comman
 
             var result = new List<object[]>
                 {
-                    new object[] { new StreetNameWasMigratedToMunicipality(municipalityId, nisCode, _fixture.Create<StreetNameId>(), streetNamePersistentLocalId, _fixture.Create<StreetNameStatus>().ToString(), null, null,null,null, true, false, provenance ) },
+                    new object[] { new StreetNameWasMigratedToMunicipality(municipalityId, nisCode, _fixture.Create<Guid>().ToString("D"), streetNamePersistentLocalId, _fixture.Create<StreetNameStatus>().ToString(), null, null,null,null, true, false, provenance ) },
                     new object[] { new StreetNameWasProposedV2(municipalityId, nisCode, null, streetNamePersistentLocalId, provenance) },
                     new object[] { new StreetNameWasApproved(municipalityId, streetNamePersistentLocalId, provenance) }
                 };

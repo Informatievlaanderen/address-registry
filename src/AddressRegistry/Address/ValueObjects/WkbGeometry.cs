@@ -1,4 +1,4 @@
-namespace AddressRegistry.Address.ValueObjects
+namespace AddressRegistry.Address
 {
     using System.Collections.Generic;
     using System.Linq;

@@ -10,8 +10,10 @@ namespace AddressRegistry.Address
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using NodaTime;
-    using ValueObjects;
-    using ValueObjects.Crab;
+    using StreetName;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Crab;
+    using StreetName.Commands;
 
     public partial class Address : AggregateRootEntity
     {
@@ -291,12 +293,49 @@ namespace AddressRegistry.Address
                 ApplyChange(new AddressPersistentLocalIdWasAssigned(_addressId, persistentLocalId, assignmentDate));
         }
 
+        public MigrateAddressToStreetName CreateMigrateCommand(StreetNamePersistentLocalId streetNamePersistentLocalId)
+        {
+            var status = _status ?? throw new InvalidOperationException($"No status found for Address '{_addressId}'");
+
+            var parentAddressId = IsSubaddress ? AddressId.CreateFor(_coupledHouseNumberId) : null;
+
+            return new MigrateAddressToStreetName(
+                _addressId,
+                streetNamePersistentLocalId,
+                StreetNameId,
+                PersistentLocalId,
+                status,
+                HouseNumber,
+                _boxNumber,
+                _geometry,
+                _officiallyAssigned,
+                _postalCode,
+                IsComplete,
+                IsRemoved,
+                parentAddressId,
+                new Provenance(
+                    SystemClock.Instance.GetCurrentInstant(),
+                    Application.AddressRegistry,
+                    new Reason("Migrate Address aggregate to StreetName."),
+                    new Operator("Address Registry"),
+                    Modification.Insert,
+                    Organisation.DigitaalVlaanderen));
+        }
+
         public void RequestPersistentLocalId(IPersistentLocalIdGenerator persistentLocalIdGenerator)
         {
             if (PersistentLocalId == null)
                 AssignPersistentLocalId(
                     persistentLocalIdGenerator.GenerateNextPersistentLocalId(),
                     new PersistentLocalIdAssignmentDate(Instant.FromDateTimeOffset(DateTimeOffset.Now))); // TODO: Refactor this to use IClock
+        }
+
+        public void MarkMigrated(StreetNamePersistentLocalId streetNamePersistentLocalId)
+        {
+            if (!IsMigrated)
+            {
+                ApplyChange(new AddressWasMigrated(_addressId, streetNamePersistentLocalId));
+            }
         }
 
         private void EvaluatePositionChange()
@@ -330,9 +369,9 @@ namespace AddressRegistry.Address
 
         private void ApplyAddressCompletion()
         {
-            if (_status.HasValue && _geometry != null && _officiallyAssigned.HasValue && !_isComplete)
+            if (_status.HasValue && _geometry != null && _officiallyAssigned.HasValue && !IsComplete)
                 ApplyChange(new AddressBecameComplete(_addressId));
-            else if ((!_status.HasValue || _geometry == null || !_officiallyAssigned.HasValue) && _isComplete)
+            else if ((!_status.HasValue || _geometry == null || !_officiallyAssigned.HasValue) && IsComplete)
                 ApplyChange(new AddressBecameIncomplete(_addressId));
         }
 

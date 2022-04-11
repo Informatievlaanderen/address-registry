@@ -2,7 +2,7 @@ namespace AddressRegistry.Api.Legacy.Tests.Framework.Generate
 {
     using System;
     using System.Collections.Generic;
-    using AddressRegistry.Address.ValueObjects;
+    using AddressRegistry.Address;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using NetTopologySuite.Geometries;
     using Projections.Legacy.AddressDetail;

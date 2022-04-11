@@ -1,0 +1,146 @@
+namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
+{
+    using System;
+    using System.Collections.Generic;
+    using AutoFixture;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using FluentAssertions;
+    using global::AutoFixture;
+    using StreetName;
+    using StreetName.Commands;
+    using StreetName.Events;
+    using Xunit;
+    using Xunit.Abstractions;
+
+    public class GivenStreetName : AddressRegistryTest
+    {
+        private readonly StreetNameStreamId _streamId;
+
+        public GivenStreetName(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        {
+            Fixture.Customize(new InfrastructureCustomization());
+            Fixture.Customize(new WithFixedStreetNamePersistentLocalId());
+            Fixture.Customize(new WithExtendedWkbGeometry());
+            _streamId = Fixture.Create<StreetNameStreamId>();
+        }
+
+        [Fact]
+        public void ThenAddressWasMigratedToStreetName()
+        {
+            var command = Fixture.Create<MigrateAddressToStreetName>()
+                .WithoutParentAddressId();
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    Fixture.Create<StreetNameWasImported>())
+                .When(command)
+                .Then(
+                    new Fact(new StreetNameStreamId(command.StreetNamePersistentLocalId),
+                        new AddressWasMigratedToStreetName(
+                            command.StreetNamePersistentLocalId,
+                            command.AddressId,
+                            command.StreetNameId,
+                            command.AddressPersistentLocalId,
+                            command.Status,
+                            command.HouseNumber,
+                            command.BoxNumber,
+                            command.Geometry,
+                            command.OfficiallyAssigned,
+                            command.PostalCode,
+                            command.IsCompleted,
+                            command.IsRemoved,
+                            null))));
+        }
+
+        [Fact]
+        public void AddressWasAlreadyMigrated_ThenNone()
+        {
+            IgnoreExceptionMessage = true;
+            var command = Fixture.Create<MigrateAddressToStreetName>();
+
+            var addressMigratedEvent = new AddressWasMigratedToStreetName(
+                command.StreetNamePersistentLocalId,
+                command.AddressId,
+                command.StreetNameId,
+                command.AddressPersistentLocalId,
+                command.Status,
+                command.HouseNumber,
+                command.BoxNumber,
+                command.Geometry,
+                command.OfficiallyAssigned,
+                command.PostalCode,
+                command.IsCompleted,
+                command.IsRemoved,
+                null);
+
+            ((ISetProvenance)addressMigratedEvent).SetProvenance(Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    Fixture.Create<StreetNameWasImported>(),
+                    addressMigratedEvent)
+                .When(command)
+                .Throws(new InvalidOperationException()));
+        }
+
+        [Fact]
+        public void ThenExpectedAddressWasAddedToStreetName()
+        {
+            var command = Fixture.Create<MigrateAddressToStreetName>();
+            var aggregate = StreetName.Factory();
+            aggregate.Initialize(new List<object>
+            {
+                Fixture.Create<StreetNameWasImported>()
+            });
+
+            // Act
+            aggregate.MigrateAddress(
+                command.AddressId,
+                command.StreetNameId,
+                command.AddressPersistentLocalId,
+                command.Status,
+                command.HouseNumber,
+                command.BoxNumber,
+                command.Geometry,
+                command.OfficiallyAssigned,
+                command.PostalCode,
+                command.IsCompleted,
+                command.IsRemoved,
+                null);
+
+            // Assert
+            var result = aggregate.StreetNameAddresses.GetByPersistentLocalId(command.AddressPersistentLocalId);
+            result.Should().NotBeNull();
+
+            result.AddressPersistentLocalId.Should().Be(command.AddressPersistentLocalId);
+            result.Status.Should().Be(command.Status);
+            result.HouseNumber.Should().Be(command.HouseNumber);
+            result.BoxNumber.Should().Be(command.BoxNumber);
+            result.PostalCode.Should().Be(command.PostalCode);
+            result.Geometry.Should().Be(command.Geometry);
+            result.IsOfficiallyAssigned.Should().Be(command.OfficiallyAssigned);
+            result.IsRemoved.Should().Be(command.IsRemoved);
+            result.Parent.Should().BeNull();
+        }
+
+
+        [Fact]
+        public void WithoutParentAddressMigrated_ThenThrowsInvalidOperationException()
+        {
+            IgnoreExceptionMessage = true;
+
+            var parentAddressWasMigratedToStreetName = Fixture.Create<AddressWasMigratedToStreetName>();
+
+            var command = Fixture.Create<MigrateAddressToStreetName>()
+                .WithParentAddressId(new Address.AddressId(parentAddressWasMigratedToStreetName.AddressId));
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    Fixture.Create<StreetNameWasImported>())
+                .When(command)
+                .Throws(new InvalidOperationException()));
+        }
+    }
+}

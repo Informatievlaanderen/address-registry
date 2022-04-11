@@ -1,4 +1,4 @@
-namespace AddressRegistry.Address.ValueObjects.Crab
+namespace AddressRegistry.Address.Crab
 {
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Newtonsoft.Json;

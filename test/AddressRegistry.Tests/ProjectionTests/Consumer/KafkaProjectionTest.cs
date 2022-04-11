@@ -1,4 +1,4 @@
-namespace AddressRegistry.Tests.ProjectionTests;
+namespace AddressRegistry.Tests.ProjectionTests.Consumer;
 
 using System;
 using System.Threading;

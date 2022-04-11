@@ -9,8 +9,8 @@ namespace AddressRegistry.Tests.AggregateTests.Legacy.WhenImportHouseNumberPosit
     using global::AutoFixture;
     using NodaTime;
     using System;
-    using Address.ValueObjects;
-    using Address.ValueObjects.Crab;
+    using Address;
+    using Address.Crab;
     using WhenImportHouseNumberFromCrab;
     using Xunit;
     using Xunit.Abstractions;

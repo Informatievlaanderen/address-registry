@@ -2,7 +2,6 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
 {
     using Address;
     using Address.Events;
-    using Address.ValueObjects;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;

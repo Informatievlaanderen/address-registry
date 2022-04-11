@@ -11,8 +11,8 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
     using NodaTime;
     using System;
     using System.Text;
+    using Address;
     using Address.Events.Crab;
-    using Address.ValueObjects;
     using Microsoft.Extensions.Options;
 
     [ConnectedProjectionName("Extract adressen")]

@@ -22,4 +22,21 @@ namespace AddressRegistry.Address
                 crabProvenance.Organisation);
         }
     }
+
+    public class AddressLegacyProvenanceFactory : IProvenanceFactory<Address>
+    {
+        public bool CanCreateFrom<TCommand>() => typeof(IHasCommandProvenance).IsAssignableFrom(typeof(TCommand));
+
+        public Provenance CreateFrom(
+            object provenanceHolder,
+            Address aggregate)
+        {
+            if (provenanceHolder is not IHasCommandProvenance provenance)
+            {
+                throw new ApplicationException($"Cannot create provenance from {provenanceHolder.GetType().Name}");
+            }
+
+            return provenance.Provenance;
+        }
+    }
 }

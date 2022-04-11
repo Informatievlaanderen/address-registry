@@ -1,8 +1,8 @@
 namespace AddressRegistry.Tests.Bugfixes
 {
+    using Address;
     using Address.Commands.Crab;
     using Address.Events;
-    using Address.ValueObjects;
 
     public static class AssignPersistentLocalIdForCrabSubaddressIdExtensions
     {

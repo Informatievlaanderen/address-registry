@@ -1,4 +1,4 @@
-namespace AddressRegistry.Address.ValueObjects
+namespace AddressRegistry.Address
 {
     public enum GeometrySpecification
     {

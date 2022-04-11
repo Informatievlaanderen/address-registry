@@ -12,7 +12,6 @@ namespace AddressRegistry.Tests
     using KellermanSoftware.CompareNetObjects;
     using Microsoft.Extensions.Logging;
     using System;
-    using Address.ValueObjects;
     using Newtonsoft.Json;
     using Xunit.Abstractions;
 
@@ -29,8 +28,10 @@ namespace AddressRegistry.Tests
         protected IFactComparer FactComparer => Container.Resolve<IFactComparer>();
 
         protected IExceptionComparer ExceptionComparer => Container.Resolve<IExceptionComparer>();
-
+        
         protected ILogger Logger => Container.Resolve<ILogger>();
+
+        protected bool IgnoreExceptionMessage { get; set; }
 
         protected AutofacBasedTest(ITestOutputHelper testOutputHelper)
         {
@@ -73,6 +74,12 @@ namespace AddressRegistry.Tests
             comparer.Config.MembersToIgnore.Add("Source");
             comparer.Config.MembersToIgnore.Add("StackTrace");
             comparer.Config.MembersToIgnore.Add("TargetSite");
+
+            if (IgnoreExceptionMessage)
+            {
+                comparer.Config.MembersToIgnore.Add("Message");
+            }
+
             return new CompareNetObjectsBasedExceptionComparer(comparer);
         }
 

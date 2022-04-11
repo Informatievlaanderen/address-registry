@@ -2,9 +2,9 @@ namespace AddressRegistry.Projections.Extract.AddressCrabHouseNumberIdExtract
 {
     using System;
     using System.Text;
+    using Address;
     using Address.Events;
     using Address.Events.Crab;
-    using Address.ValueObjects;
     using Be.Vlaanderen.Basisregisters.Crab;
     using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;

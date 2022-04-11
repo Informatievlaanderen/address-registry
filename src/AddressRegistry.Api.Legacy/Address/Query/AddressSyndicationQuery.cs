@@ -12,7 +12,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
-    using AddressRegistry.Address.ValueObjects;
+    using AddressRegistry.Address;
 
     public class AddressSyndicationQueryResult
     {

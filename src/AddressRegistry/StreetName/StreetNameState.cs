@@ -8,11 +8,14 @@ namespace AddressRegistry.StreetName
         public bool IsRemoved { get; private set; }
         public StreetNameStatus Status { get; private set; }
 
+        public StreetNameAddresses StreetNameAddresses { get; } = new StreetNameAddresses();
+
         private StreetName()
         {
             Register<StreetNameWasImported>(When);
             Register<StreetNameWasApproved>(When);
             Register<StreetNameWasRemoved>(When);
+            Register<AddressWasMigratedToStreetName>(When);
         }
 
         private void When(StreetNameWasRemoved @event)
@@ -29,6 +32,22 @@ namespace AddressRegistry.StreetName
         {
             PersistentLocalId = new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId);
             Status = @event.StreetNameStatus;
+        }
+
+        private void When(AddressWasMigratedToStreetName @event)
+        {
+            var address = new StreetNameAddress(ApplyChange);
+            address.Route(@event);
+
+            if (@event.ParentPersistentLocalId.HasValue)
+            {
+                var parent = StreetNameAddresses
+                    .GetByPersistentLocalId(new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value));
+
+                parent.AddChild(address);
+            }
+
+            StreetNameAddresses.Add(address);
         }
     }
 }

@@ -2,7 +2,7 @@ namespace AddressRegistry.Tests.AutoFixture
 {
     using System;
     using System.Linq;
-    using Address.ValueObjects;
+    using Address;
     using Be.Vlaanderen.Basisregisters.Crab;
     using global::AutoFixture;
 

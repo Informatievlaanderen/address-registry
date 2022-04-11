@@ -1,7 +1,7 @@
 namespace AddressRegistry.Projections.Legacy.AddressDetail
 {
     using System;
-    using Address.ValueObjects;
+    using Address;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;

@@ -1,12 +1,11 @@
 namespace AddressRegistry.Address
 {
+    using System.Collections.Generic;
+    using System.Linq;
     using Be.Vlaanderen.Basisregisters.Crab;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Events;
     using Events.Crab;
-    using System.Collections.Generic;
-    using System.Linq;
-    using ValueObjects;
 
     public partial class Address
     {
@@ -34,7 +33,6 @@ namespace AddressRegistry.Address
         private AddressId _addressId;
         private BoxNumber _boxNumber;
         private AddressGeometry _geometry;
-        private bool _isComplete;
         private bool? _officiallyAssigned;
         private PostalCode _postalCode;
         private AddressStatus? _previousStatus;
@@ -45,11 +43,14 @@ namespace AddressRegistry.Address
         public HouseNumber HouseNumber { get; private set; }
         public PersistentLocalId PersistentLocalId { get; private set; }
 
+        public bool IsComplete { get; private set; }
+
         public bool IsRemoved { get; private set; }
 
         public bool IsSubaddress { get; private set; }
 
         public Modification LastModificationBasedOnCrab { get; private set; }
+        public bool IsMigrated { get; private set; }
 
         private Address()
         {
@@ -101,6 +102,13 @@ namespace AddressRegistry.Address
             Register<AddressSubaddressStatusWasImportedFromCrab>(When);
             Register<AddressHouseNumberPositionWasImportedFromCrab>(When);
             Register<AddressSubaddressPositionWasImportedFromCrab>(When);
+
+            Register<AddressWasMigrated>(When);
+        }
+
+        private void When(AddressWasMigrated @event)
+        {
+            IsMigrated = true;
         }
 
         #region HouseNumber/Boxnumber
@@ -253,12 +261,12 @@ namespace AddressRegistry.Address
 
         private void When(AddressBecameIncomplete @event)
         {
-            _isComplete = false;
+            IsComplete = false;
         }
 
         private void When(AddressBecameComplete @event)
         {
-            _isComplete = true;
+            IsComplete = true;
         }
 
         private void When(AddressWasRegistered @event)

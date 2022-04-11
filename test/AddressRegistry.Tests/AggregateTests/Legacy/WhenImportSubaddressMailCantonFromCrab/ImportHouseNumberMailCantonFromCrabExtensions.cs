@@ -1,8 +1,8 @@
 namespace AddressRegistry.Tests.AggregateTests.Legacy.WhenImportSubaddressMailCantonFromCrab
 {
     using Address.Commands.Crab;
+    using Address.Crab;
     using Address.Events.Crab;
-    using Address.ValueObjects.Crab;
 
     public static class ImportSubaddressMailCantonFromCrabExtensions
     {

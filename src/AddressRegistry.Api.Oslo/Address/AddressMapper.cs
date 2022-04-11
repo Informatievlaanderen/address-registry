@@ -5,7 +5,6 @@ namespace AddressRegistry.Api.Oslo.Address
     using System.Text;
     using System.Xml;
     using AddressRegistry.Address;
-    using AddressRegistry.Address.ValueObjects;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;

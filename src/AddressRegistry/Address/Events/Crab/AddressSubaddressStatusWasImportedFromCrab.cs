@@ -1,10 +1,10 @@
 namespace AddressRegistry.Address.Events.Crab
 {
+    using AddressRegistry.Address.Crab;
     using Be.Vlaanderen.Basisregisters.Crab;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Newtonsoft.Json;
     using NodaTime;
-    using ValueObjects.Crab;
 
     [EventName("AddressSubaddressStatusWasImportedFromCrab")]
     [EventDescription("Legacy event om tblSubadresstatus en tblSubadresstatus_hist te importeren.")]

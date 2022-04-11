@@ -20,6 +20,29 @@ namespace AddressRegistry.StreetName
             EventSerializer eventSerializer,
             StreetNameProvenanceFactory provenanceFactory)
         {
+            For<ImportMigratedStreetName>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
+                .AddEventHash<ImportMigratedStreetName, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streetNameStreamId = new StreetNameStreamId(message.Command.PersistentLocalId);
+                    var streetName = await getStreetNames().GetOptionalAsync(streetNameStreamId, ct);
+
+                    if (streetName.HasValue)
+                    {
+                        throw new AggregateSourceException($"StreetName with id {message.Command.PersistentLocalId} already exists");
+                    }
+
+                    var newStreetName = StreetName.Register(
+                        message.Command.StreetNameId,
+                        message.Command.PersistentLocalId,
+                        message.Command.MunicipalityId,
+                        message.Command.StreetNameStatus);
+
+                    getStreetNames().Add(streetNameStreamId, newStreetName);
+                });
+
             For<ImportStreetName>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
                 .AddEventHash<ImportStreetName, StreetName>(getUnitOfWork)
@@ -34,7 +57,10 @@ namespace AddressRegistry.StreetName
                         throw new AggregateSourceException($"StreetName with id {message.Command.PersistentLocalId} already exists");
                     }
 
-                    var newStreetName = StreetName.Register(message.Command.PersistentLocalId, message.Command.MunicipalityId, message.Command.StreetNameStatus);
+                    var newStreetName = StreetName.Register(
+                        message.Command.PersistentLocalId,
+                        message.Command.MunicipalityId,
+                        message.Command.StreetNameStatus);
 
                     getStreetNames().Add(streetNameStreamId, newStreetName);
                 });

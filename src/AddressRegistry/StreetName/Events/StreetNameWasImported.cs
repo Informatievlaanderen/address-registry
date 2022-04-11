@@ -15,7 +15,6 @@ namespace AddressRegistry.StreetName.Events
     public class StreetNameWasImported : IStreetNameEvent
     {
         public const string EventName = "StreetNameWasImported"; // BE CAREFUL CHANGING THIS!!
-
         public int StreetNamePersistentLocalId { get; }
         public Guid MunicipalityId { get; }
         public StreetNameStatus StreetNameStatus { get; }

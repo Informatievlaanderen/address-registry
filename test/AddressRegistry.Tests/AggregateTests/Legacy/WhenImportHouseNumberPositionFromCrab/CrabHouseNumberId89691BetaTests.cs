@@ -1,10 +1,10 @@
 namespace AddressRegistry.Tests.AggregateTests.Legacy.WhenImportHouseNumberPositionFromCrab
 {
     using System;
+    using Address;
     using Address.Commands.Crab;
+    using Address.Crab;
     using Address.Events;
-    using Address.ValueObjects;
-    using Address.ValueObjects.Crab;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.Crab;

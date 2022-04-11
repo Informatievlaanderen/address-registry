@@ -10,12 +10,32 @@ namespace AddressRegistry.StreetName
         public static readonly Func<StreetName> Factory = () => new StreetName();
 
         public static StreetName Register(
+            StreetNameId streetNameId,
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             MunicipalityId municipalityId,
             StreetNameStatus streetNameStatus)
         {
             var streetName = Factory();
-            streetName.ApplyChange(new StreetNameWasImported(streetNamePersistentLocalId, municipalityId, streetNameStatus));
+            streetName.ApplyChange(
+                new MigratedStreetNameWasImported(
+                    streetNameId,
+                    streetNamePersistentLocalId,
+                    municipalityId,
+                    streetNameStatus));
+            return streetName;
+        }
+
+        public static StreetName Register(
+            StreetNamePersistentLocalId streetNamePersistentLocalId,
+            MunicipalityId municipalityId,
+            StreetNameStatus streetNameStatus)
+        {
+            var streetName = Factory();
+            streetName.ApplyChange(
+                new StreetNameWasImported(
+                    streetNamePersistentLocalId,
+                    municipalityId,
+                    streetNameStatus));
             return streetName;
         }
 
@@ -34,6 +54,47 @@ namespace AddressRegistry.StreetName
                 ApplyChange(new StreetNameWasRemoved(PersistentLocalId));
             }
             //TODO: remove addresses?
+        }
+
+        public void MigrateAddress(
+            AddressId addressId,
+            AddressStreetNameId streetNameId,
+            AddressPersistentLocalId addressPersistentLocalId,
+            AddressStatus addressStatus,
+            HouseNumber houseNumber,
+            BoxNumber boxNumber,
+            AddressGeometry geometry,
+            bool? officiallyAssigned,
+            PostalCode postalCode,
+            bool isCompleted,
+            bool isRemoved,
+            AddressId? parentAddressId)
+        {
+            if (StreetNameAddresses.HasPersistentLocalId(addressPersistentLocalId))
+            {
+                throw new InvalidOperationException($"Cannot migrate address with id '{addressPersistentLocalId}' to streetname '{PersistentLocalId}'.");
+            }
+
+            AddressPersistentLocalId? parentPersistentLocalId = null;
+            if (!EqualityComparer<Guid>.Default.Equals(parentAddressId ?? Guid.Empty, Guid.Empty))
+            {
+                parentPersistentLocalId = StreetNameAddresses.GetByLegacyAddressId(parentAddressId ?? AddressId.Default).AddressPersistentLocalId;
+            }
+
+            ApplyChange(new AddressWasMigratedToStreetName(
+                PersistentLocalId,
+                addressId,
+                streetNameId,
+                addressPersistentLocalId,
+                addressStatus,
+                houseNumber,
+                boxNumber,
+                geometry,
+                officiallyAssigned,
+                postalCode,
+                isCompleted,
+                isRemoved,
+                parentPersistentLocalId));
         }
 
         #region Metadata

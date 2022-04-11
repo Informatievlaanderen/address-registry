@@ -5,8 +5,7 @@ namespace AddressRegistry.Address.Commands.Crab
     using Be.Vlaanderen.Basisregisters.Utilities;
     using System;
     using System.Collections.Generic;
-    using ValueObjects;
-    using ValueObjects.Crab;
+    using AddressRegistry.Address.Crab;
 
     public class ImportSubaddressFromCrab : BaseCrabCommand
     {

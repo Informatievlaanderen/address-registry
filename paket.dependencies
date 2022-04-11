@@ -50,7 +50,7 @@ nuget Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore 6.0.0
 nuget Be.Vlaanderen.Basisregisters.EventHandling 4.0.0
 nuget Be.Vlaanderen.Basisregisters.EventHandling.Autofac 4.0.0
 
-nuget Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple 2.0.0
+nuget Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple 3.0.0
 
 nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList 10.0.1
 nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore 10.0.1

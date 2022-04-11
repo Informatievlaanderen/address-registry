@@ -5,6 +5,7 @@ namespace AddressRegistry.Consumer
     using Autofac;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
+    using Confluent.Kafka;
     using Microsoft.Extensions.Logging;
     using Projections;
 
@@ -14,17 +15,20 @@ namespace AddressRegistry.Consumer
         private readonly ILoggerFactory _loggerFactory;
         private readonly KafkaOptions _options;
         private readonly ConsumerOptions _consumerOptions;
+        private readonly Offset? _offset;
 
         public Consumer(
             ILifetimeScope container,
             ILoggerFactory loggerFactory,
             KafkaOptions options,
-            ConsumerOptions consumerOptions)
+            ConsumerOptions consumerOptions,
+            Offset? offset)
         {
             _container = container;
             _loggerFactory = loggerFactory;
             _options = options;
             _consumerOptions = consumerOptions;
+            _offset = offset;
         }
 
         public async Task Start(CancellationToken cancellationToken = default)
@@ -41,6 +45,7 @@ namespace AddressRegistry.Consumer
                 {
                     await projector.ProjectAsync(commandHandler, message, cancellationToken);
                 },
+                _offset,
                 cancellationToken);
 
             if (!result.IsSuccess)

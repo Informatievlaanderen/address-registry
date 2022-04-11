@@ -279,7 +279,7 @@ NUGET
       Be.Vlaanderen.Basisregisters.Crab (>= 3.0) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
       Be.Vlaanderen.Basisregisters.GrAr.Common (17.2) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
       Microsoft.CSharp (>= 4.7) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
-    Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple (2.0)
+    Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple (3.0)
       Confluent.Kafka (>= 1.8.2) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
       Microsoft.Extensions.Logging (>= 6.0) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
     Be.Vlaanderen.Basisregisters.Middleware.AddProblemJsonHeader (2.0) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)

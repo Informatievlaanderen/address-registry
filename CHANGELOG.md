@@ -1,3 +1,10 @@
+## [3.2.1](https://github.com/informatievlaanderen/address-registry/compare/v3.2.0...v3.2.1) (2022-04-12)
+
+
+### Performance Improvements
+
+* bosa collect all postalcodes instead of one by one ([c753ba2](https://github.com/informatievlaanderen/address-registry/commit/c753ba2c5ea42029dd8ba38fc7f542f328b5894d))
+
 # [3.2.0](https://github.com/informatievlaanderen/address-registry/compare/v3.1.7...v3.2.0) (2022-04-12)
 
 

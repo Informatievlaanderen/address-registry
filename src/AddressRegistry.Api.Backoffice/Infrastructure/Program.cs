@@ -1,14 +1,11 @@
-namespace AddressRegistry.Api.Backoffice.Infrastructure
+namespace AddressRegistry.Api.BackOffice.Infrastructure
 {
     using Be.Vlaanderen.Basisregisters.Api;
     using Microsoft.AspNetCore.Hosting;
 
     public class Program
     {
-        public static void Main(string[] args)
-            => CreateWebHostBuilder(args)
-                .Build()
-                .Run();
+        public static void Main(string[] args) => CreateWebHostBuilder(args).Build().Run();
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args)
             => new WebHostBuilder()
@@ -17,7 +14,7 @@ namespace AddressRegistry.Api.Backoffice.Infrastructure
                     {
                         Hosting =
                         {
-                            HttpPort = 5012
+                            HttpPort = 5010
                         },
                         Logging =
                         {

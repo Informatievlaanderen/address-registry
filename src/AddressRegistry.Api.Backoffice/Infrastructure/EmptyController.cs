@@ -1,9 +1,9 @@
-namespace AddressRegistry.Api.Backoffice.Infrastructure
+namespace AddressRegistry.Api.BackOffice.Infrastructure
 {
     using System.Reflection;
-    using Be.Vlaanderen.Basisregisters.Api;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Net.Http.Headers;
+    using Be.Vlaanderen.Basisregisters.Api;
 
     [ApiVersionNeutral]
     [Route("")]
@@ -14,6 +14,6 @@ namespace AddressRegistry.Api.Backoffice.Infrastructure
         public IActionResult Get()
             => Request.Headers[HeaderNames.Accept].ToString().Contains("text/html")
                 ? (IActionResult)new RedirectResult("/docs")
-                : new OkObjectResult($"Welcome to the Basisregisters Vlaanderen Address Backoffice Api {Assembly.GetEntryAssembly().GetVersionText()}.");
+                : new OkObjectResult($"Welcome to the Basisregisters Vlaanderen Address BackOffice Api {Assembly.GetEntryAssembly().GetVersionText()}.");
     }
 }

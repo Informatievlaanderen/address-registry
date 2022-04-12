@@ -1,3 +1,15 @@
+# [3.2.0](https://github.com/informatievlaanderen/address-registry/compare/v3.1.7...v3.2.0) (2022-04-12)
+
+
+### Bug Fixes
+
+* run consumer projection + upgrade kafka package ([c1a893a](https://github.com/informatievlaanderen/address-registry/commit/c1a893a35c757ce7d6cac9314e3525d78bbe2943))
+
+
+### Features
+
+* add migrator without backoffice ([850720d](https://github.com/informatievlaanderen/address-registry/commit/850720dbc2e3491d4233a459ceb5d921397bf18f))
+
 ## [3.1.7](https://github.com/informatievlaanderen/address-registry/compare/v3.1.6...v3.1.7) (2022-04-08)
 
 

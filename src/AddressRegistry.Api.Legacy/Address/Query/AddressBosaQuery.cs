@@ -95,40 +95,49 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             var municipalities = filteredMunicipalities.Select(x => new { x.NisCode, x.Version }).ToList();
             var streetNames = filteredStreetNames.Select(x => new { x.StreetNameId, x.PersistentLocalId, x.Version, x.NisCode }).ToList();
 
-            var addresses = filteredAddresses
+            var topFilteredAddresses = filteredAddresses
                     .Take(1001)
-                    .ToList()
-                    .Select(x =>
-                    {
-                        var streetName = streetNames.First(y => y.StreetNameId == x.StreetNameId);
-                        var municipality = municipalities.First(y => y.NisCode == streetName.NisCode);
-                        var postalCode = _context
-                            .PostalInfoLatestItems
-                            .AsNoTracking()
-                            .First(y => y.PostalCode == x.PostalCode);
-
-                        return new AddressBosaResponseItem(
-                            _responseOptions.PostInfoNaamruimte,
-                            _responseOptions.GemeenteNaamruimte,
-                            _responseOptions.StraatNaamNaamruimte,
-                            _responseOptions.Naamruimte,
-                            x.PersistentLocalId.Value,
-                            AddressMapper.ConvertFromAddressStatus(x.Status),
-                            x.HouseNumber,
-                            x.BoxNumber,
-                            x.OfficiallyAssigned,
-                            AddressMapper.GetAddressPoint(x.Position),
-                            AddressMapper.ConvertFromGeometryMethod(x.PositionMethod),
-                            AddressMapper.ConvertFromGeometrySpecification(x.PositionSpecification),
-                            x.VersionTimestamp.ToBelgianDateTimeOffset(),
-                            streetName.PersistentLocalId,
-                            streetName.Version,
-                            municipality.NisCode,
-                            municipality.Version,
-                            x.PostalCode,
-                            postalCode.Version);
-                    })
                     .ToList();
+
+            var postalCodesInAddresses = filteredAddresses.Select(x => x.PostalCode).Distinct().ToList();
+
+            var postalCodes = _context
+                .PostalInfoLatestItems
+                .AsNoTracking()
+                .Where(y => postalCodesInAddresses.Contains(y.PostalCode))
+                .ToList();
+
+            var addresses = topFilteredAddresses
+                .Select(x =>
+                {
+                    var streetName = streetNames.First(y => y.StreetNameId == x.StreetNameId);
+                    var municipality = municipalities.First(y => y.NisCode == streetName.NisCode);
+
+                    var postalCode = postalCodes
+                        .First(y => y.PostalCode == x.PostalCode);
+
+                    return new AddressBosaResponseItem(
+                        _responseOptions.PostInfoNaamruimte,
+                        _responseOptions.GemeenteNaamruimte,
+                        _responseOptions.StraatNaamNaamruimte,
+                        _responseOptions.Naamruimte,
+                        x.PersistentLocalId.Value,
+                        AddressMapper.ConvertFromAddressStatus(x.Status),
+                        x.HouseNumber,
+                        x.BoxNumber,
+                        x.OfficiallyAssigned,
+                        AddressMapper.GetAddressPoint(x.Position),
+                        AddressMapper.ConvertFromGeometryMethod(x.PositionMethod),
+                        AddressMapper.ConvertFromGeometrySpecification(x.PositionSpecification),
+                        x.VersionTimestamp.ToBelgianDateTimeOffset(),
+                        streetName.PersistentLocalId,
+                        streetName.Version,
+                        municipality.NisCode,
+                        municipality.Version,
+                        x.PostalCode,
+                        postalCode.Version);
+                })
+                .ToList();
 
             return new AddressBosaResponse
             {

@@ -1,6 +1,7 @@
 namespace AddressRegistry.Migrator.Address.Infrastructure
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
@@ -24,6 +25,7 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
     using Polly;
     using Serilog;
     using StreetName;
+    using StreetName.Exceptions;
     using AddressId = AddressRegistry.Address.AddressId;
 
     public class Program
@@ -124,56 +126,76 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
 
             async Task ProcessStream(IEnumerable<(int, string)> streamsToProcess)
             {
+                var parentNotFoundCollection = new BlockingCollection<(int, string)>();
+
                 await Parallel.ForEachAsync(streamsToProcess, ct, async (stream, token) =>
                 {
                     var (internalId, aggregateId) = stream;
 
-                    if (token.IsCancellationRequested)
+                    try
                     {
-                        return;
-                    }
-
-                    if (processedIds.Contains(internalId))
-                    {
-                        logger.LogDebug($"Already migrated '{internalId}', skipping...");
-                        return;
-                    }
-
-                    var addressId = new AddressId(Guid.Parse(aggregateId));
-                    var addressAggregate = await addressRepo.GetAsync(addressId, ct);
-
-                    if (!addressAggregate.IsComplete)
-                    {
-                        if (addressAggregate.IsRemoved)
+                        if (token.IsCancellationRequested)
                         {
-                            logger.LogDebug($"Skipping incomplete & removed Address '{aggregateId}'.");
                             return;
                         }
 
-                        throw new InvalidOperationException($"Incomplete but not removed Address '{aggregateId}'.");
+                        if (processedIds.Contains(internalId))
+                        {
+                            logger.LogDebug($"Already migrated '{internalId}', skipping...");
+                            return;
+                        }
+
+                        var addressId = new AddressId(Guid.Parse(aggregateId));
+                        var addressAggregate = await addressRepo.GetAsync(addressId, ct);
+
+                        if (!addressAggregate.IsComplete)
+                        {
+                            if (addressAggregate.IsRemoved)
+                            {
+                                logger.LogDebug($"Skipping incomplete & removed Address '{aggregateId}'.");
+                                return;
+                            }
+
+                            throw new InvalidOperationException($"Incomplete but not removed Address '{aggregateId}'.");
+                        }
+
+                        var streetNameId = (Guid) addressAggregate.StreetNameId;
+                        var streetName =
+                            await consumerContext.StreetNameConsumerItems.FindAsync(new object[] { streetNameId }, ct);
+
+                        if (streetName == null)
+                        {
+                            throw new InvalidOperationException(
+                                $"StreetName for StreetNameId '{streetNameId}' was not found.");
+                        }
+
+                        await CreateAndDispatchCommand(streetName, addressAggregate, actualContainer, ct);
+
+                        await processedIdsTable.Add(internalId);
+                        processedIds.Add(internalId);
+
+                        await backOfficeContext
+                            .AddressPersistentIdStreetNamePersistentId
+                            .AddAsync(
+                                new AddressPersistentIdStreetNamePersistentId(addressAggregate.PersistentLocalId,
+                                    streetName.PersistentLocalId), ct);
+                        await backOfficeContext.SaveChangesAsync(ct);
+
                     }
-
-                    var streetNameId = (Guid)addressAggregate.StreetNameId;
-                    var streetName =
-                        await consumerContext.StreetNameConsumerItems.FindAsync(new object[] { streetNameId }, ct);
-
-                    if (streetName == null)
+                    catch (ParentAddressNotFoundException ex)
                     {
-                        throw new InvalidOperationException(
-                            $"StreetName for StreetNameId '{streetNameId}' was not found.");
+                        parentNotFoundCollection.Add(stream, CancellationToken.None);
                     }
-
-                    await CreateAndDispatchCommand(streetName, addressAggregate, actualContainer, ct);
-
-                    await processedIdsTable.Add(internalId);
-                    processedIds.Add(internalId);
-
-                    await backOfficeContext
-                        .AddressPersistentIdStreetNamePersistentId
-                        .AddAsync(new AddressPersistentIdStreetNamePersistentId(addressAggregate.PersistentLocalId, streetName.PersistentLocalId), ct);
-                    await backOfficeContext.SaveChangesAsync(ct);
-
+                    catch (Exception ex)
+                    {
+                        // insert into table
+                    }
                 });
+
+                foreach (var failedChildAddress in parentNotFoundCollection)
+                {
+
+                }
             }
 
             while (streams.Any())

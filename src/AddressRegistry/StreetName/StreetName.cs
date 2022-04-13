@@ -70,7 +70,6 @@ namespace AddressRegistry.StreetName
             bool isRemoved,
             AddressId? parentAddressId)
         {
-            // TODO: make idempotent?
             if (StreetNameAddresses.HasPersistentLocalId(addressPersistentLocalId))
             {
                 throw new InvalidOperationException($"Cannot migrate address with id '{addressPersistentLocalId}' to streetname '{PersistentLocalId}'.");

@@ -1,6 +1,8 @@
 namespace AddressRegistry.StreetName
 {
+    using System.Runtime.InteropServices.ComTypes;
     using Events;
+    using Exceptions;
 
     public partial class StreetName
     {
@@ -49,10 +51,12 @@ namespace AddressRegistry.StreetName
 
             if (@event.ParentPersistentLocalId.HasValue)
             {
-                var parent = StreetNameAddresses
-                    .GetByPersistentLocalId(new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value));
+                if (!StreetNameAddresses.HasPersistentLocalId(new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value), out var parent))
+                {
+                    throw new ParentAddressNotFoundException();
+                }
 
-                parent.AddChild(address);
+                parent!.AddChild(address);
             }
 
             StreetNameAddresses.Add(address);

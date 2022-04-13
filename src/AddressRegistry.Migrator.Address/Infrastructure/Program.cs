@@ -8,6 +8,7 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
     using System.Threading.Tasks;
     using AddressRegistry.Address;
     using AddressRegistry.Address.Commands;
+    using Api.BackOffice;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
@@ -115,30 +116,27 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
 
             var addressRepo = actualContainer.Resolve<IAddresses>();
             
-            //var backOfficeContext = actualContainer.Resolve<BackOfficeContext>();
+            var backOfficeContext = actualContainer.Resolve<BackOfficeContext>();
             var consumerContext = actualContainer.Resolve<ConsumerContext>();
             var sqlStreamTable = new SqlStreamsTable(connectionString);
 
             var streams = (await sqlStreamTable.ReadNextAddressStreamPage(lastCursorPosition))?.ToList() ?? new List<(int, string)>();
 
-            async Task<bool> ProcessStream(IEnumerable<(int, string)> streamsToProcess)
+            async Task ProcessStream(IEnumerable<(int, string)> streamsToProcess)
             {
-                if (CancellationTokenSource.IsCancellationRequested)
+                await Parallel.ForEachAsync(streamsToProcess, ct, async (stream, token) =>
                 {
-                    return false;
-                }
+                    var (internalId, aggregateId) = stream;
 
-                foreach (var (internalId, aggregateId) in streamsToProcess)
-                {
-                    if (CancellationTokenSource.IsCancellationRequested)
+                    if (token.IsCancellationRequested)
                     {
-                        return false;
+                        return;
                     }
 
                     if (processedIds.Contains(internalId))
                     {
                         logger.LogDebug($"Already migrated '{internalId}', skipping...");
-                        continue;
+                        return;
                     }
 
                     var addressId = new AddressId(Guid.Parse(aggregateId));
@@ -149,7 +147,7 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
                         if (addressAggregate.IsRemoved)
                         {
                             logger.LogDebug($"Skipping incomplete & removed Address '{aggregateId}'.");
-                            continue;
+                            return;
                         }
 
                         throw new InvalidOperationException($"Incomplete but not removed Address '{aggregateId}'.");
@@ -157,7 +155,7 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
 
                     var streetNameId = (Guid)addressAggregate.StreetNameId;
                     var streetName =
-                        await consumerContext.StreetNameConsumerItems.FindAsync(new object[] {streetNameId}, ct);
+                        await consumerContext.StreetNameConsumerItems.FindAsync(new object[] { streetNameId }, ct);
 
                     if (streetName == null)
                     {
@@ -170,21 +168,22 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
                     await processedIdsTable.Add(internalId);
                     processedIds.Add(internalId);
 
-                    //await backOfficeContext
-                    //    .MunicipalityIdByPersistentLocalId
-                    //    .AddAsync(new MunicipalityIdByPersistentLocalId(streetName.PersistentLocalId, municipality.MunicipalityId), ct);
-                    //await backOfficeContext.SaveChangesAsync(ct);
-                }
+                    await backOfficeContext
+                        .AddressPersistentIdStreetNamePersistentId
+                        .AddAsync(new AddressPersistentIdStreetNamePersistentId(addressAggregate.PersistentLocalId, streetName.PersistentLocalId), ct);
+                    await backOfficeContext.SaveChangesAsync(ct);
 
-                return true;
+                });
             }
 
             while (streams.Any())
             {
-                if (!await ProcessStream(streams))
+                if (CancellationTokenSource.IsCancellationRequested)
                 {
                     break;
                 }
+
+                await ProcessStream(streams);
 
                 lastCursorPosition = streams.Max(x => x.internalId);
                 streams = (await sqlStreamTable.ReadNextAddressStreamPage(lastCursorPosition))?.ToList() ?? new List<(int, string)>();

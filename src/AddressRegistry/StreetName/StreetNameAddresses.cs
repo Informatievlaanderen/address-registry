@@ -15,7 +15,7 @@ namespace AddressRegistry.StreetName
 
             return streetNameAddress is not null;
         }
-        
+
         public StreetNameAddress? FindByPersistentLocalId(AddressPersistentLocalId addressPersistentLocalId)
             => this.SingleOrDefault(x => x.AddressPersistentLocalId == addressPersistentLocalId);
 

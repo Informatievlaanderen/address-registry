@@ -56,7 +56,7 @@ CONSTRAINT [PK_ProcessedIds] PRIMARY KEY CLUSTERED
         public async Task<IEnumerable<int>?> GetProcessedIds()
         {
             await using var conn = new SqlConnection(_connectionString);
-            var result = await conn.QueryAsync<int>($"SELECT Id FROM [{Schema.MigrateAddress}].[{ProcessedIdsTableName}]");
+            var result = await conn.QueryAsync<int>($"SELECT Id FROM [{Schema.MigrateAddress}].[{ProcessedIdsTableName}] ORDER BY Id desc");
             return result;
         }
     }

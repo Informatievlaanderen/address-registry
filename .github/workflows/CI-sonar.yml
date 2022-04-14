@@ -1,0 +1,279 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    if: github.repository_owner == 'Informatievlaanderen'
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Cache NPM
+      uses: actions/cache@v3
+      env:
+        cache-name: cache-npm
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+    - name: Cache Paket
+      uses: actions/cache@v3
+      env:
+        cache-name: cache-paket
+      with:
+        path: packages
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('paket.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+    - name: Cache Python
+      uses: actions/cache@v3
+      env:
+        cache-name: cache-pip
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-build-${{ env.cache-name }}
+
+    - name: Parse repository name
+      run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
+      shell: bash
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: ${{ secrets.VBR_DOTNET_VERSION }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
+
+    - name: Node version
+      shell: bash
+      run: node --version
+
+    - name: .NET version
+      shell: bash
+      run: dotnet --info
+
+    - name: Python version
+      shell: bash
+      run: python --version
+
+    - name: Install NPM dependencies
+      shell: bash
+      run: npm ci
+
+    - name: Install Python dependencies
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests markdown argparse
+        
+    - name: Cache SonarCloud packages
+      uses: actions/cache@v1
+      with:
+        path: ~/sonar/cache
+        key: ${{ runner.os }}-sonar
+        restore-keys: ${{ runner.os }}-sonar
+        
+    - name: Cache SonarCloud scanner
+      id: cache-sonar-scanner
+      uses: actions/cache@v1
+      with:
+        path: ./.sonar/scanner
+        key: ${{ runner.os }}-sonar-scanner
+        restore-keys: ${{ runner.os }}-sonar-scanner
+        
+    - name: Install SonarCloud scanner
+      if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        mkdir .sonar
+        mkdir .sonar/scanner
+        dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
+        
+    - name: Sonar build & analyze
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      shell: bash
+      run: |
+        ./.sonar/scanner/dotnet-sonarscanner begin /k:"Informatievlaanderen_address-registry" /o:"informatievlaanderen" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+        ./build.sh
+        ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+        
+    - name: Run Semantic Release
+      shell: bash
+      run: npx semantic-release
+      env:
+        BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GIT_COMMIT: ${{ github.sha }}
+        GIT_USERNAME: ${{ secrets.VBR_GIT_USER }}
+        GIT_AUTHOR_NAME: ${{ secrets.VBR_GIT_USER }}
+        GIT_COMMITTER_NAME: ${{ secrets.VBR_GIT_USER }}
+        GIT_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
+        GIT_AUTHOR_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
+        GIT_COMMITTER_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
+
+    - name: Set Release Version
+      run: |
+        [ ! -f semver ] && echo none > semver
+        echo RELEASE_VERSION=$(cat semver) >> $GITHUB_ENV
+      shell: bash
+
+    - name: Configure AWS credentials (Test)
+      if: env.RELEASE_VERSION != 'none'
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_TST }}
+        aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_TST }}
+        aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
+
+    - name: Login to Amazon ECR (Test)
+      if: env.RELEASE_VERSION != 'none'
+      uses: aws-actions/amazon-ecr-login@v1.3.3
+
+    - name: Push to Test
+      if: env.RELEASE_VERSION != 'none'
+      shell: bash
+      run: |
+        docker push $BUILD_DOCKER_REGISTRY/address-registry/api-legacy:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY/address-registry/api-oslo:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY/address-registry/api-crab-import:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY/address-registry/api-extract:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY/address-registry/consumer:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY/address-registry/projector:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY/address-registry/projections-syndication:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY/address-registry/cache-warmer:$SEMVER
+      env:
+        BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
+        SEMVER: ${{ env.RELEASE_VERSION }}
+        WORKSPACE: ${{ github.workspace }}
+
+    - name: Configure AWS credentials (Staging)
+      if: env.RELEASE_VERSION != 'none'
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.VBR_AWS_REGION }}
+
+    - name: Login to Amazon ECR (Staging)
+      if: env.RELEASE_VERSION != 'none'
+      uses: aws-actions/amazon-ecr-login@v1.3.3
+
+    - name: Push to Staging
+      if: env.RELEASE_VERSION != 'none'
+      shell: bash
+      run: |
+        docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/api-legacy:$SEMVER $BUILD_DOCKER_REGISTRY/address-registry/api-legacy:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY/address-registry/api-legacy:$SEMVER
+        docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/api-oslo:$SEMVER $BUILD_DOCKER_REGISTRY/address-registry/api-oslo:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY/address-registry/api-oslo:$SEMVER
+        
+        docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/api-crab-import:$SEMVER $BUILD_DOCKER_REGISTRY/address-registry/api-crab-import:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY/address-registry/api-crab-import:$SEMVER
+        
+        docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/api-extract:$SEMVER $BUILD_DOCKER_REGISTRY/address-registry/api-extract:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY/address-registry/api-extract:$SEMVER
+        docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/consumer:$SEMVER $BUILD_DOCKER_REGISTRY/address-registry/consumer:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY/address-registry/consumer:$SEMVER
+        
+        docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/projector:$SEMVER $BUILD_DOCKER_REGISTRY/address-registry/projector:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY/address-registry/projector:$SEMVER
+        
+        docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/projections-syndication:$SEMVER $BUILD_DOCKER_REGISTRY/address-registry/projections-syndication:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY/address-registry/projections-syndication:$SEMVER
+        
+        docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/cache-warmer:$SEMVER $BUILD_DOCKER_REGISTRY/address-registry/cache-warmer:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY/address-registry/cache-warmer:$SEMVER
+      env:
+        BUILD_DOCKER_REGISTRY_TST: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
+        BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
+        SEMVER: ${{ env.RELEASE_VERSION }}
+        WORKSPACE: ${{ github.workspace }}
+
+    - name: Configure AWS credentials (Production)
+      if: env.RELEASE_VERSION != 'none'
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_PRD }}
+        aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_PRD }}
+        aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
+
+    - name: Login to Amazon ECR (Production)
+      if: env.RELEASE_VERSION != 'none'
+      uses: aws-actions/amazon-ecr-login@v1.3.3
+
+    - name: Push to Production
+      if: env.RELEASE_VERSION != 'none'
+      shell: bash
+      run: |
+        docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/api-legacy:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/api-legacy:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/api-legacy:$SEMVER
+        docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/api-oslo:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/api-oslo:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/api-oslo:$SEMVER
+        docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/api-crab-import:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/api-crab-import:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/api-crab-import:$SEMVER
+        docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/api-extract:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/api-extract:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/api-extract:$SEMVER
+        docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/consumer:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/consumer:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/consumer:$SEMVER
+        docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/projector:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/projector:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/projector:$SEMVER
+        docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/projections-syndication:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/projections-syndication:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/projections-syndication:$SEMVER
+        docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/cache-warmer:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/cache-warmer:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/cache-warmer:$SEMVER
+      env:                
+        BUILD_DOCKER_REGISTRY_TST: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
+        BUILD_DOCKER_REGISTRY_PRD: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_PRD }}
+        SEMVER: ${{ env.RELEASE_VERSION }}
+        WORKSPACE: ${{ github.workspace }}
+
+    - name: Publish to NuGet
+      if: env.RELEASE_VERSION != 'none'
+      shell: bash
+      run: |
+        node packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-nuget.js dist/nuget/Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Legacy.$SEMVER.nupkg
+        node packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-nuget.js dist/nuget/Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Oslo.$SEMVER.nupkg
+        node packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-nuget.js dist/nuget/Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Extract.$SEMVER.nupkg
+        node packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-nuget.js dist/nuget/Be.Vlaanderen.Basisregisters.AddressRegistry.Api.CrabImport.$SEMVER.nupkg
+        node packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-nuget.js dist/nuget/Be.Vlaanderen.Basisregisters.AddressRegistry.Projector.$SEMVER.nupkg
+      env:
+        SEMVER: ${{ env.RELEASE_VERSION }}
+        NUGET_HOST: ${{ secrets.NUGET_HOST }}
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+
+    - name: Publish to Confluence
+      if: env.RELEASE_VERSION != 'none'
+      shell: bash
+      run: ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-confluence.sh
+      env:
+        CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
+        CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
+        CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
+
+    - name: Create Jira Release
+      if: env.RELEASE_VERSION != 'none'
+      shell: bash
+      run: ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-jira.sh
+      env:
+        CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
+        CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
+        CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
+        JIRA_PREFIX: Address
+        JIRA_PROJECT: GAWR
+        JIRA_VERSION: ${{ env.RELEASE_VERSION }}

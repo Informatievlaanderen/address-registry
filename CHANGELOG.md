@@ -1,3 +1,11 @@
+## [3.2.4](https://github.com/informatievlaanderen/address-registry/compare/v3.2.3...v3.2.4) (2022-04-15)
+
+
+### Bug Fixes
+
+* break linkedfeed loop when cancellation is requested ([74a5401](https://github.com/informatievlaanderen/address-registry/commit/74a5401f8bcf929a55345b7502d48a981adb4085))
+* style to trigger build ([1818ff4](https://github.com/informatievlaanderen/address-registry/commit/1818ff4bef302ce1378d420320b46d091954d77a))
+
 ## [3.2.3](https://github.com/informatievlaanderen/address-registry/compare/v3.2.2...v3.2.3) (2022-04-15)
 
 

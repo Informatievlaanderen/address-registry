@@ -27,6 +27,9 @@ namespace AddressRegistry.Projections.Syndication
                     await linkedFeedProjectionRunner.CatchUpAsync(context, cancellationToken);
 
                 Thread.Sleep(10000 / _linkedFeedProjectionRunners.Count());
+
+                if(cancellationToken.IsCancellationRequested)
+                    break;
             }
         }
     }

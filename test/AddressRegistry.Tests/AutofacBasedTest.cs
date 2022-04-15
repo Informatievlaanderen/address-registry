@@ -18,7 +18,6 @@ namespace AddressRegistry.Tests
     public abstract class AutofacBasedTest
     {
         private readonly Lazy<IContainer> _container;
-
         protected IContainer Container => _container.Value;
 
         protected IExceptionCentricTestSpecificationRunner ExceptionCentricTestSpecificationRunner => Container.Resolve<IExceptionCentricTestSpecificationRunner>();

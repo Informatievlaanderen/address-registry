@@ -103,15 +103,13 @@ jobs:
         mkdir .sonar/scanner
         dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
         
-    - name: Sonar build & analyze
+    - name: Sonar begin build & analyze
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       shell: bash
       run: |
         ./.sonar/scanner/dotnet-sonarscanner begin /k:"Informatievlaanderen_address-registry" /o:"informatievlaanderen" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-        ./build.sh
-        ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
         
     - name: Run Semantic Release
       shell: bash
@@ -126,6 +124,14 @@ jobs:
         GIT_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
         GIT_AUTHOR_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
         GIT_COMMITTER_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
+        
+    - name: Sonar end build & analyze
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      shell: bash
+      run: |
+        ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
     - name: Set Release Version
       run: |

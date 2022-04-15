@@ -1,3 +1,10 @@
+## [3.2.3](https://github.com/informatievlaanderen/address-registry/compare/v3.2.2...v3.2.3) (2022-04-15)
+
+
+### Bug Fixes
+
+* fuzzymatch null checks ([0f03432](https://github.com/informatievlaanderen/address-registry/commit/0f03432747b30ac1a56f203b4abac5dc61c1dc35))
+
 ## [3.2.2](https://github.com/informatievlaanderen/address-registry/compare/v3.2.1...v3.2.2) (2022-04-13)
 
 

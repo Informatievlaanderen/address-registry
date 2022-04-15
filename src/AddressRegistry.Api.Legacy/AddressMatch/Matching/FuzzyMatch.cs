@@ -14,7 +14,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
         /// <returns>A similarity percentage</returns>
         public static double Calculate(string pStr1, string pStr2)
         {
-            if (string.IsNullOrEmpty(pStr1) || string.IsNullOrEmpty(pStr1))
+            if (string.IsNullOrEmpty(pStr1) || string.IsNullOrEmpty(pStr2))
                 return 0.0;
 
             pStr1 = pStr1.ToUpper();
@@ -46,7 +46,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             internal static double DiceCoefficient(string pStr1, string pStr2)
             {
                 // faulty input parameters
-                if (string.IsNullOrEmpty(pStr1) || string.IsNullOrEmpty(pStr1))
+                if (string.IsNullOrEmpty(pStr1) || string.IsNullOrEmpty(pStr2))
                     return 0.0;
 
                 var bigram1 = Bigram.Parse(pStr1);
@@ -73,7 +73,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             internal static double LevenshteinDistance(string pStr1, string pStr2)
             {
                 // faulty input parameters
-                if (string.IsNullOrEmpty(pStr1) || string.IsNullOrEmpty(pStr1))
+                if (string.IsNullOrEmpty(pStr1) || string.IsNullOrEmpty(pStr2))
                     return 0.0;
 
                 char[] string1 = pStr1.ToCharArray();
@@ -135,7 +135,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             internal static double LongestCommonSubsequence(string pStr1, string pStr2)
             {
                 // faulty input parameters
-                if (string.IsNullOrEmpty(pStr1) || string.IsNullOrEmpty(pStr1))
+                if (string.IsNullOrEmpty(pStr1) || string.IsNullOrEmpty(pStr2))
                     return 0.0;
 
                 char[] x;

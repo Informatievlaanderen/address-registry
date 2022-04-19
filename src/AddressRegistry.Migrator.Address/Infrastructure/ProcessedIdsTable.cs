@@ -13,13 +13,14 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
         private readonly string _connectionString;
         private readonly ILogger<ProcessedIdsTable> _logger;
 
+        private const string ProcessedIdsTableName = "ProcessedIds";
+        private const string Table = $"[{Schema.MigrateAddress}].[{ProcessedIdsTableName}]";
+
         public ProcessedIdsTable(string connectionString, ILoggerFactory loggerFactory)
         {
             _connectionString = connectionString;
             _logger = loggerFactory.CreateLogger<ProcessedIdsTable>();
         }
-
-        private const string ProcessedIdsTableName = "ProcessedIds";
 
         public async Task CreateTableIfNotExists()
         {
@@ -31,8 +32,9 @@ IF NOT EXISTS ( SELECT  *
     EXEC('CREATE SCHEMA [{Schema.MigrateAddress}]');
 
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='{ProcessedIdsTableName}' and xtype='U')
-CREATE TABLE [{Schema.MigrateAddress}].[{ProcessedIdsTableName}](
+CREATE TABLE {Table}(
 [Id] [int] NOT NULL,
+[IsPageCompleted] [bit] NOT NULL DEFAULT 0,
 CONSTRAINT [PK_ProcessedIds] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
@@ -44,7 +46,7 @@ CONSTRAINT [PK_ProcessedIds] PRIMARY KEY CLUSTERED
             try
             {
                 await using var conn = new SqlConnection(_connectionString);
-                await conn.ExecuteAsync(@$"INSERT INTO [{Schema.MigrateAddress}].[{ProcessedIdsTableName}] VALUES ('{internalId}')");
+                await conn.ExecuteAsync(@$"INSERT INTO {Table} VALUES ('{internalId}')");
             }
             catch(Exception ex)
             {
@@ -53,10 +55,21 @@ CONSTRAINT [PK_ProcessedIds] PRIMARY KEY CLUSTERED
             }
         }
 
-        public async Task<IEnumerable<int>?> GetProcessedIds()
+        public async Task CompletePageAsync (IEnumerable<int> processedIds)
+        {
+            string query = $"UPDATE {Table} SET IsPageCompleted = 1 WHERE Id in (@processedIds)";
+
+            await using var conn = new SqlConnection(_connectionString);
+            await conn.ExecuteAsync(query, new
+            {
+                processedIds
+            });
+        }
+
+        public async Task<IEnumerable<(int processedId, bool isPageCompleted)>> GetProcessedIds()
         {
             await using var conn = new SqlConnection(_connectionString);
-            var result = await conn.QueryAsync<int>($"SELECT Id FROM [{Schema.MigrateAddress}].[{ProcessedIdsTableName}] ORDER BY Id desc");
+            var result = await conn.QueryAsync<(int, bool)>($"SELECT Id, IsPageCompleted FROM {Table} ORDER BY Id desc");
             return result;
         }
     }

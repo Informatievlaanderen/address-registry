@@ -1,13 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace AddressRegistry.Migrator.Address.Infrastructure
 {
+    using System;
     using System.Collections.Concurrent;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
+    using System.Threading.Tasks;
     using AddressRegistry.Address;
     using AddressRegistry.Address.Commands;
     using Api.BackOffice;
@@ -24,13 +22,14 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
     internal class StreamMigrator
     {
         private readonly ILifetimeScope _lifetimeScope;
-        private ILogger _logger;
+        private readonly ILogger _logger;
+        private readonly ProcessedIdsTable _processedIdsTable;
+        private readonly SqlStreamsTable _sqlStreamTable;
+        private readonly IAddresses _addressRepo;
+        private readonly BackOfficeContext _backOfficeContext;
+        private readonly ConsumerContext _consumerContext;
 
-        private ProcessedIdsTable _processedIdsTable;
-        private SqlStreamsTable _sqlStreamTable;
-        private IAddresses _addressRepo;
-        private BackOfficeContext _backOfficeContext;
-        private ConsumerContext _consumerContext;
+        private List<(int processedId, bool isPageCompleted)> _processedIds;
 
         public StreamMigrator(ILoggerFactory loggerFactory, IConfiguration configuration, ILifetimeScope lifetimeScope)
         {
@@ -46,109 +45,131 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
             _consumerContext = lifetimeScope.Resolve<ConsumerContext>();
         }
 
-        public async Task Process(CancellationToken ct)
+        public async Task ProcessAsync(CancellationToken ct)
         {
             await _processedIdsTable.CreateTableIfNotExists();
 
-            var processedIds = (await _processedIdsTable.GetProcessedIds())?.ToList() ?? new List<int>();
-            var lastCursorPosition = processedIds.Any() ? processedIds.Max() : 0;
+            var processedIdsList = await _processedIdsTable.GetProcessedIds();
+            _processedIds = new List<(int, bool)>(processedIdsList);
 
-            var streams = (await _sqlStreamTable.ReadNextAddressStreamPage(lastCursorPosition))?.ToList() ?? new List<(int, string)>();
+            var lastCursorPosition = _processedIds.Any()
+                ? _processedIds
+                    .Where(x => x.isPageCompleted)
+                    .Max(x => x.processedId)
+                : 0;
 
-            while (streams.Any())
+            var pageOfStreams = (await _sqlStreamTable.ReadNextAddressStreamPage(lastCursorPosition)).ToList();
+
+            while (pageOfStreams.Any())
             {
                 if (ct.IsCancellationRequested)
                 {
                     break;
                 }
 
-                await ProcessStreams(streams, processedIds, ct);
+                try
+                {
+                    var processedPageItems = await ProcessStreams(pageOfStreams, ct);
 
-                lastCursorPosition = streams.Max(x => x.internalId);
-                streams = (await _sqlStreamTable.ReadNextAddressStreamPage(lastCursorPosition))?.ToList() ?? new List<(int, string)>();
+                    await _processedIdsTable.CompletePageAsync(pageOfStreams.Select(x => x.internalId).ToList());
+                    processedPageItems.ForEach(x => _processedIds.Add((x, true)));
+
+                    lastCursorPosition = _processedIds.Max(x => x.processedId);
+
+                    pageOfStreams = (await _sqlStreamTable.ReadNextAddressStreamPage(lastCursorPosition)).ToList();
+                }
+                catch (OperationCanceledException e)
+                {
+                    _logger.LogWarning("ProcessStreams cancelled.");
+                }
             }
         }
 
-        private async Task ProcessStreams(IEnumerable<(int, string)> streamsToProcess, List<int> processedIds, CancellationToken ct)
+        private async Task<List<int>> ProcessStreams(IEnumerable<(int, string)> streamsToProcess, CancellationToken ct)
         {
             var parentNotFoundCollection = new BlockingCollection<(int, string)>();
 
-            await Parallel.ForEachAsync(streamsToProcess, ct, async (stream, token) =>
-            {
-                await ProcessStream(processedIds, ct, stream, token, parentNotFoundCollection);
-            });
+            var processedItems = new BlockingCollection<int>();
+
+            await Parallel.ForEachAsync(streamsToProcess, ct,
+                async (stream, ct2) =>
+                {
+                    try
+                    {
+                        await ProcessStream(stream, processedItems, ct2);
+                    }
+                    catch (ParentAddressNotFoundException ex)
+                    {
+                        _logger.LogWarning($"Parent not found for child '{stream.Item1}', adding to retry collection.");
+                        parentNotFoundCollection.Add(stream, CancellationToken.None);
+                    }
+                    catch
+                    {
+                        _logger.LogCritical($"Unexpected exception for migration stream '{stream.Item1}', aggregateId '{stream.Item2}'");
+                        throw;
+                    }
+                });
+
+            _logger.LogInformation($"Retrying orphans.");
 
             foreach (var failedChildAddress in parentNotFoundCollection)
             {
-                await ProcessStream(processedIds, ct, processedIds, );
+                await ProcessStream(failedChildAddress, processedItems, ct);
             }
+
+            return processedItems.ToList();
         }
 
-        private async Task ProcessStream(List<int> processedIds, CancellationToken ct, (int, string) stream, CancellationToken token,
-            BlockingCollection<(int, string)> parentNotFoundCollection)
+        private async Task ProcessStream(
+            (int, string) stream,
+            BlockingCollection<int> processedItems,
+            CancellationToken token)
         {
             var (internalId, aggregateId) = stream;
 
-            try
+            if (token.IsCancellationRequested)
             {
-                if (token.IsCancellationRequested)
+                return;
+            }
+
+            if (_processedIds.Contains((internalId, true)))
+            {
+                _logger.LogDebug($"Already migrated '{internalId}', skipping...");
+                return;
+            }
+
+            var addressId = new AddressId(Guid.Parse(aggregateId));
+            var addressAggregate = await _addressRepo.GetAsync(addressId, token);
+
+            if (!addressAggregate.IsComplete)
+            {
+                if (addressAggregate.IsRemoved)
                 {
+                    _logger.LogDebug($"Skipping incomplete & removed Address '{aggregateId}'.");
                     return;
                 }
 
-                if (processedIds.Contains(internalId))
-                {
-                    _logger.LogDebug($"Already migrated '{internalId}', skipping...");
-                    return;
-                }
-
-                // TODO: persist processed stream pages (min - max) timestamp
-
-                var addressId = new AddressId(Guid.Parse(aggregateId));
-                var addressAggregate = await _addressRepo.GetAsync(addressId, ct);
-
-                if (!addressAggregate.IsComplete)
-                {
-                    if (addressAggregate.IsRemoved)
-                    {
-                        _logger.LogDebug($"Skipping incomplete & removed Address '{aggregateId}'.");
-                        return;
-                    }
-
-                    throw new InvalidOperationException($"Incomplete but not removed Address '{aggregateId}'.");
-                }
-
-                var streetNameId = (Guid) addressAggregate.StreetNameId;
-                var streetName =
-                    await _consumerContext.StreetNameConsumerItems.FindAsync(new object[] { streetNameId }, ct);
-
-                if (streetName == null)
-                {
-                    throw new InvalidOperationException(
-                        $"StreetName for StreetNameId '{streetNameId}' was not found.");
-                }
-
-                await CreateAndDispatchCommand(streetName, addressAggregate, ct);
-
-                await _processedIdsTable.Add(internalId);
-                processedIds.Add(internalId);
-
-                await _backOfficeContext
-                    .AddressPersistentIdStreetNamePersistentId
-                    .AddAsync(
-                        new AddressPersistentIdStreetNamePersistentId(addressAggregate.PersistentLocalId,
-                            streetName.PersistentLocalId), ct);
-                await _backOfficeContext.SaveChangesAsync(ct);
+                throw new InvalidOperationException($"Incomplete but not removed Address '{aggregateId}'.");
             }
-            catch (ParentAddressNotFoundException ex)
+
+            var streetNameId = (Guid)addressAggregate.StreetNameId;
+            var streetName =
+                await _consumerContext.StreetNameConsumerItems.FindAsync(new object[] { streetNameId }, token);
+
+            if (streetName == null)
             {
-                parentNotFoundCollection.Add(stream, CancellationToken.None);
-            }
-            catch (Exception ex)
-            {
-                // insert into table
+                throw new InvalidOperationException($"StreetName for StreetNameId '{streetNameId}' was not found.");
             }
 
+            await CreateAndDispatchCommand(streetName, addressAggregate, token);
+
+            await _processedIdsTable.Add(internalId);
+            processedItems.Add(internalId);
+
+            await _backOfficeContext
+                .AddressPersistentIdStreetNamePersistentId
+                .AddAsync(new AddressPersistentIdStreetNamePersistentId(addressAggregate.PersistentLocalId, streetName.PersistentLocalId), token);
+            await _backOfficeContext.SaveChangesAsync(token);
         }
 
         private async Task CreateAndDispatchCommand(

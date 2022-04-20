@@ -1,3 +1,10 @@
+## [3.2.5](https://github.com/informatievlaanderen/address-registry/compare/v3.2.4...v3.2.5) (2022-04-20)
+
+
+### Bug Fixes
+
+* recreate index wms GAWR-3003 ([4fe354d](https://github.com/informatievlaanderen/address-registry/commit/4fe354d30b7af9b83b7a2e755d5a30da9a2cddda))
+
 ## [3.2.4](https://github.com/informatievlaanderen/address-registry/compare/v3.2.3...v3.2.4) (2022-04-15)
 
 

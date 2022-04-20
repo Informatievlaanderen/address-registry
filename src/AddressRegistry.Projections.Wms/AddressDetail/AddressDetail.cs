@@ -86,7 +86,7 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
             b.HasIndex(p => p.PersistentLocalId);
             b.HasIndex(p => p.Status);
             b.HasIndex(p => p.StreetNameId);
-            b.HasIndex(p => new  {p.Removed, p.Complete} );
+            b.HasIndex(p => new  {p.Removed, p.Complete, p.Status} ).IncludeProperties(x => x.StreetNameId);
         }
     }
 }

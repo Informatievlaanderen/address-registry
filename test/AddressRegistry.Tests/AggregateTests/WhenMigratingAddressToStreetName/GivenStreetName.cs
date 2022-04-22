@@ -23,6 +23,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
             Fixture.Customize(new InfrastructureCustomization());
             Fixture.Customize(new WithFixedStreetNamePersistentLocalId());
             Fixture.Customize(new WithExtendedWkbGeometry());
+            Fixture.Customize(new WithFlemishNisCode());
             _streamId = Fixture.Create<StreetNameStreamId>();
         }
 
@@ -34,7 +35,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
 
             Assert(new Scenario()
                 .Given(_streamId,
-                    Fixture.Create<StreetNameWasImported>())
+                    Fixture.Create<MigratedStreetNameWasImported>())
                 .When(command)
                 .Then(
                     new Fact(new StreetNameStreamId(command.StreetNamePersistentLocalId),
@@ -79,7 +80,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
 
             Assert(new Scenario()
                 .Given(_streamId,
-                    Fixture.Create<StreetNameWasImported>(),
+                    Fixture.Create<MigratedStreetNameWasImported>(),
                     addressMigratedEvent)
                 .When(command)
                 .Throws(new InvalidOperationException()));
@@ -92,7 +93,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
             var aggregate = StreetName.Factory();
             aggregate.Initialize(new List<object>
             {
-                Fixture.Create<StreetNameWasImported>()
+                Fixture.Create<MigratedStreetNameWasImported>()
             });
 
             // Act
@@ -138,7 +139,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
 
             Assert(new Scenario()
                 .Given(_streamId,
-                    Fixture.Create<StreetNameWasImported>())
+                    Fixture.Create<MigratedStreetNameWasImported>())
                 .When(command)
                 .Throws(new InvalidOperationException()));
         }

@@ -1,3 +1,16 @@
+# [3.3.0](https://github.com/informatievlaanderen/address-registry/compare/v3.2.5...v3.3.0) (2022-04-22)
+
+
+### Bug Fixes
+
+* build ([318b480](https://github.com/informatievlaanderen/address-registry/commit/318b4800ebda2bf63aff63744bcf9de4a495ceba))
+* tests change to MigratedNisCode ([3f7ed22](https://github.com/informatievlaanderen/address-registry/commit/3f7ed22f5f7505bb120f1202f14708e614b2b2b6))
+
+
+### Features
+
+* add backoffice for migrator ([eab6d05](https://github.com/informatievlaanderen/address-registry/commit/eab6d05f13a5ab345ee980be72f1c76c47c83872))
+
 ## [3.2.5](https://github.com/informatievlaanderen/address-registry/compare/v3.2.4...v3.2.5) (2022-04-20)
 
 

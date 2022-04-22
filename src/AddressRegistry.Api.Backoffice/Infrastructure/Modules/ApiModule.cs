@@ -54,7 +54,6 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
                 eventSerializerSettings));
 
             containerBuilder.RegisterModule(new EnvelopeModule());
-            containerBuilder.RegisterModule(new SequenceModule(_configuration, _services, _loggerFactory));
             containerBuilder.RegisterModule(new BackOfficeModule(_configuration, _services, _loggerFactory));
 
             containerBuilder.RegisterModule(new CommandHandlingModule(_configuration));

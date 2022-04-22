@@ -75,7 +75,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure
                             {
                                 Name = "Digitaal Vlaanderen",
                                 Email = "digitaal.vlaanderen@vlaanderen.be",
-                                Url = new Uri("https://backoffice.basisregisters.vlaanderen") // TODO: to review, shouldn't this be something like address-backoffice.basisregsiters?
+                                Url = new Uri("https://backoffice.basisregisters.vlaanderen")
                             }
                         },
                         XmlCommentPaths = new[] {typeof(Startup).GetTypeInfo().Assembly.GetName().Name}

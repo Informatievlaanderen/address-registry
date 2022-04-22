@@ -2,6 +2,7 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using AddressRegistry.Infrastructure;
     using Dapper;
@@ -57,13 +58,11 @@ CONSTRAINT [PK_ProcessedIds] PRIMARY KEY CLUSTERED
 
         public async Task CompletePageAsync (IEnumerable<int> processedIds)
         {
-            string query = $"UPDATE {Table} SET IsPageCompleted = 1 WHERE Id in (@processedIds)";
+            string query = $"UPDATE {Table} SET IsPageCompleted = 1 WHERE Id IN @processedIds;";
 
             await using var conn = new SqlConnection(_connectionString);
-            await conn.ExecuteAsync(query, new
-            {
-                processedIds
-            });
+
+            await conn.ExecuteAsync(query, new { processedIds = processedIds.ToArray() });
         }
 
         public async Task<IEnumerable<(int processedId, bool isPageCompleted)>> GetProcessedIds()

@@ -3,6 +3,7 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -13,6 +14,8 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Consumer;
     using Consumer.StreetName;
+    using Fluid.Ast;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using StreetName;
@@ -27,7 +30,8 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
         private readonly SqlStreamsTable _sqlStreamTable;
         private readonly IAddresses _addressRepo;
         private readonly BackOfficeContext _backOfficeContext;
-        private readonly ConsumerContext _consumerContext;
+        private List<StreetNameConsumerItem> _consumerItems;
+        private readonly bool _skipIncomplete;
 
         private List<(int processedId, bool isPageCompleted)> _processedIds;
 
@@ -40,14 +44,19 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
             _processedIdsTable = new ProcessedIdsTable(connectionString, loggerFactory);
             _sqlStreamTable = new SqlStreamsTable(connectionString);
 
+            _skipIncomplete = Boolean.Parse(configuration["SkipIncomplete"]);
+
             _addressRepo = lifetimeScope.Resolve<IAddresses>();
             _backOfficeContext = lifetimeScope.Resolve<BackOfficeContext>();
-            _consumerContext = lifetimeScope.Resolve<ConsumerContext>();
-        }
 
+        }
+        
         public async Task ProcessAsync(CancellationToken ct)
         {
             await _processedIdsTable.CreateTableIfNotExists();
+
+            var consumerContext = _lifetimeScope.Resolve<ConsumerContext>();
+            _consumerItems = await consumerContext.StreetNameConsumerItems.ToListAsync(ct);
 
             var processedIdsList = await _processedIdsTable.GetProcessedIds();
             _processedIds = new List<(int, bool)>(processedIdsList);
@@ -117,11 +126,14 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
             }
             //});
 
-            _logger.LogInformation($"Retrying orphans.");
-
-            foreach (var failedChildAddress in parentNotFoundCollection)
+            if (parentNotFoundCollection.Any())
             {
-                await ProcessStream(failedChildAddress, processedItems, ct);
+                _logger.LogInformation($"Retrying orphans.");
+
+                foreach (var failedChildAddress in parentNotFoundCollection)
+                {
+                    await ProcessStream(failedChildAddress, processedItems, ct);
+                }
             }
 
             return processedItems.ToList();
@@ -148,7 +160,6 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
             var addressId = new AddressId(Guid.Parse(aggregateId));
             var addressAggregate = await _addressRepo.GetAsync(addressId, token);
 
-            // TODO: check environment and skip in != prd
             if (!addressAggregate.IsComplete)
             {
                 if (addressAggregate.IsRemoved)
@@ -157,12 +168,18 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
                     return;
                 }
 
+                if (_skipIncomplete)
+                {
+                    await _processedIdsTable.Add(internalId);
+                    processedItems.Add(internalId);
+                    return;
+                }
+
                 throw new InvalidOperationException($"Incomplete but not removed Address '{aggregateId}'.");
             }
 
             var streetNameId = (Guid)addressAggregate.StreetNameId;
-            var streetName =
-                await _consumerContext.StreetNameConsumerItems.FindAsync(new object[] { streetNameId }, token);
+            var streetName = _consumerItems.SingleOrDefault(x => x.StreetNameId == streetNameId);
 
             if (streetName == null)
             {

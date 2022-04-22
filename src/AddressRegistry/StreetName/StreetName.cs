@@ -3,6 +3,7 @@ namespace AddressRegistry.StreetName
     using System;
     using System.Collections.Generic;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Events;
 
     public partial class StreetName : AggregateRootEntity
@@ -13,6 +14,7 @@ namespace AddressRegistry.StreetName
             StreetNameId streetNameId,
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             MunicipalityId municipalityId,
+            NisCode nisCode,
             StreetNameStatus streetNameStatus)
         {
             var streetName = Factory();
@@ -21,6 +23,7 @@ namespace AddressRegistry.StreetName
                     streetNameId,
                     streetNamePersistentLocalId,
                     municipalityId,
+                    nisCode,
                     streetNameStatus));
             return streetName;
         }
@@ -70,6 +73,11 @@ namespace AddressRegistry.StreetName
             bool isRemoved,
             AddressId? parentAddressId)
         {
+            if (!RegionFilter.IsFlemishRegion(MigratedNisCode))
+            {
+                return;
+            }
+
             if (StreetNameAddresses.HasPersistentLocalId(addressPersistentLocalId))
             {
                 throw new InvalidOperationException($"Cannot migrate address with id '{addressPersistentLocalId}' to streetname '{PersistentLocalId}'.");

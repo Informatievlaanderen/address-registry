@@ -1,10 +1,12 @@
 namespace AddressRegistry.StreetName
 {
     using Events;
+    using Exceptions;
 
     public partial class StreetName
     {
         public StreetNamePersistentLocalId PersistentLocalId { get; private set; }
+        public NisCode MigratedNisCode { get; private set; }
         public bool IsRemoved { get; private set; }
         public StreetNameStatus Status { get; private set; }
 
@@ -23,6 +25,7 @@ namespace AddressRegistry.StreetName
         private void When(MigratedStreetNameWasImported @event)
         {
             PersistentLocalId = new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId);
+            MigratedNisCode = new NisCode(@event.NisCode);
             Status = @event.StreetNameStatus;
         }
 
@@ -49,10 +52,12 @@ namespace AddressRegistry.StreetName
 
             if (@event.ParentPersistentLocalId.HasValue)
             {
-                var parent = StreetNameAddresses
-                    .GetByPersistentLocalId(new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value));
+                if (!StreetNameAddresses.HasPersistentLocalId(new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value), out var parent))
+                {
+                    throw new ParentAddressNotFoundException();
+                }
 
-                parent.AddChild(address);
+                parent!.AddChild(address);
             }
 
             StreetNameAddresses.Add(address);

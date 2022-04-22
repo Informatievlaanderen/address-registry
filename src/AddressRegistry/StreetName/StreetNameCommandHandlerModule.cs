@@ -38,6 +38,7 @@ namespace AddressRegistry.StreetName
                         message.Command.StreetNameId,
                         message.Command.PersistentLocalId,
                         message.Command.MunicipalityId,
+                        message.Command.NisCode,
                         message.Command.StreetNameStatus);
 
                     getStreetNames().Add(streetNameStreamId, newStreetName);

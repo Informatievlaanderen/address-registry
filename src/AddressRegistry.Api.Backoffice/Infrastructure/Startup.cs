@@ -1,4 +1,4 @@
-namespace AddressRegistry.Api.Backoffice.Infrastructure
+namespace AddressRegistry.Api.BackOffice.Infrastructure
 {
     using System;
     using System.Linq;
@@ -6,8 +6,9 @@ namespace AddressRegistry.Api.Backoffice.Infrastructure
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api;
-    using Be.Vlaanderen.Basisregisters.Api.Exceptions;
+    using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
+    using Configuration;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc.ApiExplorer;
@@ -18,15 +19,18 @@ namespace AddressRegistry.Api.Backoffice.Infrastructure
     using Microsoft.Extensions.Logging;
     using Microsoft.OpenApi.Models;
     using Modules;
+    using Options;
+    using SqlStreamStore;
 
+    /// <summary>Represents the startup process for the application.</summary>
     public class Startup
     {
         private const string DatabaseTag = "db";
 
+        private IContainer _applicationContainer;
+
         private readonly IConfiguration _configuration;
         private readonly ILoggerFactory _loggerFactory;
-
-        private IContainer _applicationContainer;
 
         public Startup(
             IConfiguration configuration,
@@ -36,11 +40,14 @@ namespace AddressRegistry.Api.Backoffice.Infrastructure
             _loggerFactory = loggerFactory;
         }
 
+        /// <summary>Configures services for the application.</summary>
+        /// <param name="services">The collection of services to configure the application with.</param>
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            var baseUrl = _configuration
-                .GetValue<string>("BaseUrl")
-                .TrimEnd('/');
+            var baseUrl = _configuration.GetValue<string>("BaseUrl");
+            var baseUrlForExceptions = baseUrl.EndsWith("/")
+                ? baseUrl.Substring(0, baseUrl.Length - 1)
+                : baseUrl;
 
             services
                 .ConfigureDefaultForApi<Startup>(new StartupConfigureOptions
@@ -55,7 +62,7 @@ namespace AddressRegistry.Api.Backoffice.Infrastructure
                     },
                     Server =
                     {
-                        BaseUrl = baseUrl
+                        BaseUrl = baseUrlForExceptions
                     },
                     Swagger =
                     {
@@ -68,7 +75,7 @@ namespace AddressRegistry.Api.Backoffice.Infrastructure
                             {
                                 Name = "Digitaal Vlaanderen",
                                 Email = "digitaal.vlaanderen@vlaanderen.be",
-                                Url = new Uri("https://backoffice.basisregisters.vlaanderen")
+                                Url = new Uri("https://backoffice.basisregisters.vlaanderen") // TODO: to review, shouldn't this be something like address-backoffice.basisregsiters?
                             }
                         },
                         XmlCommentPaths = new[] {typeof(Startup).GetTypeInfo().Assembly.GetName().Name}
@@ -90,8 +97,9 @@ namespace AddressRegistry.Api.Backoffice.Infrastructure
                                     tags: new[] { DatabaseTag, "sql", "sqlserver" });
                         }
                     }
-                })
-                .AddMemoryCache();
+                }
+                .EnableJsonErrorActionFilterOption())
+                .Configure<ResponseOptions>(_configuration);
 
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterModule(new ApiModule(_configuration, services, _loggerFactory));
@@ -109,12 +117,10 @@ namespace AddressRegistry.Api.Backoffice.Infrastructure
             IApiVersionDescriptionProvider apiVersionProvider,
             ApiDataDogToggle datadogToggle,
             ApiDebugDataDogToggle debugDataDogToggle,
+            MsSqlStreamStore streamStore,
             HealthCheckService healthCheckService)
         {
-            StartupHelpers
-                .CheckDatabases(healthCheckService, DatabaseTag)
-                .GetAwaiter()
-                .GetResult();
+            StartupHelpers.EnsureSqlStreamStoreSchema<Startup>(streamStore, loggerFactory);
 
             app
                 .UseDataDog<Startup>(new DataDogOptions
@@ -157,18 +163,27 @@ namespace AddressRegistry.Api.Backoffice.Infrastructure
                         TypeScriptClientOptions =
                         {
                             ClassName = "AddressRegistry"
-                        },
-                        CustomExceptionHandlers = new IExceptionHandler[]
-                        {
-                            new CrabClientValidationExceptionHandler()
                         }
                     },
                     Server =
                     {
                         PoweredByName = "Vlaamse overheid - Basisregisters Vlaanderen",
-                        ServerName = "agentschap Digitaal Vlaanderen"
+                        ServerName = "Digitaal Vlaanderen"
+                    },
+                    MiddlewareHooks =
+                    {
+                        AfterMiddleware = x => x.UseMiddleware<AddNoCacheHeadersMiddleware>(),
                     }
                 });
+
+            app.UseIdempotencyDatabaseMigrations();
+
+            MigrationsHelper.Run(
+                _configuration.GetConnectionString("Sequences"),
+                _configuration.GetConnectionString("BackOffice"),
+                serviceProvider.GetService<ILoggerFactory>());
+
+            StartupHelpers.CheckDatabases(healthCheckService, DatabaseTag, loggerFactory).GetAwaiter().GetResult();
         }
 
         private static string GetApiLeadingText(ApiVersionDescription description)

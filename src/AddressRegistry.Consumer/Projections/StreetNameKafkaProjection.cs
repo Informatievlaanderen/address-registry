@@ -35,6 +35,7 @@ namespace AddressRegistry.Consumer.Projections
                     StreetNameId.CreateFor(msg.StreetNameId),
                     new StreetNamePersistentLocalId(msg.PersistentLocalId),
                     new MunicipalityId(MunicipalityId.CreateFor(msg.MunicipalityId)),
+                    new NisCode(msg.NisCode),
                     Enum.Parse<StreetNameStatus>(msg.Status),
                     FromProvenance(msg.Provenance)
                 );

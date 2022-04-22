@@ -17,7 +17,7 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
             _pageSize = pageSize;
         }
 
-        public async Task<IEnumerable<(int internalId, string aggregateId)>?> ReadNextAddressStreamPage(int lastCursorPosition)
+        public async Task<IEnumerable<(int internalId, string aggregateId)>> ReadNextAddressStreamPage(int lastCursorPosition)
         {
             await using var conn = new SqlConnection(_connectionString);
 

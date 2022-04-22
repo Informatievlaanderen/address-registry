@@ -1,7 +1,9 @@
 namespace AddressRegistry.Migrator.Address.Infrastructure
 {
     using System;
+    using System.Diagnostics;
     using System.IO;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Autofac;
@@ -15,6 +17,7 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
     using Modules;
     using Polly;
     using Serilog;
+    using StreetName;
 
     public class Program
     {
@@ -50,6 +53,8 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
 
             try
             {
+                Stopwatch watch = Stopwatch.StartNew();
+
                 var migrator = new StreamMigrator(
                     container.GetRequiredService<ILoggerFactory>(),
                     configuration,
@@ -69,6 +74,9 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
                                 {
                                     await migrator.ProcessAsync(ct);
                                 });
+
+                            watch.Stop();
+                            Log.Information($"Migration finished, time elapsed '{watch.Elapsed:g}'");
                         }
                         catch (Exception e)
                         {

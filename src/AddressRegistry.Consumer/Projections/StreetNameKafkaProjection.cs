@@ -1,7 +1,6 @@
 namespace AddressRegistry.Consumer.Projections
 {
     using System;
-    using Address;
     using AddressRegistry.StreetName;
     using AddressRegistry.StreetName.Commands;
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts;

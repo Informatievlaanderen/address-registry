@@ -2,6 +2,7 @@ namespace AddressRegistry.Tests.AutoFixture
 {
     using global::AutoFixture;
     using global::AutoFixture.Kernel;
+    using StreetName;
 
     public class WithExtendedWkbGeometry : ICustomization
     {
@@ -13,8 +14,8 @@ namespace AddressRegistry.Tests.AutoFixture
             fixture.Customize<Address.ExtendedWkbGeometry>(c => c.FromFactory(
                 () => extendedWkbGeometry));
 
-            fixture.Customize<StreetName.ExtendedWkbGeometry>(c => c.FromFactory(
-                () => new StreetName.ExtendedWkbGeometry(extendedWkbGeometry.ToString())));
+            fixture.Customize<ExtendedWkbGeometry>(c => c.FromFactory(
+                () => new ExtendedWkbGeometry(extendedWkbGeometry.ToString())));
 
             fixture.Customizations.Add(
                 new FilteringSpecimenBuilder(

@@ -19,6 +19,7 @@ namespace AddressRegistry.StreetName.Events
         public Guid StreetNameId { get; }
         public int StreetNamePersistentLocalId { get; }
         public Guid MunicipalityId { get; }
+        public string NisCode { get; }
         public StreetNameStatus StreetNameStatus { get; }
         public ProvenanceData Provenance { get; private set; }
 
@@ -26,11 +27,13 @@ namespace AddressRegistry.StreetName.Events
             StreetNameId streetNameId,
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             MunicipalityId municipalityId,
+            NisCode nisCode,
             StreetNameStatus streetNameStatus)
         {
             StreetNameId = streetNameId;
             StreetNamePersistentLocalId = streetNamePersistentLocalId;
             MunicipalityId = municipalityId;
+            NisCode = nisCode;
             StreetNameStatus = streetNameStatus;
         }
 
@@ -39,12 +42,14 @@ namespace AddressRegistry.StreetName.Events
             Guid streetNameId,
             int streetNamePersistentLocalId,
             Guid municipalityId,
+            string nisCode,
             StreetNameStatus streetNameStatus,
             ProvenanceData provenance)
             : this(
                 new StreetNameId(streetNameId),
                 new StreetNamePersistentLocalId(streetNamePersistentLocalId),
                 new MunicipalityId(municipalityId),
+                new NisCode(nisCode),
                 streetNameStatus)
             => ((ISetProvenance)this).SetProvenance(provenance.ToProvenance());
 
@@ -55,6 +60,7 @@ namespace AddressRegistry.StreetName.Events
             var fields = Provenance.GetHashFields().ToList();
             fields.Add(StreetNamePersistentLocalId.ToString(CultureInfo.InvariantCulture));
             fields.Add(MunicipalityId.ToString("D"));
+            fields.Add(NisCode);
             fields.Add(StreetNameStatus.ToString());
             fields.Add(StreetNameId.ToString("D"));
             return fields;

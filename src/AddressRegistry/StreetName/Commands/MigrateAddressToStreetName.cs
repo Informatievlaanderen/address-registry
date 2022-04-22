@@ -18,7 +18,7 @@ namespace AddressRegistry.StreetName.Commands
         public AddressPersistentLocalId AddressPersistentLocalId { get; }
         public AddressRegistry.StreetName.AddressStatus Status { get; }
         public AddressRegistry.StreetName.HouseNumber HouseNumber { get; }
-        public AddressRegistry.StreetName.BoxNumber BoxNumber { get; }
+        public AddressRegistry.StreetName.BoxNumber? BoxNumber { get; }
         public AddressRegistry.StreetName.AddressGeometry Geometry { get; }
         public bool? OfficiallyAssigned { get; }
         public AddressRegistry.StreetName.PostalCode PostalCode { get; }
@@ -34,7 +34,7 @@ namespace AddressRegistry.StreetName.Commands
             PersistentLocalId addressPersistentLocalId,
             AddressRegistry.Address.AddressStatus status,
             AddressRegistry.Address.HouseNumber houseNumber,
-            AddressRegistry.Address.BoxNumber boxNumber,
+            AddressRegistry.Address.BoxNumber? boxNumber,
             AddressRegistry.Address.AddressGeometry geometry,
             bool? officiallyAssigned,
             AddressRegistry.Address.PostalCode postalCode,
@@ -49,7 +49,7 @@ namespace AddressRegistry.StreetName.Commands
             AddressPersistentLocalId = new AddressPersistentLocalId(addressPersistentLocalId);
             Status = status.ToStreetNameAddressStatus();
             HouseNumber = new AddressRegistry.StreetName.HouseNumber(houseNumber);
-            BoxNumber = new AddressRegistry.StreetName.BoxNumber(boxNumber);
+            BoxNumber = boxNumber == null ? (AddressRegistry.StreetName.BoxNumber?)null : new AddressRegistry.StreetName.BoxNumber(boxNumber);
             Geometry = new AddressRegistry.StreetName.AddressGeometry(geometry.GeometryMethod, geometry.GeometrySpecification, geometry.Geometry);
             OfficiallyAssigned = officiallyAssigned;
             PostalCode = new AddressRegistry.StreetName.PostalCode(postalCode);
@@ -74,11 +74,11 @@ namespace AddressRegistry.StreetName.Commands
             yield return AddressId;
             yield return StreetNamePersistentLocalId;
             yield return IsRemoved;
-            yield return BoxNumber;
+            yield return BoxNumber ?? string.Empty;
             yield return HouseNumber;
             yield return PostalCode;
             yield return Geometry;
-            yield return ParentAddressId != null ? ParentAddressId : string.Empty;
+            yield return ParentAddressId ?? string.Empty;
             yield return OfficiallyAssigned.HasValue ? OfficiallyAssigned.Value : string.Empty;
         }
     }

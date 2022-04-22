@@ -1,12 +1,12 @@
 namespace AddressRegistry.StreetName
 {
-    using System.Runtime.InteropServices.ComTypes;
     using Events;
     using Exceptions;
 
     public partial class StreetName
     {
         public StreetNamePersistentLocalId PersistentLocalId { get; private set; }
+        public NisCode MigratedNisCode { get; private set; }
         public bool IsRemoved { get; private set; }
         public StreetNameStatus Status { get; private set; }
 
@@ -25,6 +25,7 @@ namespace AddressRegistry.StreetName
         private void When(MigratedStreetNameWasImported @event)
         {
             PersistentLocalId = new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId);
+            MigratedNisCode = new NisCode(@event.NisCode);
             Status = @event.StreetNameStatus;
         }
 

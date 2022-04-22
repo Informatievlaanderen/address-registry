@@ -55,7 +55,9 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
             var lastCursorPosition = _processedIds.Any()
                 ? _processedIds
                     .Where(x => x.isPageCompleted)
-                    .Max(x => x.processedId)
+                    .Select(x => x.processedId)
+                    .DefaultIfEmpty(0)
+                    .Max()
                 : 0;
 
             var pageOfStreams = (await _sqlStreamTable.ReadNextAddressStreamPage(lastCursorPosition)).ToList();
@@ -91,24 +93,29 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
 
             var processedItems = new BlockingCollection<int>();
 
-            await Parallel.ForEachAsync(streamsToProcess, ct,
-                async (stream, ct2) =>
+            //await Parallel.ForEachAsync(streamsToProcess, ct,
+            //    async (stream, ct2) =>
+            //    {
+            foreach (var stream in streamsToProcess)
+            {
+                var ct2 = ct;
+                try
                 {
-                    try
-                    {
-                        await ProcessStream(stream, processedItems, ct2);
-                    }
-                    catch (ParentAddressNotFoundException ex)
-                    {
-                        _logger.LogWarning($"Parent not found for child '{stream.Item1}', adding to retry collection.");
-                        parentNotFoundCollection.Add(stream, CancellationToken.None);
-                    }
-                    catch
-                    {
-                        _logger.LogCritical($"Unexpected exception for migration stream '{stream.Item1}', aggregateId '{stream.Item2}'");
-                        throw;
-                    }
-                });
+                    await ProcessStream(stream, processedItems, ct2);
+                }
+                catch (ParentAddressNotFoundException ex)
+                {
+                    _logger.LogWarning($"Parent not found for child '{stream.Item1}', adding to retry collection.");
+                    parentNotFoundCollection.Add(stream, CancellationToken.None);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogCritical(
+                        $"Unexpected exception for migration stream '{stream.Item1}', aggregateId '{stream.Item2}' \n\n {ex.Message}");
+                    throw;
+                }
+            }
+            //});
 
             _logger.LogInformation($"Retrying orphans.");
 
@@ -132,7 +139,7 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
                 return;
             }
 
-            if (_processedIds.Contains((internalId, true)))
+            if (_processedIds.Contains((internalId, false)))
             {
                 _logger.LogDebug($"Already migrated '{internalId}', skipping...");
                 return;
@@ -141,6 +148,7 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
             var addressId = new AddressId(Guid.Parse(aggregateId));
             var addressAggregate = await _addressRepo.GetAsync(addressId, token);
 
+            // TODO: check environment and skip in != prd
             if (!addressAggregate.IsComplete)
             {
                 if (addressAggregate.IsRemoved)

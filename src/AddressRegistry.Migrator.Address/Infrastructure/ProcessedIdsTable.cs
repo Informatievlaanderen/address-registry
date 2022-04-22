@@ -46,7 +46,7 @@ CONSTRAINT [PK_ProcessedIds] PRIMARY KEY CLUSTERED
             try
             {
                 await using var conn = new SqlConnection(_connectionString);
-                await conn.ExecuteAsync(@$"INSERT INTO {Table} VALUES ('{internalId}')");
+                await conn.ExecuteAsync(@$"INSERT INTO {Table} (Id, IsPageCompleted) VALUES ('{internalId}', 0)");
             }
             catch(Exception ex)
             {

@@ -72,7 +72,7 @@ namespace AddressRegistry.StreetName.Events
             AddressPersistentLocalId addressPersistentLocalId,
             AddressStatus status,
             HouseNumber houseNumber,
-            BoxNumber boxNumber,
+            BoxNumber? boxNumber,
             AddressGeometry geometry,
             bool? officiallyAssigned,
             PostalCode postalCode,
@@ -86,7 +86,7 @@ namespace AddressRegistry.StreetName.Events
             AddressPersistentLocalId = addressPersistentLocalId;
             Status = status;
             HouseNumber = houseNumber;
-            BoxNumber = boxNumber;
+            BoxNumber = boxNumber ?? string.Empty;
             GeometryMethod = geometry.GeometryMethod;
             GeometrySpecification = geometry.GeometrySpecification;
             ExtendedWkbGeometry = geometry.Geometry.ToString();

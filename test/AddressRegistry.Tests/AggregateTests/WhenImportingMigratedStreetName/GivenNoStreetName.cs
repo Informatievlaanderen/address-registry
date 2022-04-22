@@ -27,6 +27,11 @@ public class GivenNoStreetName : AddressRegistryTest
             .When(command)
             .Then(
                 new Fact(new StreetNameStreamId(command.PersistentLocalId),
-                    new MigratedStreetNameWasImported(command.StreetNameId, command.PersistentLocalId, command.MunicipalityId, command.StreetNameStatus))));
+                    new MigratedStreetNameWasImported(
+                        command.StreetNameId,
+                        command.PersistentLocalId,
+                        command.MunicipalityId,
+                        command.NisCode,
+                        command.StreetNameStatus))));
     }
 }

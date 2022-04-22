@@ -18,6 +18,7 @@ Be.Vlaanderen.Basisregisters.Generators.Guid.Deterministic
 Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor
 
 Be.Vlaanderen.Basisregisters.GrAr.Provenance
+Be.Vlaanderen.Basisregisters.GrAr.Legacy
 
 SourceLink.Embed.AllSourceFiles
 SourceLink.Copy.PdbFiles

@@ -1,3 +1,10 @@
+## [3.3.1](https://github.com/informatievlaanderen/address-registry/compare/v3.3.0...v3.3.1) (2022-04-25)
+
+
+### Bug Fixes
+
+* finish migrator ([0ed78b3](https://github.com/informatievlaanderen/address-registry/commit/0ed78b3e6d9813f40cf68080bfcf1c89eb016058))
+
 # [3.3.0](https://github.com/informatievlaanderen/address-registry/compare/v3.2.5...v3.3.0) (2022-04-22)
 
 

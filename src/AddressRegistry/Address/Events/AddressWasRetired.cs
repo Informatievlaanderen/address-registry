@@ -8,7 +8,7 @@ namespace AddressRegistry.Address.Events
     [EventTags(EventTag.For.Sync)]
     [EventName("AddressWasRetired")]
     [EventDescription("Het adres kreeg status 'gehistoreerd'.")]
-    public class AddressWasRetired : IHasProvenance, ISetProvenance
+    public class AddressWasRetired : IHasProvenance, ISetProvenance, IMessage
     {
         [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }

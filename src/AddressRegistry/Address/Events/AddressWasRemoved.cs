@@ -8,7 +8,7 @@ namespace AddressRegistry.Address.Events
     [EventTags(EventTag.For.Sync)]
     [EventName("AddressWasRemoved")]
     [EventDescription("Het adres werd verwijderd.")]
-    public class AddressWasRemoved : IHasProvenance, ISetProvenance
+    public class AddressWasRemoved : IHasProvenance, ISetProvenance, IMessage
     {
         [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }

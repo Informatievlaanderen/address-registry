@@ -9,7 +9,7 @@ namespace AddressRegistry.Address.Events
     [EventTags(EventTag.For.Sync)]
     [EventName("AddressPersistentLocalIdentifierWasAssigned")]
     [EventDescription("Het adres kreeg een persistente lokale identificator toegekend.")]
-    public class AddressPersistentLocalIdWasAssigned : IHasProvenance, ISetProvenance
+    public class AddressPersistentLocalIdWasAssigned : IHasProvenance, ISetProvenance, IMessage
     {
         [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }

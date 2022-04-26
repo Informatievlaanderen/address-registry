@@ -8,7 +8,7 @@ namespace AddressRegistry.Address.Events
     [EventTags(EventTag.For.Sync)]
     [EventName("AddressWasCorrectedToProposed")]
     [EventDescription("Het adres kreeg status 'voorgesteld' (via correctie).")]
-    public class AddressWasCorrectedToProposed : IHasProvenance, ISetProvenance
+    public class AddressWasCorrectedToProposed : IHasProvenance, ISetProvenance, IMessage
     {
         [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }

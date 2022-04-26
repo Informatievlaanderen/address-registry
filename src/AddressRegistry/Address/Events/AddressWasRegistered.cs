@@ -8,7 +8,7 @@ namespace AddressRegistry.Address.Events
     [EventTags(EventTag.For.Sync)]
     [EventName("AddressWasRegistered")]
     [EventDescription("Het adres werd aangemaakt in het register.")]
-    public class AddressWasRegistered : IHasProvenance, ISetProvenance
+    public class AddressWasRegistered : IHasProvenance, ISetProvenance, IMessage
     {
         [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }

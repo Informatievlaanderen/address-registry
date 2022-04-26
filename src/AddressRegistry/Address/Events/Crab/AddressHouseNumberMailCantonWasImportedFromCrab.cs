@@ -8,7 +8,7 @@ namespace AddressRegistry.Address.Events.Crab
 
     [EventName("AddressHouseNumberMailCantonWasImportedFromCrab")]
     [EventDescription("Legacy event om tblHuisNummer_postKanton en tblHuisNummer_postKanton_hist te importeren.")]
-    public class AddressHouseNumberMailCantonWasImportedFromCrab : ICrabEvent, IHasCrabKey<int>
+    public class AddressHouseNumberMailCantonWasImportedFromCrab : ICrabEvent, IHasCrabKey<int>, IMessage
     {
         [EventPropertyDescription("CRAB-identificator van de relatie huisnummer-postkanton.")]
         public int HouseNumberMailCantonId { get; }

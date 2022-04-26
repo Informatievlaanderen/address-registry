@@ -6,6 +6,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
     using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
+    using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
@@ -19,7 +20,8 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             Guid addressId,
             Envelope<T> message,
             Action<AddressSyndicationItem> applyEventInfoOn,
-            CancellationToken ct) where T : IHasProvenance
+            CancellationToken ct)
+            where T : IHasProvenance, IMessage
         {
             var addressSyndicationItem = await context.AddressSyndication.LatestPosition(addressId, ct);
 

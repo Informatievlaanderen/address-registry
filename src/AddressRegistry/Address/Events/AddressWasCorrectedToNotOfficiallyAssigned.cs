@@ -8,7 +8,7 @@ namespace AddressRegistry.Address.Events
     [EventTags(EventTag.For.Sync)]
     [EventName("AddressWasCorrectedToNotOfficiallyAssigned")]
     [EventDescription("Het adres kreeg aanduiding 'niet officieel toegekend' (via correctie).")]
-    public class AddressWasCorrectedToNotOfficiallyAssigned : IHasProvenance, ISetProvenance
+    public class AddressWasCorrectedToNotOfficiallyAssigned : IHasProvenance, ISetProvenance, IMessage
     {
         [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }

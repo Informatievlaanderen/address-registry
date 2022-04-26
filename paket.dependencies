@@ -47,18 +47,18 @@ nuget Be.Vlaanderen.Basisregisters.CommandHandling 6.0.0
 nuget Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency 6.0.0
 nuget Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore 6.0.0
 
-nuget Be.Vlaanderen.Basisregisters.EventHandling 4.0.0
-nuget Be.Vlaanderen.Basisregisters.EventHandling.Autofac 4.0.0
+nuget Be.Vlaanderen.Basisregisters.EventHandling 4.1.0
+nuget Be.Vlaanderen.Basisregisters.EventHandling.Autofac 4.1.0
 
 nuget Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple 3.0.0
 
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList 10.0.1
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore 10.0.1
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac 10.0.1
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner 10.0.1
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing 10.0.1
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit 10.0.1
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication 10.0.1
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList 11.0.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore 11.0.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac 11.0.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner 11.0.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing 11.0.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit 11.0.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication 11.0.0
 
 nuget Be.Vlaanderen.Basisregisters.Projector 12.0.0
 

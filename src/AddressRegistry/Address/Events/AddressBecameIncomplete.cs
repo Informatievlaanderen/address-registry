@@ -8,7 +8,7 @@ namespace AddressRegistry.Address.Events
     [EventTags(EventTag.For.Sync)]
     [EventName("AddressBecameIncomplete")]
     [EventDescription("Het adres voldoet niet meer aan het informatiemodel (wegens niet volledig).")]
-    public class AddressBecameIncomplete : IHasProvenance, ISetProvenance
+    public class AddressBecameIncomplete : IHasProvenance, ISetProvenance, IMessage
     {
         [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }

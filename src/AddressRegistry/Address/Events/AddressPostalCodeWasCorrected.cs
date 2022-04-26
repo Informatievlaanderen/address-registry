@@ -8,7 +8,7 @@ namespace AddressRegistry.Address.Events
     [EventTags(EventTag.For.Sync)]
     [EventName("AddressPostalCodeWasCorrected")]
     [EventDescription("De postcode van het adres werd gecorrigeerd.")]
-    public class AddressPostalCodeWasCorrected : IHasProvenance, ISetProvenance
+    public class AddressPostalCodeWasCorrected : IHasProvenance, ISetProvenance, IMessage
     {
         [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }

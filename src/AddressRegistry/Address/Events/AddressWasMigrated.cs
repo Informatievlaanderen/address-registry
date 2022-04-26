@@ -8,7 +8,7 @@ namespace AddressRegistry.Address.Events
     [EventTags(EventTag.For.Sync)]
     [EventName("AddressWasMigrated")]
     [EventDescription("Het adres werd gemigreerd.")]
-    public class AddressWasMigrated : IHasProvenance, ISetProvenance
+    public class AddressWasMigrated : IHasProvenance, ISetProvenance, IMessage
     {
         [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }

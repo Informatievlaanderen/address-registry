@@ -8,7 +8,7 @@ namespace AddressRegistry.Address.Events
     [EventTags(EventTag.For.Sync)]
     [EventName("AddressWasProposed")]
     [EventDescription("Het adres kreeg status 'voorgesteld'.")]
-    public class AddressWasProposed : IHasProvenance, ISetProvenance
+    public class AddressWasProposed : IHasProvenance, ISetProvenance, IMessage
     {
         [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }

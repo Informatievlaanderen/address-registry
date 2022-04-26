@@ -3,7 +3,6 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -14,7 +13,6 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Consumer;
     using Consumer.StreetName;
-    using Fluid.Ast;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;

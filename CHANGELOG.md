@@ -1,3 +1,10 @@
+## [3.3.4](https://github.com/informatievlaanderen/address-registry/compare/v3.3.3...v3.3.4) (2022-04-26)
+
+
+### Bug Fixes
+
+* use IMessage on events ([d344c70](https://github.com/informatievlaanderen/address-registry/commit/d344c70c22bd84a1976f4441a292b1b3ac8f8bda))
+
 ## [3.3.3](https://github.com/informatievlaanderen/address-registry/compare/v3.3.2...v3.3.3) (2022-04-26)
 
 

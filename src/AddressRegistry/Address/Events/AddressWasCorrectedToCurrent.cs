@@ -9,7 +9,7 @@ namespace AddressRegistry.Address.Events
     [EventTags(EventTag.For.Sync)]
     [EventName("AddressWasCorrectedToCurrent")]
     [EventDescription("Het adres kreeg status 'in gebruik' (via correctie).")]
-    public class AddressWasCorrectedToCurrent : IHasProvenance, ISetProvenance
+    public class AddressWasCorrectedToCurrent : IHasProvenance, ISetProvenance, IMessage
     {
         [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }

@@ -9,7 +9,7 @@ namespace AddressRegistry.Address.Events.Crab
 
     [EventName("AddressSubaddressPositionWasImportedFromCrab")]
     [EventDescription("Legacy event om tblAdrespositie en tblAdrespositie_hist te importeren voor subadressen.")]
-    public class AddressSubaddressPositionWasImportedFromCrab : ICrabEvent, IHasCrabPosition, IHasCrabKey<int>
+    public class AddressSubaddressPositionWasImportedFromCrab : ICrabEvent, IHasCrabPosition, IHasCrabKey<int>, IMessage
     {
         [EventPropertyDescription("CRAB-identificator van de adrespositie.")]
         public int AddressPositionId { get; }

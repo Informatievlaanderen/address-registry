@@ -8,7 +8,7 @@ namespace AddressRegistry.Address.Events
     [EventTags(EventTag.For.Sync)]
     [EventName("AddressBoxNumberWasCorrected")]
     [EventDescription("Het busnummer van het adres werd gecorrigeerd.")]
-    public class AddressBoxNumberWasCorrected : IHasProvenance, ISetProvenance
+    public class AddressBoxNumberWasCorrected : IHasProvenance, ISetProvenance, IMessage
     {
         [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }

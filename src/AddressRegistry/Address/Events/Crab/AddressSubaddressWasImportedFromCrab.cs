@@ -8,7 +8,7 @@ namespace AddressRegistry.Address.Events.Crab
 
     [EventName("AddressSubaddressWasImportedFromCrab")]
     [EventDescription("Legacy event om tblSubAdres en tblSubAdres_hist te importeren.")]
-    public class AddressSubaddressWasImportedFromCrab
+    public class AddressSubaddressWasImportedFromCrab : IMessage
     {
         [EventPropertyDescription("CRAB-identificator van het subadres (bus- of appartementsnummer).")]
         public int SubaddressId { get; }

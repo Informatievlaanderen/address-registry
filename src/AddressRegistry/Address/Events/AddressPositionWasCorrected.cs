@@ -9,7 +9,7 @@ namespace AddressRegistry.Address.Events
     [EventTags(EventTag.For.Sync)]
     [EventName("AddressPositionWasCorrected")]
     [EventDescription("De adrespositie werd gecorrigeerd.")]
-    public class AddressPositionWasCorrected : IHasProvenance, ISetProvenance
+    public class AddressPositionWasCorrected : IHasProvenance, ISetProvenance, IMessage
     {
         [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; set; }

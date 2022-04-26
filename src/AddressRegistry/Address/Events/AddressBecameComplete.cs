@@ -8,7 +8,7 @@ namespace AddressRegistry.Address.Events
     [EventTags(EventTag.For.Sync)]
     [EventName("AddressBecameComplete")]
     [EventDescription("Het adres voldoet aan het informatiemodel (wegens volledig).")]
-    public class AddressBecameComplete : IHasProvenance, ISetProvenance
+    public class AddressBecameComplete : IHasProvenance, ISetProvenance, IMessage
     {
         [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }

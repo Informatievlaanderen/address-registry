@@ -8,7 +8,7 @@ namespace AddressRegistry.Address.Events
     [EventTags(EventTag.For.Sync)]
     [EventName("AddressBecameCurrent")]
     [EventDescription("Het adres kreeg status 'in gebruik'.")]
-    public class AddressBecameCurrent : IHasProvenance, ISetProvenance
+    public class AddressBecameCurrent : IHasProvenance, ISetProvenance, IMessage
     {
         [EventPropertyDescription("Interne GUID van het adres.")]
         public Guid AddressId { get; }

@@ -1,3 +1,11 @@
+## [3.3.2](https://github.com/informatievlaanderen/address-registry/compare/v3.3.1...v3.3.2) (2022-04-26)
+
+
+### Bug Fixes
+
+* add build backoffice ([99ddd29](https://github.com/informatievlaanderen/address-registry/commit/99ddd294c734ea91525605735e3956202ac16d35))
+* solution ([f87efe9](https://github.com/informatievlaanderen/address-registry/commit/f87efe9cdae868b299beb4e23a012d2b14523188))
+
 ## [3.3.1](https://github.com/informatievlaanderen/address-registry/compare/v3.3.0...v3.3.1) (2022-04-25)
 
 

@@ -1,3 +1,12 @@
+## [3.3.3](https://github.com/informatievlaanderen/address-registry/compare/v3.3.2...v3.3.3) (2022-04-26)
+
+
+### Bug Fixes
+
+* add migrator to build ([d066cf4](https://github.com/informatievlaanderen/address-registry/commit/d066cf45930915fda294eac9aa7f9dd4dd0f18ec))
+* correct migrator backoffice csproj ([fb481e1](https://github.com/informatievlaanderen/address-registry/commit/fb481e18f0a5a17469cf0c4b530c591b572e1dd6))
+* csproj migrator + backoffice naming ([1fcae14](https://github.com/informatievlaanderen/address-registry/commit/1fcae144ff229b0ef70f9705da5782d14825e86a))
+
 ## [3.3.2](https://github.com/informatievlaanderen/address-registry/compare/v3.3.1...v3.3.2) (2022-04-26)
 
 

@@ -22,7 +22,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AddressRegistry.Api.Backoffice\AddressRegistry.Api.BackOffice.csproj" />
+    <ProjectReference Include="..\AddressRegistry.Api.BackOffice\AddressRegistry.Api.BackOffice.csproj" />
     <ProjectReference Include="..\AddressRegistry.Consumer\AddressRegistry.Consumer.csproj" />
     <ProjectReference Include="..\AddressRegistry.Infrastructure\AddressRegistry.Infrastructure.csproj" />
   </ItemGroup>

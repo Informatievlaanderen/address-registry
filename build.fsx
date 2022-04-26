@@ -109,8 +109,8 @@ Target.create "PushContainer_ApiOslo" (fun _ -> push "api-oslo")
 Target.create "Containerize_ApiExtract" (fun _ -> containerize "AddressRegistry.Api.Extract" "api-extract")
 Target.create "PushContainer_ApiExtract" (fun _ -> push "api-extract")
 
-Target.create "Containerize_ApiBackOffice" (fun _ -> containerize "AddressRegistry.Api.BackOffice" "api-BackOffice")
-Target.create "PushContainer_ApiBackOffice" (fun _ -> push "api-BackOffice")
+Target.create "Containerize_ApiBackOffice" (fun _ -> containerize "AddressRegistry.Api.BackOffice" "api-backoffice")
+Target.create "PushContainer_ApiBackOffice" (fun _ -> push "api-backoffice")
 
 Target.create "Containerize_ApiCrabImport" (fun _ -> containerize "AddressRegistry.Api.CrabImport" "api-crab-import")
 Target.create "PushContainer_ApiCrabImport" (fun _ -> push "api-crab-import")

@@ -64,7 +64,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddressRegistry.Consumer", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddressRegistry.Migrator.Address", "src\AddressRegistry.Migrator.Address\AddressRegistry.Migrator.Address.csproj", "{FBD8EFCF-722A-4480-9E5D-3E9736103E12}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddressRegistry.Api.Backoffice", "src\AddressRegistry.Api.Backoffice\AddressRegistry.Api.Backoffice.csproj", "{0A094042-A834-4278-A49E-C5C8C1BB6FA6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddressRegistry.Api.BackOffice", "src\AddressRegistry.Api.BackOffice\AddressRegistry.Api.BackOffice.csproj", "{0A094042-A834-4278-A49E-C5C8C1BB6FA6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -158,6 +158,7 @@ jobs:
         docker push $BUILD_DOCKER_REGISTRY/address-registry/api-oslo:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/api-crab-import:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/api-extract:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY/address-registry/api-backoffice:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/consumer:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/projector:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/projections-syndication:$SEMVER
@@ -185,6 +186,7 @@ jobs:
       run: |
         docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/api-legacy:$SEMVER $BUILD_DOCKER_REGISTRY/address-registry/api-legacy:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/api-legacy:$SEMVER
+
         docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/api-oslo:$SEMVER $BUILD_DOCKER_REGISTRY/address-registry/api-oslo:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/api-oslo:$SEMVER
         
@@ -193,6 +195,10 @@ jobs:
         
         docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/api-extract:$SEMVER $BUILD_DOCKER_REGISTRY/address-registry/api-extract:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/api-extract:$SEMVER
+
+        docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/api-backoffice:$SEMVER $BUILD_DOCKER_REGISTRY/address-registry/api-backoffice:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY/address-registry/api-backoffice:$SEMVER
+
         docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/consumer:$SEMVER $BUILD_DOCKER_REGISTRY/address-registry/consumer:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/consumer:$SEMVER
         
@@ -234,6 +240,8 @@ jobs:
         docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/api-crab-import:$SEMVER
         docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/api-extract:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/api-extract:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/api-extract:$SEMVER
+        docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/api-backoffice:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/api-backoffice:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/api-backoffice:$SEMVER
         docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/consumer:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/consumer:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/consumer:$SEMVER
         docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/projector:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/projector:$SEMVER
@@ -256,6 +264,7 @@ jobs:
         node packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-nuget.js dist/nuget/Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Oslo.$SEMVER.nupkg
         node packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-nuget.js dist/nuget/Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Extract.$SEMVER.nupkg
         node packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-nuget.js dist/nuget/Be.Vlaanderen.Basisregisters.AddressRegistry.Api.CrabImport.$SEMVER.nupkg
+        node packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-nuget.js dist/nuget/Be.Vlaanderen.Basisregisters.AddressRegistry.Api.BackOffice.$SEMVER.nupkg
         node packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-nuget.js dist/nuget/Be.Vlaanderen.Basisregisters.AddressRegistry.Projector.$SEMVER.nupkg
       env:
         SEMVER: ${{ env.RELEASE_VERSION }}

@@ -43,6 +43,7 @@ Target.create "Build_Solution" (fun _ ->
   buildSource "AddressRegistry.Api.Legacy"
   buildSource "AddressRegistry.Api.Extract"
   buildSource "AddressRegistry.Api.CrabImport"
+  buildSource "AddressRegistry.Api.BackOffice"
   buildSource "AddressRegistry.Consumer"
   buildSource "AddressRegistry.Projections.Legacy"
   buildSource "AddressRegistry.Projections.Extract"
@@ -68,6 +69,7 @@ Target.create "Publish_Solution" (fun _ ->
     "AddressRegistry.Api.Oslo"
     "AddressRegistry.Api.Extract"
     "AddressRegistry.Api.CrabImport"
+    "AddressRegistry.Api.BackOffice"
     "AddressRegistry.Consumer"
     "AddressRegistry.Projections.Legacy"
     "AddressRegistry.Projections.Extract"
@@ -91,6 +93,7 @@ Target.create "Pack_Solution" (fun _ ->
     "AddressRegistry.Api.Oslo"
     "AddressRegistry.Api.Extract"
     "AddressRegistry.Api.CrabImport"
+    "AddressRegistry.Api.BackOffice"
     "AddressRegistry.Consumer"
   ] |> List.iter pack)
 
@@ -106,8 +109,8 @@ Target.create "PushContainer_ApiOslo" (fun _ -> push "api-oslo")
 Target.create "Containerize_ApiExtract" (fun _ -> containerize "AddressRegistry.Api.Extract" "api-extract")
 Target.create "PushContainer_ApiExtract" (fun _ -> push "api-extract")
 
-Target.create "Containerize_ApiBackoffice" (fun _ -> containerize "AddressRegistry.Api.Backoffice" "api-backoffice")
-Target.create "PushContainer_ApiBackoffice" (fun _ -> push "api-backoffice")
+Target.create "Containerize_ApiBackOffice" (fun _ -> containerize "AddressRegistry.Api.BackOffice" "api-BackOffice")
+Target.create "PushContainer_ApiBackOffice" (fun _ -> push "api-BackOffice")
 
 Target.create "Containerize_ApiCrabImport" (fun _ -> containerize "AddressRegistry.Api.CrabImport" "api-crab-import")
 Target.create "PushContainer_ApiCrabImport" (fun _ -> push "api-crab-import")
@@ -154,7 +157,7 @@ Target.create "Push" ignore
   ==> "Containerize_ApiLegacy"
   ==> "Containerize_ApiOslo"
   ==> "Containerize_ApiExtract"
-  //==> "Containerize_ApiBackoffice"
+  ==> "Containerize_ApiBackOffice"
   ==> "Containerize_ApiCrabImport"
   ==> "Containerize_Consumer"
   ==> "Containerize_ProjectionsSyndication"
@@ -168,7 +171,7 @@ Target.create "Push" ignore
   ==> "PushContainer_ApiLegacy"
   ==> "PushContainer_ApiOslo"
   ==> "PushContainer_ApiExtract"
-  //==> "PushContainer_ApiBackoffice"
+  ==> "PushContainer_ApiBackOffice"
   ==> "PushContainer_ApiCrabImport"
   ==> "PushContainer_Consumer"
   ==> "PushContainer_ProjectionsSyndication"

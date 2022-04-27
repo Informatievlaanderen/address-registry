@@ -1,6 +1,7 @@
 namespace AddressRegistry.Projections.Legacy.AddressListV2
 {
     using System;
+    using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Pipes;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
@@ -37,7 +38,7 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
         private static void UpdateVersionTimestamp(AddressListItemV2 addressListItemV2, Instant timestamp)
             => addressListItemV2.VersionTimestamp = timestamp;
 
-        private static void UpdateHash<T>(AddressListItemV2 entity, Envelope<T> wrappedEvent) where T : IHaveHash
+        private static void UpdateHash<T>(AddressListItemV2 entity, Envelope<T> wrappedEvent) where T : IHaveHash, IMessage
         {
             if (!wrappedEvent.Metadata.ContainsKey(AddEventHashPipe.HashMetadataKey))
             {

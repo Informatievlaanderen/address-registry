@@ -2,6 +2,7 @@ namespace AddressRegistry.Projections.Legacy.AddressDetailV2
 {
     using System;
     using AddressDetail;
+    using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Pipes;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
@@ -40,7 +41,7 @@ namespace AddressRegistry.Projections.Legacy.AddressDetailV2
             });
         }
 
-        private static void UpdateHash<T>(AddressDetailItemV2 entity, Envelope<T> wrappedEvent) where T : IHaveHash
+        private static void UpdateHash<T>(AddressDetailItemV2 entity, Envelope<T> wrappedEvent) where T : IHaveHash, IMessage
         {
             if (!wrappedEvent.Metadata.ContainsKey(AddEventHashPipe.HashMetadataKey))
             {

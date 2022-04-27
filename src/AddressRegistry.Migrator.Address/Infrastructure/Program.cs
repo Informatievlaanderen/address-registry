@@ -112,7 +112,6 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
             var loggerFactory = tempProvider.GetRequiredService<ILoggerFactory>();
 
             builder.RegisterModule(new ApiModule(configuration, services, loggerFactory));
-
             builder.RegisterModule(new ProjectorModule(configuration));
 
             builder.Populate(services);

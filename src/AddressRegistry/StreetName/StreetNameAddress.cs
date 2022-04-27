@@ -13,10 +13,10 @@ namespace AddressRegistry.StreetName
         public AddressPersistentLocalId AddressPersistentLocalId { get; private set; }
         public AddressStatus Status { get; private set; }
         public HouseNumber HouseNumber { get; private set; }
-        public BoxNumber BoxNumber { get; private set; }
+        public BoxNumber? BoxNumber { get; private set; }
         public PostalCode PostalCode { get; private set; }
         public AddressGeometry Geometry { get; private set; }
-        public bool? IsOfficiallyAssigned { get; set; }
+        public bool IsOfficiallyAssigned { get; set; }
         public bool IsRemoved { get; private set; }
 
         public StreetNameAddress? Parent { get; private set; }
@@ -66,7 +66,7 @@ namespace AddressRegistry.StreetName
             AddressPersistentLocalId = new AddressPersistentLocalId(@event.AddressPersistentLocalId);
             Status = @event.Status;
             HouseNumber = new HouseNumber(@event.HouseNumber);
-            BoxNumber = new BoxNumber(@event.BoxNumber);
+            BoxNumber = string.IsNullOrEmpty(@event.BoxNumber) ? null : new BoxNumber(@event.BoxNumber);
             PostalCode = new PostalCode(@event.PostalCode);
             Geometry = new AddressGeometry(
                 @event.GeometryMethod,

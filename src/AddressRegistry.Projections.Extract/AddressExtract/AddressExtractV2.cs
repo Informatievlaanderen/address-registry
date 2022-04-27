@@ -1,13 +1,11 @@
 namespace AddressRegistry.Projections.Extract.AddressExtract
 {
-    using System;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-    public class AddressExtractItem
+    public class AddressExtractItemV2
     {
-        public Guid AddressId { get; set; }
         public int AddressPersistentLocalId { get; set; }
         public bool Complete { get; set; }
         public byte[]? DbaseRecord { get; set; }
@@ -17,19 +15,21 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
         public double MaximumX { get; set; }
         public double MinimumY { get; set; }
         public double MaximumY { get; set; }
-        public Guid StreetNameId { get; set; }
-        public string? NisCode { get; set; }
+        public int StreetNamePersistentLocalId { get; set; }
     }
 
-    public class AddressExtractItemConfiguration : IEntityTypeConfiguration<AddressExtractItem>
+    public class AddressExtractItemV2Configuration : IEntityTypeConfiguration<AddressExtractItemV2>
     {
-        private const string TableName = "Address";
+        private const string TableName = "AddressV2";
 
-        public void Configure(EntityTypeBuilder<AddressExtractItem> builder)
+        public void Configure(EntityTypeBuilder<AddressExtractItemV2> builder)
         {
             builder.ToTable(TableName, Schema.Extract)
-                .HasKey(p => p.AddressId)
-                .IsClustered(false);
+                .HasKey(p => p.AddressPersistentLocalId)
+                .IsClustered(true);
+
+            builder.Property(p => p.AddressPersistentLocalId)
+                .ValueGeneratedNever();
 
             builder.Property(p => p.Complete);
             builder.Property(p => p.DbaseRecord);
@@ -39,13 +39,10 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
             builder.Property(p => p.MinimumX);
             builder.Property(p => p.MinimumY);
             builder.Property(p => p.MaximumY);
-            builder.Property(p => p.StreetNameId);
-            builder.Property(p => p.NisCode);
+            builder.Property(p => p.StreetNamePersistentLocalId);
 
-            builder.HasIndex(p => p.StreetNameId);
-            builder.HasIndex(p => p.NisCode);
+            builder.HasIndex(p => p.StreetNamePersistentLocalId);
             builder.HasIndex(p => p.Complete);
-            builder.HasIndex(p => p.AddressPersistentLocalId).IsClustered();
         }
     }
 }

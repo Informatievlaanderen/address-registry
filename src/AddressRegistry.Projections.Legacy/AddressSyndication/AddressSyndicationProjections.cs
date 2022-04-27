@@ -1,12 +1,13 @@
 namespace AddressRegistry.Projections.Legacy.AddressSyndication
 {
     using System;
-    using Address;
+    using StreetName;
     using Address.Events;
     using Address.Events.Crab;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
+    using StreetName.Events;
 
     [ConnectedProjectionName("Feed endpoint adressen")]
     [ConnectedProjectionDescription("Projectie die de adressen data voor de adressen feed voorziet.")]
@@ -14,6 +15,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
     {
         public AddressSyndicationProjections()
         {
+            #region Legacy Events
             When<Envelope<AddressWasRegistered>>(async (context, message, ct) =>
             {
                 var addressSyndicationItem = new AddressSyndicationItem
@@ -133,8 +135,8 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     message,
                     x =>
                     {
-                        x.PositionMethod = message.Message.GeometryMethod;
-                        x.PositionSpecification = message.Message.GeometrySpecification;
+                        x.PositionMethod = (GeometryMethod?)message.Message.GeometryMethod;
+                        x.PositionSpecification = (GeometrySpecification?)message.Message.GeometrySpecification;
                         x.PointPosition = message.Message.ExtendedWkbGeometry.ToByteArray();
                     },
                     ct);
@@ -278,8 +280,8 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     message,
                     x =>
                     {
-                        x.PositionMethod = message.Message.GeometryMethod;
-                        x.PositionSpecification = message.Message.GeometrySpecification;
+                        x.PositionMethod = (GeometryMethod?)message.Message.GeometryMethod;
+                        x.PositionSpecification = (GeometrySpecification?)message.Message.GeometrySpecification;
                         x.PointPosition = message.Message.ExtendedWkbGeometry.ToByteArray();
                     },
                     ct);
@@ -328,7 +330,40 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
             When<Envelope<AddressSubaddressPositionWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
             When<Envelope<AddressSubaddressStatusWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            #endregion Legacy Events
 
+            When<Envelope<AddressWasMigratedToStreetName>>(async (context, message, ct) =>
+            {
+                var streetNameSyndicationItem = new AddressSyndicationItem
+                {
+                    Position = message.Position,
+                    AddressId = null, //while we have the information, we shouldn't identify this resource with its old guid id
+                    PersistentLocalId = message.Message.AddressPersistentLocalId,
+                    StreetNameId = null, //while we have the information, we shouldn't identify this resource with its old guid id
+                    StreetNamePersistentLocalId = message.Message.StreetNamePersistentLocalId,
+                    PostalCode = message.Message.PostalCode,
+                    HouseNumber = message.Message.HouseNumber,
+                    BoxNumber = message.Message.BoxNumber,
+                    PointPosition = message.Message.ExtendedWkbGeometry.ToByteArray(),
+                    PositionMethod = message.Message.GeometryMethod,
+                    PositionSpecification = message.Message.GeometrySpecification,
+                    Status = message.Message.Status,
+                    IsComplete = true,
+                    IsOfficiallyAssigned = message.Message.OfficiallyAssigned,
+
+                    RecordCreatedAt = message.Message.Provenance.Timestamp,
+                    LastChangedOn = message.Message.Provenance.Timestamp,
+                    ChangeType = message.EventName,
+                    SyndicationItemCreatedAt = DateTimeOffset.UtcNow
+                };
+
+                streetNameSyndicationItem.ApplyProvenance(message.Message.Provenance);
+                streetNameSyndicationItem.SetEventData(message.Message, message.EventName);
+
+                await context
+                    .AddressSyndication
+                    .AddAsync(streetNameSyndicationItem, ct);
+            });
         }
 
         private static void DoNothing() { }

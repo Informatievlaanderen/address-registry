@@ -63,12 +63,13 @@ namespace AddressRegistry.Projections.Legacy.AddressDetail
             b.Property(p => p.Removed);
 
             b.HasIndex(p => p.PersistentLocalId)
-                .IsUnique()
-                .HasFilter($"([{nameof(AddressDetailItem.PersistentLocalId)}] IS NOT NULL)")
-                .HasDatabaseName("IX_AddressDetails_PersistentLocalId_1");;
+                .IsClustered();
 
             b.HasIndex(p => p.PersistentLocalId)
-                .IsClustered();
+                .IsUnique()
+                .IsClustered(false)
+                .HasFilter($"([{nameof(AddressDetailItem.PersistentLocalId)}] IS NOT NULL)")
+                .HasDatabaseName("IX_AddressDetails_PersistentLocalId_1");
 
             // This speeds up AddressBosaQuery's huge StreetNameId IN (...) AND Complete = 1 query
             b.HasIndex(p => new { p.StreetNameId, p.Complete });

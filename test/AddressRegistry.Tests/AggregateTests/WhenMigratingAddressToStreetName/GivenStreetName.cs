@@ -48,7 +48,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
                             command.HouseNumber,
                             command.BoxNumber,
                             command.Geometry,
-                            command.OfficiallyAssigned,
+                            command.OfficiallyAssigned ?? false,
                             command.PostalCode,
                             command.IsCompleted,
                             command.IsRemoved,
@@ -70,7 +70,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
                 command.HouseNumber,
                 command.BoxNumber,
                 command.Geometry,
-                command.OfficiallyAssigned,
+                command.OfficiallyAssigned ?? false,
                 command.PostalCode,
                 command.IsCompleted,
                 command.IsRemoved,
@@ -121,7 +121,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
             result.BoxNumber.Should().Be(command.BoxNumber);
             result.PostalCode.Should().Be(command.PostalCode);
             result.Geometry.Should().Be(command.Geometry);
-            result.IsOfficiallyAssigned.Should().Be(command.OfficiallyAssigned);
+            result.IsOfficiallyAssigned.Should().Be(command.OfficiallyAssigned ?? false);
             result.IsRemoved.Should().Be(command.IsRemoved);
             result.Parent.Should().BeNull();
         }

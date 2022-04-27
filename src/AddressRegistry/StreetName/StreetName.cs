@@ -98,7 +98,7 @@ namespace AddressRegistry.StreetName
                 houseNumber,
                 boxNumber,
                 geometry,
-                officiallyAssigned,
+                officiallyAssigned ?? false,
                 postalCode,
                 isCompleted,
                 isRemoved,

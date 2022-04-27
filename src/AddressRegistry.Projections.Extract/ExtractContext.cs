@@ -3,7 +3,6 @@ namespace AddressRegistry.Projections.Extract
     using AddressCrabHouseNumberIdExtract;
     using AddressCrabSubaddressIdExtract;
     using AddressExtract;
-    using AddressLinkExtract;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
@@ -13,7 +12,7 @@ namespace AddressRegistry.Projections.Extract
         public override string ProjectionStateSchema => Schema.Extract;
 
         public DbSet<AddressExtractItem> AddressExtract { get; set; }
-        public DbSet<AddressLinkExtractItem> AddressLinkExtract { get; set; }
+        public DbSet<AddressExtractItemV2> AddressExtractV2 { get; set; }
 
         public DbSet<AddressCrabHouseNumberIdExtractItem> AddressCrabHouseNumberIdExtract { get; set; }
         public DbSet<AddressCrabSubaddressIdExtractItem> AddressCrabSubaddressIdExtract { get; set; }

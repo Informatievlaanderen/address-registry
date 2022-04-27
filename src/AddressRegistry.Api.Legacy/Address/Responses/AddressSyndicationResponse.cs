@@ -90,7 +90,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
                     address.HouseNumber,
                     address.BoxNumber,
                     address.PostalCode,
-                    address.PointPosition == null ? null : AddressMapper.GetAddressPoint(address.PointPosition),
+                    address.PointPosition == null ? (Point?)null : AddressMapper.GetAddressPoint(address.PointPosition),
                     address.GeometryMethod == null ? (PositieGeometrieMethode?)null : AddressMapper.ConvertFromGeometryMethod(address.GeometryMethod.Value),
                     address.GeometrySpecification == null ? (PositieSpecificatie?)null : AddressMapper.ConvertFromGeometrySpecification(address.GeometrySpecification.Value),
                     address.Status.ConvertFromAddressStatus(),

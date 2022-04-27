@@ -1,3 +1,10 @@
+## [3.4.2](https://github.com/informatievlaanderen/address-registry/compare/v3.4.1...v3.4.2) (2022-04-27)
+
+
+### Bug Fixes
+
+* add null check for boxnumber in migrated event ([00ece37](https://github.com/informatievlaanderen/address-registry/commit/00ece37582f63b7ad02cd94fb51b396eed261a22))
+
 ## [3.4.1](https://github.com/informatievlaanderen/address-registry/compare/v3.4.0...v3.4.1) (2022-04-27)
 
 

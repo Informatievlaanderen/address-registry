@@ -1,11 +1,14 @@
 namespace AddressRegistry.Projections.LastChangedList
 {
     using System;
+    using System.Collections.Generic;
     using Address.Events;
     using Address.Events.Crab;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList.Model;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
+    using StreetName.Events;
 
     [ConnectedProjectionName("Cache markering adressen")]
     [ConnectedProjectionDescription("Projectie die markeert voor hoeveel adressen de gecachte data nog geüpdated moeten worden.")]
@@ -16,6 +19,7 @@ namespace AddressRegistry.Projections.LastChangedList
         public LastChangedListProjections()
             : base(SupportedAcceptTypes)
         {
+            #region Legacy Events
             When<Envelope<AddressPersistentLocalIdWasAssigned>>(async (context, message, ct) =>
             {
                 var attachedRecords = await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
@@ -184,6 +188,30 @@ namespace AddressRegistry.Projections.LastChangedList
             When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
             When<Envelope<AddressSubaddressPositionWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
             When<Envelope<AddressSubaddressStatusWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            #endregion Legacy Events
+
+            When<Envelope<AddressWasMigrated>>(async (context, message, ct) =>
+            {
+                var attachedRecords = await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
+
+                context.LastChangedList.RemoveRange(attachedRecords);
+            });
+
+            When<Envelope<AddressWasMigratedToStreetName>>(async (context, message, ct) =>
+            {
+                var records = await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
+                RebuildKeyAndUri(records, message.Message.AddressPersistentLocalId);
+            });
+
+        }
+
+        private static void RebuildKeyAndUri(IEnumerable<LastChangedRecord>? attachedRecords, int persistentLocalId)
+        {
+            foreach (var record in attachedRecords)
+            {
+                record.CacheKey = string.Format(record.CacheKey, persistentLocalId);
+                record.Uri = string.Format(record.Uri, persistentLocalId);
+            }
         }
 
         protected override string BuildCacheKey(AcceptType acceptType, string identifier)

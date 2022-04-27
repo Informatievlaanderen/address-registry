@@ -1,7 +1,7 @@
 namespace AddressRegistry.Projections.Legacy.AddressSyndication
 {
     using System;
-    using Address;
+    using StreetName;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
     using Infrastructure;
@@ -18,6 +18,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
         public string? ChangeType { get; set; }
 
         public Guid? StreetNameId { get; set; }
+        public int? StreetNamePersistentLocalId { get; set; }
         public string? PostalCode { get; set; }
         public string? HouseNumber { get; set; }
         public string? BoxNumber { get; set; }

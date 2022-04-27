@@ -14,7 +14,7 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
             CancellationToken ct)
         {
             var address = await context
-                .Get<AddressDetailItem>()
+                .AddressDetail
                 .FindAsync(addressId, cancellationToken: ct);
 
             if (address == null)

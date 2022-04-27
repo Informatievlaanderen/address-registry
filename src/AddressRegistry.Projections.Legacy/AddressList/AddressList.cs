@@ -65,12 +65,13 @@ namespace AddressRegistry.Projections.Legacy.AddressList
             b.HasIndex(p => p.StreetNameId);
 
             b.HasIndex(p => p.PersistentLocalId)
-                .IsUnique()
-                .HasFilter($"([{nameof(AddressListItem.PersistentLocalId)}] IS NOT NULL)")
-                .HasDatabaseName("IX_AddressList_PersistentLocalId_1");
+                .IsClustered();
 
             b.HasIndex(p => p.PersistentLocalId)
-                .IsClustered();
+                .IsUnique()
+                .IsClustered(false)
+                .HasFilter($"([{nameof(AddressListItem.PersistentLocalId)}] IS NOT NULL)")
+                .HasDatabaseName("IX_AddressList_PersistentLocalId_1");
         }
     }
 }

@@ -12,7 +12,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
-    using AddressRegistry.Address;
+    using StreetName;
 
     public class AddressSyndicationQueryResult
     {
@@ -27,7 +27,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
         public string ChangeType { get; }
         public Guid? StreetNameId { get; }
         public string PostalCode { get; set; }
-        public byte[] PointPosition { get; set; }
+        public byte[]? PointPosition { get; set; }
         public GeometryMethod? GeometryMethod { get; set; }
         public GeometrySpecification? GeometrySpecification { get; set; }
         public Instant RecordCreatedAt { get; }
@@ -100,7 +100,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             string boxNumber,
             Guid? streetNameId,
             string postalCode,
-            byte[] pointPosition,
+            byte[]? pointPosition,
             GeometryMethod? geometryMethod,
             GeometrySpecification? geometrySpecification,
             string changeType,
@@ -152,7 +152,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             string boxNumber,
             Guid? streetNameId,
             string postalCode,
-            byte[] pointPosition,
+            byte[]? pointPosition,
             GeometryMethod? geometryMethod,
             GeometrySpecification? geometrySpecification,
             string changeType,

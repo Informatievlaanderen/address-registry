@@ -97,9 +97,6 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .RegisterProjections<AddressExtractProjection, ExtractContext>(
                     context => new AddressExtractProjection(context.Resolve<IOptions<ExtractConfig>>(), DbaseCodePage.Western_European_ANSI.ToEncoding(), new WKBReader()),
                     ConnectedProjectionSettings.Default)
-                .RegisterProjections<AddressLinkExtractProjection, ExtractContext>(
-                    context => new AddressLinkExtractProjection(context.Resolve<IOptions<ExtractConfig>>(), DbaseCodePage.Western_European_ANSI.ToEncoding(), new WKBReader()),
-                    ConnectedProjectionSettings.Default)
                 .RegisterProjections<AddressCrabHouseNumberIdExtractProjection, ExtractContext>(
                     context => new AddressCrabHouseNumberIdExtractProjection(DbaseCodePage.Western_European_ANSI.ToEncoding()),
                     ConnectedProjectionSettings.Default)

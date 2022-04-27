@@ -4,6 +4,7 @@ using AddressRegistry.Projections.Wfs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 
@@ -12,9 +13,10 @@ using NetTopologySuite.Geometries;
 namespace AddressRegistry.Projections.Wfs.Migrations
 {
     [DbContext(typeof(WfsContext))]
-    partial class WfsContextModelSnapshot : ModelSnapshot
+    [Migration("20220427124425_Add_AddressWfsItem")]
+    partial class Add_AddressWfsItem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

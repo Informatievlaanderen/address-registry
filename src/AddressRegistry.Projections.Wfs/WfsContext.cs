@@ -2,6 +2,7 @@ namespace AddressRegistry.Projections.Wfs
 {
     using System;
     using AddressDetail;
+    using AddressWfs;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
@@ -10,14 +11,8 @@ namespace AddressRegistry.Projections.Wfs
     {
         public override string ProjectionStateSchema => Schema.Wfs;
         public DbSet<AddressDetailItem> AddressDetail { get; set; }
+        public DbSet<AddressWfsItem> AddressWfsItems { get; set; }
 
-        public DbSet<T> Get<T>() where T : class, new()
-        {
-            if (typeof(T) == typeof(AddressDetailItem))
-                return (AddressDetail as DbSet<T>)!;
-
-            throw new NotImplementedException($"DbSet not found of type {typeof(T)}");
-        }
 
         public WfsContext() { }
 

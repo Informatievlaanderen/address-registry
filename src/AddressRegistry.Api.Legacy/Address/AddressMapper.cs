@@ -49,6 +49,59 @@ namespace AddressRegistry.Api.Legacy.Address
             };
         }
 
+        public static PositieGeometrieMethode ConvertFromGeometryMethod(AddressRegistry.StreetName.GeometryMethod? method)
+        {
+            switch (method)
+            {
+                case AddressRegistry.StreetName.GeometryMethod.DerivedFromObject:
+                    return PositieGeometrieMethode.AfgeleidVanObject;
+
+                case AddressRegistry.StreetName.GeometryMethod.Interpolated:
+                    return PositieGeometrieMethode.Geinterpoleerd;
+
+                default:
+                case AddressRegistry.StreetName.GeometryMethod.AppointedByAdministrator:
+                    return PositieGeometrieMethode.AangeduidDoorBeheerder;
+            }
+        }
+
+        public static PositieSpecificatie ConvertFromGeometrySpecification(AddressRegistry.StreetName.GeometrySpecification? specification)
+        {
+            switch (specification)
+            {
+                case AddressRegistry.StreetName.GeometrySpecification.Street:
+                    return PositieSpecificatie.Straat;
+
+                case AddressRegistry.StreetName.GeometrySpecification.Parcel:
+                    return PositieSpecificatie.Perceel;
+
+                case AddressRegistry.StreetName.GeometrySpecification.Lot:
+                    return PositieSpecificatie.Lot;
+
+                case AddressRegistry.StreetName.GeometrySpecification.Stand:
+                    return PositieSpecificatie.Standplaats;
+
+                case AddressRegistry.StreetName.GeometrySpecification.Berth:
+                    return PositieSpecificatie.Ligplaats;
+
+                case AddressRegistry.StreetName.GeometrySpecification.Building:
+                    return PositieSpecificatie.Gebouw;
+
+                case AddressRegistry.StreetName.GeometrySpecification.BuildingUnit:
+                    return PositieSpecificatie.Gebouweenheid;
+
+                case AddressRegistry.StreetName.GeometrySpecification.Entry:
+                    return PositieSpecificatie.Ingang;
+
+                case AddressRegistry.StreetName.GeometrySpecification.RoadSegment:
+                    return PositieSpecificatie.Wegsegment;
+
+                default:
+                case AddressRegistry.StreetName.GeometrySpecification.Municipality:
+                    return PositieSpecificatie.Gemeente;
+            }
+        }
+
         public static PositieGeometrieMethode ConvertFromGeometryMethod(GeometryMethod? method)
         {
             switch (method)

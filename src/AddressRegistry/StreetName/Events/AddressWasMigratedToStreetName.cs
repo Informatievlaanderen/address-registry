@@ -36,7 +36,7 @@ namespace AddressRegistry.StreetName.Events
         public string HouseNumber { get; }
 
         [EventPropertyDescription("Busnummer van het adres.")]
-        public string BoxNumber { get; }
+        public string? BoxNumber { get; }
 
         [EventPropertyDescription("Geometriemethode van de adrespositie. Mogelijkheden: DerivedFromObject, AppointedByAdministrator of Interpolated.")]
         public GeometryMethod GeometryMethod { get; }
@@ -48,7 +48,7 @@ namespace AddressRegistry.StreetName.Events
         public string ExtendedWkbGeometry { get; }
 
         [EventPropertyDescription("True wanneer het adres aanduiding kreeg 'officieel toegekend'.")]
-        public bool? OfficiallyAssigned { get; }
+        public bool OfficiallyAssigned { get; }
 
         [EventPropertyDescription("Postcode (= objectidentificator) van het PostInfo-object dat deel uitmaakt van het adres.")]
         public string PostalCode { get; }
@@ -74,7 +74,7 @@ namespace AddressRegistry.StreetName.Events
             HouseNumber houseNumber,
             BoxNumber? boxNumber,
             AddressGeometry geometry,
-            bool? officiallyAssigned,
+            bool officiallyAssigned,
             PostalCode postalCode,
             bool isCompleted,
             bool isRemoved,
@@ -86,7 +86,7 @@ namespace AddressRegistry.StreetName.Events
             AddressPersistentLocalId = addressPersistentLocalId;
             Status = status;
             HouseNumber = houseNumber;
-            BoxNumber = boxNumber ?? string.Empty;
+            BoxNumber = boxNumber ?? (string?)null;
             GeometryMethod = geometry.GeometryMethod;
             GeometrySpecification = geometry.GeometrySpecification;
             ExtendedWkbGeometry = geometry.Geometry.ToString();
@@ -105,11 +105,11 @@ namespace AddressRegistry.StreetName.Events
             int addressPersistentLocalId,
             AddressStatus status,
             string houseNumber,
-            string boxNumber,
+            string? boxNumber,
             GeometryMethod geometryMethod,
             GeometrySpecification geometrySpecification,
             string extendedWkbGeometry,
-            bool? officiallyAssigned,
+            bool officiallyAssigned,
             string postalCode,
             bool isCompleted,
             bool isRemoved,
@@ -145,11 +145,11 @@ namespace AddressRegistry.StreetName.Events
             fields.Add(AddressPersistentLocalId.ToString(CultureInfo.InvariantCulture));
             fields.Add(Status.ToString());
             fields.Add(HouseNumber);
-            fields.Add(BoxNumber);
+            fields.Add(!string.IsNullOrEmpty(BoxNumber) ? BoxNumber : string.Empty);
             fields.Add(GeometryMethod.ToString());
             fields.Add(GeometrySpecification.ToString());
             fields.Add(ExtendedWkbGeometry);
-            fields.Add(OfficiallyAssigned.HasValue ? OfficiallyAssigned.Value.ToString() : string.Empty);
+            fields.Add(OfficiallyAssigned.ToString());
             fields.Add(PostalCode);
             fields.Add(IsCompleted.ToString());
             fields.Add(IsRemoved.ToString());

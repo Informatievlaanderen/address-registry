@@ -1,3 +1,10 @@
+## [3.3.5](https://github.com/informatievlaanderen/address-registry/compare/v3.3.4...v3.3.5) (2022-04-27)
+
+
+### Bug Fixes
+
+* redirect sonar to /dev/null ([435ab01](https://github.com/informatievlaanderen/address-registry/commit/435ab0162c8955bb0b23cbe1b7e3254b945286a0))
+
 ## [3.3.4](https://github.com/informatievlaanderen/address-registry/compare/v3.3.3...v3.3.4) (2022-04-26)
 
 

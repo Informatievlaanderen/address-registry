@@ -122,7 +122,7 @@ namespace AddressRegistry.StreetName.Events
                 new AddressPersistentLocalId(addressPersistentLocalId),
                 status,
                 new HouseNumber(houseNumber),
-                new BoxNumber(boxNumber),
+                string.IsNullOrEmpty(boxNumber) ? null : new BoxNumber(boxNumber),
                 new AddressGeometry(
                     geometryMethod,
                     geometrySpecification,

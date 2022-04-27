@@ -1,3 +1,15 @@
+# [3.4.0](https://github.com/informatievlaanderen/address-registry/compare/v3.3.5...v3.4.0) (2022-04-27)
+
+
+### Bug Fixes
+
+* v2 projections build ([158cdfc](https://github.com/informatievlaanderen/address-registry/commit/158cdfcf8dc53e3ec8f9582734b6d2ea53234241))
+
+
+### Features
+
+* add v2 projections ([3e9b28a](https://github.com/informatievlaanderen/address-registry/commit/3e9b28a76a54cbeaf485c3427a537be6d80ebd27))
+
 ## [3.3.5](https://github.com/informatievlaanderen/address-registry/compare/v3.3.4...v3.3.5) (2022-04-27)
 
 

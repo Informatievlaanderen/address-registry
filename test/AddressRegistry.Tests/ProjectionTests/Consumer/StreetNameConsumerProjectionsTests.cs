@@ -35,5 +35,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
                     expectedStreetName.PersistentLocalId.Should().Be(streetNameWasImported.StreetNamePersistentLocalId);
                 });
         }
+
+        protected override StreetNameConsumerProjection CreateProjection()
+            => new StreetNameConsumerProjection();
     }
 }

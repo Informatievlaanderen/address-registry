@@ -6,14 +6,14 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing;
     using Microsoft.EntityFrameworkCore;
 
-    public class ConsumerProjectionTest<TProjection>
+    public abstract class ConsumerProjectionTest<TProjection>
         where TProjection : ConnectedProjection<ConsumerContext>, new()
     {
         protected ConnectedProjectionTest<ConsumerContext, TProjection> Sut { get; }
 
         public ConsumerProjectionTest()
         {
-            Sut = new ConnectedProjectionTest<ConsumerContext, TProjection>(CreateContext);
+            Sut = new ConnectedProjectionTest<ConsumerContext, TProjection>(CreateContext, CreateProjection);
         }
 
         protected virtual ConsumerContext CreateContext()
@@ -24,5 +24,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
 
             return new ConsumerContext(options);
         }
+
+        protected abstract TProjection CreateProjection();
     }
 }

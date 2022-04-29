@@ -1,3 +1,11 @@
+# [3.5.0](https://github.com/informatievlaanderen/address-registry/compare/v3.4.4...v3.5.0) (2022-04-29)
+
+
+### Features
+
+* add projection tests ([f1b0bbd](https://github.com/informatievlaanderen/address-registry/commit/f1b0bbdedaeae9ff5da1b41daa56d6822ad83b9a))
+* add toggle projector v2 projections ([15a519d](https://github.com/informatievlaanderen/address-registry/commit/15a519dd48c79c672f5146ba3adbc0fc838527e0))
+
 ## [3.4.4](https://github.com/informatievlaanderen/address-registry/compare/v3.4.3...v3.4.4) (2022-04-29)
 
 

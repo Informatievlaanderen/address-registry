@@ -1,3 +1,10 @@
+## [3.4.4](https://github.com/informatievlaanderen/address-registry/compare/v3.4.3...v3.4.4) (2022-04-29)
+
+
+### Bug Fixes
+
+* run sonar end when release version != none ([1f0f1de](https://github.com/informatievlaanderen/address-registry/commit/1f0f1de6a63578368187bd38b86e9ca63a344160))
+
 ## [3.4.3](https://github.com/informatievlaanderen/address-registry/compare/v3.4.2...v3.4.3) (2022-04-29)
 
 ## [3.4.2](https://github.com/informatievlaanderen/address-registry/compare/v3.4.1...v3.4.2) (2022-04-27)

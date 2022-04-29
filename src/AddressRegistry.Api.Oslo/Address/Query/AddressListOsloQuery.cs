@@ -64,7 +64,7 @@ namespace AddressRegistry.Api.Oslo.Address.Query
             {
                 if (Enum.TryParse(typeof(AdresStatus), filtering.Filter.Status, true, out var status))
                 {
-                    var addressStatus = ((AdresStatus)status).ConvertFromAdresStatus();
+                    var addressStatus = AddressStatusExtensions.ConvertFromAdresStatus((AdresStatus)status);
                     addresses = addresses.Where(a => a.Status.HasValue && a.Status.Value == addressStatus);
                 }
                 else

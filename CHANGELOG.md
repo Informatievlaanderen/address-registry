@@ -1,3 +1,16 @@
+# [3.6.0](https://github.com/informatievlaanderen/address-registry/compare/v3.5.0...v3.6.0) (2022-04-29)
+
+
+### Bug Fixes
+
+* ambigous call after toggle in oslo list ([37b904a](https://github.com/informatievlaanderen/address-registry/commit/37b904a5f0316d5210be9a875ab6f76bd6e85efe))
+* backoffice scope lifetime in migrator ([cd66dec](https://github.com/informatievlaanderen/address-registry/commit/cd66dec000b496a8cfae85e8a18ba176677b6fab))
+
+
+### Features
+
+* add toggles to projection api ([242b23e](https://github.com/informatievlaanderen/address-registry/commit/242b23ea2f5d2473724d5ecb492b2fb86e0eb453))
+
 # [3.5.0](https://github.com/informatievlaanderen/address-registry/compare/v3.4.4...v3.5.0) (2022-04-29)
 
 

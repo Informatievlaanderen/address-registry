@@ -1,7 +1,6 @@
 namespace AddressRegistry.Migrator.Address.Infrastructure
 {
     using System;
-    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -27,7 +26,6 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
         private readonly ProcessedIdsTable _processedIdsTable;
         private readonly SqlStreamsTable _sqlStreamTable;
         private readonly IAddresses _addressRepo;
-        private readonly BackOfficeContext _backOfficeContext;
         private List<StreetNameConsumerItem> _consumerItems;
         private readonly bool _skipIncomplete;
 
@@ -45,10 +43,8 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
             _skipIncomplete = Boolean.Parse(configuration["SkipIncomplete"]);
 
             _addressRepo = lifetimeScope.Resolve<IAddresses>();
-            _backOfficeContext = lifetimeScope.Resolve<BackOfficeContext>();
-
         }
-        
+
         public async Task ProcessAsync(CancellationToken ct)
         {
             await _processedIdsTable.CreateTableIfNotExists();
@@ -96,24 +92,19 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
 
         private async Task<List<int>> ProcessStreams(IEnumerable<(int, string)> streamsToProcess, CancellationToken ct)
         {
-            var parentNotFoundCollection = new BlockingCollection<(int, string)>();
+            var parentNotFoundCollection = new List<(int, string)>();
+            var processedItems = new List<int>();
 
-            var processedItems = new BlockingCollection<int>();
-
-            //await Parallel.ForEachAsync(streamsToProcess, ct,
-            //    async (stream, ct2) =>
-            //    {
             foreach (var stream in streamsToProcess)
             {
-                var ct2 = ct;
                 try
                 {
-                    await ProcessStream(stream, processedItems, ct2);
+                    await ProcessStream(stream, processedItems, ct);
                 }
-                catch (ParentAddressNotFoundException ex)
+                catch (ParentAddressNotFoundException)
                 {
                     _logger.LogWarning($"Parent not found for child '{stream.Item1}', adding to retry collection.");
-                    parentNotFoundCollection.Add(stream, CancellationToken.None);
+                    parentNotFoundCollection.Add(stream);
                 }
                 catch (Exception ex)
                 {
@@ -122,7 +113,6 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
                     throw;
                 }
             }
-            //});
 
             if (parentNotFoundCollection.Any())
             {
@@ -134,12 +124,12 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
                 }
             }
 
-            return processedItems.ToList();
+            return processedItems;
         }
 
         private async Task ProcessStream(
             (int, string) stream,
-            BlockingCollection<int> processedItems,
+            List<int> processedItems,
             CancellationToken token)
         {
             var (internalId, aggregateId) = stream;
@@ -189,10 +179,13 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
             await _processedIdsTable.Add(internalId);
             processedItems.Add(internalId);
 
-            await _backOfficeContext
+            await using var backOfficeContext = _lifetimeScope.Resolve<BackOfficeContext>();
+            await backOfficeContext
                 .AddressPersistentIdStreetNamePersistentId
-                .AddAsync(new AddressPersistentIdStreetNamePersistentId(addressAggregate.PersistentLocalId, streetName.PersistentLocalId), token);
-            await _backOfficeContext.SaveChangesAsync(token);
+                .AddAsync(
+                    new AddressPersistentIdStreetNamePersistentId(addressAggregate.PersistentLocalId,
+                        streetName.PersistentLocalId), token);
+            await backOfficeContext.SaveChangesAsync(token);
         }
 
         private async Task CreateAndDispatchCommand(

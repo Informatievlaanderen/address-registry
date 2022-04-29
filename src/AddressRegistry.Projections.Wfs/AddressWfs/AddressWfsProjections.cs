@@ -62,7 +62,7 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
             }
         }
 
-        public Point ParsePosition(string extendedWkbGeometry)
+        private Point ParsePosition(string extendedWkbGeometry)
             => (Point) _wkbReader.Read(extendedWkbGeometry.ToByteArray());
 
 

@@ -17,6 +17,8 @@ namespace AddressRegistry.Api.Extract.Infrastructure
     using System;
     using System.Linq;
     using System.Reflection;
+    using FeatureToggles;
+    using Microsoft.Extensions.Options;
     using Microsoft.OpenApi.Models;
 
     /// <summary>Represents the startup process for the application.</summary>
@@ -94,7 +96,11 @@ namespace AddressRegistry.Api.Extract.Infrastructure
                                     tags: new[] { DatabaseTag, "sql", "sqlserver" });
                         }
                     }
-                });
+                })
+                .Configure<FeatureToggleOptions>(_configuration.GetSection(FeatureToggleOptions.ConfigurationKey))
+                .AddSingleton(c =>
+                    new UseExtractV2Toggle(c.GetRequiredService<IOptions<FeatureToggleOptions>>().Value.UseExtractV2));
+
 
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterModule(new ApiModule(_configuration, services, _loggerFactory));

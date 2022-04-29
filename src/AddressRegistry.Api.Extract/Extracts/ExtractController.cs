@@ -10,6 +10,7 @@ namespace AddressRegistry.Api.Extract.Extracts
     using System.Threading;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api.Extract;
+    using Infrastructure.FeatureToggles;
     using Microsoft.Extensions.Configuration;
     using Projections.Syndication;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
@@ -35,9 +36,21 @@ namespace AddressRegistry.Api.Extract.Extracts
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
         public async Task<IActionResult> Get(
             [FromServices] ExtractContext context,
+            [FromServices] UseExtractV2Toggle useExtractV2Toggle,
             [FromServices] SyndicationContext syndicationContext,
             CancellationToken cancellationToken = default)
         {
+            if (useExtractV2Toggle.FeatureEnabled)
+            {
+                return new IsolationExtractArchive(ExtractFileNames.GetAddressZip(), context)
+                    {
+                        AddressRegistryExtractBuilder.CreateAddressFiles(context, syndicationContext),
+                        AddressCrabHouseNumberIdExtractBuilder.CreateAddressCrabHouseNumberIdFile(context),
+                        AddressCrabSubaddressIdExtractBuilder.CreateAddressSubaddressIdFile(context)
+                    }
+                    .CreateFileCallbackResult(cancellationToken);
+            }
+
             return new IsolationExtractArchive(ExtractFileNames.GetAddressZip(), context)
                 {
                     AddressRegistryExtractBuilder.CreateAddressFiles(context, syndicationContext),

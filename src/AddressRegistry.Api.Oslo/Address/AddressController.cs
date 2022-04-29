@@ -23,6 +23,7 @@ namespace AddressRegistry.Api.Oslo.Address
     using System.Threading;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api.Search;
+    using Infrastructure.FeatureToggles;
     using Projections.Syndication.Municipality;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
@@ -32,6 +33,13 @@ namespace AddressRegistry.Api.Oslo.Address
     [ApiExplorerSettings(GroupName = "Adressen")]
     public class AddressController : ApiController
     {
+        private readonly UseProjectionsV2Toggle _useProjectionsV2Toggle;
+
+        public AddressController(UseProjectionsV2Toggle useProjectionsV2Toggle)
+        {
+            _useProjectionsV2Toggle = useProjectionsV2Toggle;
+        }
+
         /// <summary>
         /// Vraag een adres op.
         /// </summary>
@@ -63,10 +71,70 @@ namespace AddressRegistry.Api.Oslo.Address
             [FromRoute] Taal? taal,
             CancellationToken cancellationToken = default)
         {
-            var address = await context
-                .AddressDetail
+            if (_useProjectionsV2Toggle.FeatureEnabled)
+            {
+                var addressV2 = await context
+                .AddressDetailV2
                 .AsNoTracking()
-                .SingleOrDefaultAsync(item => item.PersistentLocalId == persistentLocalId, cancellationToken);
+                .SingleOrDefaultAsync(item => item.AddressPersistentLocalId == persistentLocalId, cancellationToken);
+
+                if (addressV2 != null && addressV2.Removed)
+                    throw new ApiException("Adres werd verwijderd.", StatusCodes.Status410Gone);
+
+                if (addressV2 == null)
+                    throw new ApiException("Onbestaand adres.", StatusCodes.Status404NotFound);
+
+                var streetNameV2 = await syndicationContext.StreetNameLatestItems.FindAsync(new object[] { addressV2.StreetNamePersistentLocalId }, cancellationToken);
+                var municipalityV2 = await syndicationContext.MunicipalityLatestItems.FirstAsync(m => m.NisCode == streetNameV2.NisCode, cancellationToken);
+                var defaultMunicipalityNameV2 = AddressMapper.GetDefaultMunicipalityName(municipalityV2);
+                var defaultStreetNameV2 = AddressMapper.GetDefaultStreetNameName(streetNameV2, municipalityV2.PrimaryLanguage);
+                var defaultHomonymAdditionV2 = AddressMapper.GetDefaultHomonymAddition(streetNameV2, municipalityV2.PrimaryLanguage);
+
+                var gemeenteV2 = new AdresDetailGemeente(
+                    municipalityV2.NisCode,
+                    string.Format(responseOptions.Value.GemeenteDetailUrl, municipalityV2.NisCode),
+                    new GeografischeNaam(defaultMunicipalityNameV2.Value, defaultMunicipalityNameV2.Key));
+
+                var straatV2 = new AdresDetailStraatnaam(
+                    streetNameV2.PersistentLocalId,
+                    string.Format(responseOptions.Value.StraatnaamDetailUrl, streetNameV2.PersistentLocalId),
+                    new GeografischeNaam(defaultStreetNameV2.Value, defaultStreetNameV2.Key));
+
+                var postInfoV2 = string.IsNullOrEmpty(addressV2.PostalCode)
+                    ? null
+                    : new AdresDetailPostinfo(
+                        addressV2.PostalCode,
+                        string.Format(responseOptions.Value.PostInfoDetailUrl, addressV2.PostalCode));
+
+                var homoniemToevoegingV2 = defaultHomonymAdditionV2 == null
+                    ? null
+                    : new HomoniemToevoeging(new GeografischeNaam(defaultHomonymAdditionV2.Value.Value, defaultHomonymAdditionV2.Value.Key));
+
+                return Ok(
+                    new AddressOsloResponse(
+                        responseOptions.Value.Naamruimte,
+                        responseOptions.Value.ContextUrlDetail,
+                        addressV2.AddressPersistentLocalId.ToString(),
+                        addressV2.HouseNumber,
+                        addressV2.BoxNumber,
+                        gemeenteV2,
+                        straatV2,
+                        homoniemToevoegingV2,
+                        postInfoV2,
+                        AddressMapper.GetAddressPoint(
+                            addressV2.Position,
+                            addressV2.PositionMethod,
+                            addressV2.PositionSpecification),
+                        AddressMapper.ConvertFromAddressStatus(addressV2.Status),
+                        defaultStreetNameV2.Key,
+                        addressV2.OfficiallyAssigned,
+                        addressV2.VersionTimestamp.ToBelgianDateTimeOffset()));
+            }
+
+            var address = await context
+            .AddressDetail
+            .AsNoTracking()
+            .SingleOrDefaultAsync(item => item.PersistentLocalId == persistentLocalId, cancellationToken);
 
             if (address != null && address.Removed)
                 throw new ApiException("Adres werd verwijderd.", StatusCodes.Status410Gone);
@@ -145,8 +213,76 @@ namespace AddressRegistry.Api.Oslo.Address
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
+            if (_useProjectionsV2Toggle.FeatureEnabled)
+            {
+                var pagedAddressesV2 = new AddressListOsloQueryV2(queryContext)
+                        .Fetch(filtering, sorting, pagination);
+
+                Response.AddPagedQueryResultHeaders(pagedAddressesV2);
+
+                var addressesV2 = await pagedAddressesV2.Items
+                    .Select(a =>
+                    new
+                    {
+                        a.AddressPersistentLocalId,
+                        a.StreetNamePersistentLocalId,
+                        a.HouseNumber,
+                        a.BoxNumber,
+                        a.PostalCode,
+                        a.Status,
+                        a.VersionTimestamp
+                    })
+                    .ToListAsync(cancellationToken);
+
+                var streetNameIdsV2 = addressesV2
+                    .Select(x => x.StreetNamePersistentLocalId.ToString())
+                    .Distinct()
+                    .ToList();
+
+                var streetNamesV2 = await queryContext
+                    .StreetNameLatestItems
+                    .Where(x => streetNameIdsV2.Contains(x.PersistentLocalId))
+                    .ToListAsync(cancellationToken);
+
+                var nisCodesV2 = streetNamesV2
+                    .Select(x => x.NisCode)
+                    .Distinct()
+                    .ToList();
+
+                var municipalitiesV2 = await queryContext
+                    .MunicipalityLatestItems
+                    .Where(x => nisCodesV2.Contains(x.NisCode))
+                    .ToListAsync(cancellationToken);
+
+                var addressListItemResponsesV2 = addressesV2
+                    .Select(a =>
+                    {
+                        var streetName = streetNamesV2.SingleOrDefault(x => x.PersistentLocalId == a.StreetNamePersistentLocalId.ToString());
+                        MunicipalityLatestItem municipality = null;
+                        if (streetName != null)
+                            municipality = municipalitiesV2.SingleOrDefault(x => x.NisCode == streetName.NisCode);
+                        return new AddressListItemOsloResponse(
+                            a.AddressPersistentLocalId,
+                            responseOptions.Value.Naamruimte,
+                            responseOptions.Value.DetailUrl,
+                            a.HouseNumber,
+                            a.BoxNumber,
+                            AddressMapper.GetVolledigAdres(a.HouseNumber, a.BoxNumber, a.PostalCode, streetName, municipality),
+                            AddressMapper.ConvertFromAddressStatus(a.Status),
+                            a.VersionTimestamp.ToBelgianDateTimeOffset());
+                    })
+                    .ToList();
+
+                return Ok(new AddressListOsloResponse
+                {
+                    Adressen = addressListItemResponsesV2,
+                    Volgende = pagedAddressesV2.PaginationInfo.BuildNextUri(responseOptions.Value.VolgendeUrl),
+                    Context = responseOptions.Value.ContextUrlList
+                });
+            }
+
             var pagedAddresses = new AddressListOsloQuery(queryContext)
-                .Fetch(filtering, sorting, pagination);
+            .Fetch(filtering, sorting, pagination);
 
             Response.AddPagedQueryResultHeaders(pagedAddresses);
 
@@ -233,6 +369,23 @@ namespace AddressRegistry.Api.Oslo.Address
             var filtering = Request.ExtractFilteringRequest<AddressFilter>();
             var sorting = Request.ExtractSortingRequest();
             var pagination = new NoPaginationRequest();
+
+            if (_useProjectionsV2Toggle.FeatureEnabled)
+            {
+                return Ok(
+                    new TotaalAantalResponse
+                    {
+                        Aantal = filtering.ShouldFilter
+                            ? await new AddressListOsloQueryV2(queryContext)
+                                .Fetch(filtering, sorting, pagination)
+                                .Items
+                                .CountAsync(cancellationToken)
+                            : Convert.ToInt32(context
+                                .AddressListViewCountV2
+                                .First()
+                                .Count)
+                    });
+            }
 
             return Ok(
                 new TotaalAantalResponse

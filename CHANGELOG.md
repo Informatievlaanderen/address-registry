@@ -1,3 +1,5 @@
+## [3.4.3](https://github.com/informatievlaanderen/address-registry/compare/v3.4.2...v3.4.3) (2022-04-29)
+
 ## [3.4.2](https://github.com/informatievlaanderen/address-registry/compare/v3.4.1...v3.4.2) (2022-04-27)
 
 

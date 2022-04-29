@@ -63,6 +63,18 @@ namespace AddressRegistry.Api.Oslo.Address
             return new AddressPosition(new GmlJsonPoint(gml), positieGeometrieMethode, positieSpecificatie);
         }
 
+        public static AddressPosition GetAddressPoint(
+            byte[] point,
+            AddressRegistry.StreetName.GeometryMethod? method,
+            AddressRegistry.StreetName.GeometrySpecification? specification)
+        {
+            var geometry = WKBReaderFactory.CreateForLegacy().Read(point);
+            var gml = GetGml(geometry);
+            var positieSpecificatie = ConvertFromGeometrySpecification(specification);
+            var positieGeometrieMethode = ConvertFromGeometryMethod(method);
+            return new AddressPosition(new GmlJsonPoint(gml), positieGeometrieMethode, positieSpecificatie);
+        }
+
         public static PositieGeometrieMethode ConvertFromGeometryMethod(GeometryMethod? method)
         {
             switch (method)
@@ -75,6 +87,22 @@ namespace AddressRegistry.Api.Oslo.Address
 
                 default:
                 case GeometryMethod.AppointedByAdministrator:
+                    return PositieGeometrieMethode.AangeduidDoorBeheerder;
+            }
+        }
+
+        public static PositieGeometrieMethode ConvertFromGeometryMethod(AddressRegistry.StreetName.GeometryMethod? method)
+        {
+            switch (method)
+            {
+                case AddressRegistry.StreetName.GeometryMethod.DerivedFromObject:
+                    return PositieGeometrieMethode.AfgeleidVanObject;
+
+                case AddressRegistry.StreetName.GeometryMethod.Interpolated:
+                    return PositieGeometrieMethode.Geinterpoleerd;
+
+                default:
+                case AddressRegistry.StreetName.GeometryMethod.AppointedByAdministrator:
                     return PositieGeometrieMethode.AangeduidDoorBeheerder;
             }
         }
@@ -116,6 +144,43 @@ namespace AddressRegistry.Api.Oslo.Address
             }
         }
 
+        public static PositieSpecificatie ConvertFromGeometrySpecification(AddressRegistry.StreetName.GeometrySpecification? specification)
+        {
+            switch (specification)
+            {
+                case AddressRegistry.StreetName.GeometrySpecification.Street:
+                    return PositieSpecificatie.Straat;
+
+                case AddressRegistry.StreetName.GeometrySpecification.Parcel:
+                    return PositieSpecificatie.Perceel;
+
+                case AddressRegistry.StreetName.GeometrySpecification.Lot:
+                    return PositieSpecificatie.Lot;
+
+                case AddressRegistry.StreetName.GeometrySpecification.Stand:
+                    return PositieSpecificatie.Standplaats;
+
+                case AddressRegistry.StreetName.GeometrySpecification.Berth:
+                    return PositieSpecificatie.Ligplaats;
+
+                case AddressRegistry.StreetName.GeometrySpecification.Building:
+                    return PositieSpecificatie.Gebouw;
+
+                case AddressRegistry.StreetName.GeometrySpecification.BuildingUnit:
+                    return PositieSpecificatie.Gebouweenheid;
+
+                case AddressRegistry.StreetName.GeometrySpecification.Entry:
+                    return PositieSpecificatie.Ingang;
+
+                case AddressRegistry.StreetName.GeometrySpecification.RoadSegment:
+                    return PositieSpecificatie.Wegsegment;
+
+                default:
+                case AddressRegistry.StreetName.GeometrySpecification.Municipality:
+                    return PositieSpecificatie.Gemeente;
+            }
+        }
+
         public static AdresStatus ConvertFromAddressStatus(AddressStatus? status)
         {
             switch (status)
@@ -128,6 +193,22 @@ namespace AddressRegistry.Api.Oslo.Address
 
                 default:
                 case AddressStatus.Current:
+                    return AdresStatus.InGebruik;
+            }
+        }
+
+        public static AdresStatus ConvertFromAddressStatus(AddressRegistry.StreetName.AddressStatus? status)
+        {
+            switch (status)
+            {
+                case AddressRegistry.StreetName.AddressStatus.Proposed:
+                    return AdresStatus.Voorgesteld;
+
+                case AddressRegistry.StreetName.AddressStatus.Retired:
+                    return AdresStatus.Gehistoreerd;
+
+                default:
+                case AddressRegistry.StreetName.AddressStatus.Current:
                     return AdresStatus.InGebruik;
             }
         }

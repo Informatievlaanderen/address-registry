@@ -5,6 +5,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
     using Microsoft.EntityFrameworkCore;
     using Projections.Legacy;
     using Projections.Legacy.AddressList;
+    using Projections.Legacy.AddressListV2;
     using Projections.Syndication;
     using Projections.Syndication.Municipality;
     using Projections.Syndication.StreetName;
@@ -12,6 +13,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
     public class AddressQueryContext : DbContext
     {
         public DbSet<AddressListItem> AddressList { get; set; }
+        public DbSet<AddressListItemV2> AddressListV2 { get; set; }
         public DbSet<MunicipalityLatestItem> MunicipalityLatestItems { get; set; }
         public DbSet<StreetNameLatestItem> StreetNameLatestItems { get; set; }
 

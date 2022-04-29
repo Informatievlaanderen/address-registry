@@ -189,6 +189,24 @@ namespace AddressRegistry.Api.Legacy.Address
             }
         }
 
+        public static AddressRegistry.StreetName.AddressStatus? ConvertFromAdresStatusV2(AdresStatus? status)
+        {
+            switch (status)
+            {
+                case null:
+                    return null;
+                case AdresStatus.Voorgesteld:
+                    return AddressRegistry.StreetName.AddressStatus.Proposed;
+
+                case AdresStatus.Gehistoreerd:
+                    return AddressRegistry.StreetName.AddressStatus.Retired;
+
+                default:
+                case AdresStatus.InGebruik:
+                    return AddressRegistry.StreetName.AddressStatus.Current;
+            }
+        }
+
         public static KeyValuePair<Taal, string> GetDefaultMunicipalityName(MunicipalityLatestItem municipality)
         {
             switch (municipality.PrimaryLanguage)

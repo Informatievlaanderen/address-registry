@@ -5,6 +5,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
     using Microsoft.EntityFrameworkCore;
     using Projections.Legacy;
     using Projections.Legacy.AddressDetail;
+    using Projections.Legacy.AddressDetailV2;
     using Projections.Syndication;
     using Projections.Syndication.Municipality;
     using Projections.Syndication.PostalInfo;
@@ -13,6 +14,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
     public class AddressBosaContext : DbContext
     {
         public DbSet<AddressDetailItem> AddressDetail { get; set; }
+        public DbSet<AddressDetailItemV2> AddressDetailV2 { get; set; }
         public DbSet<MunicipalityBosaItem> MunicipalityBosaItems { get; set; }
         public DbSet<StreetNameBosaItem> StreetNameBosaItems { get; set; }
         public DbSet<PostalInfoLatestItem> PostalInfoLatestItems { get; set; }

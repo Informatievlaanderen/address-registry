@@ -6,14 +6,13 @@ namespace AddressRegistry.Projections.Legacy.AddressDetail
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
-    using NetTopologySuite.IO;
     using NodaTime;
 
     [ConnectedProjectionName("API endpoint detail adressen")]
     [ConnectedProjectionDescription("Projectie die de adressen data voor het adressen detail voorziet.")]
     public class AddressDetailProjections : ConnectedProjection<LegacyContext>
     {
-        public AddressDetailProjections(WKBReader wkbReader)
+        public AddressDetailProjections()
         {
             When<Envelope<AddressWasRegistered>>(async (context, message, ct) =>
             {

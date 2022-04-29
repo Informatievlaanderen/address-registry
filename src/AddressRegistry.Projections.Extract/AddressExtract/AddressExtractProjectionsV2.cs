@@ -16,7 +16,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
 
     [ConnectedProjectionName("Extract adressen")]
     [ConnectedProjectionDescription("Projectie die de adressen data voor het adressen extract voorziet.")]
-    public class AddressExtractV2Projection : ConnectedProjection<ExtractContext>
+    public class AddressExtractProjectionsV2 : ConnectedProjection<ExtractContext>
     {
         private const string StatusCurrent = "InGebruik";
         private const string StatusProposed = "Voorgesteld";
@@ -39,7 +39,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
         private readonly string GeomSpecBuildingUnit = "Gebouweenheid";
         private readonly Encoding _encoding;
 
-        public AddressExtractV2Projection(IOptions<ExtractConfig> extractConfig, Encoding encoding, WKBReader wkbReader)
+        public AddressExtractProjectionsV2(IOptions<ExtractConfig> extractConfig, Encoding encoding, WKBReader wkbReader)
         {
             _encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
 

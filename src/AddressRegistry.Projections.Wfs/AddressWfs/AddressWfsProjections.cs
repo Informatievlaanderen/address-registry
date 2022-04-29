@@ -49,7 +49,7 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
             });
         }
 
-        private string MapStatus(AddressStatus status)
+        public static string MapStatus(AddressStatus status)
         {
             switch (status)
             {
@@ -62,7 +62,7 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
             }
         }
 
-        private Point ParsePosition(string extendedWkbGeometry)
+        public Point ParsePosition(string extendedWkbGeometry)
             => (Point) _wkbReader.Read(extendedWkbGeometry.ToByteArray());
 
 
@@ -88,7 +88,7 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
             }
         }
 
-        private static string? ConvertGeometryMethodToString(GeometryMethod? method) =>
+        public static string? ConvertGeometryMethodToString(GeometryMethod? method) =>
             MapGeometryMethodToPositieGeometrieMethode(method)?
             .ToString()
             .Replace("Geinterpoleerd", "Geïnterpoleerd");
@@ -126,7 +126,7 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
             }
         }
 
-        private static string? ConvertGeometrySpecificationToString(GeometrySpecification? specification) =>
+        public static string? ConvertGeometrySpecificationToString(GeometrySpecification? specification) =>
             MapGeometrySpecificationToPositieSpecificatie(specification)?.ToString();
     }
 }

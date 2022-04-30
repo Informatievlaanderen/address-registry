@@ -25,7 +25,6 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
         private readonly ILogger _logger;
         private readonly ProcessedIdsTable _processedIdsTable;
         private readonly SqlStreamsTable _sqlStreamTable;
-        private readonly IAddresses _addressRepo;
         private List<StreetNameConsumerItem> _consumerItems;
         private readonly bool _skipIncomplete;
 
@@ -41,8 +40,6 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
             _sqlStreamTable = new SqlStreamsTable(connectionString);
 
             _skipIncomplete = Boolean.Parse(configuration["SkipIncomplete"]);
-
-            _addressRepo = lifetimeScope.Resolve<IAddresses>();
         }
 
         public async Task ProcessAsync(CancellationToken ct)
@@ -145,8 +142,11 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
                 return;
             }
 
+            await using var streamLifetimeScope = _lifetimeScope.BeginLifetimeScope();
+
+            var addressRepo = streamLifetimeScope.Resolve<IAddresses>();
             var addressId = new AddressId(Guid.Parse(aggregateId));
-            var addressAggregate = await _addressRepo.GetAsync(addressId, token);
+            var addressAggregate = await addressRepo.GetAsync(addressId, token);
 
             if (!addressAggregate.IsComplete)
             {
@@ -179,7 +179,7 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
             await _processedIdsTable.Add(internalId);
             processedItems.Add(internalId);
 
-            await using var backOfficeContext = _lifetimeScope.Resolve<BackOfficeContext>();
+            await using var backOfficeContext = streamLifetimeScope.Resolve<BackOfficeContext>();
             await backOfficeContext
                 .AddressPersistentIdStreetNamePersistentId
                 .AddAsync(

@@ -1,3 +1,10 @@
+## [3.6.1](https://github.com/informatievlaanderen/address-registry/compare/v3.6.0...v3.6.1) (2022-04-30)
+
+
+### Performance Improvements
+
+* resolve addresses per stream so it doesn't build up memory ([d8a61e7](https://github.com/informatievlaanderen/address-registry/commit/d8a61e7f5a41fd71c3919e0a492b00dd00582d98))
+
 # [3.6.0](https://github.com/informatievlaanderen/address-registry/compare/v3.5.0...v3.6.0) (2022-04-29)
 
 

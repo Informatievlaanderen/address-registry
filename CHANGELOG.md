@@ -1,3 +1,10 @@
+## [3.6.2](https://github.com/informatievlaanderen/address-registry/compare/v3.6.1...v3.6.2) (2022-05-02)
+
+
+### Bug Fixes
+
+* stuck migrator ([b0af684](https://github.com/informatievlaanderen/address-registry/commit/b0af6848c39f263a3ca2d0a1ab217437c21fef11))
+
 ## [3.6.1](https://github.com/informatievlaanderen/address-registry/compare/v3.6.0...v3.6.1) (2022-04-30)
 
 

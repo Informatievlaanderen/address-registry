@@ -73,10 +73,16 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
                 {
                     var processedPageItems = await ProcessStreams(pageOfStreams, ct);
 
-                    await _processedIdsTable.CompletePageAsync(pageOfStreams.Select(x => x.internalId).ToList());
-                    processedPageItems.ForEach(x => _processedIds.Add((x, true)));
-
-                    lastCursorPosition = _processedIds.Max(x => x.processedId);
+                    if (!processedPageItems.Any())
+                    {
+                        lastCursorPosition = pageOfStreams.Max(x => x.internalId);
+                    }
+                    else
+                    {
+                        await _processedIdsTable.CompletePageAsync(pageOfStreams.Select(x => x.internalId).ToList());
+                        processedPageItems.ForEach(x => _processedIds.Add((x, true)));
+                        lastCursorPosition = _processedIds.Max(x => x.processedId);
+                    }
 
                     pageOfStreams = (await _sqlStreamTable.ReadNextAddressStreamPage(lastCursorPosition)).ToList();
                 }
@@ -158,8 +164,6 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
 
                 if (_skipIncomplete)
                 {
-                    await _processedIdsTable.Add(internalId);
-                    processedItems.Add(internalId);
                     return;
                 }
 

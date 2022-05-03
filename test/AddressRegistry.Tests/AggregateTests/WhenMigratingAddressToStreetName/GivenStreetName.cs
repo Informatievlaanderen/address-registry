@@ -11,6 +11,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
     using StreetName;
     using StreetName.Commands;
     using StreetName.Events;
+    using StreetName.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -141,7 +142,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
                 .Given(_streamId,
                     Fixture.Create<MigratedStreetNameWasImported>())
                 .When(command)
-                .Throws(new InvalidOperationException()));
+                .Throws(new ParentAddressNotFoundException()));
         }
     }
 }

@@ -86,7 +86,7 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
 
                     pageOfStreams = (await _sqlStreamTable.ReadNextAddressStreamPage(lastCursorPosition)).ToList();
                 }
-                catch (OperationCanceledException e)
+                catch (OperationCanceledException)
                 {
                     _logger.LogWarning("ProcessStreams cancelled.");
                 }
@@ -95,7 +95,6 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
 
         private async Task<List<int>> ProcessStreams(IEnumerable<(int, string)> streamsToProcess, CancellationToken ct)
         {
-            var parentNotFoundCollection = new List<(int, string)>();
             var processedItems = new List<int>();
 
             foreach (var stream in streamsToProcess)
@@ -106,8 +105,14 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
                 }
                 catch (ParentAddressNotFoundException)
                 {
-                    _logger.LogWarning($"Parent not found for child '{stream.Item1}', adding to retry collection.");
-                    parentNotFoundCollection.Add(stream);
+                    _logger.LogWarning($"Parent not found for child '{stream.Item1}'.");
+
+                    if (_skipIncomplete)
+                    {
+                        continue;
+                    }
+
+                    throw;
                 }
                 catch (Exception ex)
                 {
@@ -116,17 +121,7 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
                     throw;
                 }
             }
-
-            if (parentNotFoundCollection.Any())
-            {
-                _logger.LogInformation($"Retrying orphans.");
-
-                foreach (var failedChildAddress in parentNotFoundCollection)
-                {
-                    await ProcessStream(failedChildAddress, processedItems, ct);
-                }
-            }
-
+            
             return processedItems;
         }
 

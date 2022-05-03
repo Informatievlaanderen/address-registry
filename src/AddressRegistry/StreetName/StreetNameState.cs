@@ -52,12 +52,8 @@ namespace AddressRegistry.StreetName
 
             if (@event.ParentPersistentLocalId.HasValue)
             {
-                if (!StreetNameAddresses.HasPersistentLocalId(new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value), out var parent))
-                {
-                    throw new ParentAddressNotFoundException();
-                }
-
-                parent!.AddChild(address);
+                var parent = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value));
+                parent.AddChild(address);
             }
 
             StreetNameAddresses.Add(address);

@@ -86,7 +86,7 @@ namespace AddressRegistry.StreetName
             AddressPersistentLocalId? parentPersistentLocalId = null;
             if (!EqualityComparer<Guid>.Default.Equals(parentAddressId ?? Guid.Empty, Guid.Empty))
             {
-                parentPersistentLocalId = StreetNameAddresses.GetByLegacyAddressId(parentAddressId ?? AddressId.Default).AddressPersistentLocalId;
+                parentPersistentLocalId = StreetNameAddresses.GetParentByLegacyAddressId(parentAddressId ?? AddressId.Default).AddressPersistentLocalId;
             }
 
             ApplyChange(new AddressWasMigratedToStreetName(

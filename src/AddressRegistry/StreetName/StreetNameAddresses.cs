@@ -2,6 +2,7 @@ namespace AddressRegistry.StreetName
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Exceptions;
     using Guid = System.Guid;
 
     public class StreetNameAddresses : List<StreetNameAddress>
@@ -22,7 +23,15 @@ namespace AddressRegistry.StreetName
         public StreetNameAddress GetByPersistentLocalId(AddressPersistentLocalId addressPersistentLocalId)
             => this.Single(x => x.AddressPersistentLocalId == addressPersistentLocalId);
 
-        public StreetNameAddress GetByLegacyAddressId(AddressId parentAddressId)
-            => this.Single(x => EqualityComparer<Guid>.Default.Equals(parentAddressId, x.LegacyAddressId ?? AddressId.Default));
+        public StreetNameAddress GetParentByLegacyAddressId(AddressId parentAddressId)
+        {
+            var result = this.SingleOrDefault(x => EqualityComparer<Guid>.Default.Equals(parentAddressId, x.LegacyAddressId ?? AddressId.Default));
+            if (result is null)
+            {
+                throw new ParentAddressNotFoundException();
+            }
+
+            return result;
+        }
     }
 }

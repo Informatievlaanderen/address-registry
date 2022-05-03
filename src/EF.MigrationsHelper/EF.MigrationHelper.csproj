@@ -31,9 +31,10 @@
     <ProjectReference Include="..\AddressRegistry.Projections.Wfs\AddressRegistry.Projections.Wfs.csproj" />
     <ProjectReference Include="..\AddressRegistry.Projections.Wms\AddressRegistry.Projections.Wms.csproj" />
     <ProjectReference Include="..\AddressRegistry.Projections.Syndication\AddressRegistry.Projections.Syndication.csproj" />
-	<ProjectReference Include="..\AddressRegistry.Consumer\AddressRegistry.Consumer.csproj" />
+	  <ProjectReference Include="..\AddressRegistry.Consumer\AddressRegistry.Consumer.csproj" />
     <ProjectReference Include="..\AddressRegistry.Api.CrabImport\AddressRegistry.Api.CrabImport.csproj" />
-	<ProjectReference Include="..\AddressRegistry.Api.Backoffice\AddressRegistry.Api.Backoffice.csproj" />
+	  <ProjectReference Include="..\AddressRegistry.Api.Backoffice\AddressRegistry.Api.Backoffice.csproj" />
+  	<ProjectReference Include="..\AddressRegistry.Consumer.Read.Municipality\AddressRegistry.Consumer.Read.Municipality.csproj" />
   </ItemGroup>
 
   <Import Project="..\..\.paket\Paket.Restore.targets" />

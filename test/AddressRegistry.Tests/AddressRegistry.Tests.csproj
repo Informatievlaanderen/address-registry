@@ -3,6 +3,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\AddressRegistry.Api.Legacy\AddressRegistry.Api.Legacy.csproj" />
+    <ProjectReference Include="..\..\src\AddressRegistry.Consumer.Read.Municipality\AddressRegistry.Consumer.Read.Municipality.csproj" />
     <ProjectReference Include="..\..\src\AddressRegistry.Consumer\AddressRegistry.Consumer.csproj" />
     <ProjectReference Include="..\..\src\AddressRegistry.Projections.Wfs\AddressRegistry.Projections.Wfs.csproj" />
     <ProjectReference Include="..\..\src\AddressRegistry.Projections.Wms\AddressRegistry.Projections.Wms.csproj" />

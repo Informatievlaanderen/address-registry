@@ -1,15 +1,15 @@
-namespace Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events
+namespace AddressRegistry.Tests
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Xunit;
-    using EventHandling;
-    using FluentAssertions;
     using System.Reflection;
     using System.Runtime.CompilerServices;
-    using AggregateSource;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Be.Vlaanderen.Basisregisters.EventHandling;
+    using FluentAssertions;
     using Newtonsoft.Json;
+    using Xunit;
 
     /// <summary>
     /// This class was generated using a nuget package called Aiv.Vbr.Testing.Infrastructure.Events.

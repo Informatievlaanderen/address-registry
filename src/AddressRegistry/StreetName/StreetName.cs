@@ -80,13 +80,19 @@ namespace AddressRegistry.StreetName
 
             if (StreetNameAddresses.HasPersistentLocalId(addressPersistentLocalId))
             {
-                throw new InvalidOperationException($"Cannot migrate address with id '{addressPersistentLocalId}' to streetname '{PersistentLocalId}'.");
+                throw new InvalidOperationException(
+                    $"Cannot migrate address with id '{addressPersistentLocalId}' to streetname '{PersistentLocalId}'.");
             }
 
             AddressPersistentLocalId? parentPersistentLocalId = null;
             if (!EqualityComparer<Guid>.Default.Equals(parentAddressId ?? Guid.Empty, Guid.Empty))
             {
+<<<<<<< HEAD
                 parentPersistentLocalId = StreetNameAddresses.GetParentByLegacyAddressId(parentAddressId ?? AddressId.Default).AddressPersistentLocalId;
+=======
+                parentPersistentLocalId = StreetNameAddresses
+                    .GetByLegacyAddressId(parentAddressId ?? AddressId.Default).AddressPersistentLocalId;
+>>>>>>> mob/main-consume-municipality
             }
 
             ApplyChange(new AddressWasMigratedToStreetName(

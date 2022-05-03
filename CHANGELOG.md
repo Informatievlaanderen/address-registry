@@ -1,3 +1,11 @@
+## [3.6.3](https://github.com/informatievlaanderen/address-registry/compare/v3.6.2...v3.6.3) (2022-05-03)
+
+
+### Bug Fixes
+
+* skip unexpected cases in staging ([f21957a](https://github.com/informatievlaanderen/address-registry/commit/f21957ae75eba6b8538b6580f7f810d6f97dcd1d))
+* test ([dd3e07f](https://github.com/informatievlaanderen/address-registry/commit/dd3e07fc40c52bc4b8def982bbeb1066a38ad371))
+
 ## [3.6.2](https://github.com/informatievlaanderen/address-registry/compare/v3.6.1...v3.6.2) (2022-05-02)
 
 

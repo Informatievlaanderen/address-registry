@@ -71,7 +71,13 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
 
                 try
                 {
-                    var processedPageItems = await ProcessStreams(pageOfStreams, ct);
+                    var l = pageOfStreams.Where(x => x.internalId == 4498265);
+                    var processedPageItems = await ProcessStreams(l, ct);
+
+                    if (processedPageItems == null)
+                    {
+
+                    }
 
                     if (!processedPageItems.Any())
                     {

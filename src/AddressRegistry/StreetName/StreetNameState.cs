@@ -48,33 +48,10 @@ namespace AddressRegistry.StreetName
 
         private void When(AddressWasMigratedToStreetName @event)
         {
-            try
-            {
-<<<<<<< HEAD
-                var parent = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value));
-                parent.AddChild(address);
-=======
-                var address = new StreetNameAddress(ApplyChange);
-                address.Route(@event);
-
-                if (@event.ParentPersistentLocalId.HasValue)
-                {
-                    if (!StreetNameAddresses.HasPersistentLocalId(
-                            new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value), out var parent))
-                    {
-                        throw new ParentAddressNotFoundException();
-                    }
-
-                    parent!.AddChild(address);
-                }
-
-                StreetNameAddresses.Add(address);
->>>>>>> mob/main-consume-municipality
-            }
-            catch (Exception e)
-            {
-
-            }
+            var address = new StreetNameAddress(ApplyChange);
+            address.Route(@event);
+            var parent = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value));
+            parent.AddChild(address);
         }
     }
 }

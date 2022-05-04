@@ -71,14 +71,8 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
 
                 try
                 {
-                    var l = pageOfStreams.Where(x => x.internalId == 4498265);
-                    var processedPageItems = await ProcessStreams(l, ct);
-
-                    if (processedPageItems == null)
-                    {
-
-                    }
-
+                    var processedPageItems = await ProcessStreams(pageOfStreams, ct);
+                    
                     if (!processedPageItems.Any())
                     {
                         lastCursorPosition = pageOfStreams.Max(x => x.internalId);

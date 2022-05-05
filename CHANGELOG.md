@@ -1,3 +1,15 @@
+# [3.7.0](https://github.com/informatievlaanderen/address-registry/compare/v3.6.3...v3.7.0) (2022-05-05)
+
+
+### Bug Fixes
+
+* fix test ([e178a6f](https://github.com/informatievlaanderen/address-registry/commit/e178a6f34b6d0acfdf0c37b10312c40077f329a8))
+
+
+### Features
+
+* add municipality consumer + tests for lastItem ([f982a82](https://github.com/informatievlaanderen/address-registry/commit/f982a82ceea98618c934081b07ac58c7fcd16a81))
+
 ## [3.6.3](https://github.com/informatievlaanderen/address-registry/compare/v3.6.2...v3.6.3) (2022-05-03)
 
 

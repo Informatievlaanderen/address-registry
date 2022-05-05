@@ -1,3 +1,10 @@
+## [3.7.1](https://github.com/informatievlaanderen/address-registry/compare/v3.7.0...v3.7.1) (2022-05-05)
+
+
+### Bug Fixes
+
+* make projector stay alive ([14a4a55](https://github.com/informatievlaanderen/address-registry/commit/14a4a555074e4c3c97b0ade0fb12fa1c8b70dd62))
+
 # [3.7.0](https://github.com/informatievlaanderen/address-registry/compare/v3.6.3...v3.7.0) (2022-05-05)
 
 

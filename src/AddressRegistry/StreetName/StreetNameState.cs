@@ -50,8 +50,14 @@ namespace AddressRegistry.StreetName
         {
             var address = new StreetNameAddress(ApplyChange);
             address.Route(@event);
-            var parent = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value));
-            parent.AddChild(address);
+
+            if (@event.ParentPersistentLocalId.HasValue)
+            {
+                var parent = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value));
+                parent.AddChild(address);
+            }
+
+            StreetNameAddresses.Add(address);
         }
     }
 }

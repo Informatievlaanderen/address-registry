@@ -105,10 +105,12 @@ namespace AddressRegistry.Consumer.Infrastructure
                             var consumer = new Consumer(actualContainer, loggerFactory, kafkaOptions, consumerOptions, kafkaOffset);
                             var consumerTask = consumer.Start(cancellationToken);
 
-                            var projectionsManager = actualContainer.Resolve<IConnectedProjectionsManager>();
-                            var projectionsTask = projectionsManager.Start(cancellationToken);
+                            var projectorRunner = new ProjectorRunner(actualContainer);
+                            var projectorTask = projectorRunner.Start(cancellationToken);
 
-                            await Task.WhenAll(projectionsTask, consumerTask);
+                            await Task.WhenAll(consumerTask, projectorTask);
+
+                            Log.Error("The consumer was terminated");
                         }
                         catch (Exception e)
                         {
@@ -150,6 +152,26 @@ namespace AddressRegistry.Consumer.Infrastructure
             builder.Populate(services);
 
             return new AutofacServiceProvider(builder.Build());
+        }
+
+        //Projector runner needs its own thread to stay alive
+        private class ProjectorRunner
+        {
+            private readonly IConnectedProjectionsManager _projectionsManager;
+
+            public ProjectorRunner(ILifetimeScope scope)
+            {
+                _projectionsManager = scope.Resolve<IConnectedProjectionsManager>();
+            }
+
+            public async Task Start(CancellationToken cancellationToken = default)
+            {
+                await _projectionsManager.Start(cancellationToken);
+                while (!cancellationToken.IsCancellationRequested)
+                {
+                    await Task.Delay(1000, cancellationToken);
+                }
+            }
         }
     }
 }

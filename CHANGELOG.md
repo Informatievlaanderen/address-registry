@@ -1,3 +1,10 @@
+## [3.8.1](https://github.com/informatievlaanderen/address-registry/compare/v3.8.0...v3.8.1) (2022-05-10)
+
+
+### Bug Fixes
+
+* contract of propose request ([fa8a91b](https://github.com/informatievlaanderen/address-registry/commit/fa8a91be115871d6dbed6a408fafde45a4c6e2f8))
+
 # [3.8.0](https://github.com/informatievlaanderen/address-registry/compare/v3.7.1...v3.8.0) (2022-05-10)
 
 

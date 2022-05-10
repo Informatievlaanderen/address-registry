@@ -5,6 +5,7 @@ namespace AddressRegistry.StreetName
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Events;
+    using Exceptions;
 
     public partial class StreetName : AggregateRootEntity
     {
@@ -106,6 +107,38 @@ namespace AddressRegistry.StreetName
                 parentPersistentLocalId));
         }
 
+        public void ProposeAddress(
+            StreetNamePersistentLocalId streetNamePersistentLocalId,
+            AddressPersistentLocalId addressPersistentLocalId,
+            PostalCode postalCode,
+            HouseNumber houseNumber,
+            BoxNumber? boxNumber)
+        {
+            var parent = StreetNameAddresses.FindActiveParentByHouseNumber(houseNumber);
+
+            var isChild = boxNumber is not null;
+            var isParent = !isChild;
+            var parentFound = parent is not null;
+            var parentNotFound = !parentFound;
+
+            if (isChild && parentNotFound)
+            {
+                throw new ParentAddressNotFoundException();
+            }
+            if(isParent && parentFound)
+            {
+                // parent address already exists for the house number
+            }
+
+            ApplyChange(new AddressWasProposedV2(
+                streetNamePersistentLocalId,
+                addressPersistentLocalId,
+                parent?.AddressPersistentLocalId,
+                postalCode,
+                houseNumber,
+                boxNumber));
+        }
+
         #region Metadata
 
         protected override void BeforeApplyChange(object @event)
@@ -115,5 +148,16 @@ namespace AddressRegistry.StreetName
         }
 
         #endregion
+
+        public string GetAddressHash(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            var address = StreetNameAddresses.FindByPersistentLocalId(addressPersistentLocalId);
+            if (address == null)
+            {
+                throw new AggregateSourceException($"Cannot find a address entity with id {addressPersistentLocalId}");
+            }
+
+            return address.LastEventHash;
+        }
     }
 }

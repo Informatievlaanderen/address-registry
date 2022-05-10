@@ -14,14 +14,14 @@ namespace AddressRegistry.Api.BackOffice
         public BackOfficeContext(DbContextOptions<BackOfficeContext> options)
             : base(options) { }
 
-        public DbSet<AddressPersistentIdStreetNamePersistentId> AddressPersistentIdStreetNamePersistentId { get; set; }
+        public DbSet<AddressPersistentIdStreetNamePersistentId> AddressPersistentIdStreetNamePersistentIds { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<AddressPersistentIdStreetNamePersistentId>()
-                .ToTable(nameof(AddressPersistentIdStreetNamePersistentId), Schema.BackOffice)
+                .ToTable(nameof(AddressPersistentIdStreetNamePersistentIds), Schema.BackOffice)
                 .HasKey(x => x.AddressPersistentLocalId)
                 .IsClustered();
 

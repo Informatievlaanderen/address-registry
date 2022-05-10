@@ -43,6 +43,23 @@ namespace AddressRegistry.StreetName
                         message.Command.IsRemoved,
                         message.Command.ParentAddressId);
                 });
+
+            For<ProposeAddress>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
+                .AddEventHash<ProposeAddress, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streetNameStreamId = new StreetNameStreamId(message.Command.StreetNamePersistentLocalId);
+                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+
+                    streetName.ProposeAddress(
+                        message.Command.StreetNamePersistentLocalId,
+                        message.Command.AddressPersistentLocalId,
+                        message.Command.PostalCode,
+                        message.Command.HouseNumber,
+                        message.Command.BoxNumber);
+                });
         }
     }
 }

@@ -35,7 +35,7 @@ namespace AddressRegistry.Api.BackOffice.Address.Requests
         /// Het busnummer.
         /// </summary>
         [DataMember(Name = "BusNummer", Order = 3)]
-        [JsonProperty(Required = Required.AllowNull)]
+        [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string? BoxNumber { get; set; }
 
         /// <summary>

@@ -1,3 +1,10 @@
+# [3.8.0](https://github.com/informatievlaanderen/address-registry/compare/v3.7.1...v3.8.0) (2022-05-10)
+
+
+### Features
+
+* add propose address ([132d5b6](https://github.com/informatievlaanderen/address-registry/commit/132d5b659369a2fdd2e0aa0ab3df22e1703c7c89))
+
 ## [3.7.1](https://github.com/informatievlaanderen/address-registry/compare/v3.7.0...v3.7.1) (2022-05-05)
 
 

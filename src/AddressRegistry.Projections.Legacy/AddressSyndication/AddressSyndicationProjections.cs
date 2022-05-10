@@ -287,7 +287,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     ct);
             });
 
-            When<Envelope<AddressWasProposed>>(async (context, message, ct) =>
+            When<Envelope<Address.Events.AddressWasProposed>>(async (context, message, ct) =>
             {
                 await context.CreateNewAddressSyndicationItem(
                     message.Message.AddressId,

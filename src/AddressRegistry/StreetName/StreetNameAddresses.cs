@@ -33,5 +33,15 @@ namespace AddressRegistry.StreetName
 
             return result;
         }
+
+        public StreetNameAddress? FindActiveParentByHouseNumber(HouseNumber houseNumber)
+        {
+            var result = this.SingleOrDefault(x =>
+                x.IsActive
+               && x.HouseNumber == houseNumber
+               && x.BoxNumber is null);
+
+            return result;
+        }
     }
 }

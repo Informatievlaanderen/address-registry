@@ -180,7 +180,7 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
 
             await using var backOfficeContext = streamLifetimeScope.Resolve<BackOfficeContext>();
             await backOfficeContext
-                .AddressPersistentIdStreetNamePersistentId
+                .AddressPersistentIdStreetNamePersistentIds
                 .AddAsync(
                     new AddressPersistentIdStreetNamePersistentId(addressAggregate.PersistentLocalId,
                         streetName.PersistentLocalId), token);

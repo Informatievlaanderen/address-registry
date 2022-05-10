@@ -1,8 +1,6 @@
 namespace AddressRegistry.StreetName
 {
-    using System;
     using Events;
-    using Exceptions;
 
     public partial class StreetName
     {
@@ -21,6 +19,7 @@ namespace AddressRegistry.StreetName
             Register<StreetNameWasApproved>(When);
             Register<StreetNameWasRemoved>(When);
             Register<AddressWasMigratedToStreetName>(When);
+            Register<AddressWasProposedV2>(When);
         }
 
         private void When(MigratedStreetNameWasImported @event)
@@ -48,7 +47,21 @@ namespace AddressRegistry.StreetName
 
         private void When(AddressWasMigratedToStreetName @event)
         {
-            var address = new StreetNameAddress(ApplyChange);
+            var address = new StreetNameAddress(applier: ApplyChange);
+            address.Route(@event);
+
+            if (@event.ParentPersistentLocalId.HasValue)
+            {
+                var parent = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value));
+                parent.AddChild(address);
+            }
+
+            StreetNameAddresses.Add(address);
+        }
+
+        private void When(AddressWasProposedV2 @event)
+        {
+            var address = new StreetNameAddress(applier: ApplyChange);
             address.Route(@event);
 
             if (@event.ParentPersistentLocalId.HasValue)

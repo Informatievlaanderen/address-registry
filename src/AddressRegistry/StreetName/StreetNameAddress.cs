@@ -3,13 +3,14 @@ namespace AddressRegistry.StreetName
     using System;
     using System.Collections.Generic;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Events;
     using Exceptions;
 
     public class StreetNameAddress : Entity
     {
         private readonly StreetNameAddresses _children = new StreetNameAddresses();
-
+        private IHaveHash _lastEvent;
         public AddressPersistentLocalId AddressPersistentLocalId { get; private set; }
         public AddressStatus Status { get; private set; }
         public HouseNumber HouseNumber { get; private set; }
@@ -24,9 +25,14 @@ namespace AddressRegistry.StreetName
 
         public AddressId? LegacyAddressId { get; private set; }
 
+        public string LastEventHash => _lastEvent.GetHash();
+
+        public bool IsActive => Status == AddressStatus.Proposed || Status == AddressStatus.Current;
+
         public StreetNameAddress(Action<object> applier) : base(applier)
         {
             Register<AddressWasMigratedToStreetName>(When);
+            Register<AddressWasProposedV2>(When);
         }
 
         public StreetNameAddress AddChild(StreetNameAddress streetNameAddress)
@@ -76,6 +82,18 @@ namespace AddressRegistry.StreetName
             IsRemoved = @event.IsRemoved;
 
             LegacyAddressId = new AddressId(@event.AddressId);
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressWasProposedV2 @event)
+        {
+            AddressPersistentLocalId = new AddressPersistentLocalId(@event.AddressPersistentLocalId);
+            HouseNumber = new HouseNumber(@event.HouseNumber);
+            Status = AddressStatus.Proposed;
+            BoxNumber = string.IsNullOrEmpty(@event.BoxNumber) ? null : new BoxNumber(@event.BoxNumber);
+
+            _lastEvent = @event;
         }
     }
 }

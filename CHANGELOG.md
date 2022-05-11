@@ -1,3 +1,11 @@
+## [3.8.2](https://github.com/informatievlaanderen/address-registry/compare/v3.8.1...v3.8.2) (2022-05-11)
+
+
+### Bug Fixes
+
+* add logging ([16025ff](https://github.com/informatievlaanderen/address-registry/commit/16025ffe42bc043d39f061709b3c67101937ad56))
+* build logging ([00d393b](https://github.com/informatievlaanderen/address-registry/commit/00d393bb80b436269eedac4cf9b80ec0056d2f06))
+
 ## [3.8.1](https://github.com/informatievlaanderen/address-registry/compare/v3.8.0...v3.8.1) (2022-05-10)
 
 

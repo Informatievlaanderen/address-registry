@@ -43,6 +43,7 @@ namespace AddressRegistry.Consumer
                 _consumerOptions.Topic,
                 async message =>
                 {
+                    _loggerFactory.CreateLogger<Consumer>().LogInformation("Handling next message");
                     await projector.ProjectAsync(commandHandler, message, cancellationToken);
                 },
                 _offset,

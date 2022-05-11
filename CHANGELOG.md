@@ -1,3 +1,10 @@
+## [3.8.4](https://github.com/informatievlaanderen/address-registry/compare/v3.8.3...v3.8.4) (2022-05-11)
+
+
+### Bug Fixes
+
+* copy consumer and add logging ([9dde6cc](https://github.com/informatievlaanderen/address-registry/commit/9dde6cc43c3fbe71ce694b71dcf61ba621bd7e38))
+
 ## [3.8.3](https://github.com/informatievlaanderen/address-registry/compare/v3.8.2...v3.8.3) (2022-05-11)
 
 

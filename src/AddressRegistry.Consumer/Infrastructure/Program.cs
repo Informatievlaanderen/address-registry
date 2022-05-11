@@ -158,19 +158,26 @@ namespace AddressRegistry.Consumer.Infrastructure
         private class ProjectorRunner
         {
             private readonly IConnectedProjectionsManager _projectionsManager;
+            private readonly ILogger _logger;
 
             public ProjectorRunner(ILifetimeScope scope)
             {
                 _projectionsManager = scope.Resolve<IConnectedProjectionsManager>();
+                _logger = scope.Resolve<ILoggerFactory>().CreateLogger<ProjectorRunner>();
             }
 
             public async Task Start(CancellationToken cancellationToken = default)
             {
+                _logger.LogInformation("Projector starting");
                 await _projectionsManager.Start(cancellationToken);
+                _logger.LogInformation("Projector started");
+
                 while (!cancellationToken.IsCancellationRequested)
                 {
                     await Task.Delay(1000, cancellationToken);
                 }
+
+                _logger.LogInformation("Projector cancelled");
             }
         }
     }

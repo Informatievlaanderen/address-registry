@@ -41,7 +41,7 @@ namespace AddressRegistry.Consumer.Infrastructure.Modules
                     _loggerFactory)
 
                 .RegisterProjections<StreetNameConsumerProjection, ConsumerContext>(
-                    context => new StreetNameConsumerProjection(),
+                    context => new StreetNameConsumerProjection(context.Resolve<ILoggerFactory>().CreateLogger<StreetNameConsumerProjection>()),
                     ConnectedProjectionSettings.Default);
 
             builder.Populate(_services);

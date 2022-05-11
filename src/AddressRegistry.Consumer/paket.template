@@ -16,6 +16,7 @@ description Address Registry Consumer.
 
 dependencies
   framework: net6.0
+    Be.Vlaanderen.Basisregisters.Api >= LOCKEDVERSION
     Be.Vlaanderen.Basisregisters.Aws.DistributedMutex >= LOCKEDVERSION
     Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac >= LOCKEDVERSION
     Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql >= LOCKEDVERSION

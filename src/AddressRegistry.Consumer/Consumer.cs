@@ -31,13 +31,13 @@ namespace AddressRegistry.Consumer
             _offset = offset;
         }
 
-        public async Task Start(CancellationToken cancellationToken = default)
+        public Task<Result<KafkaJsonMessage>> Start(CancellationToken cancellationToken = default)
         {
             var commandHandler = new CommandHandler(_container, _loggerFactory);
             var projector = new ConnectedProjector<CommandHandler>(Resolve.WhenEqualToHandlerMessageType(new StreetNameKafkaProjection().Handlers));
 
             var consumerGroupId = $"{nameof(AddressRegistry)}.{nameof(Consumer)}.{_consumerOptions.Topic}{_consumerOptions.ConsumerGroupSuffix}";
-            var result = await KafkaConsumer.Consume(
+            return KafkaConsumer.Consume(
                 _options,
                 consumerGroupId,
                 _consumerOptions.Topic,
@@ -49,11 +49,11 @@ namespace AddressRegistry.Consumer
                 _offset,
                 cancellationToken);
 
-            if (!result.IsSuccess)
-            {
-                var logger = _loggerFactory.CreateLogger<Consumer>();
-                logger.LogCritical($"Consumer group {consumerGroupId} could not consume from topic {_consumerOptions.Topic}");
-            }
+            //if (!result.IsSuccess)
+            //{
+            //    var logger = _loggerFactory.CreateLogger<Consumer>();
+            //    logger.LogCritical($"Consumer group {consumerGroupId} could not consume from topic {_consumerOptions.Topic}");
+            //}
         }
     }
 }

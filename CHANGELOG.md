@@ -1,3 +1,10 @@
+## [3.8.3](https://github.com/informatievlaanderen/address-registry/compare/v3.8.2...v3.8.3) (2022-05-11)
+
+
+### Bug Fixes
+
+* try different approach for consumer ([3a64fbd](https://github.com/informatievlaanderen/address-registry/commit/3a64fbdea9da03dbdb57646b6a1c3868d46bd657))
+
 ## [3.8.2](https://github.com/informatievlaanderen/address-registry/compare/v3.8.1...v3.8.2) (2022-05-11)
 
 

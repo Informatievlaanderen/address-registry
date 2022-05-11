@@ -44,7 +44,7 @@ namespace AddressRegistry.Consumer.Infrastructure
                     AppDomain.CurrentDomain.FriendlyName);
 
             AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) =>
-                Log.Fatal((Exception) eventArgs.ExceptionObject, "Encountered a fatal exception, exiting program.");
+                Log.Fatal((Exception)eventArgs.ExceptionObject, "Encountered a fatal exception, exiting program.");
 
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -65,15 +65,18 @@ namespace AddressRegistry.Consumer.Infrastructure
                     {
                         try
                         {
-                            async Task<Offset?> GetOffset(IServiceProvider serviceProvider, ILogger logger, ConsumerOptions consumerOptions)
+                            async Task<Offset?> GetOffset(IServiceProvider serviceProvider, ILogger logger,
+                                ConsumerOptions consumerOptions)
                             {
                                 if (long.TryParse(configuration["StreetNameTopicOffset"], out var offset))
                                 {
                                     var streamStore = serviceProvider.GetRequiredService<IStreamStore>();
-                                    var lastMessagePage = await streamStore.ReadAllBackwards(StreamVersion.End, 1, false, cancellationToken);
+                                    var lastMessagePage = await streamStore.ReadAllBackwards(StreamVersion.End, 1,
+                                        false, cancellationToken);
 
                                     var lastMessage = lastMessagePage.Messages.FirstOrDefault();
-                                    if (lastMessagePage.Messages.Any() && lastMessage.StreamId.StartsWith("streetname-", StringComparison.InvariantCultureIgnoreCase))
+                                    if (lastMessagePage.Messages.Any() && lastMessage.StreamId.StartsWith("streetname-",
+                                            StringComparison.InvariantCultureIgnoreCase))
                                     {
                                         throw new InvalidOperationException(
                                             "Cannot start migration from offset, because migration is already running. Remove offset to continue.");
@@ -89,26 +92,43 @@ namespace AddressRegistry.Consumer.Infrastructure
 
                             var loggerFactory = container.GetRequiredService<ILoggerFactory>();
 
-                            await MigrationsHelper.RunAsync(configuration.GetConnectionString("ConsumerAdmin"), loggerFactory, cancellationToken);
+                            await MigrationsHelper.RunAsync(configuration.GetConnectionString("ConsumerAdmin"),
+                                loggerFactory, cancellationToken);
 
                             var bootstrapServers = configuration["Kafka:BootstrapServers"];
-                            var kafkaOptions = new KafkaOptions(bootstrapServers, configuration["Kafka:SaslUserName"], configuration["Kafka:SaslPassword"], EventsJsonSerializerSettingsProvider.CreateSerializerSettings());
+                            var kafkaOptions = new KafkaOptions(bootstrapServers, configuration["Kafka:SaslUserName"],
+                                configuration["Kafka:SaslPassword"],
+                                EventsJsonSerializerSettingsProvider.CreateSerializerSettings());
 
-                            var topic = $"{configuration["StreetNameTopic"]}" ?? throw new ArgumentException("Configuration has no MunicipalityTopic.");
+                            var topic = $"{configuration["StreetNameTopic"]}" ??
+                                        throw new ArgumentException("Configuration has no MunicipalityTopic.");
                             var consumerGroupSuffix = configuration["StreetNameConsumerGroupSuffix"];
                             var consumerOptions = new ConsumerOptions(topic, consumerGroupSuffix);
 
                             var actualContainer = container.GetRequiredService<ILifetimeScope>();
 
-                            var kafkaOffset = await GetOffset(container, loggerFactory.CreateLogger<Program>(), consumerOptions);
+                            var kafkaOffset = await GetOffset(container, loggerFactory.CreateLogger<Program>(),
+                                consumerOptions);
 
-                            var consumer = new Consumer(actualContainer, loggerFactory, kafkaOptions, consumerOptions, kafkaOffset);
+                            var consumer = new Consumer(actualContainer, loggerFactory, kafkaOptions, consumerOptions,
+                                kafkaOffset);
                             var consumerTask = consumer.Start(cancellationToken);
 
-                            var projectorRunner = new ProjectorRunner(actualContainer);
-                            var projectorTask = projectorRunner.Start(cancellationToken);
+                            Log.Information("The kafka consumer was started");
 
-                            await Task.WhenAll(consumerTask, projectorTask);
+                            var projectionManager = actualContainer.Resolve<IConnectedProjectionsManager>();
+                            var projectorTask = projectionManager.Start(cancellationToken);
+                            //var projectorRunner = new ProjectorRunner(actualContainer);
+                            //var projectorTask = projectorRunner.Start(cancellationToken);
+
+                            Log.Information("The projection consumer was started");
+
+                            await Task.WhenAny(consumerTask, projectorTask);
+
+                            cancellationTokenSource.Cancel();
+
+                            Log.Error($"Consumer task stopped with status: {consumerTask.Status}");
+                            Log.Error($"Projector task stopped with status: {projectorTask.Status}");
 
                             Log.Error("The consumer was terminated");
                         }
@@ -154,31 +174,31 @@ namespace AddressRegistry.Consumer.Infrastructure
             return new AutofacServiceProvider(builder.Build());
         }
 
-        //Projector runner needs its own thread to stay alive
-        private class ProjectorRunner
-        {
-            private readonly IConnectedProjectionsManager _projectionsManager;
-            private readonly ILogger _logger;
+        ////Projector runner needs its own thread to stay alive
+        //private class ProjectorRunner
+        //{
+        //    private readonly IConnectedProjectionsManager _projectionsManager;
+        //    private readonly ILogger _logger;
 
-            public ProjectorRunner(ILifetimeScope scope)
-            {
-                _projectionsManager = scope.Resolve<IConnectedProjectionsManager>();
-                _logger = scope.Resolve<ILoggerFactory>().CreateLogger<ProjectorRunner>();
-            }
+        //    public ProjectorRunner(ILifetimeScope scope)
+        //    {
+        //        _projectionsManager = scope.Resolve<IConnectedProjectionsManager>();
+        //        _logger = scope.Resolve<ILoggerFactory>().CreateLogger<ProjectorRunner>();
+        //    }
 
-            public async Task Start(CancellationToken cancellationToken = default)
-            {
-                _logger.LogInformation("Projector starting");
-                await _projectionsManager.Start(cancellationToken);
-                _logger.LogInformation("Projector started");
+        //    public async Task Start(CancellationToken cancellationToken = default)
+        //    {
+        //        _logger.LogInformation("Projector starting");
+        //        return _projectionsManager.Start(cancellationToken);
+        //        _logger.LogInformation("Projector started");
 
-                while (!cancellationToken.IsCancellationRequested)
-                {
-                    await Task.Delay(1000, cancellationToken);
-                }
+        //        while (!cancellationToken.IsCancellationRequested)
+        //        {
+        //            await Task.Delay(1000, cancellationToken);
+        //        }
 
-                _logger.LogInformation("Projector cancelled");
-            }
-        }
+        //        _logger.LogInformation("Projector cancelled");
+        //    }
+        //}
     }
 }

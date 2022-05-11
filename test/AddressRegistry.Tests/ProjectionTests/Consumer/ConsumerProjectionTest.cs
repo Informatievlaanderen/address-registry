@@ -7,7 +7,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
     using Microsoft.EntityFrameworkCore;
 
     public abstract class ConsumerProjectionTest<TProjection>
-        where TProjection : ConnectedProjection<ConsumerContext>, new()
+        where TProjection : ConnectedProjection<ConsumerContext>
     {
         protected ConnectedProjectionTest<ConsumerContext, TProjection> Sut { get; }
 

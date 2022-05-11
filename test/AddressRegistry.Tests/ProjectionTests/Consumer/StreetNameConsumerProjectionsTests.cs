@@ -5,15 +5,18 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
     using AutoFixture;
     using FluentAssertions;
     using global::AutoFixture;
+    using Microsoft.Extensions.Logging;
     using StreetName.Events;
     using Xunit;
 
     public class StreetNameConsumerProjectionsTests : ConsumerProjectionTest<StreetNameConsumerProjection>
     {
         private readonly Fixture _fixture;
+        private readonly ILogger _logger;
 
         public StreetNameConsumerProjectionsTests()
         {
+            _logger = new LoggerFactory().CreateLogger(typeof(StreetNameConsumerProjectionsTests));
             _fixture = new Fixture();
             _fixture.Customize(new InfrastructureCustomization());
             _fixture.Customize(new WithFixedStreetNameId());
@@ -37,6 +40,6 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
         }
 
         protected override StreetNameConsumerProjection CreateProjection()
-            => new StreetNameConsumerProjection();
+            => new StreetNameConsumerProjection(_logger);
     }
 }

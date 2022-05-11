@@ -1,3 +1,10 @@
+## [3.8.5](https://github.com/informatievlaanderen/address-registry/compare/v3.8.4...v3.8.5) (2022-05-11)
+
+
+### Bug Fixes
+
+* consumer add projector in own runner ([9cb84f3](https://github.com/informatievlaanderen/address-registry/commit/9cb84f32b5d9f3ba8aa70dd7b626035030ea764e))
+
 ## [3.8.4](https://github.com/informatievlaanderen/address-registry/compare/v3.8.3...v3.8.4) (2022-05-11)
 
 

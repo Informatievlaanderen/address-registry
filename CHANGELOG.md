@@ -1,3 +1,10 @@
+## [3.8.9](https://github.com/informatievlaanderen/address-registry/compare/v3.8.8...v3.8.9) (2022-05-12)
+
+
+### Bug Fixes
+
+* added delay for projector to start up ([f0f0369](https://github.com/informatievlaanderen/address-registry/commit/f0f0369cdf7cf50537f53a897e0d2968802cfeaf))
+
 ## [3.8.8](https://github.com/informatievlaanderen/address-registry/compare/v3.8.7...v3.8.8) (2022-05-12)
 
 

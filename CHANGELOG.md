@@ -1,3 +1,10 @@
+## [3.8.8](https://github.com/informatievlaanderen/address-registry/compare/v3.8.7...v3.8.8) (2022-05-12)
+
+
+### Bug Fixes
+
+* add delay back into consumer ([2e69c22](https://github.com/informatievlaanderen/address-registry/commit/2e69c226487d364d4d46cb8366c94dee815d871a))
+
 ## [3.8.7](https://github.com/informatievlaanderen/address-registry/compare/v3.8.6...v3.8.7) (2022-05-12)
 
 

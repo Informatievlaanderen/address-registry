@@ -1,3 +1,10 @@
+## [3.8.10](https://github.com/informatievlaanderen/address-registry/compare/v3.8.9...v3.8.10) (2022-05-12)
+
+
+### Bug Fixes
+
+* try using ([be3f1b8](https://github.com/informatievlaanderen/address-registry/commit/be3f1b89bce748c9995f2ea0d16605e29d4b0072))
+
 ## [3.8.9](https://github.com/informatievlaanderen/address-registry/compare/v3.8.8...v3.8.9) (2022-05-12)
 
 

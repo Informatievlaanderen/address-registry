@@ -189,7 +189,8 @@ namespace AddressRegistry.Consumer.Infrastructure
                 await _projectionsManager.Start(cancellationToken);
                 _logger.LogInformation("Projector started");
 
-                
+                await Task.Delay(10000, cancellationToken); //waiting for projections to get started
+
                 while (!cancellationToken.IsCancellationRequested
                        && _projectionsManager
                            .GetRegisteredProjections()
@@ -198,7 +199,14 @@ namespace AddressRegistry.Consumer.Infrastructure
                     await Task.Delay(1000, cancellationToken);
                 }
 
-                _logger.LogInformation("Projector cancelled/stopped");
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    _logger.LogInformation("Projector cancelled");
+                }
+                else
+                {
+                    _logger.LogCritical("Projections went in a 'stopped' stated");
+                }
             }
         }
     }

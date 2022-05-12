@@ -1,3 +1,10 @@
+## [3.8.7](https://github.com/informatievlaanderen/address-registry/compare/v3.8.6...v3.8.7) (2022-05-12)
+
+
+### Bug Fixes
+
+* gawr-3040 add tag to migrate event ([ac78f87](https://github.com/informatievlaanderen/address-registry/commit/ac78f87258bfa0bc42adef90f3b494b519f643e2))
+
 ## [3.8.6](https://github.com/informatievlaanderen/address-registry/compare/v3.8.5...v3.8.6) (2022-05-12)
 
 

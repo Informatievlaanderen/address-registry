@@ -107,6 +107,7 @@ namespace AddressRegistry.Consumer
                     var consumeResult = consumer.Consume(TimeSpan.FromSeconds(3));
                     if (consumeResult == null) //if no message is found, returns null
                     {
+                        await Task.Delay(1000, cancellationToken);
                         continue;
                     }
 

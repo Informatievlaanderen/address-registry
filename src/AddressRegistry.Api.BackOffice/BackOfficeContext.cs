@@ -21,7 +21,7 @@ namespace AddressRegistry.Api.BackOffice
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<AddressPersistentIdStreetNamePersistentId>()
-                .ToTable(nameof(AddressPersistentIdStreetNamePersistentIds), Schema.BackOffice)
+                .ToTable("AddressPersistentIdStreetNamePersistentId", Schema.BackOffice)
                 .HasKey(x => x.AddressPersistentLocalId)
                 .IsClustered();
 

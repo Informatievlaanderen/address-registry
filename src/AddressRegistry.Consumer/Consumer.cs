@@ -41,7 +41,6 @@ namespace AddressRegistry.Consumer
 
         public Task<Result<KafkaJsonMessage>> Start(CancellationToken cancellationToken = default)
         {
-            Task.Yield().GetAwaiter().GetResult();
             var commandHandler = new CommandHandler(_container, _loggerFactory);
             var projector = new ConnectedProjector<CommandHandler>(Resolve.WhenEqualToHandlerMessageType(new StreetNameKafkaProjection().Handlers));
 
@@ -111,7 +110,7 @@ namespace AddressRegistry.Consumer
                     var consumeResult = consumer.Consume(TimeSpan.FromSeconds(3));
                     if (consumeResult == null) //if no message is found, returns null
                     {
-                        //await Task.Delay(1000, cancellationToken);
+                        await Task.Delay(500, cancellationToken);
                         continue;
                     }
 

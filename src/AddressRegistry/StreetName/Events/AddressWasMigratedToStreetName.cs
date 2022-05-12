@@ -10,7 +10,7 @@ namespace AddressRegistry.StreetName.Events
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using Newtonsoft.Json;
 
-    [EventTags(Tag.StreetName)]
+    [EventTags(EventTag.For.Sync)]
     [EventName(EventName)]
     [EventDescription("Het adres werd gemigreerd naar straatnaam.")]
     public class AddressWasMigratedToStreetName : IStreetNameEvent

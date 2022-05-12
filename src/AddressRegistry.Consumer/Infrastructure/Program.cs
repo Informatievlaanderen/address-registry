@@ -110,14 +110,11 @@ namespace AddressRegistry.Consumer.Infrastructure
                             var kafkaOffset = await GetOffset(container, loggerFactory.CreateLogger<Program>(),
                                 consumerOptions);
 
-                            var consumer = new Consumer(actualContainer, loggerFactory, kafkaOptions, consumerOptions,
-                                kafkaOffset);
+                            var consumer = new Consumer(actualContainer, loggerFactory, kafkaOptions, consumerOptions, kafkaOffset);
                             var consumerTask = consumer.Start(cancellationToken);
 
                             Log.Information("The kafka consumer was started");
-
-                            //var projectionManager = actualContainer.Resolve<IConnectedProjectionsManager>();
-                            //var projectorTask = projectionManager.Start(cancellationToken);
+                            
                             var projectorRunner = new ProjectorRunner(actualContainer);
                             var projectorTask = projectorRunner.Start(cancellationToken);
 
@@ -192,12 +189,16 @@ namespace AddressRegistry.Consumer.Infrastructure
                 await _projectionsManager.Start(cancellationToken);
                 _logger.LogInformation("Projector started");
 
-                while (!cancellationToken.IsCancellationRequested)
+                
+                while (!cancellationToken.IsCancellationRequested
+                       && _projectionsManager
+                           .GetRegisteredProjections()
+                           .All(x => x.State != ConnectedProjectionState.Stopped))
                 {
                     await Task.Delay(1000, cancellationToken);
                 }
 
-                _logger.LogInformation("Projector cancelled");
+                _logger.LogInformation("Projector cancelled/stopped");
             }
         }
     }

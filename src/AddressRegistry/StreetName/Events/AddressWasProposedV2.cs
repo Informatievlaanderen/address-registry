@@ -6,7 +6,7 @@ namespace AddressRegistry.StreetName.Events
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Newtonsoft.Json;
 
-    [EventTags(Tag.StreetName, Tag.Edit)]
+    [EventTags(EventTag.For.Sync, Tag.Edit)]
     [EventName(EventName)]
     [EventDescription("De adres werd voorgesteld.")]
     public class AddressWasProposedV2 : IStreetNameEvent

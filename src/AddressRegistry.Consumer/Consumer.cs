@@ -21,6 +21,7 @@ namespace AddressRegistry.Consumer
         private readonly KafkaOptions _options;
         private readonly ConsumerOptions _consumerOptions;
         private readonly Offset? _offset;
+        private readonly ILogger<Consumer> _logger;
 
         public Consumer(
             ILifetimeScope container,
@@ -34,10 +35,13 @@ namespace AddressRegistry.Consumer
             _options = options;
             _consumerOptions = consumerOptions;
             _offset = offset;
+
+            _logger = _loggerFactory.CreateLogger<Consumer>();
         }
 
         public Task<Result<KafkaJsonMessage>> Start(CancellationToken cancellationToken = default)
         {
+            Task.Yield().GetAwaiter().GetResult();
             var commandHandler = new CommandHandler(_container, _loggerFactory);
             var projector = new ConnectedProjector<CommandHandler>(Resolve.WhenEqualToHandlerMessageType(new StreetNameKafkaProjection().Handlers));
 
@@ -48,7 +52,7 @@ namespace AddressRegistry.Consumer
                 _consumerOptions.Topic,
                 async message =>
                 {
-                    _loggerFactory.CreateLogger<Consumer>().LogInformation("Handling next message");
+                    _logger.LogInformation("Handling next message");
                     await projector.ProjectAsync(commandHandler, message, cancellationToken);
                 },
                 _offset,
@@ -107,7 +111,7 @@ namespace AddressRegistry.Consumer
                     var consumeResult = consumer.Consume(TimeSpan.FromSeconds(3));
                     if (consumeResult == null) //if no message is found, returns null
                     {
-                        await Task.Delay(1000, cancellationToken);
+                        //await Task.Delay(1000, cancellationToken);
                         continue;
                     }
 

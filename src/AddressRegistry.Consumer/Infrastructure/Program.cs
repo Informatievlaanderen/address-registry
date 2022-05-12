@@ -115,7 +115,7 @@ namespace AddressRegistry.Consumer.Infrastructure
 
                             Log.Information("The kafka consumer was started");
                             
-                            var projectorRunner = new ProjectorRunner(actualContainer);
+                            var projectorRunner = new ProjectorRunner(actualContainer.Resolve<IConnectedProjectionsManager>(), actualContainer.Resolve<ILoggerFactory>());
                             var projectorTask = projectorRunner.Start(cancellationToken);
 
                             Log.Information("The projection consumer was started");
@@ -169,45 +169,6 @@ namespace AddressRegistry.Consumer.Infrastructure
             builder.Populate(services);
 
             return new AutofacServiceProvider(builder.Build());
-        }
-
-        //Projector runner needs its own thread to stay alive
-        private class ProjectorRunner
-        {
-            private readonly IConnectedProjectionsManager _projectionsManager;
-            private readonly ILogger _logger;
-
-            public ProjectorRunner(ILifetimeScope scope)
-            {
-                _projectionsManager = scope.Resolve<IConnectedProjectionsManager>();
-                _logger = scope.Resolve<ILoggerFactory>().CreateLogger<ProjectorRunner>();
-            }
-
-            public async Task Start(CancellationToken cancellationToken = default)
-            {
-                _logger.LogInformation("Projector starting");
-                await _projectionsManager.Start(cancellationToken);
-                _logger.LogInformation("Projector started");
-
-                await Task.Delay(10000, cancellationToken); //waiting for projections to get started
-
-                while (!cancellationToken.IsCancellationRequested
-                       && _projectionsManager
-                           .GetRegisteredProjections()
-                           .All(x => x.State != ConnectedProjectionState.Stopped))
-                {
-                    await Task.Delay(1000, cancellationToken);
-                }
-
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    _logger.LogInformation("Projector cancelled");
-                }
-                else
-                {
-                    _logger.LogCritical("Projections went in a 'stopped' stated");
-                }
-            }
         }
     }
 }

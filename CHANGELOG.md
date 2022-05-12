@@ -1,3 +1,10 @@
+## [3.8.6](https://github.com/informatievlaanderen/address-registry/compare/v3.8.5...v3.8.6) (2022-05-12)
+
+
+### Bug Fixes
+
+* remove nameof > refactor broke it ([5dab0ca](https://github.com/informatievlaanderen/address-registry/commit/5dab0ca3f15b5218a168fbde1dafb28fb45d3879))
+
 ## [3.8.5](https://github.com/informatievlaanderen/address-registry/compare/v3.8.4...v3.8.5) (2022-05-11)
 
 

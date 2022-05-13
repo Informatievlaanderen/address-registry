@@ -65,8 +65,7 @@ namespace AddressRegistry.Consumer.Infrastructure
                     {
                         try
                         {
-                            async Task<Offset?> GetOffset(IServiceProvider serviceProvider, ILogger logger,
-                                ConsumerOptions consumerOptions)
+                            async Task<Offset?> GetOffset(IServiceProvider serviceProvider, ILogger logger, string topic)
                             {
                                 if (long.TryParse(configuration["StreetNameTopicOffset"], out var offset))
                                 {
@@ -82,11 +81,11 @@ namespace AddressRegistry.Consumer.Infrastructure
                                             "Cannot start migration from offset, because migration is already running. Remove offset to continue.");
                                     }
 
-                                    logger.LogInformation($"Starting {consumerOptions.Topic} from offset {offset}.");
+                                    logger.LogInformation($"Starting {topic} from offset {offset}.");
                                     return new Offset(offset);
                                 }
 
-                                logger.LogInformation($"Continuing {consumerOptions.Topic} from last offset.");
+                                logger.LogInformation($"Continuing {topic} from last offset.");
                                 return null;
                             }
 
@@ -103,14 +102,12 @@ namespace AddressRegistry.Consumer.Infrastructure
                             var topic = $"{configuration["StreetNameTopic"]}" ??
                                         throw new ArgumentException("Configuration has no MunicipalityTopic.");
                             var consumerGroupSuffix = configuration["StreetNameConsumerGroupSuffix"];
-                            var consumerOptions = new ConsumerOptions(topic, consumerGroupSuffix);
 
                             var actualContainer = container.GetRequiredService<ILifetimeScope>();
 
-                            var kafkaOffset = await GetOffset(container, loggerFactory.CreateLogger<Program>(),
-                                consumerOptions);
+                            var kafkaOffset = await GetOffset(container, loggerFactory.CreateLogger<Program>(), topic);
 
-                            var consumer = new Consumer(actualContainer, loggerFactory, kafkaOptions, consumerOptions, kafkaOffset);
+                            var consumer = new Consumer(actualContainer, loggerFactory, kafkaOptions, topic, consumerGroupSuffix, kafkaOffset);
                             var consumerTask = consumer.Start(cancellationToken);
 
                             Log.Information("The kafka consumer was started");

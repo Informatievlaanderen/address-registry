@@ -1,3 +1,10 @@
+## [3.8.12](https://github.com/informatievlaanderen/address-registry/compare/v3.8.11...v3.8.12) (2022-05-13)
+
+
+### Bug Fixes
+
+* upgrade kafka consumer ([146435c](https://github.com/informatievlaanderen/address-registry/commit/146435c70f18d7f7ff6bc3d891d955558f07b219))
+
 ## [3.8.11](https://github.com/informatievlaanderen/address-registry/compare/v3.8.10...v3.8.11) (2022-05-12)
 
 

@@ -11,7 +11,7 @@ namespace AddressRegistry.StreetName.Events
     [EventDescription("De adres werd voorgesteld.")]
     public class AddressWasProposedV2 : IStreetNameEvent
     {
-        public const string EventName = "AddressWasApprovedV2"; // BE CAREFUL CHANGING THIS!!
+        public const string EventName = "AddressWasProposedV2"; // BE CAREFUL CHANGING THIS!!
 
         public int StreetNamePersistentLocalId { get; }
         public int AddressPersistentLocalId { get; }

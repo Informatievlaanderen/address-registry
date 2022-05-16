@@ -2,6 +2,7 @@ namespace AddressRegistry.StreetName
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Events;
@@ -54,6 +55,11 @@ namespace AddressRegistry.StreetName
             streetNameAddress.SetParent(null);
 
             return streetNameAddress;
+        }
+
+        public bool BoxNumberIsUnique(BoxNumber boxNumber)
+        {
+            return _children.FirstOrDefault(x => x.BoxNumber! == boxNumber!) == null;
         }
 
         /// <summary>

@@ -55,7 +55,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
 
             containerBuilder.RegisterModule(new EnvelopeModule());
             containerBuilder.RegisterModule(new BackOfficeModule(_configuration, _services, _loggerFactory));
-            containerBuilder.RegisterModule(new CommandHandlingModule(_configuration));
+            containerBuilder.RegisterModule(new EditModule(_configuration, _services, _loggerFactory));
             containerBuilder.RegisterModule(new ConsumerModule(_configuration, _services, _loggerFactory));
 
             containerBuilder.Populate(_services);

@@ -110,9 +110,13 @@ namespace AddressRegistry.Api.BackOffice.Address
                 {
                     // TODO: catch validation exceptions
 
-                   _ => new ValidationException(new List<ValidationFailure>
-                        {new ValidationFailure(string.Empty, exception.Message)})
+                    _ => new ValidationException(new List<ValidationFailure>
+                        { new ValidationFailure(string.Empty, exception.Message) })
                 };
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
     }

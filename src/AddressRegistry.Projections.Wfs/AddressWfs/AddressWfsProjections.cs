@@ -47,6 +47,27 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
                     .AddressWfsItems
                     .AddAsync(addressWfsItem, ct);
             });
+
+            When<Envelope<AddressWasProposedV2>>(async (context, message, ct) =>
+            {
+                var addressWfsItem = new AddressWfsItem(
+                    message.Message.AddressPersistentLocalId,
+                    message.Message.StreetNamePersistentLocalId,
+                    message.Message.PostalCode,
+                    message.Message.HouseNumber,
+                    message.Message.BoxNumber,
+                    MapStatus(AddressStatus.Proposed),
+                    officiallyAssigned: true,
+                    position: null,
+                    positionMethod: null,
+                    positionSpecification: null,
+                    removed: false,
+                    message.Message.Provenance.Timestamp);
+
+                await context
+                    .AddressWfsItems
+                    .AddAsync(addressWfsItem, ct);
+            });
         }
 
         public static string MapStatus(AddressStatus status)

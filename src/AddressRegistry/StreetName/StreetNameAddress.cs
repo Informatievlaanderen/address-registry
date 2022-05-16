@@ -98,6 +98,7 @@ namespace AddressRegistry.StreetName
             HouseNumber = new HouseNumber(@event.HouseNumber);
             Status = AddressStatus.Proposed;
             BoxNumber = string.IsNullOrEmpty(@event.BoxNumber) ? null : new BoxNumber(@event.BoxNumber);
+            IsOfficiallyAssigned = true;
 
             _lastEvent = @event;
         }

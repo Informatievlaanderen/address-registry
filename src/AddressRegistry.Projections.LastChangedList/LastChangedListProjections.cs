@@ -203,6 +203,12 @@ namespace AddressRegistry.Projections.LastChangedList
                 RebuildKeyAndUri(records, message.Message.AddressPersistentLocalId);
             });
 
+            When<Envelope<AddressWasProposedV2>>(async (context, message, ct) =>
+            {
+                var records = await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
+                RebuildKeyAndUri(records, message.Message.AddressPersistentLocalId);
+            });
+
         }
 
         private static void RebuildKeyAndUri(IEnumerable<LastChangedRecord>? attachedRecords, int persistentLocalId)

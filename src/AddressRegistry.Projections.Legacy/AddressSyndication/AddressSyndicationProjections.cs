@@ -364,6 +364,37 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     .AddressSyndication
                     .AddAsync(streetNameSyndicationItem, ct);
             });
+
+            When<Envelope<AddressWasProposedV2>>(async (context, message, ct) =>
+            {
+                var streetNameSyndicationItem = new AddressSyndicationItem
+                {
+                    Position = message.Position,
+                    PersistentLocalId = message.Message.AddressPersistentLocalId,
+                    StreetNamePersistentLocalId = message.Message.StreetNamePersistentLocalId,
+                    PostalCode = message.Message.PostalCode,
+                    HouseNumber = message.Message.HouseNumber,
+                    BoxNumber = message.Message.BoxNumber,
+                    PointPosition = null,
+                    PositionMethod = null,
+                    PositionSpecification = null,
+                    Status = AddressStatus.Proposed,
+                    IsComplete = true,
+                    IsOfficiallyAssigned = true,
+
+                    RecordCreatedAt = message.Message.Provenance.Timestamp,
+                    LastChangedOn = message.Message.Provenance.Timestamp,
+                    ChangeType = message.EventName,
+                    SyndicationItemCreatedAt = DateTimeOffset.UtcNow
+                };
+
+                streetNameSyndicationItem.ApplyProvenance(message.Message.Provenance);
+                streetNameSyndicationItem.SetEventData(message.Message, message.EventName);
+
+                await context
+                    .AddressSyndication
+                    .AddAsync(streetNameSyndicationItem, ct);
+            });
         }
 
         private static void DoNothing() { }

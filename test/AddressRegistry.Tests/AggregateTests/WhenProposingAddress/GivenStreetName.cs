@@ -110,6 +110,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
             child.HouseNumber.Should().Be(houseNumber);
             child.Status.Should().Be(AddressStatus.Proposed);
             child.BoxNumber.Should().Be(childBoxNumber);
+            child.IsOfficiallyAssigned.Should().BeTrue();
         }
 
         [Fact]

@@ -71,13 +71,41 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 {
                     AddressPersistentLocalId = message.Message.AddressPersistentLocalId,
                     StreetNamePersistentLocalId = message.Message.StreetNamePersistentLocalId,
-                    Complete = false,
+                    Complete =  true,
                     MinimumX = pointShapeContent.Shape.X,
                     MaximumX = pointShapeContent.Shape.X,
                     MinimumY = pointShapeContent.Shape.Y,
                     MaximumY = pointShapeContent.Shape.Y,
                     ShapeRecordContent = pointShapeContent.ToBytes(),
                     ShapeRecordContentLength = pointShapeContent.ContentLength.ToInt32(),
+                    DbaseRecord = addressDbaseRecord.ToBytes(_encoding),
+                }, cancellationToken: ct);
+            });
+
+            When<Envelope<AddressWasProposedV2>>(async (context, message, ct) =>
+            {
+                var addressDbaseRecord = new AddressDbaseRecord
+                {
+                    id = { Value = $"{extractConfig.Value.DataVlaanderenNamespace}/{message.Message.AddressPersistentLocalId}" },
+                    adresid = { Value = message.Message.AddressPersistentLocalId },
+                    huisnr = { Value = message.Message.HouseNumber },
+                    postcode = { Value = message.Message.PostalCode },
+                    offtoegknd = { Value = true },
+                    straatnmid = { Value = message.Message.StreetNamePersistentLocalId.ToString() },
+                    status = { Value = Map(AddressStatus.Proposed) },
+                    versieid = { Value = message.Message.Provenance.Timestamp.ToBelgianDateTimeOffset().FromDateTimeOffset() }
+                };
+
+                if (!string.IsNullOrEmpty(message.Message.BoxNumber))
+                {
+                    addressDbaseRecord.busnr.Value = message.Message.BoxNumber;
+                }
+
+                await context.AddressExtractV2.AddAsync(new AddressExtractItemV2
+                {
+                    AddressPersistentLocalId = message.Message.AddressPersistentLocalId,
+                    StreetNamePersistentLocalId = message.Message.StreetNamePersistentLocalId,
+                    Complete = true,
                     DbaseRecord = addressDbaseRecord.ToBytes(_encoding),
                 }, cancellationToken: ct);
             });

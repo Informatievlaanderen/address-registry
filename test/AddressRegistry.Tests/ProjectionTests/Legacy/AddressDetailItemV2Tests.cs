@@ -9,6 +9,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
     using FluentAssertions;
     using global::AutoFixture;
     using Projections.Legacy.AddressDetailV2;
+    using StreetName;
     using StreetName.Events;
     using Xunit;
 
@@ -51,6 +52,37 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                     addressDetailItemV2.Removed.Should().Be(addressWasMigratedToStreetName.IsRemoved);
                     addressDetailItemV2.VersionTimestamp.Should().Be(addressWasMigratedToStreetName.Provenance.Timestamp);
                     addressDetailItemV2.LastEventHash.Should().Be(addressWasMigratedToStreetName.GetHash());
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressWasProposedV2()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            await Sut
+                .Given(new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, metadata)))
+                .Then(async ct =>
+                {
+                    var addressDetailItemV2 = (await ct.AddressDetailV2.FindAsync(addressWasProposedV2.AddressPersistentLocalId));
+                    addressDetailItemV2.Should().NotBeNull();
+                    addressDetailItemV2.StreetNamePersistentLocalId.Should().Be(addressWasProposedV2.StreetNamePersistentLocalId);
+                    addressDetailItemV2.HouseNumber.Should().Be(addressWasProposedV2.HouseNumber);
+                    addressDetailItemV2.BoxNumber.Should().Be(addressWasProposedV2.BoxNumber);
+                    addressDetailItemV2.PostalCode.Should().Be(addressWasProposedV2.PostalCode);
+                    addressDetailItemV2.Status.Should().Be(AddressStatus.Proposed);
+                    addressDetailItemV2.OfficiallyAssigned.Should().BeTrue();
+                    addressDetailItemV2.Position.Should().BeNull();
+                    addressDetailItemV2.PositionMethod.Should().BeNull();
+                    addressDetailItemV2.PositionSpecification.Should().BeNull();
+                    addressDetailItemV2.Removed.Should().BeFalse();
+                    addressDetailItemV2.VersionTimestamp.Should().Be(addressWasProposedV2.Provenance.Timestamp);
+                    addressDetailItemV2.LastEventHash.Should().Be(addressWasProposedV2.GetHash());
                 });
         }
 

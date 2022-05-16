@@ -8,6 +8,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
     using FluentAssertions;
     using global::AutoFixture;
     using Projections.Legacy.AddressListV2;
+    using StreetName;
     using StreetName.Events;
     using Xunit;
 
@@ -43,8 +44,36 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                     expectedListItem.BoxNumber.Should().Be(addressWasMigratedToStreetName.BoxNumber);
                     expectedListItem.PostalCode.Should().Be(addressWasMigratedToStreetName.PostalCode);
                     expectedListItem.Status.Should().Be(addressWasMigratedToStreetName.Status);
+                    expectedListItem.Removed.Should().Be(addressWasMigratedToStreetName.IsRemoved);
                     expectedListItem.VersionTimestamp.Should().Be(addressWasMigratedToStreetName.Provenance.Timestamp);
                     expectedListItem.LastEventHash.Should().Be(addressWasMigratedToStreetName.GetHash());
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressWasProposedV2()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            await Sut
+                .Given(new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, metadata)))
+                .Then(async ct =>
+                {
+                    var expectedListItem = (await ct.AddressListV2.FindAsync(addressWasProposedV2.AddressPersistentLocalId));
+                    expectedListItem.Should().NotBeNull();
+                    expectedListItem.StreetNamePersistentLocalId.Should().Be(addressWasProposedV2.StreetNamePersistentLocalId);
+                    expectedListItem.HouseNumber.Should().Be(addressWasProposedV2.HouseNumber);
+                    expectedListItem.BoxNumber.Should().Be(addressWasProposedV2.BoxNumber);
+                    expectedListItem.PostalCode.Should().Be(addressWasProposedV2.PostalCode);
+                    expectedListItem.Status.Should().Be(AddressStatus.Proposed);
+                    expectedListItem.Removed.Should().BeFalse();
+                    expectedListItem.VersionTimestamp.Should().Be(addressWasProposedV2.Provenance.Timestamp);
+                    expectedListItem.LastEventHash.Should().Be(addressWasProposedV2.GetHash());
                 });
         }
 

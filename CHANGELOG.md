@@ -1,3 +1,10 @@
+## [3.10.1](https://github.com/informatievlaanderen/address-registry/compare/v3.10.0...v3.10.1) (2022-05-16)
+
+
+### Bug Fixes
+
+* syndication projection set AddressId nullable in db ([d010702](https://github.com/informatievlaanderen/address-registry/commit/d01070230952a1311ebce507a214c2d02401ac15))
+
 # [3.10.0](https://github.com/informatievlaanderen/address-registry/compare/v3.9.0...v3.10.0) (2022-05-16)
 
 

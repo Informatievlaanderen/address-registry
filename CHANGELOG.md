@@ -1,3 +1,15 @@
+# [3.9.0](https://github.com/informatievlaanderen/address-registry/compare/v3.8.13...v3.9.0) (2022-05-16)
+
+
+### Bug Fixes
+
+* build ([933a626](https://github.com/informatievlaanderen/address-registry/commit/933a626f12781a2863670d4435470be3021a4b61))
+
+
+### Features
+
+* add address propose integration test ([2a7044f](https://github.com/informatievlaanderen/address-registry/commit/2a7044f99f52837015124114ae9895828d0a835a))
+
 ## [3.8.13](https://github.com/informatievlaanderen/address-registry/compare/v3.8.12...v3.8.13) (2022-05-16)
 
 

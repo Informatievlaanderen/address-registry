@@ -1,3 +1,16 @@
+# [3.10.0](https://github.com/informatievlaanderen/address-registry/compare/v3.9.0...v3.10.0) (2022-05-16)
+
+
+### Bug Fixes
+
+* correct contract casing gawr-3055 gawr-3056 ([001b773](https://github.com/informatievlaanderen/address-registry/commit/001b77368025665620d6202b11a780584ee20673))
+* gawr-3074 correct tags new events ([0cfca6c](https://github.com/informatievlaanderen/address-registry/commit/0cfca6cc388d17250269dd6364c7a043e1650a86))
+
+
+### Features
+
+* update projections after AddressWasProposedV2 ([f0ec457](https://github.com/informatievlaanderen/address-registry/commit/f0ec4578e16bfe882eaf25490daa1982271df04e))
+
 # [3.9.0](https://github.com/informatievlaanderen/address-registry/compare/v3.8.13...v3.9.0) (2022-05-16)
 
 

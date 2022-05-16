@@ -11,30 +11,30 @@ namespace AddressRegistry.Api.BackOffice.Address.Requests
     public class AddressProposeRequest
     {
         /// <summary>
-        /// De unieke en persistente identificator van de postinfo die het adres toekent.
+        /// De unieke en persistente identificator van de postcode van het adres.
         /// </summary>
-        [DataMember(Name = "PostInfoId", Order = 0)]
+        [DataMember(Name = "PostinfoId", Order = 0)]
         [JsonProperty(Required = Required.Always)]
         public string PostInfoId { get; set; }
 
         /// <summary>
-        /// De unieke en persistente identificator van de straatnaam die het adres toekent.
+        /// De unieke en persistente identificator van de straatnaam van het adres.
         /// </summary>
-        [DataMember(Name = "StraatNaamId", Order = 1)]
+        [DataMember(Name = "StraatnaamId", Order = 1)]
         [JsonProperty(Required = Required.Always)]
         public string StraatNaamId { get; set; }
 
         /// <summary>
-        /// Het huisnummer.
+        /// Het huisnummer van het adres.
         /// </summary>
-        [DataMember(Name = "HuisNummer", Order = 2)]
+        [DataMember(Name = "Huisnummer", Order = 2)]
         [JsonProperty(Required = Required.Always)]
         public string HouseNumber { get; set; }
 
         /// <summary>
-        /// Het busnummer.
+        /// Het busnummer van het adres (optioneel).
         /// </summary>
-        [DataMember(Name = "BusNummer", Order = 3)]
+        [DataMember(Name = "Busnummer", Order = 3)]
         [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string? BoxNumber { get; set; }
 

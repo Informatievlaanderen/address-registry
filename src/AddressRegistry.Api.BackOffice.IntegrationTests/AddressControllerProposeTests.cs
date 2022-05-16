@@ -10,7 +10,7 @@ namespace AddressRegistry.Api.BackOffice.IntegrationTests
 
     public class AddressControllerProposeTests
     {
-        private const string Uri = "v2/adres/acties/voorstellen";
+        private const string Uri = "v2/adressen/acties/voorstellen";
 
         [Fact(Skip = "Does not use in-memory database.")]
         public async Task AddParentAddress_ShouldRespondNoContent()

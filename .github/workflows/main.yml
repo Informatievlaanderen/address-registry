@@ -279,14 +279,14 @@ jobs:
         NUGET_HOST: ${{ secrets.NUGET_HOST }}
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
 
-    # - name: Publish to Confluence
-    #   if: env.RELEASE_VERSION != 'none'
-    #   shell: bash
-    #   run: ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-confluence.sh
-    #   env:
-    #     CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
-    #     CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
-    #     CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
+    - name: Publish to Confluence
+      if: env.RELEASE_VERSION != 'none'
+      shell: bash
+      run: ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-confluence.sh
+      env:
+        CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
+        CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
+        CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
 
     - name: Create Jira Release
       if: env.RELEASE_VERSION != 'none'

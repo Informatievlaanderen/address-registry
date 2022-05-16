@@ -11,14 +11,15 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
 
     public class AddressSyndicationItem
     {
-        public long Position { get; set; }
-
+        [Obsolete("Guid identifiers are no longer used.")]
         public Guid? AddressId { get; set; }
-        public int? PersistentLocalId { get; set; }
-        public string? ChangeType { get; set; }
-
+        [Obsolete("Guid identifiers are no longer used.")]
         public Guid? StreetNameId { get; set; }
+
+        public int? PersistentLocalId { get; set; }
         public int? StreetNamePersistentLocalId { get; set; }
+        public long Position { get; set; }
+        public string? ChangeType { get; set; }
         public string? PostalCode { get; set; }
         public string? HouseNumber { get; set; }
         public string? BoxNumber { get; set; }

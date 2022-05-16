@@ -10,6 +10,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
     using NetTopologySuite.Geometries;
     using NetTopologySuite.IO;
     using Projections.Wfs.AddressWfs;
+    using StreetName;
     using StreetName.Events;
     using Xunit;
     using Envelope = Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope;
@@ -23,7 +24,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
         {
             _fixture = new Fixture();
             _fixture.Customize(new InfrastructureCustomization());
-            _fixture.Customize<StreetName.AddressStatus>(c => new WithoutUnknownStreetNameAddressStatus());
+            _fixture.Customize<AddressStatus>(c => new WithoutUnknownStreetNameAddressStatus());
             _fixture.Customize(new WithExtendedWkbGeometry());
 
             _wkbReader = WKBReaderFactory.CreateForLegacy();
@@ -51,6 +52,32 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                     addressWfsItem.PositionSpecification.Should().Be(AddressWfsProjections.ConvertGeometrySpecificationToString(addressWasMigratedToStreetName.GeometrySpecification));
                     addressWfsItem.Removed.Should().Be(addressWasMigratedToStreetName.IsRemoved);
                     addressWfsItem.VersionTimestamp.Should().Be(addressWasMigratedToStreetName.Provenance.Timestamp);
+                });
+        }
+
+
+        [Fact]
+        public async Task AddressWasProposedV2()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+
+            await Sut
+                .Given(new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, new Dictionary<string, object>())))
+                .Then(async ct =>
+                {
+                    var addressWfsItem = (await ct.AddressWfsItems.FindAsync(addressWasProposedV2.AddressPersistentLocalId));
+                    addressWfsItem.Should().NotBeNull();
+                    addressWfsItem.StreetNamePersistentLocalId.Should().Be(addressWasProposedV2.StreetNamePersistentLocalId);
+                    addressWfsItem.HouseNumber.Should().Be(addressWasProposedV2.HouseNumber);
+                    addressWfsItem.BoxNumber.Should().Be(addressWasProposedV2.BoxNumber);
+                    addressWfsItem.PostalCode.Should().Be(addressWasProposedV2.PostalCode);
+                    addressWfsItem.Status.Should().Be(AddressWfsProjections.MapStatus(AddressStatus.Proposed));
+                    addressWfsItem.OfficiallyAssigned.Should().BeTrue();
+                    addressWfsItem.Position.Should().BeNull();
+                    addressWfsItem.PositionMethod.Should().BeNull();
+                    addressWfsItem.PositionSpecification.Should().BeNull();
+                    addressWfsItem.Removed.Should().BeFalse();
+                    addressWfsItem.VersionTimestamp.Should().Be(addressWasProposedV2.Provenance.Timestamp);
                 });
         }
 

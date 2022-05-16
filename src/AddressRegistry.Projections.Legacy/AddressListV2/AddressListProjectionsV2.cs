@@ -7,6 +7,7 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using NodaTime;
+    using StreetName;
     using StreetName.Events;
 
     [ConnectedProjectionName("API endpoint lijst adressen")]
@@ -25,6 +26,25 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
                     message.Message.BoxNumber,
                     message.Message.Status,
                     message.Message.IsRemoved,
+                    message.Message.Provenance.Timestamp);
+
+                UpdateHash(addressListItemV2, message);
+
+                await context
+                    .AddressListV2
+                    .AddAsync(addressListItemV2, ct);
+            });
+
+            When<Envelope<AddressWasProposedV2>>(async (context, message, ct) =>
+            {
+                var addressListItemV2 = new AddressListItemV2(
+                    message.Message.AddressPersistentLocalId,
+                    message.Message.StreetNamePersistentLocalId,
+                    message.Message.PostalCode,
+                    message.Message.HouseNumber,
+                    message.Message.BoxNumber,
+                    status: AddressStatus.Proposed,
+                    removed: false,
                     message.Message.Provenance.Timestamp);
 
                 UpdateHash(addressListItemV2, message);

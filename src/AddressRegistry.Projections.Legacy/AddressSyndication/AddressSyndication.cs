@@ -107,7 +107,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             b.Property(x => x.Position).ValueGeneratedNever();
             b.HasIndex(x => x.Position).IsColumnStore($"CI_{TableName}_Position");
 
-            b.Property(x => x.AddressId).IsRequired();
+            b.Property(x => x.AddressId);
             b.Property(x => x.ChangeType);
 
             b.Property(x => x.StreetNameId);

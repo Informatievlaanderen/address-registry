@@ -54,6 +54,7 @@ Target.create "Build_Solution" (fun _ ->
   buildSource "AddressRegistry.Projections.Syndication"
   buildTest "AddressRegistry.Tests"
   buildTest "AddressRegistry.Api.Legacy.Tests"
+  buildTest "AddressRegistry.Api.BackOffice.IntegrationTests"
 )
 
 Target.create "Test_Solution" (fun _ ->

@@ -8,8 +8,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AddressRegistry.Api.BackOffice\AddressRegistry.Api.BackOffice.csproj" />
-    <ProjectReference Include="..\AddressRegistry.Infrastructure\AddressRegistry.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\AddressRegistry.Api.BackOffice\AddressRegistry.Api.BackOffice.csproj" />
+    <ProjectReference Include="..\..\src\AddressRegistry.Infrastructure\AddressRegistry.Infrastructure.csproj" />
   </ItemGroup>
 
   <Import Project="..\..\.paket\Paket.Restore.targets" />

@@ -88,6 +88,7 @@ nuget Structurizr.Client 0.9.7
 nuget Structurizr.AdrTools 0.9.3
 
 // TEST STUFF
+nuget Microsoft.AspNetCore.Mvc.Testing 6.0.4
 nuget Microsoft.NET.Test.Sdk 17.1.0
 nuget Microsoft.EntityFrameworkCore.InMemory 6.0.3
 nuget xunit 2.4.1

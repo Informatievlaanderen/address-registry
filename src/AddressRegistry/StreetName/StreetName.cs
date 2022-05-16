@@ -2,6 +2,8 @@ namespace AddressRegistry.StreetName
 {
     using System;
     using System.Collections.Generic;
+    using System.Data;
+    using System.Linq;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Events;
@@ -127,7 +129,11 @@ namespace AddressRegistry.StreetName
             }
             if(isParent && parentFound)
             {
-                // parent address already exists for the house number
+                throw new ParentAddressAlreadyExistsException(houseNumber);
+            }
+            if (isChild && !parent.BoxNumberIsUnique(boxNumber!))
+            {
+                throw new DuplicateBoxNumberException(boxNumber!);
             }
 
             ApplyChange(new AddressWasProposedV2(

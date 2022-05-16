@@ -12,7 +12,7 @@ namespace AddressRegistry.Api.BackOffice.Address
 
     [ApiVersion("2.0")]
     [AdvertiseApiVersions("2.0")]
-    [ApiRoute("adres")]
+    [ApiRoute("adressen")]
     [ApiExplorerSettings(GroupName = "adressen")]
     public partial class AddressController : ApiBusController
     {

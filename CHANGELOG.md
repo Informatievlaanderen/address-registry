@@ -1,3 +1,10 @@
+## [3.8.13](https://github.com/informatievlaanderen/address-registry/compare/v3.8.12...v3.8.13) (2022-05-16)
+
+
+### Bug Fixes
+
+* remove alter column from previous projection ([ed8ce9e](https://github.com/informatievlaanderen/address-registry/commit/ed8ce9ea166702d292e72d84ce17fb475fb65f51))
+
 ## [3.8.12](https://github.com/informatievlaanderen/address-registry/compare/v3.8.11...v3.8.12) (2022-05-13)
 
 

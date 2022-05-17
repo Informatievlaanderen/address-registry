@@ -1,3 +1,10 @@
+# [3.11.0](https://github.com/informatievlaanderen/address-registry/compare/v3.10.2...v3.11.0) (2022-05-17)
+
+
+### Features
+
+* add approve command, event, aggregate, tests ([f038d17](https://github.com/informatievlaanderen/address-registry/commit/f038d17ef9eced72713f0704cecc8fe4efe4c2d0))
+
 ## [3.10.2](https://github.com/informatievlaanderen/address-registry/compare/v3.10.1...v3.10.2) (2022-05-17)
 
 

@@ -60,6 +60,20 @@ namespace AddressRegistry.StreetName
                         message.Command.HouseNumber,
                         message.Command.BoxNumber);
                 });
+
+            For<ApproveAddress>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
+                .AddEventHash<ApproveAddress, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streetNameStreamId = new StreetNameStreamId(message.Command.StreetNamePersistentLocalId);
+                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+
+                    streetName.ApproveAddress(
+                        message.Command.StreetNamePersistentLocalId,
+                        message.Command.AddressPersistentLocalId);
+                });
         }
     }
 }

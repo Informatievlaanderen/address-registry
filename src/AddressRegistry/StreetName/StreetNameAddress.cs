@@ -34,8 +34,9 @@ namespace AddressRegistry.StreetName
         {
             Register<AddressWasMigratedToStreetName>(When);
             Register<AddressWasProposedV2>(When);
+            Register<AddressWasApproved>(When);
         }
-
+        
         public StreetNameAddress AddChild(StreetNameAddress streetNameAddress)
         {
             if (_children.HasPersistentLocalId(streetNameAddress.AddressPersistentLocalId))
@@ -99,6 +100,13 @@ namespace AddressRegistry.StreetName
             Status = AddressStatus.Proposed;
             BoxNumber = string.IsNullOrEmpty(@event.BoxNumber) ? null : new BoxNumber(@event.BoxNumber);
             IsOfficiallyAssigned = true;
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressWasApproved @event)
+        {
+            Status = AddressStatus.Current;
 
             _lastEvent = @event;
         }

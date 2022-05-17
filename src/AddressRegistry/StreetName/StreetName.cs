@@ -2,8 +2,6 @@ namespace AddressRegistry.StreetName
 {
     using System;
     using System.Collections.Generic;
-    using System.Data;
-    using System.Linq;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Events;
@@ -143,6 +141,23 @@ namespace AddressRegistry.StreetName
                 postalCode,
                 houseNumber,
                 boxNumber));
+        }
+
+        public void ApproveAddress(
+            StreetNamePersistentLocalId streetNamePersistentLocalId,
+            AddressPersistentLocalId addressPersistentLocalId)
+        {
+            var addressToApprove = StreetNameAddresses.FindByPersistentLocalId(addressPersistentLocalId);
+
+            if (addressToApprove is null)
+            {
+                throw new AggregateSourceException($"Cannot find a address entity with id {addressPersistentLocalId}");
+            }
+
+            if (addressToApprove.Status == AddressStatus.Proposed)
+            {
+                ApplyChange(new AddressWasApproved(streetNamePersistentLocalId, addressPersistentLocalId));
+            }
         }
 
         #region Metadata

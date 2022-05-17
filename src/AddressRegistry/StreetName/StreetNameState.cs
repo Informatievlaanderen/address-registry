@@ -20,6 +20,7 @@ namespace AddressRegistry.StreetName
             Register<StreetNameWasRemoved>(When);
             Register<AddressWasMigratedToStreetName>(When);
             Register<AddressWasProposedV2>(When);
+            Register<AddressWasApproved>(When);
         }
 
         private void When(MigratedStreetNameWasImported @event)
@@ -71,6 +72,12 @@ namespace AddressRegistry.StreetName
             }
 
             StreetNameAddresses.Add(address);
+        }
+
+        private void When(AddressWasApproved @event)
+        {
+            var addressToApprove = StreetNameAddresses.FindByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
+            addressToApprove.Route(@event);
         }
     }
 }

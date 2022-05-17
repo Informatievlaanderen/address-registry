@@ -1,3 +1,10 @@
+## [3.10.2](https://github.com/informatievlaanderen/address-registry/compare/v3.10.1...v3.10.2) (2022-05-17)
+
+
+### Bug Fixes
+
+* set event descriptions for AddressWasProposedV2 ([e4043f0](https://github.com/informatievlaanderen/address-registry/commit/e4043f0a9cb5a02ae75827fc3a59db406f1f0dce))
+
 ## [3.10.1](https://github.com/informatievlaanderen/address-registry/compare/v3.10.0...v3.10.1) (2022-05-16)
 
 

@@ -83,7 +83,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             var content = new SyndicationContent();
             if (address.ContainsObject)
                 content.Object = new AddressSyndicationContent(
-                    address.AddressId,
+                    address.AddressId.HasValue ? address.AddressId.Value.ToString("D") : address.StreetNamePersistentLocalId.ToString(),
                     naamruimte,
                     address.StreetNameId,
                     address.PersistentLocalId,
@@ -128,7 +128,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         /// De technische id van het adres.
         /// </summary>
         [DataMember(Name = "Id", Order = 1)]
-        public Guid AddressId { get; set; }
+        public string AddressId { get; set; }
 
         /// <summary>
         /// De identificator van het adres.
@@ -203,7 +203,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         public Provenance Provenance { get; set; }
 
         public AddressSyndicationContent(
-            Guid addressId,
+            string addressId,
             string naamruimte,
             Guid? streetNameId,
             int? persistentLocalId,

@@ -29,7 +29,7 @@ namespace AddressRegistry.StreetName.Events
         [EventPropertyDescription("Objectidentificator van het adres.")]
         public int AddressPersistentLocalId { get; }
 
-        [EventPropertyDescription("De status van het adres. Mogelijkheden: Current, Proposed en Retired en Rejected.")]
+        [EventPropertyDescription("De status van het adres. Mogelijkheden: Current, Proposed, Retired en Rejected.")]
         public AddressStatus Status { get; }
 
         [EventPropertyDescription("Huisnummer van het adres.")]

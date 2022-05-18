@@ -21,6 +21,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
         {
             _fixture = new Fixture();
             _fixture.Customize(new InfrastructureCustomization());
+            _fixture.Customize(new WithFixedAddressPersistentLocalId());
+            _fixture.Customize(new WithFixedStreetNamePersistentLocalId());
             _fixture.Customize(new WithExtendedWkbGeometry());
         }
 
@@ -83,6 +85,35 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                     addressDetailItemV2.Removed.Should().BeFalse();
                     addressDetailItemV2.VersionTimestamp.Should().Be(addressWasProposedV2.Provenance.Timestamp);
                     addressDetailItemV2.LastEventHash.Should().Be(addressWasProposedV2.GetHash());
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressWasApproved()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasApproved = _fixture.Create<AddressWasApproved>();
+            var approvedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasApproved.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasApproved>(new Envelope(addressWasApproved, approvedMetadata)))
+                .Then(async ct =>
+                {
+                    var addressDetailItemV2 = (await ct.AddressDetailV2.FindAsync(addressWasApproved.AddressPersistentLocalId));
+                    addressDetailItemV2.Should().NotBeNull();
+                    addressDetailItemV2.Status.Should().Be(AddressStatus.Current);
+                    addressDetailItemV2.VersionTimestamp.Should().Be(addressWasApproved.Provenance.Timestamp);
+                    addressDetailItemV2.LastEventHash.Should().Be(addressWasApproved.GetHash());
                 });
         }
 

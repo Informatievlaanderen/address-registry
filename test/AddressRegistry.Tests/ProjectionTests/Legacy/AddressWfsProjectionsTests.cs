@@ -3,6 +3,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using AutoFixture;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common.Pipes;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using FluentAssertions;
@@ -26,6 +27,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
             _fixture.Customize(new InfrastructureCustomization());
             _fixture.Customize<AddressStatus>(c => new WithoutUnknownStreetNameAddressStatus());
             _fixture.Customize(new WithExtendedWkbGeometry());
+            _fixture.Customize(new WithFixedAddressPersistentLocalId());
+            _fixture.Customize(new WithFixedStreetNamePersistentLocalId());
 
             _wkbReader = WKBReaderFactory.CreateForLegacy();
         }
@@ -78,6 +81,35 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                     addressWfsItem.PositionSpecification.Should().BeNull();
                     addressWfsItem.Removed.Should().BeFalse();
                     addressWfsItem.VersionTimestamp.Should().Be(addressWasProposedV2.Provenance.Timestamp);
+                });
+        }
+
+
+        [Fact]
+        public async Task WhenAddressWasApproved()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasApproved = _fixture.Create<AddressWasApproved>();
+            var approvedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasApproved.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasApproved>(new Envelope(addressWasApproved, approvedMetadata)))
+                .Then(async ct =>
+                {
+                    var item = (await ct.AddressWfsItems.FindAsync(addressWasApproved.AddressPersistentLocalId));
+                    item.Should().NotBeNull();
+                    item.Status.Should().Be(AddressWfsProjections.MapStatus(AddressStatus.Current));
+                    item.VersionTimestamp.Should().Be(addressWasApproved.Provenance.Timestamp);
                 });
         }
 

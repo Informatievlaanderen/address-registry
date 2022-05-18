@@ -63,6 +63,20 @@ namespace AddressRegistry.Projections.Legacy.AddressDetailV2
                     .AddressDetailV2
                     .AddAsync(addressDetailItemV2, ct);
             });
+
+            When<Envelope<AddressWasApproved>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressDetailV2(
+                    message.Message.AddressPersistentLocalId,
+                    item =>
+                    {
+                        item.Status = AddressStatus.Current;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+
+                UpdateHash(item, message);
+            });
         }
 
         private static void UpdateHash<T>(AddressDetailItemV2 entity, Envelope<T> wrappedEvent) where T : IHaveHash, IMessage
@@ -75,7 +89,7 @@ namespace AddressRegistry.Projections.Legacy.AddressDetailV2
             entity.LastEventHash = wrappedEvent.Metadata[AddEventHashPipe.HashMetadataKey].ToString()!;
         }
 
-        private static void UpdateVersionTimestamp(AddressDetailItem addressDetailItem, Instant versionTimestamp)
+        private static void UpdateVersionTimestamp(AddressDetailItemV2 addressDetailItem, Instant versionTimestamp)
             => addressDetailItem.VersionTimestamp = versionTimestamp;
     }
 }

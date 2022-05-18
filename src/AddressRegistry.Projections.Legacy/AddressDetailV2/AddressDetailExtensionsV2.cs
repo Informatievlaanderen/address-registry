@@ -7,7 +7,7 @@ namespace AddressRegistry.Projections.Legacy.AddressDetailV2
 
     public static class AddressDetailExtensionsV2
     {
-        public static async Task<AddressDetailItemV2> FindAndUpdateAddressDetail(
+        public static async Task<AddressDetailItemV2> FindAndUpdateAddressDetailV2(
             this LegacyContext context,
             int addressPersistentLocalId,
             Action<AddressDetailItemV2> updateFunc,

@@ -8,7 +8,7 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
 
     public static class AddressListExtensionsV2
     {
-        public static async Task<AddressListItemV2> FindAndUpdateAddressListItem(
+        public static async Task<AddressListItemV2> FindAndUpdateAddressListItemV2(
             this LegacyContext context,
             int addressPersistentLocalId,
             Action<AddressListItemV2> updateFunc,
@@ -26,7 +26,7 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
             return address;
         }
 
-        private static ProjectionItemNotFoundException<AddressListProjections> DatabaseItemNotFound(int addressPersistentLocalId)
-            => new ProjectionItemNotFoundException<AddressListProjections>(addressPersistentLocalId.ToString());
+        private static ProjectionItemNotFoundException<AddressListProjectionsV2> DatabaseItemNotFound(int addressPersistentLocalId)
+            => new ProjectionItemNotFoundException<AddressListProjectionsV2>(addressPersistentLocalId.ToString());
     }
 }

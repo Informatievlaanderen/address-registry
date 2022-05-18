@@ -395,6 +395,15 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     .AddressSyndication
                     .AddAsync(streetNameSyndicationItem, ct);
             });
+
+            When<Envelope<AddressWasApproved>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressPersistentLocalId,
+                    message,
+                    x => x.Status = AddressStatus.Current,
+                    ct);
+            });
         }
 
         private static void DoNothing() { }

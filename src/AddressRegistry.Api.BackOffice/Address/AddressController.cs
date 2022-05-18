@@ -5,6 +5,7 @@ namespace AddressRegistry.Api.BackOffice.Address
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentValidation;
     using FluentValidation.Results;
     using Microsoft.AspNetCore.Mvc;
@@ -41,6 +42,18 @@ namespace AddressRegistry.Api.BackOffice.Address
                 await streetnames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), cancellationToken);
             var streetNameHash = aggregate.GetAddressHash(addressPersistentLocalId);
             return streetNameHash;
+        }
+
+        private Provenance CreateFakeProvenance()
+        {
+            return new Provenance(
+                NodaTime.SystemClock.Instance.GetCurrentInstant(),
+                Application.StreetNameRegistry,
+                new Reason(""), // TODO: TBD
+                new Operator(""), // TODO: from claims
+                Modification.Insert,
+                Organisation.DigitaalVlaanderen // TODO: from claims
+            );
         }
     }
 }

@@ -1,3 +1,11 @@
+## [3.11.1](https://github.com/informatievlaanderen/address-registry/compare/v3.11.0...v3.11.1) (2022-05-18)
+
+
+### Bug Fixes
+
+* correct address id after migration in sync ([564857c](https://github.com/informatievlaanderen/address-registry/commit/564857c47b5c76edc9c43ce3278bb1ee97a58575))
+* correct docs event migration ([0a684ba](https://github.com/informatievlaanderen/address-registry/commit/0a684ba4bf124ceb44f7240c8c93c84b75c0b197))
+
 # [3.11.0](https://github.com/informatievlaanderen/address-registry/compare/v3.10.2...v3.11.0) (2022-05-17)
 
 

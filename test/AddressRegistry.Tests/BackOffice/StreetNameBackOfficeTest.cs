@@ -75,8 +75,8 @@ namespace AddressRegistry.Tests.BackOffice
 
         protected void ProposeAddress(
             StreetNamePersistentLocalId streetNamePersistentLocalId,
-            PostalCode postalCode,
             AddressPersistentLocalId addressPersistentLocalId,
+            PostalCode postalCode,
             HouseNumber houseNumber,
             BoxNumber? boxNumber)
         {

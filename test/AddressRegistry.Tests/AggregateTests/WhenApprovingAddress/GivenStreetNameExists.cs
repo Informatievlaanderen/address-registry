@@ -11,11 +11,11 @@ namespace AddressRegistry.Tests.AggregateTests.WhenApprovingAddress
     using Xunit;
     using Xunit.Abstractions;
 
-    public class GivenStreetName : AddressRegistryTest
+    public class GivenStreetNameExists : AddressRegistryTest
     {
         private readonly StreetNameStreamId _streamId;
 
-        public GivenStreetName(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public GivenStreetNameExists(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             Fixture.Customize(new InfrastructureCustomization());
             Fixture.Customize(new WithFixedStreetNamePersistentLocalId());

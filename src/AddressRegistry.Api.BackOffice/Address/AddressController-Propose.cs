@@ -61,15 +61,6 @@ namespace AddressRegistry.Api.BackOffice.Address
 
             try
             {
-                var fakeProvenanceData = new Provenance(
-                    NodaTime.SystemClock.Instance.GetCurrentInstant(),
-                    Application.StreetNameRegistry,
-                    new Reason(""), // TODO: TBD
-                    new Operator(""), // TODO: from claims
-                    Modification.Insert,
-                    Organisation.DigitaalVlaanderen // TODO: from claims
-                );
-
                 var identifier = addressProposeRequest.StraatNaamId
                     .AsIdentifier()
                     .Map(x => x);
@@ -86,7 +77,7 @@ namespace AddressRegistry.Api.BackOffice.Address
                     streetNamePersistentLocalId,
                     postalCodeId,
                     addressPersistentLocalId,
-                    fakeProvenanceData);
+                    CreateFakeProvenance());
 
                 await IdempotentCommandHandlerDispatch(idempotencyContext, cmd.CreateCommandId(), cmd, cancellationToken);
 

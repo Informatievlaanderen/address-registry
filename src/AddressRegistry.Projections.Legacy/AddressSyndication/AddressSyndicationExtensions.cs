@@ -15,6 +15,55 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
 
     public static class AddressSyndicationExtensions
     {
+        // Using PersistentLocalId
+        public static async Task CreateNewAddressSyndicationItem<T>(
+            this LegacyContext context,
+            int addressPersistentLocalId,
+            Envelope<T> message,
+            Action<AddressSyndicationItem> applyEventInfoOn,
+            CancellationToken ct)
+            where T : IHasProvenance, IMessage
+        {
+            var addressSyndicationItem = await context.AddressSyndication.LatestPosition(addressPersistentLocalId, ct);
+
+            if (addressSyndicationItem == null)
+                throw DatabaseItemNotFound(addressPersistentLocalId);
+
+            var provenance = message.Message.Provenance;
+
+            var newAddressSyndicationItem = addressSyndicationItem.CloneAndApplyEventInfo(
+                message.Position,
+                message.EventName,
+                provenance.Timestamp,
+                applyEventInfoOn);
+
+            newAddressSyndicationItem.ApplyProvenance(provenance);
+            newAddressSyndicationItem.SetEventData(message.Message, message.EventName);
+
+            await context
+                .AddressSyndication
+                .AddAsync(newAddressSyndicationItem, ct);
+        }
+
+        // Using PersistentLocalId
+        public static async Task<AddressSyndicationItem> LatestPosition(
+            this DbSet<AddressSyndicationItem> addressSyndicationItems,
+            int addressPersistentLocalId,
+            CancellationToken ct)
+            => addressSyndicationItems
+                   .Local
+                   .Where(x => x.PersistentLocalId == addressPersistentLocalId)
+                   .OrderByDescending(x => x.Position)
+                   .FirstOrDefault()
+               ?? await addressSyndicationItems
+                   .Where(x => x.PersistentLocalId == addressPersistentLocalId)
+                   .OrderByDescending(x => x.Position)
+                   .FirstOrDefaultAsync(ct);
+
+        // Using PersistentLocalId
+        public static ProjectionItemNotFoundException<AddressSyndicationProjections> DatabaseItemNotFound(int addressPersistentLocalId)
+            => new ProjectionItemNotFoundException<AddressSyndicationProjections>(addressPersistentLocalId.ToString());
+
         public static async Task CreateNewAddressSyndicationItem<T>(
             this LegacyContext context,
             Guid addressId,
@@ -57,7 +106,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                    .Where(x => x.AddressId == addressId)
                    .OrderByDescending(x => x.Position)
                    .FirstOrDefaultAsync(ct);
-
+        
         public static void ApplyProvenance(this AddressSyndicationItem item, ProvenanceData provenance)
         {
             item.Application = provenance.Application;

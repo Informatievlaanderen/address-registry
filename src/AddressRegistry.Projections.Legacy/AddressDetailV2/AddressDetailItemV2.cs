@@ -15,7 +15,7 @@ namespace AddressRegistry.Projections.Legacy.AddressDetailV2
         public AddressDetailItemV2(
             int addressPersistentLocalId,
             int streetNamePersistentLocalId,
-            string postalCode,
+            string? postalCode,
             string houseNumber,
             AddressStatus status,
             bool removed,
@@ -33,7 +33,7 @@ namespace AddressRegistry.Projections.Legacy.AddressDetailV2
         public AddressDetailItemV2(
             int addressPersistentLocalId,
             int streetNamePersistentLocalId,
-            string postalCode,
+            string? postalCode,
             string houseNumber,
             string? boxNumber,
             AddressStatus status,
@@ -54,7 +54,7 @@ namespace AddressRegistry.Projections.Legacy.AddressDetailV2
 
         public int AddressPersistentLocalId { get; set; }
         public int StreetNamePersistentLocalId { get; set; }
-        public string PostalCode { get; set; } = string.Empty;
+        public string? PostalCode { get; set; }
         public string HouseNumber { get; set; } = string.Empty;
         public string? BoxNumber { get; set; }
         public AddressStatus Status { get; set; }

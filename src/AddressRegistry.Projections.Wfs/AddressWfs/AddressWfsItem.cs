@@ -17,7 +17,7 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
         public AddressWfsItem(
             int addressPersistentLocalId,
             int streetNamePersistentLocalId,
-            string postalCode,
+            string? postalCode,
             string houseNumber,
             string status,
             bool removed,
@@ -35,7 +35,7 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
         public AddressWfsItem(
             int addressPersistentLocalId,
             int streetNamePersistentLocalId,
-            string postalCode,
+            string? postalCode,
             string houseNumber,
             string? boxNumber,
             string status,
@@ -56,7 +56,7 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
 
         public int AddressPersistentLocalId { get; set; }
         public int StreetNamePersistentLocalId { get; set; }
-        public string PostalCode { get; set; }
+        public string? PostalCode { get; set; }
         public string HouseNumber { get; set; }
         public string? BoxNumber { get; set; }
         public string Status { get; set; }

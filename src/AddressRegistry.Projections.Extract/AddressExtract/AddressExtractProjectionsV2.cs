@@ -109,9 +109,16 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                     DbaseRecord = addressDbaseRecord.ToBytes(_encoding),
                 }, cancellationToken: ct);
             });
+
+            When<Envelope<AddressWasApproved>>(async (context, message, ct) =>
+            {
+                var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);
+                UpdateDbaseRecordField(item, record => record.status.Value = Map(AddressStatus.Current));
+                UpdateVersie(item, message.Message.Provenance.Timestamp);
+            });
         }
 
-        private void UpdateDbaseRecordField(AddressExtractItem item, Action<AddressDbaseRecord> update)
+        private void UpdateDbaseRecordField(AddressExtractItemV2 item, Action<AddressDbaseRecord> update)
         {
             var record = new AddressDbaseRecord();
             record.FromBytes(item.DbaseRecord, _encoding);
@@ -119,7 +126,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
             item.DbaseRecord = record.ToBytes(_encoding);
         }
 
-        private void UpdateVersie(AddressExtractItem address, Instant timestamp)
+        private void UpdateVersie(AddressExtractItemV2 address, Instant timestamp)
             => UpdateDbaseRecordField(address, record => record.versieid.SetValue(timestamp.ToBelgianDateTimeOffset()));
 
         private static string Map(AddressStatus addressStatus)

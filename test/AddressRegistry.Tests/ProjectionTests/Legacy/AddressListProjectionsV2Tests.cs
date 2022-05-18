@@ -21,6 +21,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
             _fixture = new Fixture();
             _fixture.Customize(new InfrastructureCustomization());
             _fixture.Customize(new WithFixedStreetNamePersistentLocalId());
+            _fixture.Customize(new WithFixedAddressPersistentLocalId());
         }
 
         [Fact]
@@ -54,7 +55,6 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
         public async Task WhenAddressWasProposedV2()
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
-
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
@@ -74,6 +74,36 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                     expectedListItem.Removed.Should().BeFalse();
                     expectedListItem.VersionTimestamp.Should().Be(addressWasProposedV2.Provenance.Timestamp);
                     expectedListItem.LastEventHash.Should().Be(addressWasProposedV2.GetHash());
+                });
+        }
+
+
+        [Fact]
+        public async Task WhenAddressWasApproved()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasApproved = _fixture.Create<AddressWasApproved>();
+            var metadata2 = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasApproved.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, metadata)),
+                    new Envelope<AddressWasApproved>(new Envelope(addressWasApproved, metadata2)))
+                .Then(async ct =>
+                {
+                    var addressListItemV2 = (await ct.AddressListV2.FindAsync(addressWasApproved.AddressPersistentLocalId));
+                    addressListItemV2.Should().NotBeNull();
+                    addressListItemV2.Status.Should().Be(AddressStatus.Current);
+                    addressListItemV2.VersionTimestamp.Should().Be(addressWasApproved.Provenance.Timestamp);
+                    addressListItemV2.LastEventHash.Should().Be(addressWasApproved.GetHash());
                 });
         }
 

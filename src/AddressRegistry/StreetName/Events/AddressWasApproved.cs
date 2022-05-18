@@ -15,8 +15,13 @@ namespace AddressRegistry.StreetName.Events
     {
         public const string EventName = "AddressWasApproved"; // BE CAREFUL CHANGING THIS!!
 
+        [EventPropertyDescription("Objectidentificator van de straatnaam aan dewelke het adres is toegewezen.")]
         public int StreetNamePersistentLocalId { get; }
+
+        [EventPropertyDescription("Objectidentificator van het adres.")]
         public int AddressPersistentLocalId { get; }
+
+        [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
         public AddressWasApproved(

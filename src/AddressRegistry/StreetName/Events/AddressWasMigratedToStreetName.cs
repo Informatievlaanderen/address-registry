@@ -51,7 +51,7 @@ namespace AddressRegistry.StreetName.Events
         public bool OfficiallyAssigned { get; }
 
         [EventPropertyDescription("Postcode (= objectidentificator) van het PostInfo-object dat deel uitmaakt van het adres.")]
-        public string PostalCode { get; }
+        public string? PostalCode { get; } // PostalCode is not a required field in (crab) Address
 
         [EventPropertyDescription("De inhoud is altijd true en is wanneer het adres voldoet aan het informatiemodel.")]
         public bool IsCompleted { get; }
@@ -75,7 +75,7 @@ namespace AddressRegistry.StreetName.Events
             BoxNumber? boxNumber,
             AddressGeometry geometry,
             bool officiallyAssigned,
-            PostalCode postalCode,
+            PostalCode? postalCode,
             bool isCompleted,
             bool isRemoved,
             AddressPersistentLocalId? parentPersistentLocalId)
@@ -91,7 +91,7 @@ namespace AddressRegistry.StreetName.Events
             GeometrySpecification = geometry.GeometrySpecification;
             ExtendedWkbGeometry = geometry.Geometry.ToString();
             OfficiallyAssigned = officiallyAssigned;
-            PostalCode = postalCode;
+            PostalCode = postalCode ?? (string?)null;
             IsCompleted = isCompleted;
             IsRemoved = isRemoved;
             ParentPersistentLocalId = parentPersistentLocalId ?? (int?)null;
@@ -110,7 +110,7 @@ namespace AddressRegistry.StreetName.Events
             GeometrySpecification geometrySpecification,
             string extendedWkbGeometry,
             bool officiallyAssigned,
-            string postalCode,
+            string? postalCode,
             bool isCompleted,
             bool isRemoved,
             int? parentPersistentLocalId,
@@ -128,7 +128,7 @@ namespace AddressRegistry.StreetName.Events
                     geometrySpecification,
                     new ExtendedWkbGeometry(extendedWkbGeometry.ToByteArray())),
                 officiallyAssigned,
-                new PostalCode(postalCode),
+                string.IsNullOrEmpty(postalCode) ? null : new PostalCode(postalCode),
                 isCompleted,
                 isRemoved,
                 parentPersistentLocalId.HasValue ? new AddressPersistentLocalId(parentPersistentLocalId.Value) : null)
@@ -150,7 +150,7 @@ namespace AddressRegistry.StreetName.Events
             fields.Add(GeometrySpecification.ToString());
             fields.Add(ExtendedWkbGeometry);
             fields.Add(OfficiallyAssigned.ToString());
-            fields.Add(PostalCode);
+            fields.Add(!string.IsNullOrEmpty(PostalCode) ? PostalCode : string.Empty);
             fields.Add(IsCompleted.ToString());
             fields.Add(IsRemoved.ToString());
             fields.Add(ParentPersistentLocalId.HasValue ? ParentPersistentLocalId.Value.ToString(CultureInfo.InvariantCulture) : string.Empty);

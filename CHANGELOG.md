@@ -1,3 +1,10 @@
+# [3.13.0](https://github.com/informatievlaanderen/address-registry/compare/v3.12.0...v3.13.0) (2022-05-18)
+
+
+### Features
+
+* update projections for AddressWasApproved, make PostalCode nullable in legacy & wfs ([c200bcc](https://github.com/informatievlaanderen/address-registry/commit/c200bcc295d5f1ef5628d137e8146fb267cc1070))
+
 # [3.12.0](https://github.com/informatievlaanderen/address-registry/compare/v3.11.1...v3.12.0) (2022-05-18)
 
 

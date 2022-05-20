@@ -93,9 +93,9 @@ namespace AddressRegistry.Api.Legacy.Address
                 if (addressV2 == null)
                     throw new ApiException("Onbestaand adres.", StatusCodes.Status404NotFound);
 
-                var streetNameV2 =
-                    await syndicationContext.StreetNameLatestItems.FindAsync(new object[] { addressV2.StreetNamePersistentLocalId },
-                        cancellationToken);
+                var streetNameV2 = await syndicationContext.StreetNameLatestItems.FirstOrDefaultAsync(x =>
+                    x.PersistentLocalId == addressV2.StreetNamePersistentLocalId.ToString(), cancellationToken);
+
                 var municipalityV2 =
                     await syndicationContext.MunicipalityLatestItems.FirstAsync(m => m.NisCode == streetNameV2.NisCode,
                         cancellationToken);

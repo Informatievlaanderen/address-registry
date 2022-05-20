@@ -83,9 +83,9 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             var content = new SyndicationContent();
             if (address.ContainsObject)
                 content.Object = new AddressSyndicationContent(
-                    address.AddressId.HasValue ? address.AddressId.Value.ToString("D") : address.StreetNamePersistentLocalId.ToString(),
+                    address.AddressId.HasValue ? address.AddressId.Value.ToString("D") : address.PersistentLocalId.Value.ToString(),
                     naamruimte,
-                    address.StreetNameId,
+                    address.StreetNameId.HasValue ? address.StreetNameId.Value.ToString("D") : address.StreetNamePersistentLocalId.ToString(),
                     address.PersistentLocalId,
                     address.HouseNumber,
                     address.BoxNumber,
@@ -140,7 +140,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         /// De id van de straatnaam.
         /// </summary>
         [DataMember(Name = "StraatnaamId", Order = 3)]
-        public Guid? SteetnameId { get; set; }
+        public string? SteetnameId { get; set; }
 
         /// <summary>
         /// De id van de postinfo.
@@ -205,7 +205,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         public AddressSyndicationContent(
             string addressId,
             string naamruimte,
-            Guid? streetNameId,
+            string? streetNameId,
             int? persistentLocalId,
             string houseNumber,
             string boxNumber,

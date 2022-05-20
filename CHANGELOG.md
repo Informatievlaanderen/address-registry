@@ -1,3 +1,10 @@
+# [3.14.0](https://github.com/informatievlaanderen/address-registry/compare/v3.13.0...v3.14.0) (2022-05-20)
+
+
+### Features
+
+* postInfoId validations ([5e92581](https://github.com/informatievlaanderen/address-registry/commit/5e92581f9c674ea3a09a9f868e4a877862430240))
+
 # [3.13.0](https://github.com/informatievlaanderen/address-registry/compare/v3.12.0...v3.13.0) (2022-05-18)
 
 

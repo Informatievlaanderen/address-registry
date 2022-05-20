@@ -5,6 +5,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     using Address;
     using AddressRegistry.Api.BackOffice.Address;
     using AddressRegistry.Api.BackOffice.Address.Requests;
+    using AddressRegistry.Api.BackOffice.Validators;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
@@ -12,6 +13,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     using global::AutoFixture;
     using Infrastructure;
     using Moq;
+    using Projections.Syndication.PostalInfo;
     using SqlStreamStore;
     using SqlStreamStore.Streams;
     using StreetName;
@@ -25,6 +27,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
         private readonly TestBackOfficeContext _backOfficeContext;
         private readonly IdempotencyContext _idempotencyContext;
         private readonly TestConsumerContext _consumerContext;
+        private readonly TestSyndicationContext _syndicationContext;
 
         public GivenStreetNameExists(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
@@ -32,6 +35,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
             _idempotencyContext = new FakeIdempotencyContextFactory().CreateDbContext();
             _consumerContext = new FakeConsumerContextFactory().CreateDbContext();
             _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
+            _syndicationContext = new FakeSyndicationContextFactory().CreateDbContext();
         }
 
         [Fact]
@@ -54,10 +58,17 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
             ImportMigratedStreetName(streetNameId, streetNamePersistentId);
             streamVersion++;
 
+            string postInfoId = "8200";
+            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
+            {
+                 PostalCode = postInfoId
+            });
+            _syndicationContext.SaveChanges();
+
             var body = new AddressProposeRequest
             {
                 StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{consumerItem.PersistentLocalId}",
-                PostInfoId = $"https://data.vlaanderen.be/id/postinfo/8200",
+                PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
                 HouseNumber = Fixture.Create<string>(),
             };
 
@@ -67,7 +78,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                 _idempotencyContext,
                 _backOfficeContext,
                 mockPersistentLocalIdGenerator.Object,
-                //new AddressProposeRequestValidator(_consumerContext),
+                new AddressProposeRequestValidator(_syndicationContext),
                 Container.Resolve<IStreetNames>(),
                 body);
 

@@ -1,3 +1,10 @@
+## [3.14.1](https://github.com/informatievlaanderen/address-registry/compare/v3.14.0...v3.14.1) (2022-05-20)
+
+
+### Bug Fixes
+
+* fix legacy and oslo endpoints ([430a44e](https://github.com/informatievlaanderen/address-registry/commit/430a44e32ceccd770b2bc3f52ac783fd3a9ceffe))
+
 # [3.14.0](https://github.com/informatievlaanderen/address-registry/compare/v3.13.0...v3.14.0) (2022-05-20)
 
 

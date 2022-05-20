@@ -52,12 +52,12 @@ namespace AddressRegistry.Api.BackOffice.Address
             [FromServices] IdempotencyContext idempotencyContext,
             [FromServices] BackOfficeContext backOfficeContext,
             [FromServices] IPersistentLocalIdGenerator persistentLocalIdGenerator,
-            //[FromServices] IValidator<AddressProposeRequest> validator,
+            [FromServices] IValidator<AddressProposeRequest> validator,
             [FromServices] IStreetNames streetNameRepository,
             [FromBody] AddressProposeRequest addressProposeRequest,
             CancellationToken cancellationToken = default)
         {
-            //await validator.ValidateAndThrowAsync(addressProposeRequest, cancellationToken);
+            await validator.ValidateAndThrowAsync(addressProposeRequest, cancellationToken);
 
             try
             {

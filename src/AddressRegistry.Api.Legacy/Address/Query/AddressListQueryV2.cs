@@ -16,7 +16,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
     {
         private readonly AddressQueryContext _context;
 
-        protected override ISorting Sorting => new AddressSorting();
+        protected override ISorting Sorting => new AddressSortingV2();
 
         public AddressListQueryV2(AddressQueryContext context)
         {
@@ -133,5 +133,18 @@ namespace AddressRegistry.Api.Legacy.Address.Query
 
             return addresses;
         }
+    }
+
+    internal class AddressSortingV2 : ISorting
+    {
+        public IEnumerable<string> SortableFields { get; } = new[]
+        {
+            nameof(AddressListItemV2.BoxNumber),
+            nameof(AddressListItemV2.HouseNumber),
+            nameof(AddressListItemV2.PostalCode),
+            nameof(AddressListItemV2.AddressPersistentLocalId)
+        };
+
+        public SortingHeader DefaultSortingHeader { get; } = new SortingHeader(nameof(AddressListItemV2.AddressPersistentLocalId), SortOrder.Ascending);
     }
 }

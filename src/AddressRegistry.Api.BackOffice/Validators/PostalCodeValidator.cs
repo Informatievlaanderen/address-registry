@@ -21,7 +21,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
         {
             return ruleBuilder.MustAsync(async (_, postInfoId, _, cancel) =>
             {
-                if (!UrlValidator.TryParseUrl(postInfoId, out var identifier))
+                if (!OsloPuriValidator.TryParseIdentifier(postInfoId, out var identifier))
                 {
                     return false;
                 }

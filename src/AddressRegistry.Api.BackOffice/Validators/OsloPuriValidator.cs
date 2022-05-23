@@ -3,9 +3,9 @@ namespace AddressRegistry.Api.BackOffice.Validators
     using System;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo.Extensions;
 
-    public static class UrlValidator
+    public static class OsloPuriValidator
     {
-        public static bool TryParseUrl(string url, out string identifier)
+        public static bool TryParseIdentifier(string url, out string identifier)
         {
             identifier = string.Empty;
             try

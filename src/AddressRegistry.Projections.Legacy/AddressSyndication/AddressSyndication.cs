@@ -69,6 +69,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
 
                 AddressId = AddressId,
                 PersistentLocalId = PersistentLocalId,
+                StreetNamePersistentLocalId = StreetNamePersistentLocalId,
                 StreetNameId = StreetNameId,
                 PostalCode = PostalCode,
                 HouseNumber = HouseNumber,

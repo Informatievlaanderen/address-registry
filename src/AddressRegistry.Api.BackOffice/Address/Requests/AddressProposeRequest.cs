@@ -29,14 +29,14 @@ namespace AddressRegistry.Api.BackOffice.Address.Requests
         /// </summary>
         [DataMember(Name = "Huisnummer", Order = 2)]
         [JsonProperty(Required = Required.Always)]
-        public string HouseNumber { get; set; }
+        public string Huisnummer { get; set; }
 
         /// <summary>
         /// Het busnummer van het adres (optioneel).
         /// </summary>
         [DataMember(Name = "Busnummer", Order = 3)]
         [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string? BoxNumber { get; set; }
+        public string? Busnummer { get; set; }
 
         /// <summary>
         /// Map to ProposeAddress command
@@ -52,8 +52,8 @@ namespace AddressRegistry.Api.BackOffice.Address.Requests
                 streetNamePersistentLocalId,
                 postalCode,
                 addressPersistentLocalId,
-                new HouseNumber(HouseNumber),
-                string.IsNullOrWhiteSpace(BoxNumber) ? null : new BoxNumber(BoxNumber),
+                new HouseNumber(Huisnummer),
+                string.IsNullOrWhiteSpace(Busnummer) ? null : new BoxNumber(Busnummer),
                 provenance);
         }
     }
@@ -66,8 +66,8 @@ namespace AddressRegistry.Api.BackOffice.Address.Requests
             {
                 StraatNaamId = "https://data.vlaanderen.be/id/straatnaam/45041",
                 PostInfoId = "https://data.vlaanderen.be/id/postinfo/9000",
-                HouseNumber = "11",
-                BoxNumber = "3A"
+                Huisnummer = "11",
+                Busnummer = "3A"
             };
         }
     }

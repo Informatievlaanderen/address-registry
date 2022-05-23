@@ -12,6 +12,16 @@ namespace AddressRegistry.Api.BackOffice.Validators
                 .PostalCodeExists(syndicationContext)
                 .WithMessage(PostalCodeValidator.ErrorMessages.DoesNotExist)
                 .WithErrorCode(PostalCodeValidator.ErrorCodes.DoesNotExist);
+
+            RuleFor(x => x.Huisnummer)
+                .Must(HouseNumberValidator.IsValid)
+                .WithMessage("Ongeldig huisnummerformaat.")
+                .WithErrorCode("AdresOngeldigHuisnummerformaat");
+
+            RuleFor(x => x.Busnummer)
+                .Must(BoxNumberValidator.IsValid)
+                .WithMessage("Ongeldig busnummerformaat.")
+                .WithErrorCode("AdresOngeldigBusnummerformaat");
         }
     }
 }

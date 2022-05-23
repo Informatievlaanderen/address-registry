@@ -1,29 +1,28 @@
 namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
 {
-    using System.Linq;
+    using System;
     using System.Threading.Tasks;
     using AddressRegistry.Address;
     using AddressRegistry.Api.BackOffice.Address;
     using AddressRegistry.Api.BackOffice.Address.Requests;
     using AddressRegistry.Api.BackOffice.Validators;
     using Autofac;
-    using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
-    using Be.Vlaanderen.Basisregisters.Utilities;
     using FluentAssertions;
+    using FluentValidation;
     using global::AutoFixture;
     using Infrastructure;
     using Moq;
     using Projections.Syndication.PostalInfo;
-    using SqlStreamStore;
-    using SqlStreamStore.Streams;
     using StreetName;
     using Xunit;
     using Xunit.Abstractions;
-    using StreetNameId = StreetName.StreetNameId;
     using HouseNumber = StreetName.HouseNumber;
+    using PostalCode = StreetName.PostalCode;
+    using BoxNumber = StreetName.BoxNumber;
+    using StreetNameId = StreetName.StreetNameId;
 
-    public class GivenStreetNameExists : AddressRegistryBackOfficeTest
+    public class GivenChildAddressAlreadyExists : AddressRegistryBackOfficeTest
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;
@@ -31,7 +30,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
         private readonly TestConsumerContext _consumerContext;
         private readonly TestSyndicationContext _syndicationContext;
 
-        public GivenStreetNameExists(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public GivenChildAddressAlreadyExists(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             _controller = CreateApiBusControllerWithUser<AddressController>("John Doe");
             _idempotencyContext = new FakeIdempotencyContextFactory().CreateDbContext();
@@ -41,9 +40,12 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
         }
 
         [Fact]
-        public async Task ThenTheAddressIsProposed()
+        public async Task ThenThrowValidationException()
         {
             const int expectedLocation = 5;
+            string postInfoId = "8200";
+            string houseNumber = "11";
+            string boxNumber = "1A";
             var streetNameId = Fixture.Create<StreetNameId>();
             var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
 
@@ -55,12 +57,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                 .Setup(x => x.GenerateNextPersistentLocalId())
                 .Returns(new PersistentLocalId(expectedLocation));
 
-            var streamVersion = 0;
-
             ImportMigratedStreetName(streetNameId, streetNamePersistentId);
-            streamVersion++;
+            ProposeAddress(streetNamePersistentId, new AddressPersistentLocalId(123), new PostalCode(postInfoId), new HouseNumber(houseNumber), null);
+            ProposeAddress(streetNamePersistentId, new AddressPersistentLocalId(123), new PostalCode(postInfoId), new HouseNumber(houseNumber), new BoxNumber(boxNumber));
 
-            string postInfoId = "8200";
             _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
             {
                  PostalCode = postInfoId
@@ -71,11 +71,12 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
             {
                 StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{consumerItem.PersistentLocalId}",
                 PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
-                Huisnummer = "11",
+                Huisnummer = houseNumber,
+                Busnummer = boxNumber
             };
 
             //Act
-            var result = (CreatedWithLastObservedPositionAsETagResult)await _controller.Propose(
+            Func<Task> act = async () => await _controller.Propose(
                 ResponseOptions,
                 _idempotencyContext,
                 _backOfficeContext,
@@ -84,16 +85,12 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                 Container.Resolve<IStreetNames>(),
                 body);
 
-            //Assert
-            result.Location.Should().Be(string.Format(DetailUrl, expectedLocation));
-            result.LastObservedPositionAsETag.Length.Should().Be(128);
-
-            var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(new StreamId(new StreetNameStreamId(streetNamePersistentId)), streamVersion, 1); //1 = version of stream (zero based)
-            stream.Messages.First().JsonMetadata.Should().Contain(result.LastObservedPositionAsETag);
-
-            var municipalityIdByPersistentLocalId = await _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.FindAsync(expectedLocation);
-            municipalityIdByPersistentLocalId.Should().NotBeNull();
-            municipalityIdByPersistentLocalId.StreetNamePersistentLocalId.Should().Be(consumerItem.PersistentLocalId);
+            // Assert
+            act
+                .Should()
+                .ThrowAsync<ValidationException>()
+                .Result
+                .Where(x => x.Message.Contains("Deze combinatie huisnummer-busnummer bestaat reeds voor de opgegeven straatnaam."));
         }
     }
 }

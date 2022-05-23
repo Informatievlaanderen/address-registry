@@ -28,7 +28,7 @@ namespace AddressRegistry.StreetName
 
         public string LastEventHash => _lastEvent.GetHash();
 
-        public bool IsActive => Status == AddressStatus.Proposed || Status == AddressStatus.Current;
+        public bool IsActive => Status is AddressStatus.Proposed or AddressStatus.Current;
 
         public StreetNameAddress(Action<object> applier) : base(applier)
         {
@@ -60,7 +60,10 @@ namespace AddressRegistry.StreetName
 
         public bool BoxNumberIsUnique(BoxNumber boxNumber)
         {
-            return _children.FirstOrDefault(x => x.BoxNumber! == boxNumber!) == null;
+            return _children.FirstOrDefault(x =>
+                    x.IsActive
+                 && x.BoxNumber is not null
+                 && x.BoxNumber == boxNumber) is null;
         }
 
         /// <summary>

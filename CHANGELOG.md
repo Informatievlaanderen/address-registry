@@ -1,3 +1,15 @@
+# [3.15.0](https://github.com/informatievlaanderen/address-registry/compare/v3.14.2...v3.15.0) (2022-05-23)
+
+
+### Bug Fixes
+
+* correct clone streetnamepersistentlocalid in legacy sync ([5f7f0da](https://github.com/informatievlaanderen/address-registry/commit/5f7f0dad603728f040bd879f8d6792b67c5edf8c))
+
+
+### Features
+
+* add boxnumber & housenumber validations ([9bdca7b](https://github.com/informatievlaanderen/address-registry/commit/9bdca7ba80044376baad918696cbd5156a6ea359))
+
 ## [3.14.2](https://github.com/informatievlaanderen/address-registry/compare/v3.14.1...v3.14.2) (2022-05-23)
 
 

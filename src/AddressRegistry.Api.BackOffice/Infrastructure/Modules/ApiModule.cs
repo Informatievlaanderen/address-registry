@@ -14,6 +14,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
     using Microsoft.Extensions.Logging;
     using AddressRegistry.Infrastructure;
     using AddressRegistry.Infrastructure.Modules;
+    using Projections.Syndication;
 
     public class ApiModule : Module
     {
@@ -33,8 +34,6 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
 
         protected override void Load(ContainerBuilder containerBuilder)
         {
-            var eventSerializerSettings = EventsJsonSerializerSettingsProvider.CreateSerializerSettings();
-
             containerBuilder
                 .RegisterModule(new DataDogModule(_configuration));
 
@@ -50,11 +49,9 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
                 new IdempotencyTableInfo(Schema.Import),
                 _loggerFactory));
 
-            containerBuilder.RegisterModule(new EventHandlingModule(typeof(DomainAssemblyMarker).Assembly,
-                eventSerializerSettings));
-
             containerBuilder.RegisterModule(new EnvelopeModule());
             containerBuilder.RegisterModule(new BackOfficeModule(_configuration, _services, _loggerFactory));
+            containerBuilder.RegisterModule(new SyndicationModule(_configuration, _services, _loggerFactory));
             containerBuilder.RegisterModule(new EditModule(_configuration, _services, _loggerFactory));
             containerBuilder.RegisterModule(new ConsumerModule(_configuration, _services, _loggerFactory));
 

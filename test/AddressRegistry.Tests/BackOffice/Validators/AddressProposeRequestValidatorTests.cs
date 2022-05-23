@@ -23,7 +23,8 @@ namespace AddressRegistry.Tests.BackOffice.Validators
         {
             var result = _validator.TestValidate(new AddressProposeRequest
             {
-                PostInfoId = ""
+                PostInfoId = "",
+                Huisnummer = "11"
             });
 
             result
@@ -38,12 +39,13 @@ namespace AddressRegistry.Tests.BackOffice.Validators
 
             _syndicationContext.AddPostalInfoLatestItem(new PostalInfoLatestItem
             {
-                PostalCode = "8200"
+                PostalCode = "8200",
             });
 
             var result = _validator.TestValidate(new AddressProposeRequest
             {
-                PostInfoId = invalidUri
+                PostInfoId = invalidUri,
+                Huisnummer = "11"
             });
 
             result
@@ -62,7 +64,8 @@ namespace AddressRegistry.Tests.BackOffice.Validators
 
             var result = _validator.TestValidate(new AddressProposeRequest
             {
-                PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{nonExistentPostInfoId}"
+                PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{nonExistentPostInfoId}",
+                Huisnummer = "11"
             });
 
             result
@@ -81,7 +84,8 @@ namespace AddressRegistry.Tests.BackOffice.Validators
 
             var result = _validator.TestValidate(new AddressProposeRequest
             {
-                PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}"
+                PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
+                Huisnummer = "11"
             });
 
             result

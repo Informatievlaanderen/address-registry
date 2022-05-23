@@ -88,7 +88,14 @@ namespace AddressRegistry.StreetName
             AddressPersistentLocalId? parentPersistentLocalId = null;
             if (!EqualityComparer<Guid>.Default.Equals(parentAddressId ?? Guid.Empty, Guid.Empty))
             {
-                parentPersistentLocalId = StreetNameAddresses.GetParentByLegacyAddressId(parentAddressId ?? AddressId.Default).AddressPersistentLocalId;
+                var parent = StreetNameAddresses.FindParentByLegacyAddressId(parentAddressId ?? AddressId.Default);
+
+                if (parent is null)
+                {
+                    throw new ParentAddressNotFoundException(PersistentLocalId, houseNumber);
+                }
+
+                parentPersistentLocalId = parent.AddressPersistentLocalId;
             }
 
             ApplyChange(new AddressWasMigratedToStreetName(
@@ -121,13 +128,13 @@ namespace AddressRegistry.StreetName
             var parentFound = parent is not null;
             var parentNotFound = !parentFound;
 
-            if (isChild && parentNotFound)
-            {
-                throw new ParentAddressNotFoundException();
-            }
-            if(isParent && parentFound)
+            if (isParent && parentFound)
             {
                 throw new ParentAddressAlreadyExistsException(houseNumber);
+            }
+            if (isChild && parentNotFound)
+            {
+                throw new ParentAddressNotFoundException(streetNamePersistentLocalId, houseNumber);
             }
             if (isChild && !parent.BoxNumberIsUnique(boxNumber!))
             {

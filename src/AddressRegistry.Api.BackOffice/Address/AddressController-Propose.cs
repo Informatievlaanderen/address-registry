@@ -19,6 +19,7 @@ namespace AddressRegistry.Api.BackOffice.Address
     using Microsoft.Extensions.Options;
     using Requests;
     using StreetName;
+    using StreetName.Exceptions;
     using Swashbuckle.AspNetCore.Filters;
     using PostalCode = StreetName.PostalCode;
 
@@ -99,7 +100,23 @@ namespace AddressRegistry.Api.BackOffice.Address
             {
                 throw exception switch
                 {
-                    // TODO: catch validation exceptions
+                    ParentAddressAlreadyExistsException _ =>
+                        CreateValidationException(
+                            "AdresBestaandeHuisnummerBusnummerCombinatie",
+                            nameof(addressProposeRequest.Huisnummer),
+                            "Deze combinatie huisnummer-busnummer bestaat reeds voor de opgegeven straatnaam."),
+
+                    DuplicateBoxNumberException _ =>
+                        CreateValidationException(
+                            "AdresBestaandeHuisnummerBusnummerCombinatie",
+                            nameof(addressProposeRequest.Busnummer),
+                            "Deze combinatie huisnummer-busnummer bestaat reeds voor de opgegeven straatnaam."),
+
+                    ParentAddressNotFoundException parentAddressNotFound =>
+                        CreateValidationException(
+                            "AdresActiefHuisNummerNietGekendValidatie",
+                            nameof(addressProposeRequest.Huisnummer),
+                            $"Er bestaat geen actief adres zonder busnummer voor straatnaamobject '{parentAddressNotFound.StreetNamePersistentLocalId}' en huisnummer '{parentAddressNotFound.HouseNumber}'."),
 
                     _ => new ValidationException(new List<ValidationFailure>
                         { new ValidationFailure(string.Empty, exception.Message) })

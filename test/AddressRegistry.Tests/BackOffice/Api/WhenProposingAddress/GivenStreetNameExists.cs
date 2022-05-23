@@ -2,13 +2,14 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
 {
     using System.Linq;
     using System.Threading.Tasks;
-    using Address;
+    using AddressRegistry.Address;
     using AddressRegistry.Api.BackOffice.Address;
     using AddressRegistry.Api.BackOffice.Address.Requests;
     using AddressRegistry.Api.BackOffice.Validators;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
+    using Be.Vlaanderen.Basisregisters.Utilities;
     using FluentAssertions;
     using global::AutoFixture;
     using Infrastructure;
@@ -20,6 +21,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     using Xunit;
     using Xunit.Abstractions;
     using StreetNameId = StreetName.StreetNameId;
+    using HouseNumber = StreetName.HouseNumber;
 
     public class GivenStreetNameExists : AddressRegistryBackOfficeTest
     {
@@ -69,7 +71,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
             {
                 StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{consumerItem.PersistentLocalId}",
                 PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
-                HouseNumber = Fixture.Create<string>(),
+                Huisnummer = "11",
             };
 
             //Act

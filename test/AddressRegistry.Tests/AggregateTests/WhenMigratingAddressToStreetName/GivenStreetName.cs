@@ -25,6 +25,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
             Fixture.Customize(new WithFixedStreetNamePersistentLocalId());
             Fixture.Customize(new WithExtendedWkbGeometry());
             Fixture.Customize(new WithFlemishNisCode());
+            Fixture.Customize(new WithFixedValidHouseNumber());
             _streamId = Fixture.Create<StreetNameStreamId>();
         }
 
@@ -142,7 +143,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
                 .Given(_streamId,
                     Fixture.Create<MigratedStreetNameWasImported>())
                 .When(command)
-                .Throws(new ParentAddressNotFoundException()));
+                .Throws(new ParentAddressNotFoundException(command.StreetNamePersistentLocalId, command.HouseNumber)));
         }
     }
 }

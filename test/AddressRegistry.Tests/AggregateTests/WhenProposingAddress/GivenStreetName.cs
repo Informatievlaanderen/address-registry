@@ -23,6 +23,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
         {
             Fixture.Customize(new InfrastructureCustomization());
             Fixture.Customize(new WithFixedStreetNamePersistentLocalId());
+            Fixture.Customize(new WithFixedValidHouseNumber());
             _streamId = Fixture.Create<StreetNameStreamId>();
         }
 
@@ -116,13 +117,14 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
         [Fact]
         public void ChildAddressWithoutExistingParent_ThenThrowParentNotFoundException()
         {
-            var houseNumber = Fixture.Create<string>();
+            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
+            var houseNumber = Fixture.Create<HouseNumber>();
 
             var proposeChildAddress = new ProposeAddress(
-                Fixture.Create<StreetNamePersistentLocalId>(),
+                streetNamePersistentLocalId,
                 Fixture.Create<PostalCode>(),
                 Fixture.Create<AddressPersistentLocalId>(),
-                new HouseNumber(houseNumber),
+                houseNumber,
                 Fixture.Create<BoxNumber>(),
                 Fixture.Create<Provenance>());
 
@@ -130,7 +132,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 .Given(_streamId,
                     Fixture.Create<MigratedStreetNameWasImported>())
                 .When(proposeChildAddress)
-                .Throws(new ParentAddressNotFoundException()));
+                .Throws(new ParentAddressNotFoundException(streetNamePersistentLocalId, houseNumber)));
         }
 
         [Fact]

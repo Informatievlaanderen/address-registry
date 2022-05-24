@@ -76,7 +76,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                 _idempotencyContext,
                 _backOfficeContext,
                 mockPersistentLocalIdGenerator.Object,
-                new AddressProposeRequestValidator(_consumerContext, _syndicationContext),
+                new AddressProposeRequestValidator(_syndicationContext),
                 Container.Resolve<IStreetNames>(),
                 body);
 

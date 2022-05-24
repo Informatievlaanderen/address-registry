@@ -1,6 +1,7 @@
 namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
 {
     using System;
+    using System.Linq;
     using System.Threading.Tasks;
     using AddressRegistry.Address;
     using AddressRegistry.Api.BackOffice.Address;
@@ -77,7 +78,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                 _idempotencyContext,
                 _backOfficeContext,
                 mockPersistentLocalIdGenerator.Object,
-                new AddressProposeRequestValidator(_syndicationContext),
+                new AddressProposeRequestValidator(_consumerContext, _syndicationContext),
                 Container.Resolve<IStreetNames>(),
                 body);
 
@@ -86,7 +87,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                 .Should()
                 .ThrowAsync<ValidationException>()
                 .Result
-                .Where(x => x.Message.Contains("Deze combinatie huisnummer-busnummer bestaat reeds voor de opgegeven straatnaam."));
+                .Where(x =>
+                    x.Errors.Any(
+                        failure => failure.ErrorCode == "AdresBestaandeHuisnummerBusnummerCombinatie"
+                                   && failure.ErrorMessage == "Deze combinatie huisnummer-busnummer bestaat reeds voor de opgegeven straatnaam."
+                                   && failure.PropertyName == nameof(body.Huisnummer)));
         }
     }
 }

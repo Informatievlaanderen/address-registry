@@ -1,37 +1,24 @@
 namespace AddressRegistry.Api.BackOffice.Validators
 {
-    using FluentValidation;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using Projections.Syndication;
 
     public static class PostalCodeValidator
     {
-        public static class ErrorCodes
+        public static async Task<bool> PostalCodeExists(SyndicationContext syndicationContext, string postInfoId, CancellationToken ct)
         {
-            public const string DoesNotExist = "AdresPostinfoNietGekendValidatie";
-        }
-
-        public static class ErrorMessages
-        {
-            public const string DoesNotExist = "Ongeldige postinfoId.";
-        }
-
-        public static IRuleBuilderOptions<T, string> PostalCodeExists<T>(
-            this IRuleBuilder<T, string> ruleBuilder, SyndicationContext syndicationContext)
-        {
-            return ruleBuilder.MustAsync(async (_, postInfoId, _, cancel) =>
+            if (!OsloPuriValidator.TryParseIdentifier(postInfoId, out var identifier))
             {
-                if (!OsloPuriValidator.TryParseIdentifier(postInfoId, out var identifier))
-                {
-                    return false;
-                }
+                return false;
+            }
 
-                var result = await syndicationContext
-                    .PostalInfoLatestItems
-                    .FirstOrDefaultAsync(x => x.PostalCode == identifier, cancel);
+            var result = await syndicationContext
+                .PostalInfoLatestItems
+                .FirstOrDefaultAsync(x => x.PostalCode == identifier, ct);
 
-                return result is not null;
-            });
+            return result is not null;
         }
     }
 }

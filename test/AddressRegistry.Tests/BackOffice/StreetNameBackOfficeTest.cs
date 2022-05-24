@@ -61,16 +61,25 @@ namespace AddressRegistry.Tests.BackOffice
 
         protected void ImportMigratedStreetName(
             StreetNameId streetNameId,
-            StreetNamePersistentLocalId streetNamePersistentLocalId)
+            StreetNamePersistentLocalId streetNamePersistentLocalId,
+            StreetNameStatus status = StreetNameStatus.Current)
         {
             var importMunicipality = new ImportMigratedStreetName(
                 streetNameId,
                 streetNamePersistentLocalId,
                 Fixture.Create<MunicipalityId>(),
                 new NisCode("23002"),
-                StreetNameStatus.Current,
+                status,
                 Fixture.Create<Provenance>());
             DispatchArrangeCommand(importMunicipality);
+        }
+
+        protected void RemoveStreetName(StreetNamePersistentLocalId streetNamePersistentLocalId)
+        {
+            var command = new RemoveStreetName(
+                streetNamePersistentLocalId,
+                Fixture.Create<Provenance>());
+            DispatchArrangeCommand(command);
         }
 
         protected void ProposeAddress(

@@ -80,7 +80,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                 _idempotencyContext,
                 _backOfficeContext,
                 mockPersistentLocalIdGenerator.Object,
-                new AddressProposeRequestValidator(_syndicationContext),
+                new AddressProposeRequestValidator(_consumerContext, _syndicationContext),
                 Container.Resolve<IStreetNames>(),
                 body);
 

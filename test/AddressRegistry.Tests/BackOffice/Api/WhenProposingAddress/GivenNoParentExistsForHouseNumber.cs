@@ -1,6 +1,7 @@
 namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
 {
     using System;
+    using System.Linq;
     using System.Threading.Tasks;
     using AddressRegistry.Address;
     using AddressRegistry.Api.BackOffice.Address;
@@ -40,7 +41,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
         }
 
         [Fact]
-        public async Task ThenThrowValidationException()
+        public void ThenThrowValidationException()
         {
             const int expectedLocation = 5;
             string postInfoId = "8200";
@@ -79,16 +80,24 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                 _idempotencyContext,
                 _backOfficeContext,
                 mockPersistentLocalIdGenerator.Object,
-                new AddressProposeRequestValidator(_syndicationContext),
+                new AddressProposeRequestValidator(_consumerContext, _syndicationContext),
                 Container.Resolve<IStreetNames>(),
                 body);
 
             // Assert
+            var d = act
+                .Should()
+                .ThrowAsync<ValidationException>()
+                .Result;
             act
                 .Should()
                 .ThrowAsync<ValidationException>()
                 .Result
-                .Where(x => x.Message.Contains($"Er bestaat geen actief adres zonder busnummer voor straatnaamobject '{streetNamePersistentId}' en huisnummer '{houseNumber}'."));
+                .Where(x =>
+                    x.Errors.Any(
+                        failure => failure.ErrorCode == "AdresActiefHuisNummerNietGekendValidatie"
+                                   && failure.ErrorMessage == $"Er bestaat geen actief adres zonder busnummer voor straatnaamobject '{streetNamePersistentId}' en huisnummer '{houseNumber}'."
+                                   && failure.PropertyName == nameof(body.Huisnummer)));
         }
     }
 }

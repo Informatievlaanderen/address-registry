@@ -121,6 +121,15 @@ namespace AddressRegistry.StreetName
             HouseNumber houseNumber,
             BoxNumber? boxNumber)
         {
+            if (IsRemoved)
+            {
+                throw new StreetNameIsRemovedException(streetNamePersistentLocalId);
+            }
+            if (!IsActive)
+            {
+                throw new StreetNameNotActiveException(streetNamePersistentLocalId);
+            }
+
             var parent = StreetNameAddresses.FindActiveParentByHouseNumber(houseNumber);
 
             var isChild = boxNumber is not null;

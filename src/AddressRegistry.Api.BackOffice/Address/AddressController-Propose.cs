@@ -10,7 +10,6 @@ namespace AddressRegistry.Api.BackOffice.Address
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo.Extensions;
-    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentValidation;
     using FluentValidation.Results;
     using Infrastructure.Options;
@@ -21,6 +20,7 @@ namespace AddressRegistry.Api.BackOffice.Address
     using StreetName;
     using StreetName.Exceptions;
     using Swashbuckle.AspNetCore.Filters;
+    using Validators;
     using PostalCode = StreetName.PostalCode;
 
     public partial class AddressController
@@ -72,7 +72,8 @@ namespace AddressRegistry.Api.BackOffice.Address
 
                 var streetNamePersistentLocalId = new StreetNamePersistentLocalId(int.Parse(identifier.Value));
                 var postalCodeId = new PostalCode(postInfoIdentifier.Value);
-                var addressPersistentLocalId = new AddressPersistentLocalId(persistentLocalIdGenerator.GenerateNextPersistentLocalId());
+                var addressPersistentLocalId =
+                    new AddressPersistentLocalId(persistentLocalIdGenerator.GenerateNextPersistentLocalId());
 
                 var cmd = addressProposeRequest.ToCommand(
                     streetNamePersistentLocalId,
@@ -85,10 +86,19 @@ namespace AddressRegistry.Api.BackOffice.Address
                 // Insert PersistentLocalId with MunicipalityId
                 await backOfficeContext
                     .AddressPersistentIdStreetNamePersistentIds
-                    .AddAsync(new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentLocalId), cancellationToken);
+                    .AddAsync(
+                        new AddressPersistentIdStreetNamePersistentId(
+                            addressPersistentLocalId,
+                            streetNamePersistentLocalId),
+                        cancellationToken);
                 await backOfficeContext.SaveChangesAsync(cancellationToken);
 
-                var addressHash = await GetHash(streetNameRepository, streetNamePersistentLocalId, addressPersistentLocalId, cancellationToken);
+                var addressHash = await GetHash(
+                    streetNameRepository,
+                    streetNamePersistentLocalId,
+                    addressPersistentLocalId,
+                    cancellationToken);
+
                 return new CreatedWithLastObservedPositionAsETagResult(
                     new Uri(string.Format(options.Value.DetailUrl, addressPersistentLocalId)), addressHash);
             }
@@ -96,27 +106,48 @@ namespace AddressRegistry.Api.BackOffice.Address
             {
                 return Accepted();
             }
+            catch (AggregateNotFoundException exception)
+            {
+                throw CreateValidationException(
+                    ValidationErrorCodes.StreetNameInvalid,
+                    nameof(addressProposeRequest.StraatNaamId),
+                    ValidationErrorMessages.StreetNameInvalid);
+            }
             catch (DomainException exception)
             {
                 throw exception switch
                 {
                     ParentAddressAlreadyExistsException _ =>
                         CreateValidationException(
-                            "AdresBestaandeHuisnummerBusnummerCombinatie",
+                            ValidationErrorCodes.AddressAlreadyExists,
                             nameof(addressProposeRequest.Huisnummer),
-                            "Deze combinatie huisnummer-busnummer bestaat reeds voor de opgegeven straatnaam."),
+                            ValidationErrorMessages.AddressAlreadyExists),
 
                     DuplicateBoxNumberException _ =>
                         CreateValidationException(
-                            "AdresBestaandeHuisnummerBusnummerCombinatie",
+                            ValidationErrorCodes.AddressAlreadyExists,
                             nameof(addressProposeRequest.Busnummer),
-                            "Deze combinatie huisnummer-busnummer bestaat reeds voor de opgegeven straatnaam."),
+                            ValidationErrorMessages.AddressAlreadyExists),
 
-                    ParentAddressNotFoundException parentAddressNotFound =>
+                    ParentAddressNotFoundException e =>
                         CreateValidationException(
-                            "AdresActiefHuisNummerNietGekendValidatie",
+                            ValidationErrorCodes.AddressHouseNumberUnknown,
                             nameof(addressProposeRequest.Huisnummer),
-                            $"Er bestaat geen actief adres zonder busnummer voor straatnaamobject '{parentAddressNotFound.StreetNamePersistentLocalId}' en huisnummer '{parentAddressNotFound.HouseNumber}'."),
+                            ValidationErrorMessages.AddressHouseNumberUnknown(
+                                e.StreetNamePersistentLocalId,
+                                e.HouseNumber)),
+
+                    StreetNameNotActiveException _ =>
+                        CreateValidationException(
+                            ValidationErrorCodes.StreetNameIsNotActive,
+                            nameof(addressProposeRequest.StraatNaamId),
+                            ValidationErrorMessages.StreetNameIsNotActive),
+
+                    StreetNameIsRemovedException _ =>
+                        CreateValidationException(
+                            ValidationErrorCodes.StreetNameInvalid,
+                            nameof(addressProposeRequest.StraatNaamId),
+                            ValidationErrorMessages.StreetNameInvalid),
 
                     _ => new ValidationException(new List<ValidationFailure>
                         { new ValidationFailure(string.Empty, exception.Message) })

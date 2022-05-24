@@ -9,6 +9,10 @@ namespace AddressRegistry.StreetName
         public bool IsRemoved { get; private set; }
         public StreetNameStatus Status { get; private set; }
 
+        public bool IsActive => !IsRemoved 
+                                && Status != StreetNameStatus.Retired
+                                && Status != StreetNameStatus.Rejected;
+
         public StreetNameAddresses StreetNameAddresses { get; } = new StreetNameAddresses();
 
         private StreetName()

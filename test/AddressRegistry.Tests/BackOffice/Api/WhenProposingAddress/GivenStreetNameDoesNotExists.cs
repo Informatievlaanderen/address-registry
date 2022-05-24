@@ -11,19 +11,14 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using FluentAssertions;
     using FluentValidation;
-    using global::AutoFixture;
     using Infrastructure;
     using Moq;
     using Projections.Syndication.PostalInfo;
     using StreetName;
     using Xunit;
     using Xunit.Abstractions;
-    using HouseNumber = StreetName.HouseNumber;
-    using PostalCode = StreetName.PostalCode;
-    using BoxNumber = StreetName.BoxNumber;
-    using StreetNameId = StreetName.StreetNameId;
 
-    public class GivenChildAddressAlreadyExists : AddressRegistryBackOfficeTest
+    public class GivenStreetNameDoesNotExists : AddressRegistryBackOfficeTest
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;
@@ -31,7 +26,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
         private readonly TestConsumerContext _consumerContext;
         private readonly TestSyndicationContext _syndicationContext;
 
-        public GivenChildAddressAlreadyExists(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public GivenStreetNameDoesNotExists(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             _controller = CreateApiBusControllerWithUser<AddressController>("John Doe");
             _idempotencyContext = new FakeIdempotencyContextFactory().CreateDbContext();
@@ -46,21 +41,13 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
             const int expectedLocation = 5;
             string postInfoId = "8200";
             string houseNumber = "11";
-            string boxNumber = "1A";
-            var streetNameId = Fixture.Create<StreetNameId>();
-            var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
+            var nonExistentStreetNameId = "1";
 
             //Arrange
-            var consumerItem = _consumerContext
-                .AddStreetNameConsumerItemFixtureWithPersistentLocalIdAndStreetNameId(streetNameId, streetNamePersistentId);
             var mockPersistentLocalIdGenerator = new Mock<IPersistentLocalIdGenerator>();
             mockPersistentLocalIdGenerator
                 .Setup(x => x.GenerateNextPersistentLocalId())
                 .Returns(new PersistentLocalId(expectedLocation));
-
-            ImportMigratedStreetName(streetNameId, streetNamePersistentId);
-            ProposeAddress(streetNamePersistentId, new AddressPersistentLocalId(123), new PostalCode(postInfoId), new HouseNumber(houseNumber), null);
-            ProposeAddress(streetNamePersistentId, new AddressPersistentLocalId(123), new PostalCode(postInfoId), new HouseNumber(houseNumber), new BoxNumber(boxNumber));
 
             _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
             {
@@ -70,10 +57,9 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
 
             var body = new AddressProposeRequest
             {
-                StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{consumerItem.PersistentLocalId}",
+                StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{nonExistentStreetNameId}",
                 PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
-                Huisnummer = houseNumber,
-                Busnummer = boxNumber
+                Huisnummer = houseNumber
             };
 
             //Act
@@ -93,9 +79,9 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                 .Result
                 .Where(x =>
                     x.Errors.Any(
-                        failure => failure.ErrorCode == "AdresBestaandeHuisnummerBusnummerCombinatie"
-                                   && failure.ErrorMessage == "Deze combinatie huisnummer-busnummer bestaat reeds voor de opgegeven straatnaam."
-                                   && failure.PropertyName == nameof(body.Busnummer)));
+                        failure => failure.ErrorCode == "AdresStraatnaamNietGekendValidatie"
+                                   && failure.ErrorMessage == "Ongeldige straatnaamId."
+                                   && failure.PropertyName == nameof(body.StraatNaamId)));
         }
     }
 }

@@ -1,0 +1,15 @@
+Be.Vlaanderen.Basisregisters.Api
+Be.Vlaanderen.Basisregisters.EventHandling.Autofac
+Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql
+Be.Vlaanderen.Basisregisters.GrAr.Contracts
+Be.Vlaanderen.BasisRegisters.MessageHandling.Kafka.Simple
+Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner
+Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac
+Be.Vlaanderen.Basisregisters.Projector
+
+Microsoft.Extensions.DependencyInjection
+
+AspNetCore.HealthChecks.SqlServer
+
+SourceLink.Embed.AllSourceFiles
+SourceLink.Copy.PdbFiles

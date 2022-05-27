@@ -14,6 +14,7 @@ namespace AddressRegistry.Infrastructure
         public const string BackOffice = "AddressRegistryBackOffice";
         public const string Wfs = "wfs.address";
         public const string Wms = "wms.address";
+        public const string Producer = "AddressRegistryProducer";
     }
 
     public static class MigrationTables
@@ -28,6 +29,7 @@ namespace AddressRegistry.Infrastructure
         public const string BackOffice = "__EFMigrationsHistoryBackOffice";
         public const string Wfs = "__EFMigrationsHistoryWfsAddress";
         public const string Wms = "__EFMigrationsHistoryWmsAddress";
+        public const string Producer = "__EFMigrationsHistoryProducer";
     }
 }
 

@@ -2,7 +2,7 @@
 version 7.0.2
 framework: net6.0
 source https://api.nuget.org/v3/index.json
-nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 6.0.3 //"
+nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 6.0.5 //"
 
 #load "packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/build-generic.fsx"
 
@@ -21,6 +21,7 @@ let dockerRepository = "address-registry"
 let assemblyVersionNumber = (sprintf "2.%s")
 let nugetVersionNumber = (sprintf "%s")
 
+let buildSolution = buildSolution assemblyVersionNumber
 let buildSource = build assemblyVersionNumber
 let buildTest = buildTest assemblyVersionNumber
 let setVersions = (setSolutionVersions assemblyVersionNumber product copyright company)
@@ -38,31 +39,10 @@ Target.create "Restore_Solution" (fun _ -> restore "AddressRegistry")
 
 Target.create "Build_Solution" (fun _ ->
   setVersions "SolutionInfo.cs"
-  buildSource "AddressRegistry.Projector"
-  buildSource "AddressRegistry.Api.Oslo"
-  buildSource "AddressRegistry.Api.Legacy"
-  buildSource "AddressRegistry.Api.Extract"
-  buildSource "AddressRegistry.Api.CrabImport"
-  buildSource "AddressRegistry.Api.BackOffice"
-  buildSource "AddressRegistry.Consumer"
-  buildSource "AddressRegistry.Migrator.Address"
-  buildSource "AddressRegistry.Projections.Legacy"
-  buildSource "AddressRegistry.Projections.Extract"
-  buildSource "AddressRegistry.Projections.Wfs"
-  buildSource "AddressRegistry.Projections.Wms"
-  buildSource "AddressRegistry.Projections.LastChangedList"
-  buildSource "AddressRegistry.Projections.Syndication"
-  buildTest "AddressRegistry.Tests"
-  buildTest "AddressRegistry.Api.Legacy.Tests"
-  buildTest "AddressRegistry.Api.BackOffice.IntegrationTests"
+  buildSolution "AddressRegistry"
 )
 
-Target.create "Test_Solution" (fun _ ->
-    [
-        "test" @@ "AddressRegistry.Tests"
-        "test" @@ "AddressRegistry.Api.Legacy.Tests"
-    ] |> List.iter testWithDotNet
-)
+Target.create "Test_Solution" (fun _ -> test "AddressRegistry")
 
 Target.create "Publish_Solution" (fun _ ->
   [
@@ -74,6 +54,7 @@ Target.create "Publish_Solution" (fun _ ->
     "AddressRegistry.Api.BackOffice"
     "AddressRegistry.Consumer"
     "AddressRegistry.Migrator.Address"
+    "AddressRegistry.Producer"
     "AddressRegistry.Projections.Legacy"
     "AddressRegistry.Projections.Extract"
     "AddressRegistry.Projections.LastChangedList"
@@ -99,6 +80,7 @@ Target.create "Pack_Solution" (fun _ ->
     "AddressRegistry.Api.BackOffice"
     "AddressRegistry.Consumer"
     "AddressRegistry.Migrator.Address"
+    "AddressRegistry.Producer"
   ] |> List.iter pack)
 
 Target.create "Containerize_Projector" (fun _ -> containerize "AddressRegistry.Projector" "projector")
@@ -124,6 +106,9 @@ Target.create "PushContainer_Consumer" (fun _ -> push "consumer")
 
 Target.create "Containerize_Migrator_Address" (fun _ -> containerize "AddressRegistry.Migrator.Address" "migrator-address")
 Target.create "PushContainer_Migrator_Address" (fun _ -> push "migrator-address")
+
+Target.create "Containerize_Producer" (fun _ -> containerize "AddressRegistry.Producer" "producer")
+Target.create "PushContainer_Producer" (fun _ -> push "producer")
 
 Target.create "Containerize_ProjectionsSyndication" (fun _ -> containerize "AddressRegistry.Projections.Syndication" "projections-syndication")
 Target.create "PushContainer_ProjectionsSyndication" (fun _ -> push "projections-syndication")
@@ -168,6 +153,7 @@ Target.create "Push" ignore
   ==> "Containerize_ApiCrabImport"
   ==> "Containerize_Consumer"
   ==> "Containerize_Migrator_Address"
+  ==> "Containerize_Producer"
   ==> "Containerize_ProjectionsSyndication"
   ==> "Containerize_CacheWarmer"
   ==> "Containerize"
@@ -183,6 +169,7 @@ Target.create "Push" ignore
   ==> "PushContainer_ApiCrabImport"
   ==> "PushContainer_Consumer"
   ==> "PushContainer_Migrator_Address"
+  ==> "PushContainer_Producer"
   ==> "PushContainer_ProjectionsSyndication"
   ==> "PushContainer_CacheWarmer"
   ==> "Push"

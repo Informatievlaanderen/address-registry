@@ -12,7 +12,7 @@ projectUrl https://github.com/Informatievlaanderen/address-registry
 iconUrl https://raw.githubusercontent.com/Informatievlaanderen/build-pipeline/master/logo.png
 licenseUrl https://opensource.org/licenses/EUPL-1.2
 
-description StreetName Registry Producer.
+description Address Registry Producer.
 
 dependencies
   framework: net6.0

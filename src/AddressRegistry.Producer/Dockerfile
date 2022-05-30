@@ -10,6 +10,6 @@ RUN apt-get update && \
     chmod +x ./init.sh
 
 EXPOSE 5014/tcp
-ENV ASPNETCORE_URLS http://*:4014
+ENV ASPNETCORE_URLS http://*:5014
 
 ENTRYPOINT ["./init.sh"]

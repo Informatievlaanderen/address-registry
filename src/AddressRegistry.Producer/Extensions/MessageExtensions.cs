@@ -17,8 +17,6 @@ namespace AddressRegistry.Producer.Extensions
         public static Contracts.AddressBecameIncomplete ToContract(this AddressAggregate.AddressBecameIncomplete message) =>
             new Contracts.AddressBecameIncomplete(message.AddressId.ToString("D"), message.Provenance.ToContract());
 
-
-
         public static Contracts.AddressBecameNotOfficiallyAssigned ToContract(this AddressAggregate.AddressBecameNotOfficiallyAssigned message) =>
             new Contracts.AddressBecameNotOfficiallyAssigned(message.AddressId.ToString("D"), message.Provenance.ToContract());
 

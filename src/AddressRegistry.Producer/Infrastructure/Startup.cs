@@ -68,7 +68,7 @@ namespace AddressRegistry.Producer.Infrastructure
                             ApiInfo = (provider, description) => new OpenApiInfo
                             {
                                 Version = description.ApiVersion.ToString(),
-                                Title = "Basisregisters Vlaanderen StreetName Registry API",
+                                Title = "Basisregisters Vlaanderen Address Registry API",
                                 Description = GetApiLeadingText(description),
                                 Contact = new OpenApiContact
                                 {
@@ -155,7 +155,7 @@ namespace AddressRegistry.Producer.Infrastructure
                     Api =
                     {
                         VersionProvider = apiVersionProvider,
-                        Info = groupName => $"Basisregisters Vlaanderen - StreetName Registry API {groupName}",
+                        Info = groupName => $"Basisregisters Vlaanderen - Address Registry API {groupName}",
                         CSharpClientOptions =
                         {
                             ClassName = "AddressRegistryProducer",
@@ -183,6 +183,6 @@ namespace AddressRegistry.Producer.Infrastructure
         }
 
         private static string GetApiLeadingText(ApiVersionDescription description)
-            => $"Momenteel leest u de documentatie voor versie {description.ApiVersion} van de Basisregisters Vlaanderen StreetName Registry Producer API{string.Format(description.IsDeprecated ? ", **deze API versie is niet meer ondersteund * *." : ".")}";
+            => $"Momenteel leest u de documentatie voor versie {description.ApiVersion} van de Basisregisters Vlaanderen Address Registry Producer API{string.Format(description.IsDeprecated ? ", **deze API versie is niet meer ondersteund * *." : ".")}";
     }
 }

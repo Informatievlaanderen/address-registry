@@ -10,12 +10,12 @@ namespace AddressRegistry.Api.BackOffice.Validators
         {
             RuleFor(x => x.StraatNaamId)
                 .Must((_, straatNaamId) => OsloPuriValidator.TryParseIdentifier(straatNaamId, out var _))
-                .WithMessage(ValidationErrorMessages.StreetNameInvalid)
+                .WithMessage((_, straatNaamId) =>  ValidationErrorMessages.StreetNameInvalid(straatNaamId))
                 .WithErrorCode(ValidationErrorCodes.StreetNameInvalid);
 
             RuleFor(x => x.PostInfoId)
                 .MustAsync((_, postInfoId, ct) => PostalCodeValidator.PostalCodeExists(syndicationContext, postInfoId, ct))
-                .WithMessage(ValidationErrorMessages.PostalCodeDoesNotExist)
+                .WithMessage((_, postInfoId) => ValidationErrorMessages.PostalCodeDoesNotExist(postInfoId))
                 .WithErrorCode(ValidationErrorCodes.PostalCodeDoesNotExist);
 
             RuleFor(x => x.Huisnummer)

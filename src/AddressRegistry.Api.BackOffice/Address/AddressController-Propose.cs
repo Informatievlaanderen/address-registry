@@ -106,12 +106,12 @@ namespace AddressRegistry.Api.BackOffice.Address
             {
                 return Accepted();
             }
-            catch (AggregateNotFoundException exception)
+            catch (AggregateNotFoundException)
             {
                 throw CreateValidationException(
                     ValidationErrorCodes.StreetNameInvalid,
                     nameof(addressProposeRequest.StraatNaamId),
-                    ValidationErrorMessages.StreetNameInvalid);
+                    ValidationErrorMessages.StreetNameInvalid(addressProposeRequest.StraatNaamId));
             }
             catch (DomainException exception)
             {
@@ -134,7 +134,7 @@ namespace AddressRegistry.Api.BackOffice.Address
                             ValidationErrorCodes.AddressHouseNumberUnknown,
                             nameof(addressProposeRequest.Huisnummer),
                             ValidationErrorMessages.AddressHouseNumberUnknown(
-                                e.StreetNamePersistentLocalId,
+                                addressProposeRequest.StraatNaamId,
                                 e.HouseNumber)),
 
                     StreetNameNotActiveException _ =>
@@ -147,7 +147,7 @@ namespace AddressRegistry.Api.BackOffice.Address
                         CreateValidationException(
                             ValidationErrorCodes.StreetNameInvalid,
                             nameof(addressProposeRequest.StraatNaamId),
-                            ValidationErrorMessages.StreetNameInvalid),
+                            ValidationErrorMessages.StreetNameInvalid(addressProposeRequest.StraatNaamId)),
 
                     _ => new ValidationException(new List<ValidationFailure>
                         { new ValidationFailure(string.Empty, exception.Message) })

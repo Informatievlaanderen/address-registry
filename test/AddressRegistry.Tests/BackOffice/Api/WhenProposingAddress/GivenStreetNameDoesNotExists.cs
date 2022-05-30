@@ -55,9 +55,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
             });
             _syndicationContext.SaveChanges();
 
+            var streetNamePuri = $"https://data.vlaanderen.be/id/straatnaam/{nonExistentStreetNameId}";
             var body = new AddressProposeRequest
             {
-                StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{nonExistentStreetNameId}",
+                StraatNaamId = streetNamePuri,
                 PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
                 Huisnummer = houseNumber
             };
@@ -80,7 +81,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                 .Where(x =>
                     x.Errors.Any(
                         failure => failure.ErrorCode == "AdresStraatnaamNietGekendValidatie"
-                                   && failure.ErrorMessage == "Ongeldige straatnaamId."
+                                   && failure.ErrorMessage == $"De straatnaam '{streetNamePuri}' is niet gekend in het straatnaamregister."
                                    && failure.PropertyName == nameof(body.StraatNaamId)));
         }
     }

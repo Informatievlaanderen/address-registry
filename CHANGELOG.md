@@ -1,3 +1,10 @@
+# [3.18.0](https://github.com/informatievlaanderen/address-registry/compare/v3.17.0...v3.18.0) (2022-05-30)
+
+
+### Features
+
+* add producer to build ([1f84fab](https://github.com/informatievlaanderen/address-registry/commit/1f84fab292084649888e38b3620f607c11cd345a))
+
 # [3.17.0](https://github.com/informatievlaanderen/address-registry/compare/v3.16.0...v3.17.0) (2022-05-30)
 
 

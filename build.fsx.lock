@@ -2,7 +2,7 @@ STORAGE: NONE
 RESTRICTION: == net6.0
 NUGET
   remote: https://api.nuget.org/v3/index.json
-    Be.Vlaanderen.Basisregisters.Build.Pipeline (6.0.3)
+    Be.Vlaanderen.Basisregisters.Build.Pipeline (6.0.5)
       Fake.Core.Environment (>= 5.22)
       Fake.Core.Process (>= 5.22)
       Fake.Core.Target (>= 5.22)
@@ -195,7 +195,7 @@ NUGET
     System.Drawing.Common (6.0)
       Microsoft.Win32.SystemEvents (>= 6.0)
     System.Formats.Asn1 (6.0)
-    System.Memory (4.5.4)
+    System.Memory (4.5.5)
     System.Reactive (5.0)
     System.Reflection.Metadata (6.0.1)
       System.Collections.Immutable (>= 6.0)

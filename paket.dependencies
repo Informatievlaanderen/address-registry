@@ -28,7 +28,7 @@ nuget GeoJSON.NET 1.2.19
 nuget Microsoft.EntityFrameworkCore.Design 6.0.3
 
 // VBR STUFF
-nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 6.0.3
+nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 6.0.5
 nuget Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events 3.0.0 content: true, copy_content_to_output_dir: always, copy_local: true
 
 nuget Be.Vlaanderen.Basisregisters.AggregateSource 6.0.0

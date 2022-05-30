@@ -66,10 +66,12 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
             });
             _syndicationContext.SaveChanges();
 
+            var streetNamePuri = $"https://data.vlaanderen.be/id/straatnaam/{consumerItem.PersistentLocalId}";
+            var postInfoPuri = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}";
             var body = new AddressProposeRequest
             {
-                StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{consumerItem.PersistentLocalId}",
-                PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
+                StraatNaamId = streetNamePuri,
+                PostInfoId = postInfoPuri,
                 Huisnummer = houseNumber,
                 Busnummer = boxNumber
             };
@@ -96,7 +98,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                 .Where(x =>
                     x.Errors.Any(
                         failure => failure.ErrorCode == "AdresActiefHuisNummerNietGekendValidatie"
-                                   && failure.ErrorMessage == $"Er bestaat geen actief adres zonder busnummer voor straatnaamobject '{streetNamePersistentId}' en huisnummer '{houseNumber}'."
+                                   && failure.ErrorMessage == $"Er bestaat geen actief adres zonder busnummer voor straatnaam '{streetNamePuri}' en huisnummer '{houseNumber}'."
                                    && failure.PropertyName == nameof(body.Huisnummer)));
         }
     }

@@ -12,6 +12,6 @@ namespace AddressRegistry.Api.BackOffice.Validators
 
         public const string HouseNumberInvalid = "AdresOngeldigHuisnummerformaat";
 
-        public const string BoxNumberInvalid = "AdresOngeldigbusnummerformaat";
+        public const string BoxNumberInvalid = "AdresOngeldigBusnummerformaat";
     }
 }

@@ -1,3 +1,10 @@
+## [3.18.1](https://github.com/informatievlaanderen/address-registry/compare/v3.18.0...v3.18.1) (2022-05-30)
+
+
+### Bug Fixes
+
+* propose validation messages ([50df8a5](https://github.com/informatievlaanderen/address-registry/commit/50df8a5b2ab53634b066480c7a704da728442ab1))
+
 # [3.18.0](https://github.com/informatievlaanderen/address-registry/compare/v3.17.0...v3.18.0) (2022-05-30)
 
 

@@ -1,6 +1,7 @@
-namespace AddressRegistry.StreetName;
-
-public interface IHasAddressPersistentLocalId
+namespace AddressRegistry.StreetName
 {
-    int AddressPersistentLocalId { get; }
+    public interface IHasAddressPersistentLocalId
+    {
+        int AddressPersistentLocalId { get; }
+    }
 }

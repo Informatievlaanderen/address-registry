@@ -4,7 +4,6 @@ namespace AddressRegistry.StreetName
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Crab;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo;
-    using Newtonsoft.Json;
 
     public class AddressStreetNameId : GuidValueObject<AddressStreetNameId>
     {
@@ -16,7 +15,7 @@ namespace AddressRegistry.StreetName
         public static AddressStreetNameId CreateForPersistentId(IdentifierUri<int> persistentId)
             => CreateFor(new CrabStreetNameId(persistentId.Value));
 
-        public AddressStreetNameId([JsonProperty("value")] Guid streetNameId) : base(streetNameId) { }
+        public AddressStreetNameId(Guid streetNameId) : base(streetNameId) { }
 
         public override string ToString() => $"{Prefix}/{Value}";
     }

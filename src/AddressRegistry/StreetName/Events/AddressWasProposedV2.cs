@@ -9,7 +9,7 @@ namespace AddressRegistry.StreetName.Events
     [EventTags(EventTag.For.Sync, EventTag.For.Edit)]
     [EventName(EventName)]
     [EventDescription("Het adres werd voorgesteld.")]
-    public class AddressWasProposedV2 : IStreetNameEvent
+    public class AddressWasProposedV2 : IStreetNameEvent, IHasAddressPersistentLocalId
     {
         public const string EventName = "AddressWasProposedV2"; // BE CAREFUL CHANGING THIS!!
 

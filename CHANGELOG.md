@@ -1,3 +1,5 @@
+## [3.18.2](https://github.com/informatievlaanderen/address-registry/compare/v3.18.1...v3.18.2) (2022-06-02)
+
 ## [3.18.1](https://github.com/informatievlaanderen/address-registry/compare/v3.18.0...v3.18.1) (2022-05-30)
 
 

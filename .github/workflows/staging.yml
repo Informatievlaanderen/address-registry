@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix: 
-        services: ['address-registry-api', 'address-registry-projections', 'address-registry-cache-warmer', 'address-registry-consumer', 'address-registry-migrator-address', 'address-registry-backoffice-api']
+        services: ['address-registry-api', 'address-registry-projections', 'address-registry-cache-warmer', 'address-registry-consumer', 'address-registry-migrator-address', 'address-registry-backoffice-api', 'address-registry-producer']
     steps:
     - name: CD
       env:

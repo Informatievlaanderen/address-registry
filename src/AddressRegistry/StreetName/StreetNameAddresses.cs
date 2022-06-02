@@ -1,9 +1,8 @@
 namespace AddressRegistry.StreetName
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Exceptions;
-    using Guid = System.Guid;
 
     public class StreetNameAddresses : List<StreetNameAddress>
     {

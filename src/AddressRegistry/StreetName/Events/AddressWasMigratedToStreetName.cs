@@ -13,7 +13,7 @@ namespace AddressRegistry.StreetName.Events
     [EventTags(EventTag.For.Sync, Tag.Migration)]
     [EventName(EventName)]
     [EventDescription("Het adres werd gemigreerd naar straatnaam.")]
-    public class AddressWasMigratedToStreetName : IStreetNameEvent
+    public class AddressWasMigratedToStreetName : IStreetNameEvent, IHasAddressPersistentLocalId
     {
         public const string EventName = "AddressWasMigratedToStreetName"; // BE CAREFUL CHANGING THIS!!
 

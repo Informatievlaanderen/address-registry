@@ -1,3 +1,10 @@
+## [3.18.3](https://github.com/informatievlaanderen/address-registry/compare/v3.18.2...v3.18.3) (2022-06-08)
+
+
+### Bug Fixes
+
+* don't reproduce streetname events ([080de14](https://github.com/informatievlaanderen/address-registry/commit/080de14afb14506105c3ec4117f2bed5c83fdcc7))
+
 ## [3.18.2](https://github.com/informatievlaanderen/address-registry/compare/v3.18.1...v3.18.2) (2022-06-02)
 
 ## [3.18.1](https://github.com/informatievlaanderen/address-registry/compare/v3.18.0...v3.18.1) (2022-05-30)

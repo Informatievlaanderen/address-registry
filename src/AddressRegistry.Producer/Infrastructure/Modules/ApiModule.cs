@@ -82,7 +82,9 @@ namespace AddressRegistry.Producer.Infrastructure.Modules
                     _configuration,
                     _loggerFactory)
                 .RegisterProjections<ProducerProjections, ProducerContext>(() =>
-                    new ProducerProjections(_configuration), connectedProjectionSettings);
+                    new ProducerProjections(_configuration), connectedProjectionSettings)
+                .RegisterProjections<ProducerMigrateProjections, ProducerContext>(() =>
+                    new ProducerMigrateProjections(_configuration), connectedProjectionSettings);
         }
     }
 }

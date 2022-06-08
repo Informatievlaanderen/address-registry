@@ -1,19 +1,17 @@
 namespace AddressRegistry.Address
 {
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
+    using Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore;
+    using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Commands;
     using Commands.Crab;
     using NodaTime;
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore;
-    using Be.Vlaanderen.Basisregisters.EventHandling;
     using SqlStreamStore;
-    using StreetName;
-    using StreetName.Commands;
 
     public sealed class CrabAddressCommandHandlerModule : CommandHandlerModule
     {

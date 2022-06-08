@@ -1,3 +1,10 @@
+# [3.19.0](https://github.com/informatievlaanderen/address-registry/compare/v3.18.3...v3.19.0) (2022-06-08)
+
+
+### Features
+
+* add producer starting from migration ([737b0cc](https://github.com/informatievlaanderen/address-registry/commit/737b0ccb4acdba2f560d0853f7bd06ea45d298df))
+
 ## [3.18.3](https://github.com/informatievlaanderen/address-registry/compare/v3.18.2...v3.18.3) (2022-06-08)
 
 

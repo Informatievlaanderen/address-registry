@@ -1,10 +1,8 @@
 namespace AddressRegistry.Migrator.Address.Infrastructure.Modules
 {
-    using AddressRegistry.Address;
     using AddressRegistry.Infrastructure;
     using AddressRegistry.Infrastructure.Modules;
     using Api.BackOffice;
-    using Api.BackOffice.Infrastructure.Modules;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;

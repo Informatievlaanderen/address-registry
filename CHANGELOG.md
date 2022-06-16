@@ -1,3 +1,10 @@
+## [3.19.1](https://github.com/informatievlaanderen/address-registry/compare/v3.19.0...v3.19.1) (2022-06-16)
+
+
+### Bug Fixes
+
+* approve address request attributes ([486437d](https://github.com/informatievlaanderen/address-registry/commit/486437d07798458b4c0cd1c17a4023b80f90805b))
+
 # [3.19.0](https://github.com/informatievlaanderen/address-registry/compare/v3.18.3...v3.19.0) (2022-06-08)
 
 

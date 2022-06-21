@@ -4,6 +4,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
     using System.Linq;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentAssertions;
@@ -71,8 +72,9 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
         public void WithExistingParent_ThenChildAddressWasAddedToStreetNameAddresses()
         {
             var aggregateId = Fixture.Create<StreetNamePersistentLocalId>();
-            var aggregate = StreetName.Factory();
+            var aggregate = new StreetNameFactory(IntervalStrategy.Default).Create();
 
+            var postalCode = Fixture.Create<PostalCode>();
             var houseNumber = Fixture.Create<HouseNumber>();
 
             var parentAddressWasProposed = new AddressWasProposedV2(
@@ -95,10 +97,11 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
             var childBoxNumber = Fixture.Create<BoxNumber>();
 
             // Act
+            
             aggregate.ProposeAddress(
                 aggregateId,
                 childPersistentLocalId,
-                Fixture.Create<PostalCode>(),
+                postalCode,
                 houseNumber,
                 childBoxNumber);
 
@@ -109,6 +112,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
             var child = result.Children.Single();
             child.AddressPersistentLocalId.Should().Be(childPersistentLocalId);
             child.HouseNumber.Should().Be(houseNumber);
+            child.PostalCode.Should().Be(postalCode);
             child.Status.Should().Be(AddressStatus.Proposed);
             child.BoxNumber.Should().Be(childBoxNumber);
             child.IsOfficiallyAssigned.Should().BeTrue();

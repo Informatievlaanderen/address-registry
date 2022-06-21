@@ -34,5 +34,16 @@ namespace AddressRegistry.Infrastructure
                 .RegisterModule(new SqlStreamStoreModule(connectionString, Schema.Default))
                 .RegisterModule(new TraceSqlStreamStoreModule(configuration["DataDog:ServiceName"]));
         }
+
+        public static void RegisterSnapshotModule(this ContainerBuilder builder, IConfiguration configuration)
+        {
+            var connectionString = configuration.GetConnectionString("Snapshots");
+
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ApplicationException("Missing 'Snapshots' connectionstring.");
+
+            builder
+                .RegisterModule(new SqlSnapshotStoreModule(connectionString, Schema.Default));
+        }
     }
 }

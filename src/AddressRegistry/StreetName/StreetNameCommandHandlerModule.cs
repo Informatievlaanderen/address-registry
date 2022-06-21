@@ -13,6 +13,7 @@ namespace AddressRegistry.StreetName
     public sealed class StreetNameCommandHandlerModule : CommandHandlerModule
     {
         public StreetNameCommandHandlerModule(
+            IStreetNameFactory streetNameFactory,
             Func<IStreetNames> getStreetNames,
             Func<ConcurrentUnitOfWork> getUnitOfWork,
             Func<IStreamStore> getStreamStore,
@@ -35,6 +36,7 @@ namespace AddressRegistry.StreetName
                     }
 
                     var newStreetName = StreetName.Register(
+                        streetNameFactory,
                         message.Command.StreetNameId,
                         message.Command.PersistentLocalId,
                         message.Command.MunicipalityId,
@@ -59,6 +61,7 @@ namespace AddressRegistry.StreetName
                     }
 
                     var newStreetName = StreetName.Register(
+                        streetNameFactory,
                         message.Command.PersistentLocalId,
                         message.Command.MunicipalityId,
                         message.Command.StreetNameStatus);

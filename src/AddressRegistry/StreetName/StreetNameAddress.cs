@@ -4,20 +4,26 @@ namespace AddressRegistry.StreetName
     using System.Collections.Generic;
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
-    using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using DataStructures;
     using Events;
     using Exceptions;
 
     public class StreetNameAddress : Entity
     {
         private readonly StreetNameAddresses _children = new StreetNameAddresses();
-        private IHaveHash _lastEvent;
+        private IStreetNameEvent? _lastEvent;
+
+        private string _lastSnapshottedEventHash = string.Empty;
+        private ProvenanceData _lastSnapshottedProvenance;
+
         public AddressPersistentLocalId AddressPersistentLocalId { get; private set; }
         public AddressStatus Status { get; private set; }
+        public bool IsActive => Status is AddressStatus.Proposed or AddressStatus.Current;
         public HouseNumber HouseNumber { get; private set; }
         public BoxNumber? BoxNumber { get; private set; }
         public PostalCode PostalCode { get; private set; }
-        public AddressGeometry Geometry { get; private set; }
+        public AddressGeometry? Geometry { get; private set; }
         public bool IsOfficiallyAssigned { get; set; }
         public bool IsRemoved { get; private set; }
 
@@ -26,9 +32,11 @@ namespace AddressRegistry.StreetName
 
         public AddressId? LegacyAddressId { get; private set; }
 
-        public string LastEventHash => _lastEvent.GetHash();
+        //TODO: Make EventHash Value object in Grar.Common
+        public string LastEventHash => _lastEvent is null ? _lastSnapshottedEventHash : _lastEvent.GetHash();
 
-        public bool IsActive => Status is AddressStatus.Proposed or AddressStatus.Current;
+        public ProvenanceData LastProvenanceData =>
+            _lastEvent is null ? _lastSnapshottedProvenance : _lastEvent.Provenance;
 
         public StreetNameAddress(Action<object> applier) : base(applier)
         {
@@ -102,6 +110,7 @@ namespace AddressRegistry.StreetName
             HouseNumber = new HouseNumber(@event.HouseNumber);
             Status = AddressStatus.Proposed;
             BoxNumber = string.IsNullOrEmpty(@event.BoxNumber) ? null : new BoxNumber(@event.BoxNumber);
+            PostalCode = new PostalCode(@event.PostalCode);
             IsOfficiallyAssigned = true;
 
             _lastEvent = @event;
@@ -112,6 +121,30 @@ namespace AddressRegistry.StreetName
             Status = AddressStatus.Current;
 
             _lastEvent = @event;
+        }
+
+        internal void RestoreSnapshot(AddressData addressData)
+        {
+            AddressPersistentLocalId = new AddressPersistentLocalId(addressData.AddressPersistentLocalId);
+            Status = addressData.Status;
+            HouseNumber = new HouseNumber(addressData.HouseNumber);
+            BoxNumber = string.IsNullOrEmpty(addressData.BoxNumber) ? null : new BoxNumber(addressData.BoxNumber);
+            PostalCode = new PostalCode(addressData.PostalCode);
+
+            if (!string.IsNullOrEmpty(addressData.ExtendedWkbGeometry))
+            {
+                Geometry = new AddressGeometry(
+                    addressData.GeometryMethod!.Value,
+                    addressData.GeometrySpecification!.Value,
+                    new ExtendedWkbGeometry(addressData.ExtendedWkbGeometry));
+            }
+
+            IsOfficiallyAssigned = addressData.IsOfficiallyAssigned;
+            IsRemoved = addressData.IsRemoved;
+
+            LegacyAddressId = addressData.LegacyAddressId.HasValue ? new AddressId(addressData.LegacyAddressId.Value) : null;
+            _lastSnapshottedEventHash = addressData.LastEventHash;
+            _lastSnapshottedProvenance = addressData.LastProvenanceData;
         }
     }
 }

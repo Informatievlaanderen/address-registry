@@ -10,6 +10,7 @@ namespace AddressRegistry.Tests
     using Infrastructure.Modules;
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
+    using StreetName;
     using Xunit.Abstractions;
 
     public class AddressRegistryTest : AutofacBasedTest
@@ -32,6 +33,10 @@ namespace AddressRegistry.Tests
             builder
                 .RegisterModule(new CommandHandlingModule(configuration))
                 .RegisterModule(new SqlStreamStoreModule());
+
+            builder
+                .Register(c => new StreetNameFactory(Fixture.Create<ISnapshotStrategy>()))
+                .As<IStreetNameFactory>();
         }
 
         protected override void ConfigureEventHandling(ContainerBuilder builder)

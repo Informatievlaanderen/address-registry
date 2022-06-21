@@ -1,5 +1,6 @@
 namespace AddressRegistry.Consumer.Infrastructure.Modules
 {
+    using AddressRegistry.Infrastructure;
     using AddressRegistry.Infrastructure.Modules;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
@@ -34,6 +35,8 @@ namespace AddressRegistry.Consumer.Infrastructure.Modules
                 .RegisterModule(new DataDogModule(_configuration))
                 .RegisterModule<EnvelopeModule>()
                 .RegisterModule(new EditModule(_configuration, _services, _loggerFactory));
+
+            builder.RegisterSnapshotModule(_configuration);
 
             builder
                 .RegisterProjectionMigrator<ConsumerContextFactory>(

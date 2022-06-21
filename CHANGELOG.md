@@ -1,3 +1,10 @@
+# [3.20.0](https://github.com/informatievlaanderen/address-registry/compare/v3.19.1...v3.20.0) (2022-06-21)
+
+
+### Features
+
+* approve validations ([c187937](https://github.com/informatievlaanderen/address-registry/commit/c1879370b0ba49b93bb79426fa24a3341bb5e285))
+
 ## [3.19.1](https://github.com/informatievlaanderen/address-registry/compare/v3.19.0...v3.19.1) (2022-06-16)
 
 

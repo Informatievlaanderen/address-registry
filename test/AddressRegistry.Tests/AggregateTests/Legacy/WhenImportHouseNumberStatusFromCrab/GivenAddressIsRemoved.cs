@@ -3,6 +3,7 @@ namespace AddressRegistry.Tests.AggregateTests.Legacy.WhenImportHouseNumberStatu
     using Address;
     using Address.Commands.Crab;
     using Address.Events;
+    using Address.Exceptions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Xunit;

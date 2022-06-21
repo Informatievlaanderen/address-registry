@@ -2,6 +2,7 @@ namespace AddressRegistry.Tests.AggregateTests.Legacy.WhenImportHouseNumberFromC
 {
     using Address;
     using Address.Commands.Crab;
+    using Address.Exceptions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.Crab;
     using global::AutoFixture;

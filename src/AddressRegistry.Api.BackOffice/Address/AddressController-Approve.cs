@@ -1,6 +1,5 @@
 namespace AddressRegistry.Api.BackOffice.Address
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -17,7 +16,9 @@ namespace AddressRegistry.Api.BackOffice.Address
     using Requests;
     using StreetName;
     using StreetName.Commands;
+    using StreetName.Exceptions;
     using Swashbuckle.AspNetCore.Filters;
+    using Validators;
 
     public partial class AddressController
     {
@@ -56,20 +57,21 @@ namespace AddressRegistry.Api.BackOffice.Address
         {
             await validator.ValidateAndThrowAsync(addressApproveRequest, cancellationToken);
 
+            var addressPersistentLocalId =
+                new AddressPersistentLocalId(new PersistentLocalId(addressApproveRequest.PersistentLocalId));
+
+            var relation = backOfficeContext.AddressPersistentIdStreetNamePersistentIds
+                .FirstOrDefault(x => x.AddressPersistentLocalId == addressPersistentLocalId);
+
+            if (relation is null)
+            {
+                return NotFound();
+            }
+
+            var streetNamePersistentLocalId = new StreetNamePersistentLocalId(relation.StreetNamePersistentLocalId);
+
             try
             {
-                var addressPersistentLocalId = new AddressPersistentLocalId(new PersistentLocalId(addressApproveRequest.PersistentLocalId));
-
-                var relation = backOfficeContext.AddressPersistentIdStreetNamePersistentIds
-                    .FirstOrDefault(x => x.AddressPersistentLocalId == addressPersistentLocalId);
-
-                if (relation is null)
-                {
-                    return NotFound();
-                }
-
-                var streetNamePersistentLocalId = new StreetNamePersistentLocalId(relation.StreetNamePersistentLocalId);
-
                 // Check if user provided ETag is equal to the current Entity Tag
                 if (ifMatchHeaderValue is not null)
                 {
@@ -91,8 +93,9 @@ namespace AddressRegistry.Api.BackOffice.Address
                     addressPersistentLocalId,
                     CreateFakeProvenance());
 
-                await IdempotentCommandHandlerDispatch(idempotencyContext, cmd.CreateCommandId(), cmd, cancellationToken);
-                
+                await IdempotentCommandHandlerDispatch(idempotencyContext, cmd.CreateCommandId(), cmd,
+                    cancellationToken);
+
                 var etag = await GetHash(
                     streetNameRepository,
                     streetNamePersistentLocalId,
@@ -105,19 +108,36 @@ namespace AddressRegistry.Api.BackOffice.Address
             {
                 return Accepted();
             }
+            catch (AggregateNotFoundException)
+            {
+                throw new ApiException(ValidationErrorMessages.AddressNotFound, StatusCodes.Status404NotFound);
+            }
             catch (DomainException exception)
             {
                 throw exception switch
                 {
-                    // TODO: catch validation exceptions
+                    StreetNameNotActiveException _ =>
+                        CreateValidationException(
+                            ValidationErrorCodes.StreetNameIsNotActive,
+                            string.Empty,
+                            ValidationErrorMessages.StreetNameIsNotActive),
+
+                    StreetNameIsRemovedException _ =>
+                        CreateValidationException(
+                            ValidationErrorCodes.StreetNameInvalid,
+                            string.Empty,
+                            ValidationErrorMessages.StreetNameInvalid(streetNamePersistentLocalId)),
+
+                    AddressNotFoundException => new ApiException(ValidationErrorMessages.AddressNotFound, StatusCodes.Status404NotFound),
+                    AddressIsRemovedException => new ApiException(ValidationErrorMessages.AddressRemoved, StatusCodes.Status410Gone),
+                    AddressCannotBeApprovedException => CreateValidationException(
+                        ValidationErrorCodes.AddressCannotBeApproved,
+                        string.Empty,
+                        ValidationErrorMessages.AddressCannotBeApproved),
 
                     _ => new ValidationException(new List<ValidationFailure>
                         { new ValidationFailure(string.Empty, exception.Message) })
                 };
-            }
-            catch (Exception ex)
-            {
-                throw;
             }
         }
     }

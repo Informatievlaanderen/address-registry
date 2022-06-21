@@ -13,6 +13,7 @@ namespace AddressRegistry.Address
     using StreetName;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Crab;
+    using Exceptions;
     using StreetName.Commands;
 
     public partial class Address : AggregateRootEntity

@@ -2,11 +2,11 @@
   <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.Library.props" />
 
   <ItemGroup>
-    <ProjectReference Include="..\AddressRegistry\AddressRegistry.csproj" />
+    <Compile Include="..\..\SolutionInfo.cs" Link="Properties\SolutionInfo.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\SolutionInfo.cs" Link="Properties\SolutionInfo.cs" />
+    <ProjectReference Include="..\AddressRegistry\AddressRegistry.csproj" />
   </ItemGroup>
 
   <Import Project="..\..\.paket\Paket.Restore.targets" />

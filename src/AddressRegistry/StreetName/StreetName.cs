@@ -121,14 +121,7 @@ namespace AddressRegistry.StreetName
             HouseNumber houseNumber,
             BoxNumber? boxNumber)
         {
-            if (IsRemoved)
-            {
-                throw new StreetNameIsRemovedException(streetNamePersistentLocalId);
-            }
-            if (!IsActive)
-            {
-                throw new StreetNameNotActiveException(streetNamePersistentLocalId);
-            }
+            GuardActiveStreetName(streetNamePersistentLocalId);
 
             var parent = StreetNameAddresses.FindActiveParentByHouseNumber(houseNumber);
 
@@ -167,12 +160,36 @@ namespace AddressRegistry.StreetName
 
             if (addressToApprove is null)
             {
-                throw new AggregateSourceException($"Cannot find a address entity with id {addressPersistentLocalId}");
+                throw new AddressNotFoundException(addressPersistentLocalId);
             }
 
-            if (addressToApprove.Status == AddressStatus.Proposed)
+            if (addressToApprove.IsRemoved)
             {
-                ApplyChange(new AddressWasApproved(streetNamePersistentLocalId, addressPersistentLocalId));
+                throw new AddressIsRemovedException(addressToApprove.AddressPersistentLocalId);
+            }
+
+            switch (addressToApprove.Status)
+            {
+                case AddressStatus.Current:
+                    return;
+                case AddressStatus.Retired or AddressStatus.Rejected:
+                    throw new AddressCannotBeApprovedException(addressToApprove.Status);
+                case AddressStatus.Proposed:
+                    ApplyChange(new AddressWasApproved(streetNamePersistentLocalId, addressPersistentLocalId));
+                    break;
+            }
+        }
+
+        private void GuardActiveStreetName(StreetNamePersistentLocalId streetNamePersistentLocalId)
+        {
+            if (IsRemoved)
+            {
+                throw new StreetNameIsRemovedException(streetNamePersistentLocalId);
+            }
+
+            if (!IsActive)
+            {
+                throw new StreetNameNotActiveException(streetNamePersistentLocalId);
             }
         }
 

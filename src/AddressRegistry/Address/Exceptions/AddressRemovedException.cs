@@ -1,4 +1,4 @@
-namespace AddressRegistry
+namespace AddressRegistry.Address.Exceptions
 {
     using System;
 

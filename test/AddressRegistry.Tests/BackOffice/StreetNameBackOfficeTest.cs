@@ -82,6 +82,38 @@ namespace AddressRegistry.Tests.BackOffice
             DispatchArrangeCommand(command);
         }
 
+        protected void MigrateAddresToStreetName(
+            Address.AddressId addressId,
+            StreetNamePersistentLocalId streetNamePersistentLocalId,
+            Address.StreetNameId streetNameId,
+            Address.PersistentLocalId addressPersistentLocalId,
+            Address.AddressStatus status,
+            Address.HouseNumber houseNumber,
+            Address.BoxNumber? boxNumber,
+            Address.AddressGeometry geometry,
+            bool? officiallyAssigned,
+            Address.PostalCode postalCode,
+            bool isComplete,
+            bool isRemoved,
+            Address.AddressId? parentAddressId)
+        {
+            DispatchArrangeCommand(new MigrateAddressToStreetName(
+                addressId,
+                streetNamePersistentLocalId,
+                streetNameId,
+                addressPersistentLocalId,
+                status,
+                houseNumber,
+                boxNumber,
+                geometry,
+                officiallyAssigned,
+                postalCode,
+                isComplete,
+                isRemoved,
+                parentAddressId,
+                Fixture.Create<Provenance>()));
+        }
+
         protected void ProposeAddress(
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             AddressPersistentLocalId addressPersistentLocalId,

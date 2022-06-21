@@ -13,5 +13,8 @@ namespace AddressRegistry.Api.BackOffice.Validators
         public const string HouseNumberInvalid = "AdresOngeldigHuisnummerformaat";
 
         public const string BoxNumberInvalid = "AdresOngeldigBusnummerformaat";
+
+        public const string AddressRemoved = "AdresIsVerwijderd";
+        public const string AddressCannotBeApproved = "AdresGehistoreerdOfAfgekeurd";
     }
 }

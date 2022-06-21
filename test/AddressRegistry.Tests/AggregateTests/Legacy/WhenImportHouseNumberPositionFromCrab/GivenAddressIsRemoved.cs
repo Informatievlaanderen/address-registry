@@ -3,6 +3,7 @@ namespace AddressRegistry.Tests.AggregateTests.Legacy.WhenImportHouseNumberPosit
     using Address;
     using Address.Commands.Crab;
     using Address.Events;
+    using Address.Exceptions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.Crab;

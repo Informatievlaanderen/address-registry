@@ -8,6 +8,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenApprovingAddress
     using StreetName;
     using StreetName.Commands;
     using StreetName.Events;
+    using StreetName.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -66,7 +67,91 @@ namespace AddressRegistry.Tests.AggregateTests.WhenApprovingAddress
                 .Given(_streamId,
                     Fixture.Create<StreetNameWasImported>())
                 .When(command)
-                .Throws(new AggregateSourceException($"Cannot find a address entity with id {addressPersistentLocalId}")));
+                .Throws(new AddressNotFoundException(addressPersistentLocalId)));
+        }
+
+        [Fact]
+        public void OnRemovedAddress_ThenThrow()
+        {
+            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
+            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
+
+            var streetNameWasImported = new StreetNameWasImported(
+                streetNamePersistentLocalId,
+                Fixture.Create<MunicipalityId>(),
+                StreetNameStatus.Current);
+            ((ISetProvenance)streetNameWasImported).SetProvenance(Fixture.Create<Provenance>());
+
+            var migrateRemovedAddressToStreetName = new AddressWasMigratedToStreetName(
+                streetNamePersistentLocalId,
+                Fixture.Create<AddressId>(),
+                Fixture.Create<AddressStreetNameId>(),
+                addressPersistentLocalId,
+                AddressStatus.Proposed,
+                Fixture.Create<HouseNumber>(),
+                boxNumber: null,
+                Fixture.Create<AddressGeometry>(),
+                officiallyAssigned: true,
+                postalCode: null,
+                isCompleted: false,
+                isRemoved: true,
+                parentPersistentLocalId: null);
+            ((ISetProvenance)migrateRemovedAddressToStreetName).SetProvenance(Fixture.Create<Provenance>());
+
+            var approveAddress = new ApproveAddress(
+                streetNamePersistentLocalId,
+                addressPersistentLocalId,
+                Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    streetNameWasImported,
+                    migrateRemovedAddressToStreetName)
+                .When(approveAddress)
+                .Throws(new AddressIsRemovedException(addressPersistentLocalId)));
+        }
+
+        [Theory]
+        [InlineData(AddressStatus.Rejected)]
+        [InlineData(AddressStatus.Retired)]
+        public void AddressWithInvalidStatusses_ThenThrow(AddressStatus addressStatus)
+        {
+            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
+            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
+
+            var streetNameWasImported = new StreetNameWasImported(
+                streetNamePersistentLocalId,
+                Fixture.Create<MunicipalityId>(),
+                StreetNameStatus.Current);
+            ((ISetProvenance)streetNameWasImported).SetProvenance(Fixture.Create<Provenance>());
+
+            var migrateAddressWithStatusCurrent = new AddressWasMigratedToStreetName(
+                streetNamePersistentLocalId,
+                Fixture.Create<AddressId>(),
+                Fixture.Create<AddressStreetNameId>(),
+                addressPersistentLocalId,
+                addressStatus,
+                Fixture.Create<HouseNumber>(),
+                boxNumber: null,
+                Fixture.Create<AddressGeometry>(),
+                officiallyAssigned: true,
+                postalCode: null,
+                isCompleted: false,
+                isRemoved: false,
+                parentPersistentLocalId: null);
+            ((ISetProvenance)migrateAddressWithStatusCurrent).SetProvenance(Fixture.Create<Provenance>());
+
+            var approveAddress = new ApproveAddress(
+                streetNamePersistentLocalId,
+                addressPersistentLocalId,
+                Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    streetNameWasImported,
+                    migrateAddressWithStatusCurrent)
+                .When(approveAddress)
+                .Throws(new AddressCannotBeApprovedException(addressStatus)));
         }
 
         [Fact]

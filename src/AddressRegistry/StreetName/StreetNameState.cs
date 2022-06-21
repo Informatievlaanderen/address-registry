@@ -1,11 +1,13 @@
 namespace AddressRegistry.StreetName
 {
+    using System.Linq;
+    using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Events;
 
     public partial class StreetName
     {
         public StreetNamePersistentLocalId PersistentLocalId { get; private set; }
-        public NisCode MigratedNisCode { get; private set; }
+        public NisCode? MigratedNisCode { get; private set; }
         public bool IsRemoved { get; private set; }
         public StreetNameStatus Status { get; private set; }
 
@@ -15,8 +17,15 @@ namespace AddressRegistry.StreetName
 
         public StreetNameAddresses StreetNameAddresses { get; } = new StreetNameAddresses();
 
+        internal StreetName(ISnapshotStrategy snapshotStrategy) : this()
+        {
+            Strategy = snapshotStrategy;
+        }
+
         private StreetName()
         {
+            Register<StreetNameSnapshot>(When);
+
             Register<StreetNameWasImported>(When);
             Register<MigratedStreetNameWasImported>(When);
 
@@ -80,8 +89,36 @@ namespace AddressRegistry.StreetName
 
         private void When(AddressWasApproved @event)
         {
-            var addressToApprove = StreetNameAddresses.FindByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
+            var addressToApprove = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
             addressToApprove.Route(@event);
+        }
+
+        private void When(StreetNameSnapshot @event)
+        {
+            PersistentLocalId = new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId);
+            MigratedNisCode = string.IsNullOrEmpty(@event.MigratedNisCode) ? null : new NisCode(@event.MigratedNisCode);
+            Status = @event.StreetNameStatus;
+            IsRemoved = @event.IsRemoved;
+
+            foreach (var address in @event.Addresses.Where(x => !x.ParentId.HasValue))
+            {
+                var streetNameAddress = new StreetNameAddress(applier: ApplyChange);
+                streetNameAddress.RestoreSnapshot(address);
+
+                StreetNameAddresses.Add(streetNameAddress);
+            }
+
+            foreach (var address in @event.Addresses.Where(x => x.ParentId.HasValue))
+            {
+                var parent = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(address.ParentId!.Value));
+
+                var streetNameAddress = new StreetNameAddress(applier: ApplyChange);
+                streetNameAddress.RestoreSnapshot(address);
+                streetNameAddress.SetParent(parent);
+
+                StreetNameAddresses.Add(streetNameAddress);
+                parent.AddChild(streetNameAddress);
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure
     using System.Reflection;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
+    using Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
@@ -118,9 +119,11 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure
             ApiDataDogToggle datadogToggle,
             ApiDebugDataDogToggle debugDataDogToggle,
             MsSqlStreamStore streamStore,
+            MsSqlSnapshotStore snapshotStore,
             HealthCheckService healthCheckService)
         {
             StartupHelpers.EnsureSqlStreamStoreSchema<Startup>(streamStore, loggerFactory);
+            StartupHelpers.EnsureSqlSnapshotStoreSchema<Startup>(snapshotStore, loggerFactory);
 
             app
                 .UseDataDog<Startup>(new DataDogOptions

@@ -3,6 +3,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
     using System.Collections.Generic;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using FluentAssertions;
     using global::AutoFixture;
@@ -66,7 +67,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
             var command = Fixture.Create<MigrateAddressToStreetName>()
                 .WithParentAddressId(new AddressRegistry.Address.AddressId(parentAddressWasMigratedToStreetName.AddressId));
 
-            var aggregate = StreetName.Factory();
+            var aggregate = new StreetNameFactory(IntervalStrategy.Default).Create();
             aggregate.Initialize(new List<object>
             {
                 Fixture.Create<MigratedStreetNameWasImported>(),

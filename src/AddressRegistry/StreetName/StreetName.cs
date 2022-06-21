@@ -3,22 +3,22 @@ namespace AddressRegistry.StreetName
     using System;
     using System.Collections.Generic;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Events;
     using Exceptions;
 
-    public partial class StreetName : AggregateRootEntity
+    public partial class StreetName : AggregateRootEntity, ISnapshotable
     {
-        public static readonly Func<StreetName> Factory = () => new StreetName();
-
         public static StreetName Register(
+            IStreetNameFactory streetNameFactory,
             StreetNameId streetNameId,
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             MunicipalityId municipalityId,
             NisCode nisCode,
             StreetNameStatus streetNameStatus)
         {
-            var streetName = Factory();
+            var streetName = streetNameFactory.Create();
             streetName.ApplyChange(
                 new MigratedStreetNameWasImported(
                     streetNameId,
@@ -30,11 +30,12 @@ namespace AddressRegistry.StreetName
         }
 
         public static StreetName Register(
+            IStreetNameFactory streetNameFactory,
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             MunicipalityId municipalityId,
             StreetNameStatus streetNameStatus)
         {
-            var streetName = Factory();
+            var streetName = streetNameFactory.Create();
             streetName.ApplyChange(
                 new StreetNameWasImported(
                     streetNamePersistentLocalId,
@@ -74,7 +75,7 @@ namespace AddressRegistry.StreetName
             bool isRemoved,
             AddressId? parentAddressId)
         {
-            if (!RegionFilter.IsFlemishRegion(MigratedNisCode))
+            if (!RegionFilter.IsFlemishRegion(MigratedNisCode!))
             {
                 return;
             }
@@ -134,10 +135,12 @@ namespace AddressRegistry.StreetName
             {
                 throw new ParentAddressAlreadyExistsException(houseNumber);
             }
+
             if (isChild && parentNotFound)
             {
                 throw new ParentAddressNotFoundException(streetNamePersistentLocalId, houseNumber);
             }
+
             if (isChild && !parent.BoxNumberIsUnique(boxNumber!))
             {
                 throw new DuplicateBoxNumberException(boxNumber!);
@@ -213,5 +216,17 @@ namespace AddressRegistry.StreetName
 
             return address.LastEventHash;
         }
+
+        public object TakeSnapshot()
+        {
+            return new StreetNameSnapshot(
+                PersistentLocalId,
+                MigratedNisCode,
+                Status,
+                IsRemoved,
+                StreetNameAddresses);
+        }
+
+        public ISnapshotStrategy Strategy { get; }
     }
 }

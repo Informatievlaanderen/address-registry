@@ -1,19 +1,17 @@
 namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
 {
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
+    using AddressRegistry.Infrastructure;
+    using AddressRegistry.Infrastructure.Modules;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
-    using Be.Vlaanderen.Basisregisters.EventHandling;
-    using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
+    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac;
     using Consumer;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using AddressRegistry.Infrastructure;
-    using AddressRegistry.Infrastructure.Modules;
     using Projections.Syndication;
 
     public class ApiModule : Module
@@ -54,6 +52,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
             containerBuilder.RegisterModule(new SyndicationModule(_configuration, _services, _loggerFactory));
             containerBuilder.RegisterModule(new EditModule(_configuration, _services, _loggerFactory));
             containerBuilder.RegisterModule(new ConsumerModule(_configuration, _services, _loggerFactory));
+            containerBuilder.RegisterSnapshotModule(_configuration);
 
             containerBuilder.Populate(_services);
         }

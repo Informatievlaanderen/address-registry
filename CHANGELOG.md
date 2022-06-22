@@ -1,3 +1,10 @@
+# [3.21.0](https://github.com/informatievlaanderen/address-registry/compare/v3.20.0...v3.21.0) (2022-06-22)
+
+
+### Features
+
+* add snapshotting ([cb52321](https://github.com/informatievlaanderen/address-registry/commit/cb52321c7149ce94d819f16782183dc8b35412b2))
+
 # [3.20.0](https://github.com/informatievlaanderen/address-registry/compare/v3.19.1...v3.20.0) (2022-06-21)
 
 

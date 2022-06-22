@@ -7,6 +7,7 @@ namespace AddressRegistry.Tests
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore.Autofac;
     using global::AutoFixture;
+    using Infrastructure;
     using Infrastructure.Modules;
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
@@ -28,11 +29,14 @@ namespace AddressRegistry.Tests
         {
             var configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string> { { "ConnectionStrings:Events", "x" } })
+                .AddInMemoryCollection(new Dictionary<string, string> { { "ConnectionStrings:Snapshots", "x" } })
                 .Build();
 
             builder
                 .RegisterModule(new CommandHandlingModule(configuration))
                 .RegisterModule(new SqlStreamStoreModule());
+
+            builder.RegisterModule(new SqlSnapshotStoreModule());
 
             builder
                 .Register(c => new StreetNameFactory(Fixture.Create<ISnapshotStrategy>()))

@@ -1,10 +1,14 @@
 namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
 {
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Autofac;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using FluentAssertions;
     using global::AutoFixture;
     using StreetName;
     using StreetName.Commands;
@@ -15,7 +19,6 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
     public class GivenEvents : AddressRegistryTest
     {
         private readonly StreetNameStreamId _streamId;
-        private string _snapshotId;
 
         public GivenEvents(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
@@ -23,11 +26,10 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
             Fixture.Customize(new WithFixedStreetNamePersistentLocalId());
             Fixture.Customize(new WithFixedValidHouseNumber());
             _streamId = Fixture.Create<StreetNameStreamId>();
-            _snapshotId = GetSnapshotIdentifier(_streamId);
         }
 
         [Fact]
-        public void ThenSnapshotWasCreated()
+        public async Task ThenSnapshotWasCreated()
         {
             Fixture.Register(() => (ISnapshotStrategy)IntervalStrategy.SnapshotEvery(1));
 
@@ -66,34 +68,37 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
             ((ISetProvenance)addressWasProposedV2).SetProvenance(provenance);
 
             var migratedStreetNameWasImported = Fixture.Create<MigratedStreetNameWasImported>();
+            var expectedSnapshot = SnapshotBuilder.CreateDefaultSnapshot(streetNamePersistentLocalId)
+                .WithMigratedNisCode(migratedStreetNameWasImported.NisCode)
+                .WithAddress(new AddressPersistentLocalId(parentAddressWasProposed.AddressPersistentLocalId),
+                    AddressStatus.Proposed,
+                    postalCode,
+                    houseNumber,
+                    null,
+                    null,
+                    parentAddressWasProposed.GetHash(),
+                    new ProvenanceData(provenance))
+                .WithAddress(new AddressPersistentLocalId(proposeChildAddress.AddressPersistentLocalId),
+                    AddressStatus.Proposed,
+                    postalCode,
+                    houseNumber,
+                    boxNumber,
+                    new AddressPersistentLocalId(parentAddressWasProposed.AddressPersistentLocalId),
+                    addressWasProposedV2.GetHash(),
+                    new ProvenanceData(provenance))
+                .Build(2, EventSerializerSettings);
+
             Assert(new Scenario()
                 .Given(_streamId,
                     migratedStreetNameWasImported,
                     parentAddressWasProposed)
                 .When(proposeChildAddress)
-                .Then(
-                    new Fact(_streamId,
-                        addressWasProposedV2),
-                    new Fact(_snapshotId,
-                        SnapshotBuilder.CreateDefaultSnapshot(streetNamePersistentLocalId)
-                            .WithMigratedNisCode(migratedStreetNameWasImported.NisCode)
-                            .WithAddress(new AddressPersistentLocalId(parentAddressWasProposed.AddressPersistentLocalId),
-                                AddressStatus.Proposed,
-                                postalCode,
-                                houseNumber,
-                                null,
-                                null,
-                                parentAddressWasProposed.GetHash(),
-                                new ProvenanceData(provenance))
-                            .WithAddress(new AddressPersistentLocalId(proposeChildAddress.AddressPersistentLocalId),
-                                AddressStatus.Proposed,
-                                postalCode,
-                                houseNumber,
-                                boxNumber,
-                                new AddressPersistentLocalId(parentAddressWasProposed.AddressPersistentLocalId),
-                                addressWasProposedV2.GetHash(),
-                                new ProvenanceData(provenance))
-                            .Build(2, EventSerializerSettings))));
+                .Then(new Fact(_streamId, addressWasProposedV2)));
+
+            var snapshotStore = (ISnapshotStore)Container.Resolve(typeof(ISnapshotStore));
+            var latestSnapshot = await snapshotStore.FindLatestSnapshotAsync(_streamId, CancellationToken.None);
+
+            latestSnapshot.Should().BeEquivalentTo(expectedSnapshot);
         }
     }
 }

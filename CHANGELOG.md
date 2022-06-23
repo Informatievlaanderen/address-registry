@@ -1,3 +1,10 @@
+## [3.21.1](https://github.com/informatievlaanderen/address-registry/compare/v3.21.0...v3.21.1) (2022-06-23)
+
+
+### Bug Fixes
+
+* correct tpyo address approve validation ([6db624a](https://github.com/informatievlaanderen/address-registry/commit/6db624a3378a14896c6357017b742371f7b858c7))
+
 # [3.21.0](https://github.com/informatievlaanderen/address-registry/compare/v3.20.0...v3.21.0) (2022-06-22)
 
 

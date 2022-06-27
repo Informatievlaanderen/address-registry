@@ -45,12 +45,14 @@ namespace AddressRegistry.Api.BackOffice.Address.Requests
         public ProposeAddress ToCommand(
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             PostalCode postalCode,
+            MunicipalityId postalCodeMunicipalityId,
             AddressPersistentLocalId addressPersistentLocalId,
             Provenance provenance)
         {
             return new ProposeAddress(
                 streetNamePersistentLocalId,
                 postalCode,
+                postalCodeMunicipalityId,
                 addressPersistentLocalId,
                 new HouseNumber(Huisnummer),
                 string.IsNullOrWhiteSpace(Busnummer) ? null : new BoxNumber(Busnummer),

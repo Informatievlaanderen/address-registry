@@ -7,6 +7,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
     using AddressRegistry.Api.BackOffice.Address.Requests;
     using AddressRegistry.Api.BackOffice.Validators;
     using Autofac;
+    using AutoFixture;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using FluentAssertions;
@@ -29,6 +30,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
             _controller = CreateApiBusControllerWithUser<AddressController>("John Doe");
             _idempotencyContext = new FakeIdempotencyContextFactory().CreateDbContext();
             _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
+            Fixture.Customize(new WithFixedMunicipalityId());
         }
 
         [Fact]
@@ -44,6 +46,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
                 streetNamePersistentId,
                 addressPersistentLocalId,
                 Fixture.Create<PostalCode>(),
+                Fixture.Create<MunicipalityId>(),
                 Fixture.Create<HouseNumber>(),
                 boxNumber: null);
 

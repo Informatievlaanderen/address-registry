@@ -6,6 +6,7 @@ namespace AddressRegistry.StreetName
 
     public partial class StreetName
     {
+        public MunicipalityId MunicipalityId { get; private set; }
         public StreetNamePersistentLocalId PersistentLocalId { get; private set; }
         public NisCode? MigratedNisCode { get; private set; }
         public bool IsRemoved { get; private set; }
@@ -41,6 +42,7 @@ namespace AddressRegistry.StreetName
             PersistentLocalId = new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId);
             MigratedNisCode = new NisCode(@event.NisCode);
             Status = @event.StreetNameStatus;
+            MunicipalityId = new MunicipalityId(@event.MunicipalityId);
         }
 
         private void When(StreetNameWasRemoved @event)
@@ -57,6 +59,7 @@ namespace AddressRegistry.StreetName
         {
             PersistentLocalId = new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId);
             Status = @event.StreetNameStatus;
+            MunicipalityId = new MunicipalityId(@event.MunicipalityId);
         }
 
         private void When(AddressWasMigratedToStreetName @event)

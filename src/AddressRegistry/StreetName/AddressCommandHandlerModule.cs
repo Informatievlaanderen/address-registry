@@ -59,6 +59,7 @@ namespace AddressRegistry.StreetName
                         message.Command.StreetNamePersistentLocalId,
                         message.Command.AddressPersistentLocalId,
                         message.Command.PostalCode,
+                        message.Command.PostalCodeMunicipalityId,
                         message.Command.HouseNumber,
                         message.Command.BoxNumber);
                 });

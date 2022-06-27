@@ -118,12 +118,14 @@ namespace AddressRegistry.Tests.BackOffice
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             AddressPersistentLocalId addressPersistentLocalId,
             PostalCode postalCode,
+            MunicipalityId municipalityId,
             HouseNumber houseNumber,
             BoxNumber? boxNumber)
         {
             var proposeCommand = new ProposeAddress(
                 streetNamePersistentLocalId,
                 postalCode,
+                municipalityId,
                 addressPersistentLocalId,
                 houseNumber,
                 boxNumber,

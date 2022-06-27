@@ -16,5 +16,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
 
         public const string AddressRemoved = "AdresIsVerwijderd";
         public const string AddressCannotBeApproved = "AdresGehistoreerdOfAfgekeurd";
+
+        public const string PostalCodeNotInMunicipality = "AdresPostinfoNietInGemeente";
     }
 }

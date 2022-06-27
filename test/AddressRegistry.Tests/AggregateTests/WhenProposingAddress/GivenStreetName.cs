@@ -1,5 +1,6 @@
 namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using AutoFixture;
@@ -24,6 +25,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
         {
             Fixture.Customize(new InfrastructureCustomization());
             Fixture.Customize(new WithFixedStreetNamePersistentLocalId());
+            Fixture.Customize(new WithFixedMunicipalityId());
             Fixture.Customize(new WithFixedValidHouseNumber());
             _streamId = Fixture.Create<StreetNameStreamId>();
         }
@@ -46,6 +48,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
             var proposeChildAddress = new ProposeAddress(
                 Fixture.Create<StreetNamePersistentLocalId>(),
                 Fixture.Create<PostalCode>(),
+                Fixture.Create<MunicipalityId>(),
                 Fixture.Create<AddressPersistentLocalId>(),
                 houseNumber,
                 Fixture.Create<BoxNumber>(),
@@ -76,6 +79,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
 
             var postalCode = Fixture.Create<PostalCode>();
             var houseNumber = Fixture.Create<HouseNumber>();
+            var municipalityId = Fixture.Create<MunicipalityId>();
 
             var parentAddressWasProposed = new AddressWasProposedV2(
                 Fixture.Create<StreetNamePersistentLocalId>(),
@@ -102,6 +106,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 aggregateId,
                 childPersistentLocalId,
                 postalCode,
+                municipalityId,
                 houseNumber,
                 childBoxNumber);
 
@@ -127,6 +132,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
             var proposeChildAddress = new ProposeAddress(
                 streetNamePersistentLocalId,
                 Fixture.Create<PostalCode>(),
+                Fixture.Create<MunicipalityId>(),
                 Fixture.Create<AddressPersistentLocalId>(),
                 houseNumber,
                 Fixture.Create<BoxNumber>(),
@@ -140,6 +146,28 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
         }
 
         [Fact]
+        public void WithMunicipalityDifferentFromCommand_ThrowsExpectedException()
+        {
+            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
+            var houseNumber = Fixture.Create<HouseNumber>();
+
+            var proposeChildAddress = new ProposeAddress(
+                streetNamePersistentLocalId,
+                Fixture.Create<PostalCode>(),
+                new MunicipalityId(Fixture.Create<Guid>()),
+                Fixture.Create<AddressPersistentLocalId>(),
+                houseNumber,
+                Fixture.Create<BoxNumber>(),
+                Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    Fixture.Create<MigratedStreetNameWasImported>())
+                .When(proposeChildAddress)
+                .Throws(new PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException()));
+        }
+
+        [Fact]
         public void ParentAddress_ThenAddressWasProposed()
         {
             var houseNumber = Fixture.Create<string>();
@@ -147,6 +175,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
             var proposeParentAddress = new ProposeAddress(
                 Fixture.Create<StreetNamePersistentLocalId>(),
                 Fixture.Create<PostalCode>(),
+                Fixture.Create<MunicipalityId>(),
                 Fixture.Create<AddressPersistentLocalId>(),
                 new HouseNumber(houseNumber),
                 boxNumber: null,

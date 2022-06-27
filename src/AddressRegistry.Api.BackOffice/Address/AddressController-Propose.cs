@@ -15,7 +15,9 @@ namespace AddressRegistry.Api.BackOffice.Address
     using Infrastructure.Options;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Options;
+    using Projections.Syndication;
     using Requests;
     using StreetName;
     using StreetName.Exceptions;
@@ -52,6 +54,7 @@ namespace AddressRegistry.Api.BackOffice.Address
             [FromServices] IOptions<ResponseOptions> options,
             [FromServices] IdempotencyContext idempotencyContext,
             [FromServices] BackOfficeContext backOfficeContext,
+            [FromServices] SyndicationContext syndicationContext,
             [FromServices] IPersistentLocalIdGenerator persistentLocalIdGenerator,
             [FromServices] IValidator<AddressProposeRequest> validator,
             [FromServices] IStreetNames streetNameRepository,
@@ -75,9 +78,17 @@ namespace AddressRegistry.Api.BackOffice.Address
                 var addressPersistentLocalId =
                     new AddressPersistentLocalId(persistentLocalIdGenerator.GenerateNextPersistentLocalId());
 
+                var postalMunicipality = await syndicationContext.PostalInfoLatestItems.FindAsync(new object[] { postalCodeId.ToString() }, cancellationToken);
+                if (postalMunicipality is null)
+                {
+                    throw new PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException();
+                }
+
+                var municipality = await syndicationContext.MunicipalityLatestItems.SingleAsync(x => x.NisCode == postalMunicipality.NisCode, cancellationToken);
                 var cmd = addressProposeRequest.ToCommand(
                     streetNamePersistentLocalId,
                     postalCodeId,
+                    new MunicipalityId(municipality.MunicipalityId),
                     addressPersistentLocalId,
                     CreateFakeProvenance());
 
@@ -148,6 +159,12 @@ namespace AddressRegistry.Api.BackOffice.Address
                             ValidationErrorCodes.StreetNameInvalid,
                             nameof(addressProposeRequest.StraatNaamId),
                             ValidationErrorMessages.StreetNameInvalid(addressProposeRequest.StraatNaamId)),
+
+                    PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException _ =>
+                        CreateValidationException(
+                            ValidationErrorCodes.PostalCodeNotInMunicipality,
+                            nameof(addressProposeRequest.PostInfoId),
+                            ValidationErrorMessages.PostalCodeNotInMunicipality),
 
                     _ => new ValidationException(new List<ValidationFailure>
                         { new ValidationFailure(string.Empty, exception.Message) })

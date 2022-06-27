@@ -12,6 +12,7 @@ namespace AddressRegistry.StreetName.Commands
 
         public StreetNamePersistentLocalId StreetNamePersistentLocalId { get; set; }
         public PostalCode PostalCode { get; set; }
+        public MunicipalityId PostalCodeMunicipalityId { get; set; }
         public AddressPersistentLocalId AddressPersistentLocalId { get; set; }
         public HouseNumber HouseNumber { get; set; }
         public BoxNumber? BoxNumber { get; set; }
@@ -20,6 +21,7 @@ namespace AddressRegistry.StreetName.Commands
         public ProposeAddress(
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             PostalCode postalCode,
+            MunicipalityId postalCodeMunicipalityId,
             AddressPersistentLocalId addressPersistentLocalId,
             HouseNumber houseNumber,
             BoxNumber? boxNumber,
@@ -27,6 +29,7 @@ namespace AddressRegistry.StreetName.Commands
         {
             StreetNamePersistentLocalId = streetNamePersistentLocalId;
             PostalCode = postalCode;
+            PostalCodeMunicipalityId = postalCodeMunicipalityId;
             AddressPersistentLocalId = addressPersistentLocalId;
             HouseNumber = houseNumber;
             BoxNumber = boxNumber;
@@ -42,6 +45,7 @@ namespace AddressRegistry.StreetName.Commands
         private IEnumerable<object> IdentityFields()
         {
             yield return StreetNamePersistentLocalId;
+            yield return PostalCodeMunicipalityId;
             yield return PostalCode;
             yield return AddressPersistentLocalId;
             yield return HouseNumber;

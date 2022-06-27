@@ -1,3 +1,10 @@
+# [3.22.0](https://github.com/informatievlaanderen/address-registry/compare/v3.21.1...v3.22.0) (2022-06-27)
+
+
+### Features
+
+* add postinfo municaplity validation ([b25627a](https://github.com/informatievlaanderen/address-registry/commit/b25627a0ee52b0a86a61e0691e79c700751883d0))
+
 ## [3.21.1](https://github.com/informatievlaanderen/address-registry/compare/v3.21.0...v3.21.1) (2022-06-23)
 
 

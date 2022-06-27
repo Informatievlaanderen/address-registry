@@ -24,6 +24,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
         {
             Fixture.Customize(new InfrastructureCustomization());
             Fixture.Customize(new WithFixedStreetNamePersistentLocalId());
+            Fixture.Customize(new WithFixedMunicipalityId());
             Fixture.Customize(new WithFixedValidHouseNumber());
             _streamId = Fixture.Create<StreetNameStreamId>();
         }
@@ -52,6 +53,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
             var proposeChildAddress = new ProposeAddress(
                 streetNamePersistentLocalId,
                 postalCode,
+                Fixture.Create<MunicipalityId>(),
                 Fixture.Create<AddressPersistentLocalId>(),
                 houseNumber,
                 boxNumber,

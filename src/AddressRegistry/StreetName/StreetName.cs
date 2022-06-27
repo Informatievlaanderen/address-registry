@@ -119,10 +119,16 @@ namespace AddressRegistry.StreetName
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             AddressPersistentLocalId addressPersistentLocalId,
             PostalCode postalCode,
+            MunicipalityId municipalityIdByPostalCode,
             HouseNumber houseNumber,
             BoxNumber? boxNumber)
         {
             GuardActiveStreetName(streetNamePersistentLocalId);
+
+            if (municipalityIdByPostalCode != MunicipalityId)
+            {
+                throw new PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException();
+            }
 
             var parent = StreetNameAddresses.FindActiveParentByHouseNumber(houseNumber);
 

@@ -22,5 +22,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
         public const string AddressNotFound = "Onbestaand adres.";
         public const string AddressRemoved = "Verwijderde adres.";
         public const string AddressCannotBeApproved = "Deze actie is enkel toegestaan op adressen met status 'voorgesteld'.";
+
+        public const string PostalCodeNotInMunicipality = "De ingevoerde postcode wordt niet gebruikt binnen deze gemeente.";
     }
 }

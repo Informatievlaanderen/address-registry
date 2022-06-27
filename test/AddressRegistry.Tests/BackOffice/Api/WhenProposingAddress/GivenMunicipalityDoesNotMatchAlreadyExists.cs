@@ -20,12 +20,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     using StreetName;
     using Xunit;
     using Xunit.Abstractions;
-    using BoxNumber = StreetName.BoxNumber;
     using HouseNumber = StreetName.HouseNumber;
     using PostalCode = StreetName.PostalCode;
     using StreetNameId = StreetName.StreetNameId;
 
-    public class GivenChildAddressAlreadyExists : AddressRegistryBackOfficeTest
+    public class GivenMunicipalityDoesNotMatchAlreadyExists : AddressRegistryBackOfficeTest
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;
@@ -33,7 +32,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
         private readonly TestConsumerContext _consumerContext;
         private readonly TestSyndicationContext _syndicationContext;
 
-        public GivenChildAddressAlreadyExists(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public GivenMunicipalityDoesNotMatchAlreadyExists(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             _controller = CreateApiBusControllerWithUser<AddressController>("John Doe");
             _idempotencyContext = new FakeIdempotencyContextFactory().CreateDbContext();
@@ -44,12 +43,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
         }
 
         [Fact]
-        public void ThenThrowValidationException()
+        public async Task ThenThrowValidationException()
         {
             const int expectedLocation = 5;
             string postInfoId = "8200";
             string houseNumber = "11";
-            string boxNumber = "1A";
             var nisCode = Fixture.Create<NisCode>();
             var streetNameId = Fixture.Create<StreetNameId>();
             var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
@@ -64,20 +62,18 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
 
             ImportMigratedStreetName(streetNameId, streetNamePersistentId);
             ProposeAddress(streetNamePersistentId, new AddressPersistentLocalId(123), new PostalCode(postInfoId), Fixture.Create<MunicipalityId>(), new HouseNumber(houseNumber), null);
-            ProposeAddress(streetNamePersistentId, new AddressPersistentLocalId(123), new PostalCode(postInfoId), Fixture.Create<MunicipalityId>(), new HouseNumber(houseNumber), new BoxNumber(boxNumber));
 
             _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
             {
                  PostalCode = postInfoId,
-                 NisCode = nisCode
+                 NisCode = nisCode,
             });
 
             _syndicationContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem
             {
+                MunicipalityId = Fixture.Create<Guid>(),
                 NisCode = nisCode,
-                MunicipalityId = Fixture.Create<MunicipalityId>()
             });
-
             _syndicationContext.SaveChanges();
 
             var body = new AddressProposeRequest
@@ -85,7 +81,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                 StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{consumerItem.PersistentLocalId}",
                 PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
                 Huisnummer = houseNumber,
-                Busnummer = boxNumber
+                Busnummer = "5"
             };
 
             //Act
@@ -106,9 +102,9 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                 .Result
                 .Where(x =>
                     x.Errors.Any(
-                        failure => failure.ErrorCode == "AdresBestaandeHuisnummerBusnummerCombinatie"
-                                   && failure.ErrorMessage == "Deze combinatie huisnummer-busnummer bestaat reeds voor de opgegeven straatnaam."
-                                   && failure.PropertyName == nameof(body.Busnummer)));
+                        failure => failure.ErrorCode == "AdresPostinfoNietInGemeente"
+                                   && failure.ErrorMessage == "De ingevoerde postcode wordt niet gebruikt binnen deze gemeente."
+                                   && failure.PropertyName == nameof(body.PostInfoId)));
         }
     }
 }

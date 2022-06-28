@@ -150,7 +150,7 @@ jobs:
 
     - name: Login to Amazon ECR (Test)
       if: env.RELEASE_VERSION != 'none'
-      uses: aws-actions/amazon-ecr-login@v1.3.3
+      uses: aws-actions/amazon-ecr-login@v1.5.0
 
     - name: Push to Test
       if: env.RELEASE_VERSION != 'none'
@@ -183,7 +183,7 @@ jobs:
 
     - name: Login to Amazon ECR (Staging)
       if: env.RELEASE_VERSION != 'none'
-      uses: aws-actions/amazon-ecr-login@v1.3.3
+      uses: aws-actions/amazon-ecr-login@v1.5.0
 
     - name: Push to Staging
       if: env.RELEASE_VERSION != 'none'
@@ -240,7 +240,7 @@ jobs:
 
     - name: Login to Amazon ECR (Production)
       if: env.RELEASE_VERSION != 'none'
-      uses: aws-actions/amazon-ecr-login@v1.3.3
+      uses: aws-actions/amazon-ecr-login@v1.5.0
 
     - name: Push to Production
       if: env.RELEASE_VERSION != 'none'

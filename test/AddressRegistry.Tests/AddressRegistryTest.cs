@@ -1,13 +1,12 @@
 namespace AddressRegistry.Tests
 {
     using System.Collections.Generic;
-    using Be.Vlaanderen.Basisregisters.EventHandling;
-    using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore.Autofac;
+    using Be.Vlaanderen.Basisregisters.EventHandling;
+    using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
     using global::AutoFixture;
-    using Infrastructure;
     using Infrastructure.Modules;
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
@@ -22,7 +21,7 @@ namespace AddressRegistry.Tests
         public AddressRegistryTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             Fixture = new Fixture();
-            Fixture.Register(() => (ISnapshotStrategy)IntervalStrategy.Default);
+            Fixture.Register(() => (ISnapshotStrategy)NoSnapshotStrategy.Instance);
         }
 
         protected override void ConfigureCommandHandling(ContainerBuilder builder)

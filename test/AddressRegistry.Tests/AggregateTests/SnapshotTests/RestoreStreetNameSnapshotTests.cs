@@ -129,15 +129,14 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                 address.PostalCode.Should().Be(new PostalCode(snapshotAddress.PostalCode));
                 address.HouseNumber.Should().Be(new HouseNumber(snapshotAddress.HouseNumber));
 
-                if (address.BoxNumber is null)
+                if (snapshotAddress.BoxNumber is null)
                 {
-                    snapshotAddress.BoxNumber.Should().BeNull();
+                    address.BoxNumber.Should().BeNull();
                 }
                 else
                 {
                     address.BoxNumber.Should().Be(new BoxNumber(snapshotAddress.BoxNumber));
                 }
-
 
                 address.Geometry.Geometry.Should().Be(new ExtendedWkbGeometry(snapshotAddress.ExtendedWkbGeometry));
                 address.Geometry.GeometryMethod.Should().Be(snapshotAddress.GeometryMethod);

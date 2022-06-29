@@ -47,7 +47,6 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                 postalCode,
                 houseNumber,
                 boxNumber: null);
-
             ((ISetProvenance)parentAddressWasProposed).SetProvenance(provenance);
 
             var proposeChildAddress = new ProposeAddress(
@@ -66,7 +65,6 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                 proposeChildAddress.PostalCode,
                 proposeChildAddress.HouseNumber,
                 proposeChildAddress.BoxNumber);
-
             ((ISetProvenance)addressWasProposedV2).SetProvenance(provenance);
 
             var migratedStreetNameWasImported = Fixture.Create<MigratedStreetNameWasImported>();
@@ -80,7 +78,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                     null,
                     parentAddressWasProposed.GetHash(),
                     new ProvenanceData(provenance))
-                .WithAddress(new AddressPersistentLocalId(proposeChildAddress.AddressPersistentLocalId),
+                .WithAddress(proposeChildAddress.AddressPersistentLocalId,
                     AddressStatus.Proposed,
                     postalCode,
                     houseNumber,

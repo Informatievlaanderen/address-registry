@@ -1,6 +1,7 @@
 FROM mcr.microsoft.com/dotnet/runtime-deps:6.0.3
 
 LABEL maintainer "Digitaal Vlaanderen <digitaal.vlaanderen@vlaanderen.be>"
+LABEL registry="address-registry"
 
 COPY / /app
 WORKDIR /app

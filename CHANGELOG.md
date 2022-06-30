@@ -1,3 +1,11 @@
+## [3.22.2](https://github.com/informatievlaanderen/address-registry/compare/v3.22.1...v3.22.2) (2022-06-30)
+
+
+### Bug Fixes
+
+* rename projection description ([e1a63a3](https://github.com/informatievlaanderen/address-registry/commit/e1a63a3e64fd94c9f15b06456fa78139f7ea56a2))
+* rename projection description ([ccdaf11](https://github.com/informatievlaanderen/address-registry/commit/ccdaf112f3d6c1335fb73c5b22b97e41d267cd4c))
+
 ## [3.22.1](https://github.com/informatievlaanderen/address-registry/compare/v3.22.0...v3.22.1) (2022-06-30)
 
 

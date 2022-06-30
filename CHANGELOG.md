@@ -1,3 +1,10 @@
+## [3.22.1](https://github.com/informatievlaanderen/address-registry/compare/v3.22.0...v3.22.1) (2022-06-30)
+
+
+### Bug Fixes
+
+* add LABEL to Dockerfile (for easier DataDog filtering) ([8de16cd](https://github.com/informatievlaanderen/address-registry/commit/8de16cd2d2c80b0c795265c237f7c8bafad06499))
+
 # [3.22.0](https://github.com/informatievlaanderen/address-registry/compare/v3.21.1...v3.22.0) (2022-06-27)
 
 

@@ -13,7 +13,7 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
 
 
     [ConnectedProjectionName("WFS adressen")]
-    [ConnectedProjectionDescription("Projectie die de adressen data voor het WFS adresregister voorziet.")]
+    [ConnectedProjectionDescription("Projectie die de gemeente data voor het WFS adressenregister voorziet.")]
     public class AddressDetailProjections : ConnectedProjection<WfsContext>
     {
         private static readonly string AdresStatusInGebruik = AdresStatus.InGebruik.ToString();

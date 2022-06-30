@@ -13,7 +13,7 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
 
 
     [ConnectedProjectionName("WMS adressen")]
-    [ConnectedProjectionDescription("Projectie die de gemeente data voor het WMS adressenregister voorziet. ")]
+    [ConnectedProjectionDescription("Projectie die de adressen data voor het WMS adressenregister voorziet.")]
     public class AddressDetailProjections : ConnectedProjection<WmsContext>
     {
         private static readonly string AdresStatusInGebruik = AdresStatus.InGebruik.ToString();

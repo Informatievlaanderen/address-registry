@@ -2,6 +2,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using Be.Vlaanderen.Basisregisters.GrAr.Edit.Validators;
     using Microsoft.EntityFrameworkCore;
     using Projections.Syndication;
 

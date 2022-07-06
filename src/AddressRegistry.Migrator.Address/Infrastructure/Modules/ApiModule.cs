@@ -52,6 +52,7 @@ namespace AddressRegistry.Migrator.Address.Infrastructure.Modules
                 .RegisterModule(new EditModule(_configuration, _services, _loggerFactory));
 
             builder.RegisterEventstreamModule(_configuration);
+            builder.RegisterSnapshotModule(_configuration);
 
             builder.Populate(_services);
         }

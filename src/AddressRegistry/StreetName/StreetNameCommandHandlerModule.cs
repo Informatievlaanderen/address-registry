@@ -2,6 +2,7 @@ namespace AddressRegistry.StreetName
 {
     using System;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.EventHandling;
@@ -15,6 +16,7 @@ namespace AddressRegistry.StreetName
         public StreetNameCommandHandlerModule(
             IStreetNameFactory streetNameFactory,
             Func<IStreetNames> getStreetNames,
+            Func<ISnapshotStore> getSnapshotStore,
             Func<ConcurrentUnitOfWork> getUnitOfWork,
             Func<IStreamStore> getStreamStore,
             EventMapping eventMapping,
@@ -22,7 +24,7 @@ namespace AddressRegistry.StreetName
             StreetNameProvenanceFactory provenanceFactory)
         {
             For<ImportMigratedStreetName>()
-                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
                 .AddEventHash<ImportMigratedStreetName, StreetName>(getUnitOfWork)
                 .AddProvenance(getUnitOfWork, provenanceFactory)
                 .Handle(async (message, ct) =>
@@ -47,7 +49,7 @@ namespace AddressRegistry.StreetName
                 });
 
             For<ImportStreetName>()
-                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
                 .AddEventHash<ImportStreetName, StreetName>(getUnitOfWork)
                 .AddProvenance(getUnitOfWork, provenanceFactory)
                 .Handle(async (message, ct) =>
@@ -70,7 +72,7 @@ namespace AddressRegistry.StreetName
                 });
 
             For<ApproveStreetName>()
-                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
                 .AddEventHash<ApproveStreetName, StreetName>(getUnitOfWork)
                 .AddProvenance(getUnitOfWork, provenanceFactory)
                 .Handle(async (message, ct) =>
@@ -82,7 +84,7 @@ namespace AddressRegistry.StreetName
                 });
 
             For<RemoveStreetName>()
-                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
                 .AddEventHash<RemoveStreetName, StreetName>(getUnitOfWork)
                 .AddProvenance(getUnitOfWork, provenanceFactory)
                 .Handle(async (message, ct) =>

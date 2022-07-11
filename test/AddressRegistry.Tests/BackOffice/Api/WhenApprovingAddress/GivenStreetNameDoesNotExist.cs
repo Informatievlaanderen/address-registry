@@ -1,33 +1,30 @@
-namespace AddressRegistry.Tests.AggregateTests.WhenApprovingAddress
+namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
 {
     using System;
     using System.Threading.Tasks;
-    using Api.BackOffice.Abstractions.Requests;
-    using Api.BackOffice.Validators;
+    using AddressRegistry.Api.BackOffice.Abstractions.Requests;
+    using AddressRegistry.Api.BackOffice.Validators;
     using Autofac;
     using BackOffice;
-    using BackOffice.Infrastructure;
-    using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using FluentAssertions;
     using global::AutoFixture;
+    using Infrastructure;
     using Microsoft.AspNetCore.Mvc;
     using StreetName;
     using Xunit;
     using Xunit.Abstractions;
-    using AddressController = Api.BackOffice.AddressController;
+    using AddressController = AddressRegistry.Api.BackOffice.AddressController;
 
     public class GivenStreetNameDoesNotExist : AddressRegistryBackOfficeTest
     {
         private readonly Fixture _fixture;
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;
-        private readonly IdempotencyContext _idempotencyContext;
 
         public GivenStreetNameDoesNotExist(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             _fixture = new Fixture();
             _controller = CreateApiBusControllerWithUser<AddressController>();
-            _idempotencyContext = new FakeIdempotencyContextFactory().CreateDbContext(Array.Empty<string>());
             _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext(Array.Empty<string>());
         }
 

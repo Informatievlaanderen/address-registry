@@ -9,7 +9,6 @@ namespace AddressRegistry.Api.BackOffice.Handlers
     using Address;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
-    using Infrastructure.Repositories;
     using MediatR;
     using StreetName;
     using StreetName.Commands;

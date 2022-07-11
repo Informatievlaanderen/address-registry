@@ -43,9 +43,6 @@ namespace AddressRegistry.Tests
                 .RegisterModule(new CommandHandlingModule(configuration))
                 .RegisterModule(new SqlStreamStoreModule());
 
-            builder.RegisterType<AddressProposeHandler>()
-                .As<IRequestHandler<AddressProposeRequest, PersistentLocalIdETagResponse>>().AsSelf();
-
             builder.RegisterModule(new SqlSnapshotStoreModule());
 
             builder

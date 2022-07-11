@@ -1,7 +1,7 @@
 namespace AddressRegistry.Tests.BackOffice.Infrastructure
 {
     using System;
-    using AddressRegistry.Api.BackOffice;
+    using AddressRegistry.Api.BackOffice.Abstractions;
     using global::AutoFixture;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Design;

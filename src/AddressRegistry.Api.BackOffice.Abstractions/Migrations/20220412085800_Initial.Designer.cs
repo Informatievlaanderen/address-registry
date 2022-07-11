@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace AddressRegistry.Api.BackOffice.Migrations
+namespace AddressRegistry.Api.BackOffice.Abstractions.Migrations
 {
     [DbContext(typeof(BackOfficeContext))]
     [Migration("20220412085800_Initial")]

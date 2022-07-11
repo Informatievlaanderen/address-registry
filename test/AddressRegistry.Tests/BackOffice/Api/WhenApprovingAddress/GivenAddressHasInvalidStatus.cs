@@ -6,18 +6,22 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
     using System.Threading.Tasks;
     using Address;
     using AddressRegistry.Api.BackOffice;
-    using AddressRegistry.Api.BackOffice.Address;
-    using AddressRegistry.Api.BackOffice.Address.Requests;
+    using AddressRegistry.Api.BackOffice.Abstractions;
+    using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Validators;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using FluentAssertions;
     using FluentValidation;
+    using FluentValidation.Results;
     using global::AutoFixture;
     using Infrastructure;
+    using Moq;
     using StreetName;
+    using StreetName.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
+    using AddressController = AddressRegistry.Api.BackOffice.AddressController;
     using AddressGeometry = Address.AddressGeometry;
     using AddressId = Address.AddressId;
     using AddressStatus = Address.AddressStatus;
@@ -32,7 +36,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
 
         public GivenAddressHasInvalidStatus(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            _controller = CreateApiBusControllerWithUser<AddressController>("John Doe");
+            _controller = CreateApiBusControllerWithUser<AddressController>();
             _idempotencyContext = new FakeIdempotencyContextFactory().CreateDbContext();
             _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
         }
@@ -41,33 +45,15 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
         [Fact]
         public void ThenThrowApiException()
         {
-            string postInfoId = "8200";
-            string houseNumber = "11";
-            string streetNameIdStr = Guid.NewGuid().ToString("D");
-            int addressPersistentIdInt = 123;
-
-            var legacyStreetNameId = StreetNameId.CreateFor(streetNameIdStr);
-            var streetNameId = AddressRegistry.StreetName.StreetNameId.CreateFor(streetNameIdStr);
             var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
-            var legacyAddressPersistentLocalId = new PersistentLocalId(addressPersistentIdInt);
-            var addressPersistentLocalId = new AddressPersistentLocalId(addressPersistentIdInt);
+            var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
-            ImportMigratedStreetName(streetNameId, streetNamePersistentId);
-            MigrateAddresToStreetName(
-                Fixture.Create<AddressId>(),
-                streetNamePersistentId,
-                legacyStreetNameId,
-                legacyAddressPersistentLocalId,
-                AddressStatus.Retired,
-                new AddressRegistry.Address.HouseNumber(houseNumber),
-                null,
-                Fixture.Create<AddressGeometry>(),
-                true,
-                new PostalCode(postInfoId),
-                true,
-                false,
-                null
-            );
+            var mockRequestValidator = new Mock<IValidator<AddressApproveRequest>>();
+            mockRequestValidator.Setup(x => x.ValidateAsync(It.IsAny<AddressApproveRequest>(), CancellationToken.None))
+                .Returns(Task.FromResult(new ValidationResult()));
+
+            MockMediator.Setup(x => x.Send(It.IsAny<AddressApproveRequest>(), CancellationToken.None))
+                .Throws(new AddressCannotBeApprovedException(AddressRegistry.StreetName.AddressStatus.Rejected));
 
             _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.Add(
                 new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));
@@ -80,9 +66,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
 
             //Act
             Func<Task> act = async () => await _controller.Approve(
-                _idempotencyContext,
                 _backOfficeContext,
-                new AddressApproveRequestValidator(),
+                mockRequestValidator.Object,
                 Container.Resolve<IStreetNames>(),
                 approveRequest,
                 null, CancellationToken.None);

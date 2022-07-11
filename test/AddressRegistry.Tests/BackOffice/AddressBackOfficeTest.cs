@@ -3,16 +3,19 @@ namespace AddressRegistry.Tests.BackOffice
     using System;
     using System.Collections.Generic;
     using System.Security.Claims;
-    using AddressRegistry.Api.BackOffice.Address;
     using AddressRegistry.Api.BackOffice.Infrastructure.Options;
-    using AddressRegistry.StreetName;
-    using AddressRegistry.Tests;
+    using StreetName;
+    using Tests;
     using Autofac;
+    using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using global::AutoFixture;
+    using Infrastructure;
+    using MediatR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Options;
+    using Moq;
     using StreetName.Commands;
     using Xunit.Abstractions;
 
@@ -21,10 +24,15 @@ namespace AddressRegistry.Tests.BackOffice
         internal const string DetailUrl = "https://www.registry.com/address/voorgesteld/{0}";
         protected IOptions<ResponseOptions> ResponseOptions { get; }
 
-        public AddressRegistryBackOfficeTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        protected Mock<IMediator> MockMediator { get; }
+
+        public AddressRegistryBackOfficeTest(
+            ITestOutputHelper testOutputHelper)
+            : base(testOutputHelper)
         {
-            ResponseOptions = Options.Create<ResponseOptions>(Fixture.Create<ResponseOptions>());
+            ResponseOptions = Options.Create(Fixture.Create<ResponseOptions>());
             ResponseOptions.Value.DetailUrl = DetailUrl;
+            MockMediator = new Mock<IMediator>();
         }
 
         public void DispatchArrangeCommand<T>(T command) where T : IHasCommandProvenance
@@ -34,44 +42,62 @@ namespace AddressRegistry.Tests.BackOffice
             bus.Dispatch(command.CreateCommandId(), command);
         }
 
-        public T CreateApiBusControllerWithUser<T>(string username) where T : ApiBusController
+        public T CreateApiBusControllerWithUser<T>() where T : ApiController
         {
-            var bus = Container.Resolve<ICommandHandlerResolver>();
-            var controller = Activator.CreateInstance(typeof(T), bus) as T;
+            var controller = Activator.CreateInstance(typeof(T), MockMediator.Object) as T;
 
             var claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.Name, "username"),
                 new Claim(ClaimTypes.NameIdentifier, "userId"),
-                new Claim("name", username),
+                new Claim("name", "John Doe"),
             };
             var identity = new ClaimsIdentity(claims, "TestAuthType");
             var claimsPrincipal = new ClaimsPrincipal(identity);
-            if (controller != null)
-            {
-                controller.ControllerContext.HttpContext = new DefaultHttpContext { User = claimsPrincipal };
 
-                return controller;
-            }
-            else
+            if (controller == null)
             {
                 throw new Exception("Could not find controller type");
             }
+
+            controller.ControllerContext.HttpContext = new DefaultHttpContext { User = claimsPrincipal };
+
+            return controller;
         }
 
         protected void ImportMigratedStreetName(
             StreetNameId streetNameId,
             StreetNamePersistentLocalId streetNamePersistentLocalId,
+            NisCode niscode,
             StreetNameStatus status = StreetNameStatus.Current)
         {
             var importMunicipality = new ImportMigratedStreetName(
                 streetNameId,
                 streetNamePersistentLocalId,
                 Fixture.Create<MunicipalityId>(),
-                new NisCode("23002"),
+                niscode,
                 status,
                 Fixture.Create<Provenance>());
             DispatchArrangeCommand(importMunicipality);
+        }
+
+        protected void ProposeAddress(
+            StreetNamePersistentLocalId streetNamePersistentLocalId,
+            AddressPersistentLocalId addressPersistentLocalId,
+            PostalCode postalCode,
+            MunicipalityId municipalityId,
+            HouseNumber houseNumber,
+            BoxNumber? boxNumber)
+        {
+            var proposeCommand = new ProposeAddress(
+                streetNamePersistentLocalId,
+                postalCode,
+                municipalityId,
+                addressPersistentLocalId,
+                houseNumber,
+                boxNumber,
+                Fixture.Create<Provenance>());
+            DispatchArrangeCommand(proposeCommand);
         }
 
         protected void RemoveStreetName(StreetNamePersistentLocalId streetNamePersistentLocalId)
@@ -112,25 +138,6 @@ namespace AddressRegistry.Tests.BackOffice
                 isRemoved,
                 parentAddressId,
                 Fixture.Create<Provenance>()));
-        }
-
-        protected void ProposeAddress(
-            StreetNamePersistentLocalId streetNamePersistentLocalId,
-            AddressPersistentLocalId addressPersistentLocalId,
-            PostalCode postalCode,
-            MunicipalityId municipalityId,
-            HouseNumber houseNumber,
-            BoxNumber? boxNumber)
-        {
-            var proposeCommand = new ProposeAddress(
-                streetNamePersistentLocalId,
-                postalCode,
-                municipalityId,
-                addressPersistentLocalId,
-                houseNumber,
-                boxNumber,
-                Fixture.Create<Provenance>());
-            DispatchArrangeCommand(proposeCommand);
         }
     }
 }

@@ -32,7 +32,9 @@ namespace AddressRegistry.Tests
 
         protected bool IgnoreExceptionMessage { get; set; }
 
-        protected AutofacBasedTest(ITestOutputHelper testOutputHelper)
+        protected AutofacBasedTest(
+            ITestOutputHelper testOutputHelper,
+            Action<ContainerBuilder>? registerAdditional = null)
         {
             _container = new Lazy<IContainer>(() =>
             {
@@ -47,6 +49,8 @@ namespace AddressRegistry.Tests
                 containerBuilder.RegisterInstance(testOutputHelper);
                 containerBuilder.RegisterType<XUnitLogger>().AsImplementedInterfaces();
                 containerBuilder.RegisterType<FakePersistentLocalIdGenerator>().As<IPersistentLocalIdGenerator>();
+
+                registerAdditional?.Invoke(containerBuilder);
 
                 return containerBuilder.Build();
             });

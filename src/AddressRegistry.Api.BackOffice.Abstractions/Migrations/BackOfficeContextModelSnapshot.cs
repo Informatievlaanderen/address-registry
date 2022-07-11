@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace AddressRegistry.Api.BackOffice.Migrations
+namespace AddressRegistry.Api.BackOffice.Abstractions.Migrations
 {
     [DbContext(typeof(BackOfficeContext))]
     partial class BackOfficeContextModelSnapshot : ModelSnapshot

@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace AddressRegistry.Api.BackOffice.Migrations
+namespace AddressRegistry.Api.BackOffice.Abstractions.Migrations
 {
     public partial class Initial : Migration
     {

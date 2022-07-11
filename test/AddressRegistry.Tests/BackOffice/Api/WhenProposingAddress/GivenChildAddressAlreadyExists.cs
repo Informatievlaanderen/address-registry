@@ -2,87 +2,47 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
 {
     using System;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Address;
-    using AddressRegistry.Api.BackOffice.Address;
-    using AddressRegistry.Api.BackOffice.Address.Requests;
-    using AddressRegistry.Api.BackOffice.Validators;
-    using Autofac;
-    using AutoFixture;
-    using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
+    using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using FluentAssertions;
     using FluentValidation;
-    using global::AutoFixture;
-    using Infrastructure;
+    using FluentValidation.Results;
     using Moq;
-    using Projections.Syndication.Municipality;
-    using Projections.Syndication.PostalInfo;
     using StreetName;
+    using StreetName.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
-    using BoxNumber = StreetName.BoxNumber;
-    using HouseNumber = StreetName.HouseNumber;
-    using PostalCode = StreetName.PostalCode;
-    using StreetNameId = StreetName.StreetNameId;
+    using AddressController = AddressRegistry.Api.BackOffice.AddressController;
 
     public class GivenChildAddressAlreadyExists : AddressRegistryBackOfficeTest
     {
         private readonly AddressController _controller;
-        private readonly TestBackOfficeContext _backOfficeContext;
-        private readonly IdempotencyContext _idempotencyContext;
-        private readonly TestConsumerContext _consumerContext;
-        private readonly TestSyndicationContext _syndicationContext;
 
         public GivenChildAddressAlreadyExists(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            _controller = CreateApiBusControllerWithUser<AddressController>("John Doe");
-            _idempotencyContext = new FakeIdempotencyContextFactory().CreateDbContext();
-            _consumerContext = new FakeConsumerContextFactory().CreateDbContext();
-            _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
-            _syndicationContext = new FakeSyndicationContextFactory().CreateDbContext();
-            Fixture.Customize(new WithFixedMunicipalityId());
+            _controller = CreateApiBusControllerWithUser<AddressController>();
         }
 
         [Fact]
         public void ThenThrowValidationException()
         {
-            const int expectedLocation = 5;
-            string postInfoId = "8200";
             string houseNumber = "11";
             string boxNumber = "1A";
-            var nisCode = Fixture.Create<NisCode>();
-            var streetNameId = Fixture.Create<StreetNameId>();
-            var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
+            var streetNamePersistentId = new StreetNamePersistentLocalId(123);
+            var postInfoId = new PersistentLocalId(456);
 
-            //Arrange
-            var consumerItem = _consumerContext
-                .AddStreetNameConsumerItemFixtureWithPersistentLocalIdAndStreetNameId(streetNameId, streetNamePersistentId);
-            var mockPersistentLocalIdGenerator = new Mock<IPersistentLocalIdGenerator>();
-            mockPersistentLocalIdGenerator
-                .Setup(x => x.GenerateNextPersistentLocalId())
-                .Returns(new PersistentLocalId(expectedLocation));
+            var mockRequestValidator = new Mock<IValidator<AddressProposeRequest>>();
+            mockRequestValidator.Setup(x => x.ValidateAsync(It.IsAny<AddressProposeRequest>(), CancellationToken.None))
+                .Returns(Task.FromResult(new ValidationResult()));
 
-            ImportMigratedStreetName(streetNameId, streetNamePersistentId);
-            ProposeAddress(streetNamePersistentId, new AddressPersistentLocalId(123), new PostalCode(postInfoId), Fixture.Create<MunicipalityId>(), new HouseNumber(houseNumber), null);
-            ProposeAddress(streetNamePersistentId, new AddressPersistentLocalId(123), new PostalCode(postInfoId), Fixture.Create<MunicipalityId>(), new HouseNumber(houseNumber), new BoxNumber(boxNumber));
-
-            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
-            {
-                 PostalCode = postInfoId,
-                 NisCode = nisCode
-            });
-
-            _syndicationContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem
-            {
-                NisCode = nisCode,
-                MunicipalityId = Fixture.Create<MunicipalityId>()
-            });
-
-            _syndicationContext.SaveChanges();
+            MockMediator.Setup(x => x.Send(It.IsAny<AddressProposeRequest>(), CancellationToken.None))
+                .Throws(new DuplicateBoxNumberException(boxNumber));
 
             var body = new AddressProposeRequest
             {
-                StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{consumerItem.PersistentLocalId}",
+                StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentId}",
                 PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
                 Huisnummer = houseNumber,
                 Busnummer = boxNumber
@@ -91,12 +51,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
             //Act
             Func<Task> act = async () => await _controller.Propose(
                 ResponseOptions,
-                _idempotencyContext,
-                _backOfficeContext,
-                _syndicationContext,
-                mockPersistentLocalIdGenerator.Object,
-                new AddressProposeRequestValidator(_syndicationContext),
-                Container.Resolve<IStreetNames>(),
+                mockRequestValidator.Object,
                 body);
 
             // Assert

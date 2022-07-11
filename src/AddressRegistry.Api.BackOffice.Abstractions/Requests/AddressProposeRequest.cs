@@ -1,14 +1,17 @@
-namespace AddressRegistry.Api.BackOffice.Address.Requests
+namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
 {
+    using System.Collections.Generic;
     using System.Runtime.Serialization;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using MediatR;
     using Newtonsoft.Json;
+    using Responses;
     using StreetName;
     using StreetName.Commands;
     using Swashbuckle.AspNetCore.Filters;
 
     [DataContract(Name = "VoorstelAdres", Namespace = "")]
-    public class AddressProposeRequest
+    public class AddressProposeRequest : IRequest<PersistentLocalIdETagResponse>
     {
         /// <summary>
         /// De unieke en persistente identificator van de postcode van het adres.
@@ -37,6 +40,9 @@ namespace AddressRegistry.Api.BackOffice.Address.Requests
         [DataMember(Name = "Busnummer", Order = 3)]
         [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string? Busnummer { get; set; }
+
+        [JsonIgnore]
+        public IDictionary<string, object> Metadata { get; set; }
 
         /// <summary>
         /// Map to ProposeAddress command

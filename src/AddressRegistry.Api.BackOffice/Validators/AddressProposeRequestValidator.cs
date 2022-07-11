@@ -1,6 +1,6 @@
 namespace AddressRegistry.Api.BackOffice.Validators
 {
-    using Address.Requests;
+    using Abstractions.Requests;
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Validators;
     using FluentValidation;
     using Projections.Syndication;

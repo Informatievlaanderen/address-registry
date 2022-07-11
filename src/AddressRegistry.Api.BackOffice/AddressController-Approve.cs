@@ -1,21 +1,21 @@
-namespace AddressRegistry.Api.BackOffice.Address
+namespace AddressRegistry.Api.BackOffice
 {
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AddressRegistry.Address;
+    using Abstractions;
+    using Abstractions.Exceptions;
+    using Abstractions.Requests;
+    using Address;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
-    using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using FluentValidation;
     using FluentValidation.Results;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Requests;
     using StreetName;
-    using StreetName.Commands;
     using StreetName.Exceptions;
     using Swashbuckle.AspNetCore.Filters;
     using Validators;
@@ -25,10 +25,9 @@ namespace AddressRegistry.Api.BackOffice.Address
         /// <summary>
         /// Keur een adres goed.
         /// </summary>
-        /// <param name="idempotencyContext"></param>
         /// <param name="backOfficeContext"></param>
         /// <param name="streetNameRepository"></param>
-        /// <param name="addressApproveRequest"></param>
+        /// <param name="request"></param>
         /// <param name="validator"></param>
         /// <param name="ifMatchHeaderValue"></param>
         /// <param name="cancellationToken"></param>
@@ -47,18 +46,17 @@ namespace AddressRegistry.Api.BackOffice.Address
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(BadRequestResponseExamples))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
         public async Task<IActionResult> Approve(
-            [FromServices] IdempotencyContext idempotencyContext,
             [FromServices] BackOfficeContext backOfficeContext,
             [FromServices] IValidator<AddressApproveRequest> validator,
             [FromServices] IStreetNames streetNameRepository,
-            [FromRoute] AddressApproveRequest addressApproveRequest,
+            [FromRoute] AddressApproveRequest request,
             [FromHeader(Name = "If-Match")] string? ifMatchHeaderValue,
             CancellationToken cancellationToken = default)
         {
-            await validator.ValidateAndThrowAsync(addressApproveRequest, cancellationToken);
+            await validator.ValidateAndThrowAsync(request, cancellationToken);
 
             var addressPersistentLocalId =
-                new AddressPersistentLocalId(new PersistentLocalId(addressApproveRequest.PersistentLocalId));
+                new AddressPersistentLocalId(new PersistentLocalId(request.PersistentLocalId));
 
             var relation = backOfficeContext.AddressPersistentIdStreetNamePersistentIds
                 .FirstOrDefault(x => x.AddressPersistentLocalId == addressPersistentLocalId);
@@ -88,21 +86,10 @@ namespace AddressRegistry.Api.BackOffice.Address
                     }
                 }
 
-                var cmd = new ApproveAddress(
-                    streetNamePersistentLocalId,
-                    addressPersistentLocalId,
-                    CreateFakeProvenance());
+                request.Metadata = GetMetadata();
+                var response = await _mediator.Send(request, cancellationToken);
 
-                await IdempotentCommandHandlerDispatch(idempotencyContext, cmd.CreateCommandId(), cmd,
-                    cancellationToken);
-
-                var etag = await GetHash(
-                    streetNameRepository,
-                    streetNamePersistentLocalId,
-                    addressPersistentLocalId,
-                    cancellationToken);
-
-                return new NoContentWithETagResult(etag);
+                return new NoContentWithETagResult(response.LastEventHash);
             }
             catch (IdempotencyException)
             {

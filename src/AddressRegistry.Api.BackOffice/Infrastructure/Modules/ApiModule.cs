@@ -52,6 +52,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
             containerBuilder.RegisterModule(new SyndicationModule(_configuration, _services, _loggerFactory));
             containerBuilder.RegisterModule(new EditModule(_configuration, _services, _loggerFactory));
             containerBuilder.RegisterModule(new ConsumerModule(_configuration, _services, _loggerFactory));
+            containerBuilder.RegisterModule(new MediatRModule());
             containerBuilder.RegisterSnapshotModule(_configuration);
 
             containerBuilder.Populate(_services);

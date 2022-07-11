@@ -32,14 +32,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AddressRegistry.Consumer.Read.Municipality\AddressRegistry.Consumer.Read.Municipality.csproj" />
-    <ProjectReference Include="..\AddressRegistry.Consumer\AddressRegistry.Consumer.csproj" />
-    <ProjectReference Include="..\AddressRegistry.Projections.Syndication\AddressRegistry.Projections.Syndication.csproj" />
-    <ProjectReference Include="..\AddressRegistry\AddressRegistry.csproj" />
+    <Compile Include="..\..\SolutionInfo.cs" Link="Properties\SolutionInfo.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\SolutionInfo.cs" Link="Properties\SolutionInfo.cs" />
+    <ProjectReference Include="..\AddressRegistry.Api.BackOffice.Handlers\AddressRegistry.Api.BackOffice.Handlers.csproj" />
+    <ProjectReference Include="..\AddressRegistry\AddressRegistry.csproj" />
   </ItemGroup>
 
   <Import Project="..\..\.paket\Paket.Restore.targets" />

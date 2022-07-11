@@ -1,3 +1,10 @@
+## [3.22.4](https://github.com/informatievlaanderen/address-registry/compare/v3.22.3...v3.22.4) (2022-07-11)
+
+
+### Bug Fixes
+
+* add snapshot migrator settings ([cae66ad](https://github.com/informatievlaanderen/address-registry/commit/cae66ad4e522aa285d35b53f3f020f1b9caeb5b4))
+
 ## [3.22.3](https://github.com/informatievlaanderen/address-registry/compare/v3.22.2...v3.22.3) (2022-07-01)
 
 ## [3.22.2](https://github.com/informatievlaanderen/address-registry/compare/v3.22.1...v3.22.2) (2022-06-30)

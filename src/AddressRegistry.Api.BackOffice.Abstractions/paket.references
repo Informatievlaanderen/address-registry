@@ -1,0 +1,10 @@
+Be.Vlaanderen.Basisregisters.Api
+
+Be.Vlaanderen.Basisregisters.GrAr.Edit
+
+NetTopologySuite
+MediatR.Contracts
+Newtonsoft.Json
+
+SourceLink.Embed.AllSourceFiles
+SourceLink.Copy.PdbFiles

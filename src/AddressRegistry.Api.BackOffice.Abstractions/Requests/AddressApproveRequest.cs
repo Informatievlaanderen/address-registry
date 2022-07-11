@@ -1,10 +1,13 @@
-namespace AddressRegistry.Api.BackOffice.Address.Requests
+namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
 {
+    using System.Collections.Generic;
     using System.Runtime.Serialization;
+    using MediatR;
     using Newtonsoft.Json;
+    using Responses;
 
     [DataContract(Name = "GoedkeurenAdres", Namespace = "")]
-    public class AddressApproveRequest
+    public class AddressApproveRequest : IRequest<ETagResponse>
     {
         /// <summary>
         /// De unieke en persistente identificator van het adres.
@@ -12,5 +15,8 @@ namespace AddressRegistry.Api.BackOffice.Address.Requests
         [DataMember(Name = "PersistentLocalId", Order = 0)]
         [JsonProperty(Required = Required.Always)]
         public int PersistentLocalId { get; set; }
+
+        [JsonIgnore]
+        public IDictionary<string, object> Metadata { get; set; }
     }
 }

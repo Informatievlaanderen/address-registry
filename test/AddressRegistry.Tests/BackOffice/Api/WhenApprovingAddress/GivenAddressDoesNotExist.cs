@@ -1,48 +1,48 @@
 namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
 {
     using System;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AddressRegistry.Api.BackOffice;
-    using AddressRegistry.Api.BackOffice.Address;
-    using AddressRegistry.Api.BackOffice.Address.Requests;
-    using AddressRegistry.Api.BackOffice.Validators;
+    using AddressRegistry.Api.BackOffice.Abstractions;
+    using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
-    using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using FluentAssertions;
     using FluentValidation;
+    using FluentValidation.Results;
     using global::AutoFixture;
     using Infrastructure;
     using Microsoft.AspNetCore.Http;
+    using Moq;
     using StreetName;
+    using StreetName.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
+    using AddressController = AddressRegistry.Api.BackOffice.AddressController;
 
     public class GivenAddressDoesNotExist : AddressRegistryBackOfficeTest
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;
-        private readonly IdempotencyContext _idempotencyContext;
 
         public GivenAddressDoesNotExist(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            _controller = CreateApiBusControllerWithUser<AddressController>("John Doe");
-            _idempotencyContext = new FakeIdempotencyContextFactory().CreateDbContext();
+            _controller = CreateApiBusControllerWithUser<AddressController>();
             _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
         }
 
         [Fact]
         public void ThenThrowValidationException()
         {
-            string postInfoId = "8200";
-            string houseNumber = "11";
-            var streetNameId = Fixture.Create<StreetNameId>();
             var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
-            ImportMigratedStreetName(streetNameId, streetNamePersistentId);
+            var mockRequestValidator = new Mock<IValidator<AddressApproveRequest>>();
+            mockRequestValidator.Setup(x => x.ValidateAsync(It.IsAny<AddressApproveRequest>(), CancellationToken.None))
+                .Returns(Task.FromResult(new ValidationResult()));
+
+            MockMediator.Setup(x => x.Send(It.IsAny<AddressApproveRequest>(), CancellationToken.None))
+                .Throws(new AddressNotFoundException(addressPersistentLocalId));
 
             _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.Add(
                 new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));
@@ -55,12 +55,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
 
             //Act
             Func<Task> act = async () => await _controller.Approve(
-                _idempotencyContext,
                 _backOfficeContext,
-                new AddressApproveRequestValidator(),
+                mockRequestValidator.Object,
                 Container.Resolve<IStreetNames>(),
                 approveRequest,
-                null, CancellationToken.None);
+                null);
 
             // Assert
             act

@@ -1,6 +1,11 @@
 namespace AddressRegistry.Tests
 {
+    using System;
     using System.Collections.Generic;
+    using Api.BackOffice.Abstractions.Requests;
+    using Api.BackOffice.Abstractions.Responses;
+    using Api.BackOffice.Handlers;
+    using Api.BackOffice.Infrastructure.Modules;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore.Autofac;
@@ -8,6 +13,7 @@ namespace AddressRegistry.Tests
     using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
     using global::AutoFixture;
     using Infrastructure.Modules;
+    using MediatR;
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
     using StreetName;
@@ -18,7 +24,9 @@ namespace AddressRegistry.Tests
         protected Fixture Fixture { get; }
         protected JsonSerializerSettings EventSerializerSettings { get; } = EventsJsonSerializerSettingsProvider.CreateSerializerSettings();
 
-        public AddressRegistryTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public AddressRegistryTest(
+            ITestOutputHelper testOutputHelper)
+            : base(testOutputHelper)
         {
             Fixture = new Fixture();
             Fixture.Register(() => (ISnapshotStrategy)NoSnapshotStrategy.Instance);
@@ -34,6 +42,9 @@ namespace AddressRegistry.Tests
             builder
                 .RegisterModule(new CommandHandlingModule(configuration))
                 .RegisterModule(new SqlStreamStoreModule());
+
+            builder.RegisterType<AddressProposeHandler>()
+                .As<IRequestHandler<AddressProposeRequest, PersistentLocalIdETagResponse>>().AsSelf();
 
             builder.RegisterModule(new SqlSnapshotStoreModule());
 

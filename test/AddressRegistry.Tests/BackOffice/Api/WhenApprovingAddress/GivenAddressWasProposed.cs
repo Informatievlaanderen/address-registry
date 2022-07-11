@@ -1,79 +1,64 @@
 namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
 {
-    using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
-    using AddressRegistry.Api.BackOffice;
-    using AddressRegistry.Api.BackOffice.Address;
-    using AddressRegistry.Api.BackOffice.Address.Requests;
-    using AddressRegistry.Api.BackOffice.Validators;
+    using AddressRegistry.Api.BackOffice.Abstractions;
+    using AddressRegistry.Api.BackOffice.Abstractions.Requests;
+    using AddressRegistry.Api.BackOffice.Abstractions.Responses;
     using Autofac;
-    using AutoFixture;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
-    using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using FluentAssertions;
+    using FluentValidation;
+    using FluentValidation.Results;
     using global::AutoFixture;
     using Infrastructure;
-    using SqlStreamStore;
-    using SqlStreamStore.Streams;
+    using Moq;
     using StreetName;
     using Xunit;
     using Xunit.Abstractions;
+    using AddressController = AddressRegistry.Api.BackOffice.AddressController;
 
     public class GivenAddressWasProposed : AddressRegistryBackOfficeTest
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;
-        private readonly IdempotencyContext _idempotencyContext;
 
         public GivenAddressWasProposed(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            _controller = CreateApiBusControllerWithUser<AddressController>("John Doe");
-            _idempotencyContext = new FakeIdempotencyContextFactory().CreateDbContext();
+            _controller = CreateApiBusControllerWithUser<AddressController>();
             _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
-            Fixture.Customize(new WithFixedMunicipalityId());
         }
 
         [Fact]
         public async Task ThenNoContentWithETagResultIsReturned()
         {
-            // Arrange
-            var streetNameId = Fixture.Create<StreetNameId>();
+            var lastEventHash = "eventhash";
             var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
+            var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
-            ImportMigratedStreetName(streetNameId, streetNamePersistentId);
-            ProposeAddress(
-                streetNamePersistentId,
-                addressPersistentLocalId,
-                Fixture.Create<PostalCode>(),
-                Fixture.Create<MunicipalityId>(),
-                Fixture.Create<HouseNumber>(),
-                boxNumber: null);
+            var mockRequestValidator = new Mock<IValidator<AddressApproveRequest>>();
+            mockRequestValidator.Setup(x => x.ValidateAsync(It.IsAny<AddressApproveRequest>(), CancellationToken.None))
+                .Returns(Task.FromResult(new ValidationResult()));
+
+            MockMediator.Setup(x => x.Send(It.IsAny<AddressApproveRequest>(), CancellationToken.None))
+                .Returns(Task.FromResult(new ETagResponse(lastEventHash)));
 
             _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.Add(
-                new AddressPersistentIdStreetNamePersistentId(
-                    addressPersistentLocalId,
-                    streetNamePersistentId));
+                new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));
             _backOfficeContext.SaveChanges();
 
             var result = (NoContentWithETagResult)await _controller.Approve(
-                _idempotencyContext,
                 _backOfficeContext,
-                new AddressApproveRequestValidator(),
-            Container.Resolve<IStreetNames>(),
-                addressApproveRequest: new AddressApproveRequest
+                mockRequestValidator.Object,
+                Container.Resolve<IStreetNames>(),
+                request: new AddressApproveRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
                 },
                 ifMatchHeaderValue: null);
 
-            var stream = await Container
-                .Resolve<IStreamStore>()
-                .ReadStreamBackwards(new StreamId(new StreetNameStreamId(streetNamePersistentId)), 2, 1); //2 = version of stream (zero based)
-
             //Assert
-            result.ETag.Length.Should().Be(128);
-            stream.Messages.First().JsonMetadata.Should().Contain(result.ETag);
+            result.ETag.Should().Be(lastEventHash);
         }
     }
 }

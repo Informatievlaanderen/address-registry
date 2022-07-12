@@ -6,9 +6,9 @@ namespace AddressRegistry.Consumer.Read.Municipality.Infrastructure
     using System.Threading.Tasks;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
+    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple;
-    using Be.Vlaanderen.Basisregisters.Projector.Modules;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -55,7 +55,7 @@ namespace AddressRegistry.Consumer.Read.Municipality.Infrastructure
             {
                 var loggerFactory = container.GetRequiredService<ILoggerFactory>();
 
-                await MigrationsHelper.RunAsync(configuration.GetConnectionString("ConsumerAdmin"), loggerFactory, cancellationToken);
+                await MigrationsHelper.RunAsync(configuration.GetConnectionString("ConsumerMunicipalityAdmin"), loggerFactory, cancellationToken);
 
                 var bootstrapServers = configuration["Kafka:BootstrapServers"];
                 var kafkaOptions = new KafkaOptions(bootstrapServers, configuration["Kafka:SaslUserName"], configuration["Kafka:SaslPassword"], EventsJsonSerializerSettingsProvider.CreateSerializerSettings());
@@ -66,13 +66,14 @@ namespace AddressRegistry.Consumer.Read.Municipality.Infrastructure
 
                 var actualContainer = container.GetRequiredService<ILifetimeScope>();
 
-                var consumer = new MunicipalityConsumer(actualContainer, loggerFactory, kafkaOptions, consumerOptions);
+                var consumer = new MunicipalityConsumer(actualContainer, kafkaOptions, consumerOptions);
                 var consumerTask = consumer.Start(cancellationToken);
 
-                //var projectionsManager = actualContainer.Resolve<IConnectedProjectionsManager>();
-                //var projectionsTask = projectionsManager.Start(cancellationToken);
+                Log.Information("The kafka consumer municipality was started");
 
-                await Task.WhenAll(/*projectionsTask,*/ consumerTask);
+                await Task.WhenAll(consumerTask);
+
+                Log.Information($"Consumer municipality task stopped with status: {consumerTask.Status}");
             }
             catch (Exception e)
             {
@@ -98,9 +99,8 @@ namespace AddressRegistry.Consumer.Read.Municipality.Infrastructure
             var tempProvider = services.BuildServiceProvider();
             var loggerFactory = tempProvider.GetRequiredService<ILoggerFactory>();
 
-            builder.RegisterModule(new ApiModule(configuration, services, loggerFactory));
+            builder.RegisterModule(new DataDogModule(configuration));
             builder.RegisterModule(new MunicipalityConsumerModule(configuration, services, loggerFactory, ServiceLifetime.Transient));
-            //builder.RegisterModule(new ProjectorModule(configuration));
 
             builder.Populate(services);
 

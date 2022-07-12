@@ -54,6 +54,7 @@ Target.create "Publish_Solution" (fun _ ->
     "AddressRegistry.Api.BackOffice"
     "AddressRegistry.Api.BackOffice.Abstractions"
     "AddressRegistry.Consumer"
+    "AddressRegistry.Consumer.Read.Municipality"
     "AddressRegistry.Migrator.Address"
     "AddressRegistry.Producer"
     "AddressRegistry.Projections.Legacy"
@@ -81,6 +82,7 @@ Target.create "Pack_Solution" (fun _ ->
     "AddressRegistry.Api.BackOffice"
     "AddressRegistry.Api.BackOffice.Abstractions"
     "AddressRegistry.Consumer"
+    "AddressRegistry.Consumer.Read.Municipality"
     "AddressRegistry.Migrator.Address"
     "AddressRegistry.Producer"
   ] |> List.iter pack)
@@ -105,6 +107,9 @@ Target.create "PushContainer_ApiCrabImport" (fun _ -> push "api-crab-import")
 
 Target.create "Containerize_Consumer" (fun _ -> containerize "AddressRegistry.Consumer" "consumer")
 Target.create "PushContainer_Consumer" (fun _ -> push "consumer")
+
+Target.create "Containerize_ConsumerMunicipality" (fun _ -> containerize "AddressRegistry.Consumer.Read.Municipality" "consumer-read-municipality")
+Target.create "PushContainer_ConsumerMunicipality" (fun _ -> push "consumer-read-municipality")
 
 Target.create "Containerize_Migrator_Address" (fun _ -> containerize "AddressRegistry.Migrator.Address" "migrator-address")
 Target.create "PushContainer_Migrator_Address" (fun _ -> push "migrator-address")
@@ -154,6 +159,7 @@ Target.create "Push" ignore
   ==> "Containerize_ApiBackOffice"
   ==> "Containerize_ApiCrabImport"
   ==> "Containerize_Consumer"
+  ==> "Containerize_ConsumerMunicipality"
   ==> "Containerize_Migrator_Address"
   ==> "Containerize_Producer"
   ==> "Containerize_ProjectionsSyndication"
@@ -170,6 +176,7 @@ Target.create "Push" ignore
   ==> "PushContainer_ApiBackOffice"
   ==> "PushContainer_ApiCrabImport"
   ==> "PushContainer_Consumer"
+  ==> "PushContainer_ConsumerMunicipality"
   ==> "PushContainer_Migrator_Address"
   ==> "PushContainer_Producer"
   ==> "PushContainer_ProjectionsSyndication"

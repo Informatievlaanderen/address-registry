@@ -3,28 +3,26 @@ namespace AddressRegistry.Tests.ProjectionTests.Municipality
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using AddressRegistry.Consumer;
     using AddressRegistry.Consumer.Read.Municipality;
     using AddressRegistry.Consumer.Read.Municipality.Projections;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts.MunicipalityRegistry;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using FluentAssertions;
     using global::AutoFixture;
     using Microsoft.EntityFrameworkCore;
     using NodaTime;
     using NodaTime.Text;
+    using StreetName;
     using Xunit;
     using Xunit.Abstractions;
-    using StreetName;
 
     public class MunicipalityProjectionsTests : KafkaProjectionTest<MunicipalityConsumerContext, MunicipalityProjections>
     {
         private readonly Fixture _fixture;
-        private Guid _municipalityId;
-        private MunicipalityWasRegistered _registered;
-        private Provenance _provenance;
+        private readonly Guid _municipalityId;
+        private readonly MunicipalityWasRegistered _registered;
+        private readonly Provenance _provenance;
 
         public MunicipalityProjectionsTests(ITestOutputHelper testOutputHelper)
             : base(testOutputHelper)
@@ -222,7 +220,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Municipality
             var municipalityWasNamed = new MunicipalityWasNamed(
                 _municipalityId.ToString("D"),
                 _fixture.Create<string>(),
-                Taal.NL.ToString(),
+                "Dutch",
                 _provenance);
 
             Given(_registered, municipalityWasNamed);
@@ -241,13 +239,13 @@ namespace AddressRegistry.Tests.ProjectionTests.Municipality
             var municipalityWasNamed = new MunicipalityWasNamed(
                 _municipalityId.ToString("D"),
                 _fixture.Create<string>(),
-                Taal.NL.ToString(),
+                "Dutch",
                 _provenance);
 
             var municipalityNameWasCorrected = new MunicipalityNameWasCorrected(
                 _municipalityId.ToString("D"),
                 _fixture.Create<string>(),
-                Taal.NL.ToString(),
+                "Dutch",
                 _provenance);
 
             Given(_registered, municipalityWasNamed, municipalityNameWasCorrected);
@@ -266,12 +264,12 @@ namespace AddressRegistry.Tests.ProjectionTests.Municipality
             var municipalityWasNamed = new MunicipalityWasNamed(
                 _municipalityId.ToString("D"),
                 _fixture.Create<string>(),
-                Taal.NL.ToString(),
+                "Dutch",
                 _provenance);
 
             var municipalityNameWasCorrectedToCleared = new MunicipalityNameWasCorrectedToCleared(
                 _municipalityId.ToString("D"),
-                Taal.NL.ToString(),
+                "Dutch",
                 _provenance);
 
             Given(_registered, municipalityWasNamed, municipalityNameWasCorrectedToCleared);

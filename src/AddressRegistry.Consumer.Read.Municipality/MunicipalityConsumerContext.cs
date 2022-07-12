@@ -25,6 +25,7 @@ namespace AddressRegistry.Consumer.Read.Municipality
         public override string ProjectionStateSchema => Schema.ConsumerReadMunicipality;
     }
 
+    //Classed used when running dotnet ef migrations
     public class ConsumerContextFactory : RunnerDbContextMigrationFactory<MunicipalityConsumerContext>
     {
         public ConsumerContextFactory()
@@ -46,28 +47,6 @@ namespace AddressRegistry.Consumer.Read.Municipality
 
     public static class AddressDetailExtensions
     {
-        public static async Task<MunicipalityLatestItem> FindAndUpdate(
-            this Func<MunicipalityConsumerContext> contextFactory,
-            Guid municipalityId,
-            Action<MunicipalityLatestItem> updateFunc,
-            CancellationToken ct)
-        {
-            await using var context = contextFactory();
-
-            var municipality = await context
-                .MunicipalityLatestItems
-                .FindAsync(municipalityId, cancellationToken: ct);
-
-            if (municipality == null)
-                throw DatabaseItemNotFound(municipalityId);
-
-            updateFunc(municipality);
-
-            await context.SaveChangesAsync(ct);
-
-            return municipality;
-        }
-
         public static async Task<MunicipalityLatestItem> FindAndUpdate(
             this MunicipalityConsumerContext context,
             Guid municipalityId,

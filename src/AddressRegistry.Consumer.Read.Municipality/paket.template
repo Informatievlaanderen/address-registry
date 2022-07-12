@@ -1,8 +1,8 @@
 type file
 version 1.0.0
 
-id Be.Vlaanderen.Basisregisters.AddressRegistry.Consumer
-title Be.Vlaanderen.Basisregisters.AddressRegistry.Consumer
+id Be.Vlaanderen.Basisregisters.AddressRegistry.Consumer.Read.Municipality
+title Be.Vlaanderen.Basisregisters.AddressRegistry.Consumer.Read.Municipality
 
 authors Basisregisters Vlaanderen
 owners Digitaal Vlaanderen <https://vlaanderen.be/digitaal-vlaanderen>
@@ -12,7 +12,7 @@ projectUrl https://github.com/Informatievlaanderen/address-registry
 iconUrl https://raw.githubusercontent.com/Informatievlaanderen/build-pipeline/master/logo.png
 licenseUrl https://opensource.org/licenses/EUPL-1.2
 
-description Address Registry Consumer.
+description Address Registry Consumer Read Municipality.
 
 dependencies
   framework: net6.0
@@ -30,5 +30,5 @@ dependencies
     Be.Vlaanderen.Basisregisters.Projector >= LOCKEDVERSION     
 
 files
-  AddressRegistry.Consumer.dll => lib\net6.0
-  AddressRegistry.Consumer.pdb => lib\net6.0
+  AddressRegistry.Consumer.Read.Municipality.dll => lib\net6.0
+  AddressRegistry.Consumer.Read.Municipality.pdb => lib\net6.0

@@ -3,7 +3,6 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Be.Vlaanderen.Basisregisters.GrAr.Contracts;
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts.MunicipalityRegistry;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
@@ -146,7 +145,6 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
                 }, ct);
             });
 
-
             When<MunicipalityNisCodeWasDefined>(async (contextFactory, message, ct) =>
             {
                 await contextFactory.FindAndUpdate(new Guid(message.MunicipalityId), municipality =>
@@ -198,10 +196,10 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
         private static Taal StringToTaal(string taal)
             => taal.ToLower() switch
             {
-                "nl" => Taal.NL,
-                "de" => Taal.DE,
-                "fr" => Taal.FR,
-                "en" => Taal.EN,
+                "dutch" => Taal.NL,
+                "german" => Taal.DE,
+                "french" => Taal.FR,
+                "english" => Taal.EN,
                 _ => throw new ArgumentOutOfRangeException(nameof(taal), taal, null)
             };
 

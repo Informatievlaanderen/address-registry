@@ -19,7 +19,7 @@ namespace AddressRegistry.Consumer.Read.Municipality
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         {
             var logger = loggerFactory.CreateLogger<MunicipalityConsumerModule>();
-            var connectionString = configuration.GetConnectionString("Consumer");
+            var connectionString = configuration.GetConnectionString("ConsumerMunicipality");
 
             var hasConnectionString = !string.IsNullOrWhiteSpace(connectionString);
             if (hasConnectionString)

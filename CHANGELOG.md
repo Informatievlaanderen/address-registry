@@ -1,3 +1,15 @@
+# [3.23.0](https://github.com/informatievlaanderen/address-registry/compare/v3.22.4...v3.23.0) (2022-07-12)
+
+
+### Bug Fixes
+
+* build ([8d21585](https://github.com/informatievlaanderen/address-registry/commit/8d21585f276119e3d0235491f8a12954e8793217))
+
+
+### Features
+
+* add mediator handlers + tests ([60daa98](https://github.com/informatievlaanderen/address-registry/commit/60daa982ebac3d438a129d56c0868a465142cfc7))
+
 ## [3.22.4](https://github.com/informatievlaanderen/address-registry/compare/v3.22.3...v3.22.4) (2022-07-11)
 
 

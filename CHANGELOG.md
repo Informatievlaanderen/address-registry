@@ -1,3 +1,10 @@
+# [3.24.0](https://github.com/informatievlaanderen/address-registry/compare/v3.23.0...v3.24.0) (2022-07-12)
+
+
+### Features
+
+* finish consumer municipality ([f0dfebc](https://github.com/informatievlaanderen/address-registry/commit/f0dfebc796544a81705d1986924af0e6edcfac5c))
+
 # [3.23.0](https://github.com/informatievlaanderen/address-registry/compare/v3.22.4...v3.23.0) (2022-07-12)
 
 

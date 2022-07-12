@@ -16,9 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AddressRegistry.Consumer.Read.Municipality\AddressRegistry.Consumer.Read.Municipality.csproj" />
-    <ProjectReference Include="..\AddressRegistry.Consumer\AddressRegistry.Consumer.csproj" />
-    <ProjectReference Include="..\AddressRegistry.Projections.Syndication\AddressRegistry.Projections.Syndication.csproj" />
+    <ProjectReference Include="..\AddressRegistry.Infrastructure\AddressRegistry.Infrastructure.csproj" />
     <ProjectReference Include="..\AddressRegistry\AddressRegistry.csproj" />
   </ItemGroup>
 

@@ -32,6 +32,8 @@ namespace AddressRegistry
 
             containerBuilder
                 .RegisterType<StreetNameProvenanceFactory>()
+                .AsSelf()
+                .AsImplementedInterfaces()
                 .SingleInstance();
 
             containerBuilder

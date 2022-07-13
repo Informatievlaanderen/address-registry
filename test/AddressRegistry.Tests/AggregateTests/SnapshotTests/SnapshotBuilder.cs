@@ -30,7 +30,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                 new NisCode(nisCode),
                 snapshot.StreetNameStatus,
                 snapshot.IsRemoved,
-                ReaddStreetNameAddresses(snapshot.Addresses));
+                ReaddStreetNameAddresses(new StreetNamePersistentLocalId(snapshot.StreetNamePersistentLocalId), snapshot.Addresses));
         }
 
         public static StreetNameSnapshot WithAddress(
@@ -44,10 +44,12 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
             string eventHash,
             ProvenanceData provenanceData)
         {
-            var addresses = ReaddStreetNameAddresses(snapshot.Addresses);
+            var addresses = ReaddStreetNameAddresses(new StreetNamePersistentLocalId(snapshot.StreetNamePersistentLocalId), snapshot.Addresses);
 
             var newAddress = new StreetNameAddress(o => {});
-            newAddress.RestoreSnapshot(new AddressData(
+            newAddress.RestoreSnapshot(
+                new StreetNamePersistentLocalId(snapshot.StreetNamePersistentLocalId),
+                new AddressData(
                 addressPersistentLocalId,
                 addressStatus,
                 houseNumber,
@@ -76,13 +78,15 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                 addresses);
         }
 
-        private static StreetNameAddresses ReaddStreetNameAddresses(IEnumerable<AddressData> addresses)
+        private static StreetNameAddresses ReaddStreetNameAddresses(
+            StreetNamePersistentLocalId streetNamePersistentLocalId,
+            IEnumerable<AddressData> addresses)
         {
             var newAddresses = new StreetNameAddresses();
             foreach (var snapshotAddress in addresses)
             {
                 var address = new StreetNameAddress(o => { });
-                address.RestoreSnapshot(snapshotAddress);
+                address.RestoreSnapshot(streetNamePersistentLocalId, snapshotAddress);
                 newAddresses.Add(address);
             }
 

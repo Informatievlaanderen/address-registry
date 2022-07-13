@@ -20,7 +20,7 @@ namespace AddressRegistry.StreetName
             EventMapping eventMapping,
             EventSerializer eventSerializer,
             Func<ISnapshotStore> getSnapshotStore,
-            StreetNameProvenanceFactory provenanceFactory)
+            IProvenanceFactory<StreetName> provenanceFactory)
         {
             For<MigrateAddressToStreetName>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)

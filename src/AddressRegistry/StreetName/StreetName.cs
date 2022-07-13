@@ -172,21 +172,7 @@ namespace AddressRegistry.StreetName
                 throw new AddressNotFoundException(addressPersistentLocalId);
             }
 
-            if (addressToApprove.IsRemoved)
-            {
-                throw new AddressIsRemovedException(addressToApprove.AddressPersistentLocalId);
-            }
-
-            switch (addressToApprove.Status)
-            {
-                case AddressStatus.Current:
-                    return;
-                case AddressStatus.Retired or AddressStatus.Rejected:
-                    throw new AddressCannotBeApprovedException(addressToApprove.Status);
-                case AddressStatus.Proposed:
-                    ApplyChange(new AddressWasApproved(streetNamePersistentLocalId, addressPersistentLocalId));
-                    break;
-            }
+            addressToApprove.Approve();
         }
 
         private void GuardActiveStreetName(StreetNamePersistentLocalId streetNamePersistentLocalId)

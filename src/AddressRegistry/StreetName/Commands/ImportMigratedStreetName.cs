@@ -8,7 +8,7 @@ namespace AddressRegistry.StreetName.Commands
     
     public class ImportMigratedStreetName : IHasCommandProvenance
     {
-        private static readonly Guid Namespace = new Guid("10e50b34-94ad-435d-98b9-52bee77c8d99");
+        private static readonly Guid Namespace = new Guid("279628bf-1afc-44e6-a45c-75470eb9b446");
 
         public StreetNameId StreetNameId { get; }
         public StreetNamePersistentLocalId PersistentLocalId { get; }
@@ -34,7 +34,7 @@ namespace AddressRegistry.StreetName.Commands
         }
 
         public Guid CreateCommandId()
-            => Deterministic.Create(Namespace, $"ImportStreetName-{ToString()}");
+            => Deterministic.Create(Namespace, $"ImportMigratedStreetName-{ToString()}");
 
         public override string? ToString()
             => ToStringBuilder.ToString(IdentityFields());

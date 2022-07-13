@@ -21,7 +21,7 @@ namespace AddressRegistry.StreetName
             Func<IStreamStore> getStreamStore,
             EventMapping eventMapping,
             EventSerializer eventSerializer,
-            StreetNameProvenanceFactory provenanceFactory)
+            IProvenanceFactory<StreetName> provenanceFactory)
         {
             For<ImportMigratedStreetName>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)

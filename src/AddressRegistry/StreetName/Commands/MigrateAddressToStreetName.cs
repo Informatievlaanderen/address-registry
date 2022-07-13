@@ -27,34 +27,34 @@ namespace AddressRegistry.StreetName.Commands
         public Provenance Provenance { get; }
 
         public MigrateAddressToStreetName(
-            AddressRegistry.Address.AddressId addressId,
+            Address.AddressId addressId,
             StreetNamePersistentLocalId streetNamePersistentLocalId,
-            AddressRegistry.Address.StreetNameId streetNameId,
-            AddressRegistry.Address.PersistentLocalId addressPersistentLocalId,
-            AddressRegistry.Address.AddressStatus status,
-            AddressRegistry.Address.HouseNumber houseNumber,
-            AddressRegistry.Address.BoxNumber? boxNumber,
-            AddressRegistry.Address.AddressGeometry geometry,
+            Address.StreetNameId streetNameId,
+            Address.PersistentLocalId addressPersistentLocalId,
+            Address.AddressStatus status,
+            Address.HouseNumber houseNumber,
+            Address.BoxNumber? boxNumber,
+            Address.AddressGeometry geometry,
             bool? officiallyAssigned,
-            AddressRegistry.Address.PostalCode postalCode,
+            Address.PostalCode postalCode,
             bool isComplete,
             bool isRemoved,
-            AddressRegistry.Address.AddressId? parentAddressId,
+            Address.AddressId? parentAddressId,
             Provenance provenance)
         {
             AddressId = new AddressId(addressId);
             StreetNamePersistentLocalId = streetNamePersistentLocalId;
             StreetNameId = new AddressStreetNameId(streetNameId);
             AddressPersistentLocalId = new AddressPersistentLocalId(addressPersistentLocalId);
-            Status = AddressRegistry.Address.AddressStatusHelpers.ToStreetNameAddressStatus(status);
+            Status = Address.AddressStatusHelpers.ToStreetNameAddressStatus(status);
             HouseNumber = new HouseNumber(houseNumber);
-            BoxNumber = boxNumber == null ? (BoxNumber?)null : new BoxNumber(boxNumber);
+            BoxNumber = boxNumber is null ? null : new BoxNumber(boxNumber);
             Geometry = new AddressGeometry(geometry.GeometryMethod, geometry.GeometrySpecification, geometry.Geometry);
             OfficiallyAssigned = officiallyAssigned;
             PostalCode = new PostalCode(postalCode);
             IsCompleted = isComplete;
             IsRemoved = isRemoved;
-            ParentAddressId = parentAddressId == null ? (AddressId?)null : new AddressId(parentAddressId);
+            ParentAddressId = parentAddressId is null ? null : new AddressId(parentAddressId);
             Provenance = provenance;
         }
 

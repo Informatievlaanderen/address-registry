@@ -11,6 +11,7 @@ namespace AddressRegistry.StreetName.Exceptions
         { }
 
         private StreetNameIsRemovedException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         { }
     }
 }

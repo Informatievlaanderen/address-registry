@@ -11,6 +11,7 @@ namespace AddressRegistry.StreetName.Exceptions
         { }
 
         private StreetNameNotActiveException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         { }
     }
 }

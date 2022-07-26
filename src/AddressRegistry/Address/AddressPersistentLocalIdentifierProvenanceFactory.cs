@@ -13,18 +13,20 @@ namespace AddressRegistry.Address
             typeof(Commands.Crab.RequestPersistentLocalIdForCrabHouseNumberId),
             typeof(Commands.Crab.RequestPersistentLocalIdForCrabSubaddressId),
             typeof(Commands.Crab.AssignPersistentLocalIdForCrabHouseNumberId),
-            typeof(Commands.Crab.AssignPersistentLocalIdForCrabSubaddressId),
+            typeof(Commands.Crab.AssignPersistentLocalIdForCrabSubaddressId)
         };
 
-        private bool CanCreateFrom(Type? type) =>  type != null && AllowedTypes.Any(t => t == type);
+        private bool CanCreateFrom(Type? type) => type != null && AllowedTypes.Any(t => t == type);
 
         public bool CanCreateFrom<TCommand>() =>CanCreateFrom(typeof(TCommand));
 
         public Provenance CreateFrom(
-            object command,
+            object provenanceHolder,
             Address aggregate)
         {
-            if (CanCreateFrom(command?.GetType()))
+            var provenanceHolderType = provenanceHolder.GetType();
+            if (CanCreateFrom(provenanceHolderType))
+            {
                 return new Provenance(
                     SystemClock.Instance.GetCurrentInstant(),
                     Application.AddressRegistry,
@@ -32,8 +34,9 @@ namespace AddressRegistry.Address
                     new Operator("AddressRegistry"),
                     Modification.Update,
                     Organisation.DigitaalVlaanderen);
+            }
 
-            throw new ApplicationException($"Cannot create provenance for {command.GetType().Name}");
+            throw new InvalidOperationException($"Cannot create provenance for {provenanceHolderType.Name}");
         }
     }
 }

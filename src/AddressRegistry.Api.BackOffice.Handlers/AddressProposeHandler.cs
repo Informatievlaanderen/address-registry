@@ -41,7 +41,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers
             _persistentLocalIdGenerator = persistentLocalIdGenerator;
         }
 
-        public async Task<PersistentLocalIdETagResponse> Handle(AddressProposeRequest request, CancellationToken ct)
+        public async Task<PersistentLocalIdETagResponse> Handle(AddressProposeRequest request, CancellationToken cancellationToken)
         {
             var identifier = request.StraatNaamId
             .AsIdentifier()
@@ -56,7 +56,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers
             var addressPersistentLocalId =
                 new AddressPersistentLocalId(_persistentLocalIdGenerator.GenerateNextPersistentLocalId());
 
-            var postalMunicipality = await _syndicationContext.PostalInfoLatestItems.FindAsync(new object[] { postalCodeId.ToString() }, ct);
+            var postalMunicipality = await _syndicationContext.PostalInfoLatestItems.FindAsync(new object[] { postalCodeId.ToString() }, cancellationToken);
             if (postalMunicipality is null)
             {
                 throw new PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException();
@@ -64,7 +64,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers
 
             var municipality = await _syndicationContext
                 .MunicipalityLatestItems
-                .SingleAsync(x => x.NisCode == postalMunicipality.NisCode, ct);
+                .SingleAsync(x => x.NisCode == postalMunicipality.NisCode, cancellationToken);
 
             var cmd = request.ToCommand(
                 streetNamePersistentLocalId,
@@ -73,7 +73,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers
                 addressPersistentLocalId,
                 CreateFakeProvenance());
 
-            await IdempotentCommandHandlerDispatch(_idempotencyContext, cmd.CreateCommandId(), cmd, request.Metadata, ct);
+            await IdempotentCommandHandlerDispatch(_idempotencyContext, cmd.CreateCommandId(), cmd, request.Metadata, cancellationToken);
 
             // Insert PersistentLocalId with MunicipalityId
             await _backOfficeContext
@@ -82,14 +82,14 @@ namespace AddressRegistry.Api.BackOffice.Handlers
                     new AddressPersistentIdStreetNamePersistentId(
                         addressPersistentLocalId,
                         streetNamePersistentLocalId),
-                    ct);
-            await _backOfficeContext.SaveChangesAsync(ct);
+                    cancellationToken);
+            await _backOfficeContext.SaveChangesAsync(cancellationToken);
 
             var addressHash = await GetHash(
                 _streetNames,
                 streetNamePersistentLocalId,
                 addressPersistentLocalId,
-                ct);
+                cancellationToken);
 
             return new PersistentLocalIdETagResponse(addressPersistentLocalId, addressHash);
         }

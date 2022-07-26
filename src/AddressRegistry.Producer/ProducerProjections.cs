@@ -215,7 +215,7 @@ namespace AddressRegistry.Producer
             var result = await KafkaProducer.Produce(_kafkaOptions, guid.ToString("D"), message, cancellationToken);
             if (!result.IsSuccess)
             {
-                throw new ApplicationException(result.Error + Environment.NewLine + result.ErrorReason); //TODO: create custom exception
+                throw new InvalidOperationException(result.Error + Environment.NewLine + result.ErrorReason); //TODO: create custom exception
             }
         }
 
@@ -225,7 +225,7 @@ namespace AddressRegistry.Producer
             var result = await KafkaProducer.Produce(_kafkaOptions, persistentLocalId.ToString(), message, cancellationToken);
             if (!result.IsSuccess)
             {
-                throw new ApplicationException(result.Error + Environment.NewLine + result.ErrorReason); //TODO: create custom exception
+                throw new InvalidOperationException(result.Error + Environment.NewLine + result.ErrorReason); //TODO: create custom exception
             }
         }
     }

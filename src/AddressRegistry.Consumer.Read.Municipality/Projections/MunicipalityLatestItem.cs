@@ -10,7 +10,7 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
 
     public class MunicipalityLatestItem
     {
-        public static string OfficialLanguagesBackingPropertyName = nameof(OfficialLanguagesAsString);
+        public static string OfficialLanguagesBackingPropertyName => nameof(OfficialLanguagesAsString);
 
         public Guid MunicipalityId { get; set; }
         public MunicipalityStatus Status { get; set; }
@@ -29,7 +29,8 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
 
         public DateTimeOffset VersionTimestampAsDateTimeOffset { get; private set; }
 
-        private string OfficialLanguagesAsString { get; set; }
+        private string OfficialLanguagesAsString { get; set; } = "";
+        
         public List<string> OfficialLanguages
         {
             get => DeserializeOfficialLanguages();
@@ -48,6 +49,7 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
             get => Instant.FromDateTimeOffset(VersionTimestampAsDateTimeOffset);
             set => VersionTimestampAsDateTimeOffset = value.ToDateTimeOffset();
         }
+        
         public MunicipalityLatestItem()
         {
             NisCode = string.Empty;
@@ -67,7 +69,7 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
     {
         Current = 0,
         Retired = 1,
-        Proposed = 2,
+        Proposed = 2
     }
 
     public class MunicipalityItemConfiguration : IEntityTypeConfiguration<MunicipalityLatestItem>

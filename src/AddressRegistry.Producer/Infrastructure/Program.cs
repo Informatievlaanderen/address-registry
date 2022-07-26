@@ -6,6 +6,9 @@ namespace AddressRegistry.Producer.Infrastructure
 
     public class Program
     {
+        protected Program()
+        { }
+        
         public static void Main(string[] args)
             => Run(new ProgramOptions
                 {

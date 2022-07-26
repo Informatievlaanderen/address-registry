@@ -31,7 +31,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers
             _idempotencyContext = idempotencyContext;
         }
 
-        public async Task<ETagResponse> Handle(AddressApproveRequest request, CancellationToken ct)
+        public async Task<ETagResponse> Handle(AddressApproveRequest request, CancellationToken cancellationToken)
         {
             var addressPersistentLocalId =
                 new AddressPersistentLocalId(new PersistentLocalId(request.PersistentLocalId));
@@ -51,13 +51,13 @@ namespace AddressRegistry.Api.BackOffice.Handlers
                 cmd.CreateCommandId(),
                 cmd,
                 request.Metadata,
-                ct);
+                cancellationToken);
 
             var etag = await GetHash(
                 _streetNames,
                 streetNamePersistentLocalId,
                 addressPersistentLocalId,
-                ct);
+                cancellationToken);
 
             return new ETagResponse(etag);
         }

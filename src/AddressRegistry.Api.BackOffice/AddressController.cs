@@ -5,7 +5,6 @@ namespace AddressRegistry.Api.BackOffice
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Middleware;
-    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentValidation;
     using FluentValidation.Results;
     using MediatR;
@@ -49,24 +48,12 @@ namespace AddressRegistry.Api.BackOffice
             return streetNameHash;
         }
 
-        private Provenance CreateFakeProvenance()
-        {
-            return new Provenance(
-                NodaTime.SystemClock.Instance.GetCurrentInstant(),
-                Application.StreetNameRegistry,
-                new Reason(""), // TODO: TBD
-                new Operator(""), // TODO: from claims
-                Modification.Insert,
-                Organisation.DigitaalVlaanderen // TODO: from claims
-            );
-        }
-
-        protected IDictionary<string, object> GetMetadata()
+        protected IDictionary<string, object?> GetMetadata()
         {
             var userId = User.FindFirst("urn:be:vlaanderen:addressregistry:acmid")?.Value;
             var correlationId = User.FindFirst(AddCorrelationIdMiddleware.UrnBasisregistersVlaanderenCorrelationId)?.Value;
 
-            return new Dictionary<string, object>
+            return new Dictionary<string, object?>
             {
                 { "UserId", userId },
                 { "CorrelationId", correlationId }

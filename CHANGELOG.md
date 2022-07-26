@@ -1,3 +1,10 @@
+## [3.24.2](https://github.com/informatievlaanderen/address-registry/compare/v3.24.1...v3.24.2) (2022-07-26)
+
+
+### Bug Fixes
+
+* fix sonar issues ([bb4ebc6](https://github.com/informatievlaanderen/address-registry/commit/bb4ebc66904d6bb66231cd70302146fa03107318))
+
 ## [3.24.1](https://github.com/informatievlaanderen/address-registry/compare/v3.24.0...v3.24.1) (2022-07-13)
 
 # [3.24.0](https://github.com/informatievlaanderen/address-registry/compare/v3.23.0...v3.24.0) (2022-07-12)

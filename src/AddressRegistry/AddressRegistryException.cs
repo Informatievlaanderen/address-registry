@@ -1,7 +1,8 @@
 namespace AddressRegistry
 {
-    using Be.Vlaanderen.Basisregisters.AggregateSource;
     using System;
+    using System.Runtime.Serialization;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
 
     [Serializable]
     public abstract class AddressRegistryException : DomainException
@@ -9,6 +10,10 @@ namespace AddressRegistry
         protected AddressRegistryException()
         { }
 
+        protected AddressRegistryException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        { }
+        
         protected AddressRegistryException(string message)
             : base(message)
         { }

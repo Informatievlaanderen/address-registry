@@ -144,8 +144,6 @@ namespace AddressRegistry.Api.Extract.Extracts
 
                 switch (municipality.PrimaryLanguage)
                 {
-                    case null:
-                    case Taal.NL:
                     default:
                         item.gemeentenm.Value = municipality.NameDutch;
                         item.straatnm.Value = streetName.NameDutch;

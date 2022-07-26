@@ -1,9 +1,17 @@
 namespace AddressRegistry.StreetName.Exceptions
 {
-    public class AddressNotFoundException : AddressRegistryException
+    using System;
+    using System.Runtime.Serialization;
+
+    [Serializable]
+    public sealed class AddressNotFoundException : AddressRegistryException
     {
         public AddressNotFoundException(int addressPersistentLocalId)
             : base($"Address with Id '{addressPersistentLocalId}' has not been found.")
+        { }
+
+        private AddressNotFoundException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         { }
     }
 }

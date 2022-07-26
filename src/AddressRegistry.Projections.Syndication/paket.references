@@ -20,6 +20,8 @@ Microsoft.EntityFrameworkCore.Design
 
 Microsoft.SyndicationFeed.ReaderWriter
 
+Be.Vlaanderen.Basisregisters.AggregateSource
+Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore
 Be.Vlaanderen.Basisregisters.EventHandling
 Be.Vlaanderen.Basisregisters.EventHandling.Autofac
 Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql

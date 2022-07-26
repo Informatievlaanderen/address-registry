@@ -1,3 +1,10 @@
+## [3.24.3](https://github.com/informatievlaanderen/address-registry/compare/v3.24.2...v3.24.3) (2022-07-26)
+
+
+### Bug Fixes
+
+* bump commandhandling dependency ([0a6c96c](https://github.com/informatievlaanderen/address-registry/commit/0a6c96cebe3056c38490a70ac7996ae06f33d943))
+
 ## [3.24.2](https://github.com/informatievlaanderen/address-registry/compare/v3.24.1...v3.24.2) (2022-07-26)
 
 

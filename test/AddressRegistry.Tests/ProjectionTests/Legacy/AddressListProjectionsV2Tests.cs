@@ -77,7 +77,6 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                 });
         }
 
-
         [Fact]
         public async Task WhenAddressWasApproved()
         {
@@ -104,6 +103,35 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                     addressListItemV2.Status.Should().Be(AddressStatus.Current);
                     addressListItemV2.VersionTimestamp.Should().Be(addressWasApproved.Provenance.Timestamp);
                     addressListItemV2.LastEventHash.Should().Be(addressWasApproved.GetHash());
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressWasRejected()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasRejected = _fixture.Create<AddressWasRejected>();
+            var metadata2 = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasRejected.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, metadata)),
+                    new Envelope<AddressWasRejected>(new Envelope(addressWasRejected, metadata2)))
+                .Then(async ct =>
+                {
+                    var addressListItemV2 = (await ct.AddressListV2.FindAsync(addressWasRejected.AddressPersistentLocalId));
+                    addressListItemV2.Should().NotBeNull();
+                    addressListItemV2.Status.Should().Be(AddressStatus.Rejected);
+                    addressListItemV2.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
+                    addressListItemV2.LastEventHash.Should().Be(addressWasRejected.GetHash());
                 });
         }
 

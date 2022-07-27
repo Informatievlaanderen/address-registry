@@ -33,7 +33,7 @@ namespace AddressRegistry.Projections.Legacy.AddressDetailV2
                     message.Message.GeometrySpecification,
                     message.Message.IsRemoved,
                     message.Message.Provenance.Timestamp);
-                
+
                 UpdateHash(addressDetailItemV2, message);
 
                 await context
@@ -71,6 +71,20 @@ namespace AddressRegistry.Projections.Legacy.AddressDetailV2
                     item =>
                     {
                         item.Status = AddressStatus.Current;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+
+                UpdateHash(item, message);
+            });
+
+            When<Envelope<AddressWasRejected>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressDetailV2(
+                    message.Message.AddressPersistentLocalId,
+                    item =>
+                    {
+                        item.Status = AddressStatus.Rejected;
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);

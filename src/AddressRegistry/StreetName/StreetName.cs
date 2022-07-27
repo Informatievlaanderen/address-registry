@@ -161,9 +161,7 @@ namespace AddressRegistry.StreetName
                 boxNumber));
         }
 
-        public void ApproveAddress(
-            StreetNamePersistentLocalId streetNamePersistentLocalId,
-            AddressPersistentLocalId addressPersistentLocalId)
+        public void ApproveAddress(AddressPersistentLocalId addressPersistentLocalId)
         {
             var addressToApprove = StreetNameAddresses.FindByPersistentLocalId(addressPersistentLocalId);
 
@@ -173,6 +171,18 @@ namespace AddressRegistry.StreetName
             }
 
             addressToApprove.Approve();
+        }
+
+        public void RejectAddress(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            var addressToReject = StreetNameAddresses.FindByPersistentLocalId(addressPersistentLocalId);
+
+            if (addressToReject is null)
+            {
+                throw new AddressNotFoundException(addressPersistentLocalId);
+            }
+
+            addressToReject.Reject();
         }
 
         private void GuardActiveStreetName(StreetNamePersistentLocalId streetNamePersistentLocalId)

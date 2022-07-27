@@ -73,9 +73,19 @@ namespace AddressRegistry.StreetName
                     var streetNameStreamId = new StreetNameStreamId(message.Command.StreetNamePersistentLocalId);
                     var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
 
-                    streetName.ApproveAddress(
-                        message.Command.StreetNamePersistentLocalId,
-                        message.Command.AddressPersistentLocalId);
+                    streetName.ApproveAddress(message.Command.AddressPersistentLocalId);
+                });
+
+            For<RejectAddress>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<RejectAddress, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streetNameStreamId = new StreetNameStreamId(message.Command.StreetNamePersistentLocalId);
+                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+
+                    streetName.RejectAddress(message.Command.AddressPersistentLocalId);
                 });
         }
     }

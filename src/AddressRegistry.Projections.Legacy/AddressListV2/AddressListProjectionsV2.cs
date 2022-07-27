@@ -54,7 +54,6 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
                     .AddAsync(addressListItemV2, ct);
             });
 
-
             When<Envelope<AddressWasApproved>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressListItemV2(
@@ -62,6 +61,20 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
                     item =>
                     {
                         item.Status = AddressStatus.Current;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+
+                UpdateHash(item, message);
+            });
+
+            When<Envelope<AddressWasRejected>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressListItemV2(
+                    message.Message.AddressPersistentLocalId,
+                    item =>
+                    {
+                        item.Status = AddressStatus.Rejected;
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);

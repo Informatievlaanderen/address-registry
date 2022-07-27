@@ -107,6 +107,9 @@ namespace AddressRegistry.Producer.Extensions
         public static Contracts.AddressWasApproved ToContract(this StreetNameAggregate.AddressWasApproved message) =>
             new Contracts.AddressWasApproved(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
 
+        public static Contracts.AddressWasRejected ToContract(this StreetNameAggregate.AddressWasRejected message) =>
+            new Contracts.AddressWasRejected(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
+
         public static Contracts.AddressWasMigratedToStreetName ToContract(
             this StreetNameAggregate.AddressWasMigratedToStreetName message) =>
             new Contracts.AddressWasMigratedToStreetName(

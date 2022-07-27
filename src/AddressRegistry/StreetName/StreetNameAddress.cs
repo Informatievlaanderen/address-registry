@@ -55,6 +55,43 @@ namespace AddressRegistry.StreetName
             }
         }
 
+        public void Reject()
+        {
+            if (IsRemoved)
+            {
+                throw new AddressIsRemovedException(AddressPersistentLocalId);
+            }
+
+            switch (Status)
+            {
+                case AddressStatus.Rejected:
+                    return;
+                case AddressStatus.Current or AddressStatus.Retired:
+                    throw new AddressCannotBeRejectedException(Status);
+                case AddressStatus.Proposed:
+                    Apply(new AddressWasRejected(_streetNamePersistentLocalId, AddressPersistentLocalId));
+                    break;
+            }
+
+            foreach (var child in _children)
+            {
+                child.RejectBecauseParentWasRejected();
+            }
+        }
+
+        private void RejectBecauseParentWasRejected()
+        {
+            if (IsRemoved)
+            {
+                return;
+            }
+
+            if (Status == AddressStatus.Proposed)
+            {
+                Apply(new AddressWasRejected(_streetNamePersistentLocalId, AddressPersistentLocalId));
+            }
+        }
+
         /// <summary>
         /// Set the parent of the instance.
         /// </summary>

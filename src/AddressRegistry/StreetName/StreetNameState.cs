@@ -12,7 +12,7 @@ namespace AddressRegistry.StreetName
         public bool IsRemoved { get; private set; }
         public StreetNameStatus Status { get; private set; }
 
-        public bool IsActive => !IsRemoved 
+        public bool IsActive => !IsRemoved
                                 && Status != StreetNameStatus.Retired
                                 && Status != StreetNameStatus.Rejected;
 
@@ -35,6 +35,7 @@ namespace AddressRegistry.StreetName
             Register<AddressWasMigratedToStreetName>(When);
             Register<AddressWasProposedV2>(When);
             Register<AddressWasApproved>(When);
+            Register<AddressWasRejected>(When);
         }
 
         private void When(MigratedStreetNameWasImported @event)
@@ -94,6 +95,12 @@ namespace AddressRegistry.StreetName
         {
             var addressToApprove = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
             addressToApprove.Route(@event);
+        }
+
+        private void When(AddressWasRejected @event)
+        {
+            var addressToReject = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
+            addressToReject.Route(@event);
         }
 
         private void When(StreetNameSnapshot @event)

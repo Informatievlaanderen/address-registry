@@ -1,3 +1,15 @@
+# [3.25.0](https://github.com/informatievlaanderen/address-registry/compare/v3.24.5...v3.25.0) (2022-07-28)
+
+
+### Bug Fixes
+
+* static class & param name ([25b2fef](https://github.com/informatievlaanderen/address-registry/commit/25b2fefe89dd0ec54a5f301035a6f060c68d8275))
+
+
+### Features
+
+* reject address ([12fe650](https://github.com/informatievlaanderen/address-registry/commit/12fe650c9fba0225d5aa087b636597fb0d78dbb3))
+
 ## [3.24.5](https://github.com/informatievlaanderen/address-registry/compare/v3.24.4...v3.24.5) (2022-07-28)
 
 

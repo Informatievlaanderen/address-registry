@@ -35,7 +35,7 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
                         {
                             AddressId = message.Message.AddressId,
                             StreetNameId = message.Message.StreetNameId,
-                            HouseNumber = message.Message.HouseNumber,
+                            HouseNumber = message.Message.HouseNumber
                         },
                         ct);
             });
@@ -296,7 +296,7 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
 
             When<Envelope<AddressWasRemoved>>(async (context, message, ct) =>
             {
-                var address = await context.FindAndUpdateAddressDetail(
+                _ = await context.FindAndUpdateAddressDetail(
                     message.Message.AddressId,
                     item =>
                     {
@@ -328,9 +328,7 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
 
             When<Envelope<AddressHouseNumberWasChanged>>(async (context, message, ct) =>
             {
-                var addressId = message.Message.AddressId;
-
-                var address = await context.FindAndUpdateAddressDetail(
+                await context.FindAndUpdateAddressDetail(
                     message.Message.AddressId,
                     item =>
                     {
@@ -342,9 +340,7 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
 
             When<Envelope<AddressHouseNumberWasCorrected>>(async (context, message, ct) =>
             {
-                var addressId = message.Message.AddressId;
-
-                var address = await context.FindAndUpdateAddressDetail(
+                await context.FindAndUpdateAddressDetail(
                     message.Message.AddressId,
                     item =>
                     {
@@ -442,7 +438,9 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
             GeometryMethod? geometryMethod)
         {
             if (geometryMethod == null)
+            {
                 return null;
+            }
 
             switch (geometryMethod)
             {
@@ -467,7 +465,9 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
             GeometrySpecification? geometrySpecification)
         {
             if (geometrySpecification == null)
+            {
                 return null;
+            }
 
             switch (geometrySpecification)
             {

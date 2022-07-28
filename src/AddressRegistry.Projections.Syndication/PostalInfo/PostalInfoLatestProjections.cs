@@ -1,6 +1,7 @@
 namespace AddressRegistry.Projections.Syndication.PostalInfo
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.PostInfo;
@@ -29,9 +30,9 @@ namespace AddressRegistry.Projections.Syndication.PostalInfo
                 latestItem = new PostalInfoLatestItem
                 {
                     PostalCode = entry.Content.Object.PostalCode,
-                    Version = entry.Content.Object.Identificator?.Versie,
+                    Version = entry.Content.Object.Identificator.Versie,
                     Position = long.Parse(entry.FeedEntry.Id),
-                    NisCode = entry.Content.Object.MunicipalityNisCode,
+                    NisCode = entry.Content.Object.MunicipalityNisCode
                 };
 
                 UpdateNames(latestItem, entry.Content.Object.PostalNames);
@@ -44,7 +45,7 @@ namespace AddressRegistry.Projections.Syndication.PostalInfo
             {
                 await context.Entry(latestItem).Collection(x => x.PostalNames).LoadAsync(ct);
 
-                latestItem.Version = entry.Content.Object.Identificator?.Versie;
+                latestItem.Version = entry.Content.Object.Identificator.Versie;
                 latestItem.Position = long.Parse(entry.FeedEntry.Id);
                 latestItem.NisCode = entry.Content.Object.MunicipalityNisCode;
 
@@ -56,13 +57,13 @@ namespace AddressRegistry.Projections.Syndication.PostalInfo
         {
             latestItem.PostalNames.Clear();
 
-            foreach (var postalName in postalNames)
+            foreach (var geografischeNaam in postalNames.Select(x => x.GeografischeNaam))
             {
                 latestItem.PostalNames.Add(new PostalInfoPostalName
                 {
-                    Language = postalName.GeografischeNaam.Taal,
+                    Language = geografischeNaam.Taal,
                     PostalCode = latestItem.PostalCode,
-                    PostalName = postalName.GeografischeNaam.Spelling
+                    PostalName = geografischeNaam.Spelling
                 });
             }
         }

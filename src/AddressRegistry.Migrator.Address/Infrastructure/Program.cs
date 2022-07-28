@@ -3,7 +3,6 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
     using System;
     using System.Diagnostics;
     using System.IO;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Autofac;
@@ -17,10 +16,12 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
     using Modules;
     using Polly;
     using Serilog;
-    using StreetName;
 
     public class Program
     {
+        protected Program()
+        { }
+        
         public static async Task Main(string[] args)
         {
             var cancellationTokenSource = new CancellationTokenSource();
@@ -53,7 +54,7 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
 
             try
             {
-                Stopwatch watch = Stopwatch.StartNew();
+                var watch = Stopwatch.StartNew();
 
                 var migrator = new StreamMigrator(
                     container.GetRequiredService<ILoggerFactory>(),

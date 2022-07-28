@@ -12,30 +12,30 @@ namespace AddressRegistry.Structurizr
 
     public static class Ids
     {
-        public static int PersonUser = 10000;
-        public static int SoftwareSystemAddressRegistry = 10001;
-        public static int ContainerApi = 10002;
-        public static int ContainerApiRunner = 10003;
-        public static int ContainerApiStore = 10004;
-        public static int ContainerEventStore = 10005;
-        public static int ContainerAggregateRoot = 10006;
+        public const int PersonUser = 10000;
+        public const int SoftwareSystemAddressRegistry = 10001;
+        public const int ContainerApi = 10002;
+        public const int ContainerApiRunner = 10003;
+        public const int ContainerApiStore = 10004;
+        public const int ContainerEventStore = 10005;
+        public const int ContainerAggregateRoot = 10006;
 
-        public static int SoftwareSystemProjectionProducer = 10007;
-        public static int SoftwareSystemApi = 10008;
+        public const int SoftwareSystemProjectionProducer = 10007;
+        public const int SoftwareSystemApi = 10008;
     }
 
     public static class CustomTags
     {
-        public static string Store = "Store";
-        public static string Event = "Event";
-        public static string Command = "Command";
-        public static string Https = "HTTPS";
-        public static string EntityFramework = "Entity Framework";
-        public static string SqlStreamStore = "SqlStreamStore";
-        public static string Direct = "Direct";
+        public const string Store = "Store";
+        public const string Event = "Event";
+        public const string Command = "Command";
+        public const string Https = "HTTPS";
+        public const string EntityFramework = "Entity Framework";
+        public const string SqlStreamStore = "SqlStreamStore";
+        public const string Direct = "Direct";
     }
 
-    public class Program
+    public static class Program
     {
         private const string WorkspaceUrlFormat = "https://structurizr.com/workspace/{0}";
 
@@ -53,7 +53,6 @@ namespace AddressRegistry.Structurizr
         private static readonly string SoftwareSystemProjectionProducerId = Ids.SoftwareSystemProjectionProducer.ToString();
         private static readonly string SoftwareSystemApiId = Ids.SoftwareSystemApi.ToString();
 
-        private static string _workspaceUrlViewFormat;
         private static long _workspaceId;
         private static string _apiKey;
         private static string _apiSecret;
@@ -69,11 +68,10 @@ namespace AddressRegistry.Structurizr
             _workspaceId = long.Parse(configuration["Structurizr:WorkspaceId"]);
             _apiKey = configuration["Structurizr:ApiKey"];
             _apiSecret = configuration["Structurizr:ApiSecret"];
-            _workspaceUrlViewFormat = $"{string.Format(WorkspaceUrlFormat, _workspaceId)}#{{0}}";
 
             var workspace = new Workspace("AddressRegistry", "Adres register.")
             {
-                Version = DateTime.Today.ToString("yyyy-MM-dd"),
+                Version = DateTime.Today.ToString("yyyy-MM-dd")
             };
 
             var model = workspace.Model;
@@ -99,14 +97,14 @@ namespace AddressRegistry.Structurizr
 
             foreach (var e in FindAllEvents())
             {
-                var @event = eventStore.AddComponent(e.Name, e.Type, FormatDescription(e.Description, e.Properties), "Event");
+                var @event = eventStore.AddComponent(e.Name, e.Type, FormatDescription(e.Description), "Event");
                 @event.AddTags(CustomTags.Event);
                 api.Uses(@event, "produceert").AddTags(CustomTags.Event);
             }
 
             foreach (var c in FindAllCommands())
             {
-                var command = aggregateRoot.AddComponent(c.Name, c.Type, FormatDescription(c.Description, c.Properties), "Command");
+                var command = aggregateRoot.AddComponent(c.Name, c.Type, FormatDescription(c.Description), "Command");
                 command.AddTags(CustomTags.Command);
                 api.Uses(command, "aanvaardt").AddTags(CustomTags.Command);
             }
@@ -127,7 +125,7 @@ namespace AddressRegistry.Structurizr
             UploadWorkspaceToStructurizr(workspace);
         }
 
-        private static string FormatDescription(string description, IEnumerable<string> properties)
+        private static string FormatDescription(string description)
             //=> $"{description}{Environment.NewLine}{string.Join(", ", properties)}";
             => $"{description}";
 
@@ -445,7 +443,9 @@ namespace AddressRegistry.Structurizr
             eventsView.Add(eventStore);
 
             foreach (var @event in events)
+            {
                 eventsView.Add(@event);
+            }
 
             // eventsView.Relationships.RemoveWhere(x => x.Relationship.Tags.Contains(CustomTags.Event));
 
@@ -466,7 +466,9 @@ namespace AddressRegistry.Structurizr
                 left += blockWidth + yPortion;
 
                 if ((eventNumber + 1) % eventsPerRow != 0)
+                {
                     continue;
+                }
 
                 left = startLeft;
                 top += blockHeight + 100;
@@ -491,7 +493,9 @@ namespace AddressRegistry.Structurizr
             commandsView.Add(aggregateRoot);
 
             foreach (var command in commands)
+            {
                 commandsView.Add(command);
+            }
 
             // commandsView.Relationships.RemoveWhere(x => x.Relationship.Tags.Contains(CustomTags.Event));
 
@@ -512,7 +516,9 @@ namespace AddressRegistry.Structurizr
                 left += blockWidth + yPortion;
 
                 if ((commandNumber + 1) % commandsPerRow != 0)
+                {
                     continue;
+                }
 
                 left = startLeft;
                 top += blockHeight + 100;

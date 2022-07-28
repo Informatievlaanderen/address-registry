@@ -1,3 +1,28 @@
+## [3.24.5](https://github.com/informatievlaanderen/address-registry/compare/v3.24.4...v3.24.5) (2022-07-28)
+
+
+### Bug Fixes
+
+* braces style ([e4a3dd2](https://github.com/informatievlaanderen/address-registry/commit/e4a3dd27dff0284b21d25b9f652311241f5c1888))
+* comment empty methods ([0c75a75](https://github.com/informatievlaanderen/address-registry/commit/0c75a759af2811869188582a9a9a0dc725c8c64d))
+* correct format strings ([914fe1e](https://github.com/informatievlaanderen/address-registry/commit/914fe1e5c17cebfda1d3520fe91d99dccdfac8c1))
+* default value on parameters ([68ee85d](https://github.com/informatievlaanderen/address-registry/commit/68ee85d41eddd7460ce5455b731263c4645ec8cd))
+* don't throw general exceptions ([19cf4bc](https://github.com/informatievlaanderen/address-registry/commit/19cf4bcef5842dea7ce76415e4fa4948d249ac6e))
+* extract nested ternary clauses ([e0ea22a](https://github.com/informatievlaanderen/address-registry/commit/e0ea22ad39993e7ee5f0b51ea2331ba425168193))
+* fill empty methods ([c57bd2c](https://github.com/informatievlaanderen/address-registry/commit/c57bd2ceaf1721d66ecb67e445ca643b45e08c15))
+* fix Serializable ([9f34249](https://github.com/informatievlaanderen/address-registry/commit/9f3424907d8455bcf414dac4ff17396108921779))
+* ignore naming ([a40f3a5](https://github.com/informatievlaanderen/address-registry/commit/a40f3a5fea8fe911006d374a015f9f14d224291e))
+* make classes static ([54c927b](https://github.com/informatievlaanderen/address-registry/commit/54c927be9704c2a03ca53696cfb35e91f5cc5a2b))
+* match parameter names ([b34629d](https://github.com/informatievlaanderen/address-registry/commit/b34629ddcbf0533dcc795ef9e76b1d755458d9c1))
+* merge collapsible if's ([b6f0f5f](https://github.com/informatievlaanderen/address-registry/commit/b6f0f5fcb48e25c27532ce0cb2451d784ab310aa))
+* remove redundant case clauses ([ad3dd2c](https://github.com/informatievlaanderen/address-registry/commit/ad3dd2cb60c300115c09a70269f68459faf3c9ee))
+* remove unused members ([e60b91c](https://github.com/informatievlaanderen/address-registry/commit/e60b91c5d49f46a058a91d5c701addc6e2fc6f8a))
+* remove unused variables ([049e40e](https://github.com/informatievlaanderen/address-registry/commit/049e40e3b9bc0faba109ce6d3cc537bae9ac37f4))
+* return empty array instead of null ([b6f25e1](https://github.com/informatievlaanderen/address-registry/commit/b6f25e1385f4eee18565a48337002d3982d8df52))
+* simplify loops with linq ([f092d44](https://github.com/informatievlaanderen/address-registry/commit/f092d4423e009f439f60aaeabcfd4ce251c3eefb))
+* unused parameters ([ca4fdc2](https://github.com/informatievlaanderen/address-registry/commit/ca4fdc24252a4ec1b6b82d746a107122afc5286e))
+* visibility of fields ([7dc7339](https://github.com/informatievlaanderen/address-registry/commit/7dc7339ad479a094788acd1b85c5714825f8e5fd))
+
 ## [3.24.4](https://github.com/informatievlaanderen/address-registry/compare/v3.24.3...v3.24.4) (2022-07-26)
 
 

@@ -34,10 +34,10 @@ namespace AddressRegistry.Projections.Syndication.Municipality
             var municipalitySyndicationItem = new MunicipalitySyndicationItem
             {
                 MunicipalityId = entry.Content.Object.Id,
-                NisCode = entry.Content.Object.Identificator?.ObjectId,
-                Version = entry.Content.Object.Identificator?.Versie,
+                NisCode = entry.Content.Object.Identificator.ObjectId,
+                Version = entry.Content.Object.Identificator.Versie,
                 Position = long.Parse(entry.FeedEntry.Id),
-                OfficialLanguages = entry.Content.Object.OfficialLanguages,
+                OfficialLanguages = entry.Content.Object.OfficialLanguages
             };
 
             UpdateNamesByGemeentenamen(municipalitySyndicationItem, entry.Content.Object.MunicipalityNames);
@@ -50,14 +50,15 @@ namespace AddressRegistry.Projections.Syndication.Municipality
         private static void UpdateNamesByGemeentenamen(MunicipalitySyndicationItem syndicationItem, IReadOnlyCollection<GeografischeNaam> gemeentenamen)
         {
             if (gemeentenamen == null || !gemeentenamen.Any())
+            {
                 return;
+            }
 
             foreach (var naam in gemeentenamen)
             {
                 switch (naam.Taal)
                 {
                     default:
-                    case Taal.NL:
                         syndicationItem.NameDutch = naam.Spelling;
                         break;
                     case Taal.FR:

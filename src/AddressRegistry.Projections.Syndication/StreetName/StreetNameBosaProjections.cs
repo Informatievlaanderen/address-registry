@@ -54,7 +54,7 @@ namespace AddressRegistry.Projections.Syndication.StreetName
                     Version = entry.Content.Object.Identificator?.Versie,
                     Position = long.Parse(entry.FeedEntry.Id),
                     PersistentLocalId = entry.Content.Object.Identificator?.ObjectId,
-                    IsComplete = entry.Content.Object.IsComplete,
+                    IsComplete = entry.Content.Object.IsComplete
                 };
 
                 UpdateNames(latestItem, entry.Content.Object.StreetNames);
@@ -80,14 +80,15 @@ namespace AddressRegistry.Projections.Syndication.StreetName
         private static void UpdateNames(StreetNameBosaItem syndicationItem, IReadOnlyCollection<GeografischeNaam> streetNames)
         {
             if (streetNames == null || !streetNames.Any())
+            {
                 return;
+            }
 
             foreach (var naam in streetNames)
             {
                 switch (naam.Taal)
                 {
                     default:
-                    case Taal.NL:
                         syndicationItem.NameDutch = naam.Spelling;
                         syndicationItem.NameDutchSearch = naam.Spelling.SanitizeForBosaSearch();
                         break;
@@ -110,14 +111,15 @@ namespace AddressRegistry.Projections.Syndication.StreetName
         private static void UpdateHomonymAdditions(StreetNameBosaItem syndicationItem, IReadOnlyCollection<GeografischeNaam> homonymAdditions)
         {
             if (homonymAdditions == null || !homonymAdditions.Any())
+            {
                 return;
+            }
 
             foreach (var naam in homonymAdditions)
             {
                 switch (naam.Taal)
                 {
                     default:
-                    case Taal.NL:
                         syndicationItem.HomonymAdditionDutch = naam.Spelling;
                         break;
                     case Taal.FR:

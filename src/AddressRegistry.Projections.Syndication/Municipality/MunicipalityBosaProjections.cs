@@ -69,14 +69,15 @@ namespace AddressRegistry.Projections.Syndication.Municipality
         private static void UpdateNamesByGemeentenamen(MunicipalityBosaItem syndicationItem, IReadOnlyCollection<GeografischeNaam> gemeentenamen)
         {
             if (gemeentenamen == null || !gemeentenamen.Any())
+            {
                 return;
+            }
 
             foreach (var naam in gemeentenamen)
             {
                 switch (naam.Taal)
                 {
                     default:
-                    case Taal.NL:
                         syndicationItem.NameDutch = naam.Spelling;
                         syndicationItem.NameDutchSearch = naam.Spelling.SanitizeForBosaSearch();
                         break;

@@ -3,8 +3,11 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure
     using Be.Vlaanderen.Basisregisters.Api;
     using Microsoft.AspNetCore.Hosting;
 
-    public static class Program
+    public class Program
     {
+        protected Program()
+        { }
+
         public static void Main(string[] args) => CreateWebHostBuilder(args).Build().Run();
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args)

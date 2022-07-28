@@ -51,7 +51,9 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
 
             //TODO: Remove logging
             if (addressBuildingUnitLinkExtractItems.Any(x => x.BuildingUnitId == new Guid("F152384D-B701-5030-BEAE-00DBBA062CF0") || x.BuildingUnitId == new Guid("5785DCCE-1DA1-51A0-9087-6519D0406686")))
+            {
                 _logger.LogWarning($"Removed building for {entry.Content.Object.Id}");
+            }
 
             context.AddressBuildingUnitLinkExtract.RemoveRange(addressBuildingUnitLinkExtractItems);
         }
@@ -60,7 +62,9 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
             var addressBuildingUnitLinkExtractItems = GetBuildingUnitItemsByBuilding(entry, context);
 
             if (addressBuildingUnitLinkExtractItems.Any(x => x.BuildingUnitId == new Guid("F152384D-B701-5030-BEAE-00DBBA062CF0") || x.BuildingUnitId == new Guid("5785DCCE-1DA1-51A0-9087-6519D0406686")))
+            {
                 _logger.LogWarning($"Completed building ({isComplete}) for {entry.Content.Object.Id}");
+            }
 
             addressBuildingUnitLinkExtractItems.ForEach(buildingUnitItem => buildingUnitItem.IsBuildingComplete = isComplete);
         }
@@ -75,7 +79,9 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
                 if (!entry.Content.Object.BuildingUnits.Select(x => x.BuildingUnitId).Contains(buildingUnitAddressMatchLatestItem.BuildingUnitId))
                 {
                     if (buildingUnitAddressMatchLatestItem.BuildingUnitId == new Guid("F152384D-B701-5030-BEAE-00DBBA062CF0") || buildingUnitAddressMatchLatestItem.BuildingUnitId == new Guid("5785DCCE-1DA1-51A0-9087-6519D0406686"))
+                    {
                         _logger.LogWarning($"Removed buildingunit for {buildingUnitAddressMatchLatestItem.BuildingUnitId}");
+                    }
 
                     buildingUnitAddressMatchLatestItem.IsBuildingUnitRemoved = true;
                 }
@@ -92,7 +98,9 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
                     {
                         x.IsAddressLinkRemoved = true;
                         if (buildingUnit.BuildingUnitId == new Guid("F152384D-B701-5030-BEAE-00DBBA062CF0") || buildingUnit.BuildingUnitId == new Guid("5785DCCE-1DA1-51A0-9087-6519D0406686"))
+                        {
                             _logger.LogWarning($"Removed address link for {x.BuildingUnitId}");
+                        }
                     });
 
                 foreach (var addressId in buildingUnit.Addresses)
@@ -101,20 +109,27 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
                     if (addressItem == null)
                     {
                         if (buildingUnit.BuildingUnitId == new Guid("F152384D-B701-5030-BEAE-00DBBA062CF0") || buildingUnit.BuildingUnitId == new Guid("5785DCCE-1DA1-51A0-9087-6519D0406686"))
+                        {
                             _logger.LogWarning($"Add buildingunit {buildingUnit.BuildingUnitId}");
+                        }
+
                         await context.AddressBuildingUnitLinkExtract.AddAsync(CreateAddressBuildingUnitLinkExtractItem(entry, addressId, buildingUnit, context), ct);
                     }
                     else
                     {
                         if (buildingUnit.BuildingUnitId == new Guid("F152384D-B701-5030-BEAE-00DBBA062CF0") || buildingUnit.BuildingUnitId == new Guid("5785DCCE-1DA1-51A0-9087-6519D0406686"))
+                        {
                             _logger.LogWarning($"update buildingunit {buildingUnit.BuildingUnitId}, IsBURemoved: {addressItem.IsBuildingUnitRemoved} to false, IsALRemoved: {addressItem.IsAddressLinkRemoved} to false, IsBUComplete: {addressItem.IsBuildingUnitComplete} to {buildingUnit.IsComplete}, IsBComplete: {addressItem.IsBuildingComplete}");
+                        }
 
                         addressItem.IsBuildingUnitRemoved = false;
                         addressItem.IsAddressLinkRemoved = false;
                         addressItem.IsBuildingUnitComplete = buildingUnit.IsComplete;
 
                         if (string.Equals(addressItem.BuildingUnitPersistentLocalId, buildingUnit.Identificator.ObjectId))
+                        {
                             continue;
+                        }
 
                         addressItem.BuildingUnitPersistentLocalId = buildingUnit.Identificator.ObjectId;
                         UpdateDbaseRecordField(addressItem, record => record.adresobjid.Value = buildingUnit.Identificator.ObjectId);
@@ -166,7 +181,9 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
             if (address != null)
             {
                 if (!string.IsNullOrEmpty(address.PersistentLocalId))
+                {
                     record.adresid.Value = Convert.ToInt32(address.PersistentLocalId);
+                }
 
                 record.voladres.Value = CreateCompleteAddress(address, context);
             }
@@ -188,13 +205,11 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
             var streetName = context.StreetNameLatestItems.AsNoTracking().First(x => x.StreetNameId == address.StreetNameId);
             var municipality = context.MunicipalityLatestItems.AsNoTracking().First(x => x.NisCode == streetName.NisCode);
 
-            var municipalityName = string.Empty;
-            var streetNameName = string.Empty;
+            string municipalityName;
+            string streetNameName;
 
             switch (municipality.PrimaryLanguage)
             {
-                case null:
-                case Taal.NL:
                 default:
                     municipalityName = municipality.NameDutch;
                     streetNameName = streetName.NameDutch;

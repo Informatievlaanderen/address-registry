@@ -12,7 +12,9 @@ namespace AddressRegistry.Address
             Address aggregate)
         {
             if (!(provenanceHolder is IHasCrabProvenance crabProvenance))
-                throw new ApplicationException($"Cannot create provenance from {provenanceHolder.GetType().Name}");
+            {
+                throw new InvalidOperationException($"Cannot create provenance from {provenanceHolder.GetType().Name}");
+            }
 
             return CreateFrom(
                 aggregate.LastModificationBasedOnCrab,
@@ -33,7 +35,7 @@ namespace AddressRegistry.Address
         {
             if (provenanceHolder is not IHasCommandProvenance provenance)
             {
-                throw new ApplicationException($"Cannot create provenance from {provenanceHolder.GetType().Name}");
+                throw new InvalidOperationException($"Cannot create provenance from {provenanceHolder.GetType().Name}");
             }
 
             return provenance.Provenance;

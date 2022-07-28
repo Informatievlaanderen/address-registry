@@ -35,7 +35,7 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
                         {
                             AddressId = message.Message.AddressId,
                             StreetNameId = message.Message.StreetNameId,
-                            HouseNumber = message.Message.HouseNumber,
+                            HouseNumber = message.Message.HouseNumber
                         },
                         ct);
             });
@@ -421,7 +421,9 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
             GeometryMethod? geometryMethod)
         {
             if (geometryMethod == null)
+            {
                 return null;
+            }
 
             switch (geometryMethod)
             {
@@ -445,7 +447,9 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
             GeometrySpecification? geometrySpecification)
         {
             if (geometrySpecification == null)
+            {
                 return null;
+            }
 
             switch (geometrySpecification)
             {

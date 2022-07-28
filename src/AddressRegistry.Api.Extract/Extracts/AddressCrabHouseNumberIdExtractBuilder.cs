@@ -7,7 +7,7 @@ namespace AddressRegistry.Api.Extract.Extracts
     using Projections.Extract;
     using Projections.Extract.AddressCrabHouseNumberIdExtract;
 
-    public class AddressCrabHouseNumberIdExtractBuilder
+    public static class AddressCrabHouseNumberIdExtractBuilder
     {
         public static ExtractFile CreateAddressCrabHouseNumberIdFile(ExtractContext context)
         {
@@ -20,7 +20,7 @@ namespace AddressRegistry.Api.Extract.Extracts
             return ExtractBuilder.CreateDbfFile<AddressCrabHouseNumberIdDbaseRecord>(
                 ExtractFileNames.CrabHouseNumberId,
                 new AddressCrabHouseNumberIdDbaseSchema(),
-                extractItems.Select(x => x.DbaseRecord),
+                extractItems.Select(x => x.DbaseRecord!),
                 extractItems.Count);
         }
     }

@@ -3,7 +3,7 @@ namespace AddressRegistry.Api.Oslo.Infrastructure
     using Be.Vlaanderen.Basisregisters.Api;
     using Microsoft.AspNetCore.Hosting;
 
-    public class Program
+    public static class Program
     {
         public static void Main(string[] args) => CreateWebHostBuilder(args).Build().Run();
 

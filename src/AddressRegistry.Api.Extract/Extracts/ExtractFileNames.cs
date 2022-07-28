@@ -2,7 +2,7 @@ namespace AddressRegistry.Api.Extract.Extracts
 {
     using System;
 
-    internal class ExtractFileNames
+    internal static class ExtractFileNames
     {
         public const string Address = "Adres";
         public const string CrabHouseNumberId = "CrabHuisnummer";

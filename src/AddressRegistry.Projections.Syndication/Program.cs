@@ -2,7 +2,6 @@ namespace AddressRegistry.Projections.Syndication
 {
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
-    using Autofac.Features.OwnedInstances;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -28,6 +27,9 @@ namespace AddressRegistry.Projections.Syndication
         private static readonly AutoResetEvent Closing = new AutoResetEvent(false);
         private static readonly CancellationTokenSource CancellationTokenSource = new CancellationTokenSource();
 
+        protected Program()
+        { }
+
         public static async Task Main(string[] args)
         {
             var ct = CancellationTokenSource.Token;
@@ -49,7 +51,7 @@ namespace AddressRegistry.Projections.Syndication
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
                 .AddJsonFile($"appsettings.{Environment.MachineName.ToLowerInvariant()}.json", optional: true, reloadOnChange: false)
                 .AddEnvironmentVariables()
-                .AddCommandLine(args ?? new string[0])
+                .AddCommandLine(args)
                 .Build();
 
             var container = ConfigureServices(configuration);
@@ -65,11 +67,11 @@ namespace AddressRegistry.Projections.Syndication
                         {
                             await MigrationsHelper.RunAsync(
                                 configuration.GetConnectionString("SyndicationProjectionsAdmin"),
-                                container.GetService<ILoggerFactory>(),
+                                container.GetRequiredService<ILoggerFactory>(),
                                 ct);
 
                             await container
-                                .GetService<FeedProjector<SyndicationContext>>()
+                                .GetRequiredService<FeedProjector<SyndicationContext>>()
                                 .Register(BuildProjectionRunners(configuration, container))
                                 .Start(ct);
                         }
@@ -79,8 +81,8 @@ namespace AddressRegistry.Projections.Syndication
                             throw;
                         }
                     },
-                    DistributedLockOptions.LoadFromConfiguration(configuration) ?? DistributedLockOptions.Defaults,
-                    container.GetService<ILogger<Program>>());
+                    DistributedLockOptions.LoadFromConfiguration(configuration),
+                    container.GetRequiredService<ILogger<Program>>());
             }
             catch (Exception e)
             {
@@ -99,7 +101,7 @@ namespace AddressRegistry.Projections.Syndication
         private static IEnumerable<IFeedProjectionRunner<SyndicationContext>> BuildProjectionRunners(IConfiguration configuration, IServiceProvider container)
         {
             ILogger<Program> CreateLogger() => container
-                .GetService<ILoggerFactory>()
+                .GetRequiredService<ILoggerFactory>()
                 .CreateLogger<Program>();
 
             var municipalityRunner = new FeedProjectionRunner<MunicipalityEvent, SyndicationItem<Municipality.Municipality>, SyndicationContext>(
@@ -111,7 +113,7 @@ namespace AddressRegistry.Projections.Syndication
                 false,
                 true,
                 CreateLogger(),
-                container.GetService<IRegistryAtomFeedReader>(),
+                container.GetRequiredService<IRegistryAtomFeedReader>(),
                 new MunicipalitySyndiciationItemProjections(),
                 new MunicipalityLatestProjections(),
                 new MunicipalityBosaProjections());
@@ -125,7 +127,7 @@ namespace AddressRegistry.Projections.Syndication
                 false,
                 true,
                 CreateLogger(),
-                container.GetService<IRegistryAtomFeedReader>(),
+                container.GetRequiredService<IRegistryAtomFeedReader>(),
                 new PostalInfoLatestProjections());
 
             var streetNameRunner = new FeedProjectionRunner<StreetNameEvent, SyndicationItem<StreetName.StreetName>, SyndicationContext>(
@@ -137,7 +139,7 @@ namespace AddressRegistry.Projections.Syndication
                 false,
                 true,
                 CreateLogger(),
-                container.GetService<IRegistryAtomFeedReader>(),
+                container.GetRequiredService<IRegistryAtomFeedReader>(),
                 new StreetNameSyndicationItemProjections(),
                 new StreetNameLatestProjections(),
                 new StreetNameBosaProjections());
@@ -151,7 +153,7 @@ namespace AddressRegistry.Projections.Syndication
                 false,
                 true,
                 CreateLogger(),
-                container.GetService<IRegistryAtomFeedReader>(),
+                container.GetRequiredService<IRegistryAtomFeedReader>(),
                 new ParcelAddressMatchProjections());
 
             var buildingUnitRunner = new FeedProjectionRunner<BuildingEvent, SyndicationItem<Building>, SyndicationContext>(
@@ -163,7 +165,7 @@ namespace AddressRegistry.Projections.Syndication
                 true,
                 true,
                 CreateLogger(),
-                container.GetService<IRegistryAtomFeedReader>(),
+                container.GetRequiredService<IRegistryAtomFeedReader>(),
                 new BuildingUnitAddressMatchProjections());
 
             var buildingUnitAddressRunner = new LinkedFeedProjectionRunner<BuildingEvent, SyndicationItem<Building>, SyndicationContext>(
@@ -177,7 +179,7 @@ namespace AddressRegistry.Projections.Syndication
                 configuration.GetValue<int>("LinkedFeedRetryPolicy:JittererMinSeconds"),
                 configuration.GetValue<int>("LinkedFeedRetryPolicy:JittererMaxSeconds"),
                 CreateLogger(),
-                container.GetService<IRegistryAtomFeedReader>(),
+                container.GetRequiredService<IRegistryAtomFeedReader>(),
                 new AddressBuildingUnitLinkProjections(DbaseCodePage.Western_European_ANSI.ToEncoding(), CreateLogger()));
 
             var parcelAddressRunner = new LinkedFeedProjectionRunner<ParcelEvent, SyndicationItem<Parcel.Parcel>, SyndicationContext>(
@@ -191,7 +193,7 @@ namespace AddressRegistry.Projections.Syndication
                 configuration.GetValue<int>("LinkedFeedRetryPolicy:JittererMinSeconds"),
                 configuration.GetValue<int>("LinkedFeedRetryPolicy:JittererMaxSeconds"),
                 CreateLogger(),
-                container.GetService<IRegistryAtomFeedReader>(),
+                container.GetRequiredService<IRegistryAtomFeedReader>(),
                 new AddressParcelLinkProjections(DbaseCodePage.Western_European_ANSI.ToEncoding()));
 
             var addressRunner = new LinkedFeedProjectionRunner<AddressEvent, SyndicationItem<Address>, SyndicationContext>(
@@ -205,7 +207,7 @@ namespace AddressRegistry.Projections.Syndication
                 configuration.GetValue<int>("LinkedFeedRetryPolicy:JittererMinSeconds"),
                 configuration.GetValue<int>("LinkedFeedRetryPolicy:JittererMaxSeconds"),
                 CreateLogger(),
-                container.GetService<IRegistryAtomFeedReader>(),
+                container.GetRequiredService<IRegistryAtomFeedReader>(),
                 new AddressLinkSyndicationProjections(DbaseCodePage.Western_European_ANSI.ToEncoding()));
 
             var linkedFeedManager = new LinkedFeedProjectionManager<SyndicationContext>(
@@ -235,7 +237,7 @@ namespace AddressRegistry.Projections.Syndication
             builder.RegisterModule(new LoggingModule(configuration, services));
 
             var tempProvider = services.BuildServiceProvider();
-            builder.RegisterModule(new SyndicationModule(configuration, services, tempProvider.GetService<ILoggerFactory>()));
+            builder.RegisterModule(new SyndicationModule(configuration, services, tempProvider.GetRequiredService<ILoggerFactory>()));
 
             builder.Populate(services);
 

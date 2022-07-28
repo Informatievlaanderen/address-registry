@@ -1,12 +1,14 @@
 namespace AddressRegistry.Projector.Infrastructure
 {
-    using System;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
     using Microsoft.AspNetCore.Hosting;
 
     public class Program
     {
+        protected Program()
+        { }
+        
         public static void Main(string[] args)
             => Run(new ProgramOptions
                 {

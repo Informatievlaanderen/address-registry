@@ -11,7 +11,7 @@ namespace AddressRegistry.Api.Extract.Extracts
     using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
     using Projections.Syndication;
 
-    public class AddressRegistryExtractBuilder
+    public static class AddressRegistryExtractBuilder
     {
         public static IEnumerable<ExtractFile> CreateAddressFiles(ExtractContext context, SyndicationContext syndicationContext)
         {
@@ -110,6 +110,7 @@ namespace AddressRegistry.Api.Extract.Extracts
                 ExtractFileNames.Address,
                 ProjectedCoordinateSystem.Belge_Lambert_1972);
         }
+        
         public static IEnumerable<ExtractFile> CreateAddressFilesV2(ExtractContext context, SyndicationContext syndicationContext)
         {
             var extractItems = context
@@ -192,7 +193,7 @@ namespace AddressRegistry.Api.Extract.Extracts
             yield return ExtractBuilder.CreateShapeFile<PointShapeContent>(
                 ExtractFileNames.Address,
                 ShapeType.Point,
-                extractItems.Select(x => x.ShapeRecordContent),
+                extractItems.Select(x => x.ShapeRecordContent!),
                 ShapeContent.Read,
                 extractItems.Select(x => x.ShapeRecordContentLength),
                 boundingBox);

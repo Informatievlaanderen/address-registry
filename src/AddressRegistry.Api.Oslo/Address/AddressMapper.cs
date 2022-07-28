@@ -1,6 +1,5 @@
 namespace AddressRegistry.Api.Oslo.Address
 {
-    using System;
     using System.Collections.Generic;
     using System.Text;
     using System.Xml;
@@ -15,11 +14,13 @@ namespace AddressRegistry.Api.Oslo.Address
 
     public static class AddressMapper
     {
-        public static VolledigAdres GetVolledigAdres(string houseNumber, string boxNumber, string postalCode,
-            StreetNameLatestItem streetName, MunicipalityLatestItem municipality)
+        public static VolledigAdres? GetVolledigAdres(string houseNumber, string boxNumber, string postalCode,
+            StreetNameLatestItem? streetName, MunicipalityLatestItem? municipality)
         {
             if (streetName == null || municipality == null)
+            {
                 return null;
+            }
 
             var defaultMunicipalityName = GetDefaultMunicipalityName(municipality);
             return new VolledigAdres(
@@ -33,9 +34,9 @@ namespace AddressRegistry.Api.Oslo.Address
 
         private static string GetGml(Geometry geometry)
         {
-            StringBuilder builder = new();
-            XmlWriterSettings settings = new() { Indent = false, OmitXmlDeclaration = true };
-            using (XmlWriter xmlwriter = XmlWriter.Create(builder, settings))
+            var builder = new StringBuilder();
+            var settings = new XmlWriterSettings { Indent = false, OmitXmlDeclaration = true };
+            using (var xmlwriter = XmlWriter.Create(builder, settings))
             {
                 xmlwriter.WriteStartElement("gml", "Point", "http://www.opengis.net/gml/3.2");
                 xmlwriter.WriteAttributeString("srsName", "https://www.opengis.net/def/crs/EPSG/0/31370");
@@ -77,202 +78,125 @@ namespace AddressRegistry.Api.Oslo.Address
 
         public static PositieGeometrieMethode ConvertFromGeometryMethod(GeometryMethod? method)
         {
-            switch (method)
+            return method switch
             {
-                case GeometryMethod.DerivedFromObject:
-                    return PositieGeometrieMethode.AfgeleidVanObject;
-
-                case GeometryMethod.Interpolated:
-                    return PositieGeometrieMethode.Geinterpoleerd;
-
-                default:
-                case GeometryMethod.AppointedByAdministrator:
-                    return PositieGeometrieMethode.AangeduidDoorBeheerder;
-            }
+                GeometryMethod.DerivedFromObject => PositieGeometrieMethode.AfgeleidVanObject,
+                GeometryMethod.Interpolated => PositieGeometrieMethode.Geinterpoleerd,
+                GeometryMethod.AppointedByAdministrator => PositieGeometrieMethode.AangeduidDoorBeheerder,
+                _ => PositieGeometrieMethode.AangeduidDoorBeheerder
+            };
         }
 
         public static PositieGeometrieMethode ConvertFromGeometryMethod(AddressRegistry.StreetName.GeometryMethod? method)
         {
-            switch (method)
+            return method switch
             {
-                case AddressRegistry.StreetName.GeometryMethod.DerivedFromObject:
-                    return PositieGeometrieMethode.AfgeleidVanObject;
-
-                case AddressRegistry.StreetName.GeometryMethod.Interpolated:
-                    return PositieGeometrieMethode.Geinterpoleerd;
-
-                default:
-                case AddressRegistry.StreetName.GeometryMethod.AppointedByAdministrator:
-                    return PositieGeometrieMethode.AangeduidDoorBeheerder;
-            }
+                AddressRegistry.StreetName.GeometryMethod.DerivedFromObject => PositieGeometrieMethode.AfgeleidVanObject,
+                AddressRegistry.StreetName.GeometryMethod.Interpolated => PositieGeometrieMethode.Geinterpoleerd,
+                AddressRegistry.StreetName.GeometryMethod.AppointedByAdministrator => PositieGeometrieMethode.AangeduidDoorBeheerder,
+                _ => PositieGeometrieMethode.AangeduidDoorBeheerder
+            };
         }
 
         public static PositieSpecificatie ConvertFromGeometrySpecification(GeometrySpecification? specification)
         {
-            switch (specification)
+            return specification switch
             {
-                case GeometrySpecification.Street:
-                    return PositieSpecificatie.Straat;
-
-                case GeometrySpecification.Parcel:
-                    return PositieSpecificatie.Perceel;
-
-                case GeometrySpecification.Lot:
-                    return PositieSpecificatie.Lot;
-
-                case GeometrySpecification.Stand:
-                    return PositieSpecificatie.Standplaats;
-
-                case GeometrySpecification.Berth:
-                    return PositieSpecificatie.Ligplaats;
-
-                case GeometrySpecification.Building:
-                    return PositieSpecificatie.Gebouw;
-
-                case GeometrySpecification.BuildingUnit:
-                    return PositieSpecificatie.Gebouweenheid;
-
-                case GeometrySpecification.Entry:
-                    return PositieSpecificatie.Ingang;
-
-                case GeometrySpecification.RoadSegment:
-                    return PositieSpecificatie.Wegsegment;
-
-                default:
-                case GeometrySpecification.Municipality:
-                    return PositieSpecificatie.Gemeente;
-            }
+                GeometrySpecification.Street => PositieSpecificatie.Straat,
+                GeometrySpecification.Parcel => PositieSpecificatie.Perceel,
+                GeometrySpecification.Lot => PositieSpecificatie.Lot,
+                GeometrySpecification.Stand => PositieSpecificatie.Standplaats,
+                GeometrySpecification.Berth => PositieSpecificatie.Ligplaats,
+                GeometrySpecification.Building => PositieSpecificatie.Gebouw,
+                GeometrySpecification.BuildingUnit => PositieSpecificatie.Gebouweenheid,
+                GeometrySpecification.Entry => PositieSpecificatie.Ingang,
+                GeometrySpecification.RoadSegment => PositieSpecificatie.Wegsegment,
+                GeometrySpecification.Municipality => PositieSpecificatie.Gemeente,
+                _ => PositieSpecificatie.Gemeente
+            };
         }
 
         public static PositieSpecificatie ConvertFromGeometrySpecification(AddressRegistry.StreetName.GeometrySpecification? specification)
         {
-            switch (specification)
+            return specification switch
             {
-                case AddressRegistry.StreetName.GeometrySpecification.Street:
-                    return PositieSpecificatie.Straat;
-
-                case AddressRegistry.StreetName.GeometrySpecification.Parcel:
-                    return PositieSpecificatie.Perceel;
-
-                case AddressRegistry.StreetName.GeometrySpecification.Lot:
-                    return PositieSpecificatie.Lot;
-
-                case AddressRegistry.StreetName.GeometrySpecification.Stand:
-                    return PositieSpecificatie.Standplaats;
-
-                case AddressRegistry.StreetName.GeometrySpecification.Berth:
-                    return PositieSpecificatie.Ligplaats;
-
-                case AddressRegistry.StreetName.GeometrySpecification.Building:
-                    return PositieSpecificatie.Gebouw;
-
-                case AddressRegistry.StreetName.GeometrySpecification.BuildingUnit:
-                    return PositieSpecificatie.Gebouweenheid;
-
-                case AddressRegistry.StreetName.GeometrySpecification.Entry:
-                    return PositieSpecificatie.Ingang;
-
-                case AddressRegistry.StreetName.GeometrySpecification.RoadSegment:
-                    return PositieSpecificatie.Wegsegment;
-
-                default:
-                case AddressRegistry.StreetName.GeometrySpecification.Municipality:
-                    return PositieSpecificatie.Gemeente;
-            }
+                AddressRegistry.StreetName.GeometrySpecification.Street => PositieSpecificatie.Straat,
+                AddressRegistry.StreetName.GeometrySpecification.Parcel => PositieSpecificatie.Perceel,
+                AddressRegistry.StreetName.GeometrySpecification.Lot => PositieSpecificatie.Lot,
+                AddressRegistry.StreetName.GeometrySpecification.Stand => PositieSpecificatie.Standplaats,
+                AddressRegistry.StreetName.GeometrySpecification.Berth => PositieSpecificatie.Ligplaats,
+                AddressRegistry.StreetName.GeometrySpecification.Building => PositieSpecificatie.Gebouw,
+                AddressRegistry.StreetName.GeometrySpecification.BuildingUnit => PositieSpecificatie.Gebouweenheid,
+                AddressRegistry.StreetName.GeometrySpecification.Entry => PositieSpecificatie.Ingang,
+                AddressRegistry.StreetName.GeometrySpecification.RoadSegment => PositieSpecificatie.Wegsegment,
+                AddressRegistry.StreetName.GeometrySpecification.Municipality => PositieSpecificatie.Gemeente,
+                _ => PositieSpecificatie.Gemeente
+            };
         }
 
         public static AdresStatus ConvertFromAddressStatus(AddressStatus? status)
         {
-            switch (status)
+            return status switch
             {
-                case AddressStatus.Proposed:
-                    return AdresStatus.Voorgesteld;
-
-                case AddressStatus.Retired:
-                    return AdresStatus.Gehistoreerd;
-
-                default:
-                case AddressStatus.Current:
-                    return AdresStatus.InGebruik;
-            }
+                AddressStatus.Proposed => AdresStatus.Voorgesteld,
+                AddressStatus.Retired => AdresStatus.Gehistoreerd,
+                AddressStatus.Current => AdresStatus.InGebruik,
+                _ => AdresStatus.InGebruik
+            };
         }
 
         public static AdresStatus ConvertFromAddressStatus(AddressRegistry.StreetName.AddressStatus? status)
         {
-            switch (status)
+            return status switch
             {
-                case AddressRegistry.StreetName.AddressStatus.Proposed:
-                    return AdresStatus.Voorgesteld;
-
-                case AddressRegistry.StreetName.AddressStatus.Retired:
-                    return AdresStatus.Gehistoreerd;
-
-                default:
-                case AddressRegistry.StreetName.AddressStatus.Current:
-                    return AdresStatus.InGebruik;
-            }
+                AddressRegistry.StreetName.AddressStatus.Proposed => AdresStatus.Voorgesteld,
+                AddressRegistry.StreetName.AddressStatus.Retired => AdresStatus.Gehistoreerd,
+                AddressRegistry.StreetName.AddressStatus.Current => AdresStatus.InGebruik,
+                _ => AdresStatus.InGebruik
+            };
         }
 
-        public static KeyValuePair<Taal, string> GetDefaultMunicipalityName(MunicipalityLatestItem municipality)
+        public static KeyValuePair<Taal, string?> GetDefaultMunicipalityName(MunicipalityLatestItem municipality)
         {
-            switch (municipality.PrimaryLanguage)
+            return municipality.PrimaryLanguage switch
             {
-                default:
-                case Taal.NL:
-                    return new KeyValuePair<Taal, string>(Taal.NL, municipality.NameDutch);
-
-                case Taal.FR:
-                    return new KeyValuePair<Taal, string>(Taal.FR, municipality.NameFrench);
-
-                case Taal.DE:
-                    return new KeyValuePair<Taal, string>(Taal.DE, municipality.NameGerman);
-
-                case Taal.EN:
-                    return new KeyValuePair<Taal, string>(Taal.EN, municipality.NameEnglish);
-            }
+                Taal.NL => new KeyValuePair<Taal, string?>(Taal.NL, municipality.NameDutch),
+                Taal.FR => new KeyValuePair<Taal, string?>(Taal.FR, municipality.NameFrench),
+                Taal.DE => new KeyValuePair<Taal, string?>(Taal.DE, municipality.NameGerman),
+                Taal.EN => new KeyValuePair<Taal, string?>(Taal.EN, municipality.NameEnglish),
+                _ => new KeyValuePair<Taal, string?>(Taal.NL, municipality.NameDutch)
+            };
         }
 
-        public static KeyValuePair<Taal, string> GetDefaultStreetNameName(StreetNameLatestItem streetName,
+        public static KeyValuePair<Taal, string?> GetDefaultStreetNameName(StreetNameLatestItem streetName,
             Taal? municipalityLanguage)
         {
-            switch (municipalityLanguage)
+            return municipalityLanguage switch
             {
-                default:
-                case Taal.NL:
-                    return new KeyValuePair<Taal, string>(Taal.NL, streetName.NameDutch);
-
-                case Taal.FR:
-                    return new KeyValuePair<Taal, string>(Taal.FR, streetName.NameFrench);
-
-                case Taal.DE:
-                    return new KeyValuePair<Taal, string>(Taal.DE, streetName.NameGerman);
-
-                case Taal.EN:
-                    return new KeyValuePair<Taal, string>(Taal.EN, streetName.NameEnglish);
-            }
+                Taal.NL => new KeyValuePair<Taal, string?>(Taal.NL, streetName.NameDutch),
+                Taal.FR => new KeyValuePair<Taal, string?>(Taal.FR, streetName.NameFrench),
+                Taal.DE => new KeyValuePair<Taal, string?>(Taal.DE, streetName.NameGerman),
+                Taal.EN => new KeyValuePair<Taal, string?>(Taal.EN, streetName.NameEnglish),
+                _ => new KeyValuePair<Taal, string?>(Taal.NL, streetName.NameDutch)
+            };
         }
 
-        public static KeyValuePair<Taal, string>? GetDefaultHomonymAddition(StreetNameLatestItem streetName,
+        public static KeyValuePair<Taal, string?>? GetDefaultHomonymAddition(StreetNameLatestItem streetName,
             Taal? municipalityLanguage)
         {
             if (!streetName.HasHomonymAddition)
-                return null;
-
-            switch (municipalityLanguage)
             {
-                default:
-                case Taal.NL:
-                    return new KeyValuePair<Taal, string>(Taal.NL, streetName.HomonymAdditionDutch);
-
-                case Taal.FR:
-                    return new KeyValuePair<Taal, string>(Taal.FR, streetName.HomonymAdditionFrench);
-
-                case Taal.DE:
-                    return new KeyValuePair<Taal, string>(Taal.DE, streetName.HomonymAdditionGerman);
-
-                case Taal.EN:
-                    return new KeyValuePair<Taal, string>(Taal.EN, streetName.HomonymAdditionEnglish);
+                return null;
             }
+
+            return municipalityLanguage switch
+            {
+                Taal.NL => new KeyValuePair<Taal, string?>(Taal.NL, streetName.HomonymAdditionDutch),
+                Taal.FR => new KeyValuePair<Taal, string?>(Taal.FR, streetName.HomonymAdditionFrench),
+                Taal.DE => new KeyValuePair<Taal, string?>(Taal.DE, streetName.HomonymAdditionGerman),
+                Taal.EN => new KeyValuePair<Taal, string?>(Taal.EN, streetName.HomonymAdditionEnglish),
+                _ => new KeyValuePair<Taal, string?>(Taal.NL, streetName.HomonymAdditionDutch)
+            };
         }
     }
 }

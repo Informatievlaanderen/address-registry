@@ -12,8 +12,6 @@ namespace AddressRegistry.Infrastructure.Modules
     public class EditModule : Module
     {
         private readonly IConfiguration _configuration;
-        private readonly IServiceCollection _services;
-        private readonly ILoggerFactory _loggerFactory;
 
         public EditModule(
             IConfiguration configuration,
@@ -21,14 +19,12 @@ namespace AddressRegistry.Infrastructure.Modules
             ILoggerFactory loggerFactory)
         {
             _configuration = configuration;
-            _services = services;
-            _loggerFactory = loggerFactory;
 
             var projectionsConnectionString = _configuration.GetConnectionString("Sequences");
 
-            _services
+            services
                 .AddDbContext<SequenceContext>(options => options
-                    .UseLoggerFactory(_loggerFactory)
+                    .UseLoggerFactory(loggerFactory)
                     .UseSqlServer(projectionsConnectionString, sqlServerOptions => sqlServerOptions
                             .EnableRetryOnFailure()
                             .MigrationsHistoryTable(MigrationTables.Sequence, Schema.Sequence)
@@ -36,15 +32,15 @@ namespace AddressRegistry.Infrastructure.Modules
                     ));
         }
 
-        protected override void Load(ContainerBuilder containerBuilder)
+        protected override void Load(ContainerBuilder builder)
         {
             var eventSerializerSettings = EventsJsonSerializerSettingsProvider.CreateSerializerSettings();
 
-            containerBuilder
+            builder
                 .RegisterModule(new EventHandlingModule(typeof(DomainAssemblyMarker).Assembly, eventSerializerSettings))
                 .RegisterModule(new CommandHandlingModule(_configuration));
 
-            containerBuilder
+            builder
                 .RegisterType<SqlPersistentLocalIdGenerator>()
                 .As<IPersistentLocalIdGenerator>();
         }

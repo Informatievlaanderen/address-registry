@@ -24,7 +24,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             get
             {
                 if (!_isMatch.HasValue)
-                    throw new Exception("Run DoMatch first before getting IsMatch");
+                {
+                    throw new InvalidOperationException("Run DoMatch first before getting IsMatch");
+                }
 
                 return _isMatch.Value;
             }
@@ -36,14 +38,16 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             get
             {
                 if (!_proceed.HasValue)
-                    throw new Exception("Run DoMatch first before getting Proceed");
+                {
+                    throw new InvalidOperationException("Run DoMatch first before getting Proceed");
+                }
 
                 return _proceed.Value;
             }
             private set => _proceed = value;
         }
 
-        public abstract IReadOnlyList<TResult>? BuildResults(TMatchBuilder? builder);
+        public abstract IReadOnlyList<TResult>? BuildResults(TMatchBuilder? input);
 
         protected abstract TMatchBuilder? DoMatchInternal(TMatchBuilder? builder);
 
@@ -51,9 +55,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 
         protected abstract bool? ShouldProceed(TMatchBuilder? builder);
 
-        public TMatchBuilder? DoMatch(TMatchBuilder? builder)
+        public TMatchBuilder? DoMatch(TMatchBuilder? input)
         {
-            var nextBuilder = DoMatchInternal(builder);
+            var nextBuilder = DoMatchInternal(input);
 
             Proceed = ShouldProceed(nextBuilder);
             IsMatch = IsValidMatch(nextBuilder);

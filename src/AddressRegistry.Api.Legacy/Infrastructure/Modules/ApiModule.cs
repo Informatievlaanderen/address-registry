@@ -38,9 +38,13 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
 
             var hasConnectionString = !string.IsNullOrWhiteSpace(connectionString);
             if (hasConnectionString)
+            {
                 RunOnSqlServer(configuration, services, loggerFactory, connectionString, buildingConnectionString);
+            }
             else
+            {
                 RunInMemoryDb(services, loggerFactory, logger);
+            }
 
             logger.LogInformation("Added {Context} to services:", nameof(AddressBosaContext));
             logger.LogInformation("Added {Context} to services:", nameof(AddressQueryContext));
@@ -48,22 +52,22 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
             logger.LogInformation("Added {Context} to services:", nameof(BuildingContext));
         }
 
-        protected override void Load(ContainerBuilder containerBuilder)
+        protected override void Load(ContainerBuilder builder)
         {
-            containerBuilder
+            builder
                 .RegisterModule(new DataDogModule(_configuration))
                 .RegisterModule(new LegacyModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new SyndicationModule(_configuration, _services, _loggerFactory));
 
-            containerBuilder
+            builder
                 .RegisterAssemblyTypes(typeof(IKadRrService).Assembly)
                 .AsImplementedInterfaces();
 
-            containerBuilder
+            builder
                 .RegisterType<ProblemDetailsHelper>()
                 .AsSelf();
 
-            containerBuilder.Populate(_services);
+            builder.Populate(_services);
         }
 
         private static void RunOnSqlServer(

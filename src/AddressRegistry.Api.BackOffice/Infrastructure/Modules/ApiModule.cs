@@ -30,16 +30,16 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
             _loggerFactory = loggerFactory;
         }
 
-        protected override void Load(ContainerBuilder containerBuilder)
+        protected override void Load(ContainerBuilder builder)
         {
-            containerBuilder
+            builder
                 .RegisterModule(new DataDogModule(_configuration));
 
-            containerBuilder
+            builder
                 .RegisterType<ProblemDetailsHelper>()
                 .AsSelf();
 
-            containerBuilder.RegisterModule(new IdempotencyModule(
+            builder.RegisterModule(new IdempotencyModule(
                 _services,
                 _configuration.GetSection(IdempotencyConfiguration.Section).Get<IdempotencyConfiguration>()
                     .ConnectionString,
@@ -47,15 +47,15 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
                 new IdempotencyTableInfo(Schema.Import),
                 _loggerFactory));
 
-            containerBuilder.RegisterModule(new EnvelopeModule());
-            containerBuilder.RegisterModule(new BackOfficeModule(_configuration, _services, _loggerFactory));
-            containerBuilder.RegisterModule(new SyndicationModule(_configuration, _services, _loggerFactory));
-            containerBuilder.RegisterModule(new EditModule(_configuration, _services, _loggerFactory));
-            containerBuilder.RegisterModule(new ConsumerModule(_configuration, _services, _loggerFactory));
-            containerBuilder.RegisterModule(new MediatRModule());
-            containerBuilder.RegisterSnapshotModule(_configuration);
+            builder.RegisterModule(new EnvelopeModule());
+            builder.RegisterModule(new BackOfficeModule(_configuration, _services, _loggerFactory));
+            builder.RegisterModule(new SyndicationModule(_configuration, _services, _loggerFactory));
+            builder.RegisterModule(new EditModule(_configuration, _services, _loggerFactory));
+            builder.RegisterModule(new ConsumerModule(_configuration, _services, _loggerFactory));
+            builder.RegisterModule(new MediatRModule());
+            builder.RegisterSnapshotModule(_configuration);
 
-            containerBuilder.Populate(_services);
+            builder.Populate(_services);
         }
     }
 }

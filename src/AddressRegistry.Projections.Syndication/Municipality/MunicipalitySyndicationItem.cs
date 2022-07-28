@@ -10,7 +10,7 @@ namespace AddressRegistry.Projections.Syndication.Municipality
 
     public class MunicipalitySyndicationItem
     {
-        public static string OfficialLanguagesBackingPropertyName = nameof(OfficialLanguagesAsString);
+        public readonly string OfficialLanguagesBackingPropertyName = nameof(OfficialLanguagesAsString);
 
         public Guid MunicipalityId { get; set; }
         public string? NisCode { get; set; }

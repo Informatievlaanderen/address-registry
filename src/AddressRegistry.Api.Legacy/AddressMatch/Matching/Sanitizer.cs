@@ -30,7 +30,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             // huisnummer formatteren
             var formattedHouseNumber = FormatRrHouseNumber(houseNumber);
             if (formattedHouseNumber == "00000000")
+            {
                 Warnings.AddWarning("1", "Ongeldig 'Huisnummer'.");
+            }
 
             // rrindex formatteren
             var formattedRrIndex = FormatRrIndex(index);
@@ -54,7 +56,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 var potentialMatch = MatchHouseNumberWithoutIndex(formattedHouseNumber, strictMatch);
 
                 if (potentialMatch.Any())
+                {
                     return potentialMatch;
+                }
             }
 
             // huisnummers met RR-index waarvan deel1 niet-numeriek is en waarvan deel2 numeriek is en gelijk aan 0
@@ -63,26 +67,34 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             // Als deel1 een aanduiding is van een verdiep wordt enkel het RR-huisnummer als huisnummer weggeschreven en een subadres 0.0 met aard appartementnummer.
             // ******************************************************************************************************************************************************
             if (HouseNumberWithIndex_Part1NonNumeric_Part2Zero(formattedHouseNumber, formattedRrIndex))
+            {
                 return MatchHouseNumberWithIndex_Part1NonNumeric_Part2Zero(formattedHouseNumber, formattedRrIndex);
+            }
 
             // huisnummers met RR-index waarvan deel1 niet-numeriek is en waarvan deel2 numeriek is en > 0
             // Het huisnummer wordt een CRAB-huisnummer, deel2 van de RR-index wordt een CRAB-subadres van type busnummer of appartementnummer.
             // Als deel1 een aanduiding is van een subadres wordt enkel het huisnummer als huisnummer weggeschreven.
             // *****************************************************************************************************
             if (HouseNumberWithIndex_Part1NonNumeric_Part2NumericNonZero(formattedHouseNumber, formattedRrIndex))
+            {
                 return MatchHouseNumberWithIndex_Part1NonNumeric_Part2NumericNonZero(formattedHouseNumber, formattedRrIndex);
+            }
 
             // huisnummers met RR-index waarvan deel1 begint met een cijfer en zonder deel 3.
             // Het huisnummer wordt een CRAB-huisnummer, deel1 van de RR-index wordt een CRAB-subadres van type busnummer.
             // ***********************************************************************************************************
             if (HouseNumberWithIndex_Part1StartNumber_Part3Missing(formattedHouseNumber, formattedRrIndex))
+            {
                 return MatchHouseNumberWithIndex_Part1StartNumber_Part3Missing(formattedHouseNumber, formattedRrIndex);
+            }
 
             // huisnummers met RR-index waarvan deel1 begint met een cijfer en met numeriek deel 3 en zonder deel 4
             // Het huisnummer wordt een CRAB-huisnummer, de RR-index wordt een CRAB-subadres van type appartementnummer.
             // *********************************************************************************************************
             if (HouseNumberWithIndex_Part1StartNumber_Part3Numeric_Part4Missing(formattedHouseNumber, formattedRrIndex))
+            {
                 return MatchHouseNumberWithIndex_Part1StartNumber_Part3Numeric_Part4Missing(formattedHouseNumber, formattedRrIndex);
+            }
 
             // huisnummers met RR-index waarvan deel1 begint met een cijfer en met niet-numeriek deel 3 en numeriek deel 4
             // Het huisnummer + deel1 wordt een CRAB-huisnummer met een numeriek bisnummer, deel4 van de RR-index wordt een CRAB-subadres van type busnummer of appartementnummer.
@@ -93,7 +105,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 var potentialMatch = MatchHouseNumberWithIndex_Part1StartNumber_Part3NonNumeric_Part4Numeric(formattedHouseNumber, formattedRrIndex);
 
                 if (potentialMatch.Any())
+                {
                     return potentialMatch;
+                }
             }
 
             // RR-huisnummers met RR-index waarvan deel1 begint met een cijfer en met niet-numeriek deel 3 en zonder deel 4
@@ -101,16 +115,21 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             // Als deel2 een aanduiding is van een verdiepnummer wordt enkel het RR-huisnummer als huisnummer weggeschreven en worden deel1 het verdiepnummer van appartementnummer 0.
             // ***********************************************************************************************************************************************************************
             if (HouseNumberWithIndex_Part1StartNumber_Part3NonNumeric_Part4Missing(formattedHouseNumber, formattedRrIndex))
+            {
                 return MatchHouseNumberWithIndex_Part1StartNumber_Part3NonNumeric_Part4Missing(formattedHouseNumber, formattedRrIndex);
+            }
 
             // detecteer bereikachtige records
             // *******************************
             var potentialRange = MatchHouseNumberRanges(streetName, houseNumber, formattedRrIndex);
             if (potentialRange.Any())
+            {
                 return potentialRange;
+            }
 
             // last fallback
             if (formattedRrIndex == "0000" && new Regex("[0-9]+").IsMatch(RemovePrecedingZeros(formattedHouseNumber)))
+            {
                 return new List<HouseNumberWithSubaddress>
                 {
                     new HouseNumberWithSubaddress(
@@ -118,6 +137,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                         null,
                         null)
                 };
+            }
 
             return new List<HouseNumberWithSubaddress>();
         }
@@ -130,8 +150,6 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 RrIndex = formattedRrIndex
             };
 
-            int hnr;
-
             var requestStraatnaamWithoutStraatnaam = streetName
                 .Replace(StripStreetName(streetName), string.Empty)
                 .Replace(",", string.Empty)
@@ -141,28 +159,23 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             var possibleIndexInStreet = FormatRrIndex(RightIndex(requestStraatnaamWithoutStraatnaam));
 
             // huisnummer als prefix in straatnaam
-            if (new Regex("[0-9]+ ").IsMatch(streetName))
+            if (new Regex("[0-9]+ ").IsMatch(streetName)
+                && possibleIndexInStreet == "0000" 
+                && int.TryParse(possibleNumberInStreet, out int hnr) 
+                && hnr != 0)
             {
-                if (possibleIndexInStreet == "0000"
-                    && possibleNumberInStreet != null
-                    && int.TryParse(possibleNumberInStreet, out hnr)
-                    && hnr != 0)
-                {
-                    formattedParts.HouseNumber = possibleNumberInStreet;
-                }
+                formattedParts.HouseNumber = possibleNumberInStreet;
             }
 
             // huisnummer met niet-numeriek bisnummer als prefix in straatnaam
-            if (new Regex("[0-9]+[a-zA-Z] ").IsMatch(streetName))
+            if (new Regex("[0-9]+[a-zA-Z] ").IsMatch(streetName)
+                && possibleNumberInStreet != null 
+                && int.TryParse(possibleNumberInStreet, out hnr) 
+                && hnr != 0 
+                && new Regex("[0-9]+[a-zA-Z]$").IsMatch(requestStraatnaamWithoutStraatnaam))
             {
-                if (possibleNumberInStreet != null
-                    && int.TryParse(possibleNumberInStreet, out hnr)
-                    && hnr != 0
-                    && new Regex("[0-9]+[a-zA-Z]$").IsMatch(requestStraatnaamWithoutStraatnaam))
-                {
-                    formattedParts.HouseNumber = possibleNumberInStreet + LeftIndex(possibleIndexInStreet).ToUpper();
-                    formattedParts.RrIndex = string.Empty;
-                }
+                formattedParts.HouseNumber = possibleNumberInStreet + LeftIndex(possibleIndexInStreet).ToUpper();
+                formattedParts.RrIndex = string.Empty;
             }
 
             // huisnummer als suffix in straatnaam
@@ -174,18 +187,16 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             }
 
             // huisnummer met niet-numeriek bisnummer als suffix in straatnaam
-            if (new Regex(" [0-9]+[a-zA-Z]$").IsMatch(streetName))
+            if (new Regex(" [0-9]+[a-zA-Z]$").IsMatch(streetName)
+                && possibleNumberInStreet != null 
+                && int.TryParse(possibleNumberInStreet, out hnr) 
+                && hnr != 0 
+                && new Regex("[0-9]+[a-zA-Z]$").IsMatch(requestStraatnaamWithoutStraatnaam))
             {
-                if (possibleNumberInStreet != null
-                    && int.TryParse(possibleNumberInStreet, out hnr)
-                    && hnr != 0
-                    && new Regex("[0-9]+[a-zA-Z]$").IsMatch(requestStraatnaamWithoutStraatnaam))
-                {
-                    formattedParts.HouseNumber = possibleNumberInStreet + LeftIndex(possibleIndexInStreet).ToUpper();
-                    formattedParts.RrIndex = string.Empty;
+                formattedParts.HouseNumber = possibleNumberInStreet + LeftIndex(possibleIndexInStreet).ToUpper();
+                formattedParts.RrIndex = string.Empty;
 
-                    Warnings.AddWarning("3", "Niet-numeriek 'Huisnummer' in 'Straatnaam' gevonden.");
-                }
+                Warnings.AddWarning("3", "Niet-numeriek 'Huisnummer' in 'Straatnaam' gevonden.");
             }
 
             return formattedParts;
@@ -509,7 +520,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             }
 
             if (houseNumber1 == null)
+            {
                 return new List<HouseNumberWithSubaddress>();
+            }
 
             // omzetten van bereik naar adres
             if (!int.TryParse(houseNumber2, out var hnr))
@@ -521,7 +534,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                     {
                         new HouseNumberWithSubaddress(
                             houseNumber1,
-                            houseNumber2?.ToUpper(),
+                            houseNumber2.ToUpper(),
                             null)
                     };
                 }
@@ -556,13 +569,19 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             string? to)
         {
             if (from == null || to == null)
+            {
                 return new List<HouseNumberWithSubaddress>();
+            }
 
             if (!int.TryParse(from, out var fromHouseNumber))
+            {
                 return new List<HouseNumberWithSubaddress>();
+            }
 
             if (!int.TryParse(to, out var toHouseNumber))
+            {
                 return new List<HouseNumberWithSubaddress>();
+            }
 
             static bool IsEven(int number) => number % 2 == 0;
             static bool IsOdd(int number) => number % 2 != 0;
@@ -571,12 +590,12 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 
             return (fromHouseNumber, toHouseNumber) switch
             {
-                (int f, int t) when (IsEven(f) && IsEven(t)) || (IsOdd(f) && IsOdd(t)) =>
+                var (f, t) when (IsEven(f) && IsEven(t)) || (IsOdd(f) && IsOdd(t)) =>
                     RangedEnumeration(f, t, 2)
                         .Select(x => new HouseNumberWithSubaddress(x.ToString(), null, null))
                         .ToList(),
 
-                (int f, int t) =>
+                var (f, t) =>
                     RangedEnumeration(f, t, 1)
                         .Select(x => new HouseNumberWithSubaddress(x.ToString(), null, null))
                         .ToList()
@@ -591,7 +610,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
         private static string FormatRrIndex(string? rrIndex)
         {
             if (string.IsNullOrEmpty(rrIndex))
+            {
                 return "0000";
+            }
 
             var formatted = RemovePrecedingZeros(rrIndex).Trim();
 
@@ -607,18 +628,24 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 
             // straatnaam, hnr [busnr]
             if (trimmed.Contains(","))
+            {
                 trimmed = trimmed.Substring(0, trimmed.IndexOf(",", StringComparison.Ordinal));
+            }
 
             var match = ContainsNumber.Match(trimmed);
             if (match.Length <= 0)
+            {
                 return trimmed;
+            }
 
             // hrn[busnr] straatnaam
             if (match.Index == 0)
             {
                 trimmed = trimmed.Replace(match.Value, string.Empty);
                 while (!trimmed.StartsWith(" ") && trimmed.Length > 0)
+                {
                     trimmed = trimmed[1..];
+                }
 
                 trimmed = trimmed.Trim();
             }
@@ -632,15 +659,21 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
         private static string RightIndex(string rrIndex)
         {
             if (string.IsNullOrEmpty(rrIndex))
+            {
                 return string.Empty;
+            }
 
             var rightPart = string.Empty;
 
             if (Begin.IsMatch(rrIndex))
+            {
                 rightPart = rrIndex.Substring(Begin.Match(rrIndex).Value.Length);
+            }
 
             while (!Begin.IsMatch(rightPart) && rightPart.Length > 0)
+            {
                 rightPart = rightPart.Substring(1);
+            }
 
             return rightPart;
         }
@@ -648,11 +681,15 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
         private static string LeftIndex(string rrIndex)
         {
             if (string.IsNullOrEmpty(rrIndex))
+            {
                 return string.Empty;
+            }
 
             var leftPart = string.Empty;
             if (Begin.IsMatch(rrIndex))
+            {
                 leftPart = Begin.Match(rrIndex).Value;
+            }
 
             return leftPart;
         }
@@ -662,10 +699,10 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 ? string.Empty
                 : input.TrimStart(new[] { '0' });
 
-        private class FormattedAddressParts
+        private sealed class FormattedAddressParts
         {
-            public string HouseNumber { get; set; }
-            public string RrIndex { get; set; }
+            public string? HouseNumber { get; set; }
+            public string? RrIndex { get; set; }
         }
     }
 }

@@ -1,13 +1,24 @@
 namespace AddressRegistry.Address.Exceptions
 {
     using System;
+    using System.Runtime.Serialization;
 
-    public class AddressRemovedException : AddressRegistryException
+    [Serializable]
+    public sealed class AddressRemovedException : AddressRegistryException
     {
-        public AddressRemovedException() { }
+        public AddressRemovedException()
+        { }
 
-        public AddressRemovedException(string message) : base(message) { }
+        private AddressRemovedException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        { }
+        
+        public AddressRemovedException(string message)
+            : base(message)
+        { }
 
-        public AddressRemovedException(string message, Exception inner) : base(message, inner) { }
+        public AddressRemovedException(string message, Exception inner)
+            : base(message, inner)
+        { }
     }
 }

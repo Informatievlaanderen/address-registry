@@ -35,25 +35,29 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
 
             var hasConnectionString = !string.IsNullOrWhiteSpace(connectionString);
             if (hasConnectionString)
+            {
                 RunOnSqlServer(configuration, services, loggerFactory, connectionString);
+            }
             else
+            {
                 RunInMemoryDb(services, loggerFactory, logger);
+            }
 
             logger.LogInformation("Added {Context} to services:", nameof(AddressQueryContext));
         }
 
-        protected override void Load(ContainerBuilder containerBuilder)
+        protected override void Load(ContainerBuilder builder)
         {
-            containerBuilder
+            builder
                 .RegisterModule(new DataDogModule(_configuration))
                 .RegisterModule(new LegacyModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new SyndicationModule(_configuration, _services, _loggerFactory));
 
-            containerBuilder
+            builder
                 .RegisterType<ProblemDetailsHelper>()
                 .AsSelf();
 
-            containerBuilder.Populate(_services);
+            builder.Populate(_services);
         }
 
         private static void RunOnSqlServer(

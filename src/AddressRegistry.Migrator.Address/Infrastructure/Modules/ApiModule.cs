@@ -2,7 +2,6 @@ namespace AddressRegistry.Migrator.Address.Infrastructure.Modules
 {
     using AddressRegistry.Infrastructure;
     using AddressRegistry.Infrastructure.Modules;
-    using Api.BackOffice;
     using Api.BackOffice.Abstractions;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;

@@ -26,22 +26,18 @@ namespace AddressRegistry.Api.Extract.Infrastructure.Modules
             _loggerFactory = loggerFactory;
         }
 
-        protected override void Load(ContainerBuilder containerBuilder)
+        protected override void Load(ContainerBuilder builder)
         {
-            containerBuilder
-                .RegisterModule(new DataDogModule(_configuration));
-
-            containerBuilder
-                .RegisterModule(new ExtractModule(_configuration, _services, _loggerFactory, false));
-
-            containerBuilder
+            builder
+                .RegisterModule(new DataDogModule(_configuration))
+                .RegisterModule(new ExtractModule(_configuration, _services, _loggerFactory, false))
                 .RegisterModule(new SyndicationModule(_configuration, _services, _loggerFactory));
 
-            containerBuilder
+            builder
                 .RegisterType<ProblemDetailsHelper>()
                 .AsSelf();
 
-            containerBuilder.Populate(_services);
+            builder.Populate(_services);
         }
     }
 }

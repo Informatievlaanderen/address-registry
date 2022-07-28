@@ -81,7 +81,7 @@ namespace AddressRegistry.Projections.Syndication
             // Discover last projected position
             long? position;
 
-            using (var context = contextFactory().Value)
+            await using (var context = contextFactory().Value)
             {
                 var dbPosition = await context
                     .ProjectionStates
@@ -101,7 +101,9 @@ namespace AddressRegistry.Projections.Syndication
             while (entries.Any())
             {
                 if (!long.TryParse(entries.Last().Id, out var lastEntryId))
+                {
                     break;
+                }
 
                 await using (var context = contextFactory().Value)
                 {
@@ -127,19 +129,20 @@ namespace AddressRegistry.Projections.Syndication
 
                 try
                 {
-                    using (var contentXmlReader = XmlReader.Create(new StringReader(entry.Description), new XmlReaderSettings { Async = true }))
-                    {
-                        var atomEntry = new AtomEntry(entry, _dataContractSerializer.ReadObject(contentXmlReader));
+                    using var contentXmlReader = XmlReader.Create(new StringReader(entry.Description), new XmlReaderSettings { Async = true });
+                    var atomEntry = new AtomEntry(entry, _dataContractSerializer.ReadObject(contentXmlReader));
 
-                        foreach (var resolvedProjectionHandler in _atomEntryProjectionHandlerResolver(atomEntry))
-                        {
-                            await resolvedProjectionHandler
-                                .Handler
-                                .Invoke(atomEntry, context, cancellationToken);
-                        }
+                    foreach (var resolvedProjectionHandler in _atomEntryProjectionHandlerResolver(atomEntry))
+                    {
+                        await resolvedProjectionHandler
+                            .Handler
+                            .Invoke(atomEntry, context, cancellationToken);
                     }
                 }
-                catch(AtomResolveHandlerException) { } //not all events should be resolved
+                catch (AtomResolveHandlerException)
+                {
+                    // do nothing (not all events should be resolved)
+                }
                 catch (Exception e)
                 {
                     _logger.LogError(e.Message, e);

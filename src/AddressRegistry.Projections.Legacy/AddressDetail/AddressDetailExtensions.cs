@@ -18,7 +18,9 @@ namespace AddressRegistry.Projections.Legacy.AddressDetail
                 .FindAsync(addressId, cancellationToken: ct);
 
             if (address == null)
+            {
                 throw DatabaseItemNotFound(addressId);
+            }
 
             updateFunc(address);
 

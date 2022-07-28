@@ -18,7 +18,9 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
                 .FindAsync(addressId, cancellationToken: ct);
 
             if (address == null)
+            {
                 throw DatabaseItemNotFound(addressId);
+            }
 
             updateFunc(address);
 

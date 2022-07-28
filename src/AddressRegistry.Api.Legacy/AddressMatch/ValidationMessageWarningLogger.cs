@@ -6,8 +6,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
 
     internal class ValidationMessageWarningLogger : IWarningLogger
     {
-        private const string Separator = " - ";
-        public List<ValidationMessage> Warnings { get; private set; }
+        public List<ValidationMessage> Warnings { get; }
 
         public ValidationMessageWarningLogger()
         {

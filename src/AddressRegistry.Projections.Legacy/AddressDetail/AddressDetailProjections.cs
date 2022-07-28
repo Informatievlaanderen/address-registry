@@ -1,5 +1,6 @@
 namespace AddressRegistry.Projections.Legacy.AddressDetail
 {
+    using System.Threading.Tasks;
     using Address;
     using Address.Events;
     using Address.Events.Crab;
@@ -23,7 +24,7 @@ namespace AddressRegistry.Projections.Legacy.AddressDetail
                         {
                             AddressId = message.Message.AddressId,
                             StreetNameId = message.Message.StreetNameId,
-                            HouseNumber = message.Message.HouseNumber,
+                            HouseNumber = message.Message.HouseNumber
                         },
                         ct);
             });
@@ -391,18 +392,21 @@ namespace AddressRegistry.Projections.Legacy.AddressDetail
                     ct);
             });
 
-            When<Envelope<AddressHouseNumberWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressHouseNumberStatusWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressHouseNumberPositionWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressHouseNumberMailCantonWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressSubaddressPositionWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressSubaddressStatusWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressHouseNumberWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<AddressHouseNumberStatusWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<AddressHouseNumberPositionWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<AddressHouseNumberMailCantonWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<AddressSubaddressPositionWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<AddressSubaddressStatusWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
         }
 
         private static void UpdateVersionTimestamp(AddressDetailItem addressDetailItem, Instant versionTimestamp)
             => addressDetailItem.VersionTimestamp = versionTimestamp;
 
-        private static void DoNothing() { }
+        private static async Task DoNothing()
+        {
+            await Task.Yield();
+        }
     }
 }

@@ -2,6 +2,7 @@ namespace AddressRegistry.Projections.LastChangedList
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Address.Events;
     using Address.Events.Crab;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
@@ -181,13 +182,13 @@ namespace AddressRegistry.Projections.LastChangedList
                 await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);
             });
 
-            When<Envelope<AddressHouseNumberWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressHouseNumberStatusWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressHouseNumberPositionWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressHouseNumberMailCantonWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressSubaddressPositionWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressSubaddressStatusWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressHouseNumberWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<AddressHouseNumberStatusWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<AddressHouseNumberPositionWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<AddressHouseNumberMailCantonWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<AddressSubaddressPositionWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<AddressSubaddressStatusWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
             #endregion Legacy Events
 
             When<Envelope<AddressWasMigrated>>(async (context, message, ct) =>
@@ -246,6 +247,10 @@ namespace AddressRegistry.Projections.LastChangedList
                 _ => throw new NotImplementedException($"Cannot build Uri for type {typeof(AcceptType)}")
             };
         }
-        private static void DoNothing() { }
+
+        private static async Task DoNothing()
+        {
+            await Task.Yield();
+        }
     }
 }

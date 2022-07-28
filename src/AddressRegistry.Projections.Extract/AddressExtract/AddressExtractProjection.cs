@@ -11,6 +11,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
     using NodaTime;
     using System;
     using System.Text;
+    using System.Threading.Tasks;
     using Address;
     using Address.Events.Crab;
     using Microsoft.Extensions.Options;
@@ -28,16 +29,16 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
         private const string GeomMethDerivedFromObject = "AfgeleidVanObject";
         private const string GeomMethInterpolated = "Geinterpoleerd";
 
-        private readonly string GeomSpecMunicipality = "Gemeente";
-        private readonly string GeomSpecBerth = "Ligplaats";
-        private readonly string GeomSpecBuilding = "Gebouw";
-        private readonly string GeomSpecStreet = "Straat";
-        private readonly string GeomSpecStand = "Standplaats";
-        private readonly string GeomSpecRoadSegment = "Wegsegment";
-        private readonly string GeomSpecParcel = "Perceel";
-        private readonly string GeomSpecLot = "Lot";
-        private readonly string GeomSpecEntry = "Ingang";
-        private readonly string GeomSpecBuildingUnit = "Gebouweenheid";
+        private readonly string _geomSpecMunicipality = "Gemeente";
+        private readonly string _geomSpecBerth = "Ligplaats";
+        private readonly string _geomSpecBuilding = "Gebouw";
+        private readonly string _geomSpecStreet = "Straat";
+        private readonly string _geomSpecStand = "Standplaats";
+        private readonly string _geomSpecRoadSegment = "Wegsegment";
+        private readonly string _geomSpecParcel = "Perceel";
+        private readonly string _geomSpecLot = "Lot";
+        private readonly string _geomSpecEntry = "Ingang";
+        private readonly string _geomSpecBuildingUnit = "Gebouweenheid";
         private readonly Encoding _encoding;
 
         public AddressExtractProjection(IOptions<ExtractConfig> extractConfig, Encoding encoding, WKBReader wkbReader)
@@ -55,7 +56,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                     {
                         huisnr = { Value = message.Message.HouseNumber },
                         versieid = { Value = message.Message.Provenance.Timestamp.ToBelgianDateTimeOffset().FromDateTimeOffset() }
-                    }.ToBytes(_encoding),
+                    }.ToBytes(_encoding)
                 }, cancellationToken: ct);
             });
 
@@ -132,11 +133,13 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
             {
                 var item = await context.AddressExtract.FindAsync(message.Message.AddressId, cancellationToken: ct);
                 if (item != null) // in rare cases were we might get this event after an AddressWasRemoved event, we can just ignore it
+                {
                     UpdateDbaseRecordField(item, record =>
                     {
                         record.id.Value = $"{extractConfig.Value.DataVlaanderenNamespace}/{message.Message.PersistentLocalId}";
                         record.adresid.Value = message.Message.PersistentLocalId;
                     });
+                }
             });
 
             When<Envelope<AddressPositionWasCorrected>>(async (context, message, ct) =>
@@ -336,13 +339,13 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 UpdateVersie(item, message.Message.Provenance.Timestamp);
             });
 
-            When<Envelope<AddressHouseNumberWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressHouseNumberStatusWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressHouseNumberPositionWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressHouseNumberMailCantonWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressSubaddressPositionWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressSubaddressStatusWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressHouseNumberWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<AddressHouseNumberStatusWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<AddressHouseNumberPositionWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<AddressHouseNumberMailCantonWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<AddressSubaddressPositionWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<AddressSubaddressStatusWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
         }
 
         private void UpdateDbaseRecordField(AddressExtractItem item, Action<AddressDbaseRecord> update)
@@ -379,40 +382,43 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
             switch (geometrySpecification)
             {
                 case GeometrySpecification.Municipality:
-                    return GeomSpecMunicipality;
+                    return _geomSpecMunicipality;
 
                 case GeometrySpecification.Berth:
-                    return GeomSpecBerth;
+                    return _geomSpecBerth;
 
                 case GeometrySpecification.Building:
-                    return GeomSpecBuilding;
+                    return _geomSpecBuilding;
 
                 case GeometrySpecification.BuildingUnit:
-                    return GeomSpecBuildingUnit;
+                    return _geomSpecBuildingUnit;
 
                 case GeometrySpecification.Entry:
-                    return GeomSpecEntry;
+                    return _geomSpecEntry;
 
                 case GeometrySpecification.Lot:
-                    return GeomSpecLot;
+                    return _geomSpecLot;
 
                 case GeometrySpecification.Parcel:
-                    return GeomSpecParcel;
+                    return _geomSpecParcel;
 
                 case GeometrySpecification.RoadSegment:
-                    return GeomSpecRoadSegment;
+                    return _geomSpecRoadSegment;
 
                 case GeometrySpecification.Stand:
-                    return GeomSpecStand;
+                    return _geomSpecStand;
 
                 case GeometrySpecification.Street:
-                    return GeomSpecStreet;
+                    return _geomSpecStreet;
 
                 default:
                     throw new NotImplementedException();
             }
         }
 
-        private static void DoNothing() { }
+        private static async Task DoNothing()
+        {
+            await Task.Yield();
+        }
     }
 }

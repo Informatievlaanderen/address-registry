@@ -25,7 +25,7 @@ namespace AddressRegistry.Projections.Legacy.CrabIdToPersistentLocalId
                     {
                         AddressId = message.Message.AddressId,
                         StreetNameId = message.Message.StreetNameId,
-                        HouseNumber = message.Message.HouseNumber,
+                        HouseNumber = message.Message.HouseNumber
                     });
             });
 
@@ -131,7 +131,9 @@ namespace AddressRegistry.Projections.Legacy.CrabIdToPersistentLocalId
                 var item = await context.CrabIdToPersistentLocalIds.FindAsync(addressId, cancellationToken: ct);
 
                 if (item != null)
+                {
                     item.HouseNumberId = message.Message.HouseNumberId;
+                }
             });
 
             When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) =>
@@ -272,11 +274,11 @@ namespace AddressRegistry.Projections.Legacy.CrabIdToPersistentLocalId
                     ct);
             });
 
-            When<Envelope<AddressHouseNumberStatusWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressHouseNumberPositionWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressHouseNumberMailCantonWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressSubaddressPositionWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressSubaddressStatusWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressHouseNumberStatusWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<AddressHouseNumberPositionWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<AddressHouseNumberMailCantonWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<AddressSubaddressPositionWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<AddressSubaddressStatusWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
         }
 
         private static async Task FindAndUpdateVersion(LegacyContext context, Guid addressId, Instant version, CancellationToken ct)
@@ -287,6 +289,9 @@ namespace AddressRegistry.Projections.Legacy.CrabIdToPersistentLocalId
 
         private static void UpdateVersion(CrabIdToPersistentLocalIdItem item, Instant timestamp) => item.VersionTimestamp = timestamp;
 
-        private static void DoNothing() { }
+        private static async Task DoNothing()
+        {
+            await Task.Yield();
+        }
     }
 }

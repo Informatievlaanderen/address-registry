@@ -15,7 +15,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
         public static double Calculate(string pStr1, string pStr2)
         {
             if (string.IsNullOrEmpty(pStr1) || string.IsNullOrEmpty(pStr2))
+            {
                 return 0.0;
+            }
 
             pStr1 = pStr1.ToUpper();
             pStr2 = pStr2.ToUpper();
@@ -47,7 +49,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             {
                 // faulty input parameters
                 if (string.IsNullOrEmpty(pStr1) || string.IsNullOrEmpty(pStr2))
+                {
                     return 0.0;
+                }
 
                 var bigram1 = Bigram.Parse(pStr1);
                 var bigram2 = Bigram.Parse(pStr2);
@@ -74,7 +78,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             {
                 // faulty input parameters
                 if (string.IsNullOrEmpty(pStr1) || string.IsNullOrEmpty(pStr2))
+                {
                     return 0.0;
+                }
 
                 char[] string1 = pStr1.ToCharArray();
                 char[] string2 = pStr2.ToCharArray();
@@ -84,9 +90,14 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 var m = string2.Length;
                 int[,] matrix = new int[n + 1, m + 1];
                 for (var i = 0; i < n + 1; i++)
+                {
                     matrix[i, 0] = i;
+                }
+
                 for (var j = 0; j < m + 1; j++)
+                {
                     matrix[0, j] = j;
+                }
 
                 // cost calculation
                 for (var i = 1; i < n + 1; i++)
@@ -104,13 +115,19 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                             var trans = matrix[i - 2, j - 2] + 1;
 
                             if (!string1[i - 2].Equals(string2[j - 1]))
+                            {
                                 trans++;
+                            }
 
                             if (!string1[i - 1].Equals(string2[j - 2]))
+                            {
                                 trans++;
+                            }
 
                             if (cell > trans)
+                            {
                                 cell = trans;
+                            }
                         }
 
                         matrix[i, j] = cell;
@@ -136,7 +153,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             {
                 // faulty input parameters
                 if (string.IsNullOrEmpty(pStr1) || string.IsNullOrEmpty(pStr2))
+                {
                     return 0.0;
+                }
 
                 char[] x;
                 char[] y;
@@ -197,12 +216,16 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             public static string[] Parse(string pStr)
             {
                 if (pStr == null)
-                    return null;
+                {
+                    return Array.Empty<string>();
+                }
 
                 pStr = "%" + pStr + "#";
                 string[] parsed = new string[pStr.Length - 1];
                 for (var i = 0; i < pStr.Length - 1; i++)
+                {
                     parsed[i] = pStr.Substring(i, 2);
+                }
 
                 return parsed;
             }

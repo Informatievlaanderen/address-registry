@@ -41,12 +41,14 @@ namespace AddressRegistry.Projections.Syndication.StreetName
 
         private static async Task RemoveStreetName(AtomEntry<SyndicationItem<StreetName>> entry, SyndicationContext context, CancellationToken ct)
         {
-            var latestItem =
-                await context
-                    .StreetNameLatestItems
-                    .FindAsync(entry.Content.Object.StreetNameId);
+            var latestItem = await context
+                .StreetNameLatestItems
+                .FindAsync(entry.Content.Object.StreetNameId);
 
-            latestItem.IsRemoved = true;
+            if (latestItem != null)
+            {
+                latestItem.IsRemoved = true;
+            }
         }
 
         private static async Task AddSyndicationItemEntry(AtomEntry<SyndicationItem<StreetName>> entry, SyndicationContext context, CancellationToken ct)
@@ -90,14 +92,15 @@ namespace AddressRegistry.Projections.Syndication.StreetName
         private static void UpdateNames(StreetNameLatestItem syndicationItem, IReadOnlyCollection<GeografischeNaam> streetNames)
         {
             if (streetNames == null || !streetNames.Any())
+            {
                 return;
+            }
 
             foreach (var naam in streetNames)
             {
                 switch (naam.Taal)
                 {
                     default:
-                    case Taal.NL:
                         syndicationItem.NameDutch = naam.Spelling;
                         syndicationItem.NameDutchSearch = naam.Spelling.RemoveDiacritics();
                         break;
@@ -120,14 +123,15 @@ namespace AddressRegistry.Projections.Syndication.StreetName
         private static void UpdateHomonymAdditions(StreetNameLatestItem syndicationItem, IReadOnlyCollection<GeografischeNaam> homonymAdditions)
         {
             if (homonymAdditions == null || !homonymAdditions.Any())
+            {
                 return;
+            }
 
             foreach (var naam in homonymAdditions)
             {
                 switch (naam.Taal)
                 {
                     default:
-                    case Taal.NL:
                         syndicationItem.HomonymAdditionDutch = naam.Spelling;
                         break;
                     case Taal.FR:

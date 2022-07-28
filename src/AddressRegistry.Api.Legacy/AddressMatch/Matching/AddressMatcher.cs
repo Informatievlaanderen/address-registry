@@ -41,18 +41,26 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             }
 
             if (results == null)
+            {
                 return results;
+            }
 
             foreach (var municipalityWrapper in results)
-            foreach (var streetNameWrapper in municipalityWrapper)
-            foreach (var houseNumberWithSubaddress in houseNumberWithSubaddresses)
-                streetNameWrapper.AddAddresses(
-                    _latestQueries
-                        .GetLatestAddressesBy(
-                            streetNameWrapper.StreetName.PersistentLocalId,
-                            houseNumberWithSubaddress.HouseNumber,
-                            houseNumberWithSubaddress.BoxNumber)
-                        .ToList());
+            {
+                foreach (var streetNameWrapper in municipalityWrapper)
+                {
+                    foreach (var houseNumberWithSubaddress in houseNumberWithSubaddresses)
+                    {
+                        streetNameWrapper.AddAddresses(
+                            _latestQueries
+                                .GetLatestAddressesBy(
+                                    streetNameWrapper.StreetName.PersistentLocalId,
+                                    houseNumberWithSubaddress.HouseNumber,
+                                    houseNumberWithSubaddress.BoxNumber)
+                                .ToList());
+                    }
+                }
+            }
 
             return results;
         }

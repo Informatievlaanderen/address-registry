@@ -1,3 +1,10 @@
+# [3.26.0](https://github.com/informatievlaanderen/address-registry/compare/v3.25.0...v3.26.0) (2022-07-29)
+
+
+### Features
+
+* deregulate an address ([87c7577](https://github.com/informatievlaanderen/address-registry/commit/87c757799c7cb484dc1317610279c57d2c068518))
+
 # [3.25.0](https://github.com/informatievlaanderen/address-registry/compare/v3.24.5...v3.25.0) (2022-07-28)
 
 

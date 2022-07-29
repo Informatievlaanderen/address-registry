@@ -414,6 +414,15 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     x => x.Status = AddressStatus.Rejected,
                     ct);
             });
+
+            When<Envelope<AddressWasDeregulated>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressPersistentLocalId,
+                    message,
+                    x => x.IsOfficiallyAssigned = false,
+                    ct);
+            });
         }
 
         private static async Task DoNothing()

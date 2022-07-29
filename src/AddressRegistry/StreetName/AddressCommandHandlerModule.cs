@@ -87,6 +87,18 @@ namespace AddressRegistry.StreetName
 
                     streetName.RejectAddress(message.Command.AddressPersistentLocalId);
                 });
+
+            For<DeregulateAddress>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<DeregulateAddress, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streetNameStreamId = new StreetNameStreamId(message.Command.StreetNamePersistentLocalId);
+                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+
+                    streetName.DeregulateAddress(message.Command.AddressPersistentLocalId);
+                });
         }
     }
 }

@@ -185,6 +185,18 @@ namespace AddressRegistry.StreetName
             addressToReject.Reject();
         }
 
+        public void DeregulateAddress(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            var addressToDeregulate = StreetNameAddresses.FindByPersistentLocalId(addressPersistentLocalId);
+
+            if (addressToDeregulate is null)
+            {
+                throw new AddressNotFoundException(addressPersistentLocalId);
+            }
+
+            addressToDeregulate.Deregulate();
+        }
+
         private void GuardActiveStreetName(StreetNamePersistentLocalId streetNamePersistentLocalId)
         {
             if (IsRemoved)

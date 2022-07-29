@@ -79,6 +79,28 @@ namespace AddressRegistry.StreetName
             }
         }
 
+        public void Deregulate()
+        {
+            if (IsRemoved)
+            {
+                throw new AddressIsRemovedException(AddressPersistentLocalId);
+            }
+
+            var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
+
+            if (!validStatuses.Contains(Status))
+            {
+                throw new AddressCannotBeDeregulatedException(Status);
+            }
+
+            if (!IsOfficiallyAssigned)
+            {
+                return;
+            }
+
+            Apply(new AddressWasDeregulated(_streetNamePersistentLocalId, AddressPersistentLocalId));
+        }
+
         private void RejectBecauseParentWasRejected()
         {
             if (IsRemoved)

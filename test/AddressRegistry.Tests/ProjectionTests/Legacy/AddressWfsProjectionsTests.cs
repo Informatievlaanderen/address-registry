@@ -140,6 +140,34 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                 });
         }
 
+        [Fact]
+        public async Task WhenAddressWasDeregulated()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasDeregulated = _fixture.Create<AddressWasDeregulated>();
+            var approvedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasDeregulated.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasDeregulated>(new Envelope(addressWasDeregulated, approvedMetadata)))
+                .Then(async ct =>
+                {
+                    var item = (await ct.AddressWfsItems.FindAsync(addressWasDeregulated.AddressPersistentLocalId));
+                    item.Should().NotBeNull();
+                    item.OfficiallyAssigned.Should().BeFalse();
+                    item.VersionTimestamp.Should().Be(addressWasDeregulated.Provenance.Timestamp);
+                });
+        }
+
         protected override AddressWfsProjections CreateProjection()
             =>  new AddressWfsProjections(_wkbReader);
     }

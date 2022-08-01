@@ -25,11 +25,11 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
         private readonly TestBackOfficeContext _backOfficeContext;
         private readonly IdempotencyContext _idempotencyContext;
         private readonly IStreetNames _streetNames;
-        
+
         public WhenApprovingAddress(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             Fixture.Customize(new WithFixedMunicipalityId());
-            
+
             _idempotencyContext = new FakeIdempotencyContextFactory().CreateDbContext();
             _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
             _streetNames = Container.Resolve<IStreetNames>();
@@ -41,8 +41,8 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
             var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
             var addressPersistentLocalId = new AddressPersistentLocalId(456);
             var niscode = new NisCode("12345");
-            var postalCode = new AddressRegistry.StreetName.PostalCode("2018");
-            var houseNumber = new AddressRegistry.StreetName.HouseNumber("11");
+            var postalCode = new PostalCode("2018");
+            var houseNumber = new HouseNumber("11");
 
             _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.Add(
                 new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentLocalId));

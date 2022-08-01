@@ -7,7 +7,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRejectingAddress
     using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Validators;
-    using Autofac;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using FluentAssertions;
     using FluentValidation;
@@ -58,7 +57,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRejectingAddress
             Func<Task> act = async () => await _controller.Reject(
                 _backOfficeContext,
                 new AddressRejectRequestValidator(),
-                Container.Resolve<IStreetNames>(),
+                MockIfMatchValidator(true),
                 approveRequest,
                 null, CancellationToken.None);
 

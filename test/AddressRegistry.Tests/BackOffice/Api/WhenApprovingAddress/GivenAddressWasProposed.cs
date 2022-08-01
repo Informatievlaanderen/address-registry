@@ -5,7 +5,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
     using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Abstractions.Responses;
-    using Autofac;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using FluentAssertions;
     using FluentValidation;
@@ -50,7 +49,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
             var result = (NoContentWithETagResult)await _controller.Approve(
                 _backOfficeContext,
                 mockRequestValidator.Object,
-                Container.Resolve<IStreetNames>(),
+                MockIfMatchValidator(true),
                 request: new AddressApproveRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
@@ -59,6 +58,36 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
 
             //Assert
             result.ETag.Should().Be(lastEventHash);
+        }
+
+        [Fact]
+        public async Task WithInvalidIfMatchHeader_ThenPreconditionFailedResponse()
+        {
+            var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
+            var addressPersistentLocalId = new AddressPersistentLocalId(123);
+
+            var mockRequestValidator = new Mock<IValidator<AddressApproveRequest>>();
+            mockRequestValidator
+                .Setup(x => x.ValidateAsync(It.IsAny<AddressApproveRequest>(), CancellationToken.None))
+                .Returns(Task.FromResult(new ValidationResult()));
+
+            _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.Add(
+                new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));
+            await _backOfficeContext.SaveChangesAsync();
+
+            //Act
+            var result = await _controller.Approve(
+                _backOfficeContext,
+                mockRequestValidator.Object,
+                MockIfMatchValidator(false),
+                request: new AddressApproveRequest
+                {
+                    PersistentLocalId = addressPersistentLocalId
+                },
+                "IncorrectIfMatchHeader");
+
+            //Assert
+            result.Should().BeOfType<PreconditionFailedResult>();
         }
     }
 }

@@ -5,7 +5,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
-    using Autofac;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using FluentAssertions;
     using FluentValidation;
@@ -57,7 +56,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
             Func<Task> act = async () => await _controller.Approve(
                 _backOfficeContext,
                 mockRequestValidator.Object,
-                Container.Resolve<IStreetNames>(),
+                MockIfMatchValidator(true),
                 approveRequest,
                 null);
 

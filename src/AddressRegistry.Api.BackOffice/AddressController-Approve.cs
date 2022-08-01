@@ -13,6 +13,7 @@ namespace AddressRegistry.Api.BackOffice
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using FluentValidation;
     using FluentValidation.Results;
+    using Infrastructure;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using StreetName;
@@ -26,9 +27,9 @@ namespace AddressRegistry.Api.BackOffice
         /// Keur een adres goed.
         /// </summary>
         /// <param name="backOfficeContext"></param>
-        /// <param name="streetNameRepository"></param>
         /// <param name="request"></param>
         /// <param name="validator"></param>
+        /// <param name="ifMatchHeaderValidator"></param>
         /// <param name="ifMatchHeaderValue"></param>
         /// <param name="cancellationToken"></param>
         /// <response code="202">Aanvraag tot goedkeuring wordt reeds verwerkt.</response>
@@ -48,7 +49,7 @@ namespace AddressRegistry.Api.BackOffice
         public async Task<IActionResult> Approve(
             [FromServices] BackOfficeContext backOfficeContext,
             [FromServices] IValidator<AddressApproveRequest> validator,
-            [FromServices] IStreetNames streetNameRepository,
+            [FromServices] IIfMatchHeaderValidator ifMatchHeaderValidator,
             [FromRoute] AddressApproveRequest request,
             [FromHeader(Name = "If-Match")] string? ifMatchHeaderValue,
             CancellationToken cancellationToken = default)
@@ -71,19 +72,9 @@ namespace AddressRegistry.Api.BackOffice
             try
             {
                 // Check if user provided ETag is equal to the current Entity Tag
-                if (ifMatchHeaderValue is not null)
+                if (!await ifMatchHeaderValidator.IsValid(ifMatchHeaderValue, streetNamePersistentLocalId, addressPersistentLocalId, cancellationToken))
                 {
-                    var ifMatchTag = ifMatchHeaderValue.Trim();
-                    var lastHash = await GetHash(
-                        streetNameRepository,
-                        streetNamePersistentLocalId,
-                        addressPersistentLocalId,
-                        cancellationToken);
-                    var lastHashTag = new ETag(ETagType.Strong, lastHash);
-                    if (ifMatchTag != lastHashTag.ToString())
-                    {
-                        return new PreconditionFailedResult();
-                    }
+                    return new PreconditionFailedResult();
                 }
 
                 request.Metadata = GetMetadata();

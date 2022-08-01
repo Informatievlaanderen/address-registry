@@ -7,10 +7,9 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenDeregulatingAddress
     using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Validators;
-    using AddressRegistry.StreetName;
-    using AddressRegistry.StreetName.Exceptions;
-    using AddressRegistry.Tests.BackOffice.Infrastructure;
-    using Autofac;
+    using StreetName;
+    using StreetName.Exceptions;
+    using Infrastructure;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using FluentAssertions;
     using FluentValidation;
@@ -58,7 +57,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenDeregulatingAddress
             Func<Task> act = async () => await _controller.Deregulate(
                 _backOfficeContext,
                 new AddressDeregulateRequestValidator(),
-                Container.Resolve<IStreetNames>(),
+                MockIfMatchValidator(true),
                 deregulateRequest,
                 null, CancellationToken.None);
 

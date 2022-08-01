@@ -4,10 +4,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRegularizingAddress
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Validators;
-    using StreetName;
     using BackOffice;
     using Infrastructure;
-    using Autofac;
     using FluentAssertions;
     using global::AutoFixture;
     using Microsoft.AspNetCore.Mvc;
@@ -43,7 +41,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRegularizingAddress
             var result = await _controller.Regularize(
                 _backOfficeContext,
                 new AddressRegularizeRequestValidator(),
-                Container.Resolve<IStreetNames>(),
+                MockIfMatchValidator(true),
                 request,
                 null);
 

@@ -1,3 +1,10 @@
+# [3.27.0](https://github.com/informatievlaanderen/address-registry/compare/v3.26.0...v3.27.0) (2022-08-01)
+
+
+### Features
+
+* regularize address ([96d0460](https://github.com/informatievlaanderen/address-registry/commit/96d046022f3f2814023f2a9cb65c7620b274b75b))
+
 # [3.26.0](https://github.com/informatievlaanderen/address-registry/compare/v3.25.0...v3.26.0) (2022-07-29)
 
 

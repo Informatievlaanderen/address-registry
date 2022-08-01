@@ -127,7 +127,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
             };
 
             var addressWasRejected = _fixture.Create<AddressWasRejected>();
-            var approvedMetadata = new Dictionary<string, object>
+            var rejectedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasRejected.GetHash() }
             };
@@ -135,7 +135,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
             await Sut
                 .Given(
                     new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
-                    new Envelope<AddressWasRejected>(new Envelope(addressWasRejected, approvedMetadata)))
+                    new Envelope<AddressWasRejected>(new Envelope(addressWasRejected, rejectedMetadata)))
                 .Then(async ct =>
                 {
                     var addressDetailItemV2 = (await ct.AddressDetailV2.FindAsync(addressWasRejected.AddressPersistentLocalId));
@@ -156,7 +156,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
             };
 
             var addressWasDeregulated = _fixture.Create<AddressWasDeregulated>();
-            var approvedMetadata = new Dictionary<string, object>
+            var deregulatedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasDeregulated.GetHash() }
             };
@@ -164,7 +164,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
             await Sut
                 .Given(
                     new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
-                    new Envelope<AddressWasDeregulated>(new Envelope(addressWasDeregulated, approvedMetadata)))
+                    new Envelope<AddressWasDeregulated>(new Envelope(addressWasDeregulated, deregulatedMetadata)))
                 .Then(async ct =>
                 {
                     var addressDetailItemV2 = (await ct.AddressDetailV2.FindAsync(addressWasDeregulated.AddressPersistentLocalId));
@@ -172,6 +172,42 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                     addressDetailItemV2.OfficiallyAssigned.Should().BeFalse();
                     addressDetailItemV2.VersionTimestamp.Should().Be(addressWasDeregulated.Provenance.Timestamp);
                     addressDetailItemV2.LastEventHash.Should().Be(addressWasDeregulated.GetHash());
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressWasRegularized()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasDeregulated = _fixture.Create<AddressWasDeregulated>();
+            var deregulatedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasDeregulated.GetHash() }
+            };
+
+            var addressWasRegularized = _fixture.Create<AddressWasRegularized>();
+            var regularizedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasRegularized.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasDeregulated>(new Envelope(addressWasDeregulated, deregulatedMetadata)),
+                    new Envelope<AddressWasRegularized>(new Envelope(addressWasRegularized, regularizedMetadata)))
+                .Then(async ct =>
+                {
+                    var addressDetailItemV2 = (await ct.AddressDetailV2.FindAsync(addressWasRegularized.AddressPersistentLocalId));
+                    addressDetailItemV2.Should().NotBeNull();
+                    addressDetailItemV2.OfficiallyAssigned.Should().BeTrue();
+                    addressDetailItemV2.VersionTimestamp.Should().Be(addressWasRegularized.Provenance.Timestamp);
+                    addressDetailItemV2.LastEventHash.Should().Be(addressWasRegularized.GetHash());
                 });
         }
 

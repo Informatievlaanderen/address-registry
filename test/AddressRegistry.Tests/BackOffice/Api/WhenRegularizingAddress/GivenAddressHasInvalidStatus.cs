@@ -1,4 +1,4 @@
-namespace AddressRegistry.Tests.BackOffice.Api.WhenDeregulatingAddress
+namespace AddressRegistry.Tests.BackOffice.Api.WhenRegularizingAddress
 {
     using System;
     using System.Linq;
@@ -6,9 +6,9 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenDeregulatingAddress
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
-    using AddressRegistry.StreetName;
-    using AddressRegistry.StreetName.Exceptions;
-    using AddressRegistry.Tests.BackOffice.Infrastructure;
+    using StreetName;
+    using StreetName.Exceptions;
+    using Infrastructure;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using FluentAssertions;
@@ -39,28 +39,28 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenDeregulatingAddress
             var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
-            var mockRequestValidator = new Mock<IValidator<AddressDeregulateRequest>>();
-            mockRequestValidator.Setup(x => x.ValidateAsync(It.IsAny<AddressDeregulateRequest>(), CancellationToken.None))
+            var mockRequestValidator = new Mock<IValidator<AddressRegularizeRequest>>();
+            mockRequestValidator.Setup(x => x.ValidateAsync(It.IsAny<AddressRegularizeRequest>(), CancellationToken.None))
                 .Returns(Task.FromResult(new ValidationResult()));
 
-            MockMediator.Setup(x => x.Send(It.IsAny<AddressDeregulateRequest>(), CancellationToken.None))
-                .Throws(new AddressCannotBeDeregulatedException(AddressStatus.Current));
+            MockMediator.Setup(x => x.Send(It.IsAny<AddressRegularizeRequest>(), CancellationToken.None))
+                .Throws(new AddressCannotBeRegularizedException(AddressStatus.Current));
 
             _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.Add(
                 new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));
             _backOfficeContext.SaveChanges();
 
-            var addressDeregulateRequest = new AddressDeregulateRequest
+            var addressRegularizeRequest = new AddressRegularizeRequest
             {
                 PersistentLocalId = addressPersistentLocalId
             };
 
             //Act
-            Func<Task> act = async () => await _controller.Deregulate(
+            Func<Task> act = async () => await _controller.Regularize(
                 _backOfficeContext,
                 mockRequestValidator.Object,
                 Container.Resolve<IStreetNames>(),
-                addressDeregulateRequest,
+                addressRegularizeRequest,
                 null, CancellationToken.None);
 
             // Assert

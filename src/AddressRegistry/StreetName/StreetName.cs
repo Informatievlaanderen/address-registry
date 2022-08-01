@@ -197,6 +197,18 @@ namespace AddressRegistry.StreetName
             addressToDeregulate.Deregulate();
         }
 
+        public void RegularizeAddress(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            var addressToRegularize = StreetNameAddresses.FindByPersistentLocalId(addressPersistentLocalId);
+
+            if (addressToRegularize is null)
+            {
+                throw new AddressNotFoundException(addressPersistentLocalId);
+            }
+
+            addressToRegularize.Regularize();
+        }
+
         private void GuardActiveStreetName(StreetNamePersistentLocalId streetNamePersistentLocalId)
         {
             if (IsRemoved)

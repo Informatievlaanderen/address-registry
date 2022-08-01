@@ -13,6 +13,7 @@ namespace AddressRegistry.Api.BackOffice
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using FluentValidation;
     using FluentValidation.Results;
+    using Infrastructure;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using StreetName;
@@ -26,7 +27,7 @@ namespace AddressRegistry.Api.BackOffice
         /// Keur een adres af.
         /// </summary>
         /// <param name="backOfficeContext"></param>
-        /// <param name="streetNameRepository"></param>
+        /// <param name="ifMatchHeaderValidator"></param>
         /// <param name="request"></param>
         /// <param name="validator"></param>
         /// <param name="ifMatchHeaderValue"></param>
@@ -48,7 +49,7 @@ namespace AddressRegistry.Api.BackOffice
         public async Task<IActionResult> Reject(
             [FromServices] BackOfficeContext backOfficeContext,
             [FromServices] IValidator<AddressRejectRequest> validator,
-            [FromServices] IStreetNames streetNameRepository,
+            [FromServices] IIfMatchHeaderValidator ifMatchHeaderValidator,
             [FromRoute] AddressRejectRequest request,
             [FromHeader(Name = "If-Match")] string? ifMatchHeaderValue,
             CancellationToken cancellationToken = default)
@@ -71,19 +72,9 @@ namespace AddressRegistry.Api.BackOffice
             try
             {
                 // Check if user provided ETag is equal to the current Entity Tag
-                if (ifMatchHeaderValue is not null)
+                if (!await ifMatchHeaderValidator.IsValid(ifMatchHeaderValue, streetNamePersistentLocalId, addressPersistentLocalId, cancellationToken))
                 {
-                    var ifMatchTag = ifMatchHeaderValue.Trim();
-                    var lastHash = await GetHash(
-                        streetNameRepository,
-                        streetNamePersistentLocalId,
-                        addressPersistentLocalId,
-                        cancellationToken);
-                    var lastHashTag = new ETag(ETagType.Strong, lastHash);
-                    if (ifMatchTag != lastHashTag.ToString())
-                    {
-                        return new PreconditionFailedResult();
-                    }
+                    return new PreconditionFailedResult();
                 }
 
                 request.Metadata = GetMetadata();

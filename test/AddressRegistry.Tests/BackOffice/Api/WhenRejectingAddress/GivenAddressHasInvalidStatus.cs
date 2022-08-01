@@ -6,11 +6,9 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRejectingAddress
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
-    using AddressRegistry.StreetName;
-    using AddressRegistry.StreetName.Exceptions;
-    using AddressRegistry.Tests.BackOffice.Infrastructure;
-    using Autofac;
-    using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
+    using StreetName;
+    using StreetName.Exceptions;
+    using Infrastructure;
     using FluentAssertions;
     using FluentValidation;
     using FluentValidation.Results;
@@ -24,12 +22,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRejectingAddress
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;
-        private readonly IdempotencyContext _idempotencyContext;
 
         public GivenAddressHasInvalidStatus(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             _controller = CreateApiBusControllerWithUser<AddressController>();
-            _idempotencyContext = new FakeIdempotencyContextFactory().CreateDbContext();
             _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
         }
 
@@ -59,7 +55,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRejectingAddress
             Func<Task> act = async () => await _controller.Reject(
                 _backOfficeContext,
                 mockRequestValidator.Object,
-                Container.Resolve<IStreetNames>(),
+                MockIfMatchValidator(true),
                 approveRequest,
                 null, CancellationToken.None);
 

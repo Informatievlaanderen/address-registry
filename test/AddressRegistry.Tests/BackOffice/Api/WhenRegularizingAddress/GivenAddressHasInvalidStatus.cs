@@ -9,8 +9,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRegularizingAddress
     using StreetName;
     using StreetName.Exceptions;
     using Infrastructure;
-    using Autofac;
-    using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using FluentAssertions;
     using FluentValidation;
     using FluentValidation.Results;
@@ -24,12 +22,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRegularizingAddress
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;
-        private readonly IdempotencyContext _idempotencyContext;
 
         public GivenAddressHasInvalidStatus(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             _controller = CreateApiBusControllerWithUser<AddressController>();
-            _idempotencyContext = new FakeIdempotencyContextFactory().CreateDbContext();
             _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
         }
 
@@ -59,7 +55,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRegularizingAddress
             Func<Task> act = async () => await _controller.Regularize(
                 _backOfficeContext,
                 mockRequestValidator.Object,
-                Container.Resolve<IStreetNames>(),
+                MockIfMatchValidator(true),
                 addressRegularizeRequest,
                 null, CancellationToken.None);
 

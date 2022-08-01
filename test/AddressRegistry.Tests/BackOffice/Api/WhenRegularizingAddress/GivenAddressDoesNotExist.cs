@@ -9,7 +9,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRegularizingAddress
     using StreetName;
     using StreetName.Exceptions;
     using Infrastructure;
-    using Autofac;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using FluentAssertions;
     using FluentValidation;
@@ -57,7 +56,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRegularizingAddress
             Func<Task> act = async () => await _controller.Regularize(
                 _backOfficeContext,
                 mockRequestValidator.Object,
-                Container.Resolve<IStreetNames>(),
+                MockIfMatchValidator(true),
                 regularizeRequest,
                 null);
 

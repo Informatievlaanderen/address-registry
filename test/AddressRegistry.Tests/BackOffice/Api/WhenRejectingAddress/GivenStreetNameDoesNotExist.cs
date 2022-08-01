@@ -4,10 +4,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRejectingAddress
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Validators;
-    using AddressRegistry.StreetName;
-    using AddressRegistry.Tests.BackOffice;
-    using AddressRegistry.Tests.BackOffice.Infrastructure;
-    using Autofac;
+    using BackOffice;
+    using Infrastructure;
     using FluentAssertions;
     using global::AutoFixture;
     using Microsoft.AspNetCore.Mvc;
@@ -43,7 +41,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRejectingAddress
             var result = await _controller.Reject(
                 _backOfficeContext,
                 new AddressRejectRequestValidator(),
-                Container.Resolve<IStreetNames>(),
+                MockIfMatchValidator(true),
                 request,
                 null);
 

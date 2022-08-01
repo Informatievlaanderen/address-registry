@@ -4,13 +4,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Validators;
-    using Autofac;
     using BackOffice;
     using FluentAssertions;
     using global::AutoFixture;
     using Infrastructure;
     using Microsoft.AspNetCore.Mvc;
-    using StreetName;
     using Xunit;
     using Xunit.Abstractions;
     using AddressController = AddressRegistry.Api.BackOffice.AddressController;
@@ -43,7 +41,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
             var result = await _controller.Approve(
                 _backOfficeContext,
                 new AddressApproveRequestValidator(),
-                Container.Resolve<IStreetNames>(),
+                MockIfMatchValidator(true),
                 request,
                 null);
 

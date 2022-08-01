@@ -3,6 +3,9 @@ namespace AddressRegistry.Tests.BackOffice
     using System;
     using System.Collections.Generic;
     using System.Security.Claims;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using AddressRegistry.Api.BackOffice.Infrastructure;
     using AddressRegistry.Api.BackOffice.Infrastructure.Options;
     using StreetName;
     using Tests;
@@ -40,6 +43,17 @@ namespace AddressRegistry.Tests.BackOffice
             using var scope = Container.BeginLifetimeScope();
             var bus = scope.Resolve<ICommandHandlerResolver>();
             bus.Dispatch(command.CreateCommandId(), command);
+        }
+
+        protected IIfMatchHeaderValidator MockIfMatchValidator(bool expectedResult)
+        {
+            var mockIfMatchHeaderValidator = new Mock<IIfMatchHeaderValidator>();
+            mockIfMatchHeaderValidator
+                .Setup(x =>
+                    x.IsValid(
+                        It.IsAny<string>(), It.IsAny<StreetNamePersistentLocalId>(), It.IsAny<AddressPersistentLocalId>(), CancellationToken.None))
+                .Returns(Task.FromResult(expectedResult));
+            return mockIfMatchHeaderValidator.Object;
         }
 
         public T CreateApiBusControllerWithUser<T>() where T : ApiController

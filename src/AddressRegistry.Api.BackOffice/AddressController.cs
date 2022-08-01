@@ -1,15 +1,12 @@
 namespace AddressRegistry.Api.BackOffice
 {
     using System.Collections.Generic;
-    using System.Threading;
-    using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Middleware;
     using FluentValidation;
     using FluentValidation.Results;
     using MediatR;
     using Microsoft.AspNetCore.Mvc;
-    using StreetName;
 
     [ApiVersion("2.0")]
     [AdvertiseApiVersions("2.0")]
@@ -34,18 +31,6 @@ namespace AddressRegistry.Api.BackOffice
             {
                 failure
             });
-        }
-
-        private async Task<string> GetHash(
-            IStreetNames streetnames,
-            StreetNamePersistentLocalId streetNamePersistentLocalId,
-            AddressPersistentLocalId addressPersistentLocalId,
-            CancellationToken cancellationToken)
-        {
-            var aggregate =
-                await streetnames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), cancellationToken);
-            var streetNameHash = aggregate.GetAddressHash(addressPersistentLocalId);
-            return streetNameHash;
         }
 
         protected IDictionary<string, object?> GetMetadata()

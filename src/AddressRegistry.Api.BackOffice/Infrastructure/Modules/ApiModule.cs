@@ -39,6 +39,11 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
                 .RegisterType<ProblemDetailsHelper>()
                 .AsSelf();
 
+            builder
+                .RegisterType<IfMatchHeaderValidator>()
+                .As<IIfMatchHeaderValidator>()
+                .AsSelf();
+
             builder.RegisterModule(new IdempotencyModule(
                 _services,
                 _configuration.GetSection(IdempotencyConfiguration.Section).Get<IdempotencyConfiguration>()

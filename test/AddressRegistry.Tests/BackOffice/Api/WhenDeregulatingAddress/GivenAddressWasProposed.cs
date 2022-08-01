@@ -5,9 +5,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenDeregulatingAddress
     using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Abstractions.Responses;
-    using AddressRegistry.StreetName;
-    using AddressRegistry.Tests.BackOffice.Infrastructure;
-    using Autofac;
+    using StreetName;
+    using Infrastructure;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using FluentAssertions;
     using FluentValidation;
@@ -50,7 +49,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenDeregulatingAddress
             var result = (NoContentWithETagResult)await _controller.Deregulate(
                 _backOfficeContext,
                 mockRequestValidator.Object,
-                Container.Resolve<IStreetNames>(),
+                MockIfMatchValidator(true),
                 request: new AddressDeregulateRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
@@ -59,6 +58,36 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenDeregulatingAddress
 
             //Assert
             result.ETag.Should().Be(lastEventHash);
+        }
+
+        [Fact]
+        public async Task WithInvalidIfMatchHeader_ThenPreconditionFailedResponse()
+        {
+            var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
+            var addressPersistentLocalId = new AddressPersistentLocalId(123);
+
+            var mockRequestValidator = new Mock<IValidator<AddressDeregulateRequest>>();
+            mockRequestValidator
+                .Setup(x => x.ValidateAsync(It.IsAny<AddressDeregulateRequest>(), CancellationToken.None))
+                .Returns(Task.FromResult(new ValidationResult()));
+
+            _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.Add(
+                new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));
+            await _backOfficeContext.SaveChangesAsync();
+
+            //Act
+            var result = await _controller.Deregulate(
+                _backOfficeContext,
+                mockRequestValidator.Object,
+                MockIfMatchValidator(false),
+                request: new AddressDeregulateRequest
+                {
+                    PersistentLocalId = addressPersistentLocalId
+                },
+                "IncorrectIfMatchHeader");
+
+            //Assert
+            result.Should().BeOfType<PreconditionFailedResult>();
         }
     }
 }

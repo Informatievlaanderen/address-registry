@@ -7,7 +7,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRegularizingAddress
     using AddressRegistry.Api.BackOffice.Abstractions.Responses;
     using StreetName;
     using Infrastructure;
-    using Autofac;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using FluentAssertions;
     using FluentValidation;
@@ -50,7 +49,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRegularizingAddress
             var result = (NoContentWithETagResult)await _controller.Regularize(
                 _backOfficeContext,
                 mockRequestValidator.Object,
-                Container.Resolve<IStreetNames>(),
+                MockIfMatchValidator(true),
                 request: new AddressRegularizeRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
@@ -59,6 +58,36 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRegularizingAddress
 
             //Assert
             result.ETag.Should().Be(lastEventHash);
+        }
+
+        [Fact]
+        public async Task WithInvalidIfMatchHeader_ThenPreconditionFailedResponse()
+        {
+            var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
+            var addressPersistentLocalId = new AddressPersistentLocalId(123);
+
+            var mockRequestValidator = new Mock<IValidator<AddressRegularizeRequest>>();
+            mockRequestValidator
+                .Setup(x => x.ValidateAsync(It.IsAny<AddressRegularizeRequest>(), CancellationToken.None))
+                .Returns(Task.FromResult(new ValidationResult()));
+
+            _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.Add(
+                new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));
+            await _backOfficeContext.SaveChangesAsync();
+
+            //Act
+            var result = await _controller.Regularize(
+                _backOfficeContext,
+                mockRequestValidator.Object,
+                MockIfMatchValidator(false),
+                request: new AddressRegularizeRequest
+                {
+                    PersistentLocalId = addressPersistentLocalId
+                },
+                "IncorrectIfMatchHeader");
+
+            //Assert
+            result.Should().BeOfType<PreconditionFailedResult>();
         }
     }
 }

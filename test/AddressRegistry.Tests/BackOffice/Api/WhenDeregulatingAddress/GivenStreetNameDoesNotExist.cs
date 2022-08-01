@@ -4,10 +4,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenDeregulatingAddress
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Validators;
-    using AddressRegistry.StreetName;
-    using AddressRegistry.Tests.BackOffice;
-    using AddressRegistry.Tests.BackOffice.Infrastructure;
-    using Autofac;
+    using BackOffice;
+    using Infrastructure;
     using FluentAssertions;
     using global::AutoFixture;
     using Microsoft.AspNetCore.Mvc;
@@ -43,7 +41,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenDeregulatingAddress
             var result = await _controller.Deregulate(
                 _backOfficeContext,
                 new AddressDeregulateRequestValidator(),
-                Container.Resolve<IStreetNames>(),
+                MockIfMatchValidator(true),
                 request,
                 null);
 

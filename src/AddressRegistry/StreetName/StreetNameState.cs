@@ -37,6 +37,7 @@ namespace AddressRegistry.StreetName
             Register<AddressWasApproved>(When);
             Register<AddressWasRejected>(When);
             Register<AddressWasDeregulated>(When);
+            Register<AddressWasRegularized>(When);
         }
 
         private void When(MigratedStreetNameWasImported @event)
@@ -106,8 +107,14 @@ namespace AddressRegistry.StreetName
 
         private void When(AddressWasDeregulated @event)
         {
-            var addressToRegularized = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
-            addressToRegularized.Route(@event);
+            var addressToDeRegulate = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
+            addressToDeRegulate.Route(@event);
+        }
+
+        private void When(AddressWasRegularized @event)
+        {
+            var addressToRegularize = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
+            addressToRegularize.Route(@event);
         }
 
         private void When(StreetNameSnapshot @event)

@@ -423,6 +423,15 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     x => x.IsOfficiallyAssigned = false,
                     ct);
             });
+
+            When<Envelope<AddressWasRegularized>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressPersistentLocalId,
+                    message,
+                    x => x.IsOfficiallyAssigned = true,
+                    ct);
+            });
         }
 
         private static async Task DoNothing()

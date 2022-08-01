@@ -101,6 +101,28 @@ namespace AddressRegistry.StreetName
             Apply(new AddressWasDeregulated(_streetNamePersistentLocalId, AddressPersistentLocalId));
         }
 
+        public void Regularize()
+        {
+            if (IsRemoved)
+            {
+                throw new AddressIsRemovedException(AddressPersistentLocalId);
+            }
+
+            var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
+
+            if (!validStatuses.Contains(Status))
+            {
+                throw new AddressCannotBeRegularizedException(Status);
+            }
+
+            if (IsOfficiallyAssigned)
+            {
+                return;
+            }
+
+            Apply(new AddressWasRegularized(_streetNamePersistentLocalId, AddressPersistentLocalId));
+        }
+
         private void RejectBecauseParentWasRejected()
         {
             if (IsRemoved)

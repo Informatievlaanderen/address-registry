@@ -43,6 +43,7 @@ namespace AddressRegistry.StreetName
             Register<AddressWasApproved>(When);
             Register<AddressWasRejected>(When);
             Register<AddressWasDeregulated>(When);
+            Register<AddressWasRegularized>(When);
         }
 
         private void When(AddressWasMigratedToStreetName @event)
@@ -95,6 +96,13 @@ namespace AddressRegistry.StreetName
         private void When(AddressWasDeregulated @event)
         {
             IsOfficiallyAssigned = false;
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressWasRegularized @event)
+        {
+            IsOfficiallyAssigned = true;
 
             _lastEvent = @event;
         }

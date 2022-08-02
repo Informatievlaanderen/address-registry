@@ -432,6 +432,24 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     x => x.IsOfficiallyAssigned = true,
                     ct);
             });
+
+            When<Envelope<AddressWasRetiredV2>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressPersistentLocalId,
+                    message,
+                    x => x.Status = AddressStatus.Retired,
+                    ct);
+            });
+
+            When<Envelope<AddressWasRetiredBecauseHouseNumberWasRetired>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressPersistentLocalId,
+                    message,
+                    x => x.Status = AddressStatus.Retired,
+                    ct);
+            });
         }
 
         private static async Task DoNothing()

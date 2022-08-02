@@ -14,7 +14,6 @@ namespace AddressRegistry.Tests.BackOffice
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using global::AutoFixture;
-    using Infrastructure;
     using MediatR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Options;
@@ -112,6 +111,17 @@ namespace AddressRegistry.Tests.BackOffice
                 boxNumber,
                 Fixture.Create<Provenance>());
             DispatchArrangeCommand(proposeCommand);
+        }
+
+        protected void ApproveAddress(
+            StreetNamePersistentLocalId streetNamePersistentLocalId,
+            AddressPersistentLocalId addressPersistentLocalId)
+        {
+            var approveAddress = new ApproveAddress(
+                streetNamePersistentLocalId,
+                addressPersistentLocalId,
+                Fixture.Create<Provenance>());
+            DispatchArrangeCommand(approveAddress);
         }
 
         protected void RemoveStreetName(StreetNamePersistentLocalId streetNamePersistentLocalId)

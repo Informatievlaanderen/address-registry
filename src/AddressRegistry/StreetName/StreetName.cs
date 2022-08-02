@@ -209,6 +209,18 @@ namespace AddressRegistry.StreetName
             addressToRegularize.Regularize();
         }
 
+        public void RetireAddress(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            var addressToRetire = StreetNameAddresses.FindByPersistentLocalId(addressPersistentLocalId);
+
+            if (addressToRetire is null)
+            {
+                throw new AddressNotFoundException(addressPersistentLocalId);
+            }
+
+            addressToRetire.Retire();
+        }
+
         private void GuardActiveStreetName(StreetNamePersistentLocalId streetNamePersistentLocalId)
         {
             if (IsRemoved)

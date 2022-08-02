@@ -79,6 +79,19 @@ namespace AddressRegistry.StreetName
             }
         }
 
+        private void RejectBecauseParentWasRejected()
+        {
+            if (IsRemoved)
+            {
+                return;
+            }
+
+            if (Status == AddressStatus.Proposed)
+            {
+                Apply(new AddressWasRejected(_streetNamePersistentLocalId, AddressPersistentLocalId));
+            }
+        }
+
         public void Deregulate()
         {
             if (IsRemoved)
@@ -123,16 +136,40 @@ namespace AddressRegistry.StreetName
             Apply(new AddressWasRegularized(_streetNamePersistentLocalId, AddressPersistentLocalId));
         }
 
-        private void RejectBecauseParentWasRejected()
+        public void Retire()
+        {
+            if (IsRemoved)
+            {
+                throw new AddressIsRemovedException(AddressPersistentLocalId);
+            }
+
+            switch (Status)
+            {
+                case AddressStatus.Retired:
+                    return;
+                case AddressStatus.Proposed or AddressStatus.Rejected:
+                    throw new AddressCannotBeRetiredException(Status);
+                case AddressStatus.Current:
+                    Apply(new AddressWasRetiredV2(_streetNamePersistentLocalId, AddressPersistentLocalId));
+                    break;
+            }
+
+            foreach (var child in _children)
+            {
+                child.RetireBecauseParentWasRetired();
+            }
+        }
+
+        private void RetireBecauseParentWasRetired()
         {
             if (IsRemoved)
             {
                 return;
             }
 
-            if (Status == AddressStatus.Proposed)
+            if (Status == AddressStatus.Current)
             {
-                Apply(new AddressWasRejected(_streetNamePersistentLocalId, AddressPersistentLocalId));
+                Apply(new AddressWasRetiredBecauseHouseNumberWasRetired(_streetNamePersistentLocalId, AddressPersistentLocalId));
             }
         }
 

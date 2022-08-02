@@ -111,6 +111,18 @@ namespace AddressRegistry.StreetName
 
                     streetName.RegularizeAddress(message.Command.AddressPersistentLocalId);
                 });
+
+            For<RetireAddress>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<RetireAddress, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streetNameStreamId = new StreetNameStreamId(message.Command.StreetNamePersistentLocalId);
+                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+
+                    streetName.RetireAddress(message.Command.AddressPersistentLocalId);
+                });
         }
     }
 }

@@ -137,6 +137,20 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 UpdateDbaseRecordField(item, record => record.offtoegknd.Value = true);
                 UpdateVersie(item, message.Message.Provenance.Timestamp);
             });
+
+            When<Envelope<AddressWasRetiredV2>>(async (context, message, ct) =>
+            {
+                var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);
+                UpdateDbaseRecordField(item, record => record.status.Value = Map(AddressStatus.Retired));
+                UpdateVersie(item, message.Message.Provenance.Timestamp);
+            });
+
+            When<Envelope<AddressWasRetiredBecauseHouseNumberWasRetired>>(async (context, message, ct) =>
+            {
+                var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);
+                UpdateDbaseRecordField(item, record => record.status.Value = Map(AddressStatus.Retired));
+                UpdateVersie(item, message.Message.Provenance.Timestamp);
+            });
         }
 
         private void UpdateDbaseRecordField(AddressExtractItemV2 item, Action<AddressDbaseRecord> update)

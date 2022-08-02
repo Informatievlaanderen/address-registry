@@ -114,7 +114,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenApprovingAddress
         [Theory]
         [InlineData(AddressStatus.Rejected)]
         [InlineData(AddressStatus.Retired)]
-        public void AddressWithInvalidStatusses_ThenThrow(AddressStatus addressStatus)
+        public void AddressWithInvalidStatuses_ThenThrow(AddressStatus addressStatus)
         {
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();

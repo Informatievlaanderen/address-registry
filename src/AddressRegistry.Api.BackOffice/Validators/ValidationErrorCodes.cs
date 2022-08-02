@@ -19,6 +19,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
         public const string AddressCannotBeRejected = "AdresGehistoreerdOfGoedgekeurd";
         public const string AddressCannotBeDeregulated = "AdresGehistoreerdOfAfgekeurd";
         public const string AddressCannotBeRegularized = "AdresGehistoreerdOfAfgekeurd";
+        public const string AddressCannotBeRetired = "AdresVoorgesteldOfAfgekeurd";
 
         public const string PostalCodeNotInMunicipality = "AdresPostinfoNietInGemeente";
     }

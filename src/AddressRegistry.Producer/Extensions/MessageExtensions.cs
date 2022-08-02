@@ -1,7 +1,6 @@
 namespace AddressRegistry.Producer.Extensions
 {
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using SqlStreamStore;
     using Contracts = Be.Vlaanderen.Basisregisters.GrAr.Contracts.AddressRegistry;
     using AddressAggregate = Address.Events;
     using StreetNameAggregate = StreetName.Events;
@@ -115,6 +114,12 @@ namespace AddressRegistry.Producer.Extensions
 
         public static Contracts.AddressWasRegularized ToContract(this StreetNameAggregate.AddressWasRegularized message) =>
             new Contracts.AddressWasRegularized(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
+
+        public static Contracts.AddressWasRetiredV2 ToContract(this StreetNameAggregate.AddressWasRetiredV2 message) =>
+            new Contracts.AddressWasRetiredV2(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
+
+        public static Contracts.AddressWasRetiredBecauseHouseNumberWasRetired ToContract(this StreetNameAggregate.AddressWasRetiredBecauseHouseNumberWasRetired message) =>
+            new Contracts.AddressWasRetiredBecauseHouseNumberWasRetired(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
 
         public static Contracts.AddressWasMigratedToStreetName ToContract(
             this StreetNameAggregate.AddressWasMigratedToStreetName message) =>

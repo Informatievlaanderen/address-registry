@@ -6,24 +6,15 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     using System.Threading.Tasks;
     using AddressRegistry.Address;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
-    using AddressRegistry.Api.BackOffice.Validators;
-    using Autofac;
-    using AutoFixture;
-    using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using FluentAssertions;
     using FluentValidation;
     using FluentValidation.Results;
-    using global::AutoFixture;
-    using Infrastructure;
     using Moq;
-    using Projections.Syndication.Municipality;
-    using Projections.Syndication.PostalInfo;
     using StreetName;
     using StreetName.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
     using AddressController = AddressRegistry.Api.BackOffice.AddressController;
-    using StreetNameId = StreetName.StreetNameId;
 
     public class GivenNoParentExistsForHouseNumber : AddressRegistryBackOfficeTest
     {

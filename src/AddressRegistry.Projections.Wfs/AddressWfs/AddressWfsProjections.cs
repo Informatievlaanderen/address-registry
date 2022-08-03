@@ -89,6 +89,16 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
             });
 
+            When<Envelope<AddressWasRejectedBecauseHouseNumberWasRejected>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    item => item.Status = MapStatus(AddressStatus.Rejected),
+                    ct);
+
+                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+            });
+
             When<Envelope<AddressWasDeregulated>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressDetail(

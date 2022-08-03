@@ -415,6 +415,15 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     ct);
             });
 
+            When<Envelope<AddressWasRejectedBecauseHouseNumberWasRejected>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressPersistentLocalId,
+                    message,
+                    x => x.Status = AddressStatus.Rejected,
+                    ct);
+            });
+
             When<Envelope<AddressWasDeregulated>>(async (context, message, ct) =>
             {
                 await context.CreateNewAddressSyndicationItem(

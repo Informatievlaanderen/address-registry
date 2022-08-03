@@ -88,7 +88,7 @@ namespace AddressRegistry.StreetName
 
             if (Status == AddressStatus.Proposed)
             {
-                Apply(new AddressWasRejected(_streetNamePersistentLocalId, AddressPersistentLocalId));
+                Apply(new AddressWasRejectedBecauseHouseNumberWasRejected(_streetNamePersistentLocalId, AddressPersistentLocalId));
             }
         }
 

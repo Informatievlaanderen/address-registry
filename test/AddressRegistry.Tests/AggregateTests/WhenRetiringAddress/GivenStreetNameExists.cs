@@ -357,14 +357,15 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringAddress
         public void StateCheck()
         {
             // Arrange
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
+            var parentAddressPersistentLocalId = new AddressPersistentLocalId(123);
+            var childAddressPersistentLocalId = new AddressPersistentLocalId(456);
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
 
-            var addressWasMigratedToStreetName = new AddressWasMigratedToStreetName(
+            var parentAddressWasMigratedToStreetName = new AddressWasMigratedToStreetName(
                 streetNamePersistentLocalId,
                 Fixture.Create<AddressId>(),
                 Fixture.Create<AddressStreetNameId>(),
-                addressPersistentLocalId,
+                parentAddressPersistentLocalId,
                 AddressStatus.Current,
                 Fixture.Create<HouseNumber>(),
                 boxNumber: null,
@@ -374,18 +375,36 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringAddress
                 isCompleted: false,
                 isRemoved: false,
                 parentPersistentLocalId: null);
-            ((ISetProvenance)addressWasMigratedToStreetName).SetProvenance(Fixture.Create<Provenance>());
+            ((ISetProvenance)parentAddressWasMigratedToStreetName).SetProvenance(Fixture.Create<Provenance>());
+
+            var childAddressWasMigratedToStreetName = new AddressWasMigratedToStreetName(
+                streetNamePersistentLocalId,
+                Fixture.Create<AddressId>(),
+                Fixture.Create<AddressStreetNameId>(),
+                childAddressPersistentLocalId,
+                AddressStatus.Current,
+                Fixture.Create<HouseNumber>(),
+                boxNumber: null,
+                Fixture.Create<AddressGeometry>(),
+                officiallyAssigned: true,
+                postalCode: null,
+                isCompleted: false,
+                isRemoved: false,
+                parentAddressPersistentLocalId);
+            ((ISetProvenance)childAddressWasMigratedToStreetName).SetProvenance(Fixture.Create<Provenance>());
 
             var sut = new StreetNameFactory(NoSnapshotStrategy.Instance).Create();
-            sut.Initialize(new List<object> { addressWasMigratedToStreetName });
+            sut.Initialize(new List<object> { parentAddressWasMigratedToStreetName, childAddressWasMigratedToStreetName });
 
             // Act
-            sut.RetireAddress(addressPersistentLocalId);
+            sut.RetireAddress(parentAddressPersistentLocalId);
 
             // Assert
-            var address = sut.StreetNameAddresses.First(x => x.AddressPersistentLocalId == addressPersistentLocalId);
+            var parentAddress = sut.StreetNameAddresses.First(x => x.AddressPersistentLocalId == parentAddressPersistentLocalId);
+            var childAddress = sut.StreetNameAddresses.First(x => x.AddressPersistentLocalId == childAddressPersistentLocalId);
 
-            address.Status.Should().Be(AddressStatus.Retired);
+            parentAddress.Status.Should().Be(AddressStatus.Retired);
+            childAddress.Status.Should().Be(AddressStatus.Retired);
         }
     }
 }

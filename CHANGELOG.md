@@ -1,3 +1,10 @@
+# [3.29.0](https://github.com/informatievlaanderen/address-registry/compare/v3.28.0...v3.29.0) (2022-08-03)
+
+
+### Features
+
+* complete automatic retire and reject of bus number addresses with extra event ([1fe11dc](https://github.com/informatievlaanderen/address-registry/commit/1fe11dc580625a24f3cf8ee116b63a5dfbd6c7b8))
+
 # [3.28.0](https://github.com/informatievlaanderen/address-registry/compare/v3.27.0...v3.28.0) (2022-08-03)
 
 

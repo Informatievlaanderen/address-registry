@@ -1,3 +1,11 @@
+# [3.28.0](https://github.com/informatievlaanderen/address-registry/compare/v3.27.0...v3.28.0) (2022-08-03)
+
+
+### Features
+
+* move if-match header validation to ifmatchheadervalidator ([eb6916a](https://github.com/informatievlaanderen/address-registry/commit/eb6916a5365c8fd397d26354c1a2ad9a2f9b25ee))
+* retire address ([6356e8d](https://github.com/informatievlaanderen/address-registry/commit/6356e8d8135c38a36058c579cf1f7e9f602759c4))
+
 # [3.27.0](https://github.com/informatievlaanderen/address-registry/compare/v3.26.0...v3.27.0) (2022-08-01)
 
 

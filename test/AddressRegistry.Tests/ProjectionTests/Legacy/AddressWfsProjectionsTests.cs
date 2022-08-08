@@ -169,6 +169,34 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
         }
 
         [Fact]
+        public async Task WhenAddressWasRejectedBecauseStreetNameWasRetired()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasRejected = _fixture.Create<AddressWasRejectedBecauseStreetNameWasRetired>();
+            var rejectedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasRejected.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasRejectedBecauseStreetNameWasRetired>(new Envelope(addressWasRejected, rejectedMetadata)))
+                .Then(async ct =>
+                {
+                    var item = (await ct.AddressWfsItems.FindAsync(addressWasRejected.AddressPersistentLocalId));
+                    item.Should().NotBeNull();
+                    item.Status.Should().Be(AddressWfsProjections.MapStatus(AddressStatus.Rejected));
+                    item.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
         public async Task WhenAddressWasRetired()
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
@@ -203,7 +231,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                 });
         }
 
-         [Fact]
+        [Fact]
         public async Task WhenAddressWasRetiredBecauseHouseNumberWasRetired()
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
@@ -229,6 +257,41 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                     new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
                     new Envelope<AddressWasApproved>(new Envelope(addressWasApproved, approveMetadata)),
                     new Envelope<AddressWasRetiredBecauseHouseNumberWasRetired>(new Envelope(addressWasRetiredBecauseHouseNumberWasRetired, retireMetadata)))
+                .Then(async ct =>
+                {
+                    var item = (await ct.AddressWfsItems.FindAsync(addressWasRetiredBecauseHouseNumberWasRetired.AddressPersistentLocalId));
+                    item.Should().NotBeNull();
+                    item.Status.Should().Be(AddressWfsProjections.MapStatus(AddressStatus.Retired));
+                    item.VersionTimestamp.Should().Be(addressWasRetiredBecauseHouseNumberWasRetired.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressWasRetiredBecauseStreetNameWasRetired()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasApproved = _fixture.Create<AddressWasApproved>();
+            var approveMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasApproved.GetHash() }
+            };
+
+            var addressWasRetiredBecauseHouseNumberWasRetired = _fixture.Create<AddressWasRetiredBecauseStreetNameWasRetired>();
+            var retireMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasRetiredBecauseHouseNumberWasRetired.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasApproved>(new Envelope(addressWasApproved, approveMetadata)),
+                    new Envelope<AddressWasRetiredBecauseStreetNameWasRetired>(new Envelope(addressWasRetiredBecauseHouseNumberWasRetired, retireMetadata)))
                 .Then(async ct =>
                 {
                     var item = (await ct.AddressWfsItems.FindAsync(addressWasRetiredBecauseHouseNumberWasRetired.AddressPersistentLocalId));

@@ -112,6 +112,9 @@ namespace AddressRegistry.Producer.Extensions
         public static Contracts.AddressWasRejectedBecauseHouseNumberWasRejected ToContract(this StreetNameAggregate.AddressWasRejectedBecauseHouseNumberWasRejected message) =>
             new Contracts.AddressWasRejectedBecauseHouseNumberWasRejected(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
 
+        public static Contracts.AddressWasRejectedBecauseStreetNameWasRetired ToContract(this StreetNameAggregate.AddressWasRejectedBecauseStreetNameWasRetired message) =>
+            new Contracts.AddressWasRejectedBecauseStreetNameWasRetired(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
+
         public static Contracts.AddressWasDeregulated ToContract(this StreetNameAggregate.AddressWasDeregulated message) =>
             new Contracts.AddressWasDeregulated(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
 
@@ -123,6 +126,9 @@ namespace AddressRegistry.Producer.Extensions
 
         public static Contracts.AddressWasRetiredBecauseHouseNumberWasRetired ToContract(this StreetNameAggregate.AddressWasRetiredBecauseHouseNumberWasRetired message) =>
             new Contracts.AddressWasRetiredBecauseHouseNumberWasRetired(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
+
+        public static Contracts.AddressWasRetiredBecauseStreetNameWasRetired ToContract(this StreetNameAggregate.AddressWasRetiredBecauseStreetNameWasRetired message) =>
+            new Contracts.AddressWasRetiredBecauseStreetNameWasRetired(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
 
         public static Contracts.AddressWasMigratedToStreetName ToContract(
             this StreetNameAggregate.AddressWasMigratedToStreetName message) =>
@@ -165,6 +171,9 @@ namespace AddressRegistry.Producer.Extensions
 
         public static Contracts.StreetNameWasApproved ToContract(this StreetNameAggregate.StreetNameWasApproved message) =>
             new Contracts.StreetNameWasApproved(message.StreetNamePersistentLocalId, message.Provenance.ToContract());
+
+        public static Contracts.StreetNameWasRetired ToContract(this StreetNameAggregate.StreetNameWasRetired message) =>
+            new Contracts.StreetNameWasRetired(message.StreetNamePersistentLocalId, message.Provenance.ToContract());
 
         public static Contracts.StreetNameWasImported ToContract(this StreetNameAggregate.StreetNameWasImported message) =>
             new Contracts.StreetNameWasImported(message.StreetNamePersistentLocalId, message.MunicipalityId.ToString("D"), message.StreetNameStatus.ToString(), message.Provenance.ToContract());

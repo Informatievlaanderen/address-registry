@@ -96,6 +96,20 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
                 UpdateHash(item, message);
             });
 
+            When<Envelope<AddressWasRejectedBecauseStreetNameWasRetired>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressListItemV2(
+                    message.Message.AddressPersistentLocalId,
+                    item =>
+                    {
+                        item.Status = AddressStatus.Rejected;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+
+                UpdateHash(item, message);
+            });
+
             When<Envelope<AddressWasRetiredV2>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressListItemV2(
@@ -111,6 +125,20 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
             });
 
             When<Envelope<AddressWasRetiredBecauseHouseNumberWasRetired>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressListItemV2(
+                    message.Message.AddressPersistentLocalId,
+                    item =>
+                    {
+                        item.Status = AddressStatus.Retired;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+
+                UpdateHash(item, message);
+            });
+
+            When<Envelope<AddressWasRetiredBecauseStreetNameWasRetired>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressListItemV2(
                     message.Message.AddressPersistentLocalId,

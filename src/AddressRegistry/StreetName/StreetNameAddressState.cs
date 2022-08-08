@@ -43,10 +43,12 @@ namespace AddressRegistry.StreetName
             Register<AddressWasApproved>(When);
             Register<AddressWasRejected>(When);
             Register<AddressWasRejectedBecauseHouseNumberWasRejected>(When);
+            Register<AddressWasRejectedBecauseStreetNameWasRetired>(When);
             Register<AddressWasDeregulated>(When);
             Register<AddressWasRegularized>(When);
             Register<AddressWasRetiredV2>(When);
             Register<AddressWasRetiredBecauseHouseNumberWasRetired>(When);
+            Register<AddressWasRetiredBecauseStreetNameWasRetired>(When);
         }
 
         private void When(AddressWasMigratedToStreetName @event)
@@ -103,6 +105,13 @@ namespace AddressRegistry.StreetName
             _lastEvent = @event;
         }
 
+        private void When(AddressWasRejectedBecauseStreetNameWasRetired @event)
+        {
+            Status = AddressStatus.Rejected;
+
+            _lastEvent = @event;
+        }
+
         private void When(AddressWasDeregulated @event)
         {
             IsOfficiallyAssigned = false;
@@ -125,6 +134,13 @@ namespace AddressRegistry.StreetName
         }
 
         private void When(AddressWasRetiredBecauseHouseNumberWasRetired @event)
+        {
+            Status = AddressStatus.Retired;
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressWasRetiredBecauseStreetNameWasRetired @event)
         {
             Status = AddressStatus.Retired;
 

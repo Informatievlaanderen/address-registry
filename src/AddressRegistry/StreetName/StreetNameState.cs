@@ -31,16 +31,20 @@ namespace AddressRegistry.StreetName
             Register<MigratedStreetNameWasImported>(When);
 
             Register<StreetNameWasApproved>(When);
+            Register<StreetNameWasRetired>(When);
             Register<StreetNameWasRemoved>(When);
+
             Register<AddressWasMigratedToStreetName>(When);
             Register<AddressWasProposedV2>(When);
             Register<AddressWasApproved>(When);
             Register<AddressWasRejected>(When);
             Register<AddressWasRejectedBecauseHouseNumberWasRejected>(When);
+            Register<AddressWasRejectedBecauseStreetNameWasRetired>(When);
             Register<AddressWasDeregulated>(When);
             Register<AddressWasRegularized>(When);
             Register<AddressWasRetiredV2>(When);
             Register<AddressWasRetiredBecauseHouseNumberWasRetired>(When);
+            Register<AddressWasRetiredBecauseStreetNameWasRetired>(When);
         }
 
         private void When(MigratedStreetNameWasImported @event)
@@ -59,6 +63,11 @@ namespace AddressRegistry.StreetName
         private void When(StreetNameWasApproved @event)
         {
             Status = StreetNameStatus.Current;
+        }
+
+        private void When(StreetNameWasRetired @event)
+        {
+            Status = StreetNameStatus.Retired;
         }
 
         private void When(StreetNameWasImported @event)
@@ -114,6 +123,12 @@ namespace AddressRegistry.StreetName
             addressToReject.Route(@event);
         }
 
+        private void When(AddressWasRejectedBecauseStreetNameWasRetired @event)
+        {
+            var addressToReject = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
+            addressToReject.Route(@event);
+        }
+
         private void When(AddressWasDeregulated @event)
         {
             var addressToDeRegulate = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
@@ -133,6 +148,12 @@ namespace AddressRegistry.StreetName
         }
 
         private void When(AddressWasRetiredBecauseHouseNumberWasRetired @event)
+        {
+            var addressToRetire = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
+            addressToRetire.Route(@event);
+        }
+
+        private void When(AddressWasRetiredBecauseStreetNameWasRetired @event)
         {
             var addressToRetire = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
             addressToRetire.Route(@event);

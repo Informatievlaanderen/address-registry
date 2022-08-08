@@ -58,6 +58,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRetiringAddress
                 _backOfficeContext,
                 new AddressRetireRequestValidator(),
                 MockIfMatchValidator(true),
+                ResponseOptions,
                 retireRequest,
                 null, CancellationToken.None);
 

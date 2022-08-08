@@ -2,6 +2,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenDeregulatingAddress
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using AddressRegistry.Api.BackOffice;
     using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Abstractions.Responses;
@@ -46,10 +47,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenDeregulatingAddress
                 new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));
             _backOfficeContext.SaveChanges();
 
-            var result = (NoContentWithETagResult)await _controller.Deregulate(
+            var result = (AcceptedWithETagResult)await _controller.Deregulate(
                 _backOfficeContext,
                 mockRequestValidator.Object,
                 MockIfMatchValidator(true),
+                ResponseOptions,
                 request: new AddressDeregulateRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
@@ -80,6 +82,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenDeregulatingAddress
                 _backOfficeContext,
                 mockRequestValidator.Object,
                 MockIfMatchValidator(false),
+                ResponseOptions,
                 request: new AddressDeregulateRequest
                 {
                     PersistentLocalId = addressPersistentLocalId

@@ -2,6 +2,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRetiringAddress
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using AddressRegistry.Api.BackOffice;
     using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Abstractions.Responses;
@@ -46,10 +47,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRetiringAddress
                 new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));
             _backOfficeContext.SaveChanges();
 
-            var result = (NoContentWithETagResult)await _controller.Retire(
+            var result = (AcceptedWithETagResult)await _controller.Retire(
                 _backOfficeContext,
                 mockRequestValidator.Object,
                 MockIfMatchValidator(true),
+                ResponseOptions,
                 request: new AddressRetireRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
@@ -80,6 +82,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRetiringAddress
                 _backOfficeContext,
                 mockRequestValidator.Object,
                 MockIfMatchValidator(false),
+                ResponseOptions,
                 request: new AddressRetireRequest
                 {
                     PersistentLocalId = addressPersistentLocalId

@@ -1,5 +1,6 @@
 namespace AddressRegistry.Api.BackOffice
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -14,8 +15,10 @@ namespace AddressRegistry.Api.BackOffice
     using FluentValidation;
     using FluentValidation.Results;
     using Infrastructure;
+    using Infrastructure.Options;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Options;
     using StreetName;
     using StreetName.Exceptions;
     using Swashbuckle.AspNetCore.Filters;
@@ -28,20 +31,18 @@ namespace AddressRegistry.Api.BackOffice
         /// </summary>
         /// <param name="backOfficeContext"></param>
         /// <param name="ifMatchHeaderValidator"></param>
+        /// <param name="options"></param>
         /// <param name="request"></param>
         /// <param name="validator"></param>
         /// <param name="ifMatchHeaderValue"></param>
         /// <param name="cancellationToken"></param>
         /// <response code="202">Aanvraag tot regularisering wordt reeds verwerkt.</response>
-        /// <response code="204">Als het adres geregulariseerd is.</response>
         /// <response code="400">Als de adres status niet 'voorgesteld' of 'ingebruik' is.</response>
         /// <response code="412">Als de If-Match header niet overeenkomt met de laatste ETag.</response>
         /// <returns></returns>
         [HttpPost("{persistentLocalId}/acties/regulariseren")]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status412PreconditionFailed)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(BadRequestResponseExamples))]
@@ -50,6 +51,7 @@ namespace AddressRegistry.Api.BackOffice
             [FromServices] BackOfficeContext backOfficeContext,
             [FromServices] IValidator<AddressRegularizeRequest> validator,
             [FromServices] IIfMatchHeaderValidator ifMatchHeaderValidator,
+            [FromServices] IOptions<ResponseOptions> options,
             [FromRoute] AddressRegularizeRequest request,
             [FromHeader(Name = "If-Match")] string? ifMatchHeaderValue,
             CancellationToken cancellationToken = default)
@@ -80,7 +82,9 @@ namespace AddressRegistry.Api.BackOffice
                 request.Metadata = GetMetadata();
                 var response = await _mediator.Send(request, cancellationToken);
 
-                return new NoContentWithETagResult(response.LastEventHash);
+                return new AcceptedWithETagResult(
+                    new Uri(string.Format(options.Value.DetailUrl, request.PersistentLocalId)),
+                    response.LastEventHash);
             }
             catch (IdempotencyException)
             {

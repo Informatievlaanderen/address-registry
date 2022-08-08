@@ -42,6 +42,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenDeregulatingAddress
                 _backOfficeContext,
                 new AddressDeregulateRequestValidator(),
                 MockIfMatchValidator(true),
+                ResponseOptions,
                 request,
                 null);
 

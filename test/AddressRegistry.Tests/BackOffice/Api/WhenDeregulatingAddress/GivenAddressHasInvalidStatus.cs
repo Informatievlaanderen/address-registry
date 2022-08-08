@@ -56,6 +56,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenDeregulatingAddress
                 _backOfficeContext,
                 mockRequestValidator.Object,
                 MockIfMatchValidator(true),
+                ResponseOptions,
                 addressDeregulateRequest,
                 null, CancellationToken.None);
 

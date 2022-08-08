@@ -56,6 +56,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRegularizingAddress
                 _backOfficeContext,
                 mockRequestValidator.Object,
                 MockIfMatchValidator(true),
+                ResponseOptions,
                 addressRegularizeRequest,
                 null, CancellationToken.None);
 

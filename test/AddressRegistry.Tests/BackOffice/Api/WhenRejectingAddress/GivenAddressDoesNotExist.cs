@@ -57,6 +57,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRejectingAddress
                 _backOfficeContext,
                 mockRequestValidator.Object,
                 MockIfMatchValidator(true),
+                ResponseOptions,
                 rejectRequest,
                 null);
 

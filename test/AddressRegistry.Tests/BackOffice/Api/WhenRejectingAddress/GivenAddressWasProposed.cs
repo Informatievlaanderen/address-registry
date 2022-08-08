@@ -46,10 +46,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRejectingAddress
                 new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));
             _backOfficeContext.SaveChanges();
 
-            var result = (NoContentWithETagResult)await _controller.Reject(
+            var result = (AcceptedWithETagResult)await _controller.Reject(
                 _backOfficeContext,
                 mockRequestValidator.Object,
                 MockIfMatchValidator(true),
+                ResponseOptions,
                 request: new AddressRejectRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
@@ -80,6 +81,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRejectingAddress
                 _backOfficeContext,
                 mockRequestValidator.Object,
                 MockIfMatchValidator(false),
+                ResponseOptions,
                 request: new AddressRejectRequest
                 {
                     PersistentLocalId = addressPersistentLocalId

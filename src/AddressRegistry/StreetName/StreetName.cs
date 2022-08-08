@@ -52,6 +52,24 @@ namespace AddressRegistry.StreetName
             }
         }
 
+        public void RetireStreetName()
+        {
+            if (Status != StreetNameStatus.Retired)
+            {
+                ApplyChange(new StreetNameWasRetired(PersistentLocalId));
+
+                foreach (var address in StreetNameAddresses.ProposedStreetNameAddresses)
+                {
+                    address.RejectBecauseStreetNameWasRetired();
+                }
+
+                foreach (var address in StreetNameAddresses.CurrentStreetNameAddresses)
+                {
+                    address.RetireBecauseStreetNameWasRetired();
+                }
+            }
+        }
+
         public void RemoveStreetName()
         {
             if (!IsRemoved)

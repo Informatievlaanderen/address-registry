@@ -6,6 +6,12 @@ namespace AddressRegistry.StreetName
 
     public class StreetNameAddresses : List<StreetNameAddress>
     {
+        public IEnumerable<StreetNameAddress> CurrentStreetNameAddresses =>
+            this.Where(x => !x.IsRemoved && x.Status == AddressStatus.Current);
+
+        public IEnumerable<StreetNameAddress> ProposedStreetNameAddresses =>
+            this.Where(x => !x.IsRemoved && x.Status == AddressStatus.Proposed);
+
         public bool HasPersistentLocalId(AddressPersistentLocalId addressPersistentLocalId)
             => this.Any(x => x.AddressPersistentLocalId == addressPersistentLocalId);
 

@@ -424,6 +424,15 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     ct);
             });
 
+            When<Envelope<AddressWasRejectedBecauseStreetNameWasRetired>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressPersistentLocalId,
+                    message,
+                    x => x.Status = AddressStatus.Rejected,
+                    ct);
+            });
+
             When<Envelope<AddressWasDeregulated>>(async (context, message, ct) =>
             {
                 await context.CreateNewAddressSyndicationItem(
@@ -452,6 +461,15 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             });
 
             When<Envelope<AddressWasRetiredBecauseHouseNumberWasRetired>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressPersistentLocalId,
+                    message,
+                    x => x.Status = AddressStatus.Retired,
+                    ct);
+            });
+
+            When<Envelope<AddressWasRetiredBecauseStreetNameWasRetired>>(async (context, message, ct) =>
             {
                 await context.CreateNewAddressSyndicationItem(
                     message.Message.AddressPersistentLocalId,

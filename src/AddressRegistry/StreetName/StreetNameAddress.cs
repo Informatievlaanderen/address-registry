@@ -92,6 +92,21 @@ namespace AddressRegistry.StreetName
             }
         }
 
+        public void RejectBecauseStreetNameWasRetired()
+        {
+            if (IsRemoved)
+            {
+                return;
+            }
+
+            if (Status == AddressStatus.Rejected)
+            {
+                return;
+            }
+
+            Apply(new AddressWasRejectedBecauseStreetNameWasRetired(_streetNamePersistentLocalId, AddressPersistentLocalId));
+        }
+
         public void Deregulate()
         {
             if (IsRemoved)
@@ -171,6 +186,21 @@ namespace AddressRegistry.StreetName
             {
                 Apply(new AddressWasRetiredBecauseHouseNumberWasRetired(_streetNamePersistentLocalId, AddressPersistentLocalId));
             }
+        }
+
+        public void RetireBecauseStreetNameWasRetired()
+        {
+            if (IsRemoved)
+            {
+                return;
+            }
+
+            if (Status == AddressStatus.Retired)
+            {
+                return;
+            }
+
+            Apply(new AddressWasRetiredBecauseStreetNameWasRetired(_streetNamePersistentLocalId, AddressPersistentLocalId));
         }
 
         /// <summary>

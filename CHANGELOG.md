@@ -1,3 +1,12 @@
+## [3.29.1](https://github.com/informatievlaanderen/address-registry/compare/v3.29.0...v3.29.1) (2022-08-09)
+
+
+### Bug Fixes
+
+* broken test ([e14fee8](https://github.com/informatievlaanderen/address-registry/commit/e14fee8d8b3d17a0b203b298963c152673622444))
+* change error code to AdresGehistoreerdOfInGebruik ([3c414e7](https://github.com/informatievlaanderen/address-registry/commit/3c414e7a6ff9b77037468af285e3fb635ba0a5c6))
+* success response from 204 to 202 ([be507cc](https://github.com/informatievlaanderen/address-registry/commit/be507ccd98a825acc418e63418884ca736f6752c))
+
 # [3.29.0](https://github.com/informatievlaanderen/address-registry/compare/v3.28.0...v3.29.0) (2022-08-03)
 
 

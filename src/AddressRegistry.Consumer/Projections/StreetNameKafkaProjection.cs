@@ -100,6 +100,12 @@ namespace AddressRegistry.Consumer.Projections
                 var command = GetCommand(message);
                 await commandHandler.Handle(command, ct);
             });
+
+            When<StreetNameWasRetiredV2>(async (commandHandler, message, ct) =>
+            {
+                var command = GetCommand(message);
+                await commandHandler.Handle(command, ct);
+            });
         }
     }
 }

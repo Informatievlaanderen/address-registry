@@ -5,6 +5,7 @@ namespace AddressRegistry.Tests.BackOffice
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using AddressRegistry.Api.BackOffice.Abstractions.Responses;
     using AddressRegistry.Api.BackOffice.Infrastructure;
     using AddressRegistry.Api.BackOffice.Infrastructure.Options;
     using StreetName;
@@ -19,6 +20,7 @@ namespace AddressRegistry.Tests.BackOffice
     using Microsoft.Extensions.Options;
     using Moq;
     using StreetName.Commands;
+    using TicketingService.Abstractions;
     using Xunit.Abstractions;
 
     public class AddressRegistryBackOfficeTest : AddressRegistryTest
@@ -53,6 +55,25 @@ namespace AddressRegistry.Tests.BackOffice
                         It.IsAny<string>(), It.IsAny<StreetNamePersistentLocalId>(), It.IsAny<AddressPersistentLocalId>(), CancellationToken.None))
                 .Returns(Task.FromResult(expectedResult));
             return mockIfMatchHeaderValidator.Object;
+        }
+
+        protected Mock<ITicketingUrl> MockTicketingUrl()
+        {
+            var ticketingUrl = new Mock<ITicketingUrl>();
+            ticketingUrl.Setup(x => x.For(It.IsAny<Guid>())).Returns("");
+            return ticketingUrl;
+        }
+
+        protected Mock<ITicketing> MockTicketing(Action<ETagResponse> callback)
+        {
+            var ticketing = new Mock<ITicketing>();
+            ticketing.Setup(x => x.Complete(It.IsAny<Guid>(), It.IsAny<TicketResult>(), CancellationToken.None))
+                .Callback<Guid, TicketResult, CancellationToken>((_, ticketResult, _) =>
+                {
+                    callback((ETagResponse)ticketResult.Result);
+                });
+
+            return ticketing;
         }
 
         public T CreateApiBusControllerWithUser<T>() where T : ApiController

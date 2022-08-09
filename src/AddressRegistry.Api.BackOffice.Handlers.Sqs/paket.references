@@ -1,14 +1,10 @@
-Be.Vlaanderen.Basisregisters.Api
-
 Be.Vlaanderen.Basisregisters.AggregateSource
 Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore
-Be.Vlaanderen.Basisregisters.GrAr.Edit
-
+Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple
 Be.Vlaanderen.Basisregisters.TicketingService.Abstractions
+Be.Vlaanderen.Basisregisters.TicketingService.Proxy.HttpProxy
 
-NetTopologySuite
-MediatR.Contracts
-Newtonsoft.Json
+MediatR
 
 SourceLink.Embed.AllSourceFiles
 SourceLink.Copy.PdbFiles

@@ -58,6 +58,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
             builder.RegisterModule(new EditModule(_configuration, _services, _loggerFactory));
             builder.RegisterModule(new ConsumerModule(_configuration, _services, _loggerFactory));
             builder.RegisterModule(new MediatRModule());
+            builder.RegisterModule(new TicketingModule(_configuration));
             builder.RegisterSnapshotModule(_configuration);
 
             builder.Populate(_services);

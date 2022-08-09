@@ -1,3 +1,15 @@
+# [3.30.0](https://github.com/informatievlaanderen/address-registry/compare/v3.29.1...v3.30.0) (2022-08-09)
+
+
+### Bug Fixes
+
+* StreetNameWasRejected Kafka consumption ([6974bdc](https://github.com/informatievlaanderen/address-registry/commit/6974bdcf64eb5ebf77952dc47e8935bc39c51332))
+
+
+### Features
+
+* sqs refactor ([54cafbe](https://github.com/informatievlaanderen/address-registry/commit/54cafbece3d37890e1ed2dd5448cb9eb03529d16))
+
 ## [3.29.1](https://github.com/informatievlaanderen/address-registry/compare/v3.29.0...v3.29.1) (2022-08-09)
 
 

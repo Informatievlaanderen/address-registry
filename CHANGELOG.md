@@ -1,3 +1,10 @@
+## [3.30.1](https://github.com/informatievlaanderen/address-registry/compare/v3.30.0...v3.30.1) (2022-08-10)
+
+
+### Bug Fixes
+
+* regularize and deregulate address error messages ([815c5b8](https://github.com/informatievlaanderen/address-registry/commit/815c5b83c2aed88cd10a46182b7bc15b94c2b8d9))
+
 # [3.30.0](https://github.com/informatievlaanderen/address-registry/compare/v3.29.1...v3.30.0) (2022-08-09)
 
 

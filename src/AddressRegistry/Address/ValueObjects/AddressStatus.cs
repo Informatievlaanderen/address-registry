@@ -7,9 +7,10 @@ namespace AddressRegistry.Address
         Unknown = 0,
         Proposed = 1,
         Current = 2,
-        Retired = 3
+        Retired = 3,
+        Rejected = 4
     }
-    
+
     public static class AddressStatusHelpers
     {
         public static StreetName.AddressStatus ToStreetNameAddressStatus(this AddressStatus status)
@@ -19,6 +20,7 @@ namespace AddressRegistry.Address
                 AddressStatus.Current => StreetName.AddressStatus.Current,
                 AddressStatus.Proposed => StreetName.AddressStatus.Proposed,
                 AddressStatus.Retired => StreetName.AddressStatus.Retired,
+                AddressStatus.Rejected => StreetName.AddressStatus.Rejected,
                 AddressStatus.Unknown => StreetName.AddressStatus.Unknown,
                 _ => throw new ArgumentOutOfRangeException(nameof(status), status, $"Non existing status '{status}'.")
             };

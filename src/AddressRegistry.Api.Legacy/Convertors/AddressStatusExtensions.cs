@@ -22,6 +22,9 @@ namespace AddressRegistry.Api.Legacy.Convertors
                 case AddressStatus.Retired:
                     return AdresStatus.Gehistoreerd;
 
+                case AddressStatus.Rejected:
+                    return AdresStatus.Afgekeurd;
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(status), status, null);
             }
@@ -39,6 +42,9 @@ namespace AddressRegistry.Api.Legacy.Convertors
 
                 case AdresStatus.Gehistoreerd:
                     return AddressStatus.Retired;
+
+                case AdresStatus.Afgekeurd:
+                    return AddressStatus.Rejected;
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(status), status, null);

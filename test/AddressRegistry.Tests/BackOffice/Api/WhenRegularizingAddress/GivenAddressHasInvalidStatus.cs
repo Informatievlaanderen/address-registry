@@ -67,7 +67,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRegularizingAddress
                 .Result
                 .Where(x =>
                      x.Errors.Any(e => e.ErrorCode == "AdresGehistoreerdOfAfgekeurd"
-                     && e.ErrorMessage == "Deze actie is enkel toegestaan op adres met status 'voorgesteld' of 'ingebruik'."));
+                     && e.ErrorMessage == "Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik'."));
         }
     }
 }

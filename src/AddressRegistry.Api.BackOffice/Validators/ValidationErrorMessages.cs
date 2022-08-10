@@ -23,8 +23,8 @@ namespace AddressRegistry.Api.BackOffice.Validators
         public const string AddressRemoved = "Verwijderde adres.";
         public const string AddressCannotBeApproved = "Deze actie is enkel toegestaan op adressen met status 'voorgesteld'.";
         public const string AddressCannotBeRejected = "Deze actie is enkel toegestaan op adressen met status 'voorgesteld'.";
-        public const string AddressCannotBeDeregulated = "Deze actie is enkel toegestaan op adres met status 'voorgesteld' of 'ingebruik'.";
-        public const string AddressCannotBeRegularized = "Deze actie is enkel toegestaan op adres met status 'voorgesteld' of 'ingebruik'.";
+        public const string AddressCannotBeDeregulated = "Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik'.";
+        public const string AddressCannotBeRegularized = "Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik'.";
         public const string AddressCannotBeRetired = "Deze actie is enkel toegestaan op adressen met status 'ingebruik'.";
 
         public const string PostalCodeNotInMunicipality = "De ingevoerde postcode wordt niet gebruikt binnen deze gemeente.";

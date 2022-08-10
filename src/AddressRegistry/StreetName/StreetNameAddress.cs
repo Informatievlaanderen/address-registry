@@ -69,13 +69,13 @@ namespace AddressRegistry.StreetName
                 case AddressStatus.Current or AddressStatus.Retired:
                     throw new AddressCannotBeRejectedException(Status);
                 case AddressStatus.Proposed:
+                    foreach (var child in _children)
+                    {
+                        child.RejectBecauseParentWasRejected();
+                    }
+
                     Apply(new AddressWasRejected(_streetNamePersistentLocalId, AddressPersistentLocalId));
                     break;
-            }
-
-            foreach (var child in _children)
-            {
-                child.RejectBecauseParentWasRejected();
             }
         }
 

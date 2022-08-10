@@ -85,17 +85,17 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingAddress
                 .When(command)
                 .Then(
                     new Fact(_streamId,
-                        new AddressWasRejected(
-                        Fixture.Create<StreetNamePersistentLocalId>(),
-                        parentAddressPersistentLocalId)),
-                    new Fact(_streamId,
                         new AddressWasRejectedBecauseHouseNumberWasRejected(
                             Fixture.Create<StreetNamePersistentLocalId>(),
                             firstChildAddressPersistentLocalId)),
                     new Fact(_streamId,
                         new AddressWasRejectedBecauseHouseNumberWasRejected(
                             Fixture.Create<StreetNamePersistentLocalId>(),
-                            secondChildAddressPersistentLocalId))));
+                            secondChildAddressPersistentLocalId)),
+                    new Fact(_streamId,
+                        new AddressWasRejected(
+                            Fixture.Create<StreetNamePersistentLocalId>(),
+                            parentAddressPersistentLocalId))));
         }
 
         [Theory]
@@ -201,7 +201,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingAddress
         }
 
         [Fact]
-        public void WithoutProposedAddress_ThenThrow()
+        public void WithoutProposedAddress_ThenThrowsAddressNotFoundException()
         {
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
             var command = new RejectAddress(

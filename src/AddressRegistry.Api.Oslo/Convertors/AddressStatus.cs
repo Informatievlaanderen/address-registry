@@ -19,6 +19,9 @@ namespace AddressRegistry.Api.Oslo.Convertors
                 case AdresStatus.Gehistoreerd:
                     return AddressStatus.Retired;
 
+                case AdresStatus.Afgekeurd:
+                    return AddressStatus.Rejected;
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(status), status, null);
             }

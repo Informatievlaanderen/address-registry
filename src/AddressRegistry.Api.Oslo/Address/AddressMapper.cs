@@ -141,6 +141,7 @@ namespace AddressRegistry.Api.Oslo.Address
                 AddressStatus.Proposed => AdresStatus.Voorgesteld,
                 AddressStatus.Retired => AdresStatus.Gehistoreerd,
                 AddressStatus.Current => AdresStatus.InGebruik,
+                AddressStatus.Rejected => AdresStatus.Afgekeurd,
                 _ => AdresStatus.InGebruik
             };
         }
@@ -152,6 +153,7 @@ namespace AddressRegistry.Api.Oslo.Address
                 AddressRegistry.StreetName.AddressStatus.Proposed => AdresStatus.Voorgesteld,
                 AddressRegistry.StreetName.AddressStatus.Retired => AdresStatus.Gehistoreerd,
                 AddressRegistry.StreetName.AddressStatus.Current => AdresStatus.InGebruik,
+                AddressRegistry.StreetName.AddressStatus.Rejected => AdresStatus.Afgekeurd,
                 _ => AdresStatus.InGebruik
             };
         }

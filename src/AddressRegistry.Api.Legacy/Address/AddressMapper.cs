@@ -111,6 +111,7 @@ namespace AddressRegistry.Api.Legacy.Address
             {
                 AddressStatus.Proposed => AdresStatus.Voorgesteld,
                 AddressStatus.Retired => AdresStatus.Gehistoreerd,
+                AddressStatus.Rejected => AdresStatus.Afgekeurd,
                 _ => AdresStatus.InGebruik
             };
         }
@@ -122,6 +123,7 @@ namespace AddressRegistry.Api.Legacy.Address
                 null => null,
                 AdresStatus.Voorgesteld => AddressStatus.Proposed,
                 AdresStatus.Gehistoreerd => AddressStatus.Retired,
+                AdresStatus.Afgekeurd => AddressStatus.Rejected,
                 _ => AddressStatus.Current
             };
         }
@@ -133,6 +135,7 @@ namespace AddressRegistry.Api.Legacy.Address
                 null => null,
                 AdresStatus.Voorgesteld => AddressRegistry.StreetName.AddressStatus.Proposed,
                 AdresStatus.Gehistoreerd => AddressRegistry.StreetName.AddressStatus.Retired,
+                AdresStatus.Afgekeurd => AddressRegistry.StreetName.AddressStatus.Rejected,
                 _ => AddressRegistry.StreetName.AddressStatus.Current
             };
         }

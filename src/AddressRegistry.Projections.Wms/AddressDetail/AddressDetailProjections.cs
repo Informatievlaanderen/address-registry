@@ -19,6 +19,7 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
         private static readonly string AdresStatusInGebruik = AdresStatus.InGebruik.ToString();
         private static readonly string AdresStatusGehistoreerd = AdresStatus.Gehistoreerd.ToString();
         private static readonly string AdresStatusVoorgesteld = AdresStatus.Voorgesteld.ToString();
+        private static readonly string AdresStatusAfgekeurd = AdresStatus.Afgekeurd.ToString();
 
         private readonly WKBReader _wkbReader;
 

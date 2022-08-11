@@ -107,6 +107,62 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
         }
 
         [Fact]
+        public async Task WhenAddressWasRegularized()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasRegularized = _fixture.Create<AddressWasRegularized>();
+            var metadata2 = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasRegularized.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, metadata)),
+                    new Envelope<AddressWasRegularized>(new Envelope(addressWasRegularized, metadata2)))
+                .Then(async ct =>
+                {
+                    var addressListItemV2 = (await ct.AddressListV2.FindAsync(addressWasRegularized.AddressPersistentLocalId));
+                    addressListItemV2.Should().NotBeNull();
+                    addressListItemV2.VersionTimestamp.Should().Be(addressWasRegularized.Provenance.Timestamp);
+                    addressListItemV2.LastEventHash.Should().Be(addressWasRegularized.GetHash());
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressWasDeregulated()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasDeregulated = _fixture.Create<AddressWasDeregulated>();
+            var metadata2 = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasDeregulated.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, metadata)),
+                    new Envelope<AddressWasDeregulated>(new Envelope(addressWasDeregulated, metadata2)))
+                .Then(async ct =>
+                {
+                    var addressListItemV2 = (await ct.AddressListV2.FindAsync(addressWasDeregulated.AddressPersistentLocalId));
+                    addressListItemV2.Should().NotBeNull();
+                    addressListItemV2.VersionTimestamp.Should().Be(addressWasDeregulated.Provenance.Timestamp);
+                    addressListItemV2.LastEventHash.Should().Be(addressWasDeregulated.GetHash());
+                });
+        }
+
+        [Fact]
         public async Task WhenAddressWasRejected()
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();

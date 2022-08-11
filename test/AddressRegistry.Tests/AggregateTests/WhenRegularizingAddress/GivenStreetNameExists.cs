@@ -64,7 +64,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRegularizingAddress
         }
 
         [Fact]
-        public void WithoutProposedAddress_ThenThrow()
+        public void WithoutProposedAddress_ThenThrowsAddressNotFoundException()
         {
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
             var command = new RegularizeAddress(
@@ -80,7 +80,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRegularizingAddress
         }
 
         [Fact]
-        public void OnRemovedAddress_ThenThrow()
+        public void OnRemovedAddress_ThenThrowsAddressIsRemovedException()
         {
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
@@ -123,7 +123,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRegularizingAddress
         [Theory]
         [InlineData(AddressStatus.Rejected)]
         [InlineData(AddressStatus.Retired)]
-        public void AddressWithInvalidStatus_ThenThrow(AddressStatus addressStatus)
+        public void AddressWithInvalidStatus_ThenThrowsAddressCannotBeRegularizedException(AddressStatus addressStatus)
         {
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();

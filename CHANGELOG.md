@@ -1,3 +1,11 @@
+## [3.30.2](https://github.com/informatievlaanderen/address-registry/compare/v3.30.1...v3.30.2) (2022-08-11)
+
+
+### Bug Fixes
+
+* Map address status Rejected ([75f67ff](https://github.com/informatievlaanderen/address-registry/commit/75f67ff57326a1e0d868a7140f1beb5d09c0d543))
+* review ([0bbd7f4](https://github.com/informatievlaanderen/address-registry/commit/0bbd7f4a42f9fd0af338b6e7399cbd7fc6abd0c0))
+
 ## [3.30.1](https://github.com/informatievlaanderen/address-registry/compare/v3.30.0...v3.30.1) (2022-08-10)
 
 

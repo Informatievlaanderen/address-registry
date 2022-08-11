@@ -1,3 +1,10 @@
+## [3.30.4](https://github.com/informatievlaanderen/address-registry/compare/v3.30.3...v3.30.4) (2022-08-11)
+
+
+### Bug Fixes
+
+* Update legacy list projection on address was regularized or deregulated ([84fdd36](https://github.com/informatievlaanderen/address-registry/commit/84fdd36cb426e665ed21412a117fafe7da620bc4))
+
 ## [3.30.3](https://github.com/informatievlaanderen/address-registry/compare/v3.30.2...v3.30.3) (2022-08-11)
 
 

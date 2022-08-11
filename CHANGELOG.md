@@ -1,3 +1,10 @@
+## [3.30.3](https://github.com/informatievlaanderen/address-registry/compare/v3.30.2...v3.30.3) (2022-08-11)
+
+
+### Bug Fixes
+
+* review PRs 667 and 668 ([32d39c3](https://github.com/informatievlaanderen/address-registry/commit/32d39c363e054b37657c73509f216f3d929e8b23))
+
 ## [3.30.2](https://github.com/informatievlaanderen/address-registry/compare/v3.30.1...v3.30.2) (2022-08-11)
 
 

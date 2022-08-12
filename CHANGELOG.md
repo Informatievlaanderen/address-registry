@@ -1,3 +1,11 @@
+## [3.30.6](https://github.com/informatievlaanderen/address-registry/compare/v3.30.5...v3.30.6) (2022-08-12)
+
+
+### Bug Fixes
+
+* add ticketingService baseUrl in appsettings ([09c7c95](https://github.com/informatievlaanderen/address-registry/commit/09c7c95b5c616c3ef44655d08024bc7ae3f74b18))
+* change validation message in reject address ([6b6dc31](https://github.com/informatievlaanderen/address-registry/commit/6b6dc31b6ceb35a273f160c6e5eccbf6588ab36d))
+
 ## [3.30.5](https://github.com/informatievlaanderen/address-registry/compare/v3.30.4...v3.30.5) (2022-08-12)
 
 

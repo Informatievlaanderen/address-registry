@@ -67,7 +67,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRetiringAddress
                 .Result
                 .Where(x =>
                      x.Errors.Any(e => e.ErrorCode == "AdresVoorgesteldOfAfgekeurd"
-                     && e.ErrorMessage == "Deze actie is enkel toegestaan op adressen met status 'ingebruik'."));
+                     && e.ErrorMessage == "Deze actie is enkel toegestaan op adressen met status 'inGebruik'."));
         }
     }
 }

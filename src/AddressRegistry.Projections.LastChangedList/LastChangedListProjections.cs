@@ -270,9 +270,9 @@ namespace AddressRegistry.Projections.LastChangedList
             var shortenedAcceptType = acceptType.ToString().ToLowerInvariant();
             return acceptType switch
             {
-                AcceptType.Json => $"legacy/address:{{{identifier}}}.{shortenedAcceptType}",
-                AcceptType.Xml => $"legacy/address:{{{identifier}}}.{shortenedAcceptType}",
-                AcceptType.JsonLd => $"oslo/address:{{{identifier}}}.{shortenedAcceptType}",
+                AcceptType.Json => string.Format("legacy/address:{{0}}.{1}", identifier, shortenedAcceptType),
+                AcceptType.Xml => string.Format("legacy/address:{{0}}.{1}", identifier, shortenedAcceptType),
+                AcceptType.JsonLd => string.Format("oslo/address:{{0}}.{1}", identifier, shortenedAcceptType),
                 _ => throw new NotImplementedException($"Cannot build CacheKey for type {typeof(AcceptType)}")
             };
         }
@@ -281,9 +281,9 @@ namespace AddressRegistry.Projections.LastChangedList
         {
             return acceptType switch
             {
-                AcceptType.Json => $"/v1/adressen/{{{identifier}}}",
-                AcceptType.Xml => $"/v1/adressen/{{{identifier}}}",
-                AcceptType.JsonLd => $"/v2/adressen/{{{identifier}}}",
+                AcceptType.Json => string.Format("/v1/adressen/{{0}}", identifier),
+                AcceptType.Xml => string.Format("/v1/adressen/{{0}}", identifier),
+                AcceptType.JsonLd => string.Format("/v2/adressen/{{0}}", identifier),
                 _ => throw new NotImplementedException($"Cannot build Uri for type {typeof(AcceptType)}")
             };
         }

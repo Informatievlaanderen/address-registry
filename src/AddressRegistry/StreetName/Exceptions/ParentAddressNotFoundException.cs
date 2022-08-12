@@ -6,10 +6,10 @@ namespace AddressRegistry.StreetName.Exceptions
     [Serializable]
     public sealed class ParentAddressNotFoundException : AddressRegistryException
     {
-        public readonly string? StreetNamePersistentLocalId;
-        public readonly string? HouseNumber;
+        public StreetNamePersistentLocalId StreetNamePersistentLocalId { get; }
+        public HouseNumber HouseNumber { get; }
 
-        public ParentAddressNotFoundException(string streetNamePersistentLocalId, string houseNumber)
+        public ParentAddressNotFoundException(StreetNamePersistentLocalId streetNamePersistentLocalId, HouseNumber houseNumber)
         {
             StreetNamePersistentLocalId = streetNamePersistentLocalId;
             HouseNumber = houseNumber;

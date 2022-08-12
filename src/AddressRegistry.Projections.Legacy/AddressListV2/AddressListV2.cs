@@ -44,7 +44,6 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
             BoxNumber = boxNumber;
         }
 
-
         public int AddressPersistentLocalId { get; set; }
         public int StreetNamePersistentLocalId { get; set; }
         public string? PostalCode { get; set; }

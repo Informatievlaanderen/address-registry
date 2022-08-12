@@ -15,6 +15,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     using Xunit;
     using Xunit.Abstractions;
     using AddressController = AddressRegistry.Api.BackOffice.AddressController;
+    using BoxNumber = StreetName.BoxNumber;
 
     public class GivenChildAddressAlreadyExists : AddressRegistryBackOfficeTest
     {
@@ -26,7 +27,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
         }
 
         [Fact]
-        public void ThenThrowValidationException()
+        public void ThenThrowsValidationException()
         {
             string houseNumber = "11";
             string boxNumber = "1A";
@@ -38,7 +39,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                 .Returns(Task.FromResult(new ValidationResult()));
 
             MockMediator.Setup(x => x.Send(It.IsAny<AddressProposeRequest>(), CancellationToken.None))
-                .Throws(new DuplicateBoxNumberException(boxNumber));
+                .Throws(new DuplicateBoxNumberException(new BoxNumber(boxNumber)));
 
             var body = new AddressProposeRequest
             {

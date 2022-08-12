@@ -213,7 +213,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringAddress
         }
 
         [Fact]
-        public void WithoutProposedAddress_ThenThrow()
+        public void WithoutProposedAddress_ThenThrowsAddressNotFoundException()
         {
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
             var command = new RetireAddress(
@@ -229,7 +229,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringAddress
         }
 
         [Fact]
-        public void OnRemovedAddress_ThenThrow()
+        public void OnRemovedAddress_ThenThrowsAddressIsRemovedException()
         {
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
@@ -272,7 +272,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringAddress
         [Theory]
         [InlineData(AddressStatus.Rejected)]
         [InlineData(AddressStatus.Proposed)]
-        public void AddressWithInvalidStatuses_ThenThrow(AddressStatus addressStatus)
+        public void AddressWithInvalidStatuses_ThenThrowsAddressCannotBeRetiredException(AddressStatus addressStatus)
         {
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();

@@ -124,7 +124,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
         }
 
         [Fact]
-        public void ChildAddressWithoutExistingParent_ThenThrowParentNotFoundException()
+        public void ChildAddressWithoutExistingParent_ThenThrowsParentNotFoundException()
         {
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
             var houseNumber = Fixture.Create<HouseNumber>();

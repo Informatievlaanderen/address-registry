@@ -6,7 +6,7 @@ namespace AddressRegistry.StreetName.Exceptions
     [Serializable]
     public sealed class AddressNotFoundException : AddressRegistryException
     {
-        public AddressNotFoundException(int addressPersistentLocalId)
+        public AddressNotFoundException(AddressPersistentLocalId addressPersistentLocalId)
             : base($"Address with Id '{addressPersistentLocalId}' has not been found.")
         { }
 

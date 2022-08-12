@@ -217,7 +217,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingAddress
         }
 
         [Fact]
-        public void OnRemovedAddress_ThenThrow()
+        public void OnRemovedAddress_ThenThrowsAddressIsRemovedException()
         {
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
@@ -260,7 +260,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingAddress
         [Theory]
         [InlineData(AddressStatus.Current)]
         [InlineData(AddressStatus.Retired)]
-        public void AddressWithInvalidStatuses_ThenThrow(AddressStatus addressStatus)
+        public void AddressWithInvalidStatuses_ThenThrowsAddressCannotBeRejectedException(AddressStatus addressStatus)
         {
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();

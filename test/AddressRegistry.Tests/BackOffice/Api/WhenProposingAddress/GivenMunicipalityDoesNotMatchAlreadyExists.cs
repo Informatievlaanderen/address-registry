@@ -26,7 +26,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
         }
 
         [Fact]
-        public async Task ThenThrowValidationException()
+        public async Task ThenThrowsValidationException()
         {
             string houseNumber = "11";
             string boxNumber = "1A";

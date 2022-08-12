@@ -31,7 +31,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
         }
 
         [Fact]
-        public void ThenThrowValidationException()
+        public void ThenThrowsValidationException()
         {
             var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = new AddressPersistentLocalId(123);

@@ -6,7 +6,7 @@ namespace AddressRegistry.StreetName.Exceptions
     [Serializable]
     public sealed class DuplicateBoxNumberException : AddressRegistryException
     {
-        public DuplicateBoxNumberException(string boxNumber)
+        public DuplicateBoxNumberException(BoxNumber boxNumber)
             : base($"Attempt to add child address with duplicate boxnumber '{boxNumber}'.")
         { }
 

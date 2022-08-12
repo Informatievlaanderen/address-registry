@@ -26,7 +26,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
         }
 
         [Fact]
-        public void ThenThrowValidationException()
+        public void ThenThrowsValidationException()
         {
             var streetNamePersistentId = new StreetNamePersistentLocalId(123);
             var postInfoId = new PersistentLocalId(456);

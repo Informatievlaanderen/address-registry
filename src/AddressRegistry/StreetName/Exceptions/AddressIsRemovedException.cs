@@ -6,7 +6,7 @@ namespace AddressRegistry.StreetName.Exceptions
     [Serializable]
     public sealed class AddressIsRemovedException : AddressRegistryException
     {
-        public AddressIsRemovedException(int addressPersistentLocalId)
+        public AddressIsRemovedException(AddressPersistentLocalId addressPersistentLocalId)
             : base($"Address with Id '{addressPersistentLocalId}' is removed.")
         { }
 

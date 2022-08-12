@@ -6,7 +6,7 @@ namespace AddressRegistry.StreetName.Exceptions
     [Serializable]
     public sealed class StreetNameNotActiveException : AddressRegistryException
     {
-        public StreetNameNotActiveException(int streetNameId)
+        public StreetNameNotActiveException(StreetNamePersistentLocalId streetNameId)
             : base($"StreetName with Id '{streetNameId}' is not active.")
         { }
 

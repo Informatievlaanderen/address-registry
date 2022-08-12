@@ -26,7 +26,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
         }
 
         [Fact]
-        public void ThenThrowValidationException()
+        public void ThenThrowsValidationException()
         {
             var streetNamePersistentId = new StreetNamePersistentLocalId(123);
             var postInfoId = new PersistentLocalId(456);
@@ -36,7 +36,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                 .Returns(Task.FromResult(new ValidationResult()));
 
             MockMediator.Setup(x => x.Send(It.IsAny<AddressProposeRequest>(), CancellationToken.None))
-                .Throws(new ParentAddressAlreadyExistsException("11"));
+                .Throws(new ParentAddressAlreadyExistsException(new AddressRegistry.StreetName.HouseNumber("11")));
 
             var body = new AddressProposeRequest
             {

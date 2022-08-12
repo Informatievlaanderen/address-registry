@@ -55,7 +55,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenApprovingAddress
         }
 
         [Fact]
-        public void WithoutProposedAddress_ThenThrow()
+        public void WithoutProposedAddress_ThenThrowsAddressNotFoundException()
         {
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
             var command = new ApproveAddress(
@@ -71,7 +71,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenApprovingAddress
         }
 
         [Fact]
-        public void OnRemovedAddress_ThenThrow()
+        public void OnRemovedAddress_ThenThrowsAddressIsRemovedException()
         {
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
@@ -114,7 +114,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenApprovingAddress
         [Theory]
         [InlineData(AddressStatus.Rejected)]
         [InlineData(AddressStatus.Retired)]
-        public void AddressWithInvalidStatuses_ThenThrow(AddressStatus addressStatus)
+        public void AddressWithInvalidStatuses_ThenThrowsAddressCannotBeApprovedException(AddressStatus addressStatus)
         {
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();

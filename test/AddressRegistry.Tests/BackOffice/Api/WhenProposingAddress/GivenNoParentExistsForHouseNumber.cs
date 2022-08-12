@@ -15,6 +15,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     using Xunit;
     using Xunit.Abstractions;
     using AddressController = AddressRegistry.Api.BackOffice.AddressController;
+    using HouseNumber = StreetName.HouseNumber;
 
     public class GivenNoParentExistsForHouseNumber : AddressRegistryBackOfficeTest
     {
@@ -26,7 +27,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
         }
 
         [Fact]
-        public void ThenThrowValidationException()
+        public void ThenThrowsValidationException()
         {
             string houseNumber = "11";
             string boxNumber = "1A";
@@ -38,7 +39,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                 .Returns(Task.FromResult(new ValidationResult()));
 
             MockMediator.Setup(x => x.Send(It.IsAny<AddressProposeRequest>(), CancellationToken.None))
-                .Throws(new ParentAddressNotFoundException(streetNamePersistentId, houseNumber));
+                .Throws(new ParentAddressNotFoundException(streetNamePersistentId, new HouseNumber(houseNumber)));
 
             var streetNamePuri = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentId}";
             var postInfoPuri = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}";

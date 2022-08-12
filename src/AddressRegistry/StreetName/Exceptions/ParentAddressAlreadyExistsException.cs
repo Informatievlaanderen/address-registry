@@ -6,7 +6,7 @@ namespace AddressRegistry.StreetName.Exceptions
     [Serializable]
     public sealed class ParentAddressAlreadyExistsException : AddressRegistryException
     {
-        public ParentAddressAlreadyExistsException(string houseNumber)
+        public ParentAddressAlreadyExistsException(HouseNumber houseNumber)
             : base($"Attempt to add parent address when parent address with housenumber '{houseNumber}' already exists for street.")
         { }
 

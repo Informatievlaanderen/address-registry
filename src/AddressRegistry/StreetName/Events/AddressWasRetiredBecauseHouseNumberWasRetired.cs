@@ -10,7 +10,7 @@ namespace AddressRegistry.StreetName.Events
 
     [EventTags(EventTag.For.Edit, EventTag.For.Sync)]
     [EventName(EventName)]
-    [EventDescription("Het adres met busnummer werd opgeheven door opheffing huisnummer.")]
+    [EventDescription("Het busnummer met status inGebruik werd gehistoreerd door historering huisnummer.")]
     public class AddressWasRetiredBecauseHouseNumberWasRetired : IStreetNameEvent, IHasAddressPersistentLocalId
     {
         public const string EventName = "AddressWasRetiredBecauseHouseNumberWasRetired"; // BE CAREFUL CHANGING THIS!!

@@ -1,6 +1,5 @@
 namespace AddressRegistry.Tests.AggregateTests.WhenRetiringAddress
 {
-    using System.Collections.Generic;
     using System.Linq;
     using StreetName;
     using StreetName.Commands;
@@ -65,6 +64,47 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringAddress
         }
 
         [Fact]
+        public void WithProposedChildAddresses_ThenChildAddressesWereRejected()
+        {
+            var parentAddressPersistentLocalId = new AddressPersistentLocalId(1);
+            var firstChildAddressPersistentLocalId = new AddressPersistentLocalId(2);
+            var secondChildAddressPersistentLocalId = new AddressPersistentLocalId(3);
+
+            var command = new RetireAddress(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                parentAddressPersistentLocalId,
+                Fixture.Create<Provenance>());
+
+            var parentAddressWasMigrated = CreateAddressWasMigratedToStreetName(
+                parentAddressPersistentLocalId, AddressStatus.Current);
+            var firstChildAddressWasMigrated = CreateAddressWasMigratedToStreetName(
+                firstChildAddressPersistentLocalId, AddressStatus.Proposed, parentAddressPersistentLocalId);
+            var secondChildAddressWasMigrated = CreateAddressWasMigratedToStreetName(
+                secondChildAddressPersistentLocalId, AddressStatus.Proposed, parentAddressPersistentLocalId);
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    Fixture.Create<StreetNameWasImported>(),
+                    parentAddressWasMigrated,
+                    firstChildAddressWasMigrated,
+                    secondChildAddressWasMigrated)
+                .When(command)
+                .Then(
+                    new Fact(_streamId,
+                        new AddressWasRetiredV2(
+                        Fixture.Create<StreetNamePersistentLocalId>(),
+                        parentAddressPersistentLocalId)),
+                    new Fact(_streamId,
+                        new AddressWasRejectedBecauseHouseNumberWasRetired(
+                            Fixture.Create<StreetNamePersistentLocalId>(),
+                            firstChildAddressPersistentLocalId)),
+                    new Fact(_streamId,
+                        new AddressWasRejectedBecauseHouseNumberWasRetired(
+                            Fixture.Create<StreetNamePersistentLocalId>(),
+                            secondChildAddressPersistentLocalId))));
+        }
+
+        [Fact]
         public void WithCurrentChildAddresses_ThenChildAddressesWereAlsoRetired()
         {
             var parentAddressPersistentLocalId = new AddressPersistentLocalId(1);
@@ -76,18 +116,19 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringAddress
                 parentAddressPersistentLocalId,
                 Fixture.Create<Provenance>());
 
-            var parentAddressWasProposedV2 = CreateCurrentAddressWasMigrated(parentAddressPersistentLocalId);
-            var firstChildAddressWasProposedV2 = CreateCurrentAddressWasMigrated(
-                firstChildAddressPersistentLocalId, parentAddressPersistentLocalId);
-            var secondChildAddressWasProposedV2 = CreateCurrentAddressWasMigrated(
-                secondChildAddressPersistentLocalId, parentAddressPersistentLocalId);
+            var parentAddressWasMigrated = CreateAddressWasMigratedToStreetName(
+                parentAddressPersistentLocalId, AddressStatus.Current);
+            var firstChildAddressWasMigrated = CreateAddressWasMigratedToStreetName(
+                firstChildAddressPersistentLocalId, AddressStatus.Current, parentAddressPersistentLocalId);
+            var secondChildAddressWasMigrated = CreateAddressWasMigratedToStreetName(
+                secondChildAddressPersistentLocalId, AddressStatus.Current, parentAddressPersistentLocalId);
 
             Assert(new Scenario()
                 .Given(_streamId,
                     Fixture.Create<StreetNameWasImported>(),
-                    parentAddressWasProposedV2,
-                    firstChildAddressWasProposedV2,
-                    secondChildAddressWasProposedV2)
+                    parentAddressWasMigrated,
+                    firstChildAddressWasMigrated,
+                    secondChildAddressWasMigrated)
                 .When(command)
                 .Then(
                     new Fact(_streamId,
@@ -104,8 +145,9 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringAddress
                             secondChildAddressPersistentLocalId))));
         }
 
-        private AddressWasMigratedToStreetName CreateCurrentAddressWasMigrated(
+        private AddressWasMigratedToStreetName CreateAddressWasMigratedToStreetName(
             AddressPersistentLocalId addressPersistentLocalId,
+            AddressStatus addressStatus,
             AddressPersistentLocalId? parentAddressPersistentLocalId = null)
         {
             var addressWasMigrated = new AddressWasMigratedToStreetName(
@@ -113,7 +155,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringAddress
                 Fixture.Create<AddressId>(),
                 Fixture.Create<AddressStreetNameId>(),
                 addressPersistentLocalId,
-                AddressStatus.Current,
+                addressStatus,
                 Fixture.Create<HouseNumber>(),
                 boxNumber: null,
                 Fixture.Create<AddressGeometry>(),
@@ -128,10 +170,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringAddress
             return addressWasMigrated;
         }
 
-        [Theory]
-        [InlineData(AddressStatus.Proposed)]
-        [InlineData(AddressStatus.Rejected)]
-        public void WithNotCurrentChildAddress_ThenChildAddressWasNotRetired(AddressStatus addressStatus)
+        [Fact]
+        public void WithRejectedChildAddress_ThenChildAddressWasNotRetired()
         {
             var parentAddressPersistentLocalId = new AddressPersistentLocalId(1);
             var childAddressPersistentLocalId = new AddressPersistentLocalId(2);
@@ -141,13 +181,14 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringAddress
                 parentAddressPersistentLocalId,
                 Fixture.Create<Provenance>());
 
-            var parentAddressWasProposedV2 = CreateCurrentAddressWasMigrated(parentAddressPersistentLocalId);
+            var parentAddressWasMigratedToStreetName = CreateAddressWasMigratedToStreetName(
+                parentAddressPersistentLocalId, AddressStatus.Current);
             var childAddressWasMigratedToStreetName = new AddressWasMigratedToStreetName(
                 Fixture.Create<StreetNamePersistentLocalId>(),
                 Fixture.Create<AddressId>(),
                 Fixture.Create<AddressStreetNameId>(),
                 childAddressPersistentLocalId,
-                addressStatus,
+                AddressStatus.Rejected,
                 Fixture.Create<HouseNumber>(),
                 boxNumber: null,
                 Fixture.Create<AddressGeometry>(),
@@ -161,7 +202,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringAddress
             Assert(new Scenario()
                 .Given(_streamId,
                     Fixture.Create<StreetNameWasImported>(),
-                    parentAddressWasProposedV2,
+                    parentAddressWasMigratedToStreetName,
                     childAddressWasMigratedToStreetName)
                 .When(command)
                 .Then(
@@ -182,7 +223,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringAddress
                 parentAddressPersistentLocalId,
                 Fixture.Create<Provenance>());
 
-            var parentAddressWasProposedV2 = CreateCurrentAddressWasMigrated(parentAddressPersistentLocalId);
+            var parentAddressWasMigratedToStreetName = CreateAddressWasMigratedToStreetName(
+                parentAddressPersistentLocalId, AddressStatus.Current);
             var childAddressWasMigratedToStreetName = new AddressWasMigratedToStreetName(
                 Fixture.Create<StreetNamePersistentLocalId>(),
                 Fixture.Create<AddressId>(),
@@ -202,7 +244,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringAddress
             Assert(new Scenario()
                 .Given(_streamId,
                     Fixture.Create<StreetNameWasImported>(),
-                    parentAddressWasProposedV2,
+                    parentAddressWasMigratedToStreetName,
                     childAddressWasMigratedToStreetName)
                 .When(command)
                 .Then(
@@ -358,53 +400,38 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringAddress
         {
             // Arrange
             var parentAddressPersistentLocalId = new AddressPersistentLocalId(123);
-            var childAddressPersistentLocalId = new AddressPersistentLocalId(456);
-            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
+            var proposedChildAddressPersistentLocalId = new AddressPersistentLocalId(456);
+            var currentChildAddressPersistentLocalId = new AddressPersistentLocalId(789);
 
-            var parentAddressWasMigratedToStreetName = new AddressWasMigratedToStreetName(
-                streetNamePersistentLocalId,
-                Fixture.Create<AddressId>(),
-                Fixture.Create<AddressStreetNameId>(),
-                parentAddressPersistentLocalId,
-                AddressStatus.Current,
-                Fixture.Create<HouseNumber>(),
-                boxNumber: null,
-                Fixture.Create<AddressGeometry>(),
-                officiallyAssigned: true,
-                postalCode: null,
-                isCompleted: false,
-                isRemoved: false,
-                parentPersistentLocalId: null);
-            ((ISetProvenance)parentAddressWasMigratedToStreetName).SetProvenance(Fixture.Create<Provenance>());
-
-            var childAddressWasMigratedToStreetName = new AddressWasMigratedToStreetName(
-                streetNamePersistentLocalId,
-                Fixture.Create<AddressId>(),
-                Fixture.Create<AddressStreetNameId>(),
-                childAddressPersistentLocalId,
-                AddressStatus.Current,
-                Fixture.Create<HouseNumber>(),
-                boxNumber: null,
-                Fixture.Create<AddressGeometry>(),
-                officiallyAssigned: true,
-                postalCode: null,
-                isCompleted: false,
-                isRemoved: false,
-                parentAddressPersistentLocalId);
-            ((ISetProvenance)childAddressWasMigratedToStreetName).SetProvenance(Fixture.Create<Provenance>());
+            var parentAddressWasMigratedToStreetName = CreateAddressWasMigratedToStreetName(
+                parentAddressPersistentLocalId, AddressStatus.Current);
+            var proposedChildAddressWasMigratedToStreetName = CreateAddressWasMigratedToStreetName(
+                proposedChildAddressPersistentLocalId, AddressStatus.Proposed, parentAddressPersistentLocalId);
+            var currentChildAddressWasMigratedToStreetName = CreateAddressWasMigratedToStreetName(
+                currentChildAddressPersistentLocalId, AddressStatus.Current, parentAddressPersistentLocalId);
 
             var sut = new StreetNameFactory(NoSnapshotStrategy.Instance).Create();
-            sut.Initialize(new List<object> { parentAddressWasMigratedToStreetName, childAddressWasMigratedToStreetName });
+            sut.Initialize(new[]
+            {
+                parentAddressWasMigratedToStreetName,
+                proposedChildAddressWasMigratedToStreetName,
+                currentChildAddressWasMigratedToStreetName
+            });
 
             // Act
             sut.RetireAddress(parentAddressPersistentLocalId);
 
             // Assert
-            var parentAddress = sut.StreetNameAddresses.First(x => x.AddressPersistentLocalId == parentAddressPersistentLocalId);
-            var childAddress = sut.StreetNameAddresses.First(x => x.AddressPersistentLocalId == childAddressPersistentLocalId);
+            var parentAddress = sut.StreetNameAddresses
+                .First(x => x.AddressPersistentLocalId == parentAddressPersistentLocalId);
+            var previouslyProposedChildAddress = sut.StreetNameAddresses
+                .First(x => x.AddressPersistentLocalId == proposedChildAddressPersistentLocalId);
+            var previouslyCurrentChildAddress = sut.StreetNameAddresses
+                .First(x => x.AddressPersistentLocalId == currentChildAddressPersistentLocalId);
 
             parentAddress.Status.Should().Be(AddressStatus.Retired);
-            childAddress.Status.Should().Be(AddressStatus.Retired);
+            previouslyProposedChildAddress.Status.Should().Be(AddressStatus.Rejected);
+            previouslyCurrentChildAddress.Status.Should().Be(AddressStatus.Retired);
         }
     }
 }

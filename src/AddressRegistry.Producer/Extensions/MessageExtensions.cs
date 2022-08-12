@@ -112,6 +112,9 @@ namespace AddressRegistry.Producer.Extensions
         public static Contracts.AddressWasRejectedBecauseHouseNumberWasRejected ToContract(this StreetNameAggregate.AddressWasRejectedBecauseHouseNumberWasRejected message) =>
             new Contracts.AddressWasRejectedBecauseHouseNumberWasRejected(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
 
+        public static Contracts.AddressWasRejectedBecauseHouseNumberWasRetired ToContract(this StreetNameAggregate.AddressWasRejectedBecauseHouseNumberWasRetired message) =>
+            new Contracts.AddressWasRejectedBecauseHouseNumberWasRetired(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
+
         public static Contracts.AddressWasRejectedBecauseStreetNameWasRetired ToContract(this StreetNameAggregate.AddressWasRejectedBecauseStreetNameWasRetired message) =>
             new Contracts.AddressWasRejectedBecauseStreetNameWasRetired(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
 

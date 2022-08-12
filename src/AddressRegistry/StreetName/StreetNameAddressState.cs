@@ -43,6 +43,7 @@ namespace AddressRegistry.StreetName
             Register<AddressWasApproved>(When);
             Register<AddressWasRejected>(When);
             Register<AddressWasRejectedBecauseHouseNumberWasRejected>(When);
+            Register<AddressWasRejectedBecauseHouseNumberWasRetired>(When);
             Register<AddressWasRejectedBecauseStreetNameWasRetired>(When);
             Register<AddressWasDeregulated>(When);
             Register<AddressWasRegularized>(When);
@@ -99,6 +100,13 @@ namespace AddressRegistry.StreetName
         }
 
         private void When(AddressWasRejectedBecauseHouseNumberWasRejected @event)
+        {
+            Status = AddressStatus.Rejected;
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressWasRejectedBecauseHouseNumberWasRetired @event)
         {
             Status = AddressStatus.Rejected;
 

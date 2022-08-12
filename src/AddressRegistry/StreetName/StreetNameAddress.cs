@@ -172,9 +172,14 @@ namespace AddressRegistry.StreetName
                     break;
             }
 
-            foreach (var child in _children)
+            foreach (var child in _children.Where(address => address.Status == AddressStatus.Current))
             {
                 child.RetireBecauseParentWasRetired();
+            }
+
+            foreach (var child in _children.Where(address => address.Status == AddressStatus.Proposed))
+            {
+                child.RejectBecauseParentWasRetired();
             }
         }
 
@@ -188,6 +193,19 @@ namespace AddressRegistry.StreetName
             if (Status == AddressStatus.Current)
             {
                 Apply(new AddressWasRetiredBecauseHouseNumberWasRetired(_streetNamePersistentLocalId, AddressPersistentLocalId));
+            }
+        }
+
+        private void RejectBecauseParentWasRetired()
+        {
+            if (IsRemoved)
+            {
+                return;
+            }
+
+            if (Status == AddressStatus.Proposed)
+            {
+                Apply(new AddressWasRejectedBecauseHouseNumberWasRetired(_streetNamePersistentLocalId, AddressPersistentLocalId));
             }
         }
 

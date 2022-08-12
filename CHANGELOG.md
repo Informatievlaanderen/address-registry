@@ -1,3 +1,10 @@
+## [3.30.5](https://github.com/informatievlaanderen/address-registry/compare/v3.30.4...v3.30.5) (2022-08-12)
+
+
+### Bug Fixes
+
+* review 672 status validation ([6259c36](https://github.com/informatievlaanderen/address-registry/commit/6259c3666da0fd2fb4e2feed33356c38c9995be0))
+
 ## [3.30.4](https://github.com/informatievlaanderen/address-registry/compare/v3.30.3...v3.30.4) (2022-08-11)
 
 

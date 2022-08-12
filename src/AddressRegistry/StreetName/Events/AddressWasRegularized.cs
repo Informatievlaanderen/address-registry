@@ -10,7 +10,7 @@ namespace AddressRegistry.StreetName.Events
 
     [EventTags(EventTag.For.Edit, EventTag.For.Sync)]
     [EventName(EventName)]
-    [EventDescription("Het adres werd geregulariseerd.")]
+    [EventDescription("Het adres kreeg aanduiding 'officieel toegekend'.")]
     public class AddressWasRegularized : IStreetNameEvent, IHasAddressPersistentLocalId
     {
         public const string EventName = "AddressWasRegularized"; // BE CAREFUL CHANGING THIS!!

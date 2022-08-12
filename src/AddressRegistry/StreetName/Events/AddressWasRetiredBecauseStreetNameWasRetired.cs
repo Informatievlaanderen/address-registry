@@ -11,7 +11,7 @@ namespace AddressRegistry.StreetName.Events
 
     [EventTags(EventTag.For.Edit, EventTag.For.Sync)]
     [EventName(EventName)]
-    [EventDescription("Het adres werd opgeheven door opheffing straatnaam.")]
+    [EventDescription("Het adres met status inGebruik werd gehistoreerd door historering straatnaam.")]
     public class AddressWasRetiredBecauseStreetNameWasRetired : IStreetNameEvent, IHasAddressPersistentLocalId
     {
         public const string EventName = "AddressWasRetiredBecauseStreetNameWasRetired"; // BE CAREFUL CHANGING THIS!!

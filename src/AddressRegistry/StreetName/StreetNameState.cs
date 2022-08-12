@@ -39,6 +39,7 @@ namespace AddressRegistry.StreetName
             Register<AddressWasApproved>(When);
             Register<AddressWasRejected>(When);
             Register<AddressWasRejectedBecauseHouseNumberWasRejected>(When);
+            Register<AddressWasRejectedBecauseHouseNumberWasRetired>(When);
             Register<AddressWasRejectedBecauseStreetNameWasRetired>(When);
             Register<AddressWasDeregulated>(When);
             Register<AddressWasRegularized>(When);
@@ -118,6 +119,12 @@ namespace AddressRegistry.StreetName
         }
 
         private void When(AddressWasRejectedBecauseHouseNumberWasRejected @event)
+        {
+            var addressToReject = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
+            addressToReject.Route(@event);
+        }
+
+        private void When(AddressWasRejectedBecauseHouseNumberWasRetired @event)
         {
             var addressToReject = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
             addressToReject.Route(@event);

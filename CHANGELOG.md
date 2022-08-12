@@ -1,3 +1,10 @@
+## [3.30.7](https://github.com/informatievlaanderen/address-registry/compare/v3.30.6...v3.30.7) (2022-08-12)
+
+
+### Bug Fixes
+
+* rename event descriptions for AddressWasRegularized and AddressWasDeregulated ([7022ced](https://github.com/informatievlaanderen/address-registry/commit/7022ced7370a1a530dac3d072b26e2d19c45d9d5))
+
 ## [3.30.6](https://github.com/informatievlaanderen/address-registry/compare/v3.30.5...v3.30.6) (2022-08-12)
 
 

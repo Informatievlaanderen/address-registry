@@ -40,7 +40,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRegularizingAddress
                 .Returns(Task.FromResult(new ValidationResult()));
 
             MockMediator.Setup(x => x.Send(It.IsAny<AddressRegularizeRequest>(), CancellationToken.None))
-                .Throws(new AddressCannotBeRegularizedException(AddressStatus.Current));
+                .Throws(new AddressHasInvalidStatusException());
 
             _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.Add(
                 new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));

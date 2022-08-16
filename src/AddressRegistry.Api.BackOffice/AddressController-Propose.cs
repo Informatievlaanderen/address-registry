@@ -77,7 +77,7 @@ namespace AddressRegistry.Api.BackOffice
                             nameof(request.Huisnummer),
                             ValidationErrorMessages.AddressAlreadyExists),
 
-                    DuplicateBoxNumberException _ =>
+                    BoxNumberAlreadyExistsException _ =>
                         CreateValidationException(
                             ValidationErrorCodes.AddressAlreadyExists,
                             nameof(request.Busnummer),
@@ -91,7 +91,7 @@ namespace AddressRegistry.Api.BackOffice
                                 request.StraatNaamId,
                                 e.HouseNumber)),
 
-                    StreetNameNotActiveException _ =>
+                    StreetNameHasInvalidStatusException _ =>
                         CreateValidationException(
                             ValidationErrorCodes.StreetNameIsNotActive,
                             nameof(request.StraatNaamId),

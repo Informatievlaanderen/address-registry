@@ -98,9 +98,9 @@ namespace AddressRegistry.Api.BackOffice
             {
                 throw exception switch
                 {
-                    AddressNotFoundException => new ApiException(ValidationErrorMessages.AddressNotFound, StatusCodes.Status404NotFound),
+                    AddressIsNotFoundException => new ApiException(ValidationErrorMessages.AddressNotFound, StatusCodes.Status404NotFound),
                     AddressIsRemovedException => new ApiException(ValidationErrorMessages.AddressRemoved, StatusCodes.Status410Gone),
-                    AddressCannotBeRejectedException => CreateValidationException(
+                    AddressHasInvalidStatusException => CreateValidationException(
                         ValidationErrorCodes.AddressCannotBeRejected,
                         string.Empty,
                         ValidationErrorMessages.AddressCannotBeRejected),

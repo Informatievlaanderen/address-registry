@@ -36,7 +36,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                 .Returns(Task.FromResult(new ValidationResult()));
 
             MockMediator.Setup(x => x.Send(It.IsAny<AddressProposeRequest>(), CancellationToken.None))
-                .Throws(new StreetNameNotActiveException(streetNamePersistentId));
+                .Throws(new StreetNameHasInvalidStatusException());
 
             var body = new AddressProposeRequest
             {

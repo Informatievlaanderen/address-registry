@@ -41,7 +41,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenDeregulatingAddress
                 .Returns(Task.FromResult(new ValidationResult()));
 
             MockMediator.Setup(x => x.Send(It.IsAny<AddressDeregulateRequest>(), CancellationToken.None))
-                .Throws(new AddressNotFoundException(addressPersistentLocalId));
+                .Throws(new AddressIsNotFoundException(addressPersistentLocalId));
 
             _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.Add(
                 new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));

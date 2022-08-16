@@ -48,7 +48,7 @@ namespace AddressRegistry.StreetName
                 case AddressStatus.Current:
                     return;
                 case AddressStatus.Retired or AddressStatus.Rejected:
-                    throw new AddressCannotBeApprovedException(Status);
+                    throw new AddressHasInvalidStatusException();
                 case AddressStatus.Proposed:
                     Apply(new AddressWasApproved(_streetNamePersistentLocalId, AddressPersistentLocalId));
                     break;
@@ -67,7 +67,7 @@ namespace AddressRegistry.StreetName
                 case AddressStatus.Rejected:
                     return;
                 case AddressStatus.Current or AddressStatus.Retired:
-                    throw new AddressCannotBeRejectedException(Status);
+                    throw new AddressHasInvalidStatusException();
                 case AddressStatus.Proposed:
                     foreach (var child in _children)
                     {
@@ -121,7 +121,7 @@ namespace AddressRegistry.StreetName
 
             if (!validStatuses.Contains(Status))
             {
-                throw new AddressCannotBeDeregulatedException(Status);
+                throw new AddressHasInvalidStatusException();
             }
 
             if (!IsOfficiallyAssigned)
@@ -143,7 +143,7 @@ namespace AddressRegistry.StreetName
 
             if (!validStatuses.Contains(Status))
             {
-                throw new AddressCannotBeRegularizedException(Status);
+                throw new AddressHasInvalidStatusException();
             }
 
             if (IsOfficiallyAssigned)
@@ -166,7 +166,7 @@ namespace AddressRegistry.StreetName
                 case AddressStatus.Retired:
                     return;
                 case AddressStatus.Proposed or AddressStatus.Rejected:
-                    throw new AddressCannotBeRetiredException(Status);
+                    throw new AddressHasInvalidStatusException();
                 case AddressStatus.Current:
                     Apply(new AddressWasRetiredV2(_streetNamePersistentLocalId, AddressPersistentLocalId));
                     break;

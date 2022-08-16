@@ -76,7 +76,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRegularizingAddress
                 .Given(_streamId,
                     Fixture.Create<StreetNameWasImported>())
                 .When(command)
-                .Throws(new AddressNotFoundException(addressPersistentLocalId)));
+                .Throws(new AddressIsNotFoundException(addressPersistentLocalId)));
         }
 
         [Fact]
@@ -123,7 +123,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRegularizingAddress
         [Theory]
         [InlineData(AddressStatus.Rejected)]
         [InlineData(AddressStatus.Retired)]
-        public void AddressWithInvalidStatus_ThenThrowsAddressCannotBeRegularizedException(AddressStatus addressStatus)
+        public void AddressWithInvalidStatus_ThenThrowsAddressHasInvalidStatusException(AddressStatus addressStatus)
         {
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
@@ -160,7 +160,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRegularizingAddress
                     streetNameWasImported,
                     addressWasMigratedToStreetName)
                 .When(regularizeAddress)
-                .Throws(new AddressCannotBeRegularizedException(addressStatus)));
+                .Throws(new AddressHasInvalidStatusException()));
         }
 
         [Fact]

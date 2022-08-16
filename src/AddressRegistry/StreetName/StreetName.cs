@@ -2,6 +2,7 @@ namespace AddressRegistry.StreetName
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
@@ -167,7 +168,7 @@ namespace AddressRegistry.StreetName
 
             if (isChild && !parent.BoxNumberIsUnique(boxNumber!))
             {
-                throw new DuplicateBoxNumberException(boxNumber!);
+                throw new BoxNumberAlreadyExistsException(boxNumber!);
             }
 
             ApplyChange(new AddressWasProposedV2(
@@ -185,7 +186,7 @@ namespace AddressRegistry.StreetName
 
             if (addressToApprove is null)
             {
-                throw new AddressNotFoundException(addressPersistentLocalId);
+                throw new AddressIsNotFoundException(addressPersistentLocalId);
             }
 
             addressToApprove.Approve();
@@ -197,7 +198,7 @@ namespace AddressRegistry.StreetName
 
             if (addressToReject is null)
             {
-                throw new AddressNotFoundException(addressPersistentLocalId);
+                throw new AddressIsNotFoundException(addressPersistentLocalId);
             }
 
             addressToReject.Reject();
@@ -209,7 +210,7 @@ namespace AddressRegistry.StreetName
 
             if (addressToDeregulate is null)
             {
-                throw new AddressNotFoundException(addressPersistentLocalId);
+                throw new AddressIsNotFoundException(addressPersistentLocalId);
             }
 
             addressToDeregulate.Deregulate();
@@ -221,7 +222,7 @@ namespace AddressRegistry.StreetName
 
             if (addressToRegularize is null)
             {
-                throw new AddressNotFoundException(addressPersistentLocalId);
+                throw new AddressIsNotFoundException(addressPersistentLocalId);
             }
 
             addressToRegularize.Regularize();
@@ -233,7 +234,7 @@ namespace AddressRegistry.StreetName
 
             if (addressToRetire is null)
             {
-                throw new AddressNotFoundException(addressPersistentLocalId);
+                throw new AddressIsNotFoundException(addressPersistentLocalId);
             }
 
             addressToRetire.Retire();
@@ -246,9 +247,11 @@ namespace AddressRegistry.StreetName
                 throw new StreetNameIsRemovedException(streetNamePersistentLocalId);
             }
 
-            if (!IsActive)
+            var validStatuses = new[] { StreetNameStatus.Proposed, StreetNameStatus.Current };
+
+            if (!validStatuses.Contains(Status))
             {
-                throw new StreetNameNotActiveException(streetNamePersistentLocalId);
+                throw new StreetNameHasInvalidStatusException();
             }
         }
 

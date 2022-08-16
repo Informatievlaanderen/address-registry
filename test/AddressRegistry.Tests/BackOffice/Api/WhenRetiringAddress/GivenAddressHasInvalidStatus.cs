@@ -40,7 +40,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRetiringAddress
                 .Returns(Task.FromResult(new ValidationResult()));
 
             MockMediator.Setup(x => x.Send(It.IsAny<AddressRetireRequest>(), CancellationToken.None))
-                .Throws(new AddressCannotBeRetiredException(AddressStatus.Proposed));
+                .Throws(new AddressHasInvalidStatusException());
 
             _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.Add(
                 new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));

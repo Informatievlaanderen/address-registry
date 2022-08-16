@@ -41,7 +41,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
                 .Returns(Task.FromResult(new ValidationResult()));
 
             MockMediator.Setup(x => x.Send(It.IsAny<AddressApproveRequest>(), CancellationToken.None))
-                .Throws(new AddressCannotBeApprovedException(AddressStatus.Rejected));
+                .Throws(new AddressHasInvalidStatusException());
 
             _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.Add(
                 new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));

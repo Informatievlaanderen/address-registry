@@ -71,7 +71,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenDeregulatingAddress
                 .Given(_streamId,
                     Fixture.Create<StreetNameWasImported>())
                 .When(command)
-                .Throws(new AddressNotFoundException(addressPersistentLocalId)));
+                .Throws(new AddressIsNotFoundException(addressPersistentLocalId)));
         }
 
         [Fact]
@@ -118,7 +118,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenDeregulatingAddress
         [Theory]
         [InlineData(AddressStatus.Rejected)]
         [InlineData(AddressStatus.Retired)]
-        public void AddressWithInvalidStatus_ThenThrowsAddressCannotBeDeregulatedException(AddressStatus addressStatus)
+        public void AddressWithInvalidStatus_ThenThrowsAddressHasInvalidStatusException(AddressStatus addressStatus)
         {
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
@@ -155,7 +155,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenDeregulatingAddress
                     streetNameWasImported,
                     addressWasMigratedToStreetName)
                 .When(deregulateAddress)
-                .Throws(new AddressCannotBeDeregulatedException(addressStatus)));
+                .Throws(new AddressHasInvalidStatusException()));
         }
 
         [Fact]

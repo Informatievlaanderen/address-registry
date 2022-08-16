@@ -1,3 +1,10 @@
+# [3.31.0](https://github.com/informatievlaanderen/address-registry/compare/v3.30.7...v3.31.0) (2022-08-16)
+
+
+### Features
+
+* reject proposed bus number address on retire house number address ([423f481](https://github.com/informatievlaanderen/address-registry/commit/423f4817e4ccc792392e424c37100f46259581e3))
+
 ## [3.30.7](https://github.com/informatievlaanderen/address-registry/compare/v3.30.6...v3.30.7) (2022-08-12)
 
 

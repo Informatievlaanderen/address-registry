@@ -40,7 +40,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRejectingAddress
                 .Returns(Task.FromResult(new ValidationResult()));
 
             MockMediator.Setup(x => x.Send(It.IsAny<AddressRejectRequest>(), CancellationToken.None))
-                .Throws(new AddressCannotBeRejectedException(AddressStatus.Current));
+                .Throws(new AddressHasInvalidStatusException());
 
             _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.Add(
                 new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));

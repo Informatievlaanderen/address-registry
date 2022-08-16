@@ -39,7 +39,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                 .Returns(Task.FromResult(new ValidationResult()));
 
             MockMediator.Setup(x => x.Send(It.IsAny<AddressProposeRequest>(), CancellationToken.None))
-                .Throws(new DuplicateBoxNumberException(new BoxNumber(boxNumber)));
+                .Throws(new BoxNumberAlreadyExistsException(new BoxNumber(boxNumber)));
 
             var body = new AddressProposeRequest
             {

@@ -4,13 +4,13 @@ namespace AddressRegistry.StreetName.Exceptions
     using System.Runtime.Serialization;
 
     [Serializable]
-    public sealed class DuplicateBoxNumberException : AddressRegistryException
+    public sealed class BoxNumberAlreadyExistsException : AddressRegistryException
     {
-        public DuplicateBoxNumberException(BoxNumber boxNumber)
+        public BoxNumberAlreadyExistsException(BoxNumber boxNumber)
             : base($"Attempt to add child address with duplicate boxnumber '{boxNumber}'.")
         { }
 
-        private DuplicateBoxNumberException(SerializationInfo info, StreamingContext context)
+        private BoxNumberAlreadyExistsException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         { }
     }

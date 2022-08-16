@@ -98,7 +98,7 @@ namespace AddressRegistry.Api.BackOffice
             {
                 throw exception switch
                 {
-                    StreetNameNotActiveException _ =>
+                    StreetNameHasInvalidStatusException _ =>
                         CreateValidationException(
                             ValidationErrorCodes.StreetNameIsNotActive,
                             string.Empty,
@@ -110,9 +110,9 @@ namespace AddressRegistry.Api.BackOffice
                             string.Empty,
                             ValidationErrorMessages.StreetNameInvalid(streetNamePersistentLocalId)),
 
-                    AddressNotFoundException => new ApiException(ValidationErrorMessages.AddressNotFound, StatusCodes.Status404NotFound),
+                    AddressIsNotFoundException => new ApiException(ValidationErrorMessages.AddressNotFound, StatusCodes.Status404NotFound),
                     AddressIsRemovedException => new ApiException(ValidationErrorMessages.AddressRemoved, StatusCodes.Status410Gone),
-                    AddressCannotBeRetiredException => CreateValidationException(
+                    AddressHasInvalidStatusException => CreateValidationException(
                         ValidationErrorCodes.AddressCannotBeRetired,
                         string.Empty,
                         ValidationErrorMessages.AddressCannotBeRetired),

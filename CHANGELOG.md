@@ -1,3 +1,10 @@
+## [3.33.2](https://github.com/informatievlaanderen/address-registry/compare/v3.33.1...v3.33.2) (2022-08-17)
+
+
+### Bug Fixes
+
+* add events to migration producer ([bb74348](https://github.com/informatievlaanderen/address-registry/commit/bb743482e331116bc5fa5ea26d9ed3eb810e40ee))
+
 ## [3.33.1](https://github.com/informatievlaanderen/address-registry/compare/v3.33.0...v3.33.1) (2022-08-17)
 
 # [3.33.0](https://github.com/informatievlaanderen/address-registry/compare/v3.32.0...v3.33.0) (2022-08-17)

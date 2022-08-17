@@ -131,6 +131,7 @@ namespace AddressRegistry.Tests.BackOffice
                 houseNumber,
                 boxNumber,
                 PositionGeometryMethod.DerivedFromObject,
+                GeometrySpecification.RoadSegment,
                 Fixture.Create<Provenance>());
             DispatchArrangeCommand(proposeCommand);
         }

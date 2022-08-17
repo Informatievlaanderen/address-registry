@@ -57,6 +57,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                 houseNumber,
                 boxNumber,
                 PositionGeometryMethod.DerivedFromObject,
+                GeometrySpecification.RoadSegment,
                 provenance);
 
             var addressWasProposedV2 = new AddressWasProposedV2(

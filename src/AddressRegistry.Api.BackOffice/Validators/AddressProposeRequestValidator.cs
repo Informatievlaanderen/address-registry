@@ -1,6 +1,7 @@
 namespace AddressRegistry.Api.BackOffice.Validators
 {
     using Abstractions.Requests;
+    using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Validators;
     using FluentValidation;
     using Projections.Syndication;
@@ -28,6 +29,32 @@ namespace AddressRegistry.Api.BackOffice.Validators
                 .Must(BoxNumberValidator.IsValid)
                 .WithMessage(ValidationErrorMessages.BoxNumberInvalid)
                 .WithErrorCode(ValidationErrorCodes.BoxNumberInvalid);
+
+            RuleFor(x => x.PositieSpecificatie)
+                .NotEmpty()
+                .When(x => x.PositieGeometrieMethode == PositieGeometrieMethode.AangeduidDoorBeheerder)
+                .WithMessage(ValidationErrorMessages.PositionSpecificationRequired)
+                .WithErrorCode(ValidationErrorCodes.PositionSpecificationRequired);
+
+            RuleFor(x => x.PositieSpecificatie)
+                .Must(x =>
+                    x == PositieSpecificatie.Ingang ||
+                    x == PositieSpecificatie.Perceel ||
+                    x == PositieSpecificatie.Lot ||
+                    x == PositieSpecificatie.Standplaats ||
+                    x == PositieSpecificatie.Ligplaats)
+                .When(x => x.PositieGeometrieMethode == PositieGeometrieMethode.AangeduidDoorBeheerder)
+                .WithMessage(ValidationErrorMessages.PositionSpecificationInvalid)
+                .WithErrorCode(ValidationErrorCodes.PositionSpecificationInvalid);
+
+            RuleFor(x => x.PositieSpecificatie)
+                .Must(x =>
+                    x is null ||
+                    x == PositieSpecificatie.Gemeente ||
+                    x == PositieSpecificatie.Wegsegment)
+                .When(x => x.PositieGeometrieMethode == PositieGeometrieMethode.AfgeleidVanObject)
+                .WithMessage(ValidationErrorMessages.PositionSpecificationInvalid)
+                .WithErrorCode(ValidationErrorCodes.PositionSpecificationInvalid);
         }
     }
 }

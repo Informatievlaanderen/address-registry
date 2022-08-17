@@ -50,6 +50,13 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
         [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Ignore)]
         public PositieGeometrieMethode? PositieGeometrieMethode { get; set; }
 
+        /// <summary>
+        /// De specificatie van de adrespositie (optioneel).
+        /// </summary>
+        [DataMember(Name = "PositieSpecificatie", Order = 5)]
+        [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public PositieSpecificatie? PositieSpecificatie { get; set; }
+
         [JsonIgnore]
         public IDictionary<string, object> Metadata { get; set; }
 
@@ -72,6 +79,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
                 new HouseNumber(Huisnummer),
                 string.IsNullOrWhiteSpace(Busnummer) ? null : new BoxNumber(Busnummer),
                 PositieGeometrieMethode.Map(),
+                PositieSpecificatie.Map(),
                 provenance);
         }
     }

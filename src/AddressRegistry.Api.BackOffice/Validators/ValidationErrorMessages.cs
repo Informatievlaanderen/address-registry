@@ -19,6 +19,10 @@ namespace AddressRegistry.Api.BackOffice.Validators
 
         public const string BoxNumberInvalid = "Ongeldig busnummerformaat.";
 
+        public const string PositionSpecificationRequired = "Positiespecificatie is verplicht bij een manuele aanduiding van de positie.";
+
+        public const string PositionSpecificationInvalid = "Ongeldige positiespecificatie.";
+
         public const string AddressNotFound = "Onbestaand adres.";
         public const string AddressRemoved = "Verwijderde adres.";
         public const string AddressCannotBeApproved = "Deze actie is enkel toegestaan op adressen met status 'voorgesteld'.";

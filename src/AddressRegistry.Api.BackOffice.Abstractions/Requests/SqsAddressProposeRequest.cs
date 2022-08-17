@@ -2,14 +2,12 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
 {
     using System.Collections.Generic;
     using System.Runtime.Serialization;
+    using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using MediatR;
-    using Microsoft.AspNetCore.Http;
+    using Converters;
     using Newtonsoft.Json;
-    using Responses;
     using StreetName;
     using StreetName.Commands;
-    using Swashbuckle.AspNetCore.Filters;
 
     [DataContract(Name = "VoorstelAdres", Namespace = "")]
     public class SqsAddressProposeRequest : SqsRequest
@@ -42,6 +40,13 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
         [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string? Busnummer { get; set; }
 
+        /// <summary>
+        /// De geometriemethode van het adres.
+        /// </summary>
+        [DataMember(Name= "PositieGeometriemethode", Order = 4)]
+        [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public PositieGeometrieMethode? PositieGeometrieMethode { get; set; }
+
         [JsonIgnore]
         public IDictionary<string, object> Metadata { get; set; }
 
@@ -63,6 +68,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
                 addressPersistentLocalId,
                 new HouseNumber(Huisnummer),
                 string.IsNullOrWhiteSpace(Busnummer) ? null : new BoxNumber(Busnummer),
+                PositieGeometrieMethode.Map(),
                 provenance);
         }
     }

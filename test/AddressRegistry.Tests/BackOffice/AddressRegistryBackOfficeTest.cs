@@ -130,6 +130,7 @@ namespace AddressRegistry.Tests.BackOffice
                 addressPersistentLocalId,
                 houseNumber,
                 boxNumber,
+                PositionGeometryMethod.DerivedFromObject,
                 Fixture.Create<Provenance>());
             DispatchArrangeCommand(proposeCommand);
         }

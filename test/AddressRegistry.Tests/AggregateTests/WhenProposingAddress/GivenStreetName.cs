@@ -52,6 +52,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 Fixture.Create<AddressPersistentLocalId>(),
                 houseNumber,
                 Fixture.Create<BoxNumber>(),
+                PositionGeometryMethod.DerivedFromObject,
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -101,7 +102,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
             var childBoxNumber = Fixture.Create<BoxNumber>();
 
             // Act
-            
+
             aggregate.ProposeAddress(
                 aggregateId,
                 childPersistentLocalId,
@@ -136,6 +137,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 Fixture.Create<AddressPersistentLocalId>(),
                 houseNumber,
                 Fixture.Create<BoxNumber>(),
+                PositionGeometryMethod.DerivedFromObject,
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -158,6 +160,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 Fixture.Create<AddressPersistentLocalId>(),
                 houseNumber,
                 Fixture.Create<BoxNumber>(),
+                PositionGeometryMethod.DerivedFromObject,
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -179,6 +182,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 Fixture.Create<AddressPersistentLocalId>(),
                 new HouseNumber(houseNumber),
                 boxNumber: null,
+                PositionGeometryMethod.DerivedFromObject,
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()

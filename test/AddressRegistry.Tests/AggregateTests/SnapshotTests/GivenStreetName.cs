@@ -56,6 +56,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                 Fixture.Create<AddressPersistentLocalId>(),
                 houseNumber,
                 boxNumber,
+                PositionGeometryMethod.DerivedFromObject,
                 provenance);
 
             var addressWasProposedV2 = new AddressWasProposedV2(

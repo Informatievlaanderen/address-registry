@@ -4,6 +4,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs
     using Abstractions;
     using Abstractions.Requests;
     using Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple;
+    using Microsoft.Extensions.Logging;
     using TicketingService.Abstractions;
 
     public class SqsAddressApproveHandler : SqsHandler<SqsAddressApproveRequest>
@@ -11,11 +12,12 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs
         private readonly BackOfficeContext _backOfficeContext;
 
         public SqsAddressApproveHandler(
+            ILogger<SqsAddressApproveHandler> logger,
             SqsOptions sqsOptions,
             ITicketing ticketing,
             ITicketingUrl ticketingUrl,
             BackOfficeContext backOfficeContext)
-            : base (sqsOptions, ticketing, ticketingUrl)
+            : base (logger, sqsOptions, ticketing, ticketingUrl)
         {
             _backOfficeContext = backOfficeContext;
         }

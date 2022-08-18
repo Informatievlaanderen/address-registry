@@ -54,6 +54,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 Fixture.Create<BoxNumber>(),
                 PositionGeometryMethod.DerivedFromObject,
                 GeometrySpecification.RoadSegment,
+                null,
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -140,6 +141,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 Fixture.Create<BoxNumber>(),
                 PositionGeometryMethod.DerivedFromObject,
                 GeometrySpecification.RoadSegment,
+                null,
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -164,6 +166,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 Fixture.Create<BoxNumber>(),
                 PositionGeometryMethod.DerivedFromObject,
                 GeometrySpecification.RoadSegment,
+                null,
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -187,6 +190,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 boxNumber: null,
                 PositionGeometryMethod.DerivedFromObject,
                 GeometrySpecification.RoadSegment,
+                null,
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()

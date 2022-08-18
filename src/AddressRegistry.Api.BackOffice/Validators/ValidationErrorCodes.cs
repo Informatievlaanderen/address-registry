@@ -15,8 +15,10 @@ namespace AddressRegistry.Api.BackOffice.Validators
         public const string BoxNumberInvalid = "AdresOngeldigBusnummerformaat";
 
         public const string PositionSpecificationRequired = "AdresspecificatieVerplichtBijManueleAanduiding";
-
         public const string PositionSpecificationInvalid = "AdresspecificatieValidatie";
+
+        public const string PositionRequired = "AdresGeometriemethodeValidatie";
+        public const string PositionInvalidFormat = "AdrespositieFormaatValidatie";
 
         public const string AddressRemoved = "AdresIsVerwijderd";
         public const string AddressCannotBeApproved = "AdresGehistoreerdOfAfgekeurd";

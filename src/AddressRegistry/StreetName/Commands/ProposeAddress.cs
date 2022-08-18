@@ -18,6 +18,7 @@ namespace AddressRegistry.StreetName.Commands
         public BoxNumber? BoxNumber { get; set; }
         public PositionGeometryMethod PositionGeometryMethod { get; set; }
         public GeometrySpecification? GeometrySpecification { get; set; }
+        public ExtendedWkbGeometry? Position { get; private set; }
         public Provenance Provenance { get; }
 
         public ProposeAddress(
@@ -29,6 +30,7 @@ namespace AddressRegistry.StreetName.Commands
             BoxNumber? boxNumber,
             PositionGeometryMethod positionGeometryMethod,
             GeometrySpecification? geometrySpecification,
+            ExtendedWkbGeometry? position,
             Provenance provenance)
         {
             StreetNamePersistentLocalId = streetNamePersistentLocalId;
@@ -39,6 +41,7 @@ namespace AddressRegistry.StreetName.Commands
             BoxNumber = boxNumber;
             PositionGeometryMethod = positionGeometryMethod;
             GeometrySpecification = geometrySpecification;
+            Position = position;
             Provenance = provenance;
         }
 

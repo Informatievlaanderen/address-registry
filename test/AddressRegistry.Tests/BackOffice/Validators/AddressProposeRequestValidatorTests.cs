@@ -17,7 +17,7 @@
         }
 
         [Fact]
-        public void GivenNoPositionSpecificationAndPositionGeometryMethodIsAppointedByAdministration_ThenReturnsExpectedFailure()
+        public void GivenNoPositionSpecificationAndPositionGeometryMethodIsAppointedByAdministrator_ThenReturnsExpectedFailure()
         {
             var result = _sut.TestValidate(new AddressProposeRequest
             {
@@ -35,7 +35,7 @@
         [Theory]
         [InlineData(PositieSpecificatie.Gemeente)]
         [InlineData(PositieSpecificatie.Wegsegment)]
-        public void GivenInvalidPositionSpecificationForPositionGeometryMethodAppointedByAdministration_ThenReturnsExpectedFailure(PositieSpecificatie specificatie)
+        public void GivenInvalidPositionSpecificationForPositionGeometryMethodAppointedByAdministrator_ThenReturnsExpectedFailure(PositieSpecificatie specificatie)
         {
             var result = _sut.TestValidate(new AddressProposeRequest
             {
@@ -71,6 +71,47 @@
             result.ShouldHaveValidationErrorFor(nameof(AddressProposeRequest.PositieSpecificatie))
                 .WithErrorCode("AdresspecificatieValidatie")
                 .WithErrorMessage("Ongeldige positiespecificatie.");
+        }
+
+        [Fact]
+        public void GivenNoPositionAndPositionGeometryMethodIsAppointedByAdministrator_ThenReturnsExpectedFailure()
+        {
+            var result = _sut.TestValidate(new AddressProposeRequest
+            {
+                PostInfoId = "12",
+                StraatNaamId = "34",
+                Huisnummer = "56",
+                PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
+                PositieSpecificatie = PositieSpecificatie.Ingang
+            });
+
+            result.ShouldHaveValidationErrorFor(nameof(AddressProposeRequest.Positie))
+                .WithErrorCode("AdresGeometriemethodeValidatie")
+                .WithErrorMessage("De parameter 'positie' is verplicht voor indien aangeduid door beheerder.");
+        }
+
+        [Theory]
+        [InlineData("<gml:Point srsName=\"https://INVALIDURL\" xmlns:gml=\"http://www.opengis.net/gml/3.2\">" +
+                    "<gml:pos>140285.15277253836 186725.74131567031</gml:pos></gml:Point>")]
+        [InlineData("<gml:Point missingSrSNameAttribute=\"https://www.opengis.net/def/crs/EPSG/0/31370\" xmlns:gml=\"http://www.opengis.net/gml/3.2\">" +
+                    "<gml:pos>140285.15277253836 186725.74131567031</gml:pos></gml:Point>")]
+        [InlineData("<gml:Point srsName=\"https://www.opengis.net/def/crs/EPSG/0/31370\" xmlns:gml=\"http://www.opengis.net/gml/3.2\">" +
+                    "<gml:missingPositionAttribute>140285.15277253836 186725.74131567031</gml:pos></gml:Point>")]
+        public void GivenInvalidPosition_ThenReturnsExpectedFailure(string position)
+        {
+            var result = _sut.TestValidate(new AddressProposeRequest
+            {
+                PostInfoId = "12",
+                StraatNaamId = "34",
+                Huisnummer = "56",
+                PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
+                PositieSpecificatie = PositieSpecificatie.Gemeente,
+                Positie = position
+            });
+
+            result.ShouldHaveValidationErrorFor(nameof(AddressProposeRequest.Positie))
+                .WithErrorCode("AdrespositieFormaatValidatie")
+                .WithErrorMessage("De positie is geen geldige gml-puntgeometrie.");
         }
     }
 }

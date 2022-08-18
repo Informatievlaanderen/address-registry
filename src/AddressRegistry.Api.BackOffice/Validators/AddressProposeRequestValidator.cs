@@ -1,5 +1,6 @@
 namespace AddressRegistry.Api.BackOffice.Validators
 {
+    using Abstractions;
     using Abstractions.Requests;
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Validators;
@@ -55,6 +56,18 @@ namespace AddressRegistry.Api.BackOffice.Validators
                 .When(x => x.PositieGeometrieMethode == PositieGeometrieMethode.AfgeleidVanObject)
                 .WithMessage(ValidationErrorMessages.PositionSpecificationInvalid)
                 .WithErrorCode(ValidationErrorCodes.PositionSpecificationInvalid);
+
+            RuleFor(x => x.Positie)
+                .NotEmpty()
+                .When(x => x.PositieGeometrieMethode == PositieGeometrieMethode.AangeduidDoorBeheerder)
+                .WithErrorCode(ValidationErrorCodes.PositionRequired)
+                .WithMessage(ValidationErrorMessages.PositionRequired);
+
+            RuleFor(x => x.Positie)
+                .Must(gml => GmlPointValidator.IsValid(gml, GmlHelpers.CreateGmlReader()))
+                .When(x => !string.IsNullOrEmpty(x.Positie))
+                .WithErrorCode(ValidationErrorCodes.PositionInvalidFormat)
+                .WithMessage(ValidationErrorMessages.PositionInvalidFormat);
         }
     }
 }

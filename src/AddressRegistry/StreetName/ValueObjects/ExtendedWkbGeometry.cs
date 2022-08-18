@@ -5,6 +5,8 @@ namespace AddressRegistry.StreetName
 
     public class ExtendedWkbGeometry : ByteArrayValueObject<ExtendedWkbGeometry>
     {
+        public const int SridLambert72 = 31370;
+
         public ExtendedWkbGeometry(byte[] ewkbBytes) : base(ewkbBytes) { }
 
         public ExtendedWkbGeometry(string ewkbBytesHex) : base(ewkbBytesHex.ToByteArray()) { }

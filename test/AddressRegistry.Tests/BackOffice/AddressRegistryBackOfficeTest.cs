@@ -132,6 +132,7 @@ namespace AddressRegistry.Tests.BackOffice
                 boxNumber,
                 PositionGeometryMethod.DerivedFromObject,
                 GeometrySpecification.RoadSegment,
+                null,
                 Fixture.Create<Provenance>());
             DispatchArrangeCommand(proposeCommand);
         }

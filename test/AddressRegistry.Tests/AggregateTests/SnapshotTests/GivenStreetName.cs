@@ -58,6 +58,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                 boxNumber,
                 PositionGeometryMethod.DerivedFromObject,
                 GeometrySpecification.RoadSegment,
+                null,
                 provenance);
 
             var addressWasProposedV2 = new AddressWasProposedV2(

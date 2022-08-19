@@ -38,10 +38,7 @@ namespace AddressRegistry.StreetName
 
         public void Approve()
         {
-            if (IsRemoved)
-            {
-                throw new AddressIsRemovedException(AddressPersistentLocalId);
-            }
+            GuardNotRemovedAddress();
 
             switch (Status)
             {
@@ -57,10 +54,7 @@ namespace AddressRegistry.StreetName
 
         public void Reject()
         {
-            if (IsRemoved)
-            {
-                throw new AddressIsRemovedException(AddressPersistentLocalId);
-            }
+            GuardNotRemovedAddress();
 
             switch (Status)
             {
@@ -112,10 +106,7 @@ namespace AddressRegistry.StreetName
 
         public void Deregulate()
         {
-            if (IsRemoved)
-            {
-                throw new AddressIsRemovedException(AddressPersistentLocalId);
-            }
+            GuardNotRemovedAddress();
 
             var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
 
@@ -134,10 +125,7 @@ namespace AddressRegistry.StreetName
 
         public void Regularize()
         {
-            if (IsRemoved)
-            {
-                throw new AddressIsRemovedException(AddressPersistentLocalId);
-            }
+            GuardNotRemovedAddress();
 
             var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
 
@@ -156,10 +144,7 @@ namespace AddressRegistry.StreetName
 
         public void Retire()
         {
-            if (IsRemoved)
-            {
-                throw new AddressIsRemovedException(AddressPersistentLocalId);
-            }
+            GuardNotRemovedAddress();
 
             switch (Status)
             {
@@ -225,6 +210,60 @@ namespace AddressRegistry.StreetName
             {
                 Apply(new AddressWasRetiredBecauseStreetNameWasRetired(_streetNamePersistentLocalId, AddressPersistentLocalId));
             }
+        }
+
+        public void ChangePosition(
+            GeometryMethod geometryMethod,
+            GeometrySpecification? geometrySpecification,
+            ExtendedWkbGeometry? position,
+            IMunicipalities municipalities)
+        {
+            GuardNotRemovedAddress();
+
+            if (geometryMethod == GeometryMethod.Interpolated)
+            {
+                throw new AddressHasInvalidGeometryMethodException();
+            }
+
+            var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
+
+            if (!validStatuses.Contains(Status))
+            {
+                throw new AddressHasInvalidStatusException();
+            }
+
+            if (geometryMethod == GeometryMethod.AppointedByAdministrator)
+            {
+                GuardsWhenAppointedByAdministrator(geometrySpecification, position);
+            }
+
+            var finalGeometrySpecification = geometryMethod == GeometryMethod.DerivedFromObject
+                ? GeometrySpecification.Municipality
+                : geometrySpecification!.Value;
+            var finalPosition = geometryMethod == GeometryMethod.DerivedFromObject
+                ? municipalities.Get(_streetName.MunicipalityId).Centroid()
+                : position!;
+
+            if (!HasGeometryChanged(geometryMethod, finalPosition, finalGeometrySpecification))
+            {
+                return;
+            }
+
+            Apply(new AddressPositionWasChanged(
+                _streetNamePersistentLocalId,
+                AddressPersistentLocalId,
+                geometryMethod,
+                finalGeometrySpecification,
+                finalPosition));
+        }
+
+        private bool HasGeometryChanged(
+            GeometryMethod geometryMethod,
+            ExtendedWkbGeometry position,
+            GeometrySpecification finalGeometrySpecification)
+        {
+            var newGeometry = new AddressGeometry(geometryMethod, finalGeometrySpecification, position);
+            return Geometry is null || Geometry != newGeometry;
         }
 
         /// <summary>

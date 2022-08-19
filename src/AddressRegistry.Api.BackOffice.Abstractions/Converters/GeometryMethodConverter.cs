@@ -1,24 +1,24 @@
-﻿namespace AddressRegistry.Api.BackOffice.Abstractions.Converters
+namespace AddressRegistry.Api.BackOffice.Abstractions.Converters
 {
     using System;
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
     using StreetName;
 
-    public static class PositionGeometryMethodConverter
+    public static class GeometryMethodConverter
     {
-        public static PositionGeometryMethod Map(this PositieGeometrieMethode? methode)
+        public static GeometryMethod Map(this PositieGeometrieMethode? methode)
         {
             if (methode is null)
             {
-                return PositionGeometryMethod.DerivedFromObject;
+                return GeometryMethod.DerivedFromObject;
             }
 
             switch (methode)
             {
                 case PositieGeometrieMethode.AangeduidDoorBeheerder:
-                    return PositionGeometryMethod.AppointedByAdministrator;
+                    return GeometryMethod.AppointedByAdministrator;
                 case PositieGeometrieMethode.AfgeleidVanObject:
-                    return PositionGeometryMethod.DerivedFromObject;
+                    return GeometryMethod.DerivedFromObject;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(methode), methode, null);
             }

@@ -23,6 +23,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
 
             public const string PositionRequired = "AdresGeometriemethodeValidatie";
             public const string PositionInvalidFormat = "AdrespositieFormaatValidatie";
+            public const string GeometryMethodInvalid = "AdresGeometriemethodeValidatie";
 
             public const string AddressRemoved = "AdresIsVerwijderd";
             public const string AddressCannotBeApproved = "AdresGehistoreerdOfAfgekeurd";
@@ -30,6 +31,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
             public const string AddressCannotBeDeregulated = "AdresGehistoreerdOfAfgekeurd";
             public const string AddressCannotBeRegularized = "AdresGehistoreerdOfAfgekeurd";
             public const string AddressCannotBeRetired = "AdresVoorgesteldOfAfgekeurd";
+            public const string AddressPositionCannotBeChanged = "AdresGehistoreerdOfAfgekeurd";
 
             public const string PostalCodeNotInMunicipality = "AdresPostinfoNietInGemeente";
         }
@@ -63,6 +65,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
 
             public const string PositionRequired = "De parameter 'positie' is verplicht voor indien aangeduid door beheerder.";
             public const string PositionInvalidFormat = "De positie is geen geldige gml-puntgeometrie.";
+            public const string GeometryMethodInvalid = "Ongeldige geometriemethode.";
 
             public const string AddressNotFound = "Onbestaand adres.";
             public const string AddressRemoved = "Verwijderde adres.";
@@ -71,6 +74,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
             public const string AddressCannotBeDeregulated = "Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik'.";
             public const string AddressCannotBeRegularized = "Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik'.";
             public const string AddressCannotBeRetired = "Deze actie is enkel toegestaan op adressen met status 'inGebruik'.";
+            public const string AddressPositionCannotBeChanged = "Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik'.";
 
             public const string PostalCodeNotInMunicipality = "De ingevoerde postcode wordt niet gebruikt binnen deze gemeente.";
         }

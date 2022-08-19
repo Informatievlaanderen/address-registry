@@ -21,7 +21,6 @@
                 PositieSpecificatie.Standplaats => GeometrySpecification.Stand,
                 PositieSpecificatie.Ligplaats => GeometrySpecification.Berth,
                 PositieSpecificatie.Ingang => GeometrySpecification.Entry,
-                PositieSpecificatie.Wegsegment => GeometrySpecification.RoadSegment,
                 _ => throw new ArgumentOutOfRangeException(nameof(specificatie), specificatie, null)
             };
         }

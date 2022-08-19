@@ -34,7 +34,6 @@
 
         [Theory]
         [InlineData(PositieSpecificatie.Gemeente)]
-        [InlineData(PositieSpecificatie.Wegsegment)]
         public void GivenInvalidPositionSpecificationForPositionGeometryMethodAppointedByAdministrator_ThenReturnsExpectedFailure(PositieSpecificatie specificatie)
         {
             var result = _sut.TestValidate(new AddressProposeRequest

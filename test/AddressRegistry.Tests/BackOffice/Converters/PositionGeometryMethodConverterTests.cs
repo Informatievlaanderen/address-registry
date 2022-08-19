@@ -1,4 +1,4 @@
-﻿namespace AddressRegistry.Tests.BackOffice.Converters
+namespace AddressRegistry.Tests.BackOffice.Converters
 {
     using AddressRegistry.Api.BackOffice.Abstractions.Converters;
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
@@ -15,7 +15,7 @@
 
             var result = methode.Map();
 
-            result.Should().Be(PositionGeometryMethod.DerivedFromObject);
+            result.Should().Be(GeometryMethod.DerivedFromObject);
         }
 
         [Fact]
@@ -25,7 +25,7 @@
 
             var result = methode.Map();
 
-            result.Should().Be(PositionGeometryMethod.DerivedFromObject);
+            result.Should().Be(GeometryMethod.DerivedFromObject);
         }
 
         [Fact]
@@ -35,7 +35,7 @@
 
             var result = methode.Map();
 
-            result.Should().Be(PositionGeometryMethod.AppointedByAdministrator);
+            result.Should().Be(GeometryMethod.AppointedByAdministrator);
         }
     }
 }

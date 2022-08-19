@@ -1,7 +1,6 @@
 namespace AddressRegistry.Projections.Legacy.AddressDetailV2
 {
     using System;
-    using AddressDetail;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Pipes;
@@ -197,6 +196,23 @@ namespace AddressRegistry.Projections.Legacy.AddressDetailV2
                     item =>
                     {
                         item.Status = AddressStatus.Retired;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+
+                UpdateHash(item, message);
+            });
+
+            When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressDetailV2(
+                    message.Message.AddressPersistentLocalId,
+                    item =>
+                    {
+                        item.PositionMethod = message.Message.GeometryMethod;
+                        item.PositionSpecification = message.Message.GeometrySpecification;
+                        item.Position = message.Message.ExtendedWkbGeometry.ToByteArray();
+
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);

@@ -52,7 +52,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 Fixture.Create<AddressPersistentLocalId>(),
                 houseNumber,
                 Fixture.Create<BoxNumber>(),
-                PositionGeometryMethod.DerivedFromObject,
+                GeometryMethod.DerivedFromObject,
                 GeometrySpecification.RoadSegment,
                 null,
                 Fixture.Create<Provenance>());
@@ -139,7 +139,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 Fixture.Create<AddressPersistentLocalId>(),
                 houseNumber,
                 Fixture.Create<BoxNumber>(),
-                PositionGeometryMethod.DerivedFromObject,
+                GeometryMethod.DerivedFromObject,
                 GeometrySpecification.RoadSegment,
                 null,
                 Fixture.Create<Provenance>());
@@ -164,7 +164,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 Fixture.Create<AddressPersistentLocalId>(),
                 houseNumber,
                 Fixture.Create<BoxNumber>(),
-                PositionGeometryMethod.DerivedFromObject,
+                GeometryMethod.DerivedFromObject,
                 GeometrySpecification.RoadSegment,
                 null,
                 Fixture.Create<Provenance>());
@@ -188,7 +188,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 Fixture.Create<AddressPersistentLocalId>(),
                 new HouseNumber(houseNumber),
                 boxNumber: null,
-                PositionGeometryMethod.DerivedFromObject,
+                GeometryMethod.DerivedFromObject,
                 GeometrySpecification.RoadSegment,
                 null,
                 Fixture.Create<Provenance>());

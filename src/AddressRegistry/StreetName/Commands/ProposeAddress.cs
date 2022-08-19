@@ -16,7 +16,7 @@ namespace AddressRegistry.StreetName.Commands
         public AddressPersistentLocalId AddressPersistentLocalId { get; set; }
         public HouseNumber HouseNumber { get; set; }
         public BoxNumber? BoxNumber { get; set; }
-        public PositionGeometryMethod PositionGeometryMethod { get; set; }
+        public GeometryMethod GeometryMethod { get; set; }
         public GeometrySpecification? GeometrySpecification { get; set; }
         public ExtendedWkbGeometry? Position { get; private set; }
         public Provenance Provenance { get; }
@@ -28,7 +28,7 @@ namespace AddressRegistry.StreetName.Commands
             AddressPersistentLocalId addressPersistentLocalId,
             HouseNumber houseNumber,
             BoxNumber? boxNumber,
-            PositionGeometryMethod positionGeometryMethod,
+            GeometryMethod geometryMethod,
             GeometrySpecification? geometrySpecification,
             ExtendedWkbGeometry? position,
             Provenance provenance)
@@ -39,7 +39,7 @@ namespace AddressRegistry.StreetName.Commands
             AddressPersistentLocalId = addressPersistentLocalId;
             HouseNumber = houseNumber;
             BoxNumber = boxNumber;
-            PositionGeometryMethod = positionGeometryMethod;
+            GeometryMethod = geometryMethod;
             GeometrySpecification = geometrySpecification;
             Position = position;
             Provenance = provenance;
@@ -59,6 +59,9 @@ namespace AddressRegistry.StreetName.Commands
             yield return AddressPersistentLocalId;
             yield return HouseNumber;
             yield return BoxNumber ?? string.Empty;
+            yield return GeometryMethod;
+            yield return GeometrySpecification?.ToString() ?? string.Empty;
+            yield return Position ?? string.Empty;
 
             foreach (var field in Provenance.GetIdentityFields())
             {

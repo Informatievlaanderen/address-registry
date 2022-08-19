@@ -42,6 +42,7 @@ namespace AddressRegistry.StreetName
             Register<AddressWasRetiredV2>(When);
             Register<AddressWasRetiredBecauseHouseNumberWasRetired>(When);
             Register<AddressWasRetiredBecauseStreetNameWasRetired>(When);
+            Register<AddressPositionWasChanged>(When);
         }
 
         private void When(MigratedStreetNameWasImported @event)
@@ -76,7 +77,7 @@ namespace AddressRegistry.StreetName
 
         private void When(AddressWasMigratedToStreetName @event)
         {
-            var address = new StreetNameAddress(applier: ApplyChange);
+            var address = new StreetNameAddress(this, applier: ApplyChange);
             address.Route(@event);
 
             if (@event.ParentPersistentLocalId.HasValue)
@@ -90,7 +91,7 @@ namespace AddressRegistry.StreetName
 
         private void When(AddressWasProposedV2 @event)
         {
-            var address = new StreetNameAddress(applier: ApplyChange);
+            var address = new StreetNameAddress(this, applier: ApplyChange);
             address.Route(@event);
 
             if (@event.ParentPersistentLocalId.HasValue)
@@ -162,6 +163,12 @@ namespace AddressRegistry.StreetName
             addressToRetire.Route(@event);
         }
 
+        private void When(AddressPositionWasChanged @event)
+        {
+            var addressToChange = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
+            addressToChange.Route(@event);
+        }
+
         private void When(StreetNameSnapshot @event)
         {
             PersistentLocalId = new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId);
@@ -171,7 +178,7 @@ namespace AddressRegistry.StreetName
 
             foreach (var address in @event.Addresses.Where(x => !x.ParentId.HasValue))
             {
-                var streetNameAddress = new StreetNameAddress(applier: ApplyChange);
+                var streetNameAddress = new StreetNameAddress(this, applier: ApplyChange);
                 streetNameAddress.RestoreSnapshot(PersistentLocalId, address);
 
                 StreetNameAddresses.Add(streetNameAddress);
@@ -181,7 +188,7 @@ namespace AddressRegistry.StreetName
             {
                 var parent = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(address.ParentId!.Value));
 
-                var streetNameAddress = new StreetNameAddress(applier: ApplyChange);
+                var streetNameAddress = new StreetNameAddress(this, applier: ApplyChange);
                 streetNameAddress.RestoreSnapshot(PersistentLocalId, address);
                 streetNameAddress.SetParent(parent);
 

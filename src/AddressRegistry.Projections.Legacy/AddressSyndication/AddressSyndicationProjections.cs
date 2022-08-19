@@ -486,6 +486,20 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     x => x.Status = AddressStatus.Retired,
                     ct);
             });
+
+            When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressPersistentLocalId,
+                    message,
+                    x =>
+                    {
+                        x.PositionMethod = message.Message.GeometryMethod;
+                        x.PositionSpecification = message.Message.GeometrySpecification;
+                        x.PointPosition = message.Message.ExtendedWkbGeometry.ToByteArray();
+                    },
+                    ct);
+            });
         }
 
         private static async Task DoNothing()

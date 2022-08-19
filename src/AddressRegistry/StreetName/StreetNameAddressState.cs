@@ -8,6 +8,7 @@ namespace AddressRegistry.StreetName
 
     public partial class StreetNameAddress
     {
+        private readonly StreetName _streetName;
         private readonly StreetNameAddresses _children = new StreetNameAddresses();
         private IStreetNameEvent? _lastEvent;
 
@@ -36,8 +37,10 @@ namespace AddressRegistry.StreetName
         public ProvenanceData LastProvenanceData =>
             _lastEvent is null ? _lastSnapshottedProvenance : _lastEvent.Provenance;
 
-        public StreetNameAddress(Action<object> applier) : base(applier)
+        public StreetNameAddress(StreetName streetName, Action<object> applier) : base(applier)
         {
+            _streetName = streetName;
+
             Register<AddressWasMigratedToStreetName>(When);
             Register<AddressWasProposedV2>(When);
             Register<AddressWasApproved>(When);
@@ -50,6 +53,7 @@ namespace AddressRegistry.StreetName
             Register<AddressWasRetiredV2>(When);
             Register<AddressWasRetiredBecauseHouseNumberWasRetired>(When);
             Register<AddressWasRetiredBecauseStreetNameWasRetired>(When);
+            Register<AddressPositionWasChanged>(When);
         }
 
         private void When(AddressWasMigratedToStreetName @event)
@@ -151,6 +155,16 @@ namespace AddressRegistry.StreetName
         private void When(AddressWasRetiredBecauseStreetNameWasRetired @event)
         {
             Status = AddressStatus.Retired;
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressPositionWasChanged @event)
+        {
+            Geometry = new AddressGeometry(
+                @event.GeometryMethod,
+                @event.GeometrySpecification,
+                new ExtendedWkbGeometry(@event.ExtendedWkbGeometry));
 
             _lastEvent = @event;
         }

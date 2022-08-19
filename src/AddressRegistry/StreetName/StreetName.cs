@@ -240,6 +240,23 @@ namespace AddressRegistry.StreetName
             addressToRetire.Retire();
         }
 
+        public void ChangeAddressPosition(
+            AddressPersistentLocalId addressPersistentLocalId,
+            GeometryMethod geometryMethod,
+            GeometrySpecification? geometrySpecification,
+            ExtendedWkbGeometry? position,
+            IMunicipalities municipalities)
+        {
+            var addressToChange = StreetNameAddresses.FindByPersistentLocalId(addressPersistentLocalId);
+
+            if (addressToChange is null)
+            {
+                throw new AddressIsNotFoundException(addressPersistentLocalId);
+            }
+
+            addressToChange.ChangePosition(geometryMethod, geometrySpecification, position, municipalities);
+        }
+
         private void GuardActiveStreetName(StreetNamePersistentLocalId streetNamePersistentLocalId)
         {
             if (IsRemoved)

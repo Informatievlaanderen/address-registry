@@ -392,6 +392,36 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                 });
         }
 
+        [Fact]
+        public async Task WhenAddressPositionWasChanged()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressPositionWasChanged = _fixture.Create<AddressPositionWasChanged>();
+            var positionChangedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressPositionWasChanged.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressPositionWasChanged>(new Envelope(addressPositionWasChanged, positionChangedMetadata)))
+                .Then(async ct =>
+                {
+                    var item = (await ct.AddressWfsItems.FindAsync(addressPositionWasChanged.AddressPersistentLocalId));
+                    item.Should().NotBeNull();
+                    item.PositionMethod.Should().Be(AddressWfsProjections.ConvertGeometryMethodToString(addressPositionWasChanged.GeometryMethod));
+                    item.PositionSpecification = AddressWfsProjections.ConvertGeometrySpecificationToString(addressPositionWasChanged.GeometrySpecification);
+                    item.Position = (Point) _wkbReader.Read(addressPositionWasChanged.ExtendedWkbGeometry.ToByteArray());
+                    item.VersionTimestamp.Should().Be(addressPositionWasChanged.Provenance.Timestamp);
+                });
+        }
+
         protected override AddressWfsProjections CreateProjection()
             =>  new AddressWfsProjections(_wkbReader);
     }

@@ -30,6 +30,11 @@ namespace AddressRegistry.Producer
                 EventsJsonSerializerSettingsProvider.CreateSerializerSettings());
 
             // StreetName Aggregate Events
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetName.AddressPositionWasChanged>>(async (_, message, ct) =>
+            {
+                await Produce(message.Message.StreetNamePersistentLocalId, message.Message.ToContract(), ct);
+            });
+
             When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetName.AddressWasRetiredV2>>(async (_, message, ct) =>
             {
                 await Produce(message.Message.StreetNamePersistentLocalId, message.Message.ToContract(), ct);

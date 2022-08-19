@@ -56,7 +56,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                 Fixture.Create<AddressPersistentLocalId>(),
                 houseNumber,
                 boxNumber,
-                PositionGeometryMethod.DerivedFromObject,
+                GeometryMethod.DerivedFromObject,
                 GeometrySpecification.RoadSegment,
                 null,
                 provenance);

@@ -386,6 +386,34 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                 });
         }
 
+        [Fact]
+        public async Task WhenAddressPositionWasChanged()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressPositionWasChanged = _fixture.Create<AddressPositionWasChanged>();
+            var positionChangedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressPositionWasChanged.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, metadata)),
+                    new Envelope<AddressPositionWasChanged>(new Envelope(addressPositionWasChanged, positionChangedMetadata)))
+                .Then(async ct =>
+                {
+                    var addressListItemV2 = (await ct.AddressListV2.FindAsync(addressPositionWasChanged.AddressPersistentLocalId));
+                    addressListItemV2.Should().NotBeNull();
+                    addressListItemV2.VersionTimestamp.Should().Be(addressPositionWasChanged.Provenance.Timestamp);
+                    addressListItemV2.LastEventHash.Should().Be(addressPositionWasChanged.GetHash());
+                });
+        }
+
         protected override AddressListProjectionsV2 CreateProjection()
             => new AddressListProjectionsV2();
     }

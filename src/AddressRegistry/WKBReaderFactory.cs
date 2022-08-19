@@ -15,5 +15,12 @@ namespace AddressRegistry
                     new DotSpatialAffineCoordinateSequenceFactory(Ordinates.XY),
                     new PrecisionModel(PrecisionModels.Floating),
                     SpatialReferenceSystemId.Lambert72));
+
+        public static WKBReader Create() =>
+            new WKBReader(
+                new NtsGeometryServices(
+                    new DotSpatialAffineCoordinateSequenceFactory(Ordinates.XY),
+                    new PrecisionModel(PrecisionModels.Floating),
+                    WkbGeometry.SridLambert72));
     }
 }

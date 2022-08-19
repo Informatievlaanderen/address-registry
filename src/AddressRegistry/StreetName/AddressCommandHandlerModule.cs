@@ -20,7 +20,8 @@ namespace AddressRegistry.StreetName
             EventMapping eventMapping,
             EventSerializer eventSerializer,
             Func<ISnapshotStore> getSnapshotStore,
-            IProvenanceFactory<StreetName> provenanceFactory)
+            IProvenanceFactory<StreetName> provenanceFactory,
+            IMunicipalities municipalities)
         {
             For<MigrateAddressToStreetName>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
@@ -122,6 +123,23 @@ namespace AddressRegistry.StreetName
                     var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
 
                     streetName.RetireAddress(message.Command.AddressPersistentLocalId);
+                });
+
+            For<ChangeAddressPosition>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<ChangeAddressPosition, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streetNameStreamId = new StreetNameStreamId(message.Command.StreetNamePersistentLocalId);
+                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+
+                    streetName.ChangeAddressPosition(
+                        message.Command.AddressPersistentLocalId,
+                        message.Command.GeometryMethod,
+                        message.Command.GeometrySpecification,
+                        message.Command.Position,
+                        municipalities);
                 });
         }
     }

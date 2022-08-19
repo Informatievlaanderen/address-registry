@@ -38,21 +38,13 @@ namespace AddressRegistry.Api.BackOffice.Validators
                 .WithErrorCode(ValidationErrors.Address.PositionSpecificationRequired);
 
             RuleFor(x => x.PositieSpecificatie)
-                .Must(x =>
-                    x == PositieSpecificatie.Ingang ||
-                    x == PositieSpecificatie.Perceel ||
-                    x == PositieSpecificatie.Lot ||
-                    x == PositieSpecificatie.Standplaats ||
-                    x == PositieSpecificatie.Ligplaats)
+                .Must(PositionSpecificationValidator.IsValidWhenAppointedByAdministrator)
                 .When(x => x.PositieGeometrieMethode == PositieGeometrieMethode.AangeduidDoorBeheerder)
                 .WithMessage(ValidationErrorMessages.Address.PositionSpecificationInvalid)
                 .WithErrorCode(ValidationErrors.Address.PositionSpecificationInvalid);
 
             RuleFor(x => x.PositieSpecificatie)
-                .Must(x =>
-                    x is null ||
-                    x == PositieSpecificatie.Gemeente ||
-                    x == PositieSpecificatie.Wegsegment)
+                .Must(PositionSpecificationValidator.IsValidWhenDerivedFromObject)
                 .When(x => x.PositieGeometrieMethode == PositieGeometrieMethode.AfgeleidVanObject)
                 .WithMessage(ValidationErrorMessages.Address.PositionSpecificationInvalid)
                 .WithErrorCode(ValidationErrors.Address.PositionSpecificationInvalid);

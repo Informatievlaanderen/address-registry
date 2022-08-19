@@ -8,6 +8,8 @@ namespace AddressRegistry.Address
 
     public class WkbGeometry : ByteArrayValueObject<WkbGeometry>
     {
+        public const int SridLambert72 = 31370;
+
         [JsonConstructor]
         public WkbGeometry([JsonProperty("value")] byte[] wkbBytes) : base(wkbBytes) { }
 

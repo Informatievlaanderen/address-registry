@@ -1,19 +1,14 @@
 namespace AddressRegistry.Tests
 {
-    using System;
     using System.Collections.Generic;
-    using Api.BackOffice.Abstractions.Requests;
-    using Api.BackOffice.Abstractions.Responses;
-    using Api.BackOffice.Handlers;
-    using Api.BackOffice.Infrastructure.Modules;
     using Autofac;
+    using BackOffice.Infrastructure;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore.Autofac;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
     using global::AutoFixture;
     using Infrastructure.Modules;
-    using MediatR;
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
     using StreetName;
@@ -48,6 +43,12 @@ namespace AddressRegistry.Tests
             builder
                 .Register(c => new StreetNameFactory(Fixture.Create<ISnapshotStrategy>()))
                 .As<IStreetNameFactory>();
+
+            builder
+                .Register(c => new FakeMunicipalityConsumerContextFactory().CreateDbContext())
+                .InstancePerLifetimeScope()
+                .As<IMunicipalities>()
+                .AsSelf();
         }
 
         protected override void ConfigureEventHandling(ContainerBuilder builder)

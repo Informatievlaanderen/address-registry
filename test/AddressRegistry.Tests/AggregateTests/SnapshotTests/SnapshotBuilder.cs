@@ -46,7 +46,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
         {
             var addresses = ReaddStreetNameAddresses(new StreetNamePersistentLocalId(snapshot.StreetNamePersistentLocalId), snapshot.Addresses);
 
-            var newAddress = new StreetNameAddress(o => {});
+            var newAddress = new StreetNameAddress(null, o => {});
             newAddress.RestoreSnapshot(
                 new StreetNamePersistentLocalId(snapshot.StreetNamePersistentLocalId),
                 new AddressData(
@@ -85,7 +85,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
             var newAddresses = new StreetNameAddresses();
             foreach (var snapshotAddress in addresses)
             {
-                var address = new StreetNameAddress(o => { });
+                var address = new StreetNameAddress(null, o => { });
                 address.RestoreSnapshot(streetNamePersistentLocalId, snapshotAddress);
                 newAddresses.Add(address);
             }

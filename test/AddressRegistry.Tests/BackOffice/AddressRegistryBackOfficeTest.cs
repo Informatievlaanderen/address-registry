@@ -130,7 +130,7 @@ namespace AddressRegistry.Tests.BackOffice
                 addressPersistentLocalId,
                 houseNumber,
                 boxNumber,
-                PositionGeometryMethod.DerivedFromObject,
+                GeometryMethod.DerivedFromObject,
                 GeometrySpecification.RoadSegment,
                 null,
                 Fixture.Create<Provenance>());

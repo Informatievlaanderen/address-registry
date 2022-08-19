@@ -9,10 +9,12 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac;
     using Consumer;
+    using Consumer.Read.Municipality;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Projections.Syndication;
+    using StreetName;
 
     public class ApiModule : Module
     {
@@ -60,6 +62,10 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
             builder.RegisterModule(new MediatRModule());
             builder.RegisterModule(new TicketingModule(_configuration));
             builder.RegisterSnapshotModule(_configuration);
+
+            builder.RegisterType<MunicipalityConsumerContext>()
+                .As<IMunicipalities>()
+                .AsSelf();
 
             builder.Populate(_services);
         }

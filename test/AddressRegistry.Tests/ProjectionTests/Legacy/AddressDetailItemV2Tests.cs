@@ -406,6 +406,37 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                 });
         }
 
+        [Fact]
+        public async Task WhenAddressPositionWasChanged()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressPositionWasChanged = _fixture.Create<AddressPositionWasChanged>();
+            var positionChangedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressPositionWasChanged.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressPositionWasChanged>(new Envelope(addressPositionWasChanged, positionChangedMetadata)))
+                .Then(async ct =>
+                {
+                    var addressDetailItemV2 = (await ct.AddressDetailV2.FindAsync(addressWasProposedV2.AddressPersistentLocalId));
+                    addressDetailItemV2.Should().NotBeNull();
+                    addressDetailItemV2.Position.Should().BeEquivalentTo(addressPositionWasChanged.ExtendedWkbGeometry.ToByteArray());
+                    addressDetailItemV2.PositionMethod.Should().Be(addressPositionWasChanged.GeometryMethod);
+                    addressDetailItemV2.PositionSpecification.Should().Be(addressPositionWasChanged.GeometrySpecification);
+                    addressDetailItemV2.VersionTimestamp.Should().Be(addressPositionWasChanged.Provenance.Timestamp);
+                    addressDetailItemV2.LastEventHash.Should().Be(addressPositionWasChanged.GetHash());
+                });
+        }
+
         protected override AddressDetailProjectionsV2 CreateProjection()
             => new AddressDetailProjectionsV2();
     }

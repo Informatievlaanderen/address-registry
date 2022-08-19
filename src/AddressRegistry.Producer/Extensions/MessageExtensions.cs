@@ -133,6 +133,15 @@ namespace AddressRegistry.Producer.Extensions
         public static Contracts.AddressWasRetiredBecauseStreetNameWasRetired ToContract(this StreetNameAggregate.AddressWasRetiredBecauseStreetNameWasRetired message) =>
             new Contracts.AddressWasRetiredBecauseStreetNameWasRetired(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
 
+        public static Contracts.AddressPositionWasChanged ToContract(this StreetNameAggregate.AddressPositionWasChanged message) =>
+            new Contracts.AddressPositionWasChanged(
+                message.StreetNamePersistentLocalId,
+                message.AddressPersistentLocalId,
+                message.GeometryMethod.ToString(),
+                message.GeometrySpecification.ToString(),
+                message.ExtendedWkbGeometry,
+                message.Provenance.ToContract());
+
         public static Contracts.AddressWasMigratedToStreetName ToContract(
             this StreetNameAggregate.AddressWasMigratedToStreetName message) =>
             new Contracts.AddressWasMigratedToStreetName(

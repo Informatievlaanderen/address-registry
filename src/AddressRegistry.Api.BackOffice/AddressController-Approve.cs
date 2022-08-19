@@ -88,7 +88,7 @@ namespace AddressRegistry.Api.BackOffice
             }
             catch (AggregateNotFoundException)
             {
-                throw new ApiException(ValidationErrorMessages.AddressNotFound, StatusCodes.Status404NotFound);
+                throw new ApiException(ValidationErrorMessages.Address.AddressNotFound, StatusCodes.Status404NotFound);
             }
             catch (DomainException exception)
             {
@@ -96,22 +96,22 @@ namespace AddressRegistry.Api.BackOffice
                 {
                     StreetNameHasInvalidStatusException _ =>
                         CreateValidationException(
-                            ValidationErrorCodes.StreetNameIsNotActive,
+                            ValidationErrors.StreetName.StreetNameIsNotActive,
                             string.Empty,
-                            ValidationErrorMessages.StreetNameIsNotActive),
+                            ValidationErrorMessages.StreetName.StreetNameIsNotActive),
 
                     StreetNameIsRemovedException _ =>
                         CreateValidationException(
-                            ValidationErrorCodes.StreetNameInvalid,
+                            ValidationErrors.StreetName.StreetNameInvalid,
                             string.Empty,
-                            ValidationErrorMessages.StreetNameInvalid(streetNamePersistentLocalId)),
+                            ValidationErrorMessages.StreetName.StreetNameInvalid(streetNamePersistentLocalId)),
 
-                    AddressIsNotFoundException => new ApiException(ValidationErrorMessages.AddressNotFound, StatusCodes.Status404NotFound),
-                    AddressIsRemovedException => new ApiException(ValidationErrorMessages.AddressRemoved, StatusCodes.Status410Gone),
+                    AddressIsNotFoundException => new ApiException(ValidationErrorMessages.Address.AddressNotFound, StatusCodes.Status404NotFound),
+                    AddressIsRemovedException => new ApiException(ValidationErrorMessages.Address.AddressRemoved, StatusCodes.Status410Gone),
                     AddressHasInvalidStatusException => CreateValidationException(
-                        ValidationErrorCodes.AddressCannotBeApproved,
+                        ValidationErrors.Address.AddressCannotBeApproved,
                         string.Empty,
-                        ValidationErrorMessages.AddressCannotBeApproved),
+                        ValidationErrorMessages.Address.AddressCannotBeApproved),
 
                     _ => new ValidationException(new List<ValidationFailure>
                         { new ValidationFailure(string.Empty, exception.Message) })

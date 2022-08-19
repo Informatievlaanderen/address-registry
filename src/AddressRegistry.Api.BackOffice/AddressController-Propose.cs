@@ -63,9 +63,9 @@ namespace AddressRegistry.Api.BackOffice
             catch (AggregateNotFoundException)
             {
                 throw CreateValidationException(
-                    ValidationErrorCodes.StreetNameInvalid,
+                    ValidationErrors.StreetName.StreetNameInvalid,
                     nameof(request.StraatNaamId),
-                    ValidationErrorMessages.StreetNameInvalid(request.StraatNaamId));
+                    ValidationErrorMessages.StreetName.StreetNameInvalid(request.StraatNaamId));
             }
             catch (DomainException exception)
             {
@@ -73,41 +73,41 @@ namespace AddressRegistry.Api.BackOffice
                 {
                     ParentAddressAlreadyExistsException _ =>
                         CreateValidationException(
-                            ValidationErrorCodes.AddressAlreadyExists,
+                            ValidationErrors.Address.AddressAlreadyExists,
                             nameof(request.Huisnummer),
-                            ValidationErrorMessages.AddressAlreadyExists),
+                            ValidationErrorMessages.Address.AddressAlreadyExists),
 
                     BoxNumberAlreadyExistsException _ =>
                         CreateValidationException(
-                            ValidationErrorCodes.AddressAlreadyExists,
+                            ValidationErrors.Address.AddressAlreadyExists,
                             nameof(request.Busnummer),
-                            ValidationErrorMessages.AddressAlreadyExists),
+                            ValidationErrorMessages.Address.AddressAlreadyExists),
 
                     ParentAddressNotFoundException e =>
                         CreateValidationException(
-                            ValidationErrorCodes.AddressHouseNumberUnknown,
+                            ValidationErrors.Address.AddressHouseNumberUnknown,
                             nameof(request.Huisnummer),
-                            ValidationErrorMessages.AddressHouseNumberUnknown(
+                            ValidationErrorMessages.Address.AddressHouseNumberUnknown(
                                 request.StraatNaamId,
                                 e.HouseNumber)),
 
                     StreetNameHasInvalidStatusException _ =>
                         CreateValidationException(
-                            ValidationErrorCodes.StreetNameIsNotActive,
+                            ValidationErrors.StreetName.StreetNameIsNotActive,
                             nameof(request.StraatNaamId),
-                            ValidationErrorMessages.StreetNameIsNotActive),
+                            ValidationErrorMessages.StreetName.StreetNameIsNotActive),
 
                     StreetNameIsRemovedException _ =>
                         CreateValidationException(
-                            ValidationErrorCodes.StreetNameInvalid,
+                            ValidationErrors.StreetName.StreetNameInvalid,
                             nameof(request.StraatNaamId),
-                            ValidationErrorMessages.StreetNameInvalid(request.StraatNaamId)),
+                            ValidationErrorMessages.StreetName.StreetNameInvalid(request.StraatNaamId)),
 
                     PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException _ =>
                         CreateValidationException(
-                            ValidationErrorCodes.PostalCodeNotInMunicipality,
+                            ValidationErrors.Address.PostalCodeNotInMunicipality,
                             nameof(request.PostInfoId),
-                            ValidationErrorMessages.PostalCodeNotInMunicipality),
+                            ValidationErrorMessages.Address.PostalCodeNotInMunicipality),
 
                     _ => new ValidationException(new List<ValidationFailure>
                         { new ValidationFailure(string.Empty, exception.Message) })

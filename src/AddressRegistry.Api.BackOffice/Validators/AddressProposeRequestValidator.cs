@@ -13,29 +13,29 @@ namespace AddressRegistry.Api.BackOffice.Validators
         {
             RuleFor(x => x.StraatNaamId)
                 .Must((_, straatNaamId) => OsloPuriValidator.TryParseIdentifier(straatNaamId, out var _))
-                .WithMessage((_, straatNaamId) =>  ValidationErrorMessages.StreetNameInvalid(straatNaamId))
-                .WithErrorCode(ValidationErrorCodes.StreetNameInvalid);
+                .WithMessage((_, straatNaamId) =>  ValidationErrorMessages.StreetName.StreetNameInvalid(straatNaamId))
+                .WithErrorCode(ValidationErrors.StreetName.StreetNameInvalid);
 
             RuleFor(x => x.PostInfoId)
                 .MustAsync((_, postInfoId, ct) => PostalCodeValidator.PostalCodeExists(syndicationContext, postInfoId, ct))
-                .WithMessage((_, postInfoId) => ValidationErrorMessages.PostalCodeDoesNotExist(postInfoId))
-                .WithErrorCode(ValidationErrorCodes.PostalCodeDoesNotExist);
+                .WithMessage((_, postInfoId) => ValidationErrorMessages.Address.PostalCodeDoesNotExist(postInfoId))
+                .WithErrorCode(ValidationErrors.Address.PostalCodeDoesNotExist);
 
             RuleFor(x => x.Huisnummer)
                 .Must(HouseNumberValidator.IsValid)
-                .WithMessage(ValidationErrorMessages.HouseNumberInvalid)
-                .WithErrorCode(ValidationErrorCodes.HouseNumberInvalid);
+                .WithMessage(ValidationErrorMessages.Address.HouseNumberInvalid)
+                .WithErrorCode(ValidationErrors.Address.HouseNumberInvalid);
 
             RuleFor(x => x.Busnummer)
                 .Must(BoxNumberValidator.IsValid)
-                .WithMessage(ValidationErrorMessages.BoxNumberInvalid)
-                .WithErrorCode(ValidationErrorCodes.BoxNumberInvalid);
+                .WithMessage(ValidationErrorMessages.Address.BoxNumberInvalid)
+                .WithErrorCode(ValidationErrors.Address.BoxNumberInvalid);
 
             RuleFor(x => x.PositieSpecificatie)
                 .NotEmpty()
                 .When(x => x.PositieGeometrieMethode == PositieGeometrieMethode.AangeduidDoorBeheerder)
-                .WithMessage(ValidationErrorMessages.PositionSpecificationRequired)
-                .WithErrorCode(ValidationErrorCodes.PositionSpecificationRequired);
+                .WithMessage(ValidationErrorMessages.Address.PositionSpecificationRequired)
+                .WithErrorCode(ValidationErrors.Address.PositionSpecificationRequired);
 
             RuleFor(x => x.PositieSpecificatie)
                 .Must(x =>
@@ -45,8 +45,8 @@ namespace AddressRegistry.Api.BackOffice.Validators
                     x == PositieSpecificatie.Standplaats ||
                     x == PositieSpecificatie.Ligplaats)
                 .When(x => x.PositieGeometrieMethode == PositieGeometrieMethode.AangeduidDoorBeheerder)
-                .WithMessage(ValidationErrorMessages.PositionSpecificationInvalid)
-                .WithErrorCode(ValidationErrorCodes.PositionSpecificationInvalid);
+                .WithMessage(ValidationErrorMessages.Address.PositionSpecificationInvalid)
+                .WithErrorCode(ValidationErrors.Address.PositionSpecificationInvalid);
 
             RuleFor(x => x.PositieSpecificatie)
                 .Must(x =>
@@ -54,20 +54,20 @@ namespace AddressRegistry.Api.BackOffice.Validators
                     x == PositieSpecificatie.Gemeente ||
                     x == PositieSpecificatie.Wegsegment)
                 .When(x => x.PositieGeometrieMethode == PositieGeometrieMethode.AfgeleidVanObject)
-                .WithMessage(ValidationErrorMessages.PositionSpecificationInvalid)
-                .WithErrorCode(ValidationErrorCodes.PositionSpecificationInvalid);
+                .WithMessage(ValidationErrorMessages.Address.PositionSpecificationInvalid)
+                .WithErrorCode(ValidationErrors.Address.PositionSpecificationInvalid);
 
             RuleFor(x => x.Positie)
                 .NotEmpty()
                 .When(x => x.PositieGeometrieMethode == PositieGeometrieMethode.AangeduidDoorBeheerder)
-                .WithErrorCode(ValidationErrorCodes.PositionRequired)
-                .WithMessage(ValidationErrorMessages.PositionRequired);
+                .WithErrorCode(ValidationErrors.Address.PositionRequired)
+                .WithMessage(ValidationErrorMessages.Address.PositionRequired);
 
             RuleFor(x => x.Positie)
                 .Must(gml => GmlPointValidator.IsValid(gml, GmlHelpers.CreateGmlReader()))
                 .When(x => !string.IsNullOrEmpty(x.Positie))
-                .WithErrorCode(ValidationErrorCodes.PositionInvalidFormat)
-                .WithMessage(ValidationErrorMessages.PositionInvalidFormat);
+                .WithErrorCode(ValidationErrors.Address.PositionInvalidFormat)
+                .WithMessage(ValidationErrorMessages.Address.PositionInvalidFormat);
         }
     }
 }

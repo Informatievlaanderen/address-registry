@@ -92,18 +92,18 @@ namespace AddressRegistry.Api.BackOffice
             }
             catch (AggregateNotFoundException)
             {
-                throw new ApiException(ValidationErrorMessages.AddressNotFound, StatusCodes.Status404NotFound);
+                throw new ApiException(ValidationErrorMessages.Address.AddressNotFound, StatusCodes.Status404NotFound);
             }
             catch (DomainException exception)
             {
                 throw exception switch
                 {
-                    AddressIsNotFoundException => new ApiException(ValidationErrorMessages.AddressNotFound, StatusCodes.Status404NotFound),
-                    AddressIsRemovedException => new ApiException(ValidationErrorMessages.AddressRemoved, StatusCodes.Status410Gone),
+                    AddressIsNotFoundException => new ApiException(ValidationErrorMessages.Address.AddressNotFound, StatusCodes.Status404NotFound),
+                    AddressIsRemovedException => new ApiException(ValidationErrorMessages.Address.AddressRemoved, StatusCodes.Status410Gone),
                     AddressHasInvalidStatusException => CreateValidationException(
-                        ValidationErrorCodes.AddressCannotBeDeregulated,
+                        ValidationErrors.Address.AddressCannotBeDeregulated,
                         string.Empty,
-                        ValidationErrorMessages.AddressCannotBeDeregulated),
+                        ValidationErrorMessages.Address.AddressCannotBeDeregulated),
 
                     _ => new ValidationException(new List<ValidationFailure>
                         { new ValidationFailure(string.Empty, exception.Message) })

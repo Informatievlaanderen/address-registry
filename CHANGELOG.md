@@ -1,3 +1,10 @@
+# [3.34.0](https://github.com/informatievlaanderen/address-registry/compare/v3.33.2...v3.34.0) (2022-08-19)
+
+
+### Features
+
+* propose address validation on position ([b8c8bc6](https://github.com/informatievlaanderen/address-registry/commit/b8c8bc6e9e1bb12174e78afb3e2e5c1d6bfc766c))
+
 ## [3.33.2](https://github.com/informatievlaanderen/address-registry/compare/v3.33.1...v3.33.2) (2022-08-17)
 
 

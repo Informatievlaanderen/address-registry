@@ -1,3 +1,10 @@
+# [3.35.0](https://github.com/informatievlaanderen/address-registry/compare/v3.34.1...v3.35.0) (2022-08-22)
+
+
+### Features
+
+* add change address position ([f28ebb8](https://github.com/informatievlaanderen/address-registry/commit/f28ebb81425dbc6f862646045c57d53e6c65980a))
+
 ## [3.34.1](https://github.com/informatievlaanderen/address-registry/compare/v3.34.0...v3.34.1) (2022-08-19)
 
 # [3.34.0](https://github.com/informatievlaanderen/address-registry/compare/v3.33.2...v3.34.0) (2022-08-19)

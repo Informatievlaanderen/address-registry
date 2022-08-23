@@ -3,6 +3,7 @@ namespace AddressRegistry.StreetName
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Exceptions;
 
     public class StreetNameAddresses : List<StreetNameAddress>
     {
@@ -24,6 +25,18 @@ namespace AddressRegistry.StreetName
 
         public StreetNameAddress? FindByPersistentLocalId(AddressPersistentLocalId addressPersistentLocalId)
             => this.SingleOrDefault(x => x.AddressPersistentLocalId == addressPersistentLocalId);
+
+        public StreetNameAddress GetRequiredByPersistentLocalId(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            var address = this.SingleOrDefault(x => x.AddressPersistentLocalId == addressPersistentLocalId);
+
+            if (address is null)
+            {
+                throw new AddressIsNotFoundException(addressPersistentLocalId);
+            }
+
+            return address;
+        }
 
         public StreetNameAddress GetByPersistentLocalId(AddressPersistentLocalId addressPersistentLocalId)
             => this.Single(x => x.AddressPersistentLocalId == addressPersistentLocalId);

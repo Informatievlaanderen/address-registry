@@ -1,4 +1,4 @@
-﻿namespace AddressRegistry.StreetName
+namespace AddressRegistry.StreetName
 {
     using Exceptions;
     using System.Linq;
@@ -10,6 +10,22 @@
             if (IsRemoved)
             {
                 throw new AddressIsRemovedException(AddressPersistentLocalId);
+            }
+        }
+
+        private void GuardGeometry(
+            GeometryMethod geometryMethod,
+            GeometrySpecification? geometrySpecification,
+            ExtendedWkbGeometry? position)
+        {
+            if (geometryMethod == GeometryMethod.Interpolated)
+            {
+                throw new AddressHasInvalidGeometryMethodException();
+            }
+
+            if (geometryMethod == GeometryMethod.AppointedByAdministrator)
+            {
+                GuardsWhenAppointedByAdministrator(geometrySpecification, position);
             }
         }
 

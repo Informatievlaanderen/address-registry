@@ -55,19 +55,21 @@ namespace AddressRegistry.StreetName
 
         public void RetireStreetName()
         {
-            if (Status != StreetNameStatus.Retired)
+            if (Status == StreetNameStatus.Retired)
             {
-                ApplyChange(new StreetNameWasRetired(PersistentLocalId));
+                return;
+            }
 
-                foreach (var address in StreetNameAddresses.ProposedStreetNameAddresses)
-                {
-                    address.RejectBecauseStreetNameWasRetired();
-                }
+            ApplyChange(new StreetNameWasRetired(PersistentLocalId));
 
-                foreach (var address in StreetNameAddresses.CurrentStreetNameAddresses)
-                {
-                    address.RetireBecauseStreetNameWasRetired();
-                }
+            foreach (var address in StreetNameAddresses.ProposedStreetNameAddresses)
+            {
+                address.RejectBecauseStreetNameWasRetired();
+            }
+
+            foreach (var address in StreetNameAddresses.CurrentStreetNameAddresses)
+            {
+                address.RetireBecauseStreetNameWasRetired();
             }
         }
 
@@ -77,7 +79,6 @@ namespace AddressRegistry.StreetName
             {
                 ApplyChange(new StreetNameWasRemoved(PersistentLocalId));
             }
-            //TODO: remove addresses?
         }
 
         public void MigrateAddress(
@@ -182,60 +183,35 @@ namespace AddressRegistry.StreetName
 
         public void ApproveAddress(AddressPersistentLocalId addressPersistentLocalId)
         {
-            var addressToApprove = StreetNameAddresses.FindByPersistentLocalId(addressPersistentLocalId);
-
-            if (addressToApprove is null)
-            {
-                throw new AddressIsNotFoundException(addressPersistentLocalId);
-            }
+            var addressToApprove = StreetNameAddresses.GetRequiredByPersistentLocalId(addressPersistentLocalId);
 
             addressToApprove.Approve();
         }
 
         public void RejectAddress(AddressPersistentLocalId addressPersistentLocalId)
         {
-            var addressToReject = StreetNameAddresses.FindByPersistentLocalId(addressPersistentLocalId);
-
-            if (addressToReject is null)
-            {
-                throw new AddressIsNotFoundException(addressPersistentLocalId);
-            }
+            var addressToReject = StreetNameAddresses.GetRequiredByPersistentLocalId(addressPersistentLocalId);
 
             addressToReject.Reject();
         }
 
         public void DeregulateAddress(AddressPersistentLocalId addressPersistentLocalId)
         {
-            var addressToDeregulate = StreetNameAddresses.FindByPersistentLocalId(addressPersistentLocalId);
-
-            if (addressToDeregulate is null)
-            {
-                throw new AddressIsNotFoundException(addressPersistentLocalId);
-            }
+            var addressToDeregulate = StreetNameAddresses.GetRequiredByPersistentLocalId(addressPersistentLocalId);
 
             addressToDeregulate.Deregulate();
         }
 
         public void RegularizeAddress(AddressPersistentLocalId addressPersistentLocalId)
         {
-            var addressToRegularize = StreetNameAddresses.FindByPersistentLocalId(addressPersistentLocalId);
-
-            if (addressToRegularize is null)
-            {
-                throw new AddressIsNotFoundException(addressPersistentLocalId);
-            }
+            var addressToRegularize = StreetNameAddresses.GetRequiredByPersistentLocalId(addressPersistentLocalId);
 
             addressToRegularize.Regularize();
         }
 
         public void RetireAddress(AddressPersistentLocalId addressPersistentLocalId)
         {
-            var addressToRetire = StreetNameAddresses.FindByPersistentLocalId(addressPersistentLocalId);
-
-            if (addressToRetire is null)
-            {
-                throw new AddressIsNotFoundException(addressPersistentLocalId);
-            }
+            var addressToRetire = StreetNameAddresses.GetRequiredByPersistentLocalId(addressPersistentLocalId);
 
             addressToRetire.Retire();
         }
@@ -247,14 +223,21 @@ namespace AddressRegistry.StreetName
             ExtendedWkbGeometry? position,
             IMunicipalities municipalities)
         {
-            var addressToChange = StreetNameAddresses.FindByPersistentLocalId(addressPersistentLocalId);
-
-            if (addressToChange is null)
-            {
-                throw new AddressIsNotFoundException(addressPersistentLocalId);
-            }
+            var addressToChange = StreetNameAddresses.GetRequiredByPersistentLocalId(addressPersistentLocalId);
 
             addressToChange.ChangePosition(geometryMethod, geometrySpecification, position, municipalities);
+        }
+
+        public void CorrectAddressPosition(
+            AddressPersistentLocalId addressPersistentLocalId,
+            GeometryMethod geometryMethod,
+            GeometrySpecification? geometrySpecification,
+            ExtendedWkbGeometry? position,
+            IMunicipalities municipalities)
+        {
+            var addressToCorrect = StreetNameAddresses.GetRequiredByPersistentLocalId(addressPersistentLocalId);
+
+            addressToCorrect.CorrectPosition(geometryMethod, geometrySpecification, position, municipalities);
         }
 
         private void GuardActiveStreetName(StreetNamePersistentLocalId streetNamePersistentLocalId)

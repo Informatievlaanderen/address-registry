@@ -183,6 +183,21 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
 
                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
             });
+
+            When<Envelope<AddressPositionWasCorrectedV2>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    item =>
+                    {
+                        item.PositionMethod = ConvertGeometryMethodToString(message.Message.GeometryMethod);
+                        item.PositionSpecification = ConvertGeometrySpecificationToString(message.Message.GeometrySpecification);
+                        item.Position = ParsePosition(message.Message.ExtendedWkbGeometry);
+                    },
+                    ct);
+
+                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+            });
         }
 
         public static string MapStatus(AddressStatus status)

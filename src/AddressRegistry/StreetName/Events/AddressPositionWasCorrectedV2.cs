@@ -10,10 +10,10 @@ namespace AddressRegistry.StreetName.Events
 
     [EventTags(EventTag.For.Edit, EventTag.For.Sync)]
     [EventName(EventName)]
-    [EventDescription("De adrespositie werd gewijzigd.")]
-    public class AddressPositionWasChanged : IStreetNameEvent, IHasAddressPersistentLocalId
+    [EventDescription("De adrespositie werd gecorrigeerd.")]
+    public class AddressPositionWasCorrectedV2 : IStreetNameEvent, IHasAddressPersistentLocalId
     {
-        public const string EventName = "AddressPositionWasChanged"; // BE CAREFUL CHANGING THIS!!
+        public const string EventName = "AddressPositionWasCorrectedV2"; // BE CAREFUL CHANGING THIS!!
 
         [EventPropertyDescription("Objectidentificator van de straatnaam aan dewelke het adres is toegewezen.")]
         public int StreetNamePersistentLocalId { get; }
@@ -24,7 +24,7 @@ namespace AddressRegistry.StreetName.Events
         [EventPropertyDescription("Geometriemethode van de adrespositie. Mogelijkheden: DerivedFromObject of AppointedByAdministrator.")]
         public GeometryMethod GeometryMethod { get; }
 
-        [EventPropertyDescription("Specificatie van het object dat voorgesteld wordt door de adrespositie. Mogelijkheden: Municipality, Street, Parcel, Lot, Stand, Berth, Entry")]
+        [EventPropertyDescription("Specificatie van het object dat voorgesteld wordt door de adrespositie. Mogelijkheden: Municipality, Street, Parcel, Lot, Stand, Berth, Entry.")]
         public GeometrySpecification GeometrySpecification { get; }
 
         [EventPropertyDescription("Extended WKB-voorstelling van de adrespositie.")]
@@ -33,7 +33,7 @@ namespace AddressRegistry.StreetName.Events
         [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
-        public AddressPositionWasChanged(
+        public AddressPositionWasCorrectedV2(
             int streetNamePersistentLocalId,
             int addressPersistentLocalId,
             GeometryMethod geometryMethod,
@@ -48,7 +48,7 @@ namespace AddressRegistry.StreetName.Events
         }
 
         [JsonConstructor]
-        private AddressPositionWasChanged(
+        private AddressPositionWasCorrectedV2(
             int streetNamePersistentLocalId,
             int addressPersistentLocalId,
             GeometryMethod geometryMethod,

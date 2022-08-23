@@ -141,6 +141,23 @@ namespace AddressRegistry.StreetName
                         message.Command.Position,
                         municipalities);
                 });
+
+            For<CorrectAddressPosition>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<CorrectAddressPosition, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streetNameStreamId = new StreetNameStreamId(message.Command.StreetNamePersistentLocalId);
+                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+
+                    streetName.CorrectAddressPosition(
+                        message.Command.AddressPersistentLocalId,
+                        message.Command.GeometryMethod,
+                        message.Command.GeometrySpecification,
+                        message.Command.Position,
+                        municipalities);
+                });
         }
     }
 }

@@ -34,11 +34,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
         {
             var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
-
-            var mockRequestValidator = new Mock<IValidator<AddressChangePositionRequest>>();
-            mockRequestValidator.Setup(x => x.ValidateAsync(It.IsAny<AddressChangePositionRequest>(), CancellationToken.None))
-                .Returns(Task.FromResult(new ValidationResult()));
-
+            
             MockMediator.Setup(x => x.Send(It.IsAny<AddressChangePositionRequest>(), CancellationToken.None))
                 .Throws(new AddressHasInvalidStatusException());
 
@@ -54,7 +50,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
             //Act
             Func<Task> act = async () => await _controller.ChangePosition(
                 _backOfficeContext,
-                mockRequestValidator.Object,
+                MockValidRequestValidator<AddressChangePositionRequest>(),
                 MockIfMatchValidator(true),
                 ResponseOptions,
                 addressPersistentLocalId,

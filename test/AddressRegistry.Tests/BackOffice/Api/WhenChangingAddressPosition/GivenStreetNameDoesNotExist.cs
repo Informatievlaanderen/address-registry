@@ -40,7 +40,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
             //Act
             var result = await _controller.ChangePosition(
                 _backOfficeContext,
-                new AddressChangePositionRequestValidator(),
+                MockValidRequestValidator<AddressChangePositionRequest>(),
                 MockIfMatchValidator(true),
                 ResponseOptions,
                 persistentLocalId,

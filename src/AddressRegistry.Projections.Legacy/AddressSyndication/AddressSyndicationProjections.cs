@@ -500,6 +500,20 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     },
                     ct);
             });
+
+            When<Envelope<AddressPositionWasCorrectedV2>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressPersistentLocalId,
+                    message,
+                    x =>
+                    {
+                        x.PositionMethod = message.Message.GeometryMethod;
+                        x.PositionSpecification = message.Message.GeometrySpecification;
+                        x.PointPosition = message.Message.ExtendedWkbGeometry.ToByteArray();
+                    },
+                    ct);
+            });
         }
 
         private static async Task DoNothing()

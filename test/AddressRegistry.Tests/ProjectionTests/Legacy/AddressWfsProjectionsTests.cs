@@ -422,6 +422,36 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                 });
         }
 
+        [Fact]
+        public async Task WhenAddressPositionWasCorrectedV2()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressPositionWasCorrectedV2 = _fixture.Create<AddressPositionWasCorrectedV2>();
+            var positionCorrectedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressPositionWasCorrectedV2.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressPositionWasCorrectedV2>(new Envelope(addressPositionWasCorrectedV2, positionCorrectedMetadata)))
+                .Then(async ct =>
+                {
+                    var item = (await ct.AddressWfsItems.FindAsync(addressPositionWasCorrectedV2.AddressPersistentLocalId));
+                    item.Should().NotBeNull();
+                    item.PositionMethod.Should().Be(AddressWfsProjections.ConvertGeometryMethodToString(addressPositionWasCorrectedV2.GeometryMethod));
+                    item.PositionSpecification = AddressWfsProjections.ConvertGeometrySpecificationToString(addressPositionWasCorrectedV2.GeometrySpecification);
+                    item.Position = (Point)_wkbReader.Read(addressPositionWasCorrectedV2.ExtendedWkbGeometry.ToByteArray());
+                    item.VersionTimestamp.Should().Be(addressPositionWasCorrectedV2.Provenance.Timestamp);
+                });
+        }
+
         protected override AddressWfsProjections CreateProjection()
             =>  new AddressWfsProjections(_wkbReader);
     }

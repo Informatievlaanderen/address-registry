@@ -54,6 +54,7 @@ namespace AddressRegistry.StreetName
             Register<AddressWasRetiredBecauseHouseNumberWasRetired>(When);
             Register<AddressWasRetiredBecauseStreetNameWasRetired>(When);
             Register<AddressPositionWasChanged>(When);
+            Register<AddressPositionWasCorrectedV2>(When);
         }
 
         private void When(AddressWasMigratedToStreetName @event)
@@ -160,6 +161,16 @@ namespace AddressRegistry.StreetName
         }
 
         private void When(AddressPositionWasChanged @event)
+        {
+            Geometry = new AddressGeometry(
+                @event.GeometryMethod,
+                @event.GeometrySpecification,
+                new ExtendedWkbGeometry(@event.ExtendedWkbGeometry));
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressPositionWasCorrectedV2 @event)
         {
             Geometry = new AddressGeometry(
                 @event.GeometryMethod,

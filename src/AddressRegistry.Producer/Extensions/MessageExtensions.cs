@@ -142,6 +142,15 @@ namespace AddressRegistry.Producer.Extensions
                 message.ExtendedWkbGeometry,
                 message.Provenance.ToContract());
 
+        public static Contracts.AddressPositionWasCorrectedV2 ToContract(this StreetNameAggregate.AddressPositionWasCorrectedV2 message) =>
+            new Contracts.AddressPositionWasCorrectedV2(
+                message.StreetNamePersistentLocalId,
+                message.AddressPersistentLocalId,
+                message.GeometryMethod.ToString(),
+                message.GeometrySpecification.ToString(),
+                message.ExtendedWkbGeometry,
+                message.Provenance.ToContract());
+
         public static Contracts.AddressWasMigratedToStreetName ToContract(
             this StreetNameAggregate.AddressWasMigratedToStreetName message) =>
             new Contracts.AddressWasMigratedToStreetName(

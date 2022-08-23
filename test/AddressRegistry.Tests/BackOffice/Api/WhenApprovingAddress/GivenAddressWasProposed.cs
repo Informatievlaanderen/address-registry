@@ -5,6 +5,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
     using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Abstractions.Responses;
+    using AddressRegistry.Api.BackOffice.Validators;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using FluentAssertions;
     using FluentValidation;
@@ -35,10 +36,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
             var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
-            var mockRequestValidator = new Mock<IValidator<AddressApproveRequest>>();
-            mockRequestValidator.Setup(x => x.ValidateAsync(It.IsAny<AddressApproveRequest>(), CancellationToken.None))
-                .Returns(Task.FromResult(new ValidationResult()));
-
             MockMediator.Setup(x => x.Send(It.IsAny<AddressApproveRequest>(), CancellationToken.None))
                 .Returns(Task.FromResult(new ETagResponse(lastEventHash)));
 
@@ -48,7 +45,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
 
             var result = (NoContentWithETagResult)await _controller.Approve(
                 _backOfficeContext,
-                mockRequestValidator.Object,
+                new AddressApproveRequestValidator(),
                 MockIfMatchValidator(true),
                 request: new AddressApproveRequest
                 {
@@ -66,11 +63,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
             var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
-            var mockRequestValidator = new Mock<IValidator<AddressApproveRequest>>();
-            mockRequestValidator
-                .Setup(x => x.ValidateAsync(It.IsAny<AddressApproveRequest>(), CancellationToken.None))
-                .Returns(Task.FromResult(new ValidationResult()));
-
             _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.Add(
                 new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));
             await _backOfficeContext.SaveChangesAsync();
@@ -78,7 +70,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
             //Act
             var result = await _controller.Approve(
                 _backOfficeContext,
-                mockRequestValidator.Object,
+                new AddressApproveRequestValidator(),
                 MockIfMatchValidator(false),
                 request: new AddressApproveRequest
                 {

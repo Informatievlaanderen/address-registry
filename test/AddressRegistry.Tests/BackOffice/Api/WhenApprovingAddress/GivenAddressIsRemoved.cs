@@ -37,10 +37,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
             var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
-            var mockRequestValidator = new Mock<IValidator<AddressApproveRequest>>();
-            mockRequestValidator.Setup(x => x.ValidateAsync(It.IsAny<AddressApproveRequest>(), CancellationToken.None))
-                .Returns(Task.FromResult(new ValidationResult()));
-
             MockMediator.Setup(x => x.Send(It.IsAny<AddressApproveRequest>(), CancellationToken.None))
                 .Throws(new AddressIsRemovedException(addressPersistentLocalId));
 

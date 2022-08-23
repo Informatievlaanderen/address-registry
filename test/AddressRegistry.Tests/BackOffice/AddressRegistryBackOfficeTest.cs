@@ -5,6 +5,7 @@ namespace AddressRegistry.Tests.BackOffice
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Abstractions.Responses;
     using AddressRegistry.Api.BackOffice.Infrastructure;
     using AddressRegistry.Api.BackOffice.Infrastructure.Options;
@@ -14,6 +15,8 @@ namespace AddressRegistry.Tests.BackOffice
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using FluentValidation;
+    using FluentValidation.Results;
     using global::AutoFixture;
     using MediatR;
     using Microsoft.AspNetCore.Http;
@@ -26,6 +29,10 @@ namespace AddressRegistry.Tests.BackOffice
     public class AddressRegistryBackOfficeTest : AddressRegistryTest
     {
         internal const string DetailUrl = "https://www.registry.com/address/voorgesteld/{0}";
+
+        protected const string StraatNaamPuri = $"https://data.vlaanderen.be/id/straatnaam/";
+        protected const string PostInfoPuri = $"https://data.vlaanderen.be/id/postinfo/";
+
         protected IOptions<ResponseOptions> ResponseOptions { get; }
 
         protected Mock<IMediator> MockMediator { get; }
@@ -55,6 +62,14 @@ namespace AddressRegistry.Tests.BackOffice
                         It.IsAny<string>(), It.IsAny<StreetNamePersistentLocalId>(), It.IsAny<AddressPersistentLocalId>(), CancellationToken.None))
                 .Returns(Task.FromResult(expectedResult));
             return mockIfMatchHeaderValidator.Object;
+        }
+
+        protected IValidator<TRequest> MockValidRequestValidator<TRequest>()
+        {
+            var mockRequestValidator = new Mock<IValidator<TRequest>>();
+            mockRequestValidator.Setup(x => x.ValidateAsync(It.IsAny<TRequest>(), CancellationToken.None))
+                .Returns(Task.FromResult(new ValidationResult()));
+            return mockRequestValidator.Object;
         }
 
         protected Mock<ITicketingUrl> MockTicketingUrl()

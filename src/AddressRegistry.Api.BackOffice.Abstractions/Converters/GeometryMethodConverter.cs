@@ -8,20 +8,19 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Converters
     {
         public static GeometryMethod Map(this PositieGeometrieMethode? methode)
         {
-            if (methode is null)
-            {
-                return GeometryMethod.DerivedFromObject;
-            }
+            return methode is null
+                ? GeometryMethod.DerivedFromObject
+                : ConvertMethod(methode.Value);
+        }
 
-            switch (methode)
+        private static GeometryMethod ConvertMethod(this PositieGeometrieMethode methode)
+        {
+            return methode switch
             {
-                case PositieGeometrieMethode.AangeduidDoorBeheerder:
-                    return GeometryMethod.AppointedByAdministrator;
-                case PositieGeometrieMethode.AfgeleidVanObject:
-                    return GeometryMethod.DerivedFromObject;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(methode), methode, null);
-            }
+                PositieGeometrieMethode.AangeduidDoorBeheerder => GeometryMethod.AppointedByAdministrator,
+                PositieGeometrieMethode.AfgeleidVanObject => GeometryMethod.DerivedFromObject,
+                _ => throw new ArgumentOutOfRangeException(nameof(methode), methode, null)
+            };
         }
     }
 }

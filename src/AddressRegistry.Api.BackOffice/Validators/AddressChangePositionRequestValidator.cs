@@ -10,6 +10,11 @@ namespace AddressRegistry.Api.BackOffice.Validators
     {
         public AddressChangePositionRequestValidator()
         {
+            RuleFor(x => x.PositieGeometrieMethode)
+                .Must(x => x is PositieGeometrieMethode.AangeduidDoorBeheerder or PositieGeometrieMethode.AfgeleidVanObject)
+                .WithMessage(ValidationErrorMessages.Address.GeometryMethodInvalid)
+                .WithErrorCode(ValidationErrors.Address.GeometryMethodInvalid);
+
             RuleFor(x => x.PositieSpecificatie)
                 .NotEmpty()
                 .When(x => x.PositieGeometrieMethode == PositieGeometrieMethode.AangeduidDoorBeheerder)

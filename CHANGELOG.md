@@ -1,3 +1,10 @@
+# [3.36.0](https://github.com/informatievlaanderen/address-registry/compare/v3.35.0...v3.36.0) (2022-08-23)
+
+
+### Features
+
+* add validation error tests for addressChangePosition ([6d4bd19](https://github.com/informatievlaanderen/address-registry/commit/6d4bd1923446b74f86d2dea0072dd9e9f2f8f323))
+
 # [3.35.0](https://github.com/informatievlaanderen/address-registry/compare/v3.34.1...v3.35.0) (2022-08-22)
 
 

@@ -145,6 +145,11 @@ namespace AddressRegistry.StreetName
         {
             GuardActiveStreetName(streetNamePersistentLocalId);
 
+            if (StreetNameAddresses.HasPersistentLocalId(addressPersistentLocalId))
+            {
+                throw new AddressPersistentLocalIdAlreadyExistsException();
+            }
+
             if (municipalityIdByPostalCode != MunicipalityId)
             {
                 throw new PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException();

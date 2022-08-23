@@ -91,7 +91,6 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 Fixture.Create<PostalCode>(),
                 houseNumber,
                 boxNumber: null);
-
             ((ISetProvenance)parentAddressWasProposed).SetProvenance(Fixture.Create<Provenance>());
 
             aggregate.Initialize(new List<object>
@@ -140,7 +139,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 houseNumber,
                 Fixture.Create<BoxNumber>(),
                 GeometryMethod.DerivedFromObject,
-                GeometrySpecification.RoadSegment,
+                GeometrySpecification.Municipality,
                 null,
                 Fixture.Create<Provenance>());
 
@@ -165,7 +164,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 houseNumber,
                 Fixture.Create<BoxNumber>(),
                 GeometryMethod.DerivedFromObject,
-                GeometrySpecification.RoadSegment,
+                GeometrySpecification.Municipality,
                 null,
                 Fixture.Create<Provenance>());
 
@@ -189,7 +188,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 new HouseNumber(houseNumber),
                 boxNumber: null,
                 GeometryMethod.DerivedFromObject,
-                GeometrySpecification.RoadSegment,
+                GeometrySpecification.Municipality,
                 null,
                 Fixture.Create<Provenance>());
 
@@ -206,6 +205,38 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                             proposeParentAddress.PostalCode,
                             proposeParentAddress.HouseNumber,
                             boxNumber: null))));
+        }
+
+        [Fact]
+        public void WithExistingPersistentLocalId_ThenThrowsAddressPersistentLocalIdAlreadyExistsException()
+        {
+            var addressWasProposedV2 = new AddressWasProposedV2(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<AddressPersistentLocalId>(),
+                null,
+                Fixture.Create<PostalCode>(),
+                Fixture.Create<HouseNumber>(),
+                null);
+            ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
+
+            var proposeAddress = new ProposeAddress(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<PostalCode>(),
+                Fixture.Create<MunicipalityId>(),
+                new AddressPersistentLocalId(addressWasProposedV2.AddressPersistentLocalId),
+                new HouseNumber(Fixture.Create<string>()),
+                boxNumber: null,
+                GeometryMethod.DerivedFromObject,
+                GeometrySpecification.Municipality,
+                null,
+                Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    Fixture.Create<MigratedStreetNameWasImported>(),
+                    addressWasProposedV2)
+                .When(proposeAddress)
+                .Throws(new AddressPersistentLocalIdAlreadyExistsException()));
         }
     }
 }

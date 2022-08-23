@@ -1,3 +1,10 @@
+## [3.37.2](https://github.com/informatievlaanderen/address-registry/compare/v3.37.1...v3.37.2) (2022-08-23)
+
+
+### Bug Fixes
+
+* validate on duplicate persistent local id ([c3377ff](https://github.com/informatievlaanderen/address-registry/commit/c3377ff07bbdcefceac768f5987169ce718aef81))
+
 ## [3.37.1](https://github.com/informatievlaanderen/address-registry/compare/v3.37.0...v3.37.1) (2022-08-23)
 
 # [3.37.0](https://github.com/informatievlaanderen/address-registry/compare/v3.36.0...v3.37.0) (2022-08-23)

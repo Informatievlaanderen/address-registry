@@ -1,3 +1,10 @@
+# [3.37.0](https://github.com/informatievlaanderen/address-registry/compare/v3.36.0...v3.37.0) (2022-08-23)
+
+
+### Features
+
+* add correctAddressPosition ([6b8a4d0](https://github.com/informatievlaanderen/address-registry/commit/6b8a4d063ef4ec5f8a62336dd28cbdeb5008b6c5))
+
 # [3.36.0](https://github.com/informatievlaanderen/address-registry/compare/v3.35.0...v3.36.0) (2022-08-23)
 
 

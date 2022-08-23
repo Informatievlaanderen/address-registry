@@ -10,6 +10,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
     using Responses;
     using StreetName;
     using StreetName.Commands;
+    using Swashbuckle.AspNetCore.Filters;
 
     [DataContract(Name = "WijzigenAdresPositie", Namespace = "")]
     public class AddressChangePositionRequest : IRequest<ETagResponse>
@@ -60,6 +61,19 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
                 PositieSpecificatie.Map(),
                 position,
                 provenance);
+        }
+    }
+
+    public class AddressChangePositionRequestExamples : IExamplesProvider<AddressChangePositionRequest>
+    {
+        public AddressChangePositionRequest GetExamples()
+        {
+            return new AddressChangePositionRequest
+            {
+                PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
+                PositieSpecificatie = PositieSpecificatie.Ingang,
+                Positie = "<gml:Point srsName=\"https://www.opengis.net/def/crs/EPSG/0/31370\" xmlns:gml=\"http://www.opengis.net/gml/3.2\"><gml:pos>103671.37 192046.71</gml:pos></gml:Point>",
+            };
         }
     }
 }

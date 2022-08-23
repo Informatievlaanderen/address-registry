@@ -172,8 +172,8 @@ namespace AddressRegistry.StreetName
 
         private void When(AddressPositionWasCorrectedV2 @event)
         {
-            var addressToCorrected = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
-            addressToCorrected.Route(@event);
+            var addressToCorrect = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
+            addressToCorrect.Route(@event);
         }
 
         private void When(StreetNameSnapshot @event)

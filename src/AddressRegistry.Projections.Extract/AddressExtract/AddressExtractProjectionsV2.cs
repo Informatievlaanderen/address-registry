@@ -185,18 +185,10 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);
                 UpdateDbaseRecordField(item, record =>
                 {
-                    var coordinate = wkbReader.Read(message.Message.ExtendedWkbGeometry.ToByteArray()).Coordinate;
-                    var pointShapeContent = new PointShapeContent(new Point(coordinate.X, coordinate.Y));
-
                     record.posgeommet.Value = Map(message.Message.GeometryMethod);
                     record.posspec.Value = Map(message.Message.GeometrySpecification);
 
-                    item.MinimumX = pointShapeContent.Shape.X;
-                    item.MaximumX = pointShapeContent.Shape.X;
-                    item.MinimumY = pointShapeContent.Shape.Y;
-                    item.MaximumY = pointShapeContent.Shape.Y;
-                    item.ShapeRecordContent = pointShapeContent.ToBytes();
-                    item.ShapeRecordContentLength = pointShapeContent.ContentLength.ToInt32();
+                    UpdateShape(item, wkbReader, message.Message.ExtendedWkbGeometry);
                 });
                 UpdateVersie(item, message.Message.Provenance.Timestamp);
             });
@@ -206,21 +198,26 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);
                 UpdateDbaseRecordField(item, record =>
                 {
-                    var coordinate = wkbReader.Read(message.Message.ExtendedWkbGeometry.ToByteArray()).Coordinate;
-                    var pointShapeContent = new PointShapeContent(new Point(coordinate.X, coordinate.Y));
-
                     record.posgeommet.Value = Map(message.Message.GeometryMethod);
                     record.posspec.Value = Map(message.Message.GeometrySpecification);
 
-                    item.MinimumX = pointShapeContent.Shape.X;
-                    item.MaximumX = pointShapeContent.Shape.X;
-                    item.MinimumY = pointShapeContent.Shape.Y;
-                    item.MaximumY = pointShapeContent.Shape.Y;
-                    item.ShapeRecordContent = pointShapeContent.ToBytes();
-                    item.ShapeRecordContentLength = pointShapeContent.ContentLength.ToInt32();
+                    UpdateShape(item, wkbReader, message.Message.ExtendedWkbGeometry);
                 });
                 UpdateVersie(item, message.Message.Provenance.Timestamp);
             });
+        }
+
+        private void UpdateShape(AddressExtractItemV2 item, WKBReader wkbReader, string extendedWkbGeometry)
+        {
+            var coordinate = wkbReader.Read(extendedWkbGeometry.ToByteArray()).Coordinate;
+            var pointShapeContent = new PointShapeContent(new Point(coordinate.X, coordinate.Y));
+
+            item.MinimumX = pointShapeContent.Shape.X;
+            item.MaximumX = pointShapeContent.Shape.X;
+            item.MinimumY = pointShapeContent.Shape.Y;
+            item.MaximumY = pointShapeContent.Shape.Y;
+            item.ShapeRecordContent = pointShapeContent.ToBytes();
+            item.ShapeRecordContentLength = pointShapeContent.ContentLength.ToInt32();
         }
 
         private void UpdateDbaseRecordField(AddressExtractItemV2 item, Action<AddressDbaseRecord> update)

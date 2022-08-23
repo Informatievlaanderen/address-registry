@@ -26,7 +26,7 @@ namespace AddressRegistry.StreetName
         public StreetNameAddress? FindByPersistentLocalId(AddressPersistentLocalId addressPersistentLocalId)
             => this.SingleOrDefault(x => x.AddressPersistentLocalId == addressPersistentLocalId);
 
-        public StreetNameAddress GetRequiredByPersistentLocalId(AddressPersistentLocalId addressPersistentLocalId)
+        public StreetNameAddress GetByPersistentLocalId(AddressPersistentLocalId addressPersistentLocalId)
         {
             var address = this.SingleOrDefault(x => x.AddressPersistentLocalId == addressPersistentLocalId);
 
@@ -37,9 +37,6 @@ namespace AddressRegistry.StreetName
 
             return address;
         }
-
-        public StreetNameAddress GetByPersistentLocalId(AddressPersistentLocalId addressPersistentLocalId)
-            => this.Single(x => x.AddressPersistentLocalId == addressPersistentLocalId);
 
         public StreetNameAddress? FindParentByLegacyAddressId(AddressId parentAddressId)
         {

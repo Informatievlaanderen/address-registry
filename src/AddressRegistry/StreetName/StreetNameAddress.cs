@@ -212,7 +212,8 @@ namespace AddressRegistry.StreetName
             }
         }
 
-        public void ChangePosition(GeometryMethod geometryMethod,
+        public void ChangePosition(
+            GeometryMethod geometryMethod,
             GeometrySpecification? geometrySpecification,
             ExtendedWkbGeometry? position,
             IMunicipalities municipalities)
@@ -228,21 +229,21 @@ namespace AddressRegistry.StreetName
 
             GuardGeometry(geometryMethod, geometrySpecification, position);
 
-            var (finalSpecification, finalPosition) =
-                GetFinalGeometry(geometryMethod, geometrySpecification, position, municipalities);
+            var newGeometry = GetFinalGeometry(geometryMethod, geometrySpecification, position, municipalities);
 
-            if (HasGeometryChanged(geometryMethod, finalPosition, finalSpecification))
+            if (Geometry is null || Geometry != newGeometry)
             {
                 Apply(new AddressPositionWasChanged(
                     _streetNamePersistentLocalId,
                     AddressPersistentLocalId,
-                    geometryMethod,
-                    finalSpecification,
-                    finalPosition));
+                    newGeometry.GeometryMethod,
+                    newGeometry.GeometrySpecification,
+                    newGeometry.Geometry));
             }
         }
 
-        public void CorrectPosition(GeometryMethod geometryMethod,
+        public void CorrectPosition(
+            GeometryMethod geometryMethod,
             GeometrySpecification? geometrySpecification,
             ExtendedWkbGeometry? position,
             IMunicipalities municipalities)
@@ -258,21 +259,20 @@ namespace AddressRegistry.StreetName
 
             GuardGeometry(geometryMethod, geometrySpecification, position);
 
-            var (finalSpecification, finalPosition) =
-                GetFinalGeometry(geometryMethod, geometrySpecification, position, municipalities);
+            var newGeometry = GetFinalGeometry(geometryMethod, geometrySpecification, position, municipalities);
 
-            if (HasGeometryChanged(geometryMethod, finalPosition, finalSpecification))
+            if (Geometry is null || Geometry != newGeometry)
             {
                 Apply(new AddressPositionWasCorrectedV2(
                     _streetNamePersistentLocalId,
                     AddressPersistentLocalId,
-                    geometryMethod,
-                    finalSpecification,
-                    finalPosition));
+                    newGeometry.GeometryMethod,
+                    newGeometry.GeometrySpecification,
+                    newGeometry.Geometry));
             }
         }
 
-        private (GeometrySpecification geometrySpecification, ExtendedWkbGeometry position) GetFinalGeometry(
+        private AddressGeometry GetFinalGeometry(
             GeometryMethod geometryMethod,
             GeometrySpecification? geometrySpecification,
             ExtendedWkbGeometry? position,
@@ -285,16 +285,7 @@ namespace AddressRegistry.StreetName
                 ? municipalities.Get(_streetName.MunicipalityId).Centroid()
                 : position!;
 
-            return (finalSpecification, finalPosition);
-        }
-
-        private bool HasGeometryChanged(
-            GeometryMethod geometryMethod,
-            ExtendedWkbGeometry position,
-            GeometrySpecification finalGeometrySpecification)
-        {
-            var newGeometry = new AddressGeometry(geometryMethod, finalGeometrySpecification, position);
-            return Geometry is null || Geometry != newGeometry;
+            return new AddressGeometry(geometryMethod, finalSpecification, finalPosition);
         }
 
         /// <summary>

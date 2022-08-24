@@ -2,6 +2,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
 {
     using System.Reflection;
     using Be.Vlaanderen.Basisregisters.EntityFrameworkCore.EntityTypeConfiguration;
+    using Consumer.Read.Municipality;
     using Microsoft.EntityFrameworkCore;
     using Projections.Legacy;
     using Projections.Legacy.AddressList;
@@ -15,6 +16,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
         public DbSet<AddressListItem> AddressList { get; set; }
         public DbSet<AddressListItemV2> AddressListV2 { get; set; }
         public DbSet<MunicipalityLatestItem> MunicipalityLatestItems { get; set; }
+        public DbSet<Consumer.Read.Municipality.Projections.MunicipalityLatestItem> MunicipalityConsumerLatestItems { get; set; }
         public DbSet<StreetNameLatestItem> StreetNameLatestItems { get; set; }
 
         public AddressQueryContext()
@@ -34,6 +36,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
 
             modelBuilder.AddEntityConfigurationsFromAssembly(typeof(LegacyContext).GetTypeInfo().Assembly);
             modelBuilder.AddEntityConfigurationsFromAssembly(typeof(SyndicationContext).GetTypeInfo().Assembly);
+            modelBuilder.AddEntityConfigurationsFromAssembly(typeof(MunicipalityConsumerContext).GetTypeInfo().Assembly);
         }
     }
 }

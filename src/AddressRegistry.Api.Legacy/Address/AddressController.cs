@@ -32,6 +32,7 @@ namespace AddressRegistry.Api.Legacy.Address
     using System.Threading.Tasks;
     using System.Xml;
     using Be.Vlaanderen.Basisregisters.Api.Search;
+    using Consumer.Read.Municipality;
     using Convertors;
     using Infrastructure;
     using Infrastructure.FeatureToggles;
@@ -75,6 +76,7 @@ namespace AddressRegistry.Api.Legacy.Address
         public async Task<IActionResult> Get(
             [FromServices] LegacyContext context,
             [FromServices] SyndicationContext syndicationContext,
+            [FromServices] MunicipalityConsumerContext municipalityConsumerContext,
             [FromServices] IOptions<ResponseOptions> responseOptions,
             [FromRoute] int persistentLocalId,
             [FromRoute] Taal? taal,
@@ -97,7 +99,7 @@ namespace AddressRegistry.Api.Legacy.Address
                     x.PersistentLocalId == addressV2.StreetNamePersistentLocalId.ToString(), cancellationToken);
 
                 var municipalityV2 =
-                    await syndicationContext.MunicipalityLatestItems.FirstAsync(m => m.NisCode == streetNameV2.NisCode,
+                    await municipalityConsumerContext.MunicipalityLatestItems.FirstAsync(m => m.NisCode == streetNameV2.NisCode,
                         cancellationToken);
                 var defaultMunicipalityNameV2 = AddressMapper.GetDefaultMunicipalityName(municipalityV2);
                 var defaultStreetNameV2 =
@@ -212,7 +214,6 @@ namespace AddressRegistry.Api.Legacy.Address
         /// Vraag een lijst met adressen op.
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="syndicationContext"></param>
         /// <param name="taal">Gewenste taal van de respons.</param>
         /// <param name="responseOptions"></param>
         /// <param name="cancellationToken"></param>
@@ -271,7 +272,7 @@ namespace AddressRegistry.Api.Legacy.Address
                     .ToList();
 
                 var municipalitiesV2 = await queryContext
-                    .MunicipalityLatestItems
+                    .MunicipalityConsumerLatestItems
                     .Where(x => nisCodesV2.Contains(x.NisCode))
                     .ToListAsync(cancellationToken);
 
@@ -279,7 +280,7 @@ namespace AddressRegistry.Api.Legacy.Address
                     .Select(a =>
                     {
                         var streetName = streetNamesV2.SingleOrDefault(x => x.PersistentLocalId == a.StreetNamePersistentLocalId.ToString());
-                        MunicipalityLatestItem municipality = null;
+                        Consumer.Read.Municipality.Projections.MunicipalityLatestItem municipality = null;
                         if (streetName != null)
                             municipality = municipalitiesV2.SingleOrDefault(x => x.NisCode == streetName.NisCode);
                         return new AddressListItemResponse(
@@ -475,7 +476,6 @@ namespace AddressRegistry.Api.Legacy.Address
         /// Vraag een adres op.
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="syndicationContext"></param>
         /// <param name="responseOptions"></param>
         /// <param name="addressRequest"></param>
         /// <param name="cancellationToken"></param>
@@ -533,6 +533,7 @@ namespace AddressRegistry.Api.Legacy.Address
         public async Task<IActionResult> PostBosaAddressRepresentations(
             [FromServices] LegacyContext context,
             [FromServices] SyndicationContext syndicationContext,
+            [FromServices] MunicipalityConsumerContext municipalityConsumerContext,
             [FromServices] IOptions<ResponseOptions> responseOptions,
             [FromBody] BosaAddressRepresentationRequest request,
             CancellationToken cancellationToken = default)
@@ -554,8 +555,8 @@ namespace AddressRegistry.Api.Legacy.Address
                     .StreetNameBosaItems
                     .FirstOrDefaultAsync(x => x.PersistentLocalId == addressV2.StreetNamePersistentLocalId.ToString(), cancellationToken);
 
-                var municipalityV2 = await syndicationContext
-                    .MunicipalityBosaItems
+                var municipalityV2 = await municipalityConsumerContext
+                    .MunicipalityLatestItems
                     .FirstOrDefaultAsync(x => x.NisCode == streetNameV2.NisCode, cancellationToken);
 
                 var responseV2 = new AddressRepresentationBosaResponse
@@ -563,12 +564,12 @@ namespace AddressRegistry.Api.Legacy.Address
                     Identificator = new AdresIdentificator(responseOptions.Value.Naamruimte, addressV2.AddressPersistentLocalId.ToString(), addressV2.VersionTimestamp.ToBelgianDateTimeOffset())
                 };
 
-                if (!request.Taal.HasValue || request.Taal.Value == municipalityV2.PrimaryLanguage)
+                if (!request.Taal.HasValue || request.Taal.Value == municipalityV2.PrimaryLanguage.ToTaal())
                 {
                     responseV2.AdresVoorstellingen = new List<BosaAddressRepresentation>
                     {
                         new BosaAddressRepresentation(
-                            municipalityV2.PrimaryLanguage.Value,
+                            municipalityV2.PrimaryLanguage.ToTaal(),
                             addressV2.HouseNumber,
                             addressV2.BoxNumber,
                             AddressMapper.GetVolledigAdres(addressV2.HouseNumber, addressV2.BoxNumber, addressV2.PostalCode, streetNameV2, municipalityV2).GeografischeNaam.Spelling,

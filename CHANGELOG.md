@@ -1,3 +1,10 @@
+## [3.37.3](https://github.com/informatievlaanderen/address-registry/compare/v3.37.2...v3.37.3) (2022-08-24)
+
+
+### Bug Fixes
+
+* snapshot ([cf07220](https://github.com/informatievlaanderen/address-registry/commit/cf07220c6700f4fd1e6db9710418697b96d6556d))
+
 ## [3.37.2](https://github.com/informatievlaanderen/address-registry/compare/v3.37.1...v3.37.2) (2022-08-23)
 
 

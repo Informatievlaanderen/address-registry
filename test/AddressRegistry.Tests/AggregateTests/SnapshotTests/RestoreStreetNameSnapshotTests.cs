@@ -111,6 +111,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
         public void ThenAggregateStreetNameStateIsExpected()
         {
             _sut.PersistentLocalId.Should().Be(new StreetNamePersistentLocalId(_streetNameSnapshot.StreetNamePersistentLocalId));
+            _sut.MunicipalityId.Should().Be(new MunicipalityId(_streetNameSnapshot.MunicipalityId));
             _sut.MigratedNisCode.Should().Be(new NisCode(_streetNameSnapshot.MigratedNisCode));
             _sut.Status.Should().Be(_streetNameSnapshot.StreetNameStatus);
             _sut.IsRemoved.Should().Be(_streetNameSnapshot.IsRemoved);

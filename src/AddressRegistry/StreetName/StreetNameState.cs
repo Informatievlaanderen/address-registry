@@ -179,6 +179,7 @@ namespace AddressRegistry.StreetName
         private void When(StreetNameSnapshot @event)
         {
             PersistentLocalId = new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId);
+            MunicipalityId = new MunicipalityId(@event.MunicipalityId);
             MigratedNisCode = string.IsNullOrEmpty(@event.MigratedNisCode) ? null : new NisCode(@event.MigratedNisCode);
             Status = @event.StreetNameStatus;
             IsRemoved = @event.IsRemoved;

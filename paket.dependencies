@@ -33,22 +33,22 @@ nuget GeoJSON.NET 1.2.19
 nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 6.0.5
 nuget Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events 3.0.0 content: true, copy_content_to_output_dir: always, copy_local: true
 
-nuget Be.Vlaanderen.Basisregisters.AggregateSource 6.2.2
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.ExplicitRouting 6.2.2
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore.Autofac 6.2.2
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing 6.2.2
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.CommandHandling 6.2.2
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac 6.2.2
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit 6.2.2
+nuget Be.Vlaanderen.Basisregisters.AggregateSource 7.0.0
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.ExplicitRouting 7.0.0
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore.Autofac 7.0.0
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing 7.0.0
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.CommandHandling 7.0.0
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac 7.0.0
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit 7.0.0
 
 nuget Be.Vlaanderen.Basisregisters.Api 18.1.0
 
 nuget Be.Vlaanderen.Basisregisters.Aws.DistributedMutex 3.0.0
 nuget Be.Vlaanderen.Basisregisters.Aws.Lambda 1.2.0
 
-nuget Be.Vlaanderen.Basisregisters.CommandHandling 6.2.2
-nuget Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency 6.2.2
-nuget Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore 6.2.2
+nuget Be.Vlaanderen.Basisregisters.CommandHandling 7.0.0
+nuget Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency 7.0.0
+nuget Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore 7.0.0
 
 nuget Be.Vlaanderen.Basisregisters.EventHandling 4.2.0
 nuget Be.Vlaanderen.Basisregisters.EventHandling.Autofac 4.2.0

@@ -135,7 +135,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                 .ThrowAsync<ValidationException>()
                 .Result
                 .Where(x =>
-                    x.Errors.Any(e => e.ErrorCode == "AdresGeometriemethodeValidatie"
+                    x.Errors.Any(e => e.ErrorCode == "AdresPositieGeometriemethodeValidatie"
                                       && e.ErrorMessage == "Ongeldige geometriemethode."));
         }
 
@@ -157,7 +157,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                 .ThrowAsync<ValidationException>()
                 .Result
                 .Where(x =>
-                    x.Errors.Any(e => e.ErrorCode == "AdresGeometriemethodeValidatie"
+                    x.Errors.Any(e => e.ErrorCode == "AdresPositieGeometriemethodeValidatie"
                                       && e.ErrorMessage == "Ongeldige geometriemethode."));
         }
 
@@ -230,7 +230,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                 .ThrowAsync<ValidationException>()
                 .Result
                 .Where(x =>
-                    x.Errors.Any(e => e.ErrorCode == "AdresGeometriemethodeValidatie"
+                    x.Errors.Any(e => e.ErrorCode == "AdresPositieGeometriemethodeValidatie"
                                       && e.ErrorMessage == "De parameter 'positie' is verplicht voor indien aangeduid door beheerder."));
         }
 
@@ -255,7 +255,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                 .ThrowAsync<ValidationException>()
                 .Result
                 .Where(x =>
-                    x.Errors.Any(e => e.ErrorCode == "AdrespositieFormaatValidatie"
+                    x.Errors.Any(e => e.ErrorCode == "AdresPositieformaatValidatie"
                                       && e.ErrorMessage == "De positie is geen geldige gml-puntgeometrie."));
         }
 

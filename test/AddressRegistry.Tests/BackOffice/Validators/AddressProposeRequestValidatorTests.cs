@@ -85,7 +85,7 @@
             });
 
             result.ShouldHaveValidationErrorFor(nameof(AddressProposeRequest.Positie))
-                .WithErrorCode("AdresGeometriemethodeValidatie")
+                .WithErrorCode("AdresPositieGeometriemethodeValidatie")
                 .WithErrorMessage("De parameter 'positie' is verplicht voor indien aangeduid door beheerder.");
         }
 
@@ -109,7 +109,7 @@
             });
 
             result.ShouldHaveValidationErrorFor(nameof(AddressProposeRequest.Positie))
-                .WithErrorCode("AdrespositieFormaatValidatie")
+                .WithErrorCode("AdresPositieformaatValidatie")
                 .WithErrorMessage("De positie is geen geldige gml-puntgeometrie.");
         }
     }

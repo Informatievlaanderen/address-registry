@@ -1,4 +1,4 @@
-﻿namespace AddressRegistry.Tests.BackOffice.Validators
+namespace AddressRegistry.Tests.BackOffice.Validators
 {
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Validators;
@@ -72,7 +72,7 @@
             });
 
             result.ShouldHaveValidationErrorFor(nameof(AddressProposeRequest.Positie))
-                .WithErrorCode("AdresGeometriemethodeValidatie")
+                .WithErrorCode("AdresPositieGeometriemethodeValidatie")
                 .WithErrorMessage("De parameter 'positie' is verplicht voor indien aangeduid door beheerder.");
         }
 
@@ -93,7 +93,7 @@
             });
 
             result.ShouldHaveValidationErrorFor(nameof(AddressProposeRequest.Positie))
-                .WithErrorCode("AdrespositieFormaatValidatie")
+                .WithErrorCode("AdresPositieformaatValidatie")
                 .WithErrorMessage("De positie is geen geldige gml-puntgeometrie.");
         }
     }

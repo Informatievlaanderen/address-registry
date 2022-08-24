@@ -1,3 +1,10 @@
+## [3.37.4](https://github.com/informatievlaanderen/address-registry/compare/v3.37.3...v3.37.4) (2022-08-24)
+
+
+### Bug Fixes
+
+* change errorcodes ([082ad5c](https://github.com/informatievlaanderen/address-registry/commit/082ad5c66f6268a345a566dad8707c8835eb66ee))
+
 ## [3.37.3](https://github.com/informatievlaanderen/address-registry/compare/v3.37.2...v3.37.3) (2022-08-24)
 
 

@@ -32,7 +32,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 .Where(a => !a.Removed && a.AddressPersistentLocalId != 0);
 
             var municipalities = _context
-                .MunicipalityLatestItems
+                .MunicipalityConsumerLatestItems
                 .AsNoTracking();
 
             var streetnames = _context

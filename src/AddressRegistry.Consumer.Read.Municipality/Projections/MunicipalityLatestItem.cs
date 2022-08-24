@@ -2,6 +2,7 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using AddressRegistry.Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -30,7 +31,7 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
         public DateTimeOffset VersionTimestampAsDateTimeOffset { get; private set; }
 
         private string OfficialLanguagesAsString { get; set; } = "";
-        
+
         public List<string> OfficialLanguages
         {
             get => DeserializeOfficialLanguages();
@@ -49,7 +50,23 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
             get => Instant.FromDateTimeOffset(VersionTimestampAsDateTimeOffset);
             set => VersionTimestampAsDateTimeOffset = value.ToDateTimeOffset();
         }
-        
+
+        public MunicipalityLanguage PrimaryLanguage
+        {
+            get
+            {
+                var dictionaryLanguages = new Dictionary<string, MunicipalityLanguage>(new List<KeyValuePair<string, MunicipalityLanguage>>(), StringComparer.OrdinalIgnoreCase)
+                {
+                    { "Dutch", MunicipalityLanguage.Dutch },
+                    { "French", MunicipalityLanguage.French },
+                    { "English", MunicipalityLanguage.English },
+                    { "German", MunicipalityLanguage.German }
+                };
+
+                return dictionaryLanguages[OfficialLanguages.First()];
+            }
+        }
+
         public MunicipalityLatestItem()
         {
             NisCode = string.Empty;
@@ -70,6 +87,14 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
         Current = 0,
         Retired = 1,
         Proposed = 2
+    }
+
+    public enum MunicipalityLanguage
+    {
+        Dutch = 0,
+        French = 1,
+        English = 2,
+        German = 3
     }
 
     public class MunicipalityItemConfiguration : IEntityTypeConfiguration<MunicipalityLatestItem>

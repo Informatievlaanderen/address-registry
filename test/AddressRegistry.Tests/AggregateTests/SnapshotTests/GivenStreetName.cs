@@ -72,6 +72,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
 
             var migratedStreetNameWasImported = Fixture.Create<MigratedStreetNameWasImported>();
             var expectedSnapshot = SnapshotBuilder.CreateDefaultSnapshot(streetNamePersistentLocalId)
+                .WithMunicipalityId(Fixture.Create<MunicipalityId>())
                 .WithMigratedNisCode(migratedStreetNameWasImported.NisCode)
                 .WithAddress(new AddressPersistentLocalId(parentAddressWasProposed.AddressPersistentLocalId),
                     AddressStatus.Proposed,

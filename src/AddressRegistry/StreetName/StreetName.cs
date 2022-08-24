@@ -285,6 +285,7 @@ namespace AddressRegistry.StreetName
         {
             return new StreetNameSnapshot(
                 PersistentLocalId,
+                MunicipalityId,
                 MigratedNisCode,
                 Status,
                 IsRemoved,

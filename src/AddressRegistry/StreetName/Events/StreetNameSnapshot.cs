@@ -1,5 +1,6 @@
 namespace AddressRegistry.StreetName.Events
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
@@ -13,6 +14,8 @@ namespace AddressRegistry.StreetName.Events
     public class StreetNameSnapshot
     {
         public int StreetNamePersistentLocalId { get; }
+
+        public Guid MunicipalityId { get; }
         public string? MigratedNisCode { get; }
         public StreetNameStatus StreetNameStatus { get; }
         public bool IsRemoved { get; }
@@ -21,12 +24,14 @@ namespace AddressRegistry.StreetName.Events
 
         public StreetNameSnapshot(
             StreetNamePersistentLocalId streetNamePersistentLocalId,
+            MunicipalityId municipalityId,
             NisCode? migratedNisCode,
             StreetNameStatus streetNameStatus,
             bool isRemoved,
             StreetNameAddresses addresses)
         {
             StreetNamePersistentLocalId = streetNamePersistentLocalId;
+            MunicipalityId = municipalityId;
             MigratedNisCode = migratedNisCode is null ? (string?)null : migratedNisCode;
             StreetNameStatus = streetNameStatus;
             IsRemoved = isRemoved;
@@ -36,12 +41,14 @@ namespace AddressRegistry.StreetName.Events
         [JsonConstructor]
         private StreetNameSnapshot(
             int streetNamePersistentLocalId,
+            Guid municipalityId,
             string? migratedNisCode,
             StreetNameStatus streetNameStatus,
             bool isRemoved,
             IEnumerable<AddressData> addresses)
             : this(
                 new StreetNamePersistentLocalId(streetNamePersistentLocalId),
+                new MunicipalityId(municipalityId),
                 string.IsNullOrEmpty(migratedNisCode) ? null : new NisCode(migratedNisCode),
                 streetNameStatus,
                 isRemoved,

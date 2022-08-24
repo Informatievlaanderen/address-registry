@@ -1,5 +1,6 @@
 namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
@@ -18,7 +19,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
         {
             return new SnapshotContainer
             {
-                Info = new SnapshotInfo { Position = position, Type = nameof(StreetNameSnapshot) },
+                Info = new SnapshotInfo { StreamVersion = position, Type = nameof(StreetNameSnapshot) },
                 Data = JsonConvert.SerializeObject(snapshot, serializerSettings)
             };
         }
@@ -27,7 +28,19 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
         {
             return new StreetNameSnapshot(
                 new StreetNamePersistentLocalId(snapshot.StreetNamePersistentLocalId),
+                new MunicipalityId(snapshot.MunicipalityId),
                 new NisCode(nisCode),
+                snapshot.StreetNameStatus,
+                snapshot.IsRemoved,
+                ReaddStreetNameAddresses(new StreetNamePersistentLocalId(snapshot.StreetNamePersistentLocalId), snapshot.Addresses));
+        }
+
+        public static StreetNameSnapshot WithMunicipalityId(this StreetNameSnapshot snapshot, Guid municipalityId)
+        {
+            return new StreetNameSnapshot(
+                new StreetNamePersistentLocalId(snapshot.StreetNamePersistentLocalId),
+                new MunicipalityId(municipalityId),
+                new NisCode(snapshot.MigratedNisCode),
                 snapshot.StreetNameStatus,
                 snapshot.IsRemoved,
                 ReaddStreetNameAddresses(new StreetNamePersistentLocalId(snapshot.StreetNamePersistentLocalId), snapshot.Addresses));
@@ -72,6 +85,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
 
             return new StreetNameSnapshot(
                 new StreetNamePersistentLocalId(snapshot.StreetNamePersistentLocalId),
+                new MunicipalityId(snapshot.MunicipalityId),
                 string.IsNullOrEmpty(snapshot.MigratedNisCode) ? null : new NisCode(snapshot.MigratedNisCode),
                 snapshot.StreetNameStatus,
                 snapshot.IsRemoved,
@@ -97,7 +111,8 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
         {
             return new StreetNameSnapshot(
                 streetNamePersistentLocalId,
-                null,
+                new MunicipalityId(Guid.NewGuid()),
+                new NisCode("testniscode"),
                 StreetNameStatus.Proposed,
                 false,
                 new StreetNameAddresses());

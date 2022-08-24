@@ -21,9 +21,9 @@ namespace AddressRegistry.Api.BackOffice.Validators
             public const string PositionSpecificationRequired = "AdresspecificatieVerplichtBijManueleAanduiding";
             public const string PositionSpecificationInvalid = "AdresspecificatieValidatie";
 
-            public const string PositionRequired = "AdresGeometriemethodeValidatie";
-            public const string PositionInvalidFormat = "AdrespositieFormaatValidatie";
-            public const string GeometryMethodInvalid = "AdresGeometriemethodeValidatie";
+            public const string PositionRequired = "AdresPositieGeometriemethodeValidatie";
+            public const string PositionInvalidFormat = "AdresPositieformaatValidatie";
+            public const string GeometryMethodInvalid = "AdresPositieGeometriemethodeValidatie";
 
             public const string AddressRemoved = "AdresIsVerwijderd";
             public const string AddressCannotBeApproved = "AdresGehistoreerdOfAfgekeurd";

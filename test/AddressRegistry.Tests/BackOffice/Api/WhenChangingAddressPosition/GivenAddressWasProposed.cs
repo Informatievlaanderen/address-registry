@@ -121,7 +121,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
                 .ThrowAsync<ValidationException>()
                 .Result
                 .Where(x => x.Errors.Any(e =>
-                    e.ErrorCode == "AdresGeometriemethodeValidatie"
+                    e.ErrorCode == "AdresPositieGeometriemethodeValidatie"
                     && e.ErrorMessage == "Ongeldige geometriemethode."));
         }
 

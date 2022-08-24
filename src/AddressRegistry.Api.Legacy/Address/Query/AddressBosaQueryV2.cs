@@ -37,7 +37,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 .OrderBy(x => x.AddressPersistentLocalId)
                 .Where(x => !x.Removed);
             var streetNamesQuery = _context.StreetNameBosaItems.AsNoTracking().Where(x => x.IsComplete);
-            var municipalitiesQuery = _context.MunicipalityBosaItems.AsNoTracking();
+            var municipalitiesQuery = _context.MunicipalityConsumerLatestItems.AsNoTracking();
 
             if (filter?.IsOnlyAdresIdRequested == true && int.TryParse(filter.AdresCode?.ObjectId, out var adresId))
             {
@@ -200,7 +200,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             Taal? language,
             BosaSearchType searchType,
             IQueryable<StreetNameBosaItem> streetNames,
-            IQueryable<MunicipalityBosaItem> filteredMunicipalities)
+            IQueryable<MunicipalityLatestItem> filteredMunicipalities)
         {
             var filtered = streetNames.Join(
                 filteredMunicipalities,
@@ -293,13 +293,13 @@ namespace AddressRegistry.Api.Legacy.Address.Query
         }
 
         // https://github.com/Informatievlaanderen/municipality-registry/blob/054e52fffe13bb4a09f80bf36d221d34ab0aacaa/src/MunicipalityRegistry.Api.Legacy/Municipality/Query/MunicipalityBosaQuery.cs#L83
-        private static IQueryable<MunicipalityBosaItem> FilterMunicipalities(
+        private static IQueryable<MunicipalityLatestItem> FilterMunicipalities(
             string nisCode,
             string version,
             string municipalityName,
             Taal? language,
             BosaSearchType searchType,
-            IQueryable<MunicipalityBosaItem> municipalities)
+            IQueryable<MunicipalityLatestItem> municipalities)
         {
             var filtered = municipalities.Where(x => x.IsFlemishRegion);
 
@@ -325,8 +325,8 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             return filtered;
         }
 
-        private static IQueryable<MunicipalityBosaItem> ApplyMunicipalityLanguageFilter(
-            IQueryable<MunicipalityBosaItem> query,
+        private static IQueryable<MunicipalityLatestItem> ApplyMunicipalityLanguageFilter(
+            IQueryable<MunicipalityLatestItem> query,
             Taal language)
         {
             switch (language)
@@ -346,8 +346,8 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             }
         }
 
-        private static IQueryable<MunicipalityBosaItem> CompareMunicipalityByCompareType(
-            IQueryable<MunicipalityBosaItem> query,
+        private static IQueryable<MunicipalityLatestItem> CompareMunicipalityByCompareType(
+            IQueryable<MunicipalityLatestItem> query,
             string searchValue,
             Taal? language,
             bool isContainsFilter)

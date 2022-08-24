@@ -24,6 +24,8 @@ namespace AddressRegistry.Projections.Syndication.Municipality
         public string? Version { get; set; }
         public long Position { get; set; }
 
+        public bool IsFlemishRegion => !string.IsNullOrEmpty(NisCode) && RegionFilter.IsFlemishRegion(NisCode);
+
         public string GetDefaultName()
             => PrimaryLanguage switch
             {

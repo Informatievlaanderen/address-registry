@@ -53,6 +53,9 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
             PostalCode postalCode,
             HouseNumber houseNumber,
             BoxNumber? boxNumber,
+            GeometryMethod geometryMethod,
+            GeometrySpecification geometrySpecification,
+            ExtendedWkbGeometry geometryPosition,
             AddressPersistentLocalId? parentAddressPersistentLocalId,
             string eventHash,
             ProvenanceData provenanceData)
@@ -68,7 +71,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                 houseNumber,
                 boxNumber,
                 postalCode,
-                null,
+                new AddressGeometry(geometryMethod, geometrySpecification, geometryPosition),
                 true,
                 false,
                 parentAddressPersistentLocalId is null ? null : addresses.GetByPersistentLocalId(parentAddressPersistentLocalId),

@@ -2,6 +2,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRegularizingAddress
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Api.BackOffice.Abstractions;
     using StreetName;
     using StreetName.Commands;
     using StreetName.Events;
@@ -44,7 +45,11 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRegularizingAddress
                 parentPersistentLocalId: null,
                 Fixture.Create<PostalCode>(),
                 Fixture.Create<HouseNumber>(),
-                boxNumber: null);
+                boxNumber: null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+
             var addressWasDeregulated = new AddressWasDeregulated(
                 Fixture.Create<StreetNamePersistentLocalId>(),
                 addressPersistentLocalId);
@@ -180,7 +185,10 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRegularizingAddress
                 parentPersistentLocalId: null,
                 Fixture.Create<PostalCode>(),
                 Fixture.Create<HouseNumber>(),
-                boxNumber: null);
+                boxNumber: null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
             var addressWasRegularized = new AddressWasRegularized(streetNamePersistentLocalId, addressPersistentLocalId);

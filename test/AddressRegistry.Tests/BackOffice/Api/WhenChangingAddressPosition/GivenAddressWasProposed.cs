@@ -122,7 +122,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
                 .Result
                 .Where(x => x.Errors.Any(e =>
                     e.ErrorCode == "AdresPositieGeometriemethodeValidatie"
-                    && e.ErrorMessage == "Ongeldige geometriemethode."));
+                    && e.ErrorMessage == "Ongeldige positieGeometrieMethode."));
         }
 
         [Fact]

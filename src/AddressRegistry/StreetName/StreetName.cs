@@ -141,7 +141,11 @@ namespace AddressRegistry.StreetName
             PostalCode postalCode,
             MunicipalityId municipalityIdByPostalCode,
             HouseNumber houseNumber,
-            BoxNumber? boxNumber)
+            BoxNumber? boxNumber,
+            GeometryMethod? geometryMethod,
+            GeometrySpecification? geometrySpecification,
+            ExtendedWkbGeometry? geometryPosition,
+            IMunicipalities municipalities)
         {
             GuardActiveStreetName(streetNamePersistentLocalId);
 
@@ -177,13 +181,21 @@ namespace AddressRegistry.StreetName
                 throw new BoxNumberAlreadyExistsException(boxNumber!);
             }
 
+            var finalGeometryMethod = geometryMethod ?? GeometryMethod.DerivedFromObject;
+
+            StreetNameAddress.GuardGeometry(finalGeometryMethod, geometrySpecification, geometryPosition);
+            var newGeometry = StreetNameAddress.GetFinalGeometry(MunicipalityId, finalGeometryMethod, geometrySpecification, geometryPosition, municipalities);
+
             ApplyChange(new AddressWasProposedV2(
                 streetNamePersistentLocalId,
                 addressPersistentLocalId,
                 parent?.AddressPersistentLocalId,
                 postalCode,
                 houseNumber,
-                boxNumber));
+                boxNumber,
+                newGeometry.GeometryMethod,
+                newGeometry.GeometrySpecification,
+                newGeometry.Geometry));
         }
 
         public void ApproveAddress(AddressPersistentLocalId addressPersistentLocalId)

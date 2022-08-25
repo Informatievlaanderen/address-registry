@@ -66,7 +66,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
 
             public const string PositionRequired = "De parameter 'positie' is verplicht voor indien aangeduid door beheerder.";
             public const string PositionInvalidFormat = "De positie is geen geldige gml-puntgeometrie.";
-            public const string GeometryMethodInvalid = "Ongeldige geometriemethode.";
+            public const string GeometryMethodInvalid = "Ongeldige positieGeometrieMethode.";
 
             public const string AddressNotFound = "Onbestaand adres.";
             public const string AddressRemoved = "Verwijderde adres.";

@@ -2,6 +2,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using Api.BackOffice.Abstractions;
     using Autofac;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
@@ -26,6 +27,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
             Fixture.Customize(new WithFixedStreetNamePersistentLocalId());
             Fixture.Customize(new WithFixedMunicipalityId());
             Fixture.Customize(new WithFixedValidHouseNumber());
+            Fixture.Customize(new WithExtendedWkbGeometry());
             _streamId = Fixture.Create<StreetNameStreamId>();
         }
 
@@ -46,7 +48,10 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                 parentPersistentLocalId: null,
                 postalCode,
                 houseNumber,
-                boxNumber: null);
+                boxNumber: null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)parentAddressWasProposed).SetProvenance(provenance);
 
             var proposeChildAddress = new ProposeAddress(
@@ -56,9 +61,9 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                 Fixture.Create<AddressPersistentLocalId>(),
                 houseNumber,
                 boxNumber,
-                GeometryMethod.DerivedFromObject,
-                GeometrySpecification.RoadSegment,
-                null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry(),
                 provenance);
 
             var addressWasProposedV2 = new AddressWasProposedV2(
@@ -67,7 +72,10 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                 new AddressPersistentLocalId(parentAddressWasProposed.AddressPersistentLocalId),
                 proposeChildAddress.PostalCode,
                 proposeChildAddress.HouseNumber,
-                proposeChildAddress.BoxNumber);
+                proposeChildAddress.BoxNumber,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)addressWasProposedV2).SetProvenance(provenance);
 
             var migratedStreetNameWasImported = Fixture.Create<MigratedStreetNameWasImported>();
@@ -79,6 +87,9 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                     postalCode,
                     houseNumber,
                     null,
+                    GeometryMethod.AppointedByAdministrator,
+                    GeometrySpecification.Entry,
+                    GeometryHelpers.PointGeometry.ToExtendedWkbGeometry(),
                     null,
                     parentAddressWasProposed.GetHash(),
                     new ProvenanceData(provenance))
@@ -87,6 +98,9 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                     postalCode,
                     houseNumber,
                     boxNumber,
+                    GeometryMethod.AppointedByAdministrator,
+                    GeometrySpecification.Entry,
+                    GeometryHelpers.PointGeometry.ToExtendedWkbGeometry(),
                     new AddressPersistentLocalId(parentAddressWasProposed.AddressPersistentLocalId),
                     addressWasProposedV2.GetHash(),
                     new ProvenanceData(provenance))

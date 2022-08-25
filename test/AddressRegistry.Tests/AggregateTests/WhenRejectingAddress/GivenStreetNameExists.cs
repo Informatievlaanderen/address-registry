@@ -2,6 +2,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingAddress
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Api.BackOffice.Abstractions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
@@ -43,7 +44,10 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingAddress
                 parentPersistentLocalId: null,
                 Fixture.Create<PostalCode>(),
                 Fixture.Create<HouseNumber>(),
-                boxNumber: null);
+                boxNumber: null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
 
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
@@ -193,7 +197,10 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingAddress
                 parentPersistentLocalId: parentAddressPersistentLocalId,
                 Fixture.Create<PostalCode>(),
                 Fixture.Create<HouseNumber>(),
-                boxNumber: null);
+                boxNumber: null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
 
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
@@ -317,7 +324,10 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingAddress
                 parentPersistentLocalId: null,
                 Fixture.Create<PostalCode>(),
                 Fixture.Create<HouseNumber>(),
-                boxNumber: null);
+                boxNumber: null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
             var addressWasRejected = new AddressWasRejected(streetNamePersistentLocalId, addressPersistentLocalId);

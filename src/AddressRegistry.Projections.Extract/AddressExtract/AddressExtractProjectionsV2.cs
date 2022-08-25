@@ -90,6 +90,8 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                     adresid = { Value = message.Message.AddressPersistentLocalId },
                     huisnr = { Value = message.Message.HouseNumber },
                     postcode = { Value = message.Message.PostalCode },
+                    posgeommet = { Value = Map(message.Message.GeometryMethod) },
+                    posspec = { Value = Map(message.Message.GeometrySpecification) },
                     offtoegknd = { Value = true },
                     straatnmid = { Value = message.Message.StreetNamePersistentLocalId.ToString() },
                     status = { Value = Map(AddressStatus.Proposed) },
@@ -101,11 +103,20 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                     addressDbaseRecord.busnr.Value = message.Message.BoxNumber;
                 }
 
+                var coordinate = wkbReader.Read(message.Message.ExtendedWkbGeometry.ToByteArray()).Coordinate;
+                var pointShapeContent = new PointShapeContent(new Point(coordinate.X, coordinate.Y));
+
                 await context.AddressExtractV2.AddAsync(new AddressExtractItemV2
                 {
                     AddressPersistentLocalId = message.Message.AddressPersistentLocalId,
                     StreetNamePersistentLocalId = message.Message.StreetNamePersistentLocalId,
                     Complete = true,
+                    MinimumX = pointShapeContent.Shape.X,
+                    MaximumX = pointShapeContent.Shape.X,
+                    MinimumY = pointShapeContent.Shape.Y,
+                    MaximumY = pointShapeContent.Shape.Y,
+                    ShapeRecordContent = pointShapeContent.ToBytes(),
+                    ShapeRecordContentLength = pointShapeContent.ContentLength.ToInt32(),
                     DbaseRecord = addressDbaseRecord.ToBytes(_encoding),
                 }, cancellationToken: ct);
             });

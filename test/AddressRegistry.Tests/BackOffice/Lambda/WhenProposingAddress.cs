@@ -14,6 +14,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
+    using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
     using FluentAssertions;
     using global::AutoFixture;
     using Infrastructure;
@@ -94,6 +95,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
                 Huisnummer = "11",
                 Busnummer = null,
+                PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
+                PositieSpecificatie = PositieSpecificatie.Ingang,
+                Positie = GeometryHelpers.PointGeometry,
                 Metadata = new Dictionary<string, object>(),
                 MessageGroupId = streetNamePersistentLocalId
             },

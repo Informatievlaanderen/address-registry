@@ -6,12 +6,14 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
     using System.Threading;
     using System.Threading.Tasks;
     using Address;
+    using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers;
     using Autofac;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
+    using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
     using FluentAssertions;
     using Infrastructure;
     using Moq;
@@ -85,6 +87,9 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
                 PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
                 Huisnummer = "11",
                 Busnummer = null,
+                PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
+                PositieSpecificatie = PositieSpecificatie.Ingang,
+                Positie = GeometryHelpers.PointGeometry,
                 Metadata = new Dictionary<string, object>()
             },
                 CancellationToken.None);

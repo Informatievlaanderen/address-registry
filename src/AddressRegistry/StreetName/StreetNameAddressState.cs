@@ -22,7 +22,7 @@ namespace AddressRegistry.StreetName
         public HouseNumber HouseNumber { get; private set; }
         public BoxNumber? BoxNumber { get; private set; }
         public PostalCode PostalCode { get; private set; }
-        public AddressGeometry? Geometry { get; private set; }
+        public AddressGeometry Geometry { get; private set; }
         public bool IsOfficiallyAssigned { get; set; }
         public bool IsRemoved { get; private set; }
 
@@ -86,6 +86,10 @@ namespace AddressRegistry.StreetName
             BoxNumber = string.IsNullOrEmpty(@event.BoxNumber) ? null : new BoxNumber(@event.BoxNumber);
             PostalCode = new PostalCode(@event.PostalCode);
             IsOfficiallyAssigned = true;
+            Geometry = new AddressGeometry(
+                @event.GeometryMethod,
+                @event.GeometrySpecification,
+                new ExtendedWkbGeometry(@event.ExtendedWkbGeometry));
 
             _lastEvent = @event;
         }
@@ -188,6 +192,10 @@ namespace AddressRegistry.StreetName
             HouseNumber = new HouseNumber(addressData.HouseNumber);
             BoxNumber = string.IsNullOrEmpty(addressData.BoxNumber) ? null : new BoxNumber(addressData.BoxNumber);
             PostalCode = new PostalCode(addressData.PostalCode);
+            Geometry = new AddressGeometry(
+                addressData.GeometryMethod.Value,
+                addressData.GeometrySpecification.Value,
+                new ExtendedWkbGeometry(addressData.ExtendedWkbGeometry));
 
             if (!string.IsNullOrEmpty(addressData.ExtendedWkbGeometry))
             {

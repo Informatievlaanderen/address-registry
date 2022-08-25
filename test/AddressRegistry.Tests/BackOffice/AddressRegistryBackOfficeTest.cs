@@ -5,6 +5,7 @@ namespace AddressRegistry.Tests.BackOffice
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Abstractions.Responses;
     using AddressRegistry.Api.BackOffice.Infrastructure;
@@ -145,9 +146,9 @@ namespace AddressRegistry.Tests.BackOffice
                 addressPersistentLocalId,
                 houseNumber,
                 boxNumber,
-                GeometryMethod.DerivedFromObject,
-                GeometrySpecification.RoadSegment,
-                null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry(),
                 Fixture.Create<Provenance>());
             DispatchArrangeCommand(proposeCommand);
         }

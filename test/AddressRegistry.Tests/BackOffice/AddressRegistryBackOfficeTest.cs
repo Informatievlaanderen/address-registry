@@ -148,7 +148,7 @@ namespace AddressRegistry.Tests.BackOffice
                 boxNumber,
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
-                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry(),
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                 Fixture.Create<Provenance>());
             DispatchArrangeCommand(proposeCommand);
         }

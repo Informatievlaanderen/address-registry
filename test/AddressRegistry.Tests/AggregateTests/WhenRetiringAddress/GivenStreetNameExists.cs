@@ -46,7 +46,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringAddress
                 boxNumber: null,
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
-                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
 
             var addressWasApproved = new AddressWasApproved(
                 Fixture.Create<StreetNamePersistentLocalId>(),
@@ -378,7 +378,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringAddress
                 boxNumber: null,
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
-                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
 
             var addressWasApproved = new AddressWasApproved(
                 streetNamePersistentLocalId,

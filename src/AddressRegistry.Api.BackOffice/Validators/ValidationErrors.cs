@@ -18,8 +18,8 @@ namespace AddressRegistry.Api.BackOffice.Validators
 
             public const string BoxNumberInvalid = "AdresOngeldigBusnummerformaat";
 
-            public const string PositionSpecificationRequired = "AdresspecificatieVerplichtBijManueleAanduiding";
-            public const string PositionSpecificationInvalid = "AdresspecificatieValidatie";
+            public const string PositionSpecificationRequired = "AdresPositieSpecificatieVerplichtBijManueleAanduiding";
+            public const string PositionSpecificationInvalid = "AdresPositieSpecificatieValidatie";
 
             public const string PositionRequired = "AdresPositieGeometriemethodeValidatie";
             public const string PositionInvalidFormat = "AdresPositieformaatValidatie";
@@ -61,8 +61,9 @@ namespace AddressRegistry.Api.BackOffice.Validators
 
             public const string BoxNumberInvalid = "Ongeldig busnummerformaat.";
 
-            public const string PositionSpecificationRequired = "Positiespecificatie is verplicht bij een manuele aanduiding van de positie.";
-            public const string PositionSpecificationInvalid = "Ongeldige positiespecificatie.";
+            public const string PositionSpecificationRequired = "PositieSpecificatie is verplicht bij een manuele aanduiding van de positie.";
+
+            public const string PositionSpecificationInvalid = "Ongeldige positieSpecificatie.";
 
             public const string PositionRequired = "De parameter 'positie' is verplicht voor indien aangeduid door beheerder.";
             public const string PositionInvalidFormat = "De positie is geen geldige gml-puntgeometrie.";

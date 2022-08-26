@@ -43,7 +43,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenApprovingAddress
                 boxNumber: null,
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
-                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
 
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
@@ -237,7 +237,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenApprovingAddress
                 boxNumber: null,
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
-                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
             var addressWasApproved = new AddressWasApproved(streetNamePersistentLocalId, addressPersistentLocalId);

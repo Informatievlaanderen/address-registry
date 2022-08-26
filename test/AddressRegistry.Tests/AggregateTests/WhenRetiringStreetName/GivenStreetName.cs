@@ -88,7 +88,7 @@ public class GivenStreetName : AddressRegistryTest
             boxNumber: null,
             GeometryMethod.AppointedByAdministrator,
             GeometrySpecification.Entry,
-            GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+            GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
         ((ISetProvenance)firstAddressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
         var secondAddressPersistentLocalId = new AddressPersistentLocalId(456);
@@ -101,7 +101,7 @@ public class GivenStreetName : AddressRegistryTest
             boxNumber: null,
             GeometryMethod.AppointedByAdministrator,
             GeometrySpecification.Entry,
-            GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+            GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
         ((ISetProvenance)secondAddressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
         Assert(new Scenario()
@@ -141,7 +141,7 @@ public class GivenStreetName : AddressRegistryTest
             boxNumber: null,
             GeometryMethod.AppointedByAdministrator,
             GeometrySpecification.Entry,
-            GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+            GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
 
         ((ISetProvenance)firstAddressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
         var firstAddressWasApproved = new AddressWasApproved(
@@ -159,7 +159,7 @@ public class GivenStreetName : AddressRegistryTest
             boxNumber: null,
             GeometryMethod.AppointedByAdministrator,
             GeometrySpecification.Entry,
-            GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+            GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
 
         ((ISetProvenance)secondAddressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
         var secondAddressWasApproved = new AddressWasApproved(
@@ -206,7 +206,7 @@ public class GivenStreetName : AddressRegistryTest
             boxNumber: null,
             GeometryMethod.AppointedByAdministrator,
             GeometrySpecification.Entry,
-            GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+            GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
 
         ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
         var addressWasApproved = new AddressWasApproved(
@@ -252,7 +252,7 @@ public class GivenStreetName : AddressRegistryTest
             boxNumber: null,
             GeometryMethod.AppointedByAdministrator,
             GeometrySpecification.Entry,
-            GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+            GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
         ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
         var addressWasRejected = new AddressWasRejected(
             streetNamePersistentLocalId,

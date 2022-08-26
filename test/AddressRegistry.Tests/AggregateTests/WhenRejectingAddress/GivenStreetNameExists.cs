@@ -47,7 +47,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingAddress
                 boxNumber: null,
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
-                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
 
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
@@ -200,7 +200,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingAddress
                 boxNumber: null,
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
-                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
 
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
@@ -327,7 +327,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingAddress
                 boxNumber: null,
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
-                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
             var addressWasRejected = new AddressWasRejected(streetNamePersistentLocalId, addressPersistentLocalId);

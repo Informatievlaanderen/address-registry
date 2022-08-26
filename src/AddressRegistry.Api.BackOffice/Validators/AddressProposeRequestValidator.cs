@@ -39,14 +39,16 @@ namespace AddressRegistry.Api.BackOffice.Validators
             RuleFor(x => x.PositieSpecificatie)
                 .NotEmpty()
                 .When(x => x.PositieGeometrieMethode == PositieGeometrieMethode.AangeduidDoorBeheerder)
+                .DependentRules(() =>
+                {
+                    RuleFor(x => x.PositieSpecificatie)
+                        .Must(PositionSpecificationValidator.IsValidWhenAppointedByAdministrator)
+                        .When(x => x.PositieGeometrieMethode == PositieGeometrieMethode.AangeduidDoorBeheerder)
+                        .WithMessage(ValidationErrorMessages.Address.PositionSpecificationInvalid)
+                        .WithErrorCode(ValidationErrors.Address.PositionSpecificationInvalid);
+                })
                 .WithMessage(ValidationErrorMessages.Address.PositionSpecificationRequired)
                 .WithErrorCode(ValidationErrors.Address.PositionSpecificationRequired);
-
-            RuleFor(x => x.PositieSpecificatie)
-                .Must(PositionSpecificationValidator.IsValidWhenAppointedByAdministrator)
-                .When(x => x.PositieGeometrieMethode == PositieGeometrieMethode.AangeduidDoorBeheerder)
-                .WithMessage(ValidationErrorMessages.Address.PositionSpecificationInvalid)
-                .WithErrorCode(ValidationErrors.Address.PositionSpecificationInvalid);
 
             RuleFor(x => x.PositieSpecificatie)
                 .Must(PositionSpecificationValidator.IsValidWhenDerivedFromObject)

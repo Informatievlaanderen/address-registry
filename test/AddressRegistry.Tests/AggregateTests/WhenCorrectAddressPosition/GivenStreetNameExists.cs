@@ -58,7 +58,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectAddressPosition
                 boxNumber: null,
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Lot,
-                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
 
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
@@ -100,7 +100,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectAddressPosition
                 boxNumber: null,
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
-                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
             var municipalities = Container.Resolve<TestMunicipalityConsumerContext>();
@@ -242,7 +242,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectAddressPosition
                 boxNumber: null,
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
-                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
 
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
@@ -276,7 +276,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectAddressPosition
                 boxNumber: null,
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
-                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -310,7 +310,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectAddressPosition
                 boxNumber: null,
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
-                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -348,7 +348,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectAddressPosition
                 boxNumber: null,
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
-                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
 
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
@@ -419,7 +419,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectAddressPosition
                 boxNumber: null,
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Lot,
-                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
             var addressPositionWasCorrectedV2 = new AddressPositionWasCorrectedV2(

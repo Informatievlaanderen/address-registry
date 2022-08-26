@@ -16,7 +16,7 @@ namespace AddressRegistry.Tests
             "</gml:exterior>" +
             "</gml:Polygon>";
 
-        public const string PointGeometry =
+        public const string GmlPointGeometry =
             "<gml:Point srsName=\"https://www.opengis.net/def/crs/EPSG/0/31370\" xmlns:gml=\"http://www.opengis.net/gml/3.2\">" +
             "<gml:pos>103671.37 192046.71</gml:pos></gml:Point>";
 

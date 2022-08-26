@@ -51,7 +51,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                 boxNumber: null,
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
-                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)parentAddressWasProposed).SetProvenance(provenance);
 
             var proposeChildAddress = new ProposeAddress(
@@ -63,7 +63,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                 boxNumber,
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
-                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry(),
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                 provenance);
 
             var addressWasProposedV2 = new AddressWasProposedV2(
@@ -75,7 +75,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                 proposeChildAddress.BoxNumber,
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
-                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)addressWasProposedV2).SetProvenance(provenance);
 
             var migratedStreetNameWasImported = Fixture.Create<MigratedStreetNameWasImported>();
@@ -89,7 +89,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                     null,
                     GeometryMethod.AppointedByAdministrator,
                     GeometrySpecification.Entry,
-                    GeometryHelpers.PointGeometry.ToExtendedWkbGeometry(),
+                    GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                     null,
                     parentAddressWasProposed.GetHash(),
                     new ProvenanceData(provenance))
@@ -100,7 +100,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                     boxNumber,
                     GeometryMethod.AppointedByAdministrator,
                     GeometrySpecification.Entry,
-                    GeometryHelpers.PointGeometry.ToExtendedWkbGeometry(),
+                    GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                     new AddressPersistentLocalId(parentAddressWasProposed.AddressPersistentLocalId),
                     addressWasProposedV2.GetHash(),
                     new ProvenanceData(provenance))

@@ -1,3 +1,17 @@
+# [3.38.0](https://github.com/informatievlaanderen/address-registry/compare/v3.37.4...v3.38.0) (2022-08-26)
+
+
+### Bug Fixes
+
+* tests with mystery character ([617cfce](https://github.com/informatievlaanderen/address-registry/commit/617cfcec1a517767ec949c68606ef5bfbbe8a6fc))
+* validation bug gawr-3587 ([9cdbc8b](https://github.com/informatievlaanderen/address-registry/commit/9cdbc8b1d31d65c68c95a0cedd71746914c1edec))
+
+
+### Features
+
+* default position for proposeAddress ([7062c30](https://github.com/informatievlaanderen/address-registry/commit/7062c303fa3581691730cc53a9272dd5b206595a))
+* validate parent house number status on approve bus number ([0d4b9b8](https://github.com/informatievlaanderen/address-registry/commit/0d4b9b8ef497ee1776721894425f901f879dba97))
+
 ## [3.37.4](https://github.com/informatievlaanderen/address-registry/compare/v3.37.3...v3.37.4) (2022-08-24)
 
 

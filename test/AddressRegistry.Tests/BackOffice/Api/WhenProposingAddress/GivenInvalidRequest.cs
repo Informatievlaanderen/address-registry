@@ -181,8 +181,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                 .ThrowAsync<ValidationException>()
                 .Result
                 .Where(x =>
-                    x.Errors.Any(e => e.ErrorCode == "AdresspecificatieVerplichtBijManueleAanduiding"
-                                      && e.ErrorMessage == "Positiespecificatie is verplicht bij een manuele aanduiding van de positie."));
+                    x.Errors.Any(e => e.ErrorCode == "AdresPositieSpecificatieVerplichtBijManueleAanduiding"
+                                      && e.ErrorMessage == "PositieSpecificatie is verplicht bij een manuele aanduiding van de positie."));
         }
 
         [Fact]
@@ -205,8 +205,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                 .ThrowAsync<ValidationException>()
                 .Result
                 .Where(x =>
-                    x.Errors.Any(e => e.ErrorCode == "AdresspecificatieValidatie"
-                                      && e.ErrorMessage == "Ongeldige positiespecificatie."));
+                    x.Errors.Any(e => e.ErrorCode == "AdresPositieSpecificatieValidatie"
+                                      && e.ErrorMessage == "Ongeldige positieSpecificatie."));
         }
 
         [Fact]
@@ -284,8 +284,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                 .ThrowAsync<ValidationException>()
                 .Result
                 .Where(x =>
-                    x.Errors.Any(e => e.ErrorCode == "AdresspecificatieValidatie"
-                                      && e.ErrorMessage == "Ongeldige positiespecificatie."));
+                    x.Errors.Any(e => e.ErrorCode == "AdresPositieSpecificatieValidatie"
+                                      && e.ErrorMessage == "Ongeldige positieSpecificatie."));
         }
 
         private Func<Task<IActionResult>> SetupController(AddressProposeRequest request)

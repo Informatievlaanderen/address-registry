@@ -48,7 +48,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenDeregulatingAddress
                 boxNumber: null,
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
-                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -182,7 +182,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenDeregulatingAddress
                 boxNumber: null,
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
-                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
             var addressWasDeregulated = new AddressWasDeregulated(streetNamePersistentLocalId, addressPersistentLocalId);

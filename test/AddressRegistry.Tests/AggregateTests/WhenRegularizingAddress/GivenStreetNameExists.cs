@@ -48,7 +48,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRegularizingAddress
                 boxNumber: null,
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
-                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
 
             var addressWasDeregulated = new AddressWasDeregulated(
                 Fixture.Create<StreetNamePersistentLocalId>(),
@@ -188,7 +188,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRegularizingAddress
                 boxNumber: null,
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
-                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
             var addressWasRegularized = new AddressWasRegularized(streetNamePersistentLocalId, addressPersistentLocalId);

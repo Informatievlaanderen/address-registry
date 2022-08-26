@@ -89,7 +89,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
                 Busnummer = null,
                 PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
                 PositieSpecificatie = PositieSpecificatie.Ingang,
-                Positie = GeometryHelpers.PointGeometry,
+                Positie = GeometryHelpers.GmlPointGeometry,
                 Metadata = new Dictionary<string, object>()
             },
                 CancellationToken.None);

@@ -97,7 +97,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 Busnummer = null,
                 PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
                 PositieSpecificatie = PositieSpecificatie.Ingang,
-                Positie = GeometryHelpers.PointGeometry,
+                Positie = GeometryHelpers.GmlPointGeometry,
                 Metadata = new Dictionary<string, object>(),
                 MessageGroupId = streetNamePersistentLocalId
             },

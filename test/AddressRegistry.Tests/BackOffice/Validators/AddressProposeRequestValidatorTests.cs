@@ -1,8 +1,9 @@
-﻿namespace AddressRegistry.Tests.BackOffice.Validators
+namespace AddressRegistry.Tests.BackOffice.Validators
 {
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Validators;
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
+    using FluentAssertions;
     using FluentValidation.TestHelper;
     using Infrastructure;
     using Xunit;
@@ -24,12 +25,14 @@
                 PostInfoId = "12",
                 StraatNaamId = "34",
                 Huisnummer = "56",
-                PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder
+                PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
+                Positie = GeometryHelpers.GmlPointGeometry
             });
 
             result.ShouldHaveValidationErrorFor(nameof(AddressProposeRequest.PositieSpecificatie))
-                .WithErrorCode("AdresspecificatieVerplichtBijManueleAanduiding")
-                .WithErrorMessage("Positiespecificatie is verplicht bij een manuele aanduiding van de positie.");
+                .WithoutErrorCode("AdresPositieSpecificatieValidatie")
+                .WithErrorCode("AdresPositieSpecificatieVerplichtBijManueleAanduiding")
+                .WithErrorMessage("PositieSpecificatie is verplicht bij een manuele aanduiding van de positie.");
         }
 
         [Theory]
@@ -46,8 +49,8 @@
             });
 
             result.ShouldHaveValidationErrorFor(nameof(AddressProposeRequest.PositieSpecificatie))
-                .WithErrorCode("AdresspecificatieValidatie")
-                .WithErrorMessage("Ongeldige positiespecificatie.");
+                .WithErrorCode("AdresPositieSpecificatieValidatie")
+                .WithErrorMessage("Ongeldige positieSpecificatie.");
         }
 
         [Theory]
@@ -68,8 +71,8 @@
             });
 
             result.ShouldHaveValidationErrorFor(nameof(AddressProposeRequest.PositieSpecificatie))
-                .WithErrorCode("AdresspecificatieValidatie")
-                .WithErrorMessage("Ongeldige positiespecificatie.");
+                .WithErrorCode("AdresPositieSpecificatieValidatie")
+                .WithErrorMessage("Ongeldige positieSpecificatie.");
         }
 
         [Fact]

@@ -14,12 +14,12 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
     {
         public static SnapshotContainer Build(
             this StreetNameSnapshot snapshot,
-            long position,
+            long streamVersion,
             JsonSerializerSettings serializerSettings)
         {
             return new SnapshotContainer
             {
-                Info = new SnapshotInfo { StreamVersion = position, Type = nameof(StreetNameSnapshot) },
+                Info = new SnapshotInfo { StreamVersion = streamVersion, Type = nameof(StreetNameSnapshot) },
                 Data = JsonConvert.SerializeObject(snapshot, serializerSettings)
             };
         }

@@ -30,7 +30,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRetiringAddress
         }
 
         [Fact]
-        public void ThenThrowsApiException()
+        public void ThenThrowsValidationException()
         {
             var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = new AddressPersistentLocalId(123);

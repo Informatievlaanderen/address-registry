@@ -112,6 +112,10 @@ namespace AddressRegistry.Api.BackOffice
                         ValidationErrors.Address.AddressCannotBeApproved,
                         string.Empty,
                         ValidationErrorMessages.Address.AddressCannotBeApproved),
+                    ParentAddressHasInvalidStatusException => CreateValidationException(
+                        ValidationErrors.Address.AddressCannotBeApprovedBecauseOfParent,
+                        string.Empty,
+                        ValidationErrorMessages.Address.AddressCannotBeApprovedBecauseOfParent),
 
                     _ => new ValidationException(new List<ValidationFailure>
                         { new ValidationFailure(string.Empty, exception.Message) })

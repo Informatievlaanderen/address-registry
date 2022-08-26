@@ -1,4 +1,4 @@
-namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
+namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
 {
     using System;
     using System.Linq;
@@ -6,23 +6,24 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
-    using StreetName;
-    using StreetName.Exceptions;
-    using Infrastructure;
+    using AddressRegistry.Api.BackOffice.Validators;
     using FluentAssertions;
     using FluentValidation;
     using global::AutoFixture;
+    using Infrastructure;
     using Moq;
+    using StreetName;
+    using StreetName.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
     using AddressController = AddressRegistry.Api.BackOffice.AddressController;
 
-    public class GivenAddressHasInvalidStatus : AddressRegistryBackOfficeTest
+    public class GivenParentAddressHasInvalidStatus : AddressRegistryBackOfficeTest
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;
 
-        public GivenAddressHasInvalidStatus(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public GivenParentAddressHasInvalidStatus(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             _controller = CreateApiBusControllerWithUser<AddressController>();
             _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
@@ -34,25 +35,23 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
             var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
-            MockMediator.Setup(x => x.Send(It.IsAny<AddressChangePositionRequest>(), CancellationToken.None))
-                .Throws(new AddressHasInvalidStatusException());
+            MockMediator.Setup(x => x.Send(It.IsAny<AddressApproveRequest>(), CancellationToken.None))
+                .Throws(new ParentAddressHasInvalidStatusException());
 
             _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.Add(
                 new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));
             _backOfficeContext.SaveChanges();
 
-            var approveRequest = new AddressChangePositionRequest
+            var approveRequest = new AddressApproveRequest
             {
                 PersistentLocalId = addressPersistentLocalId
             };
 
             //Act
-            Func<Task> act = async () => await _controller.ChangePosition(
+            Func<Task> act = async () => await _controller.Approve(
                 _backOfficeContext,
-                MockValidRequestValidator<AddressChangePositionRequest>(),
+                new AddressApproveRequestValidator(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
-                addressPersistentLocalId,
                 approveRequest,
                 null, CancellationToken.None);
 
@@ -62,8 +61,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
                 .ThrowAsync<ValidationException>()
                 .Result
                 .Where(x =>
-                     x.Errors.Any(e => e.ErrorCode == "AdresGehistoreerdOfAfgekeurd"
-                     && e.ErrorMessage == "Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik'."));
+                     x.Errors.Any(e => e.ErrorCode == "AdresHuisnummerVoorgesteldGehistoreerdOfAfgekeurd"
+                     && e.ErrorMessage == "Deze actie is enkel toegestaan op adressen waarbij het huisnummer de status 'inGebruik' heeft."));
         }
     }
 }

@@ -125,7 +125,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenApprovingAddress
                 StreetNameStatus.Current);
             ((ISetProvenance)streetNameWasImported).SetProvenance(Fixture.Create<Provenance>());
 
-            var migrateAddressWithStatusCurrent = new AddressWasMigratedToStreetName(
+            var addressWasMigratedToStreetName = new AddressWasMigratedToStreetName(
                 streetNamePersistentLocalId,
                 Fixture.Create<AddressId>(),
                 Fixture.Create<AddressStreetNameId>(),
@@ -139,7 +139,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenApprovingAddress
                 isCompleted: false,
                 isRemoved: false,
                 parentPersistentLocalId: null);
-            ((ISetProvenance)migrateAddressWithStatusCurrent).SetProvenance(Fixture.Create<Provenance>());
+            ((ISetProvenance)addressWasMigratedToStreetName).SetProvenance(Fixture.Create<Provenance>());
 
             var approveAddress = new ApproveAddress(
                 streetNamePersistentLocalId,
@@ -149,9 +149,68 @@ namespace AddressRegistry.Tests.AggregateTests.WhenApprovingAddress
             Assert(new Scenario()
                 .Given(_streamId,
                     streetNameWasImported,
-                    migrateAddressWithStatusCurrent)
+                    addressWasMigratedToStreetName)
                 .When(approveAddress)
                 .Throws(new AddressHasInvalidStatusException()));
+        }
+
+        [Fact]
+        public void WithParentAddressNotInStatusCurrent_ThenThrowsParentAddressHasInvalidStatusException()
+        {
+            var parentAddressPersistentLocalId = new AddressPersistentLocalId(123);
+            var childAddressPersistentLocalId = new AddressPersistentLocalId(456);
+            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
+
+            var streetNameWasImported = new StreetNameWasImported(
+                streetNamePersistentLocalId,
+                Fixture.Create<MunicipalityId>(),
+                StreetNameStatus.Current);
+            ((ISetProvenance)streetNameWasImported).SetProvenance(Fixture.Create<Provenance>());
+
+            var parentAddressWasMigratedToStreetName = new AddressWasMigratedToStreetName(
+                streetNamePersistentLocalId,
+                Fixture.Create<AddressId>(),
+                Fixture.Create<AddressStreetNameId>(),
+                parentAddressPersistentLocalId,
+                AddressStatus.Proposed,
+                Fixture.Create<HouseNumber>(),
+                boxNumber: null,
+                Fixture.Create<AddressGeometry>(),
+                officiallyAssigned: true,
+                postalCode: null,
+                isCompleted: false,
+                isRemoved: false,
+                parentPersistentLocalId: null);
+            ((ISetProvenance)parentAddressWasMigratedToStreetName).SetProvenance(Fixture.Create<Provenance>());
+
+            var childAddressWasMigratedToStreetName = new AddressWasMigratedToStreetName(
+                streetNamePersistentLocalId,
+                Fixture.Create<AddressId>(),
+                Fixture.Create<AddressStreetNameId>(),
+                childAddressPersistentLocalId,
+                AddressStatus.Proposed,
+                Fixture.Create<HouseNumber>(),
+                boxNumber: null,
+                Fixture.Create<AddressGeometry>(),
+                officiallyAssigned: true,
+                postalCode: null,
+                isCompleted: false,
+                isRemoved: false,
+                parentPersistentLocalId: parentAddressPersistentLocalId);
+            ((ISetProvenance)childAddressWasMigratedToStreetName).SetProvenance(Fixture.Create<Provenance>());
+
+            var approveChildAddress = new ApproveAddress(
+                streetNamePersistentLocalId,
+                childAddressPersistentLocalId,
+                Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    streetNameWasImported,
+                    parentAddressWasMigratedToStreetName,
+                    childAddressWasMigratedToStreetName)
+                .When(approveChildAddress)
+                .Throws(new ParentAddressHasInvalidStatusException()));
         }
 
         [Fact]

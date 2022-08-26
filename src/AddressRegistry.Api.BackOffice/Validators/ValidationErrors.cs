@@ -27,6 +27,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
 
             public const string AddressRemoved = "AdresIsVerwijderd";
             public const string AddressCannotBeApproved = "AdresGehistoreerdOfAfgekeurd";
+            public const string AddressCannotBeApprovedBecauseOfParent = "AdresHuisnummerVoorgesteldGehistoreerdOfAfgekeurd";
             public const string AddressCannotBeRejected = "AdresGehistoreerdOfInGebruik";
             public const string AddressCannotBeDeregulated = "AdresGehistoreerdOfAfgekeurd";
             public const string AddressCannotBeRegularized = "AdresGehistoreerdOfAfgekeurd";
@@ -70,6 +71,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
             public const string AddressNotFound = "Onbestaand adres.";
             public const string AddressRemoved = "Verwijderde adres.";
             public const string AddressCannotBeApproved = "Deze actie is enkel toegestaan op adressen met status 'voorgesteld'.";
+            public const string AddressCannotBeApprovedBecauseOfParent = "Deze actie is enkel toegestaan op adressen waarbij het huisnummer de status 'inGebruik' heeft.";
             public const string AddressCannotBeRejected = "Deze actie is enkel toegestaan op adressen met status 'voorgesteld'.";
             public const string AddressCannotBeDeregulated = "Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik'.";
             public const string AddressCannotBeRegularized = "Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik'.";

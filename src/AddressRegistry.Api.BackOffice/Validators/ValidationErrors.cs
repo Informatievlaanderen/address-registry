@@ -61,9 +61,9 @@ namespace AddressRegistry.Api.BackOffice.Validators
 
             public const string BoxNumberInvalid = "Ongeldig busnummerformaat.";
 
-            public const string PositionSpecificationRequired = "PositieSpecificatie is verplicht bij een manuele aanduiding van de positie.";
+            public const string PositionSpecificationRequired = "PositieSpecificatie is verplicht bij een manuele aanduiding van de positie.";
 
-            public const string PositionSpecificationInvalid = "Ongeldige positieSpecificatie.";
+            public const string PositionSpecificationInvalid = "Ongeldige positieSpecificatie.";
 
             public const string PositionRequired = "De parameter 'positie' is verplicht voor indien aangeduid door beheerder.";
             public const string PositionInvalidFormat = "De positie is geen geldige gml-puntgeometrie.";

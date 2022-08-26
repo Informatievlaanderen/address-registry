@@ -28,7 +28,7 @@ namespace AddressRegistry.Tests.BackOffice.Validators
             result.Errors.Count.Should().Be(1);
             result.ShouldHaveValidationErrorFor(nameof(AddressProposeRequest.PositieSpecificatie))
                 .WithErrorCode("AdresPositieSpecificatieVerplichtBijManueleAanduiding")
-                .WithErrorMessage("PositieSpecificatie is verplicht bij een manuele aanduiding van de positie.");
+                .WithErrorMessage("PositieSpecificatie is verplicht bij een manuele aanduiding van de positie.");
         }
 
         [Theory]
@@ -45,7 +45,7 @@ namespace AddressRegistry.Tests.BackOffice.Validators
             result.Errors.Count.Should().Be(1);
             result.ShouldHaveValidationErrorFor(nameof(AddressProposeRequest.PositieSpecificatie))
                 .WithErrorCode("AdresPositieSpecificatieValidatie")
-                .WithErrorMessage("Ongeldige positieSpecificatie.");
+                .WithErrorMessage("Ongeldige positieSpecificatie.");
         }
 
         [Theory]
@@ -65,7 +65,7 @@ namespace AddressRegistry.Tests.BackOffice.Validators
             result.Errors.Count.Should().Be(1);
             result.ShouldHaveValidationErrorFor(nameof(AddressProposeRequest.PositieSpecificatie))
                 .WithErrorCode("AdresPositieSpecificatieValidatie")
-                .WithErrorMessage("Ongeldige positieSpecificatie.");
+                .WithErrorMessage("Ongeldige positieSpecificatie.");
         }
 
         [Fact]

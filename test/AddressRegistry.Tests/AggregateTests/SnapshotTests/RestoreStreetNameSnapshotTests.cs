@@ -52,7 +52,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
 
                     foreach (var data in houseNumberData)
                     {
-                        var streetNameAddress = new StreetNameAddress(null, o => { });
+                        var streetNameAddress = new StreetNameAddress(o => { });
                         streetNameAddress.RestoreSnapshot(fixture.Create<StreetNamePersistentLocalId>(), data);
 
                         houseNumberAddresses.Add(streetNameAddress);
@@ -84,7 +84,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
 
                     foreach (var data in boxNumberData)
                     {
-                        var streetNameAddress = new StreetNameAddress(null, o => { });
+                        var streetNameAddress = new StreetNameAddress(o => { });
                         streetNameAddress.RestoreSnapshot(fixture.Create<StreetNamePersistentLocalId>(), data);
 
                         boxNumberAddresses.Add(streetNameAddress);

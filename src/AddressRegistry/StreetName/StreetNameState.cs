@@ -78,7 +78,7 @@ namespace AddressRegistry.StreetName
 
         private void When(AddressWasMigratedToStreetName @event)
         {
-            var address = new StreetNameAddress(this, applier: ApplyChange);
+            var address = new StreetNameAddress(applier: ApplyChange);
             address.Route(@event);
 
             if (@event.ParentPersistentLocalId.HasValue)
@@ -92,7 +92,7 @@ namespace AddressRegistry.StreetName
 
         private void When(AddressWasProposedV2 @event)
         {
-            var address = new StreetNameAddress(this, applier: ApplyChange);
+            var address = new StreetNameAddress(applier: ApplyChange);
             address.Route(@event);
 
             if (@event.ParentPersistentLocalId.HasValue)
@@ -186,7 +186,7 @@ namespace AddressRegistry.StreetName
 
             foreach (var address in @event.Addresses.Where(x => !x.ParentId.HasValue))
             {
-                var streetNameAddress = new StreetNameAddress(this, applier: ApplyChange);
+                var streetNameAddress = new StreetNameAddress(applier: ApplyChange);
                 streetNameAddress.RestoreSnapshot(PersistentLocalId, address);
 
                 StreetNameAddresses.Add(streetNameAddress);
@@ -196,7 +196,7 @@ namespace AddressRegistry.StreetName
             {
                 var parent = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(address.ParentId!.Value));
 
-                var streetNameAddress = new StreetNameAddress(this, applier: ApplyChange);
+                var streetNameAddress = new StreetNameAddress(applier: ApplyChange);
                 streetNameAddress.RestoreSnapshot(PersistentLocalId, address);
                 streetNameAddress.SetParent(parent);
 

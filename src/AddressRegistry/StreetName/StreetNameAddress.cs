@@ -1,7 +1,9 @@
 namespace AddressRegistry.StreetName
 {
+    using System;
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using DataStructures;
     using Events;
     using Exceptions;
 
@@ -221,7 +223,7 @@ namespace AddressRegistry.StreetName
             GeometryMethod geometryMethod,
             GeometrySpecification? geometrySpecification,
             ExtendedWkbGeometry? position,
-            IMunicipalities municipalities)
+            Func<MunicipalityData> getMunicipalityData)
         {
             GuardNotRemovedAddress();
 
@@ -234,9 +236,13 @@ namespace AddressRegistry.StreetName
 
             GuardGeometry(geometryMethod, geometrySpecification, position);
 
-            var newGeometry = GetFinalGeometry(_streetName.MunicipalityId, geometryMethod, geometrySpecification, position, municipalities);
+            var newGeometry = GetFinalGeometry(
+                geometryMethod,
+                geometrySpecification,
+                position,
+                getMunicipalityData);
 
-            if (Geometry is null || Geometry != newGeometry)
+            if (Geometry != newGeometry)
             {
                 Apply(new AddressPositionWasChanged(
                     _streetNamePersistentLocalId,
@@ -251,7 +257,7 @@ namespace AddressRegistry.StreetName
             GeometryMethod geometryMethod,
             GeometrySpecification? geometrySpecification,
             ExtendedWkbGeometry? position,
-            IMunicipalities municipalities)
+            Func<MunicipalityData> getMunicipalityData)
         {
             GuardNotRemovedAddress();
 
@@ -264,9 +270,13 @@ namespace AddressRegistry.StreetName
 
             GuardGeometry(geometryMethod, geometrySpecification, position);
 
-            var newGeometry = GetFinalGeometry(_streetName.MunicipalityId, geometryMethod, geometrySpecification, position, municipalities);
+            var newGeometry = GetFinalGeometry(
+                geometryMethod,
+                geometrySpecification,
+                position,
+                getMunicipalityData);
 
-            if (Geometry is null || Geometry != newGeometry)
+            if (Geometry != newGeometry)
             {
                 Apply(new AddressPositionWasCorrectedV2(
                     _streetNamePersistentLocalId,
@@ -278,17 +288,16 @@ namespace AddressRegistry.StreetName
         }
 
         public static AddressGeometry GetFinalGeometry(
-            MunicipalityId municipalityId,
             GeometryMethod geometryMethod,
             GeometrySpecification? geometrySpecification,
             ExtendedWkbGeometry? position,
-            IMunicipalities municipalities)
+            Func<MunicipalityData> getMunicipalityData)
         {
             var finalSpecification = geometryMethod == GeometryMethod.DerivedFromObject
                 ? GeometrySpecification.Municipality
                 : geometrySpecification!.Value;
             var finalPosition = geometryMethod == GeometryMethod.DerivedFromObject
-                ? municipalities.Get(municipalityId).Centroid()
+                ? getMunicipalityData.Invoke().Centroid()
                 : position!;
 
             return new AddressGeometry(geometryMethod, finalSpecification, finalPosition);

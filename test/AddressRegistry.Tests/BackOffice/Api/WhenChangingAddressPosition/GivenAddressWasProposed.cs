@@ -158,7 +158,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
                 .Result
                 .Where(x => x.Errors.Any(e =>
                     e.ErrorCode == "AdresPositieSpecificatieVerplichtBijManueleAanduiding"
-                    && e.ErrorMessage == "PositieSpecificatie is verplicht bij een manuele aanduiding van de positie."));
+                    && e.ErrorMessage == "PositieSpecificatie is verplicht bij een manuele aanduiding van de positie."));
         }
 
         [Fact]
@@ -194,7 +194,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
                 .Result
                 .Where(x => x.Errors.Any(e =>
                     e.ErrorCode == "AdresPositieSpecificatieValidatie"
-                    && e.ErrorMessage == "Ongeldige positieSpecificatie."));
+                    && e.ErrorMessage == "Ongeldige positieSpecificatie."));
         }
     }
 }

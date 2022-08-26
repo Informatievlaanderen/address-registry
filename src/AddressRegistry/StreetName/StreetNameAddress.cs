@@ -40,6 +40,11 @@ namespace AddressRegistry.StreetName
         {
             GuardNotRemovedAddress();
 
+            if (Parent is not null && Parent.Status != AddressStatus.Current)
+            {
+                throw new ParentAddressHasInvalidStatusException();
+            }
+
             switch (Status)
             {
                 case AddressStatus.Current:

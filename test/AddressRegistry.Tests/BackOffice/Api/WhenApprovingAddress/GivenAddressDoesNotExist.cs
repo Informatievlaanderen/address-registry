@@ -8,8 +8,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
     using AddressRegistry.Api.BackOffice.Validators;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using FluentAssertions;
-    using FluentValidation;
-    using FluentValidation.Results;
     using global::AutoFixture;
     using Infrastructure;
     using Microsoft.AspNetCore.Http;

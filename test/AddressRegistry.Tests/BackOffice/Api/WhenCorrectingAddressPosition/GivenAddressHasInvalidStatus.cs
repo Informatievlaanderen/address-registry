@@ -29,11 +29,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
         }
 
         [Fact]
-        public void ThenThrowsApiException()
+        public void ThenThrowsValidationException()
         {
             var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
-            
+
             MockMediator.Setup(x => x.Send(It.IsAny<AddressCorrectPositionRequest>(), CancellationToken.None))
                 .Throws(new AddressHasInvalidStatusException());
 

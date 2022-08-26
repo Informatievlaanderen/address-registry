@@ -9,7 +9,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
     using AddressRegistry.Api.BackOffice.Validators;
     using FluentAssertions;
     using FluentValidation;
-    using FluentValidation.Results;
     using global::AutoFixture;
     using Infrastructure;
     using Moq;
@@ -32,7 +31,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
 
         //TODO: add rejected
         [Fact]
-        public void ThenThrowsApiException()
+        public void ThenThrowsValidationException()
         {
             var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = new AddressPersistentLocalId(123);

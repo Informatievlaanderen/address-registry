@@ -30,7 +30,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenDeregulatingAddress
         }
 
         [Fact]
-        public void ThenThrowsApiException()
+        public void ThenThrowsValidationException()
         {
             var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = new AddressPersistentLocalId(123);

@@ -19,10 +19,20 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
             int streetNamePersistentLocalId,
             string? postalCode,
             string houseNumber,
+            string? boxNumber,
             string status,
+            bool officiallyAssigned,
+            Point position,
+            string positionMethod,
+            string positionSpecification,
             bool removed,
             Instant versionTimestamp)
         {
+            BoxNumber = boxNumber;
+            OfficiallyAssigned = officiallyAssigned;
+            Position = position;
+            PositionMethod = positionMethod;
+            PositionSpecification = positionSpecification;
             AddressPersistentLocalId = addressPersistentLocalId;
             StreetNamePersistentLocalId = streetNamePersistentLocalId;
             PostalCode = postalCode;
@@ -30,28 +40,6 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
             Status = status;
             Removed = removed;
             VersionTimestamp = versionTimestamp;
-        }
-
-        public AddressWfsItem(
-            int addressPersistentLocalId,
-            int streetNamePersistentLocalId,
-            string? postalCode,
-            string houseNumber,
-            string? boxNumber,
-            string status,
-            bool officiallyAssigned,
-            Point? position,
-            string? positionMethod,
-            string? positionSpecification,
-            bool removed,
-            Instant versionTimestamp)
-            : this(addressPersistentLocalId, streetNamePersistentLocalId, postalCode, houseNumber, status, removed, versionTimestamp)
-        {
-            BoxNumber = boxNumber;
-            OfficiallyAssigned = officiallyAssigned;
-            Position = position;
-            PositionMethod = positionMethod;
-            PositionSpecification = positionSpecification;
         }
 
         public int AddressPersistentLocalId { get; set; }
@@ -62,9 +50,9 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
         public string Status { get; set; }
         public bool OfficiallyAssigned { get; set; }
 
-        public Point? Position { get; set; }
-        public string? PositionMethod { get; set; }
-        public string? PositionSpecification { get; set; }
+        public Point Position { get; set; }
+        public string PositionMethod { get; set; }
+        public string PositionSpecification { get; set; }
 
         public bool Removed { get; set; }
 

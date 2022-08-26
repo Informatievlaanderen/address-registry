@@ -50,9 +50,9 @@ namespace AddressRegistry.Projections.Legacy.AddressDetailV2
                     message.Message.BoxNumber,
                     AddressStatus.Proposed,
                     officiallyAssigned: true,
-                    position: null,
-                    positionMethod: null,
-                    positionSpecification: null,
+                    position: message.Message.ExtendedWkbGeometry.ToByteArray(),
+                    positionMethod: message.Message.GeometryMethod,
+                    positionSpecification: message.Message.GeometrySpecification,
                     removed: false,
                     message.Message.Provenance.Timestamp);
 

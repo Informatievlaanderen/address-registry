@@ -179,6 +179,9 @@ namespace AddressRegistry.Producer.Extensions
                 message.PostalCode,
                 message.HouseNumber,
                 message.BoxNumber,
+                message.GeometryMethod.ToString(),
+                message.GeometrySpecification.ToString(),
+                message.ExtendedWkbGeometry,
                 message.Provenance.ToContract());
 
         public static Contracts.MigratedStreetNameWasImported ToContract(this StreetNameAggregate.MigratedStreetNameWasImported message) =>

@@ -28,24 +28,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
         }
 
         [Fact]
-        public void WithGeometryMethodHasNoValue_ThenThrowsValidationException()
-        {
-            var act = SetupController(new AddressChangePositionRequest
-            {
-                PositieGeometrieMethode = null
-            }); ;
-
-            // Assert
-            act
-                .Should()
-                .ThrowAsync<ValidationException>()
-                .Result
-                .Where(x =>
-                    x.Errors.Any(e => e.ErrorCode == "AdresPositieGeometriemethodeValidatie"
-                                      && e.ErrorMessage == "Ongeldige geometriemethode."));
-        }
-
-        [Fact]
         public void WithGeometryMethodIsInvalid_ThenThrowsValidationException()
         {
             var act = SetupController(new AddressChangePositionRequest
@@ -60,7 +42,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
                 .Result
                 .Where(x =>
                     x.Errors.Any(e => e.ErrorCode == "AdresPositieGeometriemethodeValidatie"
-                                      && e.ErrorMessage == "Ongeldige geometriemethode."));
+                                      && e.ErrorMessage == "Ongeldige positieGeometrieMethode."));
         }
 
         [Fact]

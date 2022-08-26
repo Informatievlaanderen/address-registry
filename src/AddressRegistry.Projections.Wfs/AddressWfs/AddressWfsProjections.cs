@@ -58,9 +58,9 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
                     message.Message.BoxNumber,
                     MapStatus(AddressStatus.Proposed),
                     officiallyAssigned: true,
-                    position: null,
-                    positionMethod: null,
-                    positionSpecification: null,
+                    ParsePosition(message.Message.ExtendedWkbGeometry),
+                    ConvertGeometryMethodToString(message.Message.GeometryMethod),
+                    ConvertGeometrySpecificationToString(message.Message.GeometrySpecification),
                     removed: false,
                     message.Message.Provenance.Timestamp);
 

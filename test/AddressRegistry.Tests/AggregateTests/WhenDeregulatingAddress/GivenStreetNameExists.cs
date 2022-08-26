@@ -2,6 +2,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenDeregulatingAddress
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Api.BackOffice.Abstractions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
@@ -44,7 +45,10 @@ namespace AddressRegistry.Tests.AggregateTests.WhenDeregulatingAddress
                 parentPersistentLocalId: null,
                 Fixture.Create<PostalCode>(),
                 Fixture.Create<HouseNumber>(),
-                boxNumber: null);
+                boxNumber: null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -175,7 +179,10 @@ namespace AddressRegistry.Tests.AggregateTests.WhenDeregulatingAddress
                 parentPersistentLocalId: null,
                 Fixture.Create<PostalCode>(),
                 Fixture.Create<HouseNumber>(),
-                boxNumber: null);
+                boxNumber: null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
             var addressWasDeregulated = new AddressWasDeregulated(streetNamePersistentLocalId, addressPersistentLocalId);

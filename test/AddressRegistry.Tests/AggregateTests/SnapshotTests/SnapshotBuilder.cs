@@ -53,13 +53,16 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
             PostalCode postalCode,
             HouseNumber houseNumber,
             BoxNumber? boxNumber,
+            GeometryMethod geometryMethod,
+            GeometrySpecification geometrySpecification,
+            ExtendedWkbGeometry geometryPosition,
             AddressPersistentLocalId? parentAddressPersistentLocalId,
             string eventHash,
             ProvenanceData provenanceData)
         {
             var addresses = ReaddStreetNameAddresses(new StreetNamePersistentLocalId(snapshot.StreetNamePersistentLocalId), snapshot.Addresses);
 
-            var newAddress = new StreetNameAddress(null, o => {});
+            var newAddress = new StreetNameAddress(o => {});
             newAddress.RestoreSnapshot(
                 new StreetNamePersistentLocalId(snapshot.StreetNamePersistentLocalId),
                 new AddressData(
@@ -68,7 +71,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                 houseNumber,
                 boxNumber,
                 postalCode,
-                null,
+                new AddressGeometry(geometryMethod, geometrySpecification, geometryPosition),
                 true,
                 false,
                 parentAddressPersistentLocalId is null ? null : addresses.GetByPersistentLocalId(parentAddressPersistentLocalId),
@@ -99,7 +102,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
             var newAddresses = new StreetNameAddresses();
             foreach (var snapshotAddress in addresses)
             {
-                var address = new StreetNameAddress(null, o => { });
+                var address = new StreetNameAddress(o => { });
                 address.RestoreSnapshot(streetNamePersistentLocalId, snapshotAddress);
                 newAddresses.Add(address);
             }

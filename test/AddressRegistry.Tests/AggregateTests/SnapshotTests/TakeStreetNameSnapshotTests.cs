@@ -2,6 +2,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Api.BackOffice.Abstractions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
@@ -274,7 +275,10 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                 null,
                 Fixture.Create<PostalCode>(),
                 Fixture.Create<HouseNumber>(),
-                null);
+                null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
             return addressWasProposedV2;
         }

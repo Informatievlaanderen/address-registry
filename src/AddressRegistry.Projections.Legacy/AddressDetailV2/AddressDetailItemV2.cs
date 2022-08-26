@@ -17,10 +17,20 @@ namespace AddressRegistry.Projections.Legacy.AddressDetailV2
             int streetNamePersistentLocalId,
             string? postalCode,
             string houseNumber,
+            string? boxNumber,
             AddressStatus status,
+            bool officiallyAssigned,
+            byte[] position,
+            GeometryMethod positionMethod,
+            GeometrySpecification positionSpecification,
             bool removed,
             Instant versionTimestamp)
         {
+            BoxNumber = boxNumber;
+            OfficiallyAssigned = officiallyAssigned;
+            Position = position;
+            PositionMethod = positionMethod;
+            PositionSpecification = positionSpecification;
             AddressPersistentLocalId = addressPersistentLocalId;
             StreetNamePersistentLocalId = streetNamePersistentLocalId;
             PostalCode = postalCode;
@@ -28,28 +38,6 @@ namespace AddressRegistry.Projections.Legacy.AddressDetailV2
             Status = status;
             Removed = removed;
             VersionTimestamp = versionTimestamp;
-        }
-
-        public AddressDetailItemV2(
-            int addressPersistentLocalId,
-            int streetNamePersistentLocalId,
-            string? postalCode,
-            string houseNumber,
-            string? boxNumber,
-            AddressStatus status,
-            bool officiallyAssigned,
-            byte[]? position,
-            GeometryMethod? positionMethod,
-            GeometrySpecification? positionSpecification,
-            bool removed,
-            Instant versionTimestamp)
-            : this(addressPersistentLocalId, streetNamePersistentLocalId, postalCode, houseNumber, status, removed, versionTimestamp)
-        {
-            BoxNumber = boxNumber;
-            OfficiallyAssigned = officiallyAssigned;
-            Position = position;
-            PositionMethod = positionMethod;
-            PositionSpecification = positionSpecification;
         }
 
         public int AddressPersistentLocalId { get; set; }
@@ -60,9 +48,9 @@ namespace AddressRegistry.Projections.Legacy.AddressDetailV2
         public AddressStatus Status { get; set; }
         public bool OfficiallyAssigned { get; set; }
 
-        public byte[]? Position { get; set; }
-        public GeometryMethod? PositionMethod { get; set; }
-        public GeometrySpecification? PositionSpecification { get; set; }
+        public byte[] Position { get; set; }
+        public GeometryMethod PositionMethod { get; set; }
+        public GeometrySpecification PositionSpecification { get; set; }
 
         public bool Removed { get; set; }
 

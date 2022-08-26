@@ -2,6 +2,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectAddressPosition
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Api.BackOffice.Abstractions;
     using Autofac;
     using AutoFixture;
     using BackOffice.Infrastructure;
@@ -54,7 +55,10 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectAddressPosition
                 parentPersistentLocalId: null,
                 Fixture.Create<PostalCode>(),
                 Fixture.Create<HouseNumber>(),
-                boxNumber: null);
+                boxNumber: null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Lot,
+                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
 
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
@@ -93,7 +97,10 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectAddressPosition
                 parentPersistentLocalId: null,
                 Fixture.Create<PostalCode>(),
                 Fixture.Create<HouseNumber>(),
-                boxNumber: null);
+                boxNumber: null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
             var municipalities = Container.Resolve<TestMunicipalityConsumerContext>();
@@ -167,6 +174,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectAddressPosition
 
             Assert(new Scenario()
                 .Given(_streamId,
+                    Fixture.Create<StreetNameWasImported>(),
                     migrateRemovedAddressToStreetName)
                 .When(command)
                 .Throws(new AddressIsRemovedException(addressPersistentLocalId)));
@@ -231,15 +239,52 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectAddressPosition
                 parentPersistentLocalId: null,
                 Fixture.Create<PostalCode>(),
                 Fixture.Create<HouseNumber>(),
-                boxNumber: null);
+                boxNumber: null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
 
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
             Assert(new Scenario()
                 .Given(_streamId,
+                    Fixture.Create<StreetNameWasImported>(),
                     addressWasProposedV2)
                 .When(command)
                 .Throws(new AddressHasMissingGeometrySpecificationException()));
+        }
+
+        [Fact]
+        public void WithAppointedByAdministratorAndNoPosition_ThenThrowsAddressHasMissingPositionException()
+        {
+            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
+
+            var command = new CorrectAddressPosition(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                addressPersistentLocalId,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                null,
+                Fixture.Create<Provenance>());
+
+            var addressWasProposedV2 = new AddressWasProposedV2(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                addressPersistentLocalId,
+                parentPersistentLocalId: null,
+                Fixture.Create<PostalCode>(),
+                Fixture.Create<HouseNumber>(),
+                boxNumber: null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+            ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    Fixture.Create<StreetNameWasImported>(),
+                    addressWasProposedV2)
+                .When(command)
+                .Throws(new AddressHasMissingPositionException()));
         }
 
         [Fact]
@@ -262,11 +307,15 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectAddressPosition
                 parentPersistentLocalId: null,
                 Fixture.Create<PostalCode>(),
                 Fixture.Create<HouseNumber>(),
-                boxNumber: null);
+                boxNumber: null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
             Assert(new Scenario()
                 .Given(_streamId,
+                    Fixture.Create<StreetNameWasImported>(),
                     addressWasProposedV2)
                 .When(command)
                 .Throws(new AddressHasInvalidGeometryMethodException()));
@@ -296,12 +345,16 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectAddressPosition
                 parentPersistentLocalId: null,
                 Fixture.Create<PostalCode>(),
                 Fixture.Create<HouseNumber>(),
-                boxNumber: null);
+                boxNumber: null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
 
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
             Assert(new Scenario()
                 .Given(_streamId,
+                    Fixture.Create<StreetNameWasImported>(),
                     addressWasProposedV2)
                 .When(command)
                 .Throws(new AddressHasInvalidGeometrySpecificationException()));
@@ -363,7 +416,10 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectAddressPosition
                 parentPersistentLocalId: null,
                 Fixture.Create<PostalCode>(),
                 Fixture.Create<HouseNumber>(),
-                boxNumber: null);
+                boxNumber: null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Lot,
+                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
             var addressPositionWasCorrectedV2 = new AddressPositionWasCorrectedV2(

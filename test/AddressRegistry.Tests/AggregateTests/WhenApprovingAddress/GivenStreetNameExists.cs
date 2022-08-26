@@ -1,5 +1,6 @@
 namespace AddressRegistry.Tests.AggregateTests.WhenApprovingAddress
 {
+    using Api.BackOffice.Abstractions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
@@ -39,7 +40,10 @@ namespace AddressRegistry.Tests.AggregateTests.WhenApprovingAddress
                 parentPersistentLocalId: null,
                 Fixture.Create<PostalCode>(),
                 Fixture.Create<HouseNumber>(),
-                boxNumber: null);
+                boxNumber: null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
 
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
@@ -230,7 +234,10 @@ namespace AddressRegistry.Tests.AggregateTests.WhenApprovingAddress
                 parentPersistentLocalId: null,
                 Fixture.Create<PostalCode>(),
                 Fixture.Create<HouseNumber>(),
-                boxNumber: null);
+                boxNumber: null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
             var addressWasApproved = new AddressWasApproved(streetNamePersistentLocalId, addressPersistentLocalId);

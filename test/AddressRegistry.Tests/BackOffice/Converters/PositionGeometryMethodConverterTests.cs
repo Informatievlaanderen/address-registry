@@ -9,13 +9,13 @@ namespace AddressRegistry.Tests.BackOffice.Converters
     public class PositionGeometryMethodConverterTests
     {
         [Fact]
-        public void WhenNoPositionGeometryMethodProvided_ThenDefaultIsDerivedFromObject()
+        public void WhenNoPositionGeometryMethodProvided_ThenReturnNull()
         {
             PositieGeometrieMethode? methode = null;
 
             var result = methode.Map();
 
-            result.Should().Be(GeometryMethod.DerivedFromObject);
+            result.Should().BeNull();
         }
 
         [Fact]

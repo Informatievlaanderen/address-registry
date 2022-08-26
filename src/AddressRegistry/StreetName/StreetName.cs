@@ -6,6 +6,7 @@ namespace AddressRegistry.StreetName
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
+    using DataStructures;
     using Events;
     using Exceptions;
 
@@ -141,7 +142,11 @@ namespace AddressRegistry.StreetName
             PostalCode postalCode,
             MunicipalityId municipalityIdByPostalCode,
             HouseNumber houseNumber,
-            BoxNumber? boxNumber)
+            BoxNumber? boxNumber,
+            GeometryMethod? geometryMethod,
+            GeometrySpecification? geometrySpecification,
+            ExtendedWkbGeometry? geometryPosition,
+            IMunicipalities municipalities)
         {
             GuardActiveStreetName(streetNamePersistentLocalId);
 
@@ -177,13 +182,26 @@ namespace AddressRegistry.StreetName
                 throw new BoxNumberAlreadyExistsException(boxNumber!);
             }
 
+            var finalGeometryMethod = geometryMethod ?? GeometryMethod.DerivedFromObject;
+
+            StreetNameAddress.GuardGeometry(finalGeometryMethod, geometrySpecification, geometryPosition);
+
+            var newGeometry = StreetNameAddress.GetFinalGeometry(
+                finalGeometryMethod,
+                geometrySpecification,
+                geometryPosition,
+                GetMunicipalityData(municipalities));
+
             ApplyChange(new AddressWasProposedV2(
                 streetNamePersistentLocalId,
                 addressPersistentLocalId,
                 parent?.AddressPersistentLocalId,
                 postalCode,
                 houseNumber,
-                boxNumber));
+                boxNumber,
+                newGeometry.GeometryMethod,
+                newGeometry.GeometrySpecification,
+                newGeometry.Geometry));
         }
 
         public void ApproveAddress(AddressPersistentLocalId addressPersistentLocalId)
@@ -230,9 +248,9 @@ namespace AddressRegistry.StreetName
         {
             StreetNameAddresses
                 .GetByPersistentLocalId(addressPersistentLocalId)
-                .ChangePosition(geometryMethod, geometrySpecification, position, municipalities);
+                .ChangePosition(geometryMethod, geometrySpecification, position, GetMunicipalityData(municipalities));
         }
-
+        
         public void CorrectAddressPosition(
             AddressPersistentLocalId addressPersistentLocalId,
             GeometryMethod geometryMethod,
@@ -242,8 +260,11 @@ namespace AddressRegistry.StreetName
         {
             StreetNameAddresses
                 .GetByPersistentLocalId(addressPersistentLocalId)
-                .CorrectPosition(geometryMethod, geometrySpecification, position, municipalities);
+                .CorrectPosition(geometryMethod, geometrySpecification, position, GetMunicipalityData(municipalities));
         }
+
+        private Func<MunicipalityData> GetMunicipalityData(IMunicipalities municipalities) =>
+            () => municipalities.Get(MunicipalityId);
 
         private void GuardActiveStreetName(StreetNamePersistentLocalId streetNamePersistentLocalId)
         {

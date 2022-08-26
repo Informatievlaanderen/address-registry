@@ -136,7 +136,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                 .Result
                 .Where(x =>
                     x.Errors.Any(e => e.ErrorCode == "AdresPositieGeometriemethodeValidatie"
-                                      && e.ErrorMessage == "Ongeldige geometriemethode."));
+                                      && e.ErrorMessage == "Ongeldige positieGeometrieMethode."));
         }
 
         [Fact]
@@ -158,7 +158,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                 .Result
                 .Where(x =>
                     x.Errors.Any(e => e.ErrorCode == "AdresPositieGeometriemethodeValidatie"
-                                      && e.ErrorMessage == "Ongeldige geometriemethode."));
+                                      && e.ErrorMessage == "Ongeldige positieGeometrieMethode."));
         }
 
         [Fact]

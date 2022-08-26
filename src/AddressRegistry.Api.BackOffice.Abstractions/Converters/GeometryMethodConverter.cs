@@ -6,14 +6,14 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Converters
 
     public static class GeometryMethodConverter
     {
-        public static GeometryMethod Map(this PositieGeometrieMethode? methode)
+        public static GeometryMethod? Map(this PositieGeometrieMethode? methode)
         {
             return methode is null
-                ? GeometryMethod.DerivedFromObject
-                : ConvertMethod(methode.Value);
+                ? null
+                : Map(methode.Value);
         }
 
-        private static GeometryMethod ConvertMethod(this PositieGeometrieMethode methode)
+        public static GeometryMethod Map(this PositieGeometrieMethode methode)
         {
             return methode switch
             {

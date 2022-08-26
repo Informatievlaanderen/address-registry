@@ -13,7 +13,7 @@ namespace AddressRegistry.StreetName
             }
         }
 
-        private void GuardGeometry(
+        public static void GuardGeometry(
             GeometryMethod geometryMethod,
             GeometrySpecification? geometrySpecification,
             ExtendedWkbGeometry? position)
@@ -29,7 +29,7 @@ namespace AddressRegistry.StreetName
             }
         }
 
-        private void GuardsWhenAppointedByAdministrator(
+        private static void GuardsWhenAppointedByAdministrator(
             GeometrySpecification? geometrySpecification,
             ExtendedWkbGeometry? position)
         {

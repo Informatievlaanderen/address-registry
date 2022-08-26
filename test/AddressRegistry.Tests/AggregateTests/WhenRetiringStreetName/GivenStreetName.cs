@@ -2,6 +2,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringStreetName;
 
 using System.Collections.Generic;
 using System.Linq;
+using Api.BackOffice.Abstractions;
 using StreetName;
 using StreetName.Commands;
 using StreetName.Events;
@@ -84,7 +85,10 @@ public class GivenStreetName : AddressRegistryTest
             parentPersistentLocalId: null,
             Fixture.Create<PostalCode>(),
             Fixture.Create<HouseNumber>(),
-            boxNumber: null);
+            boxNumber: null,
+            GeometryMethod.AppointedByAdministrator,
+            GeometrySpecification.Entry,
+            GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
         ((ISetProvenance)firstAddressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
         var secondAddressPersistentLocalId = new AddressPersistentLocalId(456);
@@ -94,7 +98,10 @@ public class GivenStreetName : AddressRegistryTest
             parentPersistentLocalId: null,
             Fixture.Create<PostalCode>(),
             Fixture.Create<HouseNumber>(),
-            boxNumber: null);
+            boxNumber: null,
+            GeometryMethod.AppointedByAdministrator,
+            GeometrySpecification.Entry,
+            GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
         ((ISetProvenance)secondAddressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
         Assert(new Scenario()
@@ -131,7 +138,11 @@ public class GivenStreetName : AddressRegistryTest
             parentPersistentLocalId: null,
             Fixture.Create<PostalCode>(),
             Fixture.Create<HouseNumber>(),
-            boxNumber: null);
+            boxNumber: null,
+            GeometryMethod.AppointedByAdministrator,
+            GeometrySpecification.Entry,
+            GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+
         ((ISetProvenance)firstAddressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
         var firstAddressWasApproved = new AddressWasApproved(
             streetNamePersistentLocalId,
@@ -145,7 +156,11 @@ public class GivenStreetName : AddressRegistryTest
             parentPersistentLocalId: null,
             Fixture.Create<PostalCode>(),
             Fixture.Create<HouseNumber>(),
-            boxNumber: null);
+            boxNumber: null,
+            GeometryMethod.AppointedByAdministrator,
+            GeometrySpecification.Entry,
+            GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+
         ((ISetProvenance)secondAddressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
         var secondAddressWasApproved = new AddressWasApproved(
             streetNamePersistentLocalId,
@@ -188,7 +203,11 @@ public class GivenStreetName : AddressRegistryTest
             parentPersistentLocalId: null,
             Fixture.Create<PostalCode>(),
             Fixture.Create<HouseNumber>(),
-            boxNumber: null);
+            boxNumber: null,
+            GeometryMethod.AppointedByAdministrator,
+            GeometrySpecification.Entry,
+            GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
+
         ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
         var addressWasApproved = new AddressWasApproved(
             streetNamePersistentLocalId,
@@ -230,7 +249,10 @@ public class GivenStreetName : AddressRegistryTest
             parentPersistentLocalId: null,
             Fixture.Create<PostalCode>(),
             Fixture.Create<HouseNumber>(),
-            boxNumber: null);
+            boxNumber: null,
+            GeometryMethod.AppointedByAdministrator,
+            GeometrySpecification.Entry,
+            GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
         ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
         var addressWasRejected = new AddressWasRejected(
             streetNamePersistentLocalId,

@@ -1,6 +1,7 @@
 namespace AddressRegistry.Tests.AggregateTests.WhenRetiringAddress
 {
     using System.Linq;
+    using Api.BackOffice.Abstractions;
     using StreetName;
     using StreetName.Commands;
     using StreetName.Events;
@@ -42,7 +43,10 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringAddress
                 parentPersistentLocalId: null,
                 Fixture.Create<PostalCode>(),
                 Fixture.Create<HouseNumber>(),
-                boxNumber: null);
+                boxNumber: null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
 
             var addressWasApproved = new AddressWasApproved(
                 Fixture.Create<StreetNamePersistentLocalId>(),
@@ -371,7 +375,10 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringAddress
                 parentPersistentLocalId: null,
                 Fixture.Create<PostalCode>(),
                 Fixture.Create<HouseNumber>(),
-                boxNumber: null);
+                boxNumber: null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.PointGeometry.ToExtendedWkbGeometry());
 
             var addressWasApproved = new AddressWasApproved(
                 streetNamePersistentLocalId,

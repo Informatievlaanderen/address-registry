@@ -76,9 +76,9 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                     addressWfsItem.PostalCode.Should().Be(addressWasProposedV2.PostalCode);
                     addressWfsItem.Status.Should().Be(AddressWfsProjections.MapStatus(AddressStatus.Proposed));
                     addressWfsItem.OfficiallyAssigned.Should().BeTrue();
-                    addressWfsItem.Position.Should().BeNull();
-                    addressWfsItem.PositionMethod.Should().BeNull();
-                    addressWfsItem.PositionSpecification.Should().BeNull();
+                    addressWfsItem.Position.Should().BeEquivalentTo((Point)_wkbReader.Read(addressWasProposedV2.ExtendedWkbGeometry.ToByteArray()));
+                    addressWfsItem.PositionMethod.Should().Be(AddressWfsProjections.ConvertGeometryMethodToString(addressWasProposedV2.GeometryMethod));
+                    addressWfsItem.PositionSpecification.Should().Be(AddressWfsProjections.ConvertGeometrySpecificationToString(addressWasProposedV2.GeometrySpecification));
                     addressWfsItem.Removed.Should().BeFalse();
                     addressWfsItem.VersionTimestamp.Should().Be(addressWasProposedV2.Provenance.Timestamp);
                 });

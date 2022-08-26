@@ -31,6 +31,15 @@ namespace AddressRegistry.StreetName.Events
         [EventPropertyDescription("Busnummer van het adres.")]
         public string? BoxNumber { get; }
 
+        [EventPropertyDescription("Geometriemethode van de adrespositie. Mogelijkheden: DerivedFromObject of AppointedByAdministrator.")]
+        public GeometryMethod GeometryMethod { get; }
+
+        [EventPropertyDescription("Specificatie van het object dat voorgesteld wordt door de adrespositie. Mogelijkheden: Municipality, Street, Parcel, Lot, Stand, Berth, Entry.")]
+        public GeometrySpecification GeometrySpecification { get; }
+
+        [EventPropertyDescription("Extended WKB-voorstelling van de adrespositie.")]
+        public string ExtendedWkbGeometry { get; }
+
         [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
@@ -40,7 +49,11 @@ namespace AddressRegistry.StreetName.Events
             AddressPersistentLocalId? parentPersistentLocalId,
             PostalCode postalCode,
             HouseNumber houseNumber,
-            BoxNumber? boxNumber)
+            BoxNumber? boxNumber,
+            GeometryMethod geometryMethod,
+            GeometrySpecification geometrySpecification,
+            ExtendedWkbGeometry extendedWkbGeometry
+            )
         {
             StreetNamePersistentLocalId = streetNamePersistentLocalId;
             AddressPersistentLocalId = addressPersistentLocal;
@@ -48,6 +61,9 @@ namespace AddressRegistry.StreetName.Events
             PostalCode = postalCode;
             HouseNumber = houseNumber;
             BoxNumber = boxNumber ?? (string?)null;
+            GeometryMethod = geometryMethod;
+            GeometrySpecification = geometrySpecification;
+            ExtendedWkbGeometry = extendedWkbGeometry.ToString();
         }
 
         [JsonConstructor]
@@ -58,6 +74,9 @@ namespace AddressRegistry.StreetName.Events
             string postalCode,
             string houseNumber,
             string? boxNumber,
+            GeometryMethod geometryMethod,
+            GeometrySpecification geometrySpecification,
+            string extendedWkbGeometry,
             ProvenanceData provenance)
             : this(
                 new StreetNamePersistentLocalId(streetNamePersistentLocalId),
@@ -65,7 +84,10 @@ namespace AddressRegistry.StreetName.Events
                 parentPersistentLocalId != null ? new AddressPersistentLocalId(parentPersistentLocalId.Value) : null,
                 new PostalCode(postalCode),
                 new HouseNumber(houseNumber),
-                boxNumber != null ? new BoxNumber(boxNumber) : null)
+                boxNumber != null ? new BoxNumber(boxNumber) : null,
+                geometryMethod,
+                geometrySpecification,
+                new ExtendedWkbGeometry(extendedWkbGeometry))
             => ((ISetProvenance)this).SetProvenance(provenance.ToProvenance());
 
         void ISetProvenance.SetProvenance(Provenance provenance) => Provenance = new ProvenanceData(provenance);
@@ -76,6 +98,9 @@ namespace AddressRegistry.StreetName.Events
             fields.Add(StreetNamePersistentLocalId.ToString(System.Globalization.CultureInfo.InvariantCulture));
             fields.Add(AddressPersistentLocalId.ToString(System.Globalization.CultureInfo.InvariantCulture));
             fields.Add(HouseNumber.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            fields.Add(GeometryMethod.ToString());
+            fields.Add(GeometrySpecification.ToString());
+            fields.Add(ExtendedWkbGeometry.ToString(System.Globalization.CultureInfo.InvariantCulture));
 
             if (BoxNumber is not null)
             {

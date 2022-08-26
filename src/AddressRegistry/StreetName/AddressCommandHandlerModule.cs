@@ -62,7 +62,11 @@ namespace AddressRegistry.StreetName
                         message.Command.PostalCode,
                         message.Command.PostalCodeMunicipalityId,
                         message.Command.HouseNumber,
-                        message.Command.BoxNumber);
+                        message.Command.BoxNumber,
+                        message.Command.GeometryMethod,
+                        message.Command.GeometrySpecification,
+                        message.Command.Position,
+                        municipalities);
                 });
 
             For<ApproveAddress>()

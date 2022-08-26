@@ -79,9 +79,9 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                     addressDetailItemV2.PostalCode.Should().Be(addressWasProposedV2.PostalCode);
                     addressDetailItemV2.Status.Should().Be(AddressStatus.Proposed);
                     addressDetailItemV2.OfficiallyAssigned.Should().BeTrue();
-                    addressDetailItemV2.Position.Should().BeNull();
-                    addressDetailItemV2.PositionMethod.Should().BeNull();
-                    addressDetailItemV2.PositionSpecification.Should().BeNull();
+                    addressDetailItemV2.Position.Should().BeEquivalentTo(addressWasProposedV2.ExtendedWkbGeometry.ToByteArray());
+                    addressDetailItemV2.PositionMethod.Should().Be(addressWasProposedV2.GeometryMethod);
+                    addressDetailItemV2.PositionSpecification.Should().Be(addressWasProposedV2.GeometrySpecification);
                     addressDetailItemV2.Removed.Should().BeFalse();
                     addressDetailItemV2.VersionTimestamp.Should().Be(addressWasProposedV2.Provenance.Timestamp);
                     addressDetailItemV2.LastEventHash.Should().Be(addressWasProposedV2.GetHash());

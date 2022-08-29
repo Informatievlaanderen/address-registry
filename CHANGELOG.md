@@ -1,3 +1,10 @@
+## [3.38.2](https://github.com/informatievlaanderen/address-registry/compare/v3.38.1...v3.38.2) (2022-08-29)
+
+
+### Bug Fixes
+
+* register ConsumerMunicipalityContext ([ec35f11](https://github.com/informatievlaanderen/address-registry/commit/ec35f1138b59bd0f912796ae5b58b366d7f0fdd9))
+
 ## [3.38.1](https://github.com/informatievlaanderen/address-registry/compare/v3.38.0...v3.38.1) (2022-08-29)
 
 

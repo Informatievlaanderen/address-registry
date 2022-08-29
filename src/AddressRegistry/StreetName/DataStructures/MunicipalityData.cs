@@ -1,5 +1,7 @@
 namespace AddressRegistry.StreetName.DataStructures
 {
+    using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
+
     public class MunicipalityData
     {
         public MunicipalityId MunicipalityId { get; }
@@ -16,7 +18,7 @@ namespace AddressRegistry.StreetName.DataStructures
             var municipalityGeometry =
                 WKBReaderFactory.Create().Read(ExtendedWkbGeometry);
 
-            return AddressRegistry.StreetName.ExtendedWkbGeometry.CreateEWkb(municipalityGeometry.Centroid.AsBinary());
+            return AddressRegistry.StreetName.ExtendedWkbGeometry.CreateEWkb(municipalityGeometry.CentroidWithinArea().AsBinary());
         }
     }
 }

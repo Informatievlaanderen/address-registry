@@ -2,6 +2,7 @@ namespace AddressRegistry.Consumer.Infrastructure.Modules
 {
     using AddressRegistry.Infrastructure;
     using AddressRegistry.Infrastructure.Modules;
+    using AddressRegistry.StreetName;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
@@ -12,6 +13,8 @@ namespace AddressRegistry.Consumer.Infrastructure.Modules
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Projections;
+    using Read.Municipality;
+    using ConsumerContextFactory = AddressRegistry.Consumer.ConsumerContextFactory;
 
     public class ApiModule : Module
     {
@@ -34,7 +37,8 @@ namespace AddressRegistry.Consumer.Infrastructure.Modules
             builder
                 .RegisterModule(new DataDogModule(_configuration))
                 .RegisterModule<EnvelopeModule>()
-                .RegisterModule(new EditModule(_configuration, _services, _loggerFactory));
+                .RegisterModule(new EditModule(_configuration, _services, _loggerFactory))
+                .RegisterModule(new MunicipalityConsumerModule(_configuration, _services, _loggerFactory));
 
             builder.RegisterSnapshotModule(_configuration);
 
@@ -46,6 +50,10 @@ namespace AddressRegistry.Consumer.Infrastructure.Modules
                 .RegisterProjections<StreetNameConsumerProjection, ConsumerContext>(
                     context => new StreetNameConsumerProjection(context.Resolve<ILoggerFactory>().CreateLogger<StreetNameConsumerProjection>()),
                     ConnectedProjectionSettings.Default);
+
+            builder.RegisterType<MunicipalityConsumerContext>()
+                .As<IMunicipalities>()
+                .AsSelf();
 
             builder.Populate(_services);
         }

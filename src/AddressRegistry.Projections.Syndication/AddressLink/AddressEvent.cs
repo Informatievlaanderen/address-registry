@@ -12,7 +12,7 @@ namespace AddressRegistry.Projections.Syndication.AddressLink
         /// De technische id van het adres.
         /// </summary>
         [DataMember(Name = "Id", Order = 1)]
-        public Guid AddressId { get; set; }
+        public string AddressId { get; set; }
 
         /// <summary>
         /// De identificator van het adres.
@@ -24,7 +24,7 @@ namespace AddressRegistry.Projections.Syndication.AddressLink
         /// De id van de straatnaam.
         /// </summary>
         [DataMember(Name = "StraatnaamId", Order = 3)]
-        public Guid? SteetnameId { get; set; }
+        public string? SteetnameId { get; set; }
 
         /// <summary>
         /// De id van de postinfo.
@@ -39,7 +39,7 @@ namespace AddressRegistry.Projections.Syndication.AddressLink
         public string HouseNumber { get; set; }
 
         /// <summary>
-        /// Het busnummer van het adres. 
+        /// Het busnummer van het adres.
         /// </summary>
         [DataMember(Name = "Busnummer", Order = 6)]
         public string BoxNumber { get; set; }

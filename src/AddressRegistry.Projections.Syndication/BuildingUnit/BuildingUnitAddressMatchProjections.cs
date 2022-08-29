@@ -1,5 +1,6 @@
 namespace AddressRegistry.Projections.Syndication.BuildingUnit
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -69,12 +70,13 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
 
         private static async Task RemoveBuilding(AtomEntry<SyndicationItem<Building>> entry, SyndicationContext context, CancellationToken ct)
         {
+            var objectId = Guid.Parse(entry.Content.Object.Id);
             var buildingUnitAddressMatchLatestItems =
                 context
                     .BuildingUnitAddressMatchLatestItems
-                    .Where(x => x.BuildingId == entry.Content.Object.Id)
+                    .Where(x => x.BuildingId == objectId)
                     .AsEnumerable()
-                    .Concat(context.BuildingUnitAddressMatchLatestItems.Local.Where(x => x.BuildingId == entry.Content.Object.Id))
+                    .Concat(context.BuildingUnitAddressMatchLatestItems.Local.Where(x => x.BuildingId == objectId))
                     .ToList();
 
             foreach (var buildingUnitAddressMatchLatestItem in buildingUnitAddressMatchLatestItems)
@@ -83,19 +85,22 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
 
         private static async Task AddSyndicationItemEntry(AtomEntry<SyndicationItem<Building>> entry, SyndicationContext context, CancellationToken ct)
         {
+            var buildingId = Guid.Parse(entry.Content.Object.Id);
             var buildingUnitAddressMatchLatestItems =
                 context
                     .BuildingUnitAddressMatchLatestItems
-                    .Where(x => x.BuildingId == entry.Content.Object.Id)
+                    .Where(x => x.BuildingId == buildingId)
                     .AsEnumerable()
-                    .Concat(context.BuildingUnitAddressMatchLatestItems.Local.Where(x => x.BuildingId == entry.Content.Object.Id))
+                    .Concat(context.BuildingUnitAddressMatchLatestItems.Local.Where(x => x.BuildingId == buildingId))
                     .Distinct()
                     .ToList();
 
             var itemsToRemove = new List<BuildingUnitAddressMatchLatestItem>();
             foreach (var buildingUnitAddressMatchLatestItem in buildingUnitAddressMatchLatestItems)
             {
-                if (!entry.Content.Object.BuildingUnits.Select(x => x.BuildingUnitId).Contains(buildingUnitAddressMatchLatestItem.BuildingUnitId))
+                if (!entry.Content.Object.BuildingUnits
+                        .Select(x => Guid.Parse(x.BuildingUnitId))
+                        .Contains(buildingUnitAddressMatchLatestItem.BuildingUnitId))
                     itemsToRemove.Add(buildingUnitAddressMatchLatestItem);
             }
 
@@ -104,9 +109,11 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
 
             foreach (var buildingUnit in entry.Content.Object.BuildingUnits)
             {
-                var unitItems = buildingUnitAddressMatchLatestItems.Where(x => x.BuildingUnitId == buildingUnit.BuildingUnitId).ToList();
-                var addressItemsToRemove = unitItems.Where(x => !buildingUnit.Addresses.Contains(x.AddressId));
-                foreach (var addressId in buildingUnit.Addresses)
+                var unitItems = buildingUnitAddressMatchLatestItems
+                    .Where(x => x.BuildingUnitId == Guid.Parse(buildingUnit.BuildingUnitId)).ToList();
+                var addressItemsToRemove = unitItems
+                    .Where(x => !buildingUnit.Addresses.Select(Guid.Parse).Contains(x.AddressId));
+                foreach (var addressId in buildingUnit.Addresses.Select(Guid.Parse))
                 {
                     var addressItem = unitItems.FirstOrDefault(x => x.AddressId == addressId);
                     if (addressItem == null)
@@ -115,9 +122,9 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
                             new BuildingUnitAddressMatchLatestItem
                             {
                                 AddressId = addressId,
-                                BuildingId = entry.Content.Object.Id,
+                                BuildingId = buildingId,
                                 BuildingUnitPersistentLocalId = buildingUnit.Identificator.ObjectId,
-                                BuildingUnitId = buildingUnit.BuildingUnitId,
+                                BuildingUnitId = Guid.Parse(buildingUnit.BuildingUnitId),
                                 IsComplete = buildingUnit.IsComplete,
                                 IsBuildingComplete = entry.Content.Object.IsComplete,
                             }, ct);

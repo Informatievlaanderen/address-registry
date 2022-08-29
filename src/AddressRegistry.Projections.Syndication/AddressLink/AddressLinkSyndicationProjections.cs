@@ -43,13 +43,13 @@ namespace AddressRegistry.Projections.Syndication.AddressLink
         {
             var latestItem = await context
                 .AddressLinkAddresses
-                .FindAsync(entry.Content.Object.AddressId);
+                .FindAsync(Guid.Parse(entry.Content.Object.AddressId));
 
             if (latestItem == null)
             {
                 latestItem = new AddressLinkSyndicationItem
                 {
-                    AddressId = entry.Content.Object.AddressId,
+                    AddressId = Guid.Parse(entry.Content.Object.AddressId),
                     Version = entry.Content.Object.Identificator?.Versie,
                     Position = long.Parse(entry.FeedEntry.Id),
                     PersistentLocalId = entry.Content.Object.Identificator?.ObjectId,
@@ -57,7 +57,9 @@ namespace AddressRegistry.Projections.Syndication.AddressLink
                     BoxNumber = entry.Content.Object.BoxNumber,
                     HouseNumber = entry.Content.Object.HouseNumber,
                     PostalCode = entry.Content.Object.PostalCode,
-                    StreetNameId = entry.Content.Object.SteetnameId
+                    StreetNameId = entry.Content.Object.SteetnameId is not null
+                        ? Guid.Parse(entry.Content.Object.SteetnameId)
+                        : null
                 };
 
                 await context
@@ -73,7 +75,9 @@ namespace AddressRegistry.Projections.Syndication.AddressLink
                 latestItem.BoxNumber = entry.Content.Object.BoxNumber;
                 latestItem.HouseNumber = entry.Content.Object.HouseNumber;
                 latestItem.PostalCode = entry.Content.Object.PostalCode;
-                latestItem.StreetNameId = entry.Content.Object.SteetnameId;
+                latestItem.StreetNameId = entry.Content.Object.SteetnameId is not null
+                    ? Guid.Parse(entry.Content.Object.SteetnameId)
+                    : null;
             }
 
             var addressBuildingUnitLinkExtractItems =
@@ -91,7 +95,7 @@ namespace AddressRegistry.Projections.Syndication.AddressLink
                 {
                     if (!string.IsNullOrEmpty(latestItem.PersistentLocalId))
                         record.adresid.Value = Convert.ToInt32(latestItem.PersistentLocalId);
-                        
+
                     record.voladres.Value = completeAddress;
                 });
             }
@@ -111,7 +115,7 @@ namespace AddressRegistry.Projections.Syndication.AddressLink
                 {
                     if (!string.IsNullOrEmpty(latestItem.PersistentLocalId))
                         record.adresid.Value = Convert.ToInt32(latestItem.PersistentLocalId);
-                        
+
                     record.voladres.Value = completeAddress;
                 });
             }
@@ -119,10 +123,11 @@ namespace AddressRegistry.Projections.Syndication.AddressLink
 
         private static async Task RemoveSyndicationItemEntry(AtomEntry<SyndicationItem<Address>> entry, SyndicationContext context, CancellationToken ct)
         {
+            var addressId = Guid.Parse(entry.Content.Object.AddressId);
             var latestItem =
                 await context
                     .AddressLinkAddresses
-                    .FindAsync(entry.Content.Object.AddressId);
+                    .FindAsync(addressId);
 
             latestItem.Version = entry.Content.Object.Identificator?.Versie;
             latestItem.Position = long.Parse(entry.FeedEntry.Id);
@@ -130,8 +135,8 @@ namespace AddressRegistry.Projections.Syndication.AddressLink
             latestItem.IsComplete = entry.Content.Object.IsComplete;
             latestItem.IsRemoved = true;
 
-            context.AddressBuildingUnitLinkExtract.RemoveRange(context.AddressBuildingUnitLinkExtract.Where(x => x.AddressId == entry.Content.Object.AddressId));
-            context.AddressParcelLinkExtract.RemoveRange(context.AddressParcelLinkExtract.Where(x => x.AddressId == entry.Content.Object.AddressId));
+            context.AddressBuildingUnitLinkExtract.RemoveRange(context.AddressBuildingUnitLinkExtract.Where(x => x.AddressId == addressId));
+            context.AddressParcelLinkExtract.RemoveRange(context.AddressParcelLinkExtract.Where(x => x.AddressId == addressId));
         }
 
         private void UpdateBuildingUnitDbaseRecordField(AddressBuildingUnitLinkExtractItem item, Action<AddressLinkDbaseRecord> update)

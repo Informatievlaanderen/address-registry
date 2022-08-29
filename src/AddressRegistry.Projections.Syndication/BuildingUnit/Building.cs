@@ -12,7 +12,7 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
     public class Building
     {
         [DataMember(Name = "Id", Order = 1)]
-        public Guid Id { get; set; }
+        public string Id { get; set; }
 
         [DataMember(Name = "Identificator", Order = 2)]
         public GebouwIdentificator Identificator { get; set; }
@@ -42,7 +42,7 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
     public class BuildingUnitSyndicationContent
     {
         [DataMember(Name = "Id", Order = 1)]
-        public Guid BuildingUnitId { get; set; }
+        public string BuildingUnitId { get; set; }
 
         [DataMember(Name = "Identificator", Order = 2)]
         public GebouweenheidIdentificator Identificator { get; set; }
@@ -60,7 +60,7 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
         public GebouweenheidFunctie? Function { get; set; }
 
         [DataMember(Name = "AdressenIds", Order = 7)]
-        public List<Guid> Addresses { get; set; }
+        public List<string> Addresses { get; set; }
 
         [DataMember(Name = "IsCompleet", Order = 8)]
         public bool IsComplete { get; set; }

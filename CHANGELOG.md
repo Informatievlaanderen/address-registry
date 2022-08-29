@@ -1,3 +1,10 @@
+## [3.38.1](https://github.com/informatievlaanderen/address-registry/compare/v3.38.0...v3.38.1) (2022-08-29)
+
+
+### Bug Fixes
+
+* change syndication IDs from GUID to string ([3a7064b](https://github.com/informatievlaanderen/address-registry/commit/3a7064ba8109a35801b55cef040d78b2d5bea279))
+
 # [3.38.0](https://github.com/informatievlaanderen/address-registry/compare/v3.37.4...v3.38.0) (2022-08-26)
 
 

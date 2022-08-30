@@ -51,11 +51,13 @@ namespace AddressRegistry.Api.Legacy.Address
         {
             _useProjectionsV2Toggle = useProjectionsV2Toggle;
         }
+
         /// <summary>
         /// Vraag een adres op.
         /// </summary>
         /// <param name="context"></param>
         /// <param name="syndicationContext"></param>
+        /// <param name="municipalityConsumerContext"></param>
         /// <param name="responseOptions"></param>
         /// <param name="persistentLocalId">Identificator van het adres.</param>
         /// <param name="taal">De taal in dewelke het adres wordt teruggegeven.</param>
@@ -213,8 +215,8 @@ namespace AddressRegistry.Api.Legacy.Address
         /// <summary>
         /// Vraag een lijst met adressen op.
         /// </summary>
-        /// <param name="context"></param>
         /// <param name="taal">Gewenste taal van de respons.</param>
+        /// <param name="queryContext"></param>
         /// <param name="responseOptions"></param>
         /// <param name="cancellationToken"></param>
         /// <response code="200">Als de adresmatch gelukt is.</response>
@@ -225,7 +227,6 @@ namespace AddressRegistry.Api.Legacy.Address
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(AddressListResponseExamples))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
         public async Task<IActionResult> List(
-            [FromServices] LegacyContext context,
             [FromServices] AddressQueryContext queryContext,
             [FromServices] IOptions<ResponseOptions> responseOptions,
             Taal? taal,

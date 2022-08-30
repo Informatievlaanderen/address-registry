@@ -23,6 +23,7 @@ namespace AddressRegistry.Api.Oslo.Address
     using System.Threading;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api.Search;
+    using Consumer.Read.Municipality;
     using Infrastructure.FeatureToggles;
     using Projections.Syndication.Municipality;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
@@ -45,6 +46,7 @@ namespace AddressRegistry.Api.Oslo.Address
         /// </summary>
         /// <param name="context"></param>
         /// <param name="syndicationContext"></param>
+        /// <param name="municipalityConsumerContext"></param>
         /// <param name="responseOptions"></param>
         /// <param name="persistentLocalId">Identificator van het adres.</param>
         /// <param name="taal">De taal in dewelke het adres wordt teruggegeven.</param>
@@ -66,6 +68,7 @@ namespace AddressRegistry.Api.Oslo.Address
         public async Task<IActionResult> Get(
             [FromServices] LegacyContext context,
             [FromServices] SyndicationContext syndicationContext,
+            [FromServices] MunicipalityConsumerContext municipalityConsumerContext,
             [FromServices] IOptions<ResponseOptions> responseOptions,
             [FromRoute] int persistentLocalId,
             [FromRoute] Taal? taal,
@@ -87,7 +90,9 @@ namespace AddressRegistry.Api.Oslo.Address
                 var streetNameV2 =
                     await syndicationContext.StreetNameLatestItems.FirstOrDefaultAsync(
                         x => x.PersistentLocalId == addressV2.StreetNamePersistentLocalId.ToString(), cancellationToken);
-                var municipalityV2 = await syndicationContext.MunicipalityLatestItems.FirstAsync(m => m.NisCode == streetNameV2.NisCode, cancellationToken);
+
+                var municipalityV2 = await municipalityConsumerContext
+                    .MunicipalityLatestItems.FirstAsync(m => m.NisCode == streetNameV2.NisCode, cancellationToken);
                 var defaultMunicipalityNameV2 = AddressMapper.GetDefaultMunicipalityName(municipalityV2);
                 var defaultStreetNameV2 = AddressMapper.GetDefaultStreetNameName(streetNameV2, municipalityV2.PrimaryLanguage);
                 var defaultHomonymAdditionV2 = AddressMapper.GetDefaultHomonymAddition(streetNameV2, municipalityV2.PrimaryLanguage);
@@ -191,9 +196,8 @@ namespace AddressRegistry.Api.Oslo.Address
         /// <summary>
         /// Vraag een lijst met adressen op.
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="syndicationContext"></param>
         /// <param name="taal">Gewenste taal van de respons.</param>
+        /// <param name="queryContext"></param>
         /// <param name="responseOptions"></param>
         /// <param name="cancellationToken"></param>
         /// <response code="200">Als de adresmatch gelukt is.</response>
@@ -205,7 +209,6 @@ namespace AddressRegistry.Api.Oslo.Address
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(AddressListOsloResponseExamples))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
         public async Task<IActionResult> List(
-            [FromServices] LegacyContext context,
             [FromServices] AddressQueryContext queryContext,
             [FromServices] IOptions<ResponseOptions> responseOptions,
             Taal? taal,
@@ -252,7 +255,7 @@ namespace AddressRegistry.Api.Oslo.Address
                     .ToList();
 
                 var municipalitiesV2 = await queryContext
-                    .MunicipalityLatestItems
+                    .MunicipalityConsumerLatestItems
                     .Where(x => nisCodesV2.Contains(x.NisCode))
                     .ToListAsync(cancellationToken);
 
@@ -260,7 +263,7 @@ namespace AddressRegistry.Api.Oslo.Address
                     .Select(a =>
                     {
                         var streetName = streetNamesV2.SingleOrDefault(x => x.PersistentLocalId == a.StreetNamePersistentLocalId.ToString());
-                        MunicipalityLatestItem municipality = null;
+                        Consumer.Read.Municipality.Projections.MunicipalityLatestItem municipality = null;
                         if (streetName != null)
                             municipality = municipalitiesV2.SingleOrDefault(x => x.NisCode == streetName.NisCode);
                         return new AddressListItemOsloResponse(

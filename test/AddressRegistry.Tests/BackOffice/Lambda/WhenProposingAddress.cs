@@ -15,6 +15,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
+    using Consumer.Read.Municipality.Projections;
     using FluentAssertions;
     using global::AutoFixture;
     using Infrastructure;
@@ -26,6 +27,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     using StreetName;
     using Xunit;
     using Xunit.Abstractions;
+    using MunicipalityLatestItem = Consumer.Read.Municipality.Projections.MunicipalityLatestItem;
 
     public class WhenProposingAddress : AddressRegistryBackOfficeTest
     {
@@ -33,6 +35,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
         private readonly IdempotencyContext _idempotencyContext;
         private readonly TestSyndicationContext _syndicationContext;
         private readonly IStreetNames _streetNames;
+        private readonly TestMunicipalityConsumerContext _municipalityContext;
 
         public WhenProposingAddress(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
@@ -41,6 +44,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             _idempotencyContext = new FakeIdempotencyContextFactory().CreateDbContext();
             _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
             _syndicationContext = new FakeSyndicationContextFactory().CreateDbContext();
+            _municipalityContext = new FakeMunicipalityConsumerContextFactory().CreateDbContext();
             _streetNames = Container.Resolve<IStreetNames>();
         }
 
@@ -61,12 +65,13 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 PostalCode = postInfoId,
                 NisCode = niscode,
             });
-            _syndicationContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem
+            _municipalityContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem
             {
                 MunicipalityId = Fixture.Create<MunicipalityId>(),
                 NisCode = niscode
             });
-            _syndicationContext.SaveChanges();
+            await _municipalityContext.SaveChangesAsync();
+            await _syndicationContext.SaveChangesAsync();
 
             ImportMigratedStreetName(
                 new AddressRegistry.StreetName.StreetNameId(Guid.NewGuid()),
@@ -86,6 +91,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 _backOfficeContext,
                 _idempotencyContext,
                 _syndicationContext,
+                _municipalityContext,
                 mockPersistentLocalIdGenerator.Object);
 
             // Act

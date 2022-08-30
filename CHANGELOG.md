@@ -1,3 +1,10 @@
+## [3.38.4](https://github.com/informatievlaanderen/address-registry/compare/v3.38.3...v3.38.4) (2022-08-30)
+
+
+### Bug Fixes
+
+* return etag for address legacy/oslo GAWR-3608 ([0f84405](https://github.com/informatievlaanderen/address-registry/commit/0f84405643cd2f6c7c995a2ca6b1d3c0f8a0dde2))
+
 ## [3.38.3](https://github.com/informatievlaanderen/address-registry/compare/v3.38.2...v3.38.3) (2022-08-30)
 
 ## [3.38.2](https://github.com/informatievlaanderen/address-registry/compare/v3.38.1...v3.38.2) (2022-08-29)

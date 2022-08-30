@@ -8,6 +8,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo.Extensions;
+    using Consumer.Read.Municipality;
     using Microsoft.EntityFrameworkCore;
     using Projections.Syndication;
     using StreetName;
@@ -21,6 +22,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
         private readonly BackOfficeContext _backOfficeContext;
         private readonly IdempotencyContext _idempotencyContext;
         private readonly SyndicationContext _syndicationContext;
+        private readonly MunicipalityConsumerContext _municipalityConsumerContext;
         private readonly IPersistentLocalIdGenerator _persistentLocalIdGenerator;
 
         public SqsAddressProposeHandler(
@@ -31,6 +33,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
             BackOfficeContext backOfficeContext,
             IdempotencyContext idempotencyContext,
             SyndicationContext syndicationContext,
+            MunicipalityConsumerContext municipalityConsumerContext, 
             IPersistentLocalIdGenerator persistentLocalIdGenerator
             )
             : base(ticketing, ticketingUrl, bus)
@@ -39,6 +42,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
             _backOfficeContext = backOfficeContext;
             _idempotencyContext = idempotencyContext;
             _syndicationContext = syndicationContext;
+            _municipalityConsumerContext = municipalityConsumerContext;
             _persistentLocalIdGenerator = persistentLocalIdGenerator;
         }
 
@@ -63,7 +67,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
                 throw new PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException();
             }
 
-            var municipality = await _syndicationContext
+            var municipality = await _municipalityConsumerContext
                 .MunicipalityLatestItems
                 .SingleAsync(x => x.NisCode == postalMunicipality.NisCode, cancellationToken);
 

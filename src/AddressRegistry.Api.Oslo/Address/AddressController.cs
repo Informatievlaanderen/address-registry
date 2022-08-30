@@ -22,6 +22,7 @@ namespace AddressRegistry.Api.Oslo.Address
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.Api.Search;
     using Consumer.Read.Municipality;
     using Infrastructure.FeatureToggles;
@@ -117,25 +118,28 @@ namespace AddressRegistry.Api.Oslo.Address
                     ? null
                     : new HomoniemToevoeging(new GeografischeNaam(defaultHomonymAdditionV2.Value.Value, defaultHomonymAdditionV2.Value.Key));
 
-                return Ok(
-                    new AddressOsloResponse(
-                        responseOptions.Value.Naamruimte,
-                        responseOptions.Value.ContextUrlDetail,
-                        addressV2.AddressPersistentLocalId.ToString(),
-                        addressV2.HouseNumber,
-                        addressV2.BoxNumber,
-                        gemeenteV2,
-                        straatV2,
-                        homoniemToevoegingV2,
-                        postInfoV2,
-                        AddressMapper.GetAddressPoint(
-                            addressV2.Position,
-                            addressV2.PositionMethod,
-                            addressV2.PositionSpecification),
-                        AddressMapper.ConvertFromAddressStatus(addressV2.Status),
-                        defaultStreetNameV2.Key,
-                        addressV2.OfficiallyAssigned,
-                        addressV2.VersionTimestamp.ToBelgianDateTimeOffset()));
+                var addressOsloResponse = new AddressOsloResponse(
+                    responseOptions.Value.Naamruimte,
+                    responseOptions.Value.ContextUrlDetail,
+                    addressV2.AddressPersistentLocalId.ToString(),
+                    addressV2.HouseNumber,
+                    addressV2.BoxNumber,
+                    gemeenteV2,
+                    straatV2,
+                    homoniemToevoegingV2,
+                    postInfoV2,
+                    AddressMapper.GetAddressPoint(
+                        addressV2.Position,
+                        addressV2.PositionMethod,
+                        addressV2.PositionSpecification),
+                    AddressMapper.ConvertFromAddressStatus(addressV2.Status),
+                    defaultStreetNameV2.Key,
+                    addressV2.OfficiallyAssigned,
+                    addressV2.VersionTimestamp.ToBelgianDateTimeOffset());
+
+                return string.IsNullOrWhiteSpace(addressV2.LastEventHash)
+                    ? Ok(addressOsloResponse)
+                    : new OkWithLastObservedPositionAsETagResult(addressOsloResponse, addressV2.LastEventHash);
             }
 
             var address = await context

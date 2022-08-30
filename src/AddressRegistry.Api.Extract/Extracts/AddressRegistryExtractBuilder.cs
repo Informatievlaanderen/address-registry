@@ -9,6 +9,8 @@ namespace AddressRegistry.Api.Extract.Extracts
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.Api.Extract;
     using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
+    using Consumer.Read.Municipality;
+    using Consumer.Read.Municipality.Projections;
     using Projections.Syndication;
 
     public static class AddressRegistryExtractBuilder
@@ -111,7 +113,10 @@ namespace AddressRegistry.Api.Extract.Extracts
                 ProjectedCoordinateSystem.Belge_Lambert_1972);
         }
         
-        public static IEnumerable<ExtractFile> CreateAddressFilesV2(ExtractContext context, SyndicationContext syndicationContext)
+        public static IEnumerable<ExtractFile> CreateAddressFilesV2(
+            ExtractContext context,
+            SyndicationContext syndicationContext,
+            MunicipalityConsumerContext municipalityConsumerContext)
         {
             var extractItems = context
                 .AddressExtractV2
@@ -129,7 +134,7 @@ namespace AddressRegistry.Api.Extract.Extracts
                 { ExtractMetadataKeys.LatestEventId, addressProjectionState.Position.ToString()}
             };
 
-            var cachedMunicipalities = syndicationContext.MunicipalityLatestItems.AsNoTracking().ToList();
+            var cachedMunicipalities = municipalityConsumerContext.MunicipalityLatestItems.AsNoTracking().ToList();
             var cachedStreetNames = syndicationContext.StreetNameLatestItems.AsNoTracking().ToList();
 
             byte[] TransformRecord(AddressExtractItemV2 r)
@@ -150,17 +155,17 @@ namespace AddressRegistry.Api.Extract.Extracts
                         item.straatnm.Value = streetName.NameDutch;
                         break;
 
-                    case Taal.FR:
+                    case MunicipalityLanguage.French:
                         item.gemeentenm.Value = municipality.NameFrench;
                         item.straatnm.Value = streetName.NameFrench;
                         break;
 
-                    case Taal.DE:
+                    case MunicipalityLanguage.German:
                         item.gemeentenm.Value = municipality.NameGerman;
                         item.straatnm.Value = streetName.NameGerman;
                         break;
 
-                    case Taal.EN:
+                    case MunicipalityLanguage.English:
                         item.gemeentenm.Value = municipality.NameEnglish;
                         item.straatnm.Value = streetName.NameEnglish;
                         break;

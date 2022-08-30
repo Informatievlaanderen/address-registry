@@ -10,6 +10,7 @@ namespace AddressRegistry.Api.Extract.Extracts
     using System.Threading;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api.Extract;
+    using Consumer.Read.Municipality;
     using Infrastructure.FeatureToggles;
     using Microsoft.Extensions.Configuration;
     using Projections.Syndication;
@@ -25,7 +26,9 @@ namespace AddressRegistry.Api.Extract.Extracts
         /// Vraag een dump van het volledige register op.
         /// </summary>
         /// <param name="context"></param>
+        /// <param name="useExtractV2Toggle"></param>
         /// <param name="syndicationContext"></param>
+        /// <param name="municipalityConsumerContext"></param>
         /// <param name="cancellationToken"></param>
         /// <response code="200">Als adresregister kan gedownload worden.</response>
         /// <response code="500">Als er een interne fout is opgetreden.</response>
@@ -38,13 +41,14 @@ namespace AddressRegistry.Api.Extract.Extracts
             [FromServices] ExtractContext context,
             [FromServices] UseExtractV2Toggle useExtractV2Toggle,
             [FromServices] SyndicationContext syndicationContext,
+            [FromServices] MunicipalityConsumerContext municipalityConsumerContext,
             CancellationToken cancellationToken = default)
         {
             if (useExtractV2Toggle.FeatureEnabled)
             {
                 return new IsolationExtractArchive(ExtractFileNames.GetAddressZip(), context)
                     {
-                        AddressRegistryExtractBuilder.CreateAddressFiles(context, syndicationContext),
+                        AddressRegistryExtractBuilder.CreateAddressFilesV2(context, syndicationContext, municipalityConsumerContext),
                         AddressCrabHouseNumberIdExtractBuilder.CreateAddressCrabHouseNumberIdFile(context),
                         AddressCrabSubaddressIdExtractBuilder.CreateAddressSubaddressIdFile(context)
                     }

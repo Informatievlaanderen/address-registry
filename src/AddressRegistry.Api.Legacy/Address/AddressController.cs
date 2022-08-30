@@ -31,6 +31,7 @@ namespace AddressRegistry.Api.Legacy.Address
     using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
+    using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.Api.Search;
     using Consumer.Read.Municipality;
     using Convertors;
@@ -130,23 +131,26 @@ namespace AddressRegistry.Api.Legacy.Address
                     : new HomoniemToevoeging(new GeografischeNaam(defaultHomonymAdditionV2.Value.Value,
                         defaultHomonymAdditionV2.Value.Key));
 
-                return Ok(
-                    new AddressResponse(
-                        responseOptions.Value.Naamruimte,
-                        addressV2.AddressPersistentLocalId.ToString(),
-                        addressV2.HouseNumber,
-                        addressV2.BoxNumber,
-                        gemeenteV2,
-                        straatV2,
-                        homoniemToevoegingV2,
-                        postInfoV2,
-                        AddressMapper.GetAddressPoint(addressV2.Position),
-                        AddressMapper.ConvertFromGeometryMethod(addressV2.PositionMethod),
-                        AddressMapper.ConvertFromGeometrySpecification(addressV2.PositionSpecification),
-                        addressV2.Status.ConvertFromAddressStatus(),
-                        defaultStreetNameV2.Key,
-                        addressV2.OfficiallyAssigned,
-                        addressV2.VersionTimestamp.ToBelgianDateTimeOffset()));
+                var addressResponse = new AddressResponse(
+                    responseOptions.Value.Naamruimte,
+                    addressV2.AddressPersistentLocalId.ToString(),
+                    addressV2.HouseNumber,
+                    addressV2.BoxNumber,
+                    gemeenteV2,
+                    straatV2,
+                    homoniemToevoegingV2,
+                    postInfoV2,
+                    AddressMapper.GetAddressPoint(addressV2.Position),
+                    AddressMapper.ConvertFromGeometryMethod(addressV2.PositionMethod),
+                    AddressMapper.ConvertFromGeometrySpecification(addressV2.PositionSpecification),
+                    addressV2.Status.ConvertFromAddressStatus(),
+                    defaultStreetNameV2.Key,
+                    addressV2.OfficiallyAssigned,
+                    addressV2.VersionTimestamp.ToBelgianDateTimeOffset());
+
+                return string.IsNullOrWhiteSpace(addressV2.LastEventHash)
+                    ? Ok(addressResponse)
+                    : new OkWithLastObservedPositionAsETagResult(addressResponse, addressV2.LastEventHash);
             }
 
             var address = await context

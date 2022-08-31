@@ -24,7 +24,7 @@ namespace AddressRegistry.StreetName.Events
         [EventPropertyDescription("Geometriemethode van de adrespositie. Mogelijkheden: DerivedFromObject of AppointedByAdministrator.")]
         public GeometryMethod GeometryMethod { get; }
 
-        [EventPropertyDescription("Specificatie van het object dat voorgesteld wordt door de adrespositie. Mogelijkheden: Municipality, Street, Parcel, Lot, Stand, Berth, Entry")]
+        [EventPropertyDescription("Specificatie van het object dat voorgesteld wordt door de adrespositie. Mogelijkheden: Municipality, Parcel, Lot, Stand, Berth, Entry.")]
         public GeometrySpecification GeometrySpecification { get; }
 
         [EventPropertyDescription("Extended WKB-voorstelling van de adrespositie.")]

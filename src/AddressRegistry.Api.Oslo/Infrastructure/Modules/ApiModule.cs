@@ -8,6 +8,7 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
+    using Consumer.Read.Municipality;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -51,7 +52,8 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
             builder
                 .RegisterModule(new DataDogModule(_configuration))
                 .RegisterModule(new LegacyModule(_configuration, _services, _loggerFactory))
-                .RegisterModule(new SyndicationModule(_configuration, _services, _loggerFactory));
+                .RegisterModule(new SyndicationModule(_configuration, _services, _loggerFactory))
+                .RegisterModule(new MunicipalityConsumerModule(_configuration, _services, _loggerFactory));;
 
             builder
                 .RegisterType<ProblemDetailsHelper>()

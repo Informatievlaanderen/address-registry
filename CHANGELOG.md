@@ -1,3 +1,10 @@
+## [3.38.5](https://github.com/informatievlaanderen/address-registry/compare/v3.38.4...v3.38.5) (2022-08-31)
+
+
+### Bug Fixes
+
+* event description for property GeometrySpecification ([4a4c6f1](https://github.com/informatievlaanderen/address-registry/commit/4a4c6f11fa6b417762ddad73b245997d2e3c58ce))
+
 ## [3.38.4](https://github.com/informatievlaanderen/address-registry/compare/v3.38.3...v3.38.4) (2022-08-30)
 
 

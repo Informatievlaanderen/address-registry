@@ -118,28 +118,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
         }
 
         [Fact]
-        public void WithGeometryMethodHasNoValue_ThenThrowsValidationException()
-        {
-            var act = SetupController(new AddressProposeRequest
-            {
-                StraatNaamId = StraatNaamPuri + "123",
-                Huisnummer = "11",
-                Busnummer = "AA",
-                PostInfoId = PostInfoPuri + "101",
-                PositieGeometrieMethode = null
-            }); ;
-
-            // Assert
-            act
-                .Should()
-                .ThrowAsync<ValidationException>()
-                .Result
-                .Where(x =>
-                    x.Errors.Any(e => e.ErrorCode == "AdresPositieGeometriemethodeValidatie"
-                                      && e.ErrorMessage == "Ongeldige positieGeometrieMethode."));
-        }
-
-        [Fact]
         public void WithGeometryMethodIsInvalid_ThenThrowsValidationException()
         {
             var act = SetupController(new AddressProposeRequest

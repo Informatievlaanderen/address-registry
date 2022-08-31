@@ -1,3 +1,11 @@
+## [3.38.7](https://github.com/informatievlaanderen/address-registry/compare/v3.38.6...v3.38.7) (2022-08-31)
+
+
+### Bug Fixes
+
+* documentation on request and event properties ([d11f31a](https://github.com/informatievlaanderen/address-registry/commit/d11f31ad31e64753e7bef5961af723dc6c97eb40))
+* positionGeometryMethod on propose address should be optional ([dcd6475](https://github.com/informatievlaanderen/address-registry/commit/dcd6475c0b1ef5fa178b50f855e745495703b5f2))
+
 ## [3.38.6](https://github.com/informatievlaanderen/address-registry/compare/v3.38.5...v3.38.6) (2022-08-31)
 
 

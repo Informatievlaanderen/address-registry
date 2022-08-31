@@ -32,7 +32,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
                 .WithErrorCode(ValidationErrors.Address.BoxNumberInvalid);
 
             RuleFor(x => x.PositieGeometrieMethode)
-                .Must(x => x is PositieGeometrieMethode.AangeduidDoorBeheerder or PositieGeometrieMethode.AfgeleidVanObject)
+                .Must(x => x is null or PositieGeometrieMethode.AangeduidDoorBeheerder or PositieGeometrieMethode.AfgeleidVanObject)
                 .WithMessage(ValidationErrorMessages.Address.GeometryMethodInvalid)
                 .WithErrorCode(ValidationErrors.Address.GeometryMethodInvalid);
 

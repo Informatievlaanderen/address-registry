@@ -1,3 +1,10 @@
+## [3.38.6](https://github.com/informatievlaanderen/address-registry/compare/v3.38.5...v3.38.6) (2022-08-31)
+
+
+### Bug Fixes
+
+* register missing MunicipalityConsumerModule ([5d677e3](https://github.com/informatievlaanderen/address-registry/commit/5d677e35f59990fccaf7af0006cc76f7227c37be))
+
 ## [3.38.5](https://github.com/informatievlaanderen/address-registry/compare/v3.38.4...v3.38.5) (2022-08-31)
 
 

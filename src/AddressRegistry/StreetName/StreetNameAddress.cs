@@ -160,18 +160,18 @@ namespace AddressRegistry.StreetName
                 case AddressStatus.Proposed or AddressStatus.Rejected:
                     throw new AddressHasInvalidStatusException();
                 case AddressStatus.Current:
+                    foreach (var child in _children.Where(address => address.Status == AddressStatus.Current))
+                    {
+                        child.RetireBecauseParentWasRetired();
+                    }
+
+                    foreach (var child in _children.Where(address => address.Status == AddressStatus.Proposed))
+                    {
+                        child.RejectBecauseParentWasRetired();
+                    }
+
                     Apply(new AddressWasRetiredV2(_streetNamePersistentLocalId, AddressPersistentLocalId));
                     break;
-            }
-
-            foreach (var child in _children.Where(address => address.Status == AddressStatus.Current))
-            {
-                child.RetireBecauseParentWasRetired();
-            }
-
-            foreach (var child in _children.Where(address => address.Status == AddressStatus.Proposed))
-            {
-                child.RejectBecauseParentWasRetired();
             }
         }
 

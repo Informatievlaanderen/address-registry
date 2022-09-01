@@ -95,17 +95,17 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringAddress
                 .When(command)
                 .Then(
                     new Fact(_streamId,
-                        new AddressWasRetiredV2(
-                        Fixture.Create<StreetNamePersistentLocalId>(),
-                        parentAddressPersistentLocalId)),
-                    new Fact(_streamId,
                         new AddressWasRejectedBecauseHouseNumberWasRetired(
                             Fixture.Create<StreetNamePersistentLocalId>(),
                             firstChildAddressPersistentLocalId)),
                     new Fact(_streamId,
                         new AddressWasRejectedBecauseHouseNumberWasRetired(
                             Fixture.Create<StreetNamePersistentLocalId>(),
-                            secondChildAddressPersistentLocalId))));
+                            secondChildAddressPersistentLocalId)),
+                    new Fact(_streamId,
+                        new AddressWasRetiredV2(
+                            Fixture.Create<StreetNamePersistentLocalId>(),
+                            parentAddressPersistentLocalId))));
         }
 
         [Fact]
@@ -136,17 +136,17 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringAddress
                 .When(command)
                 .Then(
                     new Fact(_streamId,
-                        new AddressWasRetiredV2(
-                        Fixture.Create<StreetNamePersistentLocalId>(),
-                        parentAddressPersistentLocalId)),
-                    new Fact(_streamId,
                         new AddressWasRetiredBecauseHouseNumberWasRetired(
                             Fixture.Create<StreetNamePersistentLocalId>(),
                             firstChildAddressPersistentLocalId)),
                     new Fact(_streamId,
                         new AddressWasRetiredBecauseHouseNumberWasRetired(
                             Fixture.Create<StreetNamePersistentLocalId>(),
-                            secondChildAddressPersistentLocalId))));
+                            secondChildAddressPersistentLocalId)),
+                    new Fact(_streamId,
+                        new AddressWasRetiredV2(
+                            Fixture.Create<StreetNamePersistentLocalId>(),
+                            parentAddressPersistentLocalId))));
         }
 
         private AddressWasMigratedToStreetName CreateAddressWasMigratedToStreetName(

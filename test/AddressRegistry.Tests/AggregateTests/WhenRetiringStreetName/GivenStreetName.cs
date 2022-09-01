@@ -104,19 +104,35 @@ public class GivenStreetName : AddressRegistryTest
             GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
         ((ISetProvenance)secondAddressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
+        var childAddressPersistentLocalId = new AddressPersistentLocalId(789);
+        var childAddressWasProposedV2 = new AddressWasProposedV2(
+            streetNamePersistentLocalId,
+            childAddressPersistentLocalId,
+            parentPersistentLocalId: secondAddressPersistentLocalId,
+            Fixture.Create<PostalCode>(),
+            Fixture.Create<HouseNumber>(),
+            Fixture.Create<BoxNumber>(),
+            GeometryMethod.AppointedByAdministrator,
+            GeometrySpecification.Entry,
+            GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
+        ((ISetProvenance)childAddressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
+
         Assert(new Scenario()
             .Given(_streamId,
                 streetNameWasImported,
                 firstAddressWasProposedV2,
-                secondAddressWasProposedV2)
+                secondAddressWasProposedV2,
+                childAddressWasProposedV2)
             .When(command)
             .Then(
                 new Fact(new StreetNameStreamId(command.PersistentLocalId),
-                    new StreetNameWasRetired(streetNamePersistentLocalId)),
+                    new AddressWasRejectedBecauseStreetNameWasRetired(streetNamePersistentLocalId, childAddressPersistentLocalId)),
                 new Fact(new StreetNameStreamId(command.PersistentLocalId),
                     new AddressWasRejectedBecauseStreetNameWasRetired(streetNamePersistentLocalId, firstAddressPersistentLocalId)),
                 new Fact(new StreetNameStreamId(command.PersistentLocalId),
-                    new AddressWasRejectedBecauseStreetNameWasRetired(streetNamePersistentLocalId, secondAddressPersistentLocalId))));
+                    new AddressWasRejectedBecauseStreetNameWasRetired(streetNamePersistentLocalId, secondAddressPersistentLocalId)),
+                new Fact(new StreetNameStreamId(command.PersistentLocalId),
+                    new StreetNameWasRetired(streetNamePersistentLocalId))));
     }
 
     [Fact]
@@ -142,8 +158,8 @@ public class GivenStreetName : AddressRegistryTest
             GeometryMethod.AppointedByAdministrator,
             GeometrySpecification.Entry,
             GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
-
         ((ISetProvenance)firstAddressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
+
         var firstAddressWasApproved = new AddressWasApproved(
             streetNamePersistentLocalId,
             firstAddressPersistentLocalId);
@@ -160,12 +176,30 @@ public class GivenStreetName : AddressRegistryTest
             GeometryMethod.AppointedByAdministrator,
             GeometrySpecification.Entry,
             GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
-
         ((ISetProvenance)secondAddressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
+
         var secondAddressWasApproved = new AddressWasApproved(
             streetNamePersistentLocalId,
             secondAddressPersistentLocalId);
         ((ISetProvenance)secondAddressWasApproved).SetProvenance(Fixture.Create<Provenance>());
+
+        var childAddressPersistentLocalId = new AddressPersistentLocalId(789);
+        var childAddressWasProposedV2 = new AddressWasProposedV2(
+            streetNamePersistentLocalId,
+            childAddressPersistentLocalId,
+            parentPersistentLocalId: secondAddressPersistentLocalId,
+            Fixture.Create<PostalCode>(),
+            Fixture.Create<HouseNumber>(),
+            Fixture.Create<BoxNumber>(),
+            GeometryMethod.AppointedByAdministrator,
+            GeometrySpecification.Entry,
+            GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
+        ((ISetProvenance)childAddressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
+
+        var childAddressWasApproved = new AddressWasApproved(
+            streetNamePersistentLocalId,
+            childAddressPersistentLocalId);
+        ((ISetProvenance)childAddressWasApproved).SetProvenance(Fixture.Create<Provenance>());
 
         Assert(new Scenario()
             .Given(_streamId,
@@ -173,15 +207,19 @@ public class GivenStreetName : AddressRegistryTest
                 firstAddressWasProposedV2,
                 firstAddressWasApproved,
                 secondAddressWasProposedV2,
-                secondAddressWasApproved)
+                secondAddressWasApproved,
+                childAddressWasProposedV2,
+                childAddressWasApproved)
             .When(command)
             .Then(
                 new Fact(new StreetNameStreamId(command.PersistentLocalId),
-                    new StreetNameWasRetired(streetNamePersistentLocalId)),
+                    new AddressWasRetiredBecauseStreetNameWasRetired(streetNamePersistentLocalId, childAddressPersistentLocalId)),
                 new Fact(new StreetNameStreamId(command.PersistentLocalId),
                     new AddressWasRetiredBecauseStreetNameWasRetired(streetNamePersistentLocalId, firstAddressPersistentLocalId)),
                 new Fact(new StreetNameStreamId(command.PersistentLocalId),
-                    new AddressWasRetiredBecauseStreetNameWasRetired(streetNamePersistentLocalId, secondAddressPersistentLocalId))));
+                    new AddressWasRetiredBecauseStreetNameWasRetired(streetNamePersistentLocalId, secondAddressPersistentLocalId)),
+                new Fact(new StreetNameStreamId(command.PersistentLocalId),
+                    new StreetNameWasRetired(streetNamePersistentLocalId))));
     }
 
     [Fact]

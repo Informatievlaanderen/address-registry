@@ -1,3 +1,10 @@
+## [3.38.9](https://github.com/informatievlaanderen/address-registry/compare/v3.38.8...v3.38.9) (2022-09-01)
+
+
+### Bug Fixes
+
+* event order when rejecting or retiring house number vs box number addresses ([c2b4fee](https://github.com/informatievlaanderen/address-registry/commit/c2b4fee5cccf88073f6b786e77ba724d8a1b80d1))
+
 ## [3.38.8](https://github.com/informatievlaanderen/address-registry/compare/v3.38.7...v3.38.8) (2022-09-01)
 
 

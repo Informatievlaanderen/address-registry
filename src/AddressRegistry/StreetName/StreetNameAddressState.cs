@@ -20,6 +20,8 @@ namespace AddressRegistry.StreetName
         public bool IsActive => Status is AddressStatus.Proposed or AddressStatus.Current;
         public HouseNumber HouseNumber { get; private set; }
         public BoxNumber? BoxNumber { get; private set; }
+        public bool IsHouseNumberAddress => !IsBoxNumberAddress;
+        public bool IsBoxNumberAddress => BoxNumber is not null;
         public PostalCode PostalCode { get; private set; }
         public AddressGeometry Geometry { get; private set; }
         public bool IsOfficiallyAssigned { get; set; }

@@ -61,14 +61,30 @@ namespace AddressRegistry.StreetName
                 return;
             }
 
-            ApplyChange(new StreetNameWasRetired(PersistentLocalId));
+            RejectAddressesBecauseStreetNameWasRetired(
+                StreetNameAddresses.ProposedStreetNameAddresses.Where(address => address.IsBoxNumberAddress));
+            RetireAddressesBecauseStreetNameWasRetired(
+                StreetNameAddresses.CurrentStreetNameAddresses.Where(address => address.IsBoxNumberAddress));
 
-            foreach (var address in StreetNameAddresses.ProposedStreetNameAddresses)
+            RejectAddressesBecauseStreetNameWasRetired(
+                StreetNameAddresses.ProposedStreetNameAddresses.Where(address => address.IsHouseNumberAddress));
+            RetireAddressesBecauseStreetNameWasRetired(
+                StreetNameAddresses.CurrentStreetNameAddresses.Where(address => address.IsHouseNumberAddress));
+
+            ApplyChange(new StreetNameWasRetired(PersistentLocalId));
+        }
+
+        private static void RejectAddressesBecauseStreetNameWasRetired(IEnumerable<StreetNameAddress> addresses)
+        {
+            foreach (var address in addresses)
             {
                 address.RejectBecauseStreetNameWasRetired();
             }
+        }
 
-            foreach (var address in StreetNameAddresses.CurrentStreetNameAddresses)
+        private static void RetireAddressesBecauseStreetNameWasRetired(IEnumerable<StreetNameAddress> addresses)
+        {
+            foreach (var address in addresses)
             {
                 address.RetireBecauseStreetNameWasRetired();
             }
@@ -250,7 +266,7 @@ namespace AddressRegistry.StreetName
                 .GetByPersistentLocalId(addressPersistentLocalId)
                 .ChangePosition(geometryMethod, geometrySpecification, position, GetMunicipalityData(municipalities));
         }
-        
+
         public void CorrectAddressPosition(
             AddressPersistentLocalId addressPersistentLocalId,
             GeometryMethod geometryMethod,

@@ -223,6 +223,103 @@ public class GivenStreetName : AddressRegistryTest
     }
 
     [Fact]
+    public void WithAddresses_ThenBoxNumberAddressesAreRejectedOrRetiredBeforeHouseNumberAddresses()
+    {
+        var command = Fixture.Create<RetireStreetName>();
+
+        var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
+        var streetNameWasImported = new StreetNameWasImported(
+            streetNamePersistentLocalId,
+            Fixture.Create<MunicipalityId>(),
+            StreetNameStatus.Current);
+        ((ISetProvenance)streetNameWasImported).SetProvenance(Fixture.Create<Provenance>());
+
+        var firstHouseNumberAddressPersistentLocalId = new AddressPersistentLocalId(123);
+        var firstHouseNumberAddressWasProposedV2 = new AddressWasProposedV2(
+            streetNamePersistentLocalId,
+            firstHouseNumberAddressPersistentLocalId,
+            parentPersistentLocalId: null,
+            Fixture.Create<PostalCode>(),
+            Fixture.Create<HouseNumber>(),
+            boxNumber: null,
+            GeometryMethod.AppointedByAdministrator,
+            GeometrySpecification.Entry,
+            GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
+        ((ISetProvenance)firstHouseNumberAddressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
+
+        var firstHouseNumberAddressWasApproved = new AddressWasApproved(
+            streetNamePersistentLocalId,
+            firstHouseNumberAddressPersistentLocalId);
+        ((ISetProvenance)firstHouseNumberAddressWasApproved).SetProvenance(Fixture.Create<Provenance>());
+
+        var childOfFirstHouseNumberAddressPersistentLocalId = new AddressPersistentLocalId(456);
+        var childOfFirstHouseNumberAddressWasProposedV2 = new AddressWasProposedV2(
+            streetNamePersistentLocalId,
+            childOfFirstHouseNumberAddressPersistentLocalId,
+            parentPersistentLocalId: firstHouseNumberAddressPersistentLocalId,
+            Fixture.Create<PostalCode>(),
+            Fixture.Create<HouseNumber>(),
+            Fixture.Create<BoxNumber>(),
+            GeometryMethod.AppointedByAdministrator,
+            GeometrySpecification.Entry,
+            GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
+        ((ISetProvenance)childOfFirstHouseNumberAddressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
+
+        var childOfFirstHouseNumberAddressWasApproved = new AddressWasApproved(
+            streetNamePersistentLocalId,
+            childOfFirstHouseNumberAddressPersistentLocalId);
+        ((ISetProvenance)childOfFirstHouseNumberAddressWasApproved).SetProvenance(Fixture.Create<Provenance>());
+
+        var secondHouseNumberAddressPersistentLocalId = new AddressPersistentLocalId(789);
+        var secondHouseNumberAddressWasProposedV2 = new AddressWasProposedV2(
+            streetNamePersistentLocalId,
+            secondHouseNumberAddressPersistentLocalId,
+            parentPersistentLocalId: null,
+            Fixture.Create<PostalCode>(),
+            Fixture.Create<HouseNumber>(),
+            boxNumber: null,
+            GeometryMethod.AppointedByAdministrator,
+            GeometrySpecification.Entry,
+            GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
+        ((ISetProvenance)secondHouseNumberAddressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
+
+        var childOfSecondHouseNumberAddressPersistentLocalId = new AddressPersistentLocalId(987);
+        var childOfSecondHouseNumberAddressWasProposedV2 = new AddressWasProposedV2(
+            streetNamePersistentLocalId,
+            childOfSecondHouseNumberAddressPersistentLocalId,
+            parentPersistentLocalId: secondHouseNumberAddressPersistentLocalId,
+            Fixture.Create<PostalCode>(),
+            Fixture.Create<HouseNumber>(),
+            Fixture.Create<BoxNumber>(),
+            GeometryMethod.AppointedByAdministrator,
+            GeometrySpecification.Entry,
+            GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
+        ((ISetProvenance)childOfSecondHouseNumberAddressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
+
+        Assert(new Scenario()
+            .Given(_streamId,
+                streetNameWasImported,
+                firstHouseNumberAddressWasProposedV2,
+                firstHouseNumberAddressWasApproved,
+                childOfFirstHouseNumberAddressWasProposedV2,
+                childOfFirstHouseNumberAddressWasApproved,
+                secondHouseNumberAddressWasProposedV2,
+                childOfSecondHouseNumberAddressWasProposedV2)
+            .When(command)
+            .Then(
+                new Fact(new StreetNameStreamId(command.PersistentLocalId),
+                    new AddressWasRejectedBecauseStreetNameWasRetired(streetNamePersistentLocalId, childOfSecondHouseNumberAddressPersistentLocalId)),
+                new Fact(new StreetNameStreamId(command.PersistentLocalId),
+                    new AddressWasRetiredBecauseStreetNameWasRetired(streetNamePersistentLocalId, childOfFirstHouseNumberAddressPersistentLocalId)),
+                new Fact(new StreetNameStreamId(command.PersistentLocalId),
+                    new AddressWasRejectedBecauseStreetNameWasRetired(streetNamePersistentLocalId, secondHouseNumberAddressPersistentLocalId)),
+                new Fact(new StreetNameStreamId(command.PersistentLocalId),
+                    new AddressWasRetiredBecauseStreetNameWasRetired(streetNamePersistentLocalId, firstHouseNumberAddressPersistentLocalId)),
+                new Fact(new StreetNameStreamId(command.PersistentLocalId),
+                    new StreetNameWasRetired(streetNamePersistentLocalId))));
+    }
+
+    [Fact]
     public void WithRetiredAddress_ThenNoChangeOnAddress()
     {
         var command = Fixture.Create<RetireStreetName>();

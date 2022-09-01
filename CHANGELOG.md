@@ -1,3 +1,10 @@
+## [3.38.8](https://github.com/informatievlaanderen/address-registry/compare/v3.38.7...v3.38.8) (2022-09-01)
+
+
+### Bug Fixes
+
+* add missing ConsumerMunicipality connection strings ([f755b07](https://github.com/informatievlaanderen/address-registry/commit/f755b07c7df6332bc93166aa6ed87d62e91c3bfb))
+
 ## [3.38.7](https://github.com/informatievlaanderen/address-registry/compare/v3.38.6...v3.38.7) (2022-08-31)
 
 

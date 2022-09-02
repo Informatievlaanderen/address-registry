@@ -1,5 +1,6 @@
 namespace AddressRegistry.Api.Extract.Extracts
 {
+    using System;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.Shaperon;
     using Microsoft.EntityFrameworkCore;
@@ -135,7 +136,22 @@ namespace AddressRegistry.Api.Extract.Extracts
             };
 
             var cachedMunicipalities = municipalityConsumerContext.MunicipalityLatestItems.AsNoTracking().ToList();
-            var cachedStreetNames = syndicationContext.StreetNameLatestItems.AsNoTracking().ToList();
+            var cachedStreetNames = syndicationContext
+                .StreetNameLatestItems
+                .AsNoTracking()
+                .ToList()
+                .Where(x => !string.IsNullOrEmpty(x.PersistentLocalId))
+                .Select(x => new
+                {
+                    PersistentLocalId = Convert.ToInt32(x.PersistentLocalId!),
+                    PersistentLocalIdAsString = x.PersistentLocalId!,
+                    x.NameDutch,
+                    x.NameFrench,
+                    x.NameGerman,
+                    x.NameEnglish,
+                    x.NisCode
+                })
+                .ToList();
 
             byte[] TransformRecord(AddressExtractItemV2 r)
             {
@@ -143,10 +159,10 @@ namespace AddressRegistry.Api.Extract.Extracts
                 item.FromBytes(r.DbaseRecord, DbfFileWriter<AddressDbaseRecord>.Encoding);
 
                 // update streetname, municipality
-                var streetName = cachedStreetNames.First(x => x.PersistentLocalId == r.StreetNamePersistentLocalId.ToString());
+                var streetName = cachedStreetNames.First(x => x.PersistentLocalId == r.StreetNamePersistentLocalId);
                 var municipality = cachedMunicipalities.First(x => x.NisCode == streetName.NisCode);
 
-                item.straatnmid.Value = streetName.PersistentLocalId;
+                item.straatnmid.Value = streetName.PersistentLocalIdAsString;
 
                 switch (municipality.PrimaryLanguage)
                 {

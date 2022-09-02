@@ -1,5 +1,6 @@
 namespace AddressRegistry.Projections.Syndication.StreetName
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -41,15 +42,16 @@ namespace AddressRegistry.Projections.Syndication.StreetName
 
         private static async Task AddSyndicationItemEntry(AtomEntry<SyndicationItem<StreetName>> entry, SyndicationContext context, CancellationToken ct)
         {
+            var streetNameId = Guid.Parse(entry.Content.Object.StreetNameId);
             var latestItem = await context
                 .StreetNameBosaItems
-                .FindAsync(entry.Content.Object.StreetNameId);
+                .FindAsync(streetNameId);
 
             if (latestItem == null)
             {
                 latestItem = new StreetNameBosaItem
                 {
-                    StreetNameId = entry.Content.Object.StreetNameId,
+                    StreetNameId = streetNameId,
                     NisCode = entry.Content.Object.NisCode,
                     Version = entry.Content.Object.Identificator?.Versie,
                     Position = long.Parse(entry.FeedEntry.Id),

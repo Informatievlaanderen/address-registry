@@ -1,6 +1,5 @@
 namespace AddressRegistry.Projections.Syndication.StreetName
 {
-    using System;
     using System.Collections.Generic;
     using System.Runtime.Serialization;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
@@ -13,7 +12,7 @@ namespace AddressRegistry.Projections.Syndication.StreetName
         /// De technische id van de straatnaam.
         /// </summary>
         [DataMember(Name = "Id", Order = 1)]
-        public Guid StreetNameId { get; set; }
+        public string StreetNameId { get; set; }
 
         /// <summary>
         /// De identificator van de straatnaam.

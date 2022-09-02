@@ -1,5 +1,6 @@
 namespace AddressRegistry.Projections.Syndication.StreetName
 {
+    using System;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication;
     using System.Collections.Generic;
@@ -40,9 +41,10 @@ namespace AddressRegistry.Projections.Syndication.StreetName
 
         private static async Task AddSyndicationItemEntry(AtomEntry<SyndicationItem<StreetName>> entry, SyndicationContext context, CancellationToken ct)
         {
+            var streetNameId = Guid.Parse(entry.Content.Object.StreetNameId);
             var latestItem = new StreetNameSyndicationItem
             {
-                StreetNameId = entry.Content.Object.StreetNameId,
+                StreetNameId = streetNameId,
                 NisCode = entry.Content.Object.NisCode,
                 Version = entry.Content.Object.Identificator.Versie,
                 Position = long.Parse(entry.FeedEntry.Id),

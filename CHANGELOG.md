@@ -1,3 +1,15 @@
+## [3.38.10](https://github.com/informatievlaanderen/address-registry/compare/v3.38.9...v3.38.10) (2022-09-02)
+
+
+### Bug Fixes
+
+* correct syndication of streetname GAWR-3637 ([a9840c9](https://github.com/informatievlaanderen/address-registry/commit/a9840c9ad29b023e18a134e5500bd60c81a97e09))
+
+
+### Performance Improvements
+
+* improve extract v2 performance address ([4ca8ff6](https://github.com/informatievlaanderen/address-registry/commit/4ca8ff65f5593df138471e8588c8fdea5d631a98))
+
 ## [3.38.9](https://github.com/informatievlaanderen/address-registry/compare/v3.38.8...v3.38.9) (2022-09-01)
 
 

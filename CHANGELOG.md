@@ -1,3 +1,10 @@
+## [3.38.12](https://github.com/informatievlaanderen/address-registry/compare/v3.38.11...v3.38.12) (2022-09-05)
+
+
+### Bug Fixes
+
+* fix format strings ([9cb8831](https://github.com/informatievlaanderen/address-registry/commit/9cb8831eeff2caa830a526d8efffc15a4fb199e1))
+
 ## [3.38.11](https://github.com/informatievlaanderen/address-registry/compare/v3.38.10...v3.38.11) (2022-09-05)
 
 

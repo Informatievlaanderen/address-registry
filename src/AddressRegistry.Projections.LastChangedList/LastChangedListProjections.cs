@@ -27,8 +27,15 @@ namespace AddressRegistry.Projections.LastChangedList
 
                 foreach (var record in attachedRecords)
                 {
-                    record.CacheKey = string.Format(record.CacheKey, message.Message.PersistentLocalId);
-                    record.Uri = string.Format(record.Uri, message.Message.PersistentLocalId);
+                    if (record.CacheKey != null)
+                    {
+                        record.CacheKey = string.Format(record.CacheKey, message.Message.PersistentLocalId);
+                    }
+
+                    if (record.Uri != null)
+                    {
+                        record.Uri = string.Format(record.Uri, message.Message.PersistentLocalId);
+                    }
                 }
             });
 
@@ -273,10 +280,22 @@ namespace AddressRegistry.Projections.LastChangedList
 
         private static void RebuildKeyAndUri(IEnumerable<LastChangedRecord>? attachedRecords, int persistentLocalId)
         {
+            if (attachedRecords == null)
+            {
+                return;
+            }
+
             foreach (var record in attachedRecords)
             {
-                record.CacheKey = string.Format(record.CacheKey, persistentLocalId);
-                record.Uri = string.Format(record.Uri, persistentLocalId);
+                if (record.CacheKey != null)
+                {
+                    record.CacheKey = string.Format(record.CacheKey, persistentLocalId);
+                }
+
+                if (record.Uri != null)
+                {
+                    record.Uri = string.Format(record.Uri, persistentLocalId);
+                }
             }
         }
 
@@ -285,9 +304,9 @@ namespace AddressRegistry.Projections.LastChangedList
             var shortenedAcceptType = acceptType.ToString().ToLowerInvariant();
             return acceptType switch
             {
-                AcceptType.Json => string.Format("legacy/address:{{0}}.{1}", identifier, shortenedAcceptType),
-                AcceptType.Xml => string.Format("legacy/address:{{0}}.{1}", identifier, shortenedAcceptType),
-                AcceptType.JsonLd => string.Format("oslo/address:{{0}}.{1}", identifier, shortenedAcceptType),
+                AcceptType.Json => $"legacy/address:{{0}}.{shortenedAcceptType}",
+                AcceptType.Xml => $"legacy/address:{{0}}.{shortenedAcceptType}",
+                AcceptType.JsonLd => $"oslo/address:{{0}}.{shortenedAcceptType}",
                 _ => throw new NotImplementedException($"Cannot build CacheKey for type {typeof(AcceptType)}")
             };
         }
@@ -296,9 +315,9 @@ namespace AddressRegistry.Projections.LastChangedList
         {
             return acceptType switch
             {
-                AcceptType.Json => string.Format("/v1/adressen/{{0}}", identifier),
-                AcceptType.Xml => string.Format("/v1/adressen/{{0}}", identifier),
-                AcceptType.JsonLd => string.Format("/v2/adressen/{{0}}", identifier),
+                AcceptType.Json => "/v1/adressen/{0}",
+                AcceptType.Xml => "/v1/adressen/{0}",
+                AcceptType.JsonLd => "/v2/adressen/{0}",
                 _ => throw new NotImplementedException($"Cannot build Uri for type {typeof(AcceptType)}")
             };
         }

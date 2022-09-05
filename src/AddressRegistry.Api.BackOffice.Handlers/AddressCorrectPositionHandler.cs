@@ -42,7 +42,6 @@ namespace AddressRegistry.Api.BackOffice.Handlers
 
             var cmd = request.ToCommand(
                 streetNamePersistentLocalId,
-                request.Positie?.ToExtendedWkbGeometry(),
                 CreateFakeProvenance());
 
             await IdempotentCommandHandlerDispatch(

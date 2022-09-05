@@ -1,3 +1,10 @@
+## [3.38.11](https://github.com/informatievlaanderen/address-registry/compare/v3.38.10...v3.38.11) (2022-09-05)
+
+
+### Bug Fixes
+
+* 500 error on empty addressposition ([821e8f4](https://github.com/informatievlaanderen/address-registry/commit/821e8f46bd82a94d2f248bb34617867aa04d8122))
+
 ## [3.38.10](https://github.com/informatievlaanderen/address-registry/compare/v3.38.9...v3.38.10) (2022-09-02)
 
 

@@ -51,7 +51,6 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
         /// <returns>ChangeAddressPosition.</returns>
         public ChangeAddressPosition ToCommand(
             StreetNamePersistentLocalId streetNamePersistentLocalId,
-            ExtendedWkbGeometry? position,
             Provenance provenance)
         {
             return new ChangeAddressPosition(
@@ -59,7 +58,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
                 new AddressPersistentLocalId(PersistentLocalId),
                 PositieGeometrieMethode.Map(),
                 PositieSpecificatie.Map(),
-                position,
+                string.IsNullOrWhiteSpace(Positie) ? null : Positie.ToExtendedWkbGeometry(),
                 provenance);
         }
     }

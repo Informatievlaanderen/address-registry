@@ -5,6 +5,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Municipality
     using System.Threading.Tasks;
     using AddressRegistry.Consumer.Read.Municipality;
     using AddressRegistry.Consumer.Read.Municipality.Projections;
+    using AddressRegistry.StreetName;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts.MunicipalityRegistry;

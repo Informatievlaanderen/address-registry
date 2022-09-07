@@ -2,11 +2,11 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
 {
     using System.Threading.Tasks;
     using AddressRegistry.Consumer.Projections;
+    using AddressRegistry.StreetName.Events;
     using AutoFixture;
     using FluentAssertions;
     using global::AutoFixture;
     using Microsoft.Extensions.Logging;
-    using StreetName.Events;
     using Xunit;
 
     public class StreetNameConsumerProjectionsTests : ConsumerProjectionTest<StreetNameConsumerProjection>

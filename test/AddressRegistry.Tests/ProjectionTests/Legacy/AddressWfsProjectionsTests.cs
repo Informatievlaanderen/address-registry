@@ -2,6 +2,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using AddressRegistry.StreetName;
+    using AddressRegistry.StreetName.Events;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Pipes;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
@@ -11,8 +13,6 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
     using NetTopologySuite.Geometries;
     using NetTopologySuite.IO;
     using Projections.Wfs.AddressWfs;
-    using StreetName;
-    using StreetName.Events;
     using Xunit;
     using Envelope = Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope;
 

@@ -35,6 +35,7 @@
     <ProjectReference Include="..\AddressRegistry.Api.CrabImport\AddressRegistry.Api.CrabImport.csproj" />
 	  <ProjectReference Include="..\AddressRegistry.Api.Backoffice.Abstractions\AddressRegistry.Api.Backoffice.Abstractions.csproj" />
   	<ProjectReference Include="..\AddressRegistry.Consumer.Read.Municipality\AddressRegistry.Consumer.Read.Municipality.csproj" />
+    	<ProjectReference Include="..\AddressRegistry.Consumer.Read.StreetName\AddressRegistry.Consumer.Read.StreetName.csproj" />
   </ItemGroup>
 
   <Import Project="..\..\.paket\Paket.Restore.targets" />

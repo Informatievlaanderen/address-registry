@@ -2,14 +2,14 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using AddressRegistry.StreetName;
+    using AddressRegistry.StreetName.Events;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Pipes;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using FluentAssertions;
     using global::AutoFixture;
     using Projections.Legacy.AddressListV2;
-    using StreetName;
-    using StreetName.Events;
     using Xunit;
 
     public class AddressListProjectionsV2Tests : AddressLegacyProjectionTest<AddressListProjectionsV2>

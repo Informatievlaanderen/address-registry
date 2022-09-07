@@ -55,6 +55,7 @@ Target.create "Publish_Solution" (fun _ ->
     "AddressRegistry.Api.BackOffice.Abstractions"
     "AddressRegistry.Consumer"
     "AddressRegistry.Consumer.Read.Municipality"
+    "AddressRegistry.Consumer.Read.StreetName"
     "AddressRegistry.Migrator.Address"
     "AddressRegistry.Producer"
     "AddressRegistry.Projections.Legacy"
@@ -83,6 +84,7 @@ Target.create "Pack_Solution" (fun _ ->
     "AddressRegistry.Api.BackOffice.Abstractions"
     "AddressRegistry.Consumer"
     "AddressRegistry.Consumer.Read.Municipality"
+    "AddressRegistry.Consumer.Read.StreetName"
     "AddressRegistry.Migrator.Address"
     "AddressRegistry.Producer"
   ] |> List.iter pack)
@@ -110,6 +112,9 @@ Target.create "PushContainer_Consumer" (fun _ -> push "consumer")
 
 Target.create "Containerize_ConsumerMunicipality" (fun _ -> containerize "AddressRegistry.Consumer.Read.Municipality" "consumer-read-municipality")
 Target.create "PushContainer_ConsumerMunicipality" (fun _ -> push "consumer-read-municipality")
+
+Target.create "Containerize_ConsumerStreetName" (fun _ -> containerize "AddressRegistry.Consumer.Read.StreetName" "consumer-read-streetname")
+Target.create "PushContainer_ConsumerStreetName" (fun _ -> push "consumer-read-streetname")
 
 Target.create "Containerize_Migrator_Address" (fun _ -> containerize "AddressRegistry.Migrator.Address" "migrator-address")
 Target.create "PushContainer_Migrator_Address" (fun _ -> push "migrator-address")

@@ -1,3 +1,10 @@
+# [3.39.0](https://github.com/informatievlaanderen/address-registry/compare/v3.38.13...v3.39.0) (2022-09-08)
+
+
+### Features
+
+* add streetname read projections ([a5e51ee](https://github.com/informatievlaanderen/address-registry/commit/a5e51eedce685e2e3b09336eb231a0529c5bb367))
+
 ## [3.38.13](https://github.com/informatievlaanderen/address-registry/compare/v3.38.12...v3.38.13) (2022-09-06)
 
 

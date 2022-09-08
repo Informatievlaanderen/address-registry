@@ -1,3 +1,10 @@
+## [3.39.1](https://github.com/informatievlaanderen/address-registry/compare/v3.39.0...v3.39.1) (2022-09-08)
+
+
+### Bug Fixes
+
+* change error reason `PositionRequired` GAWR-3649 ([ac19376](https://github.com/informatievlaanderen/address-registry/commit/ac19376a36a750f4ec108ffc222900ee73e46385))
+
 # [3.39.0](https://github.com/informatievlaanderen/address-registry/compare/v3.38.13...v3.39.0) (2022-09-08)
 
 

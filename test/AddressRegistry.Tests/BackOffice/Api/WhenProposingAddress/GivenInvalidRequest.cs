@@ -209,7 +209,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                 .Result
                 .Where(x =>
                     x.Errors.Any(e => e.ErrorCode == "AdresPositieGeometriemethodeValidatie"
-                                      && e.ErrorMessage == "De parameter 'positie' is verplicht voor indien aangeduid door beheerder."));
+                                      && e.ErrorMessage == "De parameter 'positie' is verplicht indien positieGeometrieMethode aangeduidDoorBeheerder is."));
         }
 
         [Fact]

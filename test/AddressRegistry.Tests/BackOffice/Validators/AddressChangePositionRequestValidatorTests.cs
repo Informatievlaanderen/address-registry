@@ -80,7 +80,7 @@ namespace AddressRegistry.Tests.BackOffice.Validators
             result.Errors.Count.Should().Be(1);
             result.ShouldHaveValidationErrorFor(nameof(AddressProposeRequest.Positie))
                 .WithErrorCode("AdresPositieGeometriemethodeValidatie")
-                .WithErrorMessage("De parameter 'positie' is verplicht voor indien aangeduid door beheerder.");
+                .WithErrorMessage("De parameter 'positie' is verplicht indien positieGeometrieMethode aangeduidDoorBeheerder is.");
         }
 
         [Theory]

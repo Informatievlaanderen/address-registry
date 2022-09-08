@@ -65,7 +65,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
 
             public const string PositionSpecificationInvalid = "Ongeldige positieSpecificatie.";
 
-            public const string PositionRequired = "De parameter 'positie' is verplicht voor indien aangeduid door beheerder.";
+            public const string PositionRequired = "De parameter 'positie' is verplicht indien positieGeometrieMethode aangeduidDoorBeheerder is.";
             public const string PositionInvalidFormat = "De positie is geen geldige gml-puntgeometrie.";
             public const string GeometryMethodInvalid = "Ongeldige positieGeometrieMethode.";
 

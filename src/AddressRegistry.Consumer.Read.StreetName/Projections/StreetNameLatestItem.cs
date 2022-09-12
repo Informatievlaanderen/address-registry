@@ -6,7 +6,6 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using NodaTime;
-    using NodaTime.Text;
 
     public class StreetNameLatestItem
     {

@@ -1,17 +1,17 @@
 namespace AddressRegistry.Api.Extract.Extracts
 {
-    using System;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
-    using Be.Vlaanderen.Basisregisters.Shaperon;
-    using Microsoft.EntityFrameworkCore;
-    using Projections.Extract;
-    using Projections.Extract.AddressExtract;
     using System.Collections.Generic;
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.Api.Extract;
     using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
+    using Be.Vlaanderen.Basisregisters.Shaperon;
     using Consumer.Read.Municipality;
     using Consumer.Read.Municipality.Projections;
+    using Consumer.Read.StreetName;
+    using Microsoft.EntityFrameworkCore;
+    using Projections.Extract;
+    using Projections.Extract.AddressExtract;
     using Projections.Syndication;
 
     public static class AddressRegistryExtractBuilder
@@ -116,7 +116,7 @@ namespace AddressRegistry.Api.Extract.Extracts
         
         public static IEnumerable<ExtractFile> CreateAddressFilesV2(
             ExtractContext context,
-            SyndicationContext syndicationContext,
+            StreetNameConsumerContext streetNameConsumerContext,
             MunicipalityConsumerContext municipalityConsumerContext)
         {
             var extractItems = context
@@ -136,15 +136,14 @@ namespace AddressRegistry.Api.Extract.Extracts
             };
 
             var cachedMunicipalities = municipalityConsumerContext.MunicipalityLatestItems.AsNoTracking().ToList();
-            var cachedStreetNames = syndicationContext
+            var cachedStreetNames = streetNameConsumerContext
                 .StreetNameLatestItems
                 .AsNoTracking()
                 .ToList()
-                .Where(x => !string.IsNullOrEmpty(x.PersistentLocalId))
                 .Select(x => new
                 {
-                    PersistentLocalId = Convert.ToInt32(x.PersistentLocalId!),
-                    PersistentLocalIdAsString = x.PersistentLocalId!,
+                    PersistentLocalId = x.PersistentLocalId,
+                    PersistentLocalIdAsString = x.PersistentLocalId.ToString(),
                     x.NameDutch,
                     x.NameFrench,
                     x.NameGerman,

@@ -14,6 +14,7 @@ namespace AddressRegistry.Consumer.Infrastructure.Modules
     using Microsoft.Extensions.Logging;
     using Projections;
     using Read.Municipality;
+    using Read.Municipality.Infrastructure.Modules;
     using ConsumerContextFactory = AddressRegistry.Consumer.ConsumerContextFactory;
 
     public class ApiModule : Module

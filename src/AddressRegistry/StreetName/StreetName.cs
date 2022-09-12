@@ -279,6 +279,13 @@ namespace AddressRegistry.StreetName
                 .CorrectPosition(geometryMethod, geometrySpecification, position, GetMunicipalityData(municipalities));
         }
 
+        public void RemoveAddress(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            StreetNameAddresses
+                .GetByPersistentLocalId(addressPersistentLocalId)
+                .Remove();
+        }
+
         private Func<MunicipalityData> GetMunicipalityData(IMunicipalities municipalities) =>
             () => municipalities.Get(MunicipalityId);
 

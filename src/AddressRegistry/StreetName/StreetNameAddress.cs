@@ -303,6 +303,31 @@ namespace AddressRegistry.StreetName
             return new AddressGeometry(geometryMethod, finalSpecification, finalPosition);
         }
 
+        public void Remove()
+        {
+            if (IsRemoved)
+            {
+                return;
+            }
+
+            foreach (var child in _children)
+            {
+                child.RemovedBecauseParentWasRemoved();
+            }
+
+            Apply(new AddressWasRemovedV2(_streetNamePersistentLocalId, AddressPersistentLocalId));
+        }
+
+        public void RemovedBecauseParentWasRemoved()
+        {
+            if (IsRemoved)
+            {
+                return;
+            }
+
+            Apply(new AddressWasRemovedV2(_streetNamePersistentLocalId, AddressPersistentLocalId));
+        }
+
         /// <summary>
         /// Set the parent of the instance.
         /// </summary>

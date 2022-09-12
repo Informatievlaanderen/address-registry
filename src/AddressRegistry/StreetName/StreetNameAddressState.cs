@@ -54,6 +54,7 @@ namespace AddressRegistry.StreetName
             Register<AddressWasRetiredBecauseStreetNameWasRetired>(When);
             Register<AddressPositionWasChanged>(When);
             Register<AddressPositionWasCorrectedV2>(When);
+            Register<AddressWasRemovedV2>(When);
         }
 
         private void When(AddressWasMigratedToStreetName @event)
@@ -179,6 +180,13 @@ namespace AddressRegistry.StreetName
                 @event.GeometryMethod,
                 @event.GeometrySpecification,
                 new ExtendedWkbGeometry(@event.ExtendedWkbGeometry));
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressWasRemovedV2 @event)
+        {
+            IsRemoved = true;
 
             _lastEvent = @event;
         }

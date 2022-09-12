@@ -325,7 +325,7 @@ namespace AddressRegistry.StreetName
                 return;
             }
 
-            Apply(new AddressWasRemovedV2(_streetNamePersistentLocalId, AddressPersistentLocalId));
+            Apply(new AddressWasRemovedBecauseHouseNumberWasRemoved(_streetNamePersistentLocalId, AddressPersistentLocalId));
         }
 
         /// <summary>

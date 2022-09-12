@@ -209,6 +209,15 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
             });
 
+            When<Envelope<AddressWasRemovedBecauseHouseNumberWasRemoved>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    item => item.Removed = true,
+                    ct);
+
+                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+            });
         }
 
         public static string MapStatus(AddressStatus status)

@@ -55,6 +55,7 @@ namespace AddressRegistry.StreetName
             Register<AddressPositionWasChanged>(When);
             Register<AddressPositionWasCorrectedV2>(When);
             Register<AddressWasRemovedV2>(When);
+            Register<AddressWasRemovedBecauseHouseNumberWasRemoved>(When);
         }
 
         private void When(AddressWasMigratedToStreetName @event)
@@ -185,6 +186,13 @@ namespace AddressRegistry.StreetName
         }
 
         private void When(AddressWasRemovedV2 @event)
+        {
+            IsRemoved = true;
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressWasRemovedBecauseHouseNumberWasRemoved @event)
         {
             IsRemoved = true;
 

@@ -89,11 +89,11 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRemovingAddress
                 .When(command)
                 .Then(
                     new Fact(_streamId,
-                        new AddressWasRemovedV2(
+                        new AddressWasRemovedBecauseHouseNumberWasRemoved(
                             Fixture.Create<StreetNamePersistentLocalId>(),
                             firstChildAddressPersistentLocalId)),
                     new Fact(_streamId,
-                        new AddressWasRemovedV2(
+                        new AddressWasRemovedBecauseHouseNumberWasRemoved(
                             Fixture.Create<StreetNamePersistentLocalId>(),
                             secondChildAddressPersistentLocalId)),
                     new Fact(_streamId,

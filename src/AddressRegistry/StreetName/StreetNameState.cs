@@ -45,6 +45,7 @@ namespace AddressRegistry.StreetName
             Register<AddressPositionWasChanged>(When);
             Register<AddressPositionWasCorrectedV2>(When);
             Register<AddressWasRemovedV2>(When);
+            Register<AddressWasRemovedBecauseHouseNumberWasRemoved>(When);
         }
 
         private void When(MigratedStreetNameWasImported @event)
@@ -178,6 +179,12 @@ namespace AddressRegistry.StreetName
         }
 
         private void When(AddressWasRemovedV2 @event)
+        {
+            var addressToRemove = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
+            addressToRemove.Route(@event);
+        }
+
+        private void When(AddressWasRemovedBecauseHouseNumberWasRemoved @event)
         {
             var addressToRemove = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
             addressToRemove.Route(@event);

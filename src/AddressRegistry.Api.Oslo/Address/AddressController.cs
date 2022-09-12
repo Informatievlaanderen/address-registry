@@ -25,6 +25,7 @@ namespace AddressRegistry.Api.Oslo.Address
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.Api.Search;
     using Consumer.Read.Municipality;
+    using Consumer.Read.StreetName;
     using Infrastructure.FeatureToggles;
     using Projections.Syndication.Municipality;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
@@ -48,6 +49,7 @@ namespace AddressRegistry.Api.Oslo.Address
         /// <param name="context"></param>
         /// <param name="syndicationContext"></param>
         /// <param name="municipalityConsumerContext"></param>
+        /// <param name="streetNameConsumerContext"></param>
         /// <param name="responseOptions"></param>
         /// <param name="persistentLocalId">Identificator van het adres.</param>
         /// <param name="taal">De taal in dewelke het adres wordt teruggegeven.</param>
@@ -70,6 +72,7 @@ namespace AddressRegistry.Api.Oslo.Address
             [FromServices] LegacyContext context,
             [FromServices] SyndicationContext syndicationContext,
             [FromServices] MunicipalityConsumerContext municipalityConsumerContext,
+            [FromServices] StreetNameConsumerContext streetNameConsumerContext,
             [FromServices] IOptions<ResponseOptions> responseOptions,
             [FromRoute] int persistentLocalId,
             [FromRoute] Taal? taal,
@@ -89,8 +92,8 @@ namespace AddressRegistry.Api.Oslo.Address
                     throw new ApiException("Onbestaand adres.", StatusCodes.Status404NotFound);
 
                 var streetNameV2 =
-                    await syndicationContext.StreetNameLatestItems.FirstOrDefaultAsync(
-                        x => x.PersistentLocalId == addressV2.StreetNamePersistentLocalId.ToString(), cancellationToken);
+                    await streetNameConsumerContext.StreetNameLatestItems.SingleAsync(
+                        x => x.PersistentLocalId == addressV2.StreetNamePersistentLocalId, cancellationToken);
 
                 var municipalityV2 = await municipalityConsumerContext
                     .MunicipalityLatestItems.FirstAsync(m => m.NisCode == streetNameV2.NisCode, cancellationToken);
@@ -104,7 +107,7 @@ namespace AddressRegistry.Api.Oslo.Address
                     new GeografischeNaam(defaultMunicipalityNameV2.Value, defaultMunicipalityNameV2.Key));
 
                 var straatV2 = new AdresDetailStraatnaam(
-                    streetNameV2.PersistentLocalId,
+                    streetNameV2.PersistentLocalId.ToString(),
                     string.Format(responseOptions.Value.StraatnaamDetailUrl, streetNameV2.PersistentLocalId),
                     new GeografischeNaam(defaultStreetNameV2.Value, defaultStreetNameV2.Key));
 

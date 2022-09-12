@@ -514,6 +514,15 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     },
                     ct);
             });
+
+            When<Envelope<AddressWasRemovedV2>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressPersistentLocalId,
+                    message,
+                    x => { },
+                    ct);
+            });
         }
 
         private static async Task DoNothing()

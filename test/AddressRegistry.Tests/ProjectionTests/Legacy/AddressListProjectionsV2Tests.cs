@@ -442,6 +442,34 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                 });
         }
 
+        [Fact]
+        public async Task WhenAddressWasRemovedV2()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasRemoved = _fixture.Create<AddressWasRemovedV2>();
+            var metadata2 = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasRemoved.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, metadata)),
+                    new Envelope<AddressWasRemovedV2>(new Envelope(addressWasRemoved, metadata2)))
+                .Then(async ct =>
+                {
+                    var addressListItemV2 = (await ct.AddressListV2.FindAsync(addressWasRemoved.AddressPersistentLocalId));
+                    addressListItemV2.Should().NotBeNull();
+                    addressListItemV2.Removed.Should().BeTrue();
+                    addressListItemV2.VersionTimestamp.Should().Be(addressWasRemoved.Provenance.Timestamp);
+                    addressListItemV2.LastEventHash.Should().Be(addressWasRemoved.GetHash());
+                });
+        }
         protected override AddressListProjectionsV2 CreateProjection()
             => new AddressListProjectionsV2();
     }

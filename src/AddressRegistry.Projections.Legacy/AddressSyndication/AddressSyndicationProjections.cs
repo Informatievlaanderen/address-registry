@@ -523,6 +523,15 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     x => { },
                     ct);
             });
+
+            When<Envelope<AddressWasRemovedBecauseHouseNumberWasRemoved>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressPersistentLocalId,
+                    message,
+                    x => { },
+                    ct);
+            });
         }
 
         private static async Task DoNothing()

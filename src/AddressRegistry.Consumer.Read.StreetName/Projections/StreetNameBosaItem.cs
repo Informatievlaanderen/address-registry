@@ -70,7 +70,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections
 
     public class StreetNameBosaItemConfiguration : IEntityTypeConfiguration<StreetNameBosaItem>
     {
-        private const string TableName = "StreetNameBosaItem";
+        private const string TableName = "BosaItems";
 
         public void Configure(EntityTypeBuilder<StreetNameBosaItem> builder)
         {
@@ -106,6 +106,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections
             builder.Property(x => x.IsRemoved);
 
             builder.HasIndex(x => x.NisCode);
+            builder.HasIndex(x => x.VersionTimestampAsDateTimeOffset);
             builder.HasIndex(x => x.Status);
             builder.HasIndex(x => x.IsRemoved);
 

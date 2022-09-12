@@ -14,6 +14,7 @@ namespace AddressRegistry.Consumer.Read.Municipality
     public class MunicipalityConsumerContext : RunnerDbContext<MunicipalityConsumerContext>, IMunicipalities
     {
         public DbSet<MunicipalityLatestItem> MunicipalityLatestItems { get; set; }
+        public DbSet<MunicipalityBosaItem> MunicipalityBosaItems { get; set; }
 
         // This needs to be here to please EF
         public MunicipalityConsumerContext()
@@ -76,7 +77,27 @@ namespace AddressRegistry.Consumer.Read.Municipality
             return municipality;
         }
 
-        private static ProjectionItemNotFoundException<MunicipalityProjections> DatabaseItemNotFound(Guid municipalityId)
-            => new ProjectionItemNotFoundException<MunicipalityProjections>(municipalityId.ToString("D"));
+        public static async Task<MunicipalityBosaItem> FindAndUpdate(
+            this MunicipalityConsumerContext context,
+            Guid municipalityId,
+            Action<MunicipalityBosaItem> updateFunc,
+            CancellationToken ct)
+        {
+            var municipality = await context
+                .MunicipalityBosaItems
+                .FindAsync(municipalityId, cancellationToken: ct);
+
+            if (municipality == null)
+                throw DatabaseItemNotFound(municipalityId);
+
+            updateFunc(municipality);
+
+            await context.SaveChangesAsync(ct);
+
+            return municipality;
+        }
+
+        private static ProjectionItemNotFoundException<MunicipalityLatestItemProjections> DatabaseItemNotFound(Guid municipalityId)
+            => new ProjectionItemNotFoundException<MunicipalityLatestItemProjections>(municipalityId.ToString("D"));
     }
 }

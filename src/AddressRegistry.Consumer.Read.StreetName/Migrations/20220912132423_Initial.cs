@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace AddressRegistry.Consumer.Read.StreetName.Migrations
 {
-    public partial class initial : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,24 +13,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Migrations
                 name: "AddressRegistryConsumerReadStreetName");
 
             migrationBuilder.CreateTable(
-                name: "ProjectionStates",
-                schema: "AddressRegistryConsumerReadStreetName",
-                columns: table => new
-                {
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Position = table.Column<long>(type: "bigint", nullable: false),
-                    DesiredState = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DesiredStateChangedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    ErrorMessage = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProjectionStates", x => x.Name)
-                        .Annotation("SqlServer:Clustered", true);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "StreetNameBosaItem",
+                name: "BosaItems",
                 schema: "AddressRegistryConsumerReadStreetName",
                 columns: table => new
                 {
@@ -54,12 +37,12 @@ namespace AddressRegistry.Consumer.Read.StreetName.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_StreetNameBosaItem", x => x.PersistentLocalId)
+                    table.PrimaryKey("PK_BosaItems", x => x.PersistentLocalId)
                         .Annotation("SqlServer:Clustered", true);
                 });
 
             migrationBuilder.CreateTable(
-                name: "StreetNameLatestItem",
+                name: "LatestItems",
                 schema: "AddressRegistryConsumerReadStreetName",
                 columns: table => new
                 {
@@ -83,155 +66,178 @@ namespace AddressRegistry.Consumer.Read.StreetName.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_StreetNameLatestItem", x => x.PersistentLocalId)
+                    table.PrimaryKey("PK_LatestItems", x => x.PersistentLocalId)
+                        .Annotation("SqlServer:Clustered", true);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProjectionStates",
+                schema: "AddressRegistryConsumerReadStreetName",
+                columns: table => new
+                {
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Position = table.Column<long>(type: "bigint", nullable: false),
+                    DesiredState = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DesiredStateChangedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    ErrorMessage = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectionStates", x => x.Name)
                         .Annotation("SqlServer:Clustered", true);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_StreetNameBosaItem_IsRemoved",
+                name: "IX_BosaItems_IsRemoved",
                 schema: "AddressRegistryConsumerReadStreetName",
-                table: "StreetNameBosaItem",
+                table: "BosaItems",
                 column: "IsRemoved");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StreetNameBosaItem_NameDutchSearch",
+                name: "IX_BosaItems_NameDutchSearch",
                 schema: "AddressRegistryConsumerReadStreetName",
-                table: "StreetNameBosaItem",
+                table: "BosaItems",
                 column: "NameDutchSearch");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StreetNameBosaItem_NameEnglishSearch",
+                name: "IX_BosaItems_NameEnglishSearch",
                 schema: "AddressRegistryConsumerReadStreetName",
-                table: "StreetNameBosaItem",
+                table: "BosaItems",
                 column: "NameEnglishSearch");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StreetNameBosaItem_NameFrenchSearch",
+                name: "IX_BosaItems_NameFrenchSearch",
                 schema: "AddressRegistryConsumerReadStreetName",
-                table: "StreetNameBosaItem",
+                table: "BosaItems",
                 column: "NameFrenchSearch");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StreetNameBosaItem_NameGermanSearch",
+                name: "IX_BosaItems_NameGermanSearch",
                 schema: "AddressRegistryConsumerReadStreetName",
-                table: "StreetNameBosaItem",
+                table: "BosaItems",
                 column: "NameGermanSearch");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StreetNameBosaItem_NisCode",
+                name: "IX_BosaItems_NisCode",
                 schema: "AddressRegistryConsumerReadStreetName",
-                table: "StreetNameBosaItem",
+                table: "BosaItems",
                 column: "NisCode");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StreetNameBosaItem_Status",
+                name: "IX_BosaItems_Status",
                 schema: "AddressRegistryConsumerReadStreetName",
-                table: "StreetNameBosaItem",
+                table: "BosaItems",
                 column: "Status");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StreetNameLatestItem_HomonymAdditionDutch",
+                name: "IX_BosaItems_VersionTimestamp",
                 schema: "AddressRegistryConsumerReadStreetName",
-                table: "StreetNameLatestItem",
+                table: "BosaItems",
+                column: "VersionTimestamp");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LatestItems_HomonymAdditionDutch",
+                schema: "AddressRegistryConsumerReadStreetName",
+                table: "LatestItems",
                 column: "HomonymAdditionDutch");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StreetNameLatestItem_HomonymAdditionEnglish",
+                name: "IX_LatestItems_HomonymAdditionEnglish",
                 schema: "AddressRegistryConsumerReadStreetName",
-                table: "StreetNameLatestItem",
+                table: "LatestItems",
                 column: "HomonymAdditionEnglish");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StreetNameLatestItem_HomonymAdditionFrench",
+                name: "IX_LatestItems_HomonymAdditionFrench",
                 schema: "AddressRegistryConsumerReadStreetName",
-                table: "StreetNameLatestItem",
+                table: "LatestItems",
                 column: "HomonymAdditionFrench");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StreetNameLatestItem_HomonymAdditionGerman",
+                name: "IX_LatestItems_HomonymAdditionGerman",
                 schema: "AddressRegistryConsumerReadStreetName",
-                table: "StreetNameLatestItem",
+                table: "LatestItems",
                 column: "HomonymAdditionGerman");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StreetNameLatestItem_IsRemoved",
+                name: "IX_LatestItems_IsRemoved",
                 schema: "AddressRegistryConsumerReadStreetName",
-                table: "StreetNameLatestItem",
+                table: "LatestItems",
                 column: "IsRemoved");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StreetNameLatestItem_NameDutch",
+                name: "IX_LatestItems_NameDutch",
                 schema: "AddressRegistryConsumerReadStreetName",
-                table: "StreetNameLatestItem",
+                table: "LatestItems",
                 column: "NameDutch");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StreetNameLatestItem_NameDutchSearch",
+                name: "IX_LatestItems_NameDutchSearch",
                 schema: "AddressRegistryConsumerReadStreetName",
-                table: "StreetNameLatestItem",
+                table: "LatestItems",
                 column: "NameDutchSearch");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StreetNameLatestItem_NameEnglish",
+                name: "IX_LatestItems_NameEnglish",
                 schema: "AddressRegistryConsumerReadStreetName",
-                table: "StreetNameLatestItem",
+                table: "LatestItems",
                 column: "NameEnglish");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StreetNameLatestItem_NameEnglishSearch",
+                name: "IX_LatestItems_NameEnglishSearch",
                 schema: "AddressRegistryConsumerReadStreetName",
-                table: "StreetNameLatestItem",
+                table: "LatestItems",
                 column: "NameEnglishSearch");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StreetNameLatestItem_NameFrench",
+                name: "IX_LatestItems_NameFrench",
                 schema: "AddressRegistryConsumerReadStreetName",
-                table: "StreetNameLatestItem",
+                table: "LatestItems",
                 column: "NameFrench");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StreetNameLatestItem_NameFrenchSearch",
+                name: "IX_LatestItems_NameFrenchSearch",
                 schema: "AddressRegistryConsumerReadStreetName",
-                table: "StreetNameLatestItem",
+                table: "LatestItems",
                 column: "NameFrenchSearch");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StreetNameLatestItem_NameGerman",
+                name: "IX_LatestItems_NameGerman",
                 schema: "AddressRegistryConsumerReadStreetName",
-                table: "StreetNameLatestItem",
+                table: "LatestItems",
                 column: "NameGerman");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StreetNameLatestItem_NameGermanSearch",
+                name: "IX_LatestItems_NameGermanSearch",
                 schema: "AddressRegistryConsumerReadStreetName",
-                table: "StreetNameLatestItem",
+                table: "LatestItems",
                 column: "NameGermanSearch");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StreetNameLatestItem_NisCode",
+                name: "IX_LatestItems_NisCode",
                 schema: "AddressRegistryConsumerReadStreetName",
-                table: "StreetNameLatestItem",
+                table: "LatestItems",
                 column: "NisCode");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StreetNameLatestItem_Status",
+                name: "IX_LatestItems_Status",
                 schema: "AddressRegistryConsumerReadStreetName",
-                table: "StreetNameLatestItem",
+                table: "LatestItems",
                 column: "Status");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "BosaItems",
+                schema: "AddressRegistryConsumerReadStreetName");
+
+            migrationBuilder.DropTable(
+                name: "LatestItems",
+                schema: "AddressRegistryConsumerReadStreetName");
+
+            migrationBuilder.DropTable(
                 name: "ProjectionStates",
-                schema: "AddressRegistryConsumerReadStreetName");
-
-            migrationBuilder.DropTable(
-                name: "StreetNameBosaItem",
-                schema: "AddressRegistryConsumerReadStreetName");
-
-            migrationBuilder.DropTable(
-                name: "StreetNameLatestItem",
                 schema: "AddressRegistryConsumerReadStreetName");
         }
     }

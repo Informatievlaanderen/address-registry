@@ -9,9 +9,9 @@ namespace AddressRegistry.Api.Oslo.Address
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
     using Consumer.Read.Municipality.Projections;
     using NetTopologySuite.Geometries;
-    using Projections.Syndication.StreetName;
     using Responses;
     using MunicipalityLatestItem = Projections.Syndication.Municipality.MunicipalityLatestItem;
+    using StreetNameLatestItem = Projections.Syndication.StreetName.StreetNameLatestItem;
 
     public static class AddressMapper
     {
@@ -199,7 +199,8 @@ namespace AddressRegistry.Api.Oslo.Address
             };
         }
 
-        public static KeyValuePair<Taal, string?> GetDefaultStreetNameName(StreetNameLatestItem streetName,
+        public static KeyValuePair<Taal, string?> GetDefaultStreetNameName(
+            StreetNameLatestItem streetName,
             Taal? municipalityLanguage)
         {
             return municipalityLanguage switch
@@ -223,7 +224,21 @@ namespace AddressRegistry.Api.Oslo.Address
             };
         }
 
-        public static KeyValuePair<Taal, string?>? GetDefaultHomonymAddition(StreetNameLatestItem streetName,
+        public static KeyValuePair<Taal, string?> GetDefaultStreetNameName(
+            Consumer.Read.StreetName.Projections.StreetNameLatestItem streetName,
+            MunicipalityLanguage? municipalityLanguage)
+        {
+            return municipalityLanguage switch
+            {
+                MunicipalityLanguage.French => new KeyValuePair<Taal, string?>(Taal.FR, streetName.NameFrench),
+                MunicipalityLanguage.German => new KeyValuePair<Taal, string?>(Taal.DE, streetName.NameGerman),
+                MunicipalityLanguage.English => new KeyValuePair<Taal, string?>(Taal.EN, streetName.NameEnglish),
+                _ => new KeyValuePair<Taal, string?>(Taal.NL, streetName.NameDutch)
+            };
+        }
+
+        public static KeyValuePair<Taal, string?>? GetDefaultHomonymAddition(
+            StreetNameLatestItem streetName,
             Taal? municipalityLanguage)
         {
             if (!streetName.HasHomonymAddition)
@@ -241,7 +256,9 @@ namespace AddressRegistry.Api.Oslo.Address
             };
         }
 
-        public static KeyValuePair<Taal, string?>? GetDefaultHomonymAddition(StreetNameLatestItem streetName, MunicipalityLanguage municipalityLanguage)
+        public static KeyValuePair<Taal, string?>? GetDefaultHomonymAddition(
+            Consumer.Read.StreetName.Projections.StreetNameLatestItem streetName,
+            MunicipalityLanguage? municipalityLanguage)
         {
             if (!streetName.HasHomonymAddition)
             {
@@ -250,6 +267,7 @@ namespace AddressRegistry.Api.Oslo.Address
 
             return municipalityLanguage switch
             {
+                MunicipalityLanguage.Dutch => new KeyValuePair<Taal, string?>(Taal.NL, streetName.HomonymAdditionDutch),
                 MunicipalityLanguage.French => new KeyValuePair<Taal, string?>(Taal.FR, streetName.HomonymAdditionFrench),
                 MunicipalityLanguage.German => new KeyValuePair<Taal, string?>(Taal.DE, streetName.HomonymAdditionGerman),
                 MunicipalityLanguage.English => new KeyValuePair<Taal, string?>(Taal.EN, streetName.HomonymAdditionEnglish),

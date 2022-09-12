@@ -9,6 +9,7 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
     using Consumer.Read.Municipality;
+    using Consumer.Read.Municipality.Infrastructure.Modules;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;

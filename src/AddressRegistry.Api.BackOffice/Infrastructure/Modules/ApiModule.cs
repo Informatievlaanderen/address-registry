@@ -10,6 +10,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac;
     using Consumer;
     using Consumer.Read.Municipality;
+    using Consumer.Read.Municipality.Infrastructure.Modules;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;

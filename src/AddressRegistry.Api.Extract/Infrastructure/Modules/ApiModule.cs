@@ -5,6 +5,8 @@ namespace AddressRegistry.Api.Extract.Infrastructure.Modules
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Consumer.Read.Municipality;
+    using Consumer.Read.Municipality.Infrastructure.Modules;
+    using Consumer.Read.StreetName.Infrastructure.Modules;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -33,7 +35,8 @@ namespace AddressRegistry.Api.Extract.Infrastructure.Modules
                 .RegisterModule(new DataDogModule(_configuration))
                 .RegisterModule(new ExtractModule(_configuration, _services, _loggerFactory, false))
                 .RegisterModule(new SyndicationModule(_configuration, _services, _loggerFactory))
-                .RegisterModule(new MunicipalityConsumerModule(_configuration, _services, _loggerFactory));
+                .RegisterModule(new MunicipalityConsumerModule(_configuration, _services, _loggerFactory))
+                .RegisterModule(new StreetNameConsumerModule(_configuration, _services, _loggerFactory));
 
             builder
                 .RegisterType<ProblemDetailsHelper>()

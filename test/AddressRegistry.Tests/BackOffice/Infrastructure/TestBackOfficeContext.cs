@@ -1,10 +1,12 @@
 namespace AddressRegistry.Tests.BackOffice.Infrastructure
 {
     using System;
+    using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Abstractions;
     using global::AutoFixture;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Design;
+    using StreetName;
 
     public class TestBackOfficeContext : BackOfficeContext
     {
@@ -26,6 +28,16 @@ namespace AddressRegistry.Tests.BackOffice.Infrastructure
             AddressPersistentIdStreetNamePersistentIds.Add(item);
             SaveChanges();
             return item;
+        }
+
+
+        public async Task AddAddressPersistentIdStreetNamePersistentIds(
+            AddressPersistentLocalId addressPersistentLocalId,
+            StreetNamePersistentLocalId streetNamePersistentId)
+        {
+            AddressPersistentIdStreetNamePersistentIds.Add(
+                new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));
+            await SaveChangesAsync();
         }
     }
 

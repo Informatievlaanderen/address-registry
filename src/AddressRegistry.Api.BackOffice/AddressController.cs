@@ -33,7 +33,7 @@ namespace AddressRegistry.Api.BackOffice
             });
         }
 
-        protected IDictionary<string, object?> GetMetadata()
+        private IDictionary<string, object?> GetMetadata()
         {
             var userId = User.FindFirst("urn:be:vlaanderen:addressregistry:acmid")?.Value;
             var correlationId = User.FindFirst(AddCorrelationIdMiddleware.UrnBasisregistersVlaanderenCorrelationId)?.Value;

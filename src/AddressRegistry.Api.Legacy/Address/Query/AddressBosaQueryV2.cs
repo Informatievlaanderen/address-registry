@@ -13,10 +13,9 @@ namespace AddressRegistry.Api.Legacy.Address.Query
     using Infrastructure.Options;
     using Microsoft.EntityFrameworkCore;
     using Projections.Legacy.AddressDetailV2;
-    using Projections.Syndication.Municipality;
     using Requests;
     using Responses;
-    //using MunicipalityNameBosaItem = Consumer.Read.Municipality.Projections.MunicipalityBosaItem;
+    using MunicipalityBosaItem = Consumer.Read.Municipality.Projections.MunicipalityBosaItem;
 
     public class AddressBosaQueryV2
     {
@@ -37,7 +36,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 .OrderBy(x => x.AddressPersistentLocalId)
                 .Where(x => !x.Removed);
             var streetNamesQuery = _context.StreetNameConsumerBosaItems.AsNoTracking();
-            var municipalitiesQuery = _context.MunicipalityBosaItems.AsNoTracking();
+            var municipalitiesQuery = _context.MunicipalityConsumerBosaItems.AsNoTracking();
 
             if (filter?.IsOnlyAdresIdRequested == true && int.TryParse(filter.AdresCode?.ObjectId, out var adresId))
             {
@@ -63,8 +62,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                     .AsQueryable();
             }
 
-            var gemeenteCodeVersieId = filter?.GemeenteCode?.VersieId == null ? null : new Rfc3339SerializableDateTimeOffset(filter.GemeenteCode.VersieId.Value).ToString();
-
+            DateTimeOffset? gemeenteCodeVersieId = filter?.GemeenteCode?.VersieId == null ? null : new Rfc3339SerializableDateTimeOffset(filter.GemeenteCode.VersieId.Value);
             var filteredMunicipalities = FilterMunicipalities(
                 filter?.GemeenteCode?.ObjectId,
                 gemeenteCodeVersieId,
@@ -95,7 +93,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                     filteredStreetNames)
                 .OrderBy(x => x.AddressPersistentLocalId);
 
-            var municipalities = filteredMunicipalities.Select(x => new { x.NisCode, x.Version }).ToList();
+            var municipalities = filteredMunicipalities.Select(x => new { x.NisCode, x.VersionTimestampAsDateTimeOffset }).ToList();
             var streetNames = filteredStreetNames.Select(x => new { x.PersistentLocalId, x.VersionTimestampAsDateTimeOffset, x.NisCode }).ToList();
 
             var topFilteredAddresses = filteredAddresses
@@ -137,7 +135,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                         streetName.PersistentLocalId.ToString(),
                         new Rfc3339SerializableDateTimeOffset(streetName.VersionTimestampAsDateTimeOffset).ToString(),
                         municipality.NisCode,
-                        municipality.Version,
+                        new Rfc3339SerializableDateTimeOffset(municipality.VersionTimestampAsDateTimeOffset).ToString(),
                         x.PostalCode,
                         postalCode.Version);
                 })
@@ -298,7 +296,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
         // https://github.com/Informatievlaanderen/municipality-registry/blob/054e52fffe13bb4a09f80bf36d221d34ab0aacaa/src/MunicipalityRegistry.Api.Legacy/Municipality/Query/MunicipalityBosaQuery.cs#L83
         private static IQueryable<MunicipalityBosaItem> FilterMunicipalities(
             string nisCode,
-            string version,
+            DateTimeOffset? version,
             string municipalityName,
             Taal? language,
             BosaSearchType searchType,
@@ -309,8 +307,8 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             if (!string.IsNullOrEmpty(nisCode))
                 filtered = filtered.Where(m => m.NisCode == nisCode);
 
-            if (!string.IsNullOrEmpty(version))
-                filtered = filtered.Where(m => m.Version == version);
+            if (version is not null)
+                filtered = filtered.Where(m => m.VersionTimestampAsDateTimeOffset == version);
 
             if (string.IsNullOrEmpty(municipalityName))
             {

@@ -18,7 +18,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Municipality
     using Xunit;
     using Xunit.Abstractions;
 
-    public class MunicipalityProjectionsTests : KafkaProjectionTest<MunicipalityConsumerContext, MunicipalityProjections>
+    public class MunicipalityProjectionsTests : KafkaProjectionTest<MunicipalityConsumerContext, MunicipalityLatestItemProjections>
     {
         private readonly Fixture _fixture;
         private readonly Guid _municipalityId;
@@ -376,7 +376,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Municipality
             return new MunicipalityConsumerContext(options);
         }
 
-        protected override MunicipalityProjections CreateProjection()
-            => new MunicipalityProjections();
+        protected override MunicipalityLatestItemProjections CreateProjection()
+            => new MunicipalityLatestItemProjections();
     }
 }

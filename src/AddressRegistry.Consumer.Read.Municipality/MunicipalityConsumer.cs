@@ -25,7 +25,7 @@ namespace AddressRegistry.Consumer.Read.Municipality
 
         public Task Start(CancellationToken cancellationToken = default)
         {
-            var projector = new ConnectedProjector<MunicipalityConsumerContext>(Resolve.WhenEqualToHandlerMessageType(new MunicipalityProjections().Handlers));
+            var projector = new ConnectedProjector<MunicipalityConsumerContext>(Resolve.WhenEqualToHandlerMessageType(new MunicipalityLatestItemProjections().Handlers));
 
             var consumerGroupId = $"{nameof(AddressRegistry)}.{nameof(MunicipalityConsumer)}.{_municipalityConsumerOptions.Topic}{_municipalityConsumerOptions.ConsumerGroupSuffix}";
             return KafkaConsumer.Consume(

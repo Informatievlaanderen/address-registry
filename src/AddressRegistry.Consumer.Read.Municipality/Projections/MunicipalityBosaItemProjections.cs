@@ -3,6 +3,7 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts.MunicipalityRegistry;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
@@ -10,26 +11,26 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using NodaTime.Text;
 
-    public class MunicipalityProjections : ConnectedProjection<MunicipalityConsumerContext>
+    public class MunicipalityBosaItemProjections : ConnectedProjection<MunicipalityConsumerContext>
     {
-        private void UpdateVersionTimestamp(Provenance provenance, MunicipalityLatestItem municipality)
-        {
-            var timestamp = InstantPattern.General.Parse(provenance.Timestamp).Value;
-            municipality.VersionTimestamp = timestamp;
-        }
+        public static string Dutch => MunicipalityLanguage.Dutch.ToString();
+        public static string French => MunicipalityLanguage.French.ToString();
+        public static string German => MunicipalityLanguage.German.ToString();
+        public static string English => MunicipalityLanguage.English.ToString();
 
-        public MunicipalityProjections()
+        public MunicipalityBosaItemProjections()
         {
             When<MunicipalityWasRegistered>(async (context, message, ct) =>
             {
                 var timestamp = InstantPattern.General.Parse(message.Provenance.Timestamp).Value;
 
-                var municipality = new MunicipalityLatestItem(
+                var municipality = new MunicipalityBosaItem(
                     new Guid(message.MunicipalityId),
                     message.NisCode,
-                    timestamp);
+                    timestamp,
+                    RegionFilter.IsFlemishRegion(message.NisCode));
 
-                await context.MunicipalityLatestItems.AddAsync(municipality, ct);
+                await context.MunicipalityBosaItems.AddAsync(municipality, ct);
                 await context.SaveChangesAsync(ct);
             });
 
@@ -37,7 +38,6 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
             {
                 await contextFactory.FindAndUpdate(new Guid(message.MunicipalityId), municipality =>
                 {
-                    municipality.Status = MunicipalityStatus.Current;
                     UpdateVersionTimestamp(message.Provenance, municipality);
                 }, ct);
             });
@@ -46,7 +46,6 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
             {
                 await contextFactory.FindAndUpdate(new Guid(message.MunicipalityId), municipality =>
                 {
-                    municipality.Status = MunicipalityStatus.Current;
                     UpdateVersionTimestamp(message.Provenance, municipality);
                 }, ct);
             });
@@ -55,7 +54,6 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
             {
                 await contextFactory.FindAndUpdate(new Guid(message.MunicipalityId), municipality =>
                 {
-                    municipality.Status = MunicipalityStatus.Retired;
                     UpdateVersionTimestamp(message.Provenance, municipality);
                 }, ct);
             });
@@ -64,7 +62,6 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
             {
                 await contextFactory.FindAndUpdate(new Guid(message.MunicipalityId), municipality =>
                 {
-                    municipality.Status = MunicipalityStatus.Retired;
                     UpdateVersionTimestamp(message.Provenance, municipality);
                 }, ct);
             });
@@ -150,6 +147,7 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
                 await contextFactory.FindAndUpdate(new Guid(message.MunicipalityId), municipality =>
                 {
                     municipality.NisCode = message.NisCode;
+                    municipality.IsFlemishRegion = RegionFilter.IsFlemishRegion(message.NisCode);
                     UpdateVersionTimestamp(message.Provenance, municipality);
                 }, ct);
             });
@@ -159,6 +157,7 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
                 await contextFactory.FindAndUpdate(new Guid(message.MunicipalityId), municipality =>
                 {
                     municipality.NisCode = message.NisCode;
+                    municipality.IsFlemishRegion = RegionFilter.IsFlemishRegion(message.NisCode);
                     UpdateVersionTimestamp(message.Provenance, municipality);
                 }, ct);
             });
@@ -192,6 +191,11 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
                 }, ct);
             });
         }
+        private void UpdateVersionTimestamp(Provenance provenance, MunicipalityBosaItem municipality)
+        {
+            var timestamp = InstantPattern.General.Parse(provenance.Timestamp).Value;
+            municipality.VersionTimestamp = timestamp;
+        }
 
         private static Taal StringToTaal(string taal)
             => taal.ToLower() switch
@@ -203,21 +207,25 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
                 _ => throw new ArgumentOutOfRangeException(nameof(taal), taal, null)
             };
 
-        private static void SetMunicipalityName(Taal taal, MunicipalityLatestItem municipality, string? name)
+        private static void SetMunicipalityName(Taal taal, MunicipalityBosaItem municipality, string? name)
         {
             switch (taal)
             {
                 case Taal.NL:
                     municipality.NameDutch = name;
+                    municipality.NameDutchSearch = name.SanitizeForBosaSearch();
                     break;
                 case Taal.DE:
                     municipality.NameGerman = name;
+                    municipality.NameGermanSearch = name.SanitizeForBosaSearch();
                     break;
                 case Taal.FR:
                     municipality.NameFrench = name;
+                    municipality.NameFrenchSearch = name.SanitizeForBosaSearch();
                     break;
                 case Taal.EN:
                     municipality.NameEnglish = name;
+                    municipality.NameEnglishSearch = name.SanitizeForBosaSearch();
                     break;
             }
         }

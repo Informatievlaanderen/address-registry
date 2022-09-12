@@ -86,7 +86,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections
 
     public class StreetNameLatestItemConfiguration : IEntityTypeConfiguration<StreetNameLatestItem>
     {
-        private const string TableName = "StreetNameLatestItem";
+        private const string TableName = "LatestItems";
 
         public void Configure(EntityTypeBuilder<StreetNameLatestItem> builder)
         {

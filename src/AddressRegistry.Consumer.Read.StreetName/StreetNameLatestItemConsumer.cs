@@ -27,7 +27,7 @@ namespace AddressRegistry.Consumer.Read.StreetName
         {
             var latestItemProjector = new ConnectedProjector<StreetNameConsumerContext>(Resolve.WhenEqualToHandlerMessageType(new StreetNameLatestItemProjections().Handlers));
 
-            var consumerGroupId = $"{nameof(AddressRegistry)}.{nameof(StreetNameLatestItemConsumer)}.{_streetNameConsumerOptions.Topic}{_streetNameConsumerOptions.ConsumerGroupSuffix}.latest";
+            var consumerGroupId = $"{nameof(AddressRegistry)}.{nameof(StreetNameLatestItemConsumer)}.{_streetNameConsumerOptions.Topic}{_streetNameConsumerOptions.ConsumerGroupSuffix}";
             return KafkaConsumer.Consume(
                 new KafkaConsumerOptions(
                     _options.BootstrapServers,

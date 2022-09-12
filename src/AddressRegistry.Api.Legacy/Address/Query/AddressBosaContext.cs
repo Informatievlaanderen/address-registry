@@ -19,6 +19,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
         public DbSet<MunicipalityBosaItem> MunicipalityBosaItems { get; set; }
         public DbSet<MunicipalityLatestItem> MunicipalityLatestItems { get; set; }
         public DbSet<Consumer.Read.Municipality.Projections.MunicipalityLatestItem> MunicipalityConsumerLatestItems { get; set; }
+        public DbSet<Consumer.Read.Municipality.Projections.MunicipalityBosaItem> MunicipalityConsumerBosaItems { get; set; }
         public DbSet<StreetNameBosaItem> StreetNameBosaItems { get; set; }
         public DbSet<Consumer.Read.StreetName.Projections.StreetNameBosaItem> StreetNameConsumerBosaItems { get; set; }
         public DbSet<PostalInfoLatestItem> PostalInfoLatestItems { get; set; }

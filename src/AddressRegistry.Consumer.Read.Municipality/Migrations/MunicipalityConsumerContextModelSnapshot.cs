@@ -22,6 +22,78 @@ namespace AddressRegistry.Consumer.Read.Municipality.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("AddressRegistry.Consumer.Read.Municipality.Projections.MunicipalityBosaItem", b =>
+                {
+                    b.Property<Guid>("MunicipalityId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte[]>("ExtendedWkbGeometry")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<bool>("IsFlemishRegion")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("NameDutch")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameDutchSearch")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("NameEnglish")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameEnglishSearch")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("NameFrench")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameFrenchSearch")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("NameGerman")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameGermanSearch")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("NisCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("OfficialLanguagesAsString")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("OfficialLanguages");
+
+                    b.Property<DateTimeOffset>("VersionTimestampAsDateTimeOffset")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("VersionTimestamp");
+
+                    b.HasKey("MunicipalityId");
+
+                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("MunicipalityId"), false);
+
+                    b.HasIndex("IsFlemishRegion");
+
+                    b.HasIndex("NameDutchSearch");
+
+                    b.HasIndex("NameEnglishSearch");
+
+                    b.HasIndex("NameFrenchSearch");
+
+                    b.HasIndex("NameGermanSearch");
+
+                    b.HasIndex("NisCode");
+
+                    SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("NisCode"));
+
+                    b.HasIndex("VersionTimestampAsDateTimeOffset");
+
+                    b.ToTable("BosaItems", "AddressRegistryConsumerReadMunicipality");
+                });
+
             modelBuilder.Entity("AddressRegistry.Consumer.Read.Municipality.Projections.MunicipalityLatestItem", b =>
                 {
                     b.Property<Guid>("MunicipalityId")

@@ -27,7 +27,7 @@ namespace AddressRegistry.Consumer.Read.StreetName
         {
             var bosaItemProjections = new ConnectedProjector<StreetNameConsumerContext>(Resolve.WhenEqualToHandlerMessageType(new StreetNameBosaItemProjections().Handlers));
 
-            var consumerGroupId = $"{nameof(AddressRegistry)}.{nameof(StreetNameBosaItemConsumer)}.{_streetNameConsumerOptions.Topic}{_streetNameConsumerOptions.ConsumerGroupSuffix}.bosa";
+            var consumerGroupId = $"{nameof(AddressRegistry)}.{nameof(StreetNameBosaItemConsumer)}.{_streetNameConsumerOptions.Topic}{_streetNameConsumerOptions.ConsumerGroupSuffix}";
             return KafkaConsumer.Consume(
                 new KafkaConsumerOptions(
                     _options.BootstrapServers,

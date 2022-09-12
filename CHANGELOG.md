@@ -1,3 +1,10 @@
+# [3.41.0](https://github.com/informatievlaanderen/address-registry/compare/v3.40.0...v3.41.0) (2022-09-12)
+
+
+### Features
+
+* add remove boxnumber addresses + kafka ([dc3b95f](https://github.com/informatievlaanderen/address-registry/commit/dc3b95fe1fa86c70f2965876b3da3533a27b09ff))
+
 # [3.40.0](https://github.com/informatievlaanderen/address-registry/compare/v3.39.3...v3.40.0) (2022-09-12)
 
 

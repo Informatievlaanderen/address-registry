@@ -162,6 +162,18 @@ namespace AddressRegistry.StreetName
                         message.Command.Position,
                         municipalities);
                 });
+
+            For<RemoveAddress>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<RemoveAddress, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streetNameStreamId = new StreetNameStreamId(message.Command.StreetNamePersistentLocalId);
+                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+
+                    streetName.RemoveAddress(message.Command.AddressPersistentLocalId);
+                });
         }
     }
 }

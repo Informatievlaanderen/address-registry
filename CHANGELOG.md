@@ -1,3 +1,11 @@
+# [3.40.0](https://github.com/informatievlaanderen/address-registry/compare/v3.39.3...v3.40.0) (2022-09-12)
+
+
+### Features
+
+* add remove address projections ([9cb75cb](https://github.com/informatievlaanderen/address-registry/commit/9cb75cbc70dfef2195d3de06357435ce76a360d5))
+* remove address ([ba52a90](https://github.com/informatievlaanderen/address-registry/commit/ba52a900e5e1061337e73b46a87b91397f2ac5f5))
+
 ## [3.39.3](https://github.com/informatievlaanderen/address-registry/compare/v3.39.2...v3.39.3) (2022-09-12)
 
 ## [3.39.2](https://github.com/informatievlaanderen/address-registry/compare/v3.39.1...v3.39.2) (2022-09-12)

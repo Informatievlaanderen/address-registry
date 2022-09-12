@@ -36,9 +36,9 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 .AsNoTracking();
 
             var streetnames = _context
-                .StreetNameLatestItems
+                .StreetNameConsumerLatestItems
                 .AsNoTracking()
-                .Where(x => x.IsComplete && !x.IsRemoved);
+                .Where(x => !x.IsRemoved);
 
             var filterStreet = false;
 
@@ -128,7 +128,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 addresses = addresses
                     .Where(x => streetnames
                         .Select(y => y.PersistentLocalId)
-                        .Contains(x.StreetNamePersistentLocalId.ToString()));
+                        .Contains(x.StreetNamePersistentLocalId));
             }
 
             return addresses;

@@ -1,7 +1,6 @@
 namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
 {
     using System;
-    using Microsoft.Data.SqlClient;
     using Address.Query;
     using AddressMatch;
     using AddressMatch.Matching;
@@ -10,8 +9,9 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
-    using Consumer.Read.Municipality;
     using Consumer.Read.Municipality.Infrastructure.Modules;
+    using Consumer.Read.StreetName.Infrastructure.Modules;
+    using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -60,7 +60,8 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
                 .RegisterModule(new DataDogModule(_configuration))
                 .RegisterModule(new LegacyModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new SyndicationModule(_configuration, _services, _loggerFactory))
-                .RegisterModule(new MunicipalityConsumerModule(_configuration, _services, _loggerFactory));;
+                .RegisterModule(new MunicipalityConsumerModule(_configuration, _services, _loggerFactory))
+                .RegisterModule(new StreetNameConsumerModule(_configuration, _services, _loggerFactory));
 
             builder
                 .RegisterAssemblyTypes(typeof(IKadRrService).Assembly)

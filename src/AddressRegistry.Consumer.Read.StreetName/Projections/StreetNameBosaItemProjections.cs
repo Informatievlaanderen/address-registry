@@ -1,7 +1,7 @@
 namespace AddressRegistry.Consumer.Read.StreetName.Projections
 {
+    using System;
     using System.Collections.Generic;
-    using System.Runtime.InteropServices.ComTypes;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts.StreetNameRegistry;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
@@ -79,22 +79,24 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections
 
         private void UpdateNames(StreetNameBosaItem item, IDictionary<string, string> names)
         {
-            if (names.TryGetValue(Dutch, out var name))
+            var caseInsensitiveDict = new Dictionary<string, string>(names, StringComparer.OrdinalIgnoreCase);
+
+            if (caseInsensitiveDict.TryGetValue(Dutch, out var name))
             {
                 item.NameDutch = name;
                 item.NameDutchSearch = name.SanitizeForBosaSearch();
             }
-            if (names.TryGetValue(French, out name))
+            if (caseInsensitiveDict.TryGetValue(French, out name))
             {
                 item.NameFrench = name;
                 item.NameFrenchSearch = name.SanitizeForBosaSearch();
             }
-            if (names.TryGetValue(German, out name))
+            if (caseInsensitiveDict.TryGetValue(German, out name))
             {
                 item.NameGerman = name;
                 item.NameGermanSearch = name.SanitizeForBosaSearch();
             }
-            if (names.TryGetValue(English, out name))
+            if (caseInsensitiveDict.TryGetValue(English, out name))
             {
                 item.NameEnglish = name;
                 item.NameEnglishSearch = name.SanitizeForBosaSearch();
@@ -103,19 +105,21 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections
 
         private void UpdateHomonyms(StreetNameBosaItem item, IDictionary<string, string> homonyms)
         {
-            if (homonyms.TryGetValue(Dutch, out var homonym))
+            var caseInsensitiveDict = new Dictionary<string, string>(homonyms, StringComparer.OrdinalIgnoreCase);
+
+            if (caseInsensitiveDict.TryGetValue(Dutch, out var homonym))
             {
                 item.HomonymAdditionDutch = homonym;
             }
-            if (homonyms.TryGetValue(French, out homonym))
+            if (caseInsensitiveDict.TryGetValue(French, out homonym))
             {
                 item.HomonymAdditionFrench = homonym;
             }
-            if (homonyms.TryGetValue(German, out homonym))
+            if (caseInsensitiveDict.TryGetValue(German, out homonym))
             {
                 item.HomonymAdditionGerman = homonym;
             }
-            if (homonyms.TryGetValue(English, out homonym))
+            if (caseInsensitiveDict.TryGetValue(English, out homonym))
             {
                 item.HomonymAdditionEnglish = homonym;
             }

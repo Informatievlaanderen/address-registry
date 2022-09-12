@@ -14,9 +14,9 @@ namespace AddressRegistry.Api.Legacy.Address.Query
     using Microsoft.EntityFrameworkCore;
     using Projections.Legacy.AddressDetailV2;
     using Projections.Syndication.Municipality;
-    using Projections.Syndication.StreetName;
     using Requests;
     using Responses;
+    //using MunicipalityNameBosaItem = Consumer.Read.Municipality.Projections.MunicipalityBosaItem;
 
     public class AddressBosaQueryV2
     {
@@ -36,8 +36,8 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             var addressesQuery = _context.AddressDetailV2.AsNoTracking()
                 .OrderBy(x => x.AddressPersistentLocalId)
                 .Where(x => !x.Removed);
-            var streetNamesQuery = _context.StreetNameBosaItems.AsNoTracking().Where(x => x.IsComplete);
-            var municipalitiesQuery = _context.MunicipalityConsumerLatestItems.AsNoTracking();
+            var streetNamesQuery = _context.StreetNameConsumerBosaItems.AsNoTracking();
+            var municipalitiesQuery = _context.MunicipalityBosaItems.AsNoTracking();
 
             if (filter?.IsOnlyAdresIdRequested == true && int.TryParse(filter.AdresCode?.ObjectId, out var adresId))
             {
@@ -51,7 +51,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                     return new AddressBosaResponse { Adressen = new List<AddressBosaResponseItem>() };
 
                 streetNamesQuery = (await streetNamesQuery
-                    .Where(x => x.PersistentLocalId == address.StreetNamePersistentLocalId.ToString())
+                    .Where(x => x.PersistentLocalId == address.StreetNamePersistentLocalId)
                     .ToListAsync())
                     .AsQueryable();
 
@@ -73,7 +73,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 filter?.Gemeentenaam?.SearchType ?? BosaSearchType.Bevat,
                 municipalitiesQuery);
 
-            var straatnaamCodeVersieId = filter?.StraatnaamCode?.VersieId == null ? null : new Rfc3339SerializableDateTimeOffset(filter.StraatnaamCode.VersieId.Value).ToString();
+            DateTimeOffset? straatnaamCodeVersieId = filter?.StraatnaamCode?.VersieId == null ? null : new Rfc3339SerializableDateTimeOffset(filter.StraatnaamCode.VersieId.Value);
             var filteredStreetNames = FilterStreetNames(
                 filter?.StraatnaamCode?.ObjectId,
                 straatnaamCodeVersieId,
@@ -96,7 +96,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 .OrderBy(x => x.AddressPersistentLocalId);
 
             var municipalities = filteredMunicipalities.Select(x => new { x.NisCode, x.Version }).ToList();
-            var streetNames = filteredStreetNames.Select(x => new { x.StreetNameId, x.PersistentLocalId, x.Version, x.NisCode }).ToList();
+            var streetNames = filteredStreetNames.Select(x => new { x.PersistentLocalId, x.VersionTimestampAsDateTimeOffset, x.NisCode }).ToList();
 
             var topFilteredAddresses = filteredAddresses
                     .Take(1001)
@@ -113,7 +113,8 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             var addresses = topFilteredAddresses
                 .Select(x =>
                 {
-                    var streetName = streetNames.First(y => y.PersistentLocalId == x.StreetNamePersistentLocalId.ToString());
+                    var streetName = streetNames
+                        .First(y => y.PersistentLocalId == x.StreetNamePersistentLocalId);
                     var municipality = municipalities.First(y => y.NisCode == streetName.NisCode);
 
                     var postalCode = postalCodes
@@ -133,8 +134,8 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                         AddressMapper.ConvertFromGeometryMethod(x.PositionMethod),
                         AddressMapper.ConvertFromGeometrySpecification(x.PositionSpecification),
                         x.VersionTimestamp.ToBelgianDateTimeOffset(),
-                        streetName.PersistentLocalId,
-                        streetName.Version,
+                        streetName.PersistentLocalId.ToString(),
+                        new Rfc3339SerializableDateTimeOffset(streetName.VersionTimestampAsDateTimeOffset).ToString(),
                         municipality.NisCode,
                         municipality.Version,
                         x.PostalCode,
@@ -156,10 +157,10 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             AdresStatus? status,
             string postalCode,
             IQueryable<AddressDetailItemV2> addresses,
-            IQueryable<StreetNameBosaItem> streetNames)
+            IQueryable<Consumer.Read.StreetName.Projections.StreetNameBosaItem> streetNames)
         {
             var filteredAddresses = addresses.Join(streetNames,
-                address => address.StreetNamePersistentLocalId.ToString(),
+                address => address.StreetNamePersistentLocalId,
                 streetName => streetName.PersistentLocalId,
                 (address, street) => address);
 
@@ -193,14 +194,14 @@ namespace AddressRegistry.Api.Legacy.Address.Query
         }
 
         // https://github.com/Informatievlaanderen/streetname-registry/blob/550a2398077140993d6e60029a1b831c193fb0ad/src/StreetNameRegistry.Api.Legacy/StreetName/Query/StreetNameBosaQuery.cs#L38
-        private static IQueryable<StreetNameBosaItem> FilterStreetNames(
-            string persistentLocalId,
-            string version,
+        private static IQueryable<Consumer.Read.StreetName.Projections.StreetNameBosaItem> FilterStreetNames(
+            string? persistentLocalId,
+            DateTimeOffset? version,
             string streetName,
             Taal? language,
             BosaSearchType searchType,
-            IQueryable<StreetNameBosaItem> streetNames,
-            IQueryable<MunicipalityLatestItem> filteredMunicipalities)
+            IQueryable<Consumer.Read.StreetName.Projections.StreetNameBosaItem> streetNames,
+            IQueryable<MunicipalityBosaItem> filteredMunicipalities)
         {
             var filtered = streetNames.Join(
                 filteredMunicipalities,
@@ -208,11 +209,11 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                 municipality => municipality.NisCode,
                 (street, municipality) => street);
 
-            if (!string.IsNullOrEmpty(persistentLocalId))
-                filtered = filtered.Where(m => m.PersistentLocalId == persistentLocalId);
+            if (persistentLocalId is not null)
+                filtered = filtered.Where(m => m.PersistentLocalId == int.Parse(persistentLocalId));
 
-            if (!string.IsNullOrEmpty(version))
-                filtered = filtered.Where(m => m.Version == version);
+            if (version is not null)
+                filtered = filtered.Where(m => m.VersionTimestampAsDateTimeOffset == version);
 
             if (!string.IsNullOrEmpty(streetName))
                 filtered = CompareStreetNameByCompareType(
@@ -226,7 +227,9 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             return filtered;
         }
 
-        private static IQueryable<StreetNameBosaItem> ApplyStreetNameLanguageFilter(IQueryable<StreetNameBosaItem> query, Taal language)
+        private static IQueryable<Consumer.Read.StreetName.Projections.StreetNameBosaItem> ApplyStreetNameLanguageFilter(
+            IQueryable<Consumer.Read.StreetName.Projections.StreetNameBosaItem> query,
+            Taal language)
         {
             switch (language)
             {
@@ -245,8 +248,8 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             }
         }
 
-        private static IQueryable<StreetNameBosaItem> CompareStreetNameByCompareType(
-            IQueryable<StreetNameBosaItem> query,
+        private static IQueryable<Consumer.Read.StreetName.Projections.StreetNameBosaItem> CompareStreetNameByCompareType(
+            IQueryable<Consumer.Read.StreetName.Projections.StreetNameBosaItem> query,
             string searchValue,
             Taal? language,
             bool isContainsFilter)
@@ -293,13 +296,13 @@ namespace AddressRegistry.Api.Legacy.Address.Query
         }
 
         // https://github.com/Informatievlaanderen/municipality-registry/blob/054e52fffe13bb4a09f80bf36d221d34ab0aacaa/src/MunicipalityRegistry.Api.Legacy/Municipality/Query/MunicipalityBosaQuery.cs#L83
-        private static IQueryable<MunicipalityLatestItem> FilterMunicipalities(
+        private static IQueryable<MunicipalityBosaItem> FilterMunicipalities(
             string nisCode,
             string version,
             string municipalityName,
             Taal? language,
             BosaSearchType searchType,
-            IQueryable<MunicipalityLatestItem> municipalities)
+            IQueryable<MunicipalityBosaItem> municipalities)
         {
             var filtered = municipalities.Where(x => x.IsFlemishRegion);
 
@@ -325,8 +328,8 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             return filtered;
         }
 
-        private static IQueryable<MunicipalityLatestItem> ApplyMunicipalityLanguageFilter(
-            IQueryable<MunicipalityLatestItem> query,
+        private static IQueryable<MunicipalityBosaItem> ApplyMunicipalityLanguageFilter(
+            IQueryable<MunicipalityBosaItem> query,
             Taal language)
         {
             switch (language)
@@ -346,8 +349,8 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             }
         }
 
-        private static IQueryable<MunicipalityLatestItem> CompareMunicipalityByCompareType(
-            IQueryable<MunicipalityLatestItem> query,
+        private static IQueryable<MunicipalityBosaItem> CompareMunicipalityByCompareType(
+            IQueryable<MunicipalityBosaItem> query,
             string searchValue,
             Taal? language,
             bool isContainsFilter)

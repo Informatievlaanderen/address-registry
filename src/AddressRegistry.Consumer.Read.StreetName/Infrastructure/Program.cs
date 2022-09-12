@@ -66,15 +66,17 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
 
                 var actualContainer = container.GetRequiredService<ILifetimeScope>();
 
-                var latestItemConsumerTask = new StreetNameLatestItemConsumer(actualContainer, kafkaOptions, consumerOptions)
-                    .Start(cancellationToken);
-
                 var bosaItemConsumerTask = new StreetNameBosaItemConsumer(actualContainer, kafkaOptions, consumerOptions)
                     .Start(cancellationToken);
 
+                var latestItemConsumerTask = new StreetNameLatestItemConsumer(actualContainer, kafkaOptions, consumerOptions)
+                    .Start(cancellationToken);
+
+
+
                 Log.Information("The kafka consumer streetname was started");
 
-                await Task.WhenAny(latestItemConsumerTask, bosaItemConsumerTask);
+                await Task.WhenAll(latestItemConsumerTask, bosaItemConsumerTask);
 
                 Log.Information($"StreetName LastItemConsumer task stopped with status: {latestItemConsumerTask.Status}");
                 Log.Information($"StreetName BosaItemConsumer task stopped with status: {bosaItemConsumerTask.Status}");

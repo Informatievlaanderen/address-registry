@@ -1,3 +1,16 @@
+# [3.44.0](https://github.com/informatievlaanderen/address-registry/compare/v3.43.0...v3.44.0) (2022-09-13)
+
+
+### Bug Fixes
+
+* trigger build ([b9cb5ce](https://github.com/informatievlaanderen/address-registry/commit/b9cb5ce97c750ab898877bcaf622ad0a9847b4f6))
+
+
+### Features
+
+* cascade change address postalcode to box numbers ([4fb5fbf](https://github.com/informatievlaanderen/address-registry/commit/4fb5fbf823d75d7802634abe233b9cc8c58067a3))
+* change address postalcode projections + kafka ([e107daa](https://github.com/informatievlaanderen/address-registry/commit/e107daa074e7e7ef43160cfc198833e28f1e32fe))
+
 # [3.43.0](https://github.com/informatievlaanderen/address-registry/compare/v3.42.1...v3.43.0) (2022-09-13)
 
 

@@ -387,6 +387,35 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
         }
 
         [Fact]
+        public async Task WhenAddressPostalCodeWasChangedV2()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressPostalCodeWasChangedV2 = _fixture.Create<AddressPostalCodeWasChangedV2>();
+            var addressPostalCodeWasChangedV2Metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressPostalCodeWasChangedV2.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, metadata)),
+                    new Envelope<AddressPostalCodeWasChangedV2>(new Envelope(addressPostalCodeWasChangedV2, addressPostalCodeWasChangedV2Metadata)))
+                .Then(async ct =>
+                {
+                    var addressListItemV2 = (await ct.AddressListV2.FindAsync(addressPostalCodeWasChangedV2.AddressPersistentLocalId));
+                    addressListItemV2.Should().NotBeNull();
+                    addressListItemV2.PostalCode.Should().Be(addressPostalCodeWasChangedV2.PostalCode);
+                    addressListItemV2.VersionTimestamp.Should().Be(addressPostalCodeWasChangedV2.Provenance.Timestamp);
+                    addressListItemV2.LastEventHash.Should().Be(addressPostalCodeWasChangedV2.GetHash());
+                });
+        }
+
+        [Fact]
         public async Task WhenAddressPositionWasChanged()
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();

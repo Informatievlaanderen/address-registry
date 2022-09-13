@@ -1,3 +1,10 @@
+## [3.42.1](https://github.com/informatievlaanderen/address-registry/compare/v3.42.0...v3.42.1) (2022-09-13)
+
+
+### Bug Fixes
+
+* streetname consumer github workflows ([b49ec49](https://github.com/informatievlaanderen/address-registry/commit/b49ec498b44ebfa97f12b305ce8772fb77795101))
+
 # [3.42.0](https://github.com/informatievlaanderen/address-registry/compare/v3.41.0...v3.42.0) (2022-09-13)
 
 

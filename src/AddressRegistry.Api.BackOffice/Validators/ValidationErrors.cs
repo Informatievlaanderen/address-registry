@@ -1,5 +1,7 @@
 namespace AddressRegistry.Api.BackOffice.Validators
 {
+    using System.Net.NetworkInformation;
+
     public static class ValidationErrors
     {
         public static class StreetName
@@ -33,6 +35,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
             public const string AddressCannotBeRegularized = "AdresGehistoreerdOfAfgekeurd";
             public const string AddressCannotBeRetired = "AdresVoorgesteldOfAfgekeurd";
             public const string AddressPositionCannotBeChanged = "AdresGehistoreerdOfAfgekeurd";
+            public const string AddressPostalCodeCannotBeChanged = "AdresGehistoreerdOfAfgekeurd";
 
             public const string PostalCodeNotInMunicipality = "AdresPostinfoNietInGemeente";
         }
@@ -78,6 +81,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
             public const string AddressCannotBeRegularized = "Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik'.";
             public const string AddressCannotBeRetired = "Deze actie is enkel toegestaan op adressen met status 'inGebruik'.";
             public const string AddressPositionCannotBeChanged = "Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik'.";
+            public const string AddressPostalCodeCannotBeChanged = "Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik'.";
 
             public const string PostalCodeNotInMunicipality = "De ingevoerde postcode wordt niet gebruikt binnen deze gemeente.";
         }

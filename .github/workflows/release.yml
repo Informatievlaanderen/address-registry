@@ -123,6 +123,7 @@ jobs:
         docker push $BUILD_DOCKER_REGISTRY/address-registry/api-backoffice:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/consumer:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/consumer-read-municipality:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY/address-registry/consumer-read-streetname:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/migrator-address:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/producer:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/projector:$SEMVER
@@ -169,6 +170,9 @@ jobs:
 
         docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/consumer-read-municipality:$SEMVER $BUILD_DOCKER_REGISTRY/address-registry/consumer-read-municipality:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/consumer-read-municipality:$SEMVER
+
+        docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/consumer-read-streetname:$SEMVER $BUILD_DOCKER_REGISTRY/address-registry/consumer-read-streetname:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY/address-registry/consumer-read-streetname:$SEMVER
         
         docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/migrator-address:$SEMVER $BUILD_DOCKER_REGISTRY/address-registry/migrator-address:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/migrator-address:$SEMVER
@@ -220,6 +224,8 @@ jobs:
         docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/consumer:$SEMVER
         docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/consumer-read-municipality:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/consumer-read-municipality:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/consumer-read-municipality:$SEMVER
+        docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/consumer-read-streetname:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/consumer-read-streetname:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/consumer-read-streetname:$SEMVER
         docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/migrator-address:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/migrator-address:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/migrator-address:$SEMVER
         docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/producer:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/producer:$SEMVER

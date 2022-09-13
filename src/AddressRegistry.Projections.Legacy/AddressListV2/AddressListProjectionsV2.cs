@@ -192,6 +192,20 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
                 UpdateHash(item, message);
             });
 
+            When<Envelope<AddressPostalCodeWasChangedV2>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressListItemV2(
+                    message.Message.AddressPersistentLocalId,
+                    item =>
+                    {
+                        item.PostalCode = message.Message.PostalCode;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+
+                UpdateHash(item, message);
+            });
+
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressListItemV2(

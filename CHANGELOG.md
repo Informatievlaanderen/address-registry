@@ -1,3 +1,15 @@
+# [3.45.0](https://github.com/informatievlaanderen/address-registry/compare/v3.44.0...v3.45.0) (2022-09-13)
+
+
+### Bug Fixes
+
+* add distributed lock ([722f4d0](https://github.com/informatievlaanderen/address-registry/commit/722f4d0fe7757618f891b60817824443fa5c2e59))
+
+
+### Features
+
+* change address postalcode backoffice ([139c019](https://github.com/informatievlaanderen/address-registry/commit/139c019e81f6e531b6be8f6adbbf146d0c2320bb))
+
 # [3.44.0](https://github.com/informatievlaanderen/address-registry/compare/v3.43.0...v3.44.0) (2022-09-13)
 
 

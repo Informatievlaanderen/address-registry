@@ -253,6 +253,25 @@ namespace AddressRegistry.StreetName
             }
         }
 
+        public void ChangePostalCode(PostalCode postalCode)
+        {
+            GuardNotRemovedAddress();
+
+            var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
+
+            if (!validStatuses.Contains(Status))
+            {
+                throw new AddressHasInvalidStatusException();
+            }
+
+            if (PostalCode == postalCode)
+            {
+                return;
+            }
+
+            Apply(new AddressPostalCodeWasChangedV2(_streetNamePersistentLocalId, AddressPersistentLocalId, postalCode));
+        }
+
         public void CorrectPosition(
             GeometryMethod geometryMethod,
             GeometrySpecification? geometrySpecification,

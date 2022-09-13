@@ -1,3 +1,15 @@
+# [3.43.0](https://github.com/informatievlaanderen/address-registry/compare/v3.42.1...v3.43.0) (2022-09-13)
+
+
+### Bug Fixes
+
+* pack & containerize streetname consumer ([dd9c677](https://github.com/informatievlaanderen/address-registry/commit/dd9c677df11b8821148f13a718b782ea4b936c99))
+
+
+### Features
+
+* change address postal code domain ([c304d86](https://github.com/informatievlaanderen/address-registry/commit/c304d8609b8b1419931fa200ece2ea728a4291cf))
+
 ## [3.42.1](https://github.com/informatievlaanderen/address-registry/compare/v3.42.0...v3.42.1) (2022-09-13)
 
 

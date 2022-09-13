@@ -6,6 +6,7 @@ namespace AddressRegistry.Consumer.Read.Municipality.Infrastructure
     using System.Threading.Tasks;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
+    using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple;
@@ -53,27 +54,53 @@ namespace AddressRegistry.Consumer.Read.Municipality.Infrastructure
 
             try
             {
-                var loggerFactory = container.GetRequiredService<ILoggerFactory>();
+                await DistributedLock<Program>.RunAsync(
+                async () =>
+                {
+                    try
+                    {
+                        var loggerFactory = container.GetRequiredService<ILoggerFactory>();
 
-                await MigrationsHelper.RunAsync(configuration.GetConnectionString("ConsumerMunicipalityAdmin"), loggerFactory, cancellationToken);
+                        await MigrationsHelper.RunAsync(configuration.GetConnectionString("ConsumerMunicipalityAdmin"),
+                            loggerFactory, cancellationToken);
 
-                var bootstrapServers = configuration["Kafka:BootstrapServers"];
-                var kafkaOptions = new KafkaOptions(bootstrapServers, configuration["Kafka:SaslUserName"], configuration["Kafka:SaslPassword"], EventsJsonSerializerSettingsProvider.CreateSerializerSettings());
+                        var bootstrapServers = configuration["Kafka:BootstrapServers"];
+                        var kafkaOptions = new KafkaOptions(bootstrapServers, configuration["Kafka:SaslUserName"],
+                            configuration["Kafka:SaslPassword"],
+                            EventsJsonSerializerSettingsProvider.CreateSerializerSettings());
 
-                var topic = $"{configuration["Topic"]}" ?? throw new ArgumentException("Configuration has no Municipality Topic.");
-                var consumerGroupSuffix = configuration["ConsumerGroupSuffix"];
-                var consumerOptions = new MunicipalityConsumerOptions(topic, consumerGroupSuffix);
+                        var topic = $"{configuration["Topic"]}" ??
+                                    throw new ArgumentException("Configuration has no Municipality Topic.");
+                        var consumerGroupSuffix = configuration["ConsumerGroupSuffix"];
+                        var consumerOptions = new MunicipalityConsumerOptions(topic, consumerGroupSuffix);
 
-                var actualContainer = container.GetRequiredService<ILifetimeScope>();
+                        var actualContainer = container.GetRequiredService<ILifetimeScope>();
 
-                var consumer = new MunicipalityConsumer(actualContainer, kafkaOptions, consumerOptions);
-                var consumerTask = consumer.Start(cancellationToken);
+                        var latestItemConsumerTask =
+                            new MunicipalityLatestItemConsumer(actualContainer, kafkaOptions, consumerOptions)
+                                .Start(cancellationToken);
 
-                Log.Information("The kafka consumer municipality was started");
+                        var bosaItemConsumerTask =
+                            new MunicipalityBosaItemConsumer(actualContainer, kafkaOptions, consumerOptions)
+                                .Start(cancellationToken);
 
-                await Task.WhenAll(consumerTask);
+                        Log.Information("The kafka consumer municipality was started");
 
-                Log.Information($"Consumer municipality task stopped with status: {consumerTask.Status}");
+                        await Task.WhenAll(latestItemConsumerTask, bosaItemConsumerTask);
+
+                        Log.Information(
+                            $"Consumer latest item municipality task stopped with status: {latestItemConsumerTask.Status}");
+                        Log.Information(
+                            $"Consumer bosa item municipality task stopped with status: {bosaItemConsumerTask.Status}");
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Fatal(e, "Encountered a fatal exception, exiting program.");
+                        throw;
+                    }
+                },
+                DistributedLockOptions.LoadFromConfiguration(configuration),
+                container.GetService<ILogger<Program>>()!);
             }
             catch (Exception e)
             {

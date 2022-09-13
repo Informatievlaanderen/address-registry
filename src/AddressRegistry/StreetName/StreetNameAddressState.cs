@@ -53,6 +53,7 @@ namespace AddressRegistry.StreetName
             Register<AddressWasRetiredBecauseHouseNumberWasRetired>(When);
             Register<AddressWasRetiredBecauseStreetNameWasRetired>(When);
             Register<AddressPositionWasChanged>(When);
+            Register<AddressPostalCodeWasChangedV2>(When);
             Register<AddressPositionWasCorrectedV2>(When);
             Register<AddressWasRemovedV2>(When);
             Register<AddressWasRemovedBecauseHouseNumberWasRemoved>(When);
@@ -171,6 +172,13 @@ namespace AddressRegistry.StreetName
                 @event.GeometryMethod,
                 @event.GeometrySpecification,
                 new ExtendedWkbGeometry(@event.ExtendedWkbGeometry));
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressPostalCodeWasChangedV2 @event)
+        {
+            PostalCode = new PostalCode(@event.PostalCode);
 
             _lastEvent = @event;
         }

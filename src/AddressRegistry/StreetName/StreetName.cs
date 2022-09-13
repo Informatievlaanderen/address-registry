@@ -267,6 +267,13 @@ namespace AddressRegistry.StreetName
                 .ChangePosition(geometryMethod, geometrySpecification, position, GetMunicipalityData(municipalities));
         }
 
+        public void ChangeAddressPostalCode(AddressPersistentLocalId addressPersistentLocalId, PostalCode postalCode)
+        {
+            StreetNameAddresses
+                .GetByPersistentLocalId(addressPersistentLocalId)
+                .ChangePostalCode(postalCode);
+        }
+
         public void CorrectAddressPosition(
             AddressPersistentLocalId addressPersistentLocalId,
             GeometryMethod geometryMethod,

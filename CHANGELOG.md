@@ -1,3 +1,10 @@
+# [3.42.0](https://github.com/informatievlaanderen/address-registry/compare/v3.41.0...v3.42.0) (2022-09-13)
+
+
+### Features
+
+* add remove address backoffice and sqs lambda ([2d2c0b5](https://github.com/informatievlaanderen/address-registry/commit/2d2c0b5a55abe00c605880e6aff806aa4efe9382))
+
 # [3.41.0](https://github.com/informatievlaanderen/address-registry/compare/v3.40.0...v3.41.0) (2022-09-12)
 
 

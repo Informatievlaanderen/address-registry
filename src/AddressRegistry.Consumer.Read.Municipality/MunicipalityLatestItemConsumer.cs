@@ -7,13 +7,13 @@ namespace AddressRegistry.Consumer.Read.Municipality
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Projections;
 
-    public class MunicipalityConsumer
+    public class MunicipalityLatestItemConsumer
     {
         private readonly ILifetimeScope _container;
         private readonly KafkaOptions _options;
         private readonly MunicipalityConsumerOptions _municipalityConsumerOptions;
 
-        public MunicipalityConsumer(
+        public MunicipalityLatestItemConsumer(
             ILifetimeScope container,
             KafkaOptions options,
             MunicipalityConsumerOptions municipalityConsumerOptions)
@@ -27,7 +27,7 @@ namespace AddressRegistry.Consumer.Read.Municipality
         {
             var projector = new ConnectedProjector<MunicipalityConsumerContext>(Resolve.WhenEqualToHandlerMessageType(new MunicipalityLatestItemProjections().Handlers));
 
-            var consumerGroupId = $"{nameof(AddressRegistry)}.{nameof(MunicipalityConsumer)}.{_municipalityConsumerOptions.Topic}{_municipalityConsumerOptions.ConsumerGroupSuffix}";
+            var consumerGroupId = $"{nameof(AddressRegistry)}.{nameof(MunicipalityLatestItemConsumer)}.{_municipalityConsumerOptions.Topic}{_municipalityConsumerOptions.ConsumerGroupSuffix}";
             return KafkaConsumer.Consume(
                 new KafkaConsumerOptions(
                     _options.BootstrapServers,

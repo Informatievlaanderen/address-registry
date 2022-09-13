@@ -6,6 +6,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
     using System.Threading.Tasks;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
+    using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple;
@@ -53,33 +54,54 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
 
             try
             {
-                var loggerFactory = container.GetRequiredService<ILoggerFactory>();
+                await DistributedLock<Program>.RunAsync(
+                    async () =>
+                    {
+                        try
+                        {
+                            var loggerFactory = container.GetRequiredService<ILoggerFactory>();
 
-                await MigrationsHelper.RunAsync(configuration.GetConnectionString("ConsumerStreetNameAdmin"), loggerFactory, cancellationToken);
+                            await MigrationsHelper.RunAsync(
+                                configuration.GetConnectionString("ConsumerStreetNameAdmin"), loggerFactory,
+                                cancellationToken);
 
-                var bootstrapServers = configuration["Kafka:BootstrapServers"];
-                var kafkaOptions = new KafkaOptions(bootstrapServers, configuration["Kafka:SaslUserName"], configuration["Kafka:SaslPassword"], EventsJsonSerializerSettingsProvider.CreateSerializerSettings());
+                            var bootstrapServers = configuration["Kafka:BootstrapServers"];
+                            var kafkaOptions = new KafkaOptions(bootstrapServers, configuration["Kafka:SaslUserName"],
+                                configuration["Kafka:SaslPassword"],
+                                EventsJsonSerializerSettingsProvider.CreateSerializerSettings());
 
-                var topic = $"{configuration["Topic"]}" ?? throw new ArgumentException("Configuration has no StreetName Topic.");
-                var consumerGroupSuffix = configuration["ConsumerGroupSuffix"];
-                var consumerOptions = new StreetNameConsumerOptions(topic, consumerGroupSuffix);
+                            var topic = $"{configuration["Topic"]}" ??
+                                        throw new ArgumentException("Configuration has no StreetName Topic.");
+                            var consumerGroupSuffix = configuration["ConsumerGroupSuffix"];
+                            var consumerOptions = new StreetNameConsumerOptions(topic, consumerGroupSuffix);
 
-                var actualContainer = container.GetRequiredService<ILifetimeScope>();
+                            var actualContainer = container.GetRequiredService<ILifetimeScope>();
 
-                var bosaItemConsumerTask = new StreetNameBosaItemConsumer(actualContainer, kafkaOptions, consumerOptions)
-                    .Start(cancellationToken);
+                            var bosaItemConsumerTask =
+                                new StreetNameBosaItemConsumer(actualContainer, kafkaOptions, consumerOptions)
+                                    .Start(cancellationToken);
 
-                var latestItemConsumerTask = new StreetNameLatestItemConsumer(actualContainer, kafkaOptions, consumerOptions)
-                    .Start(cancellationToken);
+                            var latestItemConsumerTask =
+                                new StreetNameLatestItemConsumer(actualContainer, kafkaOptions, consumerOptions)
+                                    .Start(cancellationToken);
 
+                            Log.Information("The kafka consumer streetname was started");
 
+                            await Task.WhenAll(latestItemConsumerTask, bosaItemConsumerTask);
 
-                Log.Information("The kafka consumer streetname was started");
-
-                await Task.WhenAll(latestItemConsumerTask, bosaItemConsumerTask);
-
-                Log.Information($"StreetName LastItemConsumer task stopped with status: {latestItemConsumerTask.Status}");
-                Log.Information($"StreetName BosaItemConsumer task stopped with status: {bosaItemConsumerTask.Status}");
+                            Log.Information(
+                                $"StreetName LastItemConsumer task stopped with status: {latestItemConsumerTask.Status}");
+                            Log.Information(
+                                $"StreetName BosaItemConsumer task stopped with status: {bosaItemConsumerTask.Status}");
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Fatal(e, "Encountered a fatal exception, exiting program.");
+                            throw;
+                        }
+                    },
+                    DistributedLockOptions.LoadFromConfiguration(configuration),
+                    container.GetService<ILogger<Program>>()!);
             }
             catch (Exception e)
             {

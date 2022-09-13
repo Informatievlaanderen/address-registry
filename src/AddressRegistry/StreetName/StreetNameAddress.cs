@@ -1,6 +1,7 @@
 namespace AddressRegistry.StreetName
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using DataStructures;
@@ -253,15 +254,41 @@ namespace AddressRegistry.StreetName
             }
         }
 
+        private static readonly IEnumerable<AddressStatus> ChangePostalCodeValidStatus =
+            new[] { AddressStatus.Proposed, AddressStatus.Current };
+
         public void ChangePostalCode(PostalCode postalCode)
         {
             GuardNotRemovedAddress();
 
-            var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
-
-            if (!validStatuses.Contains(Status))
+            if (!ChangePostalCodeValidStatus.Contains(Status))
             {
                 throw new AddressHasInvalidStatusException();
+            }
+
+            if (PostalCode == postalCode)
+            {
+                return;
+            }
+
+            foreach (var child in _children)
+            {
+                child.ChangePostalCodeBecauseParentPostalCodeWasChanged(postalCode);
+            }
+
+            Apply(new AddressPostalCodeWasChangedV2(_streetNamePersistentLocalId, AddressPersistentLocalId, postalCode));
+        }
+
+        private void ChangePostalCodeBecauseParentPostalCodeWasChanged(PostalCode postalCode)
+        {
+            if (IsRemoved)
+            {
+                return;
+            }
+
+            if (!ChangePostalCodeValidStatus.Contains(Status))
+            {
+                return;
             }
 
             if (PostalCode == postalCode)

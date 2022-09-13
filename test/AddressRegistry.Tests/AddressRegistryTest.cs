@@ -7,11 +7,13 @@ namespace AddressRegistry.Tests
     using Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore.Autofac;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using global::AutoFixture;
     using Infrastructure.Modules;
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
     using StreetName;
+    using StreetName.Events;
     using Xunit.Abstractions;
 
     public class AddressRegistryTest : AutofacBasedTest
@@ -56,6 +58,35 @@ namespace AddressRegistry.Tests
             var eventSerializerSettings = EventsJsonSerializerSettingsProvider.CreateSerializerSettings();
             builder.RegisterModule(new EventHandlingModule(typeof(DomainAssemblyMarker).Assembly, eventSerializerSettings));
         }
+
         public string GetSnapshotIdentifier(string identifier) => $"{identifier}-snapshots";
+
+        protected AddressWasMigratedToStreetName CreateAddressWasMigratedToStreetName(
+            AddressPersistentLocalId? addressPersistentLocalId = null,
+            StreetNamePersistentLocalId? streetNamePersistentLocalId = null,
+            AddressPersistentLocalId? parentAddressPersistentLocalId = null,
+            HouseNumber? houseNumber = null,
+            PostalCode? postalCode = null,
+            AddressStatus addressStatus = AddressStatus.Proposed,
+            bool isRemoved = false)
+        {
+            var addressWasMigratedToStreetName = new AddressWasMigratedToStreetName(
+                streetNamePersistentLocalId ?? Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<AddressId>(),
+                Fixture.Create<AddressStreetNameId>(),
+                addressPersistentLocalId ?? Fixture.Create<AddressPersistentLocalId>(),
+                addressStatus,
+                houseNumber ?? Fixture.Create<HouseNumber>(),
+                boxNumber: parentAddressPersistentLocalId is not null ? Fixture.Create<BoxNumber>() : null,
+                Fixture.Create<AddressGeometry>(),
+                officiallyAssigned: true,
+                postalCode ?? Fixture.Create<PostalCode>(),
+                isCompleted: false,
+                isRemoved: isRemoved,
+                parentAddressPersistentLocalId);
+            ((ISetProvenance)addressWasMigratedToStreetName).SetProvenance(Fixture.Create<Provenance>());
+
+            return addressWasMigratedToStreetName;
+        }
     }
 }

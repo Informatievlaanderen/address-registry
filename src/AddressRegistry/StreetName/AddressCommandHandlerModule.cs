@@ -175,6 +175,18 @@ namespace AddressRegistry.StreetName
                         municipalities);
                 });
 
+            For<CorrectAddressPostalCode>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<CorrectAddressPostalCode, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streetNameStreamId = new StreetNameStreamId(message.Command.StreetNamePersistentLocalId);
+                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+
+                    streetName.CorrectAddressPostalCode(message.Command.AddressPersistentLocalId, message.Command.PostalCode, message.Command.PostalCodeMunicipalityId);
+                });
+
             For<RemoveAddress>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
                 .AddEventHash<RemoveAddress, StreetName>(getUnitOfWork)

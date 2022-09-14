@@ -45,6 +45,7 @@ namespace AddressRegistry.StreetName
             Register<AddressPositionWasChanged>(When);
             Register<AddressPostalCodeWasChangedV2>(When);
             Register<AddressPositionWasCorrectedV2>(When);
+            Register<AddressPostalCodeWasCorrectedV2>(When);
             Register<AddressWasRemovedV2>(When);
             Register<AddressWasRemovedBecauseHouseNumberWasRemoved>(When);
         }
@@ -180,6 +181,12 @@ namespace AddressRegistry.StreetName
         }
 
         private void When(AddressPositionWasCorrectedV2 @event)
+        {
+            var addressToCorrect = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
+            addressToCorrect.Route(@event);
+        }
+
+        private void When(AddressPostalCodeWasCorrectedV2 @event)
         {
             var addressToCorrect = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
             addressToCorrect.Route(@event);

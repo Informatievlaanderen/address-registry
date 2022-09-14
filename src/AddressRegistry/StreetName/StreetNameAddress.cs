@@ -333,6 +333,51 @@ namespace AddressRegistry.StreetName
             }
         }
 
+        private static readonly IEnumerable<AddressStatus> CorrectPostalCodeValidStatus =
+            new[] { AddressStatus.Proposed, AddressStatus.Current };
+
+        public void CorrectPostalCode(PostalCode postalCode)
+        {
+            GuardNotRemovedAddress();
+
+            if (!CorrectPostalCodeValidStatus.Contains(Status))
+            {
+                throw new AddressHasInvalidStatusException();
+            }
+
+            if (PostalCode == postalCode)
+            {
+                return;
+            }
+
+            foreach (var child in _children)
+            {
+                child.CorrectPostalCodeBecauseParentPostalCodeWasChanged(postalCode);
+            }
+
+            Apply(new AddressPostalCodeWasCorrectedV2(_streetNamePersistentLocalId, AddressPersistentLocalId, postalCode));
+        }
+
+        private void CorrectPostalCodeBecauseParentPostalCodeWasChanged(PostalCode postalCode)
+        {
+            if (IsRemoved)
+            {
+                return;
+            }
+
+            if (!CorrectPostalCodeValidStatus.Contains(Status))
+            {
+                return;
+            }
+
+            if (PostalCode == postalCode)
+            {
+                return;
+            }
+
+            Apply(new AddressPostalCodeWasCorrectedV2(_streetNamePersistentLocalId, AddressPersistentLocalId, postalCode));
+        }
+
         public static AddressGeometry GetFinalGeometry(
             GeometryMethod geometryMethod,
             GeometrySpecification? geometrySpecification,

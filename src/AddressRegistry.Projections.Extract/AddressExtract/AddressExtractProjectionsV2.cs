@@ -198,6 +198,13 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 UpdateVersie(item, message.Message.Provenance.Timestamp);
             });
 
+            When<Envelope<AddressPostalCodeWasCorrectedV2>>(async (context, message, ct) =>
+            {
+                var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);
+                UpdateDbaseRecordField(item, record => record.postcode.Value = message.Message.PostalCode );
+                UpdateVersie(item, message.Message.Provenance.Timestamp);
+            });
+
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>
             {
                 var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);

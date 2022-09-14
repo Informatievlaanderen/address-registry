@@ -251,6 +251,20 @@ namespace AddressRegistry.Projections.Legacy.AddressDetailV2
                 UpdateHash(item, message);
             });
 
+            When<Envelope<AddressPostalCodeWasCorrectedV2>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressDetailV2(
+                    message.Message.AddressPersistentLocalId,
+                    item =>
+                    {
+                        item.PostalCode = message.Message.PostalCode;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+
+                UpdateHash(item, message);
+            });
+
             When<Envelope<AddressWasRemovedV2>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressDetailV2(

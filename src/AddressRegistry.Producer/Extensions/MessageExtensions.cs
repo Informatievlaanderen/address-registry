@@ -142,6 +142,9 @@ namespace AddressRegistry.Producer.Extensions
         public static Contracts.AddressPostalCodeWasChangedV2 ToContract(this StreetNameAggregate.AddressPostalCodeWasChangedV2 message) =>
             new Contracts.AddressPostalCodeWasChangedV2(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.PostalCode, message.Provenance.ToContract());
 
+        public static Contracts.AddressPostalCodeWasCorrectedV2 ToContract(this StreetNameAggregate.AddressPostalCodeWasCorrectedV2 message) =>
+            new Contracts.AddressPostalCodeWasCorrectedV2(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.PostalCode, message.Provenance.ToContract());
+
         public static Contracts.AddressPositionWasChanged ToContract(this StreetNameAggregate.AddressPositionWasChanged message) =>
             new Contracts.AddressPositionWasChanged(
                 message.StreetNamePersistentLocalId,

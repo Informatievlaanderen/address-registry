@@ -286,6 +286,18 @@ namespace AddressRegistry.StreetName
                 .CorrectPosition(geometryMethod, geometrySpecification, position, GetMunicipalityData(municipalities));
         }
 
+        public void CorrectAddressPostalCode(AddressPersistentLocalId addressPersistentLocalId, PostalCode postalCode, MunicipalityId municipalityIdByPostalCode)
+        {
+            if (municipalityIdByPostalCode != MunicipalityId)
+            {
+                throw new PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException();
+            }
+
+            StreetNameAddresses
+                .GetByPersistentLocalId(addressPersistentLocalId)
+                .CorrectPostalCode(postalCode);
+        }
+
         public void RemoveAddress(AddressPersistentLocalId addressPersistentLocalId)
         {
             StreetNameAddresses

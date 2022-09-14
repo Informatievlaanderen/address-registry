@@ -1,3 +1,16 @@
+# [3.47.0](https://github.com/informatievlaanderen/address-registry/compare/v3.46.0...v3.47.0) (2022-09-14)
+
+
+### Bug Fixes
+
+* register StreetNameConsumer EF configuration ([a2473d6](https://github.com/informatievlaanderen/address-registry/commit/a2473d618ce0366daca3852f89470d969010b662))
+
+
+### Features
+
+* address postalcode was corrected projections ([a4e3814](https://github.com/informatievlaanderen/address-registry/commit/a4e3814a40b184612a4b2c69f6e35217c0456fa9))
+* correct address postal code backoffice + lambda ([5f3e9ef](https://github.com/informatievlaanderen/address-registry/commit/5f3e9efb65de2fd4f8ea784ecd59104e763ba835))
+
 # [3.46.0](https://github.com/informatievlaanderen/address-registry/compare/v3.45.0...v3.46.0) (2022-09-14)
 
 

@@ -421,6 +421,34 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
         }
 
         [Fact]
+        public async Task WhenAddressPostalCodeWasCorrectedV2()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressPostalCodeWasCorrectedV2 = _fixture.Create<AddressPostalCodeWasCorrectedV2>();
+            var addressPostalCodeWasCorrectedV2Metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressPostalCodeWasCorrectedV2.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressPostalCodeWasCorrectedV2>(new Envelope(addressPostalCodeWasCorrectedV2, addressPostalCodeWasCorrectedV2Metadata)))
+                .Then(async ct =>
+                {
+                    var item = (await ct.AddressWfsItems.FindAsync(addressPostalCodeWasCorrectedV2.AddressPersistentLocalId));
+                    item.Should().NotBeNull();
+                    item.PostalCode.Should().Be(addressPostalCodeWasCorrectedV2.PostalCode);
+                    item.VersionTimestamp.Should().Be(addressPostalCodeWasCorrectedV2.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
         public async Task WhenAddressPositionWasChanged()
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();

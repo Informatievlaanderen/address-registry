@@ -1,3 +1,10 @@
+# [3.46.0](https://github.com/informatievlaanderen/address-registry/compare/v3.45.0...v3.46.0) (2022-09-14)
+
+
+### Features
+
+* address postalcode was corrected ([9493bcc](https://github.com/informatievlaanderen/address-registry/commit/9493bcc5dea93bea9708c47fd1590ee0690e974d))
+
 # [3.45.0](https://github.com/informatievlaanderen/address-registry/compare/v3.44.0...v3.45.0) (2022-09-13)
 
 

@@ -3,6 +3,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
     using System.Reflection;
     using AddressRegistry.Infrastructure;
     using Be.Vlaanderen.Basisregisters.EntityFrameworkCore.EntityTypeConfiguration;
+    using Consumer.Read.Municipality;
+    using Consumer.Read.StreetName;
     using Microsoft.EntityFrameworkCore;
     using Projections.Legacy;
     using Projections.Legacy.AddressDetail;
@@ -19,7 +21,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
     {
         public DbSet<AddressDetailItem> AddressDetail { get; set; }
         public DbSet<MunicipalityLatestItem> MunicipalityLatestItems { get; set; }
+        public DbSet<Consumer.Read.Municipality.Projections.MunicipalityLatestItem> MunicipalityConsumerLatestItems { get; set; }
         public DbSet<StreetNameLatestItem> StreetNameLatestItems { get; set; }
+        public DbSet<Consumer.Read.StreetName.Projections.StreetNameLatestItem> StreetNameConsumerLatestItems { get; set; }
         public DbSet<PostalInfoLatestItem> PostalInfoLatestItems { get; set; }
         public DbSet<BuildingUnitAddressMatchLatestItem> BuildingUnitAddressMatchLatestItems { get; set; }
         public DbSet<ParcelAddressMatchLatestItem> ParcelAddressMatchLatestItems { get; set; }
@@ -46,6 +50,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
 
             modelBuilder.AddEntityConfigurationsFromAssembly(typeof(LegacyContext).GetTypeInfo().Assembly);
             modelBuilder.AddEntityConfigurationsFromAssembly(typeof(SyndicationContext).GetTypeInfo().Assembly);
+            modelBuilder.AddEntityConfigurationsFromAssembly(typeof(MunicipalityConsumerContext).GetTypeInfo().Assembly);
+            modelBuilder.AddEntityConfigurationsFromAssembly(typeof(StreetNameConsumerContext).GetTypeInfo().Assembly);
 
             modelBuilder
                 .Entity<RRStreetName>()

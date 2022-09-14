@@ -9,6 +9,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
     using System.Collections.Generic;
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Infrastructure.FeatureToggles;
+    using Mappers;
     using Microsoft.EntityFrameworkCore;
 
     public interface ILatestQueries
@@ -26,6 +28,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
     public class CachedLatestQueriesDecorator : CachedService, ILatestQueries
     {
         private readonly AddressMatchContext _context;
+        private readonly UseProjectionsV2Toggle _useProjectionsV2Toggle;
+
         private static readonly TimeSpan AllStreetNamesCacheDuration = TimeSpan.FromDays(1);
         private static readonly TimeSpan AllMunicipalitiesCacheDuration = TimeSpan.FromDays(1);
         private static readonly TimeSpan AllPostalInfoCacheDuration = TimeSpan.FromDays(1);
@@ -35,8 +39,13 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 
         public CachedLatestQueriesDecorator(
             IMemoryCache memoryCache,
-            AddressMatchContext context)
-            : base(memoryCache) => _context = context;
+            AddressMatchContext context,
+            UseProjectionsV2Toggle useProjectionsV2Toggle)
+            : base(memoryCache)
+        {
+            _context = context;
+            _useProjectionsV2Toggle = useProjectionsV2Toggle;
+        }
 
         public IEnumerable<PostalInfoLatestItem> GetAllPostalInfo() =>
             GetOrAdd(
@@ -49,19 +58,25 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 streetNames => streetNames
                     .SelectMany(kvp => kvp.Value)
                     .Single(s => s.PersistentLocalId == streetNamePersistentLocalId),
-                () => GetLatestStreetNameItems().FirstOrDefault(
-                    x => x.PersistentLocalId == streetNamePersistentLocalId));
+                () => _useProjectionsV2Toggle.FeatureEnabled
+                    ? GetLatestStreetNameItemsFromConsumer().FirstOrDefault(x => x.PersistentLocalId == streetNamePersistentLocalId)
+                    : GetLatestStreetNameItems().FirstOrDefault(x => x.PersistentLocalId == streetNamePersistentLocalId));
 
         public IEnumerable<MunicipalityLatestItem> GetAllLatestMunicipalities() =>
             GetOrAdd(
                 AllMunicipalitiesCacheKey,
-                () => _context.MunicipalityLatestItems.ToList(),
+                () => _useProjectionsV2Toggle.FeatureEnabled
+                    ? _context.MunicipalityConsumerLatestItems.Select(x => x.Map()).ToList()
+                    : _context.MunicipalityLatestItems.ToList(),
                 AllMunicipalitiesCacheDuration);
 
         public IEnumerable<StreetNameLatestItem> GetAllLatestStreetNames() =>
             GetOrAdd(
                     AllStreetNamesCacheKey,
-                    () => ConvertToCachedModel(GetLatestStreetNameItems().ToList()),
+                    () => ConvertToCachedModel(
+                        _useProjectionsV2Toggle.FeatureEnabled
+                            ? GetLatestStreetNameItemsFromConsumer().ToList()
+                            : GetLatestStreetNameItems().ToList()),
                     AllStreetNamesCacheDuration)
                 .SelectMany(kvp => kvp.Value);
 
@@ -69,6 +84,12 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             => _context
                 .StreetNameLatestItems
                 .Where(x => x.IsComplete && !x.IsRemoved);
+
+        private IEnumerable<StreetNameLatestItem> GetLatestStreetNameItemsFromConsumer()
+            => _context
+                .StreetNameConsumerLatestItems
+                .Where(x => !x.IsRemoved)
+                .Select(x => x.Map());
 
         public IEnumerable<AddressDetailItem> GetLatestAddressesBy(string streetNamePersistentLocalId, string? houseNumber, string? boxNumber)
         {
@@ -127,10 +148,15 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                         ? streetNames[g]
                         : new StreetNameLatestItem[] { })
                     .AsQueryable(),
-                () => GetLatestStreetNameItems()
-                    .Where(x => nisCodes.Contains(x.NisCode))
-                    .ToList()
-                    .AsEnumerable());
+                () => _useProjectionsV2Toggle.FeatureEnabled
+                    ? GetLatestStreetNameItemsFromConsumer()
+                        .Where(x => nisCodes.Contains(x.NisCode))
+                        .ToList()
+                        .AsEnumerable()
+                    : GetLatestStreetNameItems()
+                        .Where(x => nisCodes.Contains(x.NisCode))
+                        .ToList()
+                        .AsEnumerable());
         }
 
         private T GetOrAddLatestStreetNames<T>(
@@ -138,7 +164,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             Func<T> ifCacheNotHit)
             => GetOrAdd(
                 AllStreetNamesCacheKey,
-                () => ConvertToCachedModel(GetLatestStreetNameItems().ToList()),
+                () => ConvertToCachedModel(_useProjectionsV2Toggle.FeatureEnabled
+                    ? GetLatestStreetNameItemsFromConsumer().ToList()
+                    : GetLatestStreetNameItems().ToList()),
                 AllStreetNamesCacheDuration,
                 ifCacheHit,
                 ifCacheNotHit);

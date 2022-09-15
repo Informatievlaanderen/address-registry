@@ -49,7 +49,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 addressPersistentLocalId,
                 Fixture.Create<PostalCode>(),
                 Fixture.Create<MunicipalityId>(),
-                Fixture.Create<HouseNumber>(),
+                new HouseNumber("1"),
                 null);
 
             var etag = new ETagResponse(string.Empty);

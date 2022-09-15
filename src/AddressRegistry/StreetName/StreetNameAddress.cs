@@ -336,7 +336,7 @@ namespace AddressRegistry.StreetName
         private static readonly IEnumerable<AddressStatus> CorrectPostalCodeValidStatus =
             new[] { AddressStatus.Proposed, AddressStatus.Current };
 
-        public void CorrectPostalCode(PostalCode postalCode)
+        public void CorrectPostalCode(PostalCode postalCode, Action guardPostalCodeMunicipalityMatchesStreetNameMunicipality)
         {
             GuardNotRemovedAddress();
 
@@ -344,6 +344,8 @@ namespace AddressRegistry.StreetName
             {
                 throw new AddressHasInvalidStatusException();
             }
+
+            guardPostalCodeMunicipalityMatchesStreetNameMunicipality();
 
             if (PostalCode == postalCode)
             {
@@ -376,6 +378,40 @@ namespace AddressRegistry.StreetName
             }
 
             Apply(new AddressPostalCodeWasCorrectedV2(_streetNamePersistentLocalId, AddressPersistentLocalId, postalCode));
+        }
+
+        public void CorrectHouseNumber(HouseNumber houseNumber, Action guardHouseNumberAddressIsUnique)
+        {
+            GuardNotRemovedAddress();
+
+            var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
+
+            if (!validStatuses.Contains(Status))
+            {
+                throw new AddressHasInvalidStatusException();
+            }
+
+            guardHouseNumberAddressIsUnique();
+
+            if (BoxNumber is not null)
+            {
+                throw new HouseNumberToCorrectHasBoxNumberException();
+            }
+
+            if (HouseNumber == houseNumber)
+            {
+                return;
+            }
+
+            var boxNumbers = _children
+                .Where(x => !x.IsRemoved && validStatuses.Contains(x.Status))
+                .Select(x => x.AddressPersistentLocalId);
+
+            Apply(new AddressHouseNumberWasCorrectedV2(
+                _streetNamePersistentLocalId,
+                AddressPersistentLocalId,
+                boxNumbers,
+                houseNumber));
         }
 
         public static AddressGeometry GetFinalGeometry(

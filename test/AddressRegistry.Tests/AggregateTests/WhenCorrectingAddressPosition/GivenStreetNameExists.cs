@@ -1,21 +1,21 @@
-namespace AddressRegistry.Tests.AggregateTests.WhenCorrectAddressPosition
+namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressPosition
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Api.BackOffice.Abstractions;
+    using AddressRegistry.Api.BackOffice.Abstractions;
+    using AddressRegistry.StreetName;
+    using AddressRegistry.StreetName.Commands;
+    using AddressRegistry.StreetName.Events;
+    using AddressRegistry.StreetName.Exceptions;
+    using AddressRegistry.Tests.AutoFixture;
+    using AddressRegistry.Tests.BackOffice.Infrastructure;
     using Autofac;
-    using AutoFixture;
-    using BackOffice.Infrastructure;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentAssertions;
     using global::AutoFixture;
-    using StreetName;
-    using StreetName.Commands;
-    using StreetName.Events;
-    using StreetName.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
 

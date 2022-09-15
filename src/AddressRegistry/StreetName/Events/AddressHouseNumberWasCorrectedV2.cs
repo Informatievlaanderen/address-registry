@@ -10,10 +10,10 @@ namespace AddressRegistry.StreetName.Events
 
     [EventTags(EventTag.For.Edit, EventTag.For.Sync)]
     [EventName(EventName)]
-    [EventDescription("De postcode van het adres werd gecorrigeerd.")]
-    public class AddressPostalCodeWasCorrectedV2 : IStreetNameEvent, IHasAddressPersistentLocalId
+    [EventDescription("Het huisnummer van het adres werd gecorrigeerd.")]
+    public class AddressHouseNumberWasCorrectedV2 : IStreetNameEvent, IHasAddressPersistentLocalId
     {
-        public const string EventName = "AddressPostalCodeWasCorrectedV2"; // BE CAREFUL CHANGING THIS!!
+        public const string EventName = "AddressHouseNumberWasCorrectedV2"; // BE CAREFUL CHANGING THIS!!
 
         [EventPropertyDescription("Objectidentificator van de straatnaam aan dewelke het adres is toegewezen.")]
         public int StreetNamePersistentLocalId { get; }
@@ -21,32 +21,39 @@ namespace AddressRegistry.StreetName.Events
         [EventPropertyDescription("Objectidentificator van het adres.")]
         public int AddressPersistentLocalId { get; }
 
-        [EventPropertyDescription("Postcode (= objectidentificator) van het PostInfo-object dat deel uitmaakt van het adres.")]
-        public string PostalCode { get; }
+        [EventPropertyDescription("Objectidentificatoren van de gekoppelde busnummers.")]
+        public List<int> BoxNumberPersistentLocalIds { get; }
+
+        [EventPropertyDescription("Huisnummer van het adres.")]
+        public string HouseNumber { get; }
 
         [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
-        public AddressPostalCodeWasCorrectedV2(
+        public AddressHouseNumberWasCorrectedV2(
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             AddressPersistentLocalId addressPersistentLocalId,
-            PostalCode postalCode)
+            IEnumerable<AddressPersistentLocalId> boxNumberPersistentLocalIds,
+            HouseNumber houseNumber)
         {
             AddressPersistentLocalId = addressPersistentLocalId;
             StreetNamePersistentLocalId = streetNamePersistentLocalId;
-            PostalCode = postalCode;
+            BoxNumberPersistentLocalIds = boxNumberPersistentLocalIds.Select(x => (int)x).ToList();
+            HouseNumber = houseNumber;
         }
 
         [JsonConstructor]
-        private AddressPostalCodeWasCorrectedV2(
+        private AddressHouseNumberWasCorrectedV2(
             int streetNamePersistentLocalId,
             int addressPersistentLocalId,
-            string postalCode,
+            IEnumerable<int> boxNumberPersistentLocalIds,
+            string houseNumber,
             ProvenanceData provenance)
             : this(
                 new StreetNamePersistentLocalId(streetNamePersistentLocalId),
                 new AddressPersistentLocalId(addressPersistentLocalId),
-                new PostalCode(postalCode))
+                boxNumberPersistentLocalIds.Select(x => new AddressPersistentLocalId(x)),
+                new HouseNumber(houseNumber))
             => ((ISetProvenance)this).SetProvenance(provenance.ToProvenance());
 
         void ISetProvenance.SetProvenance(Provenance provenance) => Provenance = new ProvenanceData(provenance);
@@ -56,7 +63,9 @@ namespace AddressRegistry.StreetName.Events
             var fields = Provenance.GetHashFields().ToList();
             fields.Add(StreetNamePersistentLocalId.ToString(CultureInfo.InvariantCulture));
             fields.Add(AddressPersistentLocalId.ToString(CultureInfo.InvariantCulture));
-            fields.Add(PostalCode);
+            fields.Add(HouseNumber);
+            fields.AddRange(BoxNumberPersistentLocalIds.Select(boxNumberPersistentLocalId => boxNumberPersistentLocalId.ToString()));
+
             return fields;
         }
 

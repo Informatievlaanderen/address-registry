@@ -1,19 +1,19 @@
-namespace AddressRegistry.Tests.AutoFixture
+﻿namespace AddressRegistry.Tests.AutoFixture
 {
-    using System;
     using Address;
     using global::AutoFixture;
     using global::AutoFixture.Kernel;
 
-    public class WithFixedValidHouseNumber : ICustomization
+    public class WithValidHouseNumber : ICustomization
     {
         public void Customize(IFixture fixture)
         {
-            var houseNumberStr = "11A";
-            fixture.Customize<HouseNumber>(c => c.FromFactory(() => new HouseNumber(houseNumberStr)));
+            var houseNumber = fixture.Create<int>().ToString();
+
+            fixture.Customize<HouseNumber>(c => c.FromFactory(() => new HouseNumber(houseNumber)));
             fixture.Customizations.Add(
                 new FilteringSpecimenBuilder(
-                    new FixedBuilder(houseNumberStr),
+                    new FixedBuilder(houseNumber),
                     new ParameterSpecification(
                         typeof(string),
                         "houseNumber")));

@@ -16,7 +16,8 @@ namespace AddressRegistry.StreetName
         public bool HasPersistentLocalId(AddressPersistentLocalId addressPersistentLocalId)
             => this.Any(x => x.AddressPersistentLocalId == addressPersistentLocalId);
 
-        public bool HasPersistentLocalId(AddressPersistentLocalId addressPersistentLocalId, out StreetNameAddress? streetNameAddress)
+        public bool HasPersistentLocalId(AddressPersistentLocalId addressPersistentLocalId,
+            out StreetNameAddress? streetNameAddress)
         {
             streetNameAddress = this.SingleOrDefault(x => x.AddressPersistentLocalId == addressPersistentLocalId);
 
@@ -38,19 +39,43 @@ namespace AddressRegistry.StreetName
             return address;
         }
 
+        public StreetNameAddress GetNotRemovedByPersistentLocalId(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            var address = GetByPersistentLocalId(addressPersistentLocalId);
+
+            if (address.IsRemoved)
+            {
+                throw new AddressIsRemovedException(addressPersistentLocalId);
+            }
+
+            return address;
+        }
+
         public StreetNameAddress? FindParentByLegacyAddressId(AddressId parentAddressId)
         {
-            return this.SingleOrDefault(x => EqualityComparer<Guid>.Default.Equals(parentAddressId, x.LegacyAddressId ?? AddressId.Default));
+            return this.SingleOrDefault(x =>
+                EqualityComparer<Guid>.Default.Equals(parentAddressId, x.LegacyAddressId ?? AddressId.Default));
         }
 
         public StreetNameAddress? FindActiveParentByHouseNumber(HouseNumber houseNumber)
         {
             var result = this.SingleOrDefault(x =>
                 x.IsActive
-               && x.HouseNumber == houseNumber
-               && x.BoxNumber is null);
+                && x.HouseNumber == houseNumber
+                && x.BoxNumber is null);
 
             return result;
+        }
+
+        public bool HasActiveAddressForOtherThan(
+            HouseNumber houseNumber,
+            AddressPersistentLocalId addressPersistentLocalId)
+        {
+            return this.Any(x =>
+                x.IsActive
+                && x.AddressPersistentLocalId != addressPersistentLocalId
+                && x.HouseNumber == houseNumber
+                && x.BoxNumber is null);
         }
     }
 }

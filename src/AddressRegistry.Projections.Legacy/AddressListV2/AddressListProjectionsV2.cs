@@ -204,6 +204,20 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
                     ct);
 
                 UpdateHash(item, message);
+
+                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
+                {
+                    var boxNumberItem = await context.FindAndUpdateAddressListItemV2(
+                        boxNumberPersistentLocalId,
+                        boxNumberItem =>
+                        {
+                            boxNumberItem.PostalCode = message.Message.PostalCode;
+                            UpdateVersionTimestamp(boxNumberItem, message.Message.Provenance.Timestamp);
+                        },
+                        ct);
+
+                    UpdateHash(boxNumberItem, message);
+                }
             });
 
             When<Envelope<AddressPostalCodeWasCorrectedV2>>(async (context, message, ct) =>
@@ -218,6 +232,20 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
                     ct);
 
                 UpdateHash(item, message);
+
+                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
+                {
+                    var boxNumberItem = await context.FindAndUpdateAddressListItemV2(
+                        boxNumberPersistentLocalId,
+                        boxNumberItem =>
+                        {
+                            boxNumberItem.PostalCode = message.Message.PostalCode;
+                            UpdateVersionTimestamp(boxNumberItem, message.Message.Provenance.Timestamp);
+                        },
+                        ct);
+
+                    UpdateHash(boxNumberItem, message);
+                }
             });
 
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>

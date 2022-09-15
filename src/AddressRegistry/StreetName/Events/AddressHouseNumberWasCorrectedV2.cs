@@ -22,7 +22,7 @@ namespace AddressRegistry.StreetName.Events
         public int AddressPersistentLocalId { get; }
 
         [EventPropertyDescription("Objectidentificatoren van de gekoppelde busnummers.")]
-        public List<int> BoxNumberPersistentLocalIds { get; }
+        public IEnumerable<int> BoxNumberPersistentLocalIds { get; }
 
         [EventPropertyDescription("Huisnummer van het adres.")]
         public string HouseNumber { get; }

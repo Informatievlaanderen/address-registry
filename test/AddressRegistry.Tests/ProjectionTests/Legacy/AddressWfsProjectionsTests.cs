@@ -8,6 +8,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Pipes;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
+    using Extensions;
     using FluentAssertions;
     using global::AutoFixture;
     using NetTopologySuite.Geometries;
@@ -396,13 +397,26 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
         [Fact]
         public async Task WhenAddressPostalCodeWasChangedV2()
         {
-            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(1))
+                .WithPostalCode(new PostalCode("9000"));
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
             };
 
-            var addressPostalCodeWasChangedV2 = _fixture.Create<AddressPostalCodeWasChangedV2>();
+            var boxNumberAddressWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(2))
+                .WithPostalCode(new PostalCode("9000"));
+            var boxNumberProposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, boxNumberAddressWasProposedV2.GetHash() }
+            };
+
+            var addressPostalCodeWasChangedV2 = _fixture.Create<AddressPostalCodeWasChangedV2>()
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(addressWasProposedV2.AddressPersistentLocalId))
+                .WithBoxNumberPersistentLocalIds(new [] { new AddressPersistentLocalId(boxNumberAddressWasProposedV2.AddressPersistentLocalId) })
+                .WithPostalCode(new PostalCode("2000"));
             var addressPostalCodeWasChangedV2Metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressPostalCodeWasChangedV2.GetHash() }
@@ -411,13 +425,19 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
             await Sut
                 .Given(
                     new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasProposedV2>(new Envelope(boxNumberAddressWasProposedV2, boxNumberProposedMetadata)),
                     new Envelope<AddressPostalCodeWasChangedV2>(new Envelope(addressPostalCodeWasChangedV2, addressPostalCodeWasChangedV2Metadata)))
                 .Then(async ct =>
                 {
-                    var item = (await ct.AddressWfsItems.FindAsync(addressPostalCodeWasChangedV2.AddressPersistentLocalId));
+                    var item = await ct.AddressWfsItems.FindAsync(addressPostalCodeWasChangedV2.AddressPersistentLocalId);
                     item.Should().NotBeNull();
-                    item.PostalCode.Should().Be(addressPostalCodeWasChangedV2.PostalCode);
+                    item!.PostalCode.Should().Be(addressPostalCodeWasChangedV2.PostalCode);
                     item.VersionTimestamp.Should().Be(addressPostalCodeWasChangedV2.Provenance.Timestamp);
+
+                    var boxNumberItem = await ct.AddressWfsItems.FindAsync(boxNumberAddressWasProposedV2.AddressPersistentLocalId);
+                    boxNumberItem.Should().NotBeNull();
+                    boxNumberItem!.PostalCode.Should().BeEquivalentTo(addressPostalCodeWasChangedV2.PostalCode);
+                    boxNumberItem.VersionTimestamp.Should().Be(addressPostalCodeWasChangedV2.Provenance.Timestamp);
                 });
         }
 

@@ -64,6 +64,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressPostalCode
                     new AddressPostalCodeWasCorrectedV2(
                         Fixture.Create<StreetNamePersistentLocalId>(),
                         Fixture.Create<AddressPersistentLocalId>(),
+                        Array.Empty<AddressPersistentLocalId>(),
                         expectedPostalCode))));
         }
 
@@ -92,16 +93,13 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressPostalCode
                     parentAddressWasMigrated,
                     childAddressWasMigrated)
                 .When(command)
-                .Then(new Fact(_streamId,
+                .Then(new Fact(
+                    _streamId,
                     new AddressPostalCodeWasCorrectedV2(
                         Fixture.Create<StreetNamePersistentLocalId>(),
-                        childAddressPersistentLocalId,
-                        expectedPostalCode)),
-                    new Fact(_streamId,
-                        new AddressPostalCodeWasCorrectedV2(
-                            Fixture.Create<StreetNamePersistentLocalId>(),
-                            parentAddressPersistentLocalId,
-                            expectedPostalCode))));
+                        parentAddressPersistentLocalId,
+                        new[] { childAddressPersistentLocalId },
+                        expectedPostalCode))));
         }
 
         [Fact]

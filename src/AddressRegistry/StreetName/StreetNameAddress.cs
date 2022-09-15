@@ -1,7 +1,6 @@
 namespace AddressRegistry.StreetName
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using DataStructures;
@@ -254,14 +253,13 @@ namespace AddressRegistry.StreetName
             }
         }
 
-        private static readonly IEnumerable<AddressStatus> ChangePostalCodeValidStatus =
-            new[] { AddressStatus.Proposed, AddressStatus.Current };
-
         public void ChangePostalCode(PostalCode postalCode)
         {
             GuardNotRemovedAddress();
 
-            if (!ChangePostalCodeValidStatus.Contains(Status))
+            var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
+
+            if (!validStatuses.Contains(Status))
             {
                 throw new AddressHasInvalidStatusException();
             }
@@ -271,32 +269,15 @@ namespace AddressRegistry.StreetName
                 return;
             }
 
-            foreach (var child in _children)
-            {
-                child.ChangePostalCodeBecauseParentPostalCodeWasChanged(postalCode);
-            }
+            var boxNumbers = _children
+                .Where(x => !x.IsRemoved && validStatuses.Contains(x.Status))
+                .Select(x => x.AddressPersistentLocalId);
 
-            Apply(new AddressPostalCodeWasChangedV2(_streetNamePersistentLocalId, AddressPersistentLocalId, postalCode));
-        }
-
-        private void ChangePostalCodeBecauseParentPostalCodeWasChanged(PostalCode postalCode)
-        {
-            if (IsRemoved)
-            {
-                return;
-            }
-
-            if (!ChangePostalCodeValidStatus.Contains(Status))
-            {
-                return;
-            }
-
-            if (PostalCode == postalCode)
-            {
-                return;
-            }
-
-            Apply(new AddressPostalCodeWasChangedV2(_streetNamePersistentLocalId, AddressPersistentLocalId, postalCode));
+            Apply(new AddressPostalCodeWasChangedV2(
+                _streetNamePersistentLocalId,
+                AddressPersistentLocalId,
+                boxNumbers,
+                postalCode));
         }
 
         public void CorrectPosition(
@@ -333,14 +314,13 @@ namespace AddressRegistry.StreetName
             }
         }
 
-        private static readonly IEnumerable<AddressStatus> CorrectPostalCodeValidStatus =
-            new[] { AddressStatus.Proposed, AddressStatus.Current };
-
         public void CorrectPostalCode(PostalCode postalCode, Action guardPostalCodeMunicipalityMatchesStreetNameMunicipality)
         {
             GuardNotRemovedAddress();
 
-            if (!CorrectPostalCodeValidStatus.Contains(Status))
+            var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
+
+            if (!validStatuses.Contains(Status))
             {
                 throw new AddressHasInvalidStatusException();
             }
@@ -352,32 +332,15 @@ namespace AddressRegistry.StreetName
                 return;
             }
 
-            foreach (var child in _children)
-            {
-                child.CorrectPostalCodeBecauseParentPostalCodeWasChanged(postalCode);
-            }
+            var boxNumbers = _children
+                .Where(x => !x.IsRemoved && validStatuses.Contains(x.Status))
+                .Select(x => x.AddressPersistentLocalId);
 
-            Apply(new AddressPostalCodeWasCorrectedV2(_streetNamePersistentLocalId, AddressPersistentLocalId, postalCode));
-        }
-
-        private void CorrectPostalCodeBecauseParentPostalCodeWasChanged(PostalCode postalCode)
-        {
-            if (IsRemoved)
-            {
-                return;
-            }
-
-            if (!CorrectPostalCodeValidStatus.Contains(Status))
-            {
-                return;
-            }
-
-            if (PostalCode == postalCode)
-            {
-                return;
-            }
-
-            Apply(new AddressPostalCodeWasCorrectedV2(_streetNamePersistentLocalId, AddressPersistentLocalId, postalCode));
+            Apply(new AddressPostalCodeWasCorrectedV2(
+                _streetNamePersistentLocalId,
+                AddressPersistentLocalId,
+                boxNumbers,
+                postalCode));
         }
 
         public void CorrectHouseNumber(HouseNumber houseNumber, Action guardHouseNumberAddressIsUnique)

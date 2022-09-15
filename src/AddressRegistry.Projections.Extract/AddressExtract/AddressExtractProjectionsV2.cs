@@ -196,6 +196,13 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);
                 UpdateDbaseRecordField(item, record => record.postcode.Value = message.Message.PostalCode );
                 UpdateVersie(item, message.Message.Provenance.Timestamp);
+
+                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
+                {
+                    var boxNumberItem = await context.AddressExtractV2.FindAsync(boxNumberPersistentLocalId, cancellationToken: ct);
+                    UpdateDbaseRecordField(boxNumberItem, record => record.postcode.Value = message.Message.PostalCode );
+                    UpdateVersie(boxNumberItem, message.Message.Provenance.Timestamp);
+                }
             });
 
             When<Envelope<AddressPostalCodeWasCorrectedV2>>(async (context, message, ct) =>
@@ -203,6 +210,13 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);
                 UpdateDbaseRecordField(item, record => record.postcode.Value = message.Message.PostalCode );
                 UpdateVersie(item, message.Message.Provenance.Timestamp);
+
+                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
+                {
+                    var boxNumberItem = await context.AddressExtractV2.FindAsync(boxNumberPersistentLocalId, cancellationToken: ct);
+                    UpdateDbaseRecordField(boxNumberItem, record => record.postcode.Value = message.Message.PostalCode );
+                    UpdateVersie(boxNumberItem, message.Message.Provenance.Timestamp);
+                }
             });
 
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>

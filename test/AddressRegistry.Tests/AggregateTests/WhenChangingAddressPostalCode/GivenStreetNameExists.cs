@@ -1,5 +1,6 @@
 namespace AddressRegistry.Tests.AggregateTests.WhenChangingAddressPostalCode
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using AddressRegistry.Api.BackOffice.Abstractions;
@@ -62,6 +63,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenChangingAddressPostalCode
                     new AddressPostalCodeWasChangedV2(
                         Fixture.Create<StreetNamePersistentLocalId>(),
                         Fixture.Create<AddressPersistentLocalId>(),
+                        Array.Empty<AddressPersistentLocalId>(),
                         expectedPostalCode))));
         }
 
@@ -89,16 +91,13 @@ namespace AddressRegistry.Tests.AggregateTests.WhenChangingAddressPostalCode
                     parentAddressWasMigrated,
                     childAddressWasMigrated)
                 .When(command)
-                .Then(new Fact(_streamId,
+                .Then(new Fact(
+                    _streamId,
                     new AddressPostalCodeWasChangedV2(
                         Fixture.Create<StreetNamePersistentLocalId>(),
-                        childAddressPersistentLocalId,
-                        expectedPostalCode)),
-                    new Fact(_streamId,
-                        new AddressPostalCodeWasChangedV2(
-                            Fixture.Create<StreetNamePersistentLocalId>(),
-                            parentAddressPersistentLocalId,
-                            expectedPostalCode))));
+                        parentAddressPersistentLocalId,
+                        new [] { childAddressPersistentLocalId },
+                        expectedPostalCode))));
         }
 
         [Fact]

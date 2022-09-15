@@ -103,6 +103,20 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
 
             b.HasIndex(p => p.StreetNamePersistentLocalId);
             b.HasIndex(p => p.Removed);
+
+            b
+                .HasIndex(p => new { p.Removed, p.StreetNamePersistentLocalId })
+                .IncludeProperties(p => new {
+                        p.BoxNumber,
+                        p.HouseNumber,
+                        p.OfficiallyAssigned,
+                        p.AddressPersistentLocalId,
+                        p.Position,
+                        p.PositionMethod,
+                        p.PositionSpecification,
+                        p.PostalCode,
+                        p.Status,
+                        p.VersionAsString });
         }
     }
 }

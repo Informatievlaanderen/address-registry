@@ -75,7 +75,21 @@ namespace AddressRegistry.Projections.Wfs.AddressDetail
             b.HasIndex(p => p.PersistentLocalId);
 
             b.HasIndex(p => p.StreetNameId);
-            b.HasIndex(p => new  {p.Removed, p.Complete} );
+            b.HasIndex(p => new { p.Removed, p.Complete });
+
+            b
+                .HasIndex(p => new { p.Removed, p.Complete, p.StreetNameId })
+                .IncludeProperties(p => new {
+                        p.BoxNumber,
+                        p.HouseNumber,
+                        p.OfficiallyAssigned,
+                        p.PersistentLocalId,
+                        p.Position,
+                        p.PositionMethod,
+                        p.PositionSpecification,
+                        p.PostalCode,
+                        p.Status,
+                        p.VersionAsString });
         }
     }
 }

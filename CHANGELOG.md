@@ -1,3 +1,10 @@
+## [3.47.1](https://github.com/informatievlaanderen/address-registry/compare/v3.47.0...v3.47.1) (2022-09-15)
+
+
+### Performance Improvements
+
+* add wfs index ([1b4a1e7](https://github.com/informatievlaanderen/address-registry/commit/1b4a1e715252a8d501701e776bc3c0f4a32464b4))
+
 # [3.47.0](https://github.com/informatievlaanderen/address-registry/compare/v3.46.0...v3.47.0) (2022-09-14)
 
 

@@ -187,6 +187,18 @@ namespace AddressRegistry.StreetName
                     streetName.CorrectAddressPostalCode(message.Command.AddressPersistentLocalId, message.Command.PostalCode, message.Command.PostalCodeMunicipalityId);
                 });
 
+            For<CorrectAddressHouseNumber>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<CorrectAddressHouseNumber, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streetNameStreamId = new StreetNameStreamId(message.Command.StreetNamePersistentLocalId);
+                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+
+                    streetName.CorrectAddressHouseNumber(message.Command.AddressPersistentLocalId, message.Command.HouseNumber);
+                });
+
             For<RemoveAddress>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
                 .AddEventHash<RemoveAddress, StreetName>(getUnitOfWork)

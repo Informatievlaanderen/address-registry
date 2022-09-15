@@ -203,14 +203,12 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
         [Fact]
         public void ParentAddress_ThenAddressWasProposed()
         {
-            var houseNumber = Fixture.Create<string>();
-
             var proposeParentAddress = new ProposeAddress(
                 Fixture.Create<StreetNamePersistentLocalId>(),
                 Fixture.Create<PostalCode>(),
                 Fixture.Create<MunicipalityId>(),
                 Fixture.Create<AddressPersistentLocalId>(),
-                new HouseNumber(houseNumber),
+                new HouseNumber("1"),
                 boxNumber: null,
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
@@ -281,7 +279,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 Fixture.Create<PostalCode>(),
                 municipalityId,
                 addressPersistentLocalId,
-                Fixture.Create<HouseNumber>(),
+                new HouseNumber("1"),
                 null,
                 GeometryMethod.DerivedFromObject,
                 null,
@@ -319,7 +317,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 Fixture.Create<PostalCode>(),
                 Fixture.Create<MunicipalityId>(),
                 Fixture.Create<AddressPersistentLocalId>(),
-                Fixture.Create<HouseNumber>(),
+                new HouseNumber("1"),
                 null,
                 GeometryMethod.AppointedByAdministrator,
                 null,
@@ -341,7 +339,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 Fixture.Create<PostalCode>(),
                 Fixture.Create<MunicipalityId>(),
                 Fixture.Create<AddressPersistentLocalId>(),
-                Fixture.Create<HouseNumber>(),
+                new HouseNumber("1"),
                 null,
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
@@ -363,7 +361,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 Fixture.Create<PostalCode>(),
                 Fixture.Create<MunicipalityId>(),
                 Fixture.Create<AddressPersistentLocalId>(),
-                Fixture.Create<HouseNumber>(),
+                new HouseNumber("1"),
                 null,
                 GeometryMethod.Interpolated,
                 GeometrySpecification.Entry,
@@ -390,7 +388,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 Fixture.Create<PostalCode>(),
                 Fixture.Create<MunicipalityId>(),
                 Fixture.Create<AddressPersistentLocalId>(),
-                Fixture.Create<HouseNumber>(),
+                new HouseNumber("1"),
                 null,
                 GeometryMethod.AppointedByAdministrator,
                 invalidSpecification,

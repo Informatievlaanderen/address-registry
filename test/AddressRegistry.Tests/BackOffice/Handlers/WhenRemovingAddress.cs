@@ -51,7 +51,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
                 addressPersistentLocalId,
                 Fixture.Create<PostalCode>(),
                 Fixture.Create<MunicipalityId>(),
-                Fixture.Create<HouseNumber>(),
+                new HouseNumber("1"),
                 null);
 
             var sut = new AddressRemoveHandler(

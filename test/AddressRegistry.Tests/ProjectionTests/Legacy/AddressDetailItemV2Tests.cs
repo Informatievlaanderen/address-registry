@@ -24,6 +24,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
             _fixture.Customize(new WithFixedAddressPersistentLocalId());
             _fixture.Customize(new WithFixedStreetNamePersistentLocalId());
             _fixture.Customize(new WithExtendedWkbGeometry());
+            _fixture.Customize(new WithValidHouseNumber());
         }
 
         [Fact]

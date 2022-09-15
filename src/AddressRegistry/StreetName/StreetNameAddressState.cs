@@ -2,6 +2,7 @@ namespace AddressRegistry.StreetName
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using DataStructures;
     using Events;
@@ -56,6 +57,7 @@ namespace AddressRegistry.StreetName
             Register<AddressPostalCodeWasChangedV2>(When);
             Register<AddressPositionWasCorrectedV2>(When);
             Register<AddressPostalCodeWasCorrectedV2>(When);
+            Register<AddressHouseNumberWasCorrectedV2>(When);
             Register<AddressWasRemovedV2>(When);
             Register<AddressWasRemovedBecauseHouseNumberWasRemoved>(When);
         }
@@ -197,6 +199,19 @@ namespace AddressRegistry.StreetName
         private void When(AddressPostalCodeWasCorrectedV2 @event)
         {
             PostalCode = new PostalCode(@event.PostalCode);
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressHouseNumberWasCorrectedV2 @event)
+        {
+            HouseNumber = new HouseNumber(@event.HouseNumber);
+
+            foreach (var boxNumberPersistentLocalId in @event.BoxNumberPersistentLocalIds)
+            {
+                var boxNumberAddress = _children.Single(x => x.AddressPersistentLocalId == boxNumberPersistentLocalId);
+                boxNumberAddress.HouseNumber = new HouseNumber(@event.HouseNumber);
+            }
 
             _lastEvent = @event;
         }

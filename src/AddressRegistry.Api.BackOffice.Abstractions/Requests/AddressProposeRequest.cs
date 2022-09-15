@@ -83,7 +83,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
                 postalCode,
                 postalCodeMunicipalityId,
                 addressPersistentLocalId,
-                new HouseNumber(Huisnummer),
+                HouseNumber.Create(Huisnummer),
                 string.IsNullOrWhiteSpace(Busnummer) ? null : new BoxNumber(Busnummer),
                 PositieGeometrieMethode.Map(),
                 PositieSpecificatie.Map(),

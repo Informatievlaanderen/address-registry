@@ -223,35 +223,35 @@ namespace AddressRegistry.StreetName
         public void ApproveAddress(AddressPersistentLocalId addressPersistentLocalId)
         {
             StreetNameAddresses
-                .GetByPersistentLocalId(addressPersistentLocalId)
+                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
                 .Approve();
         }
 
         public void RejectAddress(AddressPersistentLocalId addressPersistentLocalId)
         {
             StreetNameAddresses
-                .GetByPersistentLocalId(addressPersistentLocalId)
+                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
                 .Reject();
         }
 
         public void DeregulateAddress(AddressPersistentLocalId addressPersistentLocalId)
         {
             StreetNameAddresses
-                .GetByPersistentLocalId(addressPersistentLocalId)
+                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
                 .Deregulate();
         }
 
         public void RegularizeAddress(AddressPersistentLocalId addressPersistentLocalId)
         {
             StreetNameAddresses
-                .GetByPersistentLocalId(addressPersistentLocalId)
+                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
                 .Regularize();
         }
 
         public void RetireAddress(AddressPersistentLocalId addressPersistentLocalId)
         {
             StreetNameAddresses
-                .GetByPersistentLocalId(addressPersistentLocalId)
+                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
                 .Retire();
         }
 
@@ -263,14 +263,14 @@ namespace AddressRegistry.StreetName
             IMunicipalities municipalities)
         {
             StreetNameAddresses
-                .GetByPersistentLocalId(addressPersistentLocalId)
+                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
                 .ChangePosition(geometryMethod, geometrySpecification, position, GetMunicipalityData(municipalities));
         }
 
         public void ChangeAddressPostalCode(AddressPersistentLocalId addressPersistentLocalId, PostalCode postalCode)
         {
             StreetNameAddresses
-                .GetByPersistentLocalId(addressPersistentLocalId)
+                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
                 .ChangePostalCode(postalCode);
         }
 
@@ -282,20 +282,43 @@ namespace AddressRegistry.StreetName
             IMunicipalities municipalities)
         {
             StreetNameAddresses
-                .GetByPersistentLocalId(addressPersistentLocalId)
+                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
                 .CorrectPosition(geometryMethod, geometrySpecification, position, GetMunicipalityData(municipalities));
         }
 
         public void CorrectAddressPostalCode(AddressPersistentLocalId addressPersistentLocalId, PostalCode postalCode, MunicipalityId municipalityIdByPostalCode)
         {
+            StreetNameAddresses
+                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
+                .CorrectPostalCode(postalCode, () => GuardPostalCodeMunicipalityMatchesStreetNameMunicipality(municipalityIdByPostalCode));
+        }
+
+        private void GuardPostalCodeMunicipalityMatchesStreetNameMunicipality(MunicipalityId municipalityIdByPostalCode)
+        {
             if (municipalityIdByPostalCode != MunicipalityId)
             {
                 throw new PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException();
             }
+        }
+
+        public void CorrectAddressHouseNumber(AddressPersistentLocalId addressPersistentLocalId, HouseNumber houseNumber)
+        {
+            if (StreetNameAddresses.HasActiveAddressForOtherThan(houseNumber, addressPersistentLocalId))
+            {
+                throw new ParentAddressAlreadyExistsException();
+            }
 
             StreetNameAddresses
-                .GetByPersistentLocalId(addressPersistentLocalId)
-                .CorrectPostalCode(postalCode);
+                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
+                .CorrectHouseNumber(houseNumber, () => GuardHouseNumberAddressIsUnique(addressPersistentLocalId, houseNumber));
+        }
+
+        private void GuardHouseNumberAddressIsUnique(AddressPersistentLocalId addressPersistentLocalId, HouseNumber houseNumber)
+        {
+            if (StreetNameAddresses.HasActiveAddressForOtherThan(houseNumber, addressPersistentLocalId))
+            {
+                throw new ParentAddressAlreadyExistsException();
+            }
         }
 
         public void RemoveAddress(AddressPersistentLocalId addressPersistentLocalId)

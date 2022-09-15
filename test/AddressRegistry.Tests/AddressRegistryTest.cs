@@ -2,6 +2,7 @@ namespace AddressRegistry.Tests
 {
     using System.Collections.Generic;
     using Autofac;
+    using AutoFixture;
     using BackOffice.Infrastructure;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore.Autofac;
@@ -27,6 +28,7 @@ namespace AddressRegistry.Tests
         {
             Fixture = new Fixture();
             Fixture.Register(() => (ISnapshotStrategy)NoSnapshotStrategy.Instance);
+            Fixture.Customize(new WithValidHouseNumber());
         }
 
         protected override void ConfigureCommandHandling(ContainerBuilder builder)

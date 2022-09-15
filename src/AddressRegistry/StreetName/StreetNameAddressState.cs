@@ -183,6 +183,12 @@ namespace AddressRegistry.StreetName
         {
             PostalCode = new PostalCode(@event.PostalCode);
 
+            foreach (var boxNumberPersistentLocalId in @event.BoxNumberPersistentLocalIds)
+            {
+                var boxNumberAddress = _children.Single(x => x.AddressPersistentLocalId == boxNumberPersistentLocalId);
+                boxNumberAddress.PostalCode = new PostalCode(@event.PostalCode);
+            }
+
             _lastEvent = @event;
         }
 
@@ -199,6 +205,12 @@ namespace AddressRegistry.StreetName
         private void When(AddressPostalCodeWasCorrectedV2 @event)
         {
             PostalCode = new PostalCode(@event.PostalCode);
+
+            foreach (var boxNumberPersistentLocalId in @event.BoxNumberPersistentLocalIds)
+            {
+                var boxNumberAddress = _children.Single(x => x.AddressPersistentLocalId == boxNumberPersistentLocalId);
+                boxNumberAddress.PostalCode = new PostalCode(@event.PostalCode);
+            }
 
             _lastEvent = @event;
         }

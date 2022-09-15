@@ -52,8 +52,7 @@ namespace AddressRegistry.StreetName.Events
             BoxNumber? boxNumber,
             GeometryMethod geometryMethod,
             GeometrySpecification geometrySpecification,
-            ExtendedWkbGeometry extendedWkbGeometry
-            )
+            ExtendedWkbGeometry extendedWkbGeometry)
         {
             StreetNamePersistentLocalId = streetNamePersistentLocalId;
             AddressPersistentLocalId = addressPersistentLocal;

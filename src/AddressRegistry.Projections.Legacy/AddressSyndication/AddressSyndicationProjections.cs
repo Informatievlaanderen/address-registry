@@ -494,6 +494,15 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     message,
                     x => x.PostalCode = message.Message.PostalCode,
                     ct);
+
+                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
+                {
+                    await context.CreateNewAddressSyndicationItem(
+                        boxNumberPersistentLocalId,
+                        message,
+                        x => x.PostalCode = message.Message.PostalCode,
+                        ct);
+                }
             });
 
             When<Envelope<AddressPostalCodeWasCorrectedV2>>(async (context, message, ct) =>
@@ -503,6 +512,15 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     message,
                     x => x.PostalCode = message.Message.PostalCode,
                     ct);
+
+                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
+                {
+                    await context.CreateNewAddressSyndicationItem(
+                        boxNumberPersistentLocalId,
+                        message,
+                        x => x.PostalCode = message.Message.PostalCode,
+                        ct);
+                }
             });
 
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>

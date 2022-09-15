@@ -177,6 +177,16 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
                     ct);
 
                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+
+                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
+                {
+                    var boxNumberItem = await context.FindAndUpdateAddressDetail(
+                        boxNumberPersistentLocalId,
+                        x => x.PostalCode = message.Message.PostalCode,
+                        ct);
+
+                    UpdateVersionTimestamp(boxNumberItem, message.Message.Provenance.Timestamp);
+                }
             });
 
             When<Envelope<AddressPostalCodeWasCorrectedV2>>(async (context, message, ct) =>
@@ -187,6 +197,16 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
                     ct);
 
                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+
+                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
+                {
+                    var boxNumberItem = await context.FindAndUpdateAddressDetail(
+                        boxNumberPersistentLocalId,
+                        x => x.PostalCode = message.Message.PostalCode,
+                        ct);
+
+                    UpdateVersionTimestamp(boxNumberItem, message.Message.Provenance.Timestamp);
+                }
             });
 
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>

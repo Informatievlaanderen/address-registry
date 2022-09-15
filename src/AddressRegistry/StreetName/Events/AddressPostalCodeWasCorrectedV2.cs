@@ -21,6 +21,9 @@ namespace AddressRegistry.StreetName.Events
         [EventPropertyDescription("Objectidentificator van het adres.")]
         public int AddressPersistentLocalId { get; }
 
+        [EventPropertyDescription("Objectidentificatoren van de gekoppelde busnummers.")]
+        public IEnumerable<int> BoxNumberPersistentLocalIds { get; }
+
         [EventPropertyDescription("Postcode (= objectidentificator) van het PostInfo-object dat deel uitmaakt van het adres.")]
         public string PostalCode { get; }
 
@@ -30,10 +33,12 @@ namespace AddressRegistry.StreetName.Events
         public AddressPostalCodeWasCorrectedV2(
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             AddressPersistentLocalId addressPersistentLocalId,
+            IEnumerable<AddressPersistentLocalId> boxNumberPersistentLocalIds,
             PostalCode postalCode)
         {
             AddressPersistentLocalId = addressPersistentLocalId;
             StreetNamePersistentLocalId = streetNamePersistentLocalId;
+            BoxNumberPersistentLocalIds = boxNumberPersistentLocalIds.Select(x => (int)x).ToList();
             PostalCode = postalCode;
         }
 
@@ -41,11 +46,13 @@ namespace AddressRegistry.StreetName.Events
         private AddressPostalCodeWasCorrectedV2(
             int streetNamePersistentLocalId,
             int addressPersistentLocalId,
+            IEnumerable<int> boxNumberPersistentLocalIds,
             string postalCode,
             ProvenanceData provenance)
             : this(
                 new StreetNamePersistentLocalId(streetNamePersistentLocalId),
                 new AddressPersistentLocalId(addressPersistentLocalId),
+                boxNumberPersistentLocalIds.Select(x => new AddressPersistentLocalId(x)),
                 new PostalCode(postalCode))
             => ((ISetProvenance)this).SetProvenance(provenance.ToProvenance());
 
@@ -57,6 +64,7 @@ namespace AddressRegistry.StreetName.Events
             fields.Add(StreetNamePersistentLocalId.ToString(CultureInfo.InvariantCulture));
             fields.Add(AddressPersistentLocalId.ToString(CultureInfo.InvariantCulture));
             fields.Add(PostalCode);
+            fields.AddRange(BoxNumberPersistentLocalIds.Select(x => x.ToString()));
             return fields;
         }
 

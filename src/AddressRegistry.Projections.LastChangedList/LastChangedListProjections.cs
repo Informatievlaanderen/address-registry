@@ -117,6 +117,11 @@ namespace AddressRegistry.Projections.LastChangedList
             When<Envelope<AddressPostalCodeWasCorrectedV2>>(async (context, message, ct) =>
             {
                 await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
+
+                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
+                {
+                    await GetLastChangedRecordsAndUpdatePosition(boxNumberPersistentLocalId.ToString(), message.Position, context, ct);
+                }
             });
 
             When<Envelope<AddressPostalCodeWasRemoved>>(async (context, message, ct) =>
@@ -275,6 +280,11 @@ namespace AddressRegistry.Projections.LastChangedList
             When<Envelope<AddressPostalCodeWasChangedV2>>(async (context, message, ct) =>
             {
                 await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
+
+                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
+                {
+                    await GetLastChangedRecordsAndUpdatePosition(boxNumberPersistentLocalId.ToString(), message.Position, context, ct);
+                }
             });
 
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>

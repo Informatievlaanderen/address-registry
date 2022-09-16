@@ -6,7 +6,6 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
     using System.Threading;
     using System.Threading.Tasks;
     using Address;
-    using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers;
     using Autofac;
@@ -17,7 +16,6 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
     using FluentAssertions;
     using Infrastructure;
     using Moq;
-    using Projections.Syndication.Municipality;
     using Projections.Syndication.PostalInfo;
     using SqlStreamStore;
     using SqlStreamStore.Streams;

@@ -80,7 +80,7 @@ namespace AddressRegistry.Api.BackOffice
                     HouseNumberHasInvalidFormatException _ =>
                         CreateValidationException(
                             ValidationErrors.Address.HouseNumberInvalid,
-                            nameof(request.Busnummer),
+                            nameof(request.Huisnummer),
                             ValidationErrorMessages.Address.HouseNumberInvalid),
 
                     BoxNumberAlreadyExistsException _ =>

@@ -11,21 +11,21 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using FluentAssertions;
-    using global::AutoFixture;
     using Infrastructure;
     using SqlStreamStore;
     using SqlStreamStore.Streams;
     using StreetName;
     using Xunit;
     using Xunit.Abstractions;
+    using global::AutoFixture;
 
-    public class WhenChangingAddressPostalCode : AddressRegistryBackOfficeTest
+    public class WhenCorrectingAddressHouseNumber : AddressRegistryBackOfficeTest
     {
         private readonly TestBackOfficeContext _backOfficeContext;
         private readonly IdempotencyContext _idempotencyContext;
         private readonly IStreetNames _streetNames;
 
-        public WhenChangingAddressPostalCode(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public WhenCorrectingAddressHouseNumber(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             Fixture.Customize(new WithFixedMunicipalityId());
 
@@ -37,42 +37,41 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
         [Fact]
         public async Task GivenRequest_ThenPersistentLocalIdETagResponse()
         {
-            var municipalityId = Fixture.Create<MunicipalityId>();
-            var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
-            var addressPersistentLocalId = new AddressPersistentLocalId(456);
+            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
+            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentIds(addressPersistentLocalId, streetNamePersistentLocalId);
 
             ImportMigratedStreetName(
                 new StreetNameId(Guid.NewGuid()),
                 streetNamePersistentLocalId,
-                new NisCode("12345"));
+                Fixture.Create<NisCode>());
 
             ProposeAddress(
                 streetNamePersistentLocalId,
                 addressPersistentLocalId,
-                new PostalCode("2018"),
+                Fixture.Create<PostalCode>(),
                 Fixture.Create<MunicipalityId>(),
-                new HouseNumber("11"),
-                null
-                );
+                new HouseNumber("10"),
+                null);
 
-            var sut = new AddressChangePostalCodeHandler(
+            var sut = new AddressCorrectHouseNumberHandler(
                 Container.Resolve<ICommandHandlerResolver>(),
                 _streetNames,
                 _backOfficeContext,
                 _idempotencyContext);
 
             // Act
-            var result = await sut.Handle(new AddressChangePostalCodeRequest()
+            var result = await sut.Handle(new AddressCorrectHouseNumberRequest
             {
                 PersistentLocalId = addressPersistentLocalId,
-                PostInfoId = $"https://data.vlaanderen.be/id/postinfo/2019",
+                Huisnummer = "20"
             },
             CancellationToken.None);
 
             // Assert
-            var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))), 2, 1); //1 = version of stream (zero based)
+            var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(
+                new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))), 2, 1);
             stream.Messages.First().JsonMetadata.Should().Contain(result.LastEventHash);
         }
     }

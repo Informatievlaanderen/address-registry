@@ -17,6 +17,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
             public const string PostalCodeDoesNotExist = "AdresPostinfoNietGekendValidatie";
 
             public const string HouseNumberInvalid = "AdresOngeldigHuisnummerformaat";
+            public const string HouseNumberOfBoxNumberCannotBeChanged = "AdresCorrectieHuisnummermetBusnummer";
 
             public const string BoxNumberInvalid = "AdresOngeldigBusnummerformaat";
 
@@ -61,6 +62,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
                 => $"De postinfo '{postInfoPuri}' is niet gekend in het postinforegister.";
 
             public const string HouseNumberInvalid = "Ongeldig huisnummerformaat.";
+            public const string HouseNumberOfBoxNumberCannotBeChanged = "Te corrigeren huisnummer mag geen busnummer bevatten.";
 
             public const string BoxNumberInvalid = "Ongeldig busnummerformaat.";
 

@@ -1,3 +1,11 @@
+# [3.49.0](https://github.com/informatievlaanderen/address-registry/compare/v3.48.1...v3.49.0) (2022-09-16)
+
+
+### Features
+
+* correct address house number backoffice ([62978f1](https://github.com/informatievlaanderen/address-registry/commit/62978f1a3d19f8d56f9ce03188f13e867c6685fe))
+* correct address house number projections ([84ff850](https://github.com/informatievlaanderen/address-registry/commit/84ff850063315814f978280cee6ec3190b27ecea))
+
 ## [3.48.1](https://github.com/informatievlaanderen/address-registry/compare/v3.48.0...v3.48.1) (2022-09-16)
 
 

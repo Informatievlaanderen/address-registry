@@ -1,3 +1,10 @@
+## [3.48.1](https://github.com/informatievlaanderen/address-registry/compare/v3.48.0...v3.48.1) (2022-09-16)
+
+
+### Bug Fixes
+
+* include box numbers in postal code changed and corrected events ([a3a5faa](https://github.com/informatievlaanderen/address-registry/commit/a3a5faad89931b438b52548aa636bedf432ad2fe))
+
 # [3.48.0](https://github.com/informatievlaanderen/address-registry/compare/v3.47.2...v3.48.0) (2022-09-16)
 
 

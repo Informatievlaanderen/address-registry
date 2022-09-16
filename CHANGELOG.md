@@ -1,3 +1,10 @@
+# [3.48.0](https://github.com/informatievlaanderen/address-registry/compare/v3.47.2...v3.48.0) (2022-09-16)
+
+
+### Features
+
+* correct address house number domain ([7a13c3d](https://github.com/informatievlaanderen/address-registry/commit/7a13c3db9961f8ce7a4926de220c4f6365ee6204))
+
 ## [3.47.2](https://github.com/informatievlaanderen/address-registry/compare/v3.47.1...v3.47.2) (2022-09-16)
 
 

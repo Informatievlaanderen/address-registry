@@ -10,7 +10,7 @@ namespace AddressRegistry.StreetName.Events
 
     [EventTags(EventTag.For.Edit, EventTag.For.Sync)]
     [EventName(EventName)]
-    [EventDescription("De postcode van het adres werd gewijzigd.")]
+    [EventDescription("De postcode werd gewijzigd.")]
     public class AddressPostalCodeWasChangedV2 : IStreetNameEvent, IHasAddressPersistentLocalId
     {
         public const string EventName = "AddressPostalCodeWasChangedV2"; // BE CAREFUL CHANGING THIS!!

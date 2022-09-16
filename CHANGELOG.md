@@ -1,3 +1,10 @@
+## [3.47.2](https://github.com/informatievlaanderen/address-registry/compare/v3.47.1...v3.47.2) (2022-09-16)
+
+
+### Performance Improvements
+
+* recreate wfs view with indexed view ([6a03717](https://github.com/informatievlaanderen/address-registry/commit/6a037173f561446ba78d1e21455f3f88ff4fce4a))
+
 ## [3.47.1](https://github.com/informatievlaanderen/address-registry/compare/v3.47.0...v3.47.1) (2022-09-15)
 
 

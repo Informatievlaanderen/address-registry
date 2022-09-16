@@ -209,6 +209,26 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
                 }
             });
 
+            When<Envelope<AddressHouseNumberWasCorrectedV2>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    item => item.HouseNumber = message.Message.HouseNumber,
+                    ct);
+
+                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+
+                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
+                {
+                    var boxNumberItem = await context.FindAndUpdateAddressDetail(
+                        boxNumberPersistentLocalId,
+                        x => x.HouseNumber = message.Message.HouseNumber,
+                        ct);
+
+                    UpdateVersionTimestamp(boxNumberItem, message.Message.Provenance.Timestamp);
+                }
+            });
+
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressDetail(

@@ -6,13 +6,13 @@
     using AddressRegistry.StreetName.Events;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
 
-    public static class AddressPostalCodeWasChangedV2Extensions
+    public static class AddressPostalCodeWasCorrectedV2Extensions
     {
-        public static AddressPostalCodeWasChangedV2 WithAddressPersistentLocalId(
-            this AddressPostalCodeWasChangedV2 @event,
+        public static AddressPostalCodeWasCorrectedV2 WithAddressPersistentLocalId(
+            this AddressPostalCodeWasCorrectedV2 @event,
             AddressPersistentLocalId addressPersistentLocalId)
         {
-            var newEvent = new AddressPostalCodeWasChangedV2(
+            var newEvent = new AddressPostalCodeWasCorrectedV2(
                 new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId),
                 addressPersistentLocalId,
                 @event.BoxNumberPersistentLocalIds.Select(x => new AddressPersistentLocalId(x)),
@@ -22,11 +22,11 @@
             return newEvent;
         }
 
-        public static AddressPostalCodeWasChangedV2 WithBoxNumberPersistentLocalIds(
-            this AddressPostalCodeWasChangedV2 @event,
+        public static AddressPostalCodeWasCorrectedV2 WithBoxNumberPersistentLocalIds(
+            this AddressPostalCodeWasCorrectedV2 @event,
             IEnumerable<AddressPersistentLocalId> boxNumberAddressPersistentLocalId)
         {
-            var newEvent = new AddressPostalCodeWasChangedV2(
+            var newEvent = new AddressPostalCodeWasCorrectedV2(
                 new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId),
                 new AddressPersistentLocalId(@event.AddressPersistentLocalId),
                 boxNumberAddressPersistentLocalId,
@@ -35,11 +35,11 @@
 
             return newEvent;
         }
-        public static AddressPostalCodeWasChangedV2 WithPostalCode(
-            this AddressPostalCodeWasChangedV2 @event,
+        public static AddressPostalCodeWasCorrectedV2 WithPostalCode(
+            this AddressPostalCodeWasCorrectedV2 @event,
             PostalCode postalCode)
         {
-            var newEvent = new AddressPostalCodeWasChangedV2(
+            var newEvent = new AddressPostalCodeWasCorrectedV2(
                 new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId),
                 new AddressPersistentLocalId(@event.AddressPersistentLocalId),
                 @event.BoxNumberPersistentLocalIds.Select(x => new AddressPersistentLocalId(x)),

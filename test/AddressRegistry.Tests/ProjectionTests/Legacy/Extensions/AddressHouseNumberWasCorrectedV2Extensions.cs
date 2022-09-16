@@ -6,44 +6,44 @@
     using AddressRegistry.StreetName.Events;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
 
-    public static class AddressPostalCodeWasChangedV2Extensions
+    public static class AddressHouseNumberWasCorrectedV2Extensions
     {
-        public static AddressPostalCodeWasChangedV2 WithAddressPersistentLocalId(
-            this AddressPostalCodeWasChangedV2 @event,
+        public static AddressHouseNumberWasCorrectedV2 WithAddressPersistentLocalId(
+            this AddressHouseNumberWasCorrectedV2 @event,
             AddressPersistentLocalId addressPersistentLocalId)
         {
-            var newEvent = new AddressPostalCodeWasChangedV2(
+            var newEvent = new AddressHouseNumberWasCorrectedV2(
                 new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId),
                 addressPersistentLocalId,
                 @event.BoxNumberPersistentLocalIds.Select(x => new AddressPersistentLocalId(x)),
-                new PostalCode(@event.PostalCode));
+                new HouseNumber(@event.HouseNumber));
             ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
 
             return newEvent;
         }
 
-        public static AddressPostalCodeWasChangedV2 WithBoxNumberPersistentLocalIds(
-            this AddressPostalCodeWasChangedV2 @event,
+        public static AddressHouseNumberWasCorrectedV2 WithBoxNumberPersistentLocalIds(
+            this AddressHouseNumberWasCorrectedV2 @event,
             IEnumerable<AddressPersistentLocalId> boxNumberAddressPersistentLocalId)
         {
-            var newEvent = new AddressPostalCodeWasChangedV2(
+            var newEvent = new AddressHouseNumberWasCorrectedV2(
                 new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId),
                 new AddressPersistentLocalId(@event.AddressPersistentLocalId),
                 boxNumberAddressPersistentLocalId,
-                new PostalCode(@event.PostalCode));
+                new HouseNumber(@event.HouseNumber));
             ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
 
             return newEvent;
         }
-        public static AddressPostalCodeWasChangedV2 WithPostalCode(
-            this AddressPostalCodeWasChangedV2 @event,
-            PostalCode postalCode)
+        public static AddressHouseNumberWasCorrectedV2 WithHouseNumber(
+            this AddressHouseNumberWasCorrectedV2 @event,
+            HouseNumber houseNumber)
         {
-            var newEvent = new AddressPostalCodeWasChangedV2(
+            var newEvent = new AddressHouseNumberWasCorrectedV2(
                 new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId),
                 new AddressPersistentLocalId(@event.AddressPersistentLocalId),
                 @event.BoxNumberPersistentLocalIds.Select(x => new AddressPersistentLocalId(x)),
-                postalCode);
+                houseNumber);
             ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
 
             return newEvent;

@@ -248,6 +248,34 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
                 }
             });
 
+            When<Envelope<AddressHouseNumberWasCorrectedV2>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressListItemV2(
+                    message.Message.AddressPersistentLocalId,
+                    item =>
+                    {
+                        item.HouseNumber = message.Message.HouseNumber;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+
+                UpdateHash(item, message);
+
+                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
+                {
+                    var boxNumberItem = await context.FindAndUpdateAddressListItemV2(
+                        boxNumberPersistentLocalId,
+                        boxNumberItem =>
+                        {
+                            boxNumberItem.HouseNumber = message.Message.HouseNumber;
+                            UpdateVersionTimestamp(boxNumberItem, message.Message.Provenance.Timestamp);
+                        },
+                        ct);
+
+                    UpdateHash(boxNumberItem, message);
+                }
+            });
+
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressListItemV2(

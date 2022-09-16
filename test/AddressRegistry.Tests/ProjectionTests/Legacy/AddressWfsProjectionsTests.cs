@@ -444,13 +444,26 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
         [Fact]
         public async Task WhenAddressPostalCodeWasCorrectedV2()
         {
-            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(1))
+                .WithPostalCode(new PostalCode("9000"));
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
             };
 
-            var addressPostalCodeWasCorrectedV2 = _fixture.Create<AddressPostalCodeWasCorrectedV2>();
+            var boxNumberAddressWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(2))
+                .WithPostalCode(new PostalCode("9000"));
+            var boxNumberProposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, boxNumberAddressWasProposedV2.GetHash() }
+            };
+
+            var addressPostalCodeWasCorrectedV2 = _fixture.Create<AddressPostalCodeWasCorrectedV2>()
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(addressWasProposedV2.AddressPersistentLocalId))
+                .WithBoxNumberPersistentLocalIds(new [] { new AddressPersistentLocalId(boxNumberAddressWasProposedV2.AddressPersistentLocalId) })
+                .WithPostalCode(new PostalCode("2000"));
             var addressPostalCodeWasCorrectedV2Metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressPostalCodeWasCorrectedV2.GetHash() }
@@ -459,13 +472,66 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
             await Sut
                 .Given(
                     new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasProposedV2>(new Envelope(boxNumberAddressWasProposedV2, boxNumberProposedMetadata)),
                     new Envelope<AddressPostalCodeWasCorrectedV2>(new Envelope(addressPostalCodeWasCorrectedV2, addressPostalCodeWasCorrectedV2Metadata)))
                 .Then(async ct =>
                 {
                     var item = (await ct.AddressWfsItems.FindAsync(addressPostalCodeWasCorrectedV2.AddressPersistentLocalId));
                     item.Should().NotBeNull();
-                    item.PostalCode.Should().Be(addressPostalCodeWasCorrectedV2.PostalCode);
+                    item!.PostalCode.Should().Be(addressPostalCodeWasCorrectedV2.PostalCode);
                     item.VersionTimestamp.Should().Be(addressPostalCodeWasCorrectedV2.Provenance.Timestamp);
+
+                    var boxNumberItem = await ct.AddressWfsItems.FindAsync(boxNumberAddressWasProposedV2.AddressPersistentLocalId);
+                    boxNumberItem.Should().NotBeNull();
+                    boxNumberItem!.PostalCode.Should().BeEquivalentTo(addressPostalCodeWasCorrectedV2.PostalCode);
+                    boxNumberItem.VersionTimestamp.Should().Be(addressPostalCodeWasCorrectedV2.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressHouseNumberWasCorrectedV2()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(1))
+                .WithHouseNumber(new HouseNumber("101"));
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var boxNumberAddressWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(2))
+                .WithHouseNumber(new HouseNumber("101"));
+            var boxNumberProposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, boxNumberAddressWasProposedV2.GetHash() }
+            };
+
+            var addressHouseNumberWasCorrectedV2 = _fixture.Create<AddressHouseNumberWasCorrectedV2>()
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(addressWasProposedV2.AddressPersistentLocalId))
+                .WithBoxNumberPersistentLocalIds(new [] { new AddressPersistentLocalId(boxNumberAddressWasProposedV2.AddressPersistentLocalId) })
+                .WithHouseNumber(new HouseNumber("102"));
+            var addressHouseNumberWasCorrectedV2Metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressHouseNumberWasCorrectedV2.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasProposedV2>(new Envelope(boxNumberAddressWasProposedV2, boxNumberProposedMetadata)),
+                    new Envelope<AddressHouseNumberWasCorrectedV2>(new Envelope(addressHouseNumberWasCorrectedV2, addressHouseNumberWasCorrectedV2Metadata)))
+                .Then(async ct =>
+                {
+                    var item = await ct.AddressWfsItems.FindAsync(addressHouseNumberWasCorrectedV2.AddressPersistentLocalId);
+                    item.Should().NotBeNull();
+                    item!.HouseNumber.Should().Be(addressHouseNumberWasCorrectedV2.HouseNumber);
+                    item.VersionTimestamp.Should().Be(addressHouseNumberWasCorrectedV2.Provenance.Timestamp);
+
+                    var boxNumberItem = await ct.AddressWfsItems.FindAsync(boxNumberAddressWasProposedV2.AddressPersistentLocalId);
+                    boxNumberItem.Should().NotBeNull();
+                    boxNumberItem!.HouseNumber.Should().BeEquivalentTo(addressHouseNumberWasCorrectedV2.HouseNumber);
+                    boxNumberItem.VersionTimestamp.Should().Be(addressHouseNumberWasCorrectedV2.Provenance.Timestamp);
                 });
         }
 

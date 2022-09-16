@@ -231,6 +231,62 @@ namespace AddressRegistry.Projections.Legacy.AddressDetailV2
                 }
             });
 
+            When<Envelope<AddressPostalCodeWasCorrectedV2>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressDetailV2(
+                    message.Message.AddressPersistentLocalId,
+                    item =>
+                    {
+                        item.PostalCode = message.Message.PostalCode;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+
+                UpdateHash(item, message);
+
+                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
+                {
+                    var boxNumberItem = await context.FindAndUpdateAddressDetailV2(
+                        boxNumberPersistentLocalId,
+                        boxNumberItem =>
+                        {
+                            boxNumberItem.PostalCode = message.Message.PostalCode;
+                            UpdateVersionTimestamp(boxNumberItem, message.Message.Provenance.Timestamp);
+                        },
+                        ct);
+
+                    UpdateHash(boxNumberItem, message);
+                }
+            });
+
+            When<Envelope<AddressHouseNumberWasCorrectedV2>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressDetailV2(
+                    message.Message.AddressPersistentLocalId,
+                    item =>
+                    {
+                        item.HouseNumber = message.Message.HouseNumber;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+
+                UpdateHash(item, message);
+
+                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
+                {
+                    var boxNumberItem = await context.FindAndUpdateAddressDetailV2(
+                        boxNumberPersistentLocalId,
+                        boxNumberItem =>
+                        {
+                            boxNumberItem.HouseNumber = message.Message.HouseNumber;
+                            UpdateVersionTimestamp(boxNumberItem, message.Message.Provenance.Timestamp);
+                        },
+                        ct);
+
+                    UpdateHash(boxNumberItem, message);
+                }
+            });
+
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressDetailV2(
@@ -263,34 +319,6 @@ namespace AddressRegistry.Projections.Legacy.AddressDetailV2
                     ct);
 
                 UpdateHash(item, message);
-            });
-
-            When<Envelope<AddressPostalCodeWasCorrectedV2>>(async (context, message, ct) =>
-            {
-                var item = await context.FindAndUpdateAddressDetailV2(
-                    message.Message.AddressPersistentLocalId,
-                    item =>
-                    {
-                        item.PostalCode = message.Message.PostalCode;
-                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-                    },
-                    ct);
-
-                UpdateHash(item, message);
-
-                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
-                {
-                    var boxNumberItem = await context.FindAndUpdateAddressDetailV2(
-                        boxNumberPersistentLocalId,
-                        boxNumberItem =>
-                        {
-                            boxNumberItem.PostalCode = message.Message.PostalCode;
-                            UpdateVersionTimestamp(boxNumberItem, message.Message.Provenance.Timestamp);
-                        },
-                        ct);
-
-                    UpdateHash(boxNumberItem, message);
-                }
             });
 
             When<Envelope<AddressWasRemovedV2>>(async (context, message, ct) =>

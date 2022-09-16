@@ -523,6 +523,24 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                 }
             });
 
+            When<Envelope<AddressHouseNumberWasCorrectedV2>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressPersistentLocalId,
+                    message,
+                    x => x.HouseNumber = message.Message.HouseNumber,
+                    ct);
+
+                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
+                {
+                    await context.CreateNewAddressSyndicationItem(
+                        boxNumberPersistentLocalId,
+                        message,
+                        x => x.HouseNumber = message.Message.HouseNumber,
+                        ct);
+                }
+            });
+
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>
             {
                 await context.CreateNewAddressSyndicationItem(

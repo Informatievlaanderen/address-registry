@@ -124,6 +124,16 @@ namespace AddressRegistry.Projections.LastChangedList
                 }
             });
 
+            When<Envelope<AddressHouseNumberWasCorrectedV2>>(async (context, message, ct) =>
+            {
+                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
+
+                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
+                {
+                    await GetLastChangedRecordsAndUpdatePosition(boxNumberPersistentLocalId.ToString(), message.Position, context, ct);
+                }
+            });
+
             When<Envelope<AddressPostalCodeWasRemoved>>(async (context, message, ct) =>
             {
                 await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);

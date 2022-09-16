@@ -155,6 +155,14 @@ namespace AddressRegistry.Producer.Extensions
                 message.PostalCode,
                 message.Provenance.ToContract());
 
+        public static Contracts.AddressHouseNumberWasCorrectedV2 ToContract(this StreetNameAggregate.AddressHouseNumberWasCorrectedV2 message) =>
+            new Contracts.AddressHouseNumberWasCorrectedV2(
+                message.StreetNamePersistentLocalId,
+                message.AddressPersistentLocalId,
+                message.BoxNumberPersistentLocalIds,
+                message.HouseNumber,
+                message.Provenance.ToContract());
+
         public static Contracts.AddressPositionWasChanged ToContract(this StreetNameAggregate.AddressPositionWasChanged message) =>
             new Contracts.AddressPositionWasChanged(
                 message.StreetNamePersistentLocalId,

@@ -219,6 +219,20 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 }
             });
 
+            When<Envelope<AddressHouseNumberWasCorrectedV2>>(async (context, message, ct) =>
+            {
+                var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);
+                UpdateDbaseRecordField(item, record => record.huisnr.Value = message.Message.HouseNumber );
+                UpdateVersie(item, message.Message.Provenance.Timestamp);
+
+                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
+                {
+                    var boxNumberItem = await context.AddressExtractV2.FindAsync(boxNumberPersistentLocalId, cancellationToken: ct);
+                    UpdateDbaseRecordField(boxNumberItem, record => record.huisnr.Value = message.Message.HouseNumber );
+                    UpdateVersie(boxNumberItem, message.Message.Provenance.Timestamp);
+                }
+            });
+
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>
             {
                 var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);

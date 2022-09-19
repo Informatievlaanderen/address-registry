@@ -541,17 +541,14 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     message.Message.AddressPersistentLocalId,
                     message,
                     x => x.PostalCode = message.Message.PostalCode,
-                    x => x.PostalCode = message.Message.PostalCode,
+                    _ => { },
                     ct);
 
                 foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
                 {
-                    await context.CreateNewAddressSyndicationItem(
+                    await context.UpdateBoxNumber(
                         boxNumberPersistentLocalId,
-                        message,
-                        x => x.PostalCode = message.Message.PostalCode,
-                        x => x.PostalCode = message.Message.PostalCode,
-                        ct);
+                        x => x.PostalCode = message.Message.PostalCode);
                 }
             });
 
@@ -561,17 +558,14 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     message.Message.AddressPersistentLocalId,
                     message,
                     x => x.PostalCode = message.Message.PostalCode,
-                    x => x.PostalCode = message.Message.PostalCode,
+                    _ => {},
                     ct);
 
                 foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
                 {
-                    await context.CreateNewAddressSyndicationItem(
+                    await context.UpdateBoxNumber(
                         boxNumberPersistentLocalId,
-                        message,
-                        x => x.PostalCode = message.Message.PostalCode,
-                        x => x.PostalCode = message.Message.PostalCode,
-                        ct);
+                        x => x.PostalCode = message.Message.PostalCode);
                 }
             });
 
@@ -581,17 +575,14 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     message.Message.AddressPersistentLocalId,
                     message,
                     x => x.HouseNumber = message.Message.HouseNumber,
-                    x => x.HouseNumber = message.Message.HouseNumber,
+                    _ => {},
                     ct);
 
                 foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
                 {
-                    await context.CreateNewAddressSyndicationItem(
+                    await context.UpdateBoxNumber(
                         boxNumberPersistentLocalId,
-                        message,
-                        x => x.HouseNumber = message.Message.HouseNumber,
-                        x => x.HouseNumber = message.Message.HouseNumber,
-                        ct);
+                        x => x.HouseNumber = message.Message.HouseNumber);
                 }
             });
 

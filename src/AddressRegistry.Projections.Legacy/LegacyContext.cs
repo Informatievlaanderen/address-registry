@@ -26,7 +26,7 @@ namespace AddressRegistry.Projections.Legacy
         public DbSet<AddressListItemV2> AddressListV2 { get; set; }
 
         public DbSet<AddressSyndicationItem> AddressSyndication { get; set; }
-        public DbSet<AddressBoxNumberSyndicationItem> AddressBoxNumberSyndication { get; set; }
+        public DbSet<AddressBoxNumberSyndicationHelper> AddressBoxNumberSyndicationHelper { get; set; }
         public DbSet<RRStreetName> RRStreetNames { get; set; }
         public DbSet<KadStreetName> KadStreetNames { get; set; }
         public DbSet<RRAddress> RRAddresses { get; set; }

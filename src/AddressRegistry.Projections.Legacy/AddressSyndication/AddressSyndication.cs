@@ -93,6 +93,35 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
 
             return newItem;
         }
+
+        public AddressSyndicationItem CloneAndApplyEventInfoForBoxNumber(
+            AddressBoxNumberSyndicationHelper addressBoxNumberSyndicationHelper,
+            long position,
+            string eventName,
+            Instant timestamp,
+            Action<AddressSyndicationItem> applyEventInfoOn)
+        {
+            var newApply = new Action<AddressSyndicationItem>((item) =>
+            {
+                item.PostalCode = addressBoxNumberSyndicationHelper.PostalCode;
+                item.HouseNumber = addressBoxNumberSyndicationHelper.HouseNumber;
+                item.BoxNumber = addressBoxNumberSyndicationHelper.BoxNumber;
+                item.PointPosition = addressBoxNumberSyndicationHelper.PointPosition;
+                item.PositionMethod = addressBoxNumberSyndicationHelper.PositionMethod;
+                item.PositionSpecification = addressBoxNumberSyndicationHelper.PositionSpecification;
+                item.Status = addressBoxNumberSyndicationHelper.Status;
+                item.IsComplete = addressBoxNumberSyndicationHelper.IsComplete;
+                item.IsOfficiallyAssigned = addressBoxNumberSyndicationHelper.IsOfficiallyAssigned;
+                
+                applyEventInfoOn(item);
+            });
+
+            return CloneAndApplyEventInfo(
+                position,
+                eventName,
+                timestamp,
+                newApply);
+        }
     }
 
     public class AddressSyndicationConfiguration : IEntityTypeConfiguration<AddressSyndicationItem>

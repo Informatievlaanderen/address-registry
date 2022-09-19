@@ -348,7 +348,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                     b.ToView("RRStreetNames", "AddressRegistryLegacy");
                 });
 
-            modelBuilder.Entity("AddressRegistry.Projections.Legacy.AddressSyndication.AddressBoxNumberSyndicationItem", b =>
+            modelBuilder.Entity("AddressRegistry.Projections.Legacy.AddressSyndication.AddressBoxNumberSyndicationHelper", b =>
                 {
                     b.Property<int>("PersistentLocalId")
                         .ValueGeneratedOnAdd()
@@ -387,7 +387,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("PersistentLocalId"));
 
-                    b.ToTable("AddressBoxNumberSyndication", "AddressRegistryLegacy");
+                    b.ToTable("AddressBoxNumberSyndicationHelper", "AddressRegistryLegacy");
                 });
 
             modelBuilder.Entity("AddressRegistry.Projections.Legacy.AddressSyndication.AddressSyndicationItem", b =>

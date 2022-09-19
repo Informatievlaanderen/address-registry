@@ -1,18 +1,17 @@
 namespace AddressRegistry.Projections.Legacy.AddressSyndication
 {
-    using System;
-    using System.Linq;
-    using System.Text;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using System.Xml;
-    using System.Xml.Schema;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Microsoft.EntityFrameworkCore;
+    using System;
+    using System.Linq;
+    using System.Text;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using System.Xml;
 
     public static class AddressSyndicationExtensions
     {
@@ -22,65 +21,56 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             int addressPersistentLocalId,
             Envelope<T> message,
             Action<AddressSyndicationItem> applyEventInfoOn,
-            Action<AddressBoxNumberSyndicationItem> applyEventInfoOnBoxNumber,
             CancellationToken ct)
             where T : IHasProvenance, IMessage
         {
-            var addressSyndicationItem = await context.AddressSyndication.LatestPosition(addressPersistentLocalId, ct);
+            var addressSyndicationItem = await context
+                .AddressSyndication
+                .LatestPosition(addressPersistentLocalId, ct);
+            var addressBoxNumberSyndicationHelper = await context
+                .AddressBoxNumberSyndicationHelper
+                .FindAsync(new object[] {addressPersistentLocalId}, cancellationToken: ct);
 
             if (addressSyndicationItem == null)
                 throw DatabaseItemNotFound(addressPersistentLocalId);
 
             var provenance = message.Message.Provenance;
 
-            var newAddressSyndicationItem = addressSyndicationItem.CloneAndApplyEventInfo(
-                message.Position,
-                message.EventName,
-                provenance.Timestamp,
-                applyEventInfoOn);
+            var newAddressSyndicationItem = addressBoxNumberSyndicationHelper is not null
+                ? addressSyndicationItem.CloneAndApplyEventInfoForBoxNumber(
+                    addressBoxNumberSyndicationHelper,
+                    message.Position,
+                    message.EventName,
+                    provenance.Timestamp,
+                    applyEventInfoOn)
+                : addressSyndicationItem.CloneAndApplyEventInfo(
+                    message.Position,
+                    message.EventName,
+                    provenance.Timestamp,
+                    applyEventInfoOn);
 
             newAddressSyndicationItem.ApplyProvenance(provenance);
             newAddressSyndicationItem.SetEventData(message.Message, message.EventName);
-            var isBoxNumber = !string.IsNullOrWhiteSpace(newAddressSyndicationItem.BoxNumber);
-
-            if (isBoxNumber)
-            {
-                var boxNumber =
-                    await context
-                        .AddressBoxNumberSyndication
-                        .FindAsync(addressPersistentLocalId);
-
-                applyEventInfoOnBoxNumber(boxNumber);
-
-                newAddressSyndicationItem.PostalCode = boxNumber.PostalCode;
-                newAddressSyndicationItem.HouseNumber = boxNumber.HouseNumber;
-                newAddressSyndicationItem.BoxNumber = boxNumber.BoxNumber;
-                newAddressSyndicationItem.PointPosition = boxNumber.PointPosition;
-                newAddressSyndicationItem.PositionMethod = boxNumber.PositionMethod;
-                newAddressSyndicationItem.PositionSpecification = boxNumber.PositionSpecification;
-                newAddressSyndicationItem.Status = boxNumber.Status;
-                newAddressSyndicationItem.IsComplete = boxNumber.IsComplete;
-                newAddressSyndicationItem.IsOfficiallyAssigned = boxNumber.IsOfficiallyAssigned;
-
-                applyEventInfoOn(newAddressSyndicationItem);
-            }
 
             await context
                 .AddressSyndication
                 .AddAsync(newAddressSyndicationItem, ct);
         }
 
-        public static async Task UpdateBoxNumber(
+        public static async Task UpdateAddressBoxNumberSyndicationHelper(
             this LegacyContext context,
             int addressPersistentLocalId,
-            Action<AddressBoxNumberSyndicationItem> updateBoxNumber)
+            Action<AddressBoxNumberSyndicationHelper> updateBoxNumber,
+            CancellationToken ct)
         {
-            var boxNumber =
-                await context
-                    .AddressBoxNumberSyndication
-                    .FindAsync(addressPersistentLocalId);
+            var addressBoxNumberSyndicationHelper = await context
+                .AddressBoxNumberSyndicationHelper
+                .FindAsync(new object[] { addressPersistentLocalId }, cancellationToken: ct);
 
-            updateBoxNumber(boxNumber);
+            if (addressBoxNumberSyndicationHelper is not null)
+            {
+                updateBoxNumber(addressBoxNumberSyndicationHelper);
+            }
         }
 
         // Using PersistentLocalId
@@ -144,7 +134,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                    .Where(x => x.AddressId == addressId)
                    .OrderByDescending(x => x.Position)
                    .FirstOrDefaultAsync(ct);
-        
+
         public static void ApplyProvenance(this AddressSyndicationItem item, ProvenanceData provenance)
         {
             item.Application = provenance.Application;

@@ -1,16 +1,15 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
-
-#nullable disable
-
 namespace AddressRegistry.Projections.Legacy.Migrations
 {
-    public partial class AddAddressBoxNumberSyndication : Migration
+    using System;
+    using Microsoft.EntityFrameworkCore.Migrations;
+
+    #nullable disable
+    public partial class AddAddressBoxNumberSyndicationHelper : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "AddressBoxNumberSyndication",
+                name: "AddressBoxNumberSyndicationHelper",
                 schema: "AddressRegistryLegacy",
                 columns: table => new
                 {
@@ -28,7 +27,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AddressBoxNumberSyndication", x => x.PersistentLocalId)
+                    table.PrimaryKey("PK_AddressBoxNumberSyndicationHelper", x => x.PersistentLocalId)
                         .Annotation("SqlServer:Clustered", true);
                 });
         }
@@ -36,7 +35,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AddressBoxNumberSyndication",
+                name: "AddressBoxNumberSyndicationHelper",
                 schema: "AddressRegistryLegacy");
         }
     }

@@ -368,8 +368,8 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                 if (!string.IsNullOrWhiteSpace(addressSyndicationItem.BoxNumber))
                 {
                     await context
-                        .AddressBoxNumberSyndication
-                        .AddAsync(new AddressBoxNumberSyndicationItem
+                        .AddressBoxNumberSyndicationHelper
+                        .AddAsync(new AddressBoxNumberSyndicationHelper
                         {
                             PersistentLocalId = addressSyndicationItem.PersistentLocalId.Value,
                             PostalCode = addressSyndicationItem.PostalCode,
@@ -417,21 +417,24 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
 
                 if (!string.IsNullOrWhiteSpace(addressSyndicationItem.BoxNumber))
                 {
+                    var addressBoxNumberSyndicationHelper = new AddressBoxNumberSyndicationHelper
+                    {
+                        PersistentLocalId = addressSyndicationItem.PersistentLocalId.Value,
+                        PostalCode = addressSyndicationItem.PostalCode,
+                        HouseNumber = addressSyndicationItem.HouseNumber,
+                        BoxNumber = addressSyndicationItem.BoxNumber,
+                        PointPosition = addressSyndicationItem.PointPosition,
+                        PositionMethod = addressSyndicationItem.PositionMethod,
+                        PositionSpecification = addressSyndicationItem.PositionSpecification,
+                        Status = addressSyndicationItem.Status,
+                        IsComplete = addressSyndicationItem.IsComplete,
+                        IsOfficiallyAssigned = addressSyndicationItem.IsOfficiallyAssigned,
+                    };
+
                     await context
-                        .AddressBoxNumberSyndication
-                        .AddAsync(new AddressBoxNumberSyndicationItem
-                        {
-                            PersistentLocalId = addressSyndicationItem.PersistentLocalId.Value,
-                            PostalCode = addressSyndicationItem.PostalCode,
-                            HouseNumber = addressSyndicationItem.HouseNumber,
-                            BoxNumber = addressSyndicationItem.BoxNumber,
-                            PointPosition = addressSyndicationItem.PointPosition,
-                            PositionMethod = addressSyndicationItem.PositionMethod,
-                            PositionSpecification = addressSyndicationItem.PositionSpecification,
-                            Status = addressSyndicationItem.Status,
-                            IsComplete = addressSyndicationItem.IsComplete,
-                            IsOfficiallyAssigned = addressSyndicationItem.IsOfficiallyAssigned,
-                        });
+                        .AddressBoxNumberSyndicationHelper
+                        .AddAsync(addressBoxNumberSyndicationHelper);
+
                 }
             });
 
@@ -441,6 +444,10 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     message.Message.AddressPersistentLocalId,
                     message,
                     x => x.Status = AddressStatus.Current,
+                    ct);
+
+                await context.UpdateAddressBoxNumberSyndicationHelper(
+                    message.Message.AddressPersistentLocalId,
                     x => x.Status = AddressStatus.Current,
                     ct);
             });
@@ -451,6 +458,10 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     message.Message.AddressPersistentLocalId,
                     message,
                     x => x.Status = AddressStatus.Rejected,
+                    ct);
+
+                await context.UpdateAddressBoxNumberSyndicationHelper(
+                    message.Message.AddressPersistentLocalId,
                     x => x.Status = AddressStatus.Rejected,
                     ct);
             });
@@ -461,6 +472,10 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     message.Message.AddressPersistentLocalId,
                     message,
                     x => x.Status = AddressStatus.Rejected,
+                    ct);
+
+                await context.UpdateAddressBoxNumberSyndicationHelper(
+                    message.Message.AddressPersistentLocalId,
                     x => x.Status = AddressStatus.Rejected,
                     ct);
             });
@@ -471,6 +486,10 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     message.Message.AddressPersistentLocalId,
                     message,
                     x => x.Status = AddressStatus.Rejected,
+                    ct);
+
+                await context.UpdateAddressBoxNumberSyndicationHelper(
+                    message.Message.AddressPersistentLocalId,
                     x => x.Status = AddressStatus.Rejected,
                     ct);
             });
@@ -481,6 +500,10 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     message.Message.AddressPersistentLocalId,
                     message,
                     x => x.Status = AddressStatus.Rejected,
+                    ct);
+
+                await context.UpdateAddressBoxNumberSyndicationHelper(
+                    message.Message.AddressPersistentLocalId,
                     x => x.Status = AddressStatus.Rejected,
                     ct);
             });
@@ -491,6 +514,10 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     message.Message.AddressPersistentLocalId,
                     message,
                     x => x.IsOfficiallyAssigned = false,
+                    ct);
+
+                await context.UpdateAddressBoxNumberSyndicationHelper(
+                    message.Message.AddressPersistentLocalId,
                     x => x.IsOfficiallyAssigned = false,
                     ct);
             });
@@ -501,6 +528,10 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     message.Message.AddressPersistentLocalId,
                     message,
                     x => x.IsOfficiallyAssigned = true,
+                    ct);
+
+                await context.UpdateAddressBoxNumberSyndicationHelper(
+                    message.Message.AddressPersistentLocalId,
                     x => x.IsOfficiallyAssigned = true,
                     ct);
             });
@@ -511,6 +542,10 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     message.Message.AddressPersistentLocalId,
                     message,
                     x => x.Status = AddressStatus.Retired,
+                    ct);
+
+                await context.UpdateAddressBoxNumberSyndicationHelper(
+                    message.Message.AddressPersistentLocalId,
                     x => x.Status = AddressStatus.Retired,
                     ct);
             });
@@ -521,6 +556,10 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     message.Message.AddressPersistentLocalId,
                     message,
                     x => x.Status = AddressStatus.Retired,
+                    ct);
+
+                await context.UpdateAddressBoxNumberSyndicationHelper(
+                    message.Message.AddressPersistentLocalId,
                     x => x.Status = AddressStatus.Retired,
                     ct);
             });
@@ -531,6 +570,10 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     message.Message.AddressPersistentLocalId,
                     message,
                     x => x.Status = AddressStatus.Retired,
+                    ct);
+
+                await context.UpdateAddressBoxNumberSyndicationHelper(
+                    message.Message.AddressPersistentLocalId,
                     x => x.Status = AddressStatus.Retired,
                     ct);
             });
@@ -541,14 +584,14 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     message.Message.AddressPersistentLocalId,
                     message,
                     x => x.PostalCode = message.Message.PostalCode,
-                    _ => { },
                     ct);
 
                 foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
                 {
-                    await context.UpdateBoxNumber(
+                    await context.UpdateAddressBoxNumberSyndicationHelper(
                         boxNumberPersistentLocalId,
-                        x => x.PostalCode = message.Message.PostalCode);
+                        x => x.PostalCode = message.Message.PostalCode,
+                        ct);
                 }
             });
 
@@ -558,14 +601,14 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     message.Message.AddressPersistentLocalId,
                     message,
                     x => x.PostalCode = message.Message.PostalCode,
-                    _ => {},
                     ct);
 
                 foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
                 {
-                    await context.UpdateBoxNumber(
+                    await context.UpdateAddressBoxNumberSyndicationHelper(
                         boxNumberPersistentLocalId,
-                        x => x.PostalCode = message.Message.PostalCode);
+                        x => x.PostalCode = message.Message.PostalCode,
+                        ct);
                 }
             });
 
@@ -575,14 +618,14 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     message.Message.AddressPersistentLocalId,
                     message,
                     x => x.HouseNumber = message.Message.HouseNumber,
-                    _ => {},
                     ct);
 
                 foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
                 {
-                    await context.UpdateBoxNumber(
+                    await context.UpdateAddressBoxNumberSyndicationHelper(
                         boxNumberPersistentLocalId,
-                        x => x.HouseNumber = message.Message.HouseNumber);
+                        x => x.HouseNumber = message.Message.HouseNumber,
+                        ct);
                 }
             });
 
@@ -597,6 +640,10 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                         x.PositionSpecification = message.Message.GeometrySpecification;
                         x.PointPosition = message.Message.ExtendedWkbGeometry.ToByteArray();
                     },
+                    ct);
+
+                await context.UpdateAddressBoxNumberSyndicationHelper(
+                    message.Message.AddressPersistentLocalId,
                     x =>
                     {
                         x.PositionMethod = message.Message.GeometryMethod;
@@ -617,6 +664,10 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                         x.PositionSpecification = message.Message.GeometrySpecification;
                         x.PointPosition = message.Message.ExtendedWkbGeometry.ToByteArray();
                     },
+                    ct);
+
+                await context.UpdateAddressBoxNumberSyndicationHelper(
+                    message.Message.AddressPersistentLocalId,
                     x =>
                     {
                         x.PositionMethod = message.Message.GeometryMethod;
@@ -632,7 +683,6 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     message.Message.AddressPersistentLocalId,
                     message,
                     x => { },
-                    x => { },
                     ct);
             });
 
@@ -641,7 +691,6 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                 await context.CreateNewAddressSyndicationItem(
                     message.Message.AddressPersistentLocalId,
                     message,
-                    x => { },
                     x => { },
                     ct);
             });

@@ -22,7 +22,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             int addressPersistentLocalId,
             Envelope<T> message,
             Action<AddressSyndicationItem> applyEventInfoOn,
-            Action<AddressBoxNumberSyndicationItem> updateBoxNumber,
+            Action<AddressBoxNumberSyndicationItem> applyEventInfoOnBoxNumber,
             CancellationToken ct)
             where T : IHasProvenance, IMessage
         {
@@ -41,21 +41,46 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
 
             newAddressSyndicationItem.ApplyProvenance(provenance);
             newAddressSyndicationItem.SetEventData(message.Message, message.EventName);
+            var isBoxNumber = !string.IsNullOrWhiteSpace(newAddressSyndicationItem.BoxNumber);
 
-            await context
-                .AddressSyndication
-                .AddAsync(newAddressSyndicationItem, ct);
-
-            if (!string.IsNullOrWhiteSpace(newAddressSyndicationItem.BoxNumber))
+            if (isBoxNumber)
             {
                 var boxNumber =
                     await context
                         .AddressBoxNumberSyndication
-                        .FindAsync(newAddressSyndicationItem.PersistentLocalId
-                        .Value);
+                        .FindAsync(addressPersistentLocalId);
 
-                updateBoxNumber(boxNumber);
+                applyEventInfoOnBoxNumber(boxNumber);
+
+                newAddressSyndicationItem.PostalCode = boxNumber.PostalCode;
+                newAddressSyndicationItem.HouseNumber = boxNumber.HouseNumber;
+                newAddressSyndicationItem.BoxNumber = boxNumber.BoxNumber;
+                newAddressSyndicationItem.PointPosition = boxNumber.PointPosition;
+                newAddressSyndicationItem.PositionMethod = boxNumber.PositionMethod;
+                newAddressSyndicationItem.PositionSpecification = boxNumber.PositionSpecification;
+                newAddressSyndicationItem.Status = boxNumber.Status;
+                newAddressSyndicationItem.IsComplete = boxNumber.IsComplete;
+                newAddressSyndicationItem.IsOfficiallyAssigned = boxNumber.IsOfficiallyAssigned;
+
+                applyEventInfoOn(newAddressSyndicationItem);
             }
+
+            await context
+                .AddressSyndication
+                .AddAsync(newAddressSyndicationItem, ct);
+        }
+
+        public static async Task UpdateBoxNumber(
+            this LegacyContext context,
+            int addressPersistentLocalId,
+            Action<AddressBoxNumberSyndicationItem> updateBoxNumber)
+        {
+            var boxNumber =
+                await context
+                    .AddressBoxNumberSyndication
+                    .FindAsync(addressPersistentLocalId);
+
+            updateBoxNumber(boxNumber);
         }
 
         // Using PersistentLocalId

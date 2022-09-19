@@ -6,6 +6,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
     using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
+    using System.Xml.Schema;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
@@ -21,6 +22,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             int addressPersistentLocalId,
             Envelope<T> message,
             Action<AddressSyndicationItem> applyEventInfoOn,
+            Action<AddressBoxNumberSyndicationItem> updateBoxNumber,
             CancellationToken ct)
             where T : IHasProvenance, IMessage
         {
@@ -43,6 +45,17 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             await context
                 .AddressSyndication
                 .AddAsync(newAddressSyndicationItem, ct);
+
+            if (!string.IsNullOrWhiteSpace(newAddressSyndicationItem.BoxNumber))
+            {
+                var boxNumber =
+                    await context
+                        .AddressBoxNumberSyndication
+                        .FindAsync(newAddressSyndicationItem.PersistentLocalId
+                        .Value);
+
+                updateBoxNumber(boxNumber);
+            }
         }
 
         // Using PersistentLocalId

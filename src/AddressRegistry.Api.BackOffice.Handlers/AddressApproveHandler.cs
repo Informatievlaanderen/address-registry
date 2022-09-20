@@ -13,7 +13,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers
     using StreetName;
     using StreetName.Commands;
 
-    public class AddressApproveHandler : BusHandler, IRequestHandler<AddressApproveRequest, ETagResponse>
+    public sealed class AddressApproveHandler : BusHandler, IRequestHandler<AddressApproveRequest, ETagResponse>
     {
         private readonly IStreetNames _streetNames;
         private readonly BackOfficeContext _backOfficeContext;

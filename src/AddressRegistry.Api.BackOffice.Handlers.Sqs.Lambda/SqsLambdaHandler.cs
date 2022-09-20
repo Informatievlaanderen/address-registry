@@ -1,139 +1,129 @@
 namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda
 {
-    using System.Runtime.Serialization;
-    using System.Security.Cryptography;
-    using System.Text;
-    using Abstractions.Requests;
+    using Abstractions;
+    using Abstractions.Exceptions;
     using Abstractions.Responses;
-    using Be.Vlaanderen.Basisregisters.Api.Exceptions;
-    using Be.Vlaanderen.Basisregisters.CommandHandling;
-    using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
-    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
+    using Address;
+    using AddressRegistry.Infrastructure;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Be.Vlaanderen.Basisregisters.Api.ETag;
+    using Handlers;
     using MediatR;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
+    using Requests;
     using StreetName;
+    using StreetName.Exceptions;
     using TicketingService.Abstractions;
-    using static Microsoft.AspNetCore.Http.Results;
+    using IHasAddressPersistentLocalId = Abstractions.IHasAddressPersistentLocalId;
 
-    public abstract class SqsLambdaHandler<TRequest> : IRequestHandler<TRequest, IResult>
-        where TRequest : SqsRequest
+    public abstract class SqsLambdaHandler<TSqsLambdaRequest> : IRequestHandler<TSqsLambdaRequest>
+        where TSqsLambdaRequest : SqsLambdaRequest
     {
         private readonly ITicketing _ticketing;
-        private readonly ITicketingUrl _ticketingUrl;
-        private readonly ICommandHandlerResolver _bus;
+        private readonly ICustomRetryPolicy _retryPolicy;
+        private readonly IStreetNames _streetNames;
+
+        protected IIdempotentCommandHandler IdempotentCommandHandler { get; }
+        protected string DetailUrlFormat { get; }
 
         protected SqsLambdaHandler(
+            IConfiguration configuration,
+            ICustomRetryPolicy retryPolicy,
+            IStreetNames streetNames,
             ITicketing ticketing,
-            ITicketingUrl ticketingUrl,
-            ICommandHandlerResolver bus)
+            IIdempotentCommandHandler idempotentCommandHandler)
         {
+            _retryPolicy = retryPolicy;
+            _streetNames = streetNames;
             _ticketing = ticketing;
-            _ticketingUrl = ticketingUrl;
-            _bus = bus;
+            IdempotentCommandHandler = idempotentCommandHandler;
+
+            DetailUrlFormat = configuration["DetailUrl"];
+            if (string.IsNullOrEmpty(DetailUrlFormat))
+            {
+                throw new NullReferenceException("'DetailUrl' cannot be found in the configuration");
+            }
         }
 
-        protected abstract Task<string> Handle2(TRequest request, CancellationToken cancellationToken);
+        protected abstract Task<ETagResponse> InnerHandle(TSqsLambdaRequest request, CancellationToken cancellationToken);
 
-        public async Task<IResult> Handle(TRequest request, CancellationToken cancellationToken)
+        protected abstract TicketError? MapDomainException(DomainException exception, TSqsLambdaRequest request);
+
+        public async Task<Unit> Handle(TSqsLambdaRequest request, CancellationToken cancellationToken)
         {
-            await _ticketing.Pending(request.TicketId, cancellationToken);
-
-            var etag = await Handle2(request, cancellationToken);
-
-            await _ticketing.Complete(request.TicketId, new TicketResult(new ETagResponse(etag)), cancellationToken);
-
-            var location = _ticketingUrl.For(request.TicketId);
-            return Accepted(location);
-        }
-
-        protected async Task<long> IdempotentCommandHandlerDispatch(
-            IdempotencyContext context,
-            Guid? commandId,
-            object command,
-            IDictionary<string, object> metadata,
-            CancellationToken cancellationToken)
-        {
-            if (!commandId.HasValue || command == null)
-            {
-                throw new ApiException("Ongeldig verzoek id.", StatusCodes.Status400BadRequest);
-            }
-
-            // First check if the command id already has been processed
-            var possibleProcessedCommand = await context
-                .ProcessedCommands
-                .Where(x => x.CommandId == commandId)
-                .ToDictionaryAsync(x => x.CommandContentHash, x => x, cancellationToken);
-
-            var contentHash = SHA512
-                .Create()
-                .ComputeHash(Encoding.UTF8.GetBytes(command.ToString()!))
-                .ToHexString();
-
-            // It is possible we have a GUID collision, check the SHA-512 hash as well to see if it is really the same one.
-            // Do nothing if commandId with contenthash exists
-            if (possibleProcessedCommand.Any() && possibleProcessedCommand.ContainsKey(contentHash))
-            {
-                throw new IdempotencyException("Already processed");
-            }
-
-            var processedCommand = new ProcessedCommand(commandId.Value, contentHash);
             try
             {
-                // Store commandId in Command Store if it does not exist
-                await context.ProcessedCommands.AddAsync(processedCommand, cancellationToken);
-                await context.SaveChangesAsync(cancellationToken);
+                await ValidateIfMatchHeaderValue(request, cancellationToken);
 
-                // Do work
-                return await _bus.Dispatch(commandId.Value,
-                    command,
-                    metadata,
+                await _ticketing.Pending(request.TicketId, cancellationToken);
+
+                ETagResponse? etag = null;
+
+                await _retryPolicy.Retry(async () => etag = await InnerHandle(request, cancellationToken));
+
+                await _ticketing.Complete(
+                    request.TicketId,
+                    new TicketResult(etag),
                     cancellationToken);
             }
-            catch
+            catch (IfMatchHeaderValueMismatchException)
             {
-                // On exception, remove commandId from Command Store
-                context.ProcessedCommands.Remove(processedCommand);
-                await context.SaveChangesAsync(cancellationToken);
-                throw;
+                await _ticketing.Error(
+                    request.TicketId,
+                    new TicketError("Als de If-Match header niet overeenkomt met de laatste ETag.", "PreconditionFailed"),
+                    cancellationToken);
             }
+            catch (DomainException exception)
+            {
+                var ticketError = exception switch
+                {
+                    AddressIsNotFoundException => new TicketError(
+                        ValidationErrorMessages.Address.AddressNotFound,
+                        ValidationErrors.Address.AddressNotFound),
+                    AddressIsRemovedException => new TicketError(
+                        ValidationErrorMessages.Address.AddressRemoved,
+                        ValidationErrors.Address.AddressRemoved),
+                    _ => MapDomainException(exception, request)
+                };
+
+                ticketError ??= new TicketError(exception.Message, "");
+
+                await _ticketing.Error(
+                    request.TicketId,
+                    ticketError,
+                    cancellationToken);
+            }
+
+            return Unit.Value;
         }
 
-        protected Provenance CreateFakeProvenance()
+        private async Task ValidateIfMatchHeaderValue(TSqsLambdaRequest request, CancellationToken cancellationToken)
         {
-            return new Provenance(
-                NodaTime.SystemClock.Instance.GetCurrentInstant(),
-                Application.BuildingRegistry,
-                new Reason(""), // TODO: TBD
-                new Operator(""), // TODO: from claims
-                Modification.Insert,
-                Organisation.DigitaalVlaanderen // TODO: from claims
-            );
+            if (string.IsNullOrWhiteSpace(request.IfMatchHeaderValue) || request is not IHasAddressPersistentLocalId id)
+                return;
+
+            var lastHash = await GetHash(
+                request.StreetNamePersistentLocalId,
+                new AddressPersistentLocalId(id.AddressPersistentLocalId),
+                cancellationToken);
+
+            var lastHashTag = new ETag(ETagType.Strong, lastHash);
+
+            if (request.IfMatchHeaderValue != lastHashTag.ToString())
+            {
+                throw new IfMatchHeaderValueMismatchException();
+            }
         }
 
         protected async Task<string> GetHash(
-            IStreetNames streetnames,
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             AddressPersistentLocalId addressPersistentLocalId,
             CancellationToken cancellationToken)
         {
             var aggregate =
-                await streetnames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), cancellationToken);
+                await _streetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), cancellationToken);
             var streetNameHash = aggregate.GetAddressHash(addressPersistentLocalId);
             return streetNameHash;
         }
-    }
-
-    [Serializable]
-    public sealed class IdempotencyException : Exception
-    {
-        public IdempotencyException(string? message)
-            : base(message)
-        { }
-
-        private IdempotencyException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        { }
     }
 }

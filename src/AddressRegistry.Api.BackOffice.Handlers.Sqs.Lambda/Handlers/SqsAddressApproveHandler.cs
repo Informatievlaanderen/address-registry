@@ -1,55 +1,75 @@
 namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
 {
+    using Abstractions;
+    using Abstractions.Exceptions;
+    using Abstractions.Responses;
+    using AddressRegistry.Infrastructure;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Microsoft.Extensions.Configuration;
+    using Requests;
+    using StreetName;
+    using StreetName.Exceptions;
     using System.Threading;
     using System.Threading.Tasks;
-    using Abstractions.Requests;
-    using Be.Vlaanderen.Basisregisters.CommandHandling;
-    using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
-    using StreetName;
-    using StreetName.Commands;
     using TicketingService.Abstractions;
 
-    public class SqsAddressApproveHandler : SqsLambdaHandler<SqsAddressApproveRequest>
+    public sealed class SqsAddressApproveHandler : SqsLambdaHandler<SqsLambdaAddressApproveRequest>
     {
-        private readonly IStreetNames _streetNames;
-        private readonly IdempotencyContext _idempotencyContext;
-
         public SqsAddressApproveHandler(
-            ITicketing ticketing,
-            ITicketingUrl ticketingUrl,
-            ICommandHandlerResolver bus,
-            IStreetNames streetNames,
-            IdempotencyContext idempotencyContext)
-            : base(ticketing, ticketingUrl, bus)
+             IConfiguration configuration,
+             ICustomRetryPolicy retryPolicy,
+             ITicketing ticketing,
+             IStreetNames streetNames,
+             IIdempotentCommandHandler idempotentCommandHandler)
+             : base(
+                 configuration,
+                 retryPolicy,
+                 streetNames,
+                 ticketing,
+                 idempotentCommandHandler)
+        { }
+
+        protected override async Task<ETagResponse> InnerHandle(SqsLambdaAddressApproveRequest request, CancellationToken cancellationToken)
         {
-            _streetNames = streetNames;
-            _idempotencyContext = idempotencyContext;
+            var streetNamePersistentLocalId = new AddressPersistentLocalId(request.Request.PersistentLocalId);
+            var cmd = request.ToCommand();
+
+            try
+            {
+                await IdempotentCommandHandler.Dispatch(
+                    cmd.CreateCommandId(),
+                    cmd,
+                    request.Metadata,
+                    cancellationToken);
+            }
+            catch (IdempotencyException)
+            {
+                // Idempotent: Do Nothing return last etag
+            }
+
+            var lastHash = await GetHash(request.StreetNamePersistentLocalId, streetNamePersistentLocalId, cancellationToken);
+            return new ETagResponse(lastHash);
         }
 
-        protected override async Task<string> Handle2(SqsAddressApproveRequest request, CancellationToken cancellationToken)
+        protected override TicketError? MapDomainException(DomainException exception, SqsLambdaAddressApproveRequest request)
         {
-            var streetNamePersistentLocalId = new StreetNamePersistentLocalId(int.Parse(request.MessageGroupId));
-            var addressPersistentLocalId = new AddressPersistentLocalId(request.PersistentLocalId);
+            return exception switch
+            {
+                StreetNameHasInvalidStatusException => new TicketError(
+                    ValidationErrorMessages.StreetName.StreetNameIsNotActive,
+                    ValidationErrors.StreetName.StreetNameIsNotActive),
+                StreetNameIsRemovedException => new TicketError(
+                    ValidationErrorMessages.StreetName.StreetNameInvalid(request.StreetNamePersistentLocalId),
+                    ValidationErrors.StreetName.StreetNameInvalid),
 
-            var cmd = new ApproveAddress(
-                streetNamePersistentLocalId,
-                addressPersistentLocalId,
-                CreateFakeProvenance());
-
-            await IdempotentCommandHandlerDispatch(
-                _idempotencyContext,
-                cmd.CreateCommandId(),
-                cmd,
-                request.Metadata,
-                cancellationToken);
-
-            var etag = await GetHash(
-                _streetNames,
-                streetNamePersistentLocalId,
-                addressPersistentLocalId,
-                cancellationToken);
-
-            return etag;
+                AddressHasInvalidStatusException => new TicketError(
+                    ValidationErrorMessages.Address.AddressCannotBeApproved,
+                    ValidationErrors.Address.AddressCannotBeApproved),
+                ParentAddressHasInvalidStatusException => new TicketError(
+                    ValidationErrorMessages.Address.AddressCannotBeApprovedBecauseOfParent,
+                    ValidationErrors.Address.AddressCannotBeApprovedBecauseOfParent),
+                _ => null
+            };
         }
     }
 }

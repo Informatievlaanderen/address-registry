@@ -1,67 +1,68 @@
 namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
 {
-    using System.Threading;
-    using System.Threading.Tasks;
     using Abstractions;
-    using Abstractions.Requests;
+    using Abstractions.Responses;
     using Address;
-    using Be.Vlaanderen.Basisregisters.CommandHandling;
-    using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
+    using AddressRegistry.Infrastructure;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo.Extensions;
     using Consumer.Read.Municipality;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
     using Projections.Syndication;
+    using Requests;
     using StreetName;
     using StreetName.Exceptions;
+    using System.Threading;
+    using System.Threading.Tasks;
     using TicketingService.Abstractions;
     using PostalCode = StreetName.PostalCode;
 
-    public class SqsAddressProposeHandler : SqsLambdaHandler<SqsAddressProposeRequest>
+    public sealed class SqsAddressProposeHandler : SqsLambdaHandler<SqsLambdaAddressProposeRequest>
     {
-        private readonly IStreetNames _streetNames;
         private readonly BackOfficeContext _backOfficeContext;
-        private readonly IdempotencyContext _idempotencyContext;
         private readonly SyndicationContext _syndicationContext;
         private readonly MunicipalityConsumerContext _municipalityConsumerContext;
         private readonly IPersistentLocalIdGenerator _persistentLocalIdGenerator;
 
         public SqsAddressProposeHandler(
+            IConfiguration configuration,
+            ICustomRetryPolicy retryPolicy,
             ITicketing ticketing,
-            ITicketingUrl ticketingUrl,
-            ICommandHandlerResolver bus,
             IStreetNames streetNames,
+            IIdempotentCommandHandler idempotentCommandHandler,
             BackOfficeContext backOfficeContext,
-            IdempotencyContext idempotencyContext,
             SyndicationContext syndicationContext,
-            MunicipalityConsumerContext municipalityConsumerContext, 
-            IPersistentLocalIdGenerator persistentLocalIdGenerator
-            )
-            : base(ticketing, ticketingUrl, bus)
+            MunicipalityConsumerContext municipalityConsumerContext,
+            IPersistentLocalIdGenerator persistentLocalIdGenerator)
+            : base(
+                configuration,
+                retryPolicy,
+                streetNames,
+                ticketing,
+                idempotentCommandHandler)
         {
-            _streetNames = streetNames;
             _backOfficeContext = backOfficeContext;
-            _idempotencyContext = idempotencyContext;
             _syndicationContext = syndicationContext;
             _municipalityConsumerContext = municipalityConsumerContext;
             _persistentLocalIdGenerator = persistentLocalIdGenerator;
         }
 
-        protected override async Task<string> Handle2(SqsAddressProposeRequest request, CancellationToken cancellationToken)
+        protected override async Task<ETagResponse> InnerHandle(SqsLambdaAddressProposeRequest request, CancellationToken cancellationToken)
         {
-            var identifier = request.StraatNaamId
-            .AsIdentifier()
-            .Map(x => x);
+            var streetNamePersistentLocalId = new StreetNamePersistentLocalId(int.Parse(request.MessageGroupId));
 
-            var postInfoIdentifier = request.PostInfoId
+            var postInfoIdentifier = request.Request.PostInfoId
                 .AsIdentifier()
                 .Map(x => x);
 
-            var streetNamePersistentLocalId = new StreetNamePersistentLocalId(int.Parse(identifier.Value));
-            var postalCodeId = new PostalCode(postInfoIdentifier.Value);
+            var postalCode = new PostalCode(postInfoIdentifier.Value);
             var addressPersistentLocalId =
                 new AddressPersistentLocalId(_persistentLocalIdGenerator.GenerateNextPersistentLocalId());
 
-            var postalMunicipality = await _syndicationContext.PostalInfoLatestItems.FindAsync(new object[] { postalCodeId.ToString() }, cancellationToken);
+            var postalMunicipality =
+                await _syndicationContext.PostalInfoLatestItems.FindAsync(new object[] { postalCode.ToString() },
+                    cancellationToken);
             if (postalMunicipality is null)
             {
                 throw new PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException();
@@ -71,14 +72,14 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
                 .MunicipalityLatestItems
                 .SingleAsync(x => x.NisCode == postalMunicipality.NisCode, cancellationToken);
 
-            var cmd = request.ToCommand(
-                streetNamePersistentLocalId,
-                postalCodeId,
-                new MunicipalityId(municipality.MunicipalityId),
-                addressPersistentLocalId,
-                CreateFakeProvenance());
+            var cmd = request.ToCommand(addressPersistentLocalId, postalCode,
+                new MunicipalityId(municipality.MunicipalityId));
 
-            await IdempotentCommandHandlerDispatch(_idempotencyContext, cmd.CreateCommandId(), cmd, request.Metadata, cancellationToken);
+            await IdempotentCommandHandler.Dispatch(
+                cmd.CreateCommandId(),
+                cmd,
+                request.Metadata,
+                cancellationToken);
 
             // Insert PersistentLocalId with MunicipalityId
             await _backOfficeContext
@@ -90,13 +91,41 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
                     cancellationToken);
             await _backOfficeContext.SaveChangesAsync(cancellationToken);
 
-            var addressHash = await GetHash(
-                _streetNames,
-                streetNamePersistentLocalId,
-                addressPersistentLocalId,
-                cancellationToken);
 
-            return addressHash;
+            var lastHash = await GetHash(request.StreetNamePersistentLocalId, addressPersistentLocalId,
+                cancellationToken);
+            return new ETagResponse(lastHash);
+        }
+
+        protected override TicketError? MapDomainException(DomainException exception, SqsLambdaAddressProposeRequest request)
+        {
+            return exception switch
+            {
+                ParentAddressAlreadyExistsException => new TicketError(
+                    ValidationErrorMessages.Address.AddressAlreadyExists,
+                    ValidationErrors.Address.AddressAlreadyExists),
+                HouseNumberHasInvalidFormatException => new TicketError(
+                    ValidationErrorMessages.Address.HouseNumberInvalid,
+                    ValidationErrors.Address.HouseNumberInvalid),
+                BoxNumberAlreadyExistsException => new TicketError(
+                    ValidationErrorMessages.Address.AddressAlreadyExists,
+                    ValidationErrors.Address.AddressAlreadyExists),
+                ParentAddressNotFoundException e => new TicketError(
+                    ValidationErrorMessages.Address.AddressHouseNumberUnknown(
+                        request.Request.StraatNaamId,
+                        e.HouseNumber),
+                    ValidationErrors.Address.AddressHouseNumberUnknown),
+                StreetNameHasInvalidStatusException => new TicketError(
+                    ValidationErrorMessages.StreetName.StreetNameIsNotActive,
+                    ValidationErrors.StreetName.StreetNameIsNotActive),
+                StreetNameIsRemovedException e => new TicketError(
+                    ValidationErrorMessages.StreetName.StreetNameInvalid(request.Request.StraatNaamId),
+                    ValidationErrors.StreetName.StreetNameInvalid),
+                PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException => new TicketError(
+                    ValidationErrorMessages.Address.PostalCodeNotInMunicipality,
+                    ValidationErrors.Address.PostalCodeNotInMunicipality),
+                _ => null
+            };
         }
     }
 }

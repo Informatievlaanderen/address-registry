@@ -14,7 +14,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers
     using StreetName;
     using PostalCode = StreetName.PostalCode;
 
-    public class AddressChangePostalCodeHandler : BusHandler, IRequestHandler<AddressChangePostalCodeRequest, ETagResponse>
+    public sealed class AddressChangePostalCodeHandler : BusHandler, IRequestHandler<AddressChangePostalCodeRequest, ETagResponse>
     {
         private readonly IStreetNames _streetNames;
         private readonly BackOfficeContext _backOfficeContext;

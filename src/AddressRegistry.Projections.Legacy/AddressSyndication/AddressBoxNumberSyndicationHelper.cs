@@ -33,6 +33,10 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             b.ToTable(TableName, Schema.Legacy)
                 .HasKey(x => x.PersistentLocalId)
                 .IsClustered();
+
+            b.Property(x => x.PersistentLocalId)
+                .ValueGeneratedNever();
+
             b.Property(x => x.PostalCode);
             b.Property(x => x.HouseNumber);
             b.Property(x => x.BoxNumber);

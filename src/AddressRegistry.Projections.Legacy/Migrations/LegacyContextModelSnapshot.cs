@@ -351,10 +351,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
             modelBuilder.Entity("AddressRegistry.Projections.Legacy.AddressSyndication.AddressBoxNumberSyndicationHelper", b =>
                 {
                     b.Property<int>("PersistentLocalId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PersistentLocalId"), 1L, 1);
 
                     b.Property<string>("BoxNumber")
                         .HasColumnType("nvarchar(max)");

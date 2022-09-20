@@ -4,6 +4,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
     using Microsoft.EntityFrameworkCore.Migrations;
 
     #nullable disable
+
     public partial class AddAddressBoxNumberSyndicationHelper : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -13,8 +14,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                 schema: "AddressRegistryLegacy",
                 columns: table => new
                 {
-                    PersistentLocalId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PersistentLocalId = table.Column<int>(type: "int", nullable: false),
                     PostalCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     HouseNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     BoxNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),

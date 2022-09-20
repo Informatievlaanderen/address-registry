@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AddressRegistry.Projections.Legacy.Migrations
 {
     [DbContext(typeof(LegacyContext))]
-    [Migration("20220919142202_AddAddressBoxNumberSyndicationHelper")]
+    [Migration("20220920075950_AddAddressBoxNumberSyndicationHelper")]
     partial class AddAddressBoxNumberSyndicationHelper
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -353,10 +353,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
             modelBuilder.Entity("AddressRegistry.Projections.Legacy.AddressSyndication.AddressBoxNumberSyndicationHelper", b =>
                 {
                     b.Property<int>("PersistentLocalId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PersistentLocalId"), 1L, 1);
 
                     b.Property<string>("BoxNumber")
                         .HasColumnType("nvarchar(max)");

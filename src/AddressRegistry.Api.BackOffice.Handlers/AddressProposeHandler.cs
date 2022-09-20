@@ -17,7 +17,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers
     using StreetName.Exceptions;
     using PostalCode = StreetName.PostalCode;
 
-    public class AddressProposeHandler : BusHandler, IRequestHandler<AddressProposeRequest, PersistentLocalIdETagResponse>
+    public sealed class AddressProposeHandler : BusHandler, IRequestHandler<AddressProposeRequest, PersistentLocalIdETagResponse>
     {
         private readonly IStreetNames _streetNames;
         private readonly BackOfficeContext _backOfficeContext;

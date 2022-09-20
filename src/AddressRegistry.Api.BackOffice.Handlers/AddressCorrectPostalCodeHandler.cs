@@ -18,7 +18,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers
     using StreetName.Exceptions;
     using PostalCode = StreetName.PostalCode;
 
-    public class AddressCorrectPostalCodeHandler : BusHandler, IRequestHandler<AddressCorrectPostalCodeRequest, ETagResponse>
+    public sealed class AddressCorrectPostalCodeHandler : BusHandler, IRequestHandler<AddressCorrectPostalCodeRequest, ETagResponse>
     {
         private readonly IStreetNames _streetNames;
         private readonly BackOfficeContext _backOfficeContext;

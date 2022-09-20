@@ -12,7 +12,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers
     using MediatR;
     using StreetName;
 
-    public class AddressChangePositionHandler : BusHandler, IRequestHandler<AddressChangePositionRequest, ETagResponse>
+    public sealed class AddressChangePositionHandler : BusHandler, IRequestHandler<AddressChangePositionRequest, ETagResponse>
     {
         private readonly IStreetNames _streetNames;
         private readonly BackOfficeContext _backOfficeContext;

@@ -1,61 +1,67 @@
 namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
 {
+    using Abstractions;
+    using Abstractions.Exceptions;
+    using Abstractions.Responses;
+    using AddressRegistry.Infrastructure;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Microsoft.Extensions.Configuration;
+    using Requests;
+    using StreetName;
+    using StreetName.Exceptions;
     using System.Threading;
     using System.Threading.Tasks;
-    using Abstractions;
-    using Abstractions.Requests;
-    using Be.Vlaanderen.Basisregisters.CommandHandling;
-    using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
-    using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo.Extensions;
-    using StreetName;
     using TicketingService.Abstractions;
 
-    public class SqsAddressChangePostalCodeHandler : SqsLambdaHandler<SqsAddressChangePostalCodeRequest>
+    public sealed class SqsAddressChangePostalCodeHandler : SqsLambdaHandler<SqsLambdaAddressChangePostalCodeRequest>
     {
-        private readonly IStreetNames _streetNames;
-        private readonly IdempotencyContext _idempotencyContext;
+       public SqsAddressChangePostalCodeHandler(
+             IConfiguration configuration,
+             ICustomRetryPolicy retryPolicy,
+             ITicketing ticketing,
+             IStreetNames streetNames,
+             IIdempotentCommandHandler idempotentCommandHandler)
+             : base(
+                 configuration,
+                 retryPolicy,
+                 streetNames,
+                 ticketing,
+                 idempotentCommandHandler)
+        { }
 
-        public SqsAddressChangePostalCodeHandler(
-            ITicketing ticketing,
-            ITicketingUrl ticketingUrl,
-            ICommandHandlerResolver bus,
-            IStreetNames streetNames,
-            IdempotencyContext idempotencyContext)
-            : base(ticketing, ticketingUrl, bus)
-        {
-            _streetNames = streetNames;
-            _idempotencyContext = idempotencyContext;
-        }
-
-        protected override async Task<string> Handle2(SqsAddressChangePostalCodeRequest request, CancellationToken cancellationToken)
+        protected override async Task<ETagResponse> InnerHandle(SqsLambdaAddressChangePostalCodeRequest request, CancellationToken cancellationToken)
         {
             var streetNamePersistentLocalId = new StreetNamePersistentLocalId(int.Parse(request.MessageGroupId));
-            var addressPersistentLocalId = new AddressPersistentLocalId(request.PersistentLocalId);
+            var addressPersistentLocalId = new AddressPersistentLocalId(request.AddressPersistentLocalId);
 
-            var postInfoIdentifier = request.PostInfoId
-                .AsIdentifier()
-                .Map(x => x);
-            var postalCode = new PostalCode(postInfoIdentifier.Value);
+            var cmd = request.ToCommand();
 
-            var cmd = request.ToCommand(
-                streetNamePersistentLocalId,
-                postalCode,
-                CreateFakeProvenance());
+            try
+            {
+                await IdempotentCommandHandler.Dispatch(
+                    cmd.CreateCommandId(),
+                    cmd,
+                    request.Metadata,
+                    cancellationToken);
+            }
+            catch (IdempotencyException)
+            {
+                // Idempotent: Do Nothing return last etag
+            }
 
-            await IdempotentCommandHandlerDispatch(
-                _idempotencyContext,
-                cmd.CreateCommandId(),
-                cmd,
-                request.Metadata,
-                cancellationToken);
+            var lastHash = await GetHash(request.StreetNamePersistentLocalId, addressPersistentLocalId, cancellationToken);
+            return new ETagResponse(lastHash);
+        }
 
-            var etag = await GetHash(
-                _streetNames,
-                streetNamePersistentLocalId,
-                addressPersistentLocalId,
-                cancellationToken);
-
-            return etag;
+        protected override TicketError? MapDomainException(DomainException exception, SqsLambdaAddressChangePostalCodeRequest request)
+        {
+            return exception switch
+            {
+                StreetNameHasInvalidStatusException => new TicketError(
+                    ValidationErrorMessages.Address.AddressPostalCodeCannotBeChanged,
+                    ValidationErrors.Address.AddressPostalCodeCannotBeChanged),
+                _ => null
+            };
         }
     }
 }

@@ -1,55 +1,76 @@
 namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
 {
+    using Abstractions;
+    using Abstractions.Exceptions;
+    using Abstractions.Responses;
+    using AddressRegistry.Infrastructure;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Microsoft.Extensions.Configuration;
+    using Requests;
+    using StreetName;
+    using StreetName.Exceptions;
     using System.Threading;
     using System.Threading.Tasks;
-    using Abstractions.Requests;
-    using Be.Vlaanderen.Basisregisters.CommandHandling;
-    using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
-    using Consumer.Read.Municipality;
-    using Projections.Syndication;
-    using StreetName;
     using TicketingService.Abstractions;
 
-    public class SqsAddressCorrectHouseNumberHandler : SqsLambdaHandler<SqsAddressCorrectHouseNumberRequest>
+    public sealed class SqsAddressCorrectHouseNumberHandler : SqsLambdaHandler<SqsLambdaAddressCorrectHouseNumberRequest>
     {
-        private readonly IStreetNames _streetNames;
-        private readonly IdempotencyContext _idempotencyContext;
-
         public SqsAddressCorrectHouseNumberHandler(
+            IConfiguration configuration,
+            ICustomRetryPolicy retryPolicy,
             ITicketing ticketing,
-            ITicketingUrl ticketingUrl,
-            ICommandHandlerResolver bus,
             IStreetNames streetNames,
-            IdempotencyContext idempotencyContext)
-            : base(ticketing, ticketingUrl, bus)
+            IIdempotentCommandHandler idempotentCommandHandler)
+            : base(
+                configuration,
+                retryPolicy,
+                streetNames,
+                ticketing,
+                idempotentCommandHandler)
+        { }
+
+        protected override async Task<ETagResponse> InnerHandle(SqsLambdaAddressCorrectHouseNumberRequest request, CancellationToken cancellationToken)
         {
-            _streetNames = streetNames;
-            _idempotencyContext = idempotencyContext;
+            var streetNamePersistentLocalId = new StreetNamePersistentLocalId(int.Parse(request.MessageGroupId));
+            var addressPersistentLocalId = new AddressPersistentLocalId(request.AddressPersistentLocalId);
+
+            var cmd = request.ToCommand();
+
+            try
+            {
+                await IdempotentCommandHandler.Dispatch(
+                    cmd.CreateCommandId(),
+                    cmd,
+                    request.Metadata,
+                    cancellationToken);
+            }
+            catch (IdempotencyException)
+            {
+                // Idempotent: Do Nothing return last etag
+            }
+
+            var lastHash = await GetHash(request.StreetNamePersistentLocalId, addressPersistentLocalId, cancellationToken);
+            return new ETagResponse(lastHash);
         }
 
-        protected override async Task<string> Handle2(SqsAddressCorrectHouseNumberRequest request, CancellationToken cancellationToken)
+        protected override TicketError? MapDomainException(DomainException exception, SqsLambdaAddressCorrectHouseNumberRequest request)
         {
-            var streetNamePersistentLocalId = new StreetNamePersistentLocalId(int.Parse(request.MessageGroupId!));
-            var addressPersistentLocalId = new AddressPersistentLocalId(request.PersistentLocalId);
-
-            var cmd = request.ToCommand(
-                streetNamePersistentLocalId,
-                CreateFakeProvenance());
-
-            await IdempotentCommandHandlerDispatch(
-                _idempotencyContext,
-                cmd.CreateCommandId(),
-                cmd,
-                request.Metadata,
-                cancellationToken);
-
-            var etag = await GetHash(
-                _streetNames,
-                streetNamePersistentLocalId,
-                addressPersistentLocalId,
-                cancellationToken);
-
-            return etag;
+            return exception switch
+            {
+                AddressHasInvalidStatusException => new TicketError(
+                    ValidationErrorMessages.Address.AddressPostalCodeCannotBeChanged,
+                    ValidationErrors.Address.AddressPostalCodeCannotBeChanged),
+                ParentAddressAlreadyExistsException => new TicketError(
+                    ValidationErrorMessages.Address.AddressAlreadyExists,
+                    ValidationErrors.Address.AddressAlreadyExists),
+                HouseNumberHasInvalidFormatException => new TicketError(
+                    ValidationErrorMessages.Address.HouseNumberInvalid,
+                    ValidationErrors.Address.HouseNumberInvalid),
+                HouseNumberToCorrectHasBoxNumberException => new TicketError(
+                    ValidationErrorMessages.Address.HouseNumberOfBoxNumberCannotBeChanged,
+                    ValidationErrors.Address.HouseNumberOfBoxNumberCannotBeChanged),
+                _ => null
+            };
         }
     }
 }

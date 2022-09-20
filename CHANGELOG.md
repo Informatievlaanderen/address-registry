@@ -1,3 +1,10 @@
+# [3.50.0](https://github.com/informatievlaanderen/address-registry/compare/v3.49.0...v3.50.0) (2022-09-20)
+
+
+### Features
+
+* add AddressBoxNumberSyndication ef migration ([d9190bc](https://github.com/informatievlaanderen/address-registry/commit/d9190bc4c104847613160f49b126082d73336f61))
+
 # [3.49.0](https://github.com/informatievlaanderen/address-registry/compare/v3.48.1...v3.49.0) (2022-09-16)
 
 

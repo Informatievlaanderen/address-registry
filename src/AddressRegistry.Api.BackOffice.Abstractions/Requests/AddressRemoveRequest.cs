@@ -17,6 +17,6 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
         public int PersistentLocalId { get; set; }
 
         [JsonIgnore]
-        public IDictionary<string, object> Metadata { get; set; }
+        public IDictionary<string, object?> Metadata { get; set; }
     }
 }

@@ -101,7 +101,7 @@ namespace AddressRegistry.Api.BackOffice
                     AddressIsNotFoundException => new ApiException(ValidationErrorMessages.Address.AddressNotFound,
                         StatusCodes.Status404NotFound),
 
-                    _ => new ValidationException(new List<ValidationFailure> { new(string.Empty, exception.Message) })
+                    var _ => new ValidationException(new List<ValidationFailure> { new ValidationFailure(string.Empty, exception.Message) })
                 };
             }
         }

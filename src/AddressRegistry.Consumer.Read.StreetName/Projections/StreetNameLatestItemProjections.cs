@@ -18,9 +18,9 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections
         {
             When<StreetNameWasMigratedToMunicipality>(async (context, message, ct) =>
             {
-                var item = new StreetNameLatestItem(message.PersistentLocalId, message.NisCode);
-                item.Status = StreetNameLatestItem.ConvertStringToStatus(message.Status);
-                item.IsRemoved = message.IsRemoved;
+                var item = new StreetNameLatestItem(message.PersistentLocalId, message.NisCode) { Status = StreetNameLatestItem.ConvertStringToStatus(message.Status),
+                    IsRemoved = message.IsRemoved
+                };
 
                 UpdateNames(item, message.Names);
                 UpdateHomonyms(item, message.HomonymAdditions);
@@ -31,8 +31,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections
 
             When<StreetNameWasProposedV2>(async (context, message, ct) =>
             {
-                var item = new StreetNameLatestItem(message.PersistentLocalId, message.NisCode);
-                item.Status = StreetNameStatus.Proposed;
+                var item = new StreetNameLatestItem(message.PersistentLocalId, message.NisCode) { Status = StreetNameStatus.Proposed };
 
                 UpdateNames(item, message.StreetNameNames);
                 UpdateVersionTimestamp(item, message.Provenance.Timestamp);
@@ -124,9 +123,6 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections
                 item.HomonymAdditionEnglish = homonym;
             }
         }
-
-        private string? GetFromDictionary(IDictionary<string, string> dict, string key)
-            => dict.TryGetValue(key, out var res) ? res : null;
 
         private void UpdateVersionTimestamp(StreetNameLatestItem item, string timestamp)
         {

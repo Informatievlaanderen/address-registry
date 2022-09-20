@@ -1,3 +1,10 @@
+## [3.50.1](https://github.com/informatievlaanderen/address-registry/compare/v3.50.0...v3.50.1) (2022-09-20)
+
+
+### Bug Fixes
+
+* migration AddressBoxNumberSyndicationHelperÂ ([e70aef7](https://github.com/informatievlaanderen/address-registry/commit/e70aef7399773420ba5e9d13a05c86cd4f77c3fd))
+
 # [3.50.0](https://github.com/informatievlaanderen/address-registry/compare/v3.49.0...v3.50.0) (2022-09-20)
 
 

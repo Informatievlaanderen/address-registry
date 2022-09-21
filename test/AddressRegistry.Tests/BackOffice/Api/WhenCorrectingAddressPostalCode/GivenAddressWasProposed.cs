@@ -34,7 +34,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPostalCode
 
             MockMediator
                 .Setup(x => x.Send(It.IsAny<AddressCorrectPostalCodeRequest>(), CancellationToken.None))
-                .Returns(Task.FromResult(new ETagResponse(lastEventHash)));
+                .Returns(Task.FromResult(new ETagResponse(string.Empty, lastEventHash)));
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentIds(addressPersistentLocalId, streetNamePersistentId);
 

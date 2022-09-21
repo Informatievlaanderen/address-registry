@@ -5,7 +5,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda
     using Be.Vlaanderen.Basisregisters.Aws.Lambda;
     using MediatR;
 
-    public class MessageHandler : IMessageHandler
+    public sealed class MessageHandler : IMessageHandler
     {
         private readonly IMediator _mediator;
 

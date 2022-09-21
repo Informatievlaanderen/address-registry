@@ -32,8 +32,9 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPostalCode
             var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
-            MockMediator.Setup(x => x.Send(It.IsAny<AddressChangePostalCodeRequest>(), CancellationToken.None))
-                .Returns(Task.FromResult(new ETagResponse(lastEventHash)));
+            MockMediator
+                .Setup(x => x.Send(It.IsAny<AddressChangePostalCodeRequest>(), CancellationToken.None))
+                .Returns(Task.FromResult(new ETagResponse(string.Empty, lastEventHash)));
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentIds(addressPersistentLocalId, streetNamePersistentId);
 

@@ -65,7 +65,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers
                 addressPersistentLocalId,
                 cancellationToken);
 
-            return new ETagResponse(etag);
+            return new ETagResponse(string.Empty, etag);
         }
     }
 }

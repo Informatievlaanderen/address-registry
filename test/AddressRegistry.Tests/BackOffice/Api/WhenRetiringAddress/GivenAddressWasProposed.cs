@@ -37,15 +37,15 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRetiringAddress
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
             var mockRequestValidator = new Mock<IValidator<AddressRetireRequest>>();
-            mockRequestValidator.Setup(x => x.ValidateAsync(It.IsAny<AddressRetireRequest>(), CancellationToken.None))
+            mockRequestValidator
+                .Setup(x => x.ValidateAsync(It.IsAny<AddressRetireRequest>(), CancellationToken.None))
                 .Returns(Task.FromResult(new ValidationResult()));
 
-            MockMediator.Setup(x => x.Send(It.IsAny<AddressRetireRequest>(), CancellationToken.None))
-                .Returns(Task.FromResult(new ETagResponse(lastEventHash)));
+            MockMediator
+                .Setup(x => x.Send(It.IsAny<AddressRetireRequest>(), CancellationToken.None))
+                .Returns(Task.FromResult(new ETagResponse(string.Empty, lastEventHash)));
 
-            _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.Add(
-                new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));
-            _backOfficeContext.SaveChanges();
+            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentIds(addressPersistentLocalId, streetNamePersistentId);
 
             var result = (AcceptedWithETagResult)await _controller.Retire(
                 _backOfficeContext,

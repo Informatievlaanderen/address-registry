@@ -19,7 +19,6 @@ namespace AddressRegistry.Api.BackOffice
     using StreetName;
     using StreetName.Exceptions;
     using Swashbuckle.AspNetCore.Filters;
-    using Validators;
 
     public partial class AddressController
     {
@@ -80,7 +79,7 @@ namespace AddressRegistry.Api.BackOffice
                 request.Metadata = GetMetadata();
                 var response = await _mediator.Send(request, cancellationToken);
 
-                return new NoContentWithETagResult(response.LastEventHash);
+                return new NoContentWithETagResult(response.ETag);
             }
             catch (IdempotencyException)
             {

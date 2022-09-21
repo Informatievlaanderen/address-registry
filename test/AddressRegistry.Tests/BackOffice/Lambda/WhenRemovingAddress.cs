@@ -5,6 +5,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using AddressRegistry.Api.BackOffice.Abstractions.Exceptions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Abstractions.Responses;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers;
@@ -21,8 +22,11 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     using StreetName;
     using Xunit;
     using Xunit.Abstractions;
-    using global::AutoFixture;
     using Microsoft.Extensions.Configuration;
+    using Moq;
+    using StreetName.Commands;
+    using TicketingService.Abstractions;
+    using global::AutoFixture;
 
     public class WhenRemovingAddress : AddressRegistryBackOfficeTest
     {
@@ -56,11 +60,11 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 new HouseNumber("1"),
                 null);
 
-            var eTag = new ETagResponse(string.Empty);
+            var etagResponse = new ETagResponse(string.Empty, string.Empty);
             var sut = new SqsAddressRejectHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
-                MockTicketing(result => { eTag = result; }).Object,
+                MockTicketing(result => { etagResponse = result; }).Object,
                 _streetNames,
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext));
 
@@ -82,7 +86,73 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             // Assert
             var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(
                 new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))), 2, 1);
-            stream.Messages.First().JsonMetadata.Should().Contain(eTag.LastEventHash);
+            stream.Messages.First().JsonMetadata.Should().Contain(etagResponse.ETag);
+        }
+
+        [Fact]
+        public async Task WhenIdempotencyException_ThenTicketingCompleteIsExpected()
+        {
+            // Arrange
+            var ticketing = new Mock<ITicketing>();
+
+            var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
+            var addressPersistentLocalId = new AddressPersistentLocalId(456);
+            var nisCode = new NisCode("12345");
+            var postalCode = new PostalCode("2018");
+            var houseNumber = new HouseNumber("11");
+
+            ImportMigratedStreetName(
+                new StreetNameId(Guid.NewGuid()),
+                streetNamePersistentLocalId,
+                nisCode);
+
+            ProposeAddress(
+                streetNamePersistentLocalId,
+                addressPersistentLocalId,
+                postalCode,
+                Fixture.Create<MunicipalityId>(),
+                houseNumber,
+                null);
+
+            var removeAddress = new RemoveAddress(
+                streetNamePersistentLocalId,
+                addressPersistentLocalId,
+                Fixture.Create<Provenance>());
+            DispatchArrangeCommand(removeAddress);
+
+            var sut = new SqsAddressRemoveHandler(
+                Container.Resolve<IConfiguration>(),
+                new FakeRetryPolicy(),
+                ticketing.Object,
+                _streetNames,
+                MockExceptionIdempotentCommandHandler(() => new IdempotencyException(string.Empty)).Object);
+
+            var streetName =
+                await _streetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), CancellationToken.None);
+
+            // Act
+            await sut.Handle(new SqsLambdaAddressRemoveRequest
+            {
+                Request = new AddressBackOfficeRemoveRequest
+                {
+                    PersistentLocalId = addressPersistentLocalId
+                },
+                MessageGroupId = streetNamePersistentLocalId,
+                TicketId = Guid.NewGuid(),
+                Metadata = new Dictionary<string, object>(),
+                Provenance = Fixture.Create<Provenance>()
+            },
+            CancellationToken.None);
+
+            //Assert
+            ticketing.Verify(x =>
+                x.Complete(
+                    It.IsAny<Guid>(),
+                    new TicketResult(
+                        new ETagResponse(
+                            string.Format(ConfigDetailUrl, addressPersistentLocalId),
+                            streetName.GetAddressHash(addressPersistentLocalId))),
+                    CancellationToken.None));
         }
     }
 }

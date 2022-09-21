@@ -5,6 +5,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using AddressRegistry.Api.BackOffice.Abstractions.Exceptions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Abstractions.Responses;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers;
@@ -24,6 +25,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     using StreetName;
     using Xunit;
     using Xunit.Abstractions;
+    using Moq;
+    using StreetName.Exceptions;
+    using TicketingService.Abstractions;
     using global::AutoFixture;
 
     public class WhenCorrectingAddressPostalCode : AddressRegistryBackOfficeTest
@@ -86,11 +90,11 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 new HouseNumber("11"),
                 null);
 
-            var eTag = new ETagResponse(string.Empty);
+            var eTagResponse = new ETagResponse(string.Empty, string.Empty);
             var sut = new SqsAddressCorrectPostalCodeHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
-                MockTicketing(result => { eTag = result; }).Object,
+                MockTicketing(result => { eTagResponse = result; }).Object,
                 _streetNames,
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext),
                 _syndicationContext,
@@ -114,7 +118,215 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             // Assert
             var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(
                 new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))), 2, 1);
-            stream.Messages.First().JsonMetadata.Should().Contain(eTag!.LastEventHash);
+            stream.Messages.First().JsonMetadata.Should().Contain(eTagResponse.ETag);
+        }
+
+        [Fact]
+        public async Task WhenAddressHasInvalidStatus_ThenTicketingErrorIsExpected()
+        {
+            // Arrange
+            var ticketing = new Mock<ITicketing>();
+            var postInfoId = "2018";
+            var correctPostInfoId = "2019";
+            var nisCode = Fixture.Create<NisCode>();
+            var municipalityId = Fixture.Create<MunicipalityId>();
+
+            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
+            {
+                PostalCode = postInfoId,
+                NisCode = nisCode
+            });
+            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
+            {
+                PostalCode = correctPostInfoId,
+                NisCode = nisCode
+            });
+            await _syndicationContext.SaveChangesAsync();
+
+            _municipalityContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem
+            {
+                MunicipalityId = municipalityId,
+                NisCode = nisCode
+            });
+            await _municipalityContext.SaveChangesAsync();
+
+            var sut = new SqsAddressCorrectPostalCodeHandler(
+                Container.Resolve<IConfiguration>(),
+                new FakeRetryPolicy(),
+                ticketing.Object,
+                Mock.Of<IStreetNames>(),
+                MockExceptionIdempotentCommandHandler<AddressHasInvalidStatusException>().Object,
+                _syndicationContext,
+                _municipalityContext);
+
+            // Act
+            await sut.Handle(new SqsLambdaAddressCorrectPostalCodeRequest
+            {
+                Request = new AddressBackOfficeCorrectPostalCodeRequest
+                {
+                    PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}"
+                },
+                AddressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>(),
+                MessageGroupId = Fixture.Create<int>().ToString(),
+                TicketId = Guid.NewGuid(),
+                Metadata = new Dictionary<string, object>(),
+                Provenance = Fixture.Create<Provenance>()
+            }, CancellationToken.None);
+
+            //Assert
+            ticketing.Verify(x =>
+                x.Error(
+                    It.IsAny<Guid>(),
+                    new TicketError(
+                        "Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik'.",
+                        "AdresGehistoreerdOfAfgekeurd"),
+                    CancellationToken.None));
+        }
+
+        [Fact]
+        public async Task WhenPostalCodeMunicipalityDoesNotMatchStreetNameMunicipality_ThenTicketingErrorIsExpected()
+        {
+            // Arrange
+            var ticketing = new Mock<ITicketing>();
+            var postInfoId = "2018";
+            var correctPostInfoId = "2019";
+            var nisCode = Fixture.Create<NisCode>();
+            var municipalityId = Fixture.Create<MunicipalityId>();
+
+            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
+            {
+                PostalCode = postInfoId,
+                NisCode = nisCode
+            });
+            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
+            {
+                PostalCode = correctPostInfoId,
+                NisCode = nisCode
+            });
+            await _syndicationContext.SaveChangesAsync();
+
+            _municipalityContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem
+            {
+                MunicipalityId = municipalityId,
+                NisCode = nisCode
+            });
+            await _municipalityContext.SaveChangesAsync();
+
+            var sut = new SqsAddressCorrectPostalCodeHandler(
+                Container.Resolve<IConfiguration>(),
+                new FakeRetryPolicy(),
+                ticketing.Object,
+                Mock.Of<IStreetNames>(),
+                MockExceptionIdempotentCommandHandler<PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException>().Object,
+                _syndicationContext,
+                _municipalityContext);
+
+            // Act
+            await sut.Handle(new SqsLambdaAddressCorrectPostalCodeRequest
+            {
+                Request = new AddressBackOfficeCorrectPostalCodeRequest
+                {
+                    PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}"
+                },
+                AddressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>(),
+                MessageGroupId = Fixture.Create<int>().ToString(),
+                TicketId = Guid.NewGuid(),
+                Metadata = new Dictionary<string, object>(),
+                Provenance = Fixture.Create<Provenance>()
+            }, CancellationToken.None);
+
+            //Assert
+            ticketing.Verify(x =>
+                x.Error(
+                    It.IsAny<Guid>(),
+                    new TicketError(
+                        "De ingevoerde postcode wordt niet gebruikt binnen deze gemeente.",
+                        "AdresPostinfoNietInGemeente"),
+                    CancellationToken.None));
+        }
+
+        [Fact]
+        public async Task WhenIdempotencyException_ThenTicketingCompleteIsExpected()
+        {
+            // Arrange
+            var ticketing = new Mock<ITicketing>();
+
+            var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
+            var addressPersistentLocalId = new AddressPersistentLocalId(456);
+            var nisCode = new NisCode("12345");
+            var houseNumber = new HouseNumber("11");
+            var postInfoId = "2018";
+            var correctPostInfoId = "2019";
+            var municipalityId = Fixture.Create<MunicipalityId>();
+
+            ImportMigratedStreetName(
+                new StreetNameId(Guid.NewGuid()),
+                streetNamePersistentLocalId,
+                nisCode);
+
+            ProposeAddress(
+                streetNamePersistentLocalId,
+                addressPersistentLocalId,
+                new PostalCode(postInfoId),
+                Fixture.Create<MunicipalityId>(),
+                houseNumber,
+                null);
+
+            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
+            {
+                PostalCode = postInfoId,
+                NisCode = nisCode
+            });
+            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
+            {
+                PostalCode = correctPostInfoId,
+                NisCode = nisCode
+            });
+            await _syndicationContext.SaveChangesAsync();
+
+            _municipalityContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem
+            {
+                MunicipalityId = municipalityId,
+                NisCode = nisCode
+            });
+            await _municipalityContext.SaveChangesAsync();
+
+            var sut = new SqsAddressCorrectPostalCodeHandler(
+                Container.Resolve<IConfiguration>(),
+                new FakeRetryPolicy(),
+                ticketing.Object,
+                _streetNames,
+                MockExceptionIdempotentCommandHandler(() => new IdempotencyException(string.Empty)).Object,
+                _syndicationContext,
+                _municipalityContext);
+
+            var streetName =
+                await _streetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), CancellationToken.None);
+
+            // Act
+            await sut.Handle(new SqsLambdaAddressCorrectPostalCodeRequest
+            {
+                Request = new AddressBackOfficeCorrectPostalCodeRequest
+                {
+                    PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}"
+                },
+                AddressPersistentLocalId = addressPersistentLocalId,
+                MessageGroupId = streetNamePersistentLocalId,
+                TicketId = Guid.NewGuid(),
+                Metadata = new Dictionary<string, object>(),
+                Provenance = Fixture.Create<Provenance>()
+            },
+            CancellationToken.None);
+
+            //Assert
+            ticketing.Verify(x =>
+                x.Complete(
+                    It.IsAny<Guid>(),
+                    new TicketResult(
+                        new ETagResponse(
+                            string.Format(ConfigDetailUrl, addressPersistentLocalId),
+                            streetName.GetAddressHash(addressPersistentLocalId))),
+                    CancellationToken.None));
         }
     }
 }

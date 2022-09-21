@@ -50,8 +50,6 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
 
         protected override async Task<ETagResponse> InnerHandle(SqsLambdaAddressProposeRequest request, CancellationToken cancellationToken)
         {
-            var streetNamePersistentLocalId = new StreetNamePersistentLocalId(int.Parse(request.MessageGroupId));
-
             var postInfoIdentifier = request.Request.PostInfoId
                 .AsIdentifier()
                 .Map(x => x);
@@ -87,7 +85,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
                 .AddAsync(
                     new AddressPersistentIdStreetNamePersistentId(
                         addressPersistentLocalId,
-                        streetNamePersistentLocalId),
+                        request.StreetNamePersistentLocalId),
                     cancellationToken);
             await _backOfficeContext.SaveChangesAsync(cancellationToken);
 
@@ -111,14 +109,12 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
                     ValidationErrorMessages.Address.AddressAlreadyExists,
                     ValidationErrors.Address.AddressAlreadyExists),
                 ParentAddressNotFoundException e => new TicketError(
-                    ValidationErrorMessages.Address.AddressHouseNumberUnknown(
-                        request.Request.StraatNaamId,
-                        e.HouseNumber),
+                    ValidationErrorMessages.Address.AddressHouseNumberUnknown(request.Request.StraatNaamId, e.HouseNumber),
                     ValidationErrors.Address.AddressHouseNumberUnknown),
                 StreetNameHasInvalidStatusException => new TicketError(
                     ValidationErrorMessages.StreetName.StreetNameIsNotActive,
                     ValidationErrors.StreetName.StreetNameIsNotActive),
-                StreetNameIsRemovedException e => new TicketError(
+                StreetNameIsRemovedException => new TicketError(
                     ValidationErrorMessages.StreetName.StreetNameInvalid(request.Request.StraatNaamId),
                     ValidationErrors.StreetName.StreetNameInvalid),
                 PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException => new TicketError(

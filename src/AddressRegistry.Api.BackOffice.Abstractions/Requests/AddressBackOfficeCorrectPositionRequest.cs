@@ -1,9 +1,7 @@
 namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
 {
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
-    using MediatR;
     using Newtonsoft.Json;
-    using Responses;
     using System.Runtime.Serialization;
 
     [DataContract(Name = "CorrigerenAdresPositie", Namespace = "")]

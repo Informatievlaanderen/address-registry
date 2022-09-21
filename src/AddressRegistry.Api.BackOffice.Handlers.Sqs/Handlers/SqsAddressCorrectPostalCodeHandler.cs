@@ -25,7 +25,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Handlers
         {
             var relation = _backOfficeContext
                 .AddressPersistentIdStreetNamePersistentIds
-                .Find(request.Request.PersistentLocalId);
+                .Find(request.PersistentLocalId);
 
             return relation?.StreetNamePersistentLocalId.ToString();
         }
@@ -37,7 +37,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Handlers
                 { RegistryKey, nameof(AddressRegistry) },
                 { ActionKey, Action },
                 { AggregateIdKey, aggregateId },
-                { ObjectIdKey, sqsRequest.Request.PersistentLocalId.ToString() }
+                { ObjectIdKey, sqsRequest.PersistentLocalId.ToString() }
             };
         }
     }

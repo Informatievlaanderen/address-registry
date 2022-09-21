@@ -31,7 +31,6 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
 
         protected override async Task<ETagResponse> InnerHandle(SqsLambdaAddressApproveRequest request, CancellationToken cancellationToken)
         {
-            var streetNamePersistentLocalId = new AddressPersistentLocalId(request.Request.PersistentLocalId);
             var cmd = request.ToCommand();
 
             try
@@ -47,7 +46,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
                 // Idempotent: Do Nothing return last etag
             }
 
-            var lastHash = await GetHash(request.StreetNamePersistentLocalId, streetNamePersistentLocalId, cancellationToken);
+            var lastHash = await GetHash(request.StreetNamePersistentLocalId, new AddressPersistentLocalId(request.Request.PersistentLocalId), cancellationToken);
             return new ETagResponse(lastHash);
         }
 
@@ -61,7 +60,6 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
                 StreetNameIsRemovedException => new TicketError(
                     ValidationErrorMessages.StreetName.StreetNameInvalid(request.StreetNamePersistentLocalId),
                     ValidationErrors.StreetName.StreetNameInvalid),
-
                 AddressHasInvalidStatusException => new TicketError(
                     ValidationErrorMessages.Address.AddressCannotBeApproved,
                     ValidationErrors.Address.AddressCannotBeApproved),

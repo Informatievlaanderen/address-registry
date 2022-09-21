@@ -1,16 +1,19 @@
 namespace AddressRegistry.Tests.BackOffice.Lambda
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Abstractions.Responses;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers;
+    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Requests;
     using Autofac;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentAssertions;
     using Infrastructure;
     using SqlStreamStore;
@@ -18,6 +21,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     using StreetName;
     using Xunit;
     using Xunit.Abstractions;
+    using Microsoft.Extensions.Configuration;
     using global::AutoFixture;
 
     public class WhenCorrectingAddressHouseNumber : AddressRegistryBackOfficeTest
@@ -52,31 +56,33 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 new HouseNumber("11"),
                 null);
 
-            ETagResponse? etag = null;
-
+            var eTag = new ETagResponse(string.Empty);
             var sut = new SqsAddressCorrectHouseNumberHandler(
-                MockTicketing(result =>
-                {
-                    etag = result;
-                }).Object,
-                MockTicketingUrl().Object,
-                Container.Resolve<ICommandHandlerResolver>(),
+                Container.Resolve<IConfiguration>(),
+                new FakeRetryPolicy(),
+                MockTicketing(result =>                 { eTag = result; }).Object,
                 _streetNames,
-                _idempotencyContext);
+                new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext));
 
             // Act
-            await sut.Handle(new SqsAddressCorrectHouseNumberRequest
+            await sut.Handle(new SqsLambdaAddressCorrectHouseNumberRequest
             {
-                PersistentLocalId = addressPersistentLocalId,
+                Request = new AddressBackOfficeCorrectHouseNumberRequest
+                {
+                    Huisnummer = "20"
+                },
+                AddressPersistentLocalId = addressPersistentLocalId,
                 MessageGroupId = streetNamePersistentLocalId,
-                Huisnummer = "20"
+                TicketId = Guid.NewGuid(),
+                Metadata = new Dictionary<string, object>(),
+                Provenance = Fixture.Create<Provenance>()
             },
             CancellationToken.None);
 
             // Assert
             var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(
                 new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))), 2, 1);
-            stream.Messages.First().JsonMetadata.Should().Contain(etag!.LastEventHash);
+            stream.Messages.First().JsonMetadata.Should().Contain(eTag!.LastEventHash);
         }
     }
 }

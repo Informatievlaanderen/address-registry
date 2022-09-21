@@ -1,24 +1,28 @@
 namespace AddressRegistry.Tests.BackOffice.Lambda
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Abstractions.Responses;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers;
+    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Requests;
     using Autofac;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentAssertions;
-    using global::AutoFixture;
     using Infrastructure;
     using SqlStreamStore;
     using SqlStreamStore.Streams;
     using StreetName;
     using Xunit;
     using Xunit.Abstractions;
+    using global::AutoFixture;
+    using Microsoft.Extensions.Configuration;
 
     public class WhenRemovingAddress : AddressRegistryBackOfficeTest
     {
@@ -52,27 +56,33 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 new HouseNumber("1"),
                 null);
 
-            var etag = new ETagResponse(string.Empty);
+            var eTag = new ETagResponse(string.Empty);
             var sut = new SqsAddressRejectHandler(
-                MockTicketing(result => { etag = result; }).Object,
-                MockTicketingUrl().Object,
-                Container.Resolve<ICommandHandlerResolver>(),
+                Container.Resolve<IConfiguration>(),
+                new FakeRetryPolicy(),
+                MockTicketing(result => { eTag = result; }).Object,
                 _streetNames,
-                _idempotencyContext);
+                new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext));
 
             // Act
             await sut.Handle(
-                new SqsAddressRejectRequest
+                new SqsLambdaAddressRejectRequest
                 {
-                    PersistentLocalId = addressPersistentLocalId,
-                    MessageGroupId = streetNamePersistentLocalId
+                    Request = new AddressBackOfficeRejectRequest
+                    {
+                        PersistentLocalId = addressPersistentLocalId
+                    },
+                    MessageGroupId = streetNamePersistentLocalId,
+                    Metadata = new Dictionary<string, object>(),
+                    TicketId = Guid.NewGuid(),
+                    Provenance = Fixture.Create<Provenance>()
                 },
                 CancellationToken.None);
 
             // Assert
             var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(
                 new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))), 2, 1);
-            stream.Messages.First().JsonMetadata.Should().Contain(etag.LastEventHash);
+            stream.Messages.First().JsonMetadata.Should().Contain(eTag.LastEventHash);
         }
     }
 }

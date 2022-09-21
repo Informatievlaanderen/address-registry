@@ -20,6 +20,7 @@ namespace AddressRegistry.Tests
     public class AddressRegistryTest : AutofacBasedTest
     {
         protected Fixture Fixture { get; }
+        protected string ConfigDetailUrl => "http://base/{0}";
         protected JsonSerializerSettings EventSerializerSettings { get; } = EventsJsonSerializerSettingsProvider.CreateSerializerSettings();
 
         public AddressRegistryTest(
@@ -36,7 +37,10 @@ namespace AddressRegistry.Tests
             var configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string> { { "ConnectionStrings:Events", "x" } })
                 .AddInMemoryCollection(new Dictionary<string, string> { { "ConnectionStrings:Snapshots", "x" } })
+                .AddInMemoryCollection(new Dictionary<string, string> {  { "DetailUrl", ConfigDetailUrl } })
                 .Build();
+
+            builder.Register((a) => (IConfiguration)configuration);
 
             builder
                 .RegisterModule(new CommandHandlingModule(configuration))

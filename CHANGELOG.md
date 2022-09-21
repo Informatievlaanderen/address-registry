@@ -1,3 +1,11 @@
+## [3.50.3](https://github.com/informatievlaanderen/address-registry/compare/v3.50.2...v3.50.3) (2022-09-21)
+
+
+### Bug Fixes
+
+* remove duplicate unique validation in correct housenumber GAWR-3706 ([811f1bf](https://github.com/informatievlaanderen/address-registry/commit/811f1bf261d20558224474d1a21ef467dcd3b3a4))
+* set property for correct postal validation GAWR-3705 ([c58c4aa](https://github.com/informatievlaanderen/address-registry/commit/c58c4aa4075dde2c8038f27096685a6bfbae7c16))
+
 ## [3.50.2](https://github.com/informatievlaanderen/address-registry/compare/v3.50.1...v3.50.2) (2022-09-20)
 
 

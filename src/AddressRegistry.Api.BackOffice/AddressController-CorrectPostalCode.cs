@@ -104,13 +104,15 @@ namespace AddressRegistry.Api.BackOffice
                 {
                     AddressIsNotFoundException => new ApiException(ValidationErrorMessages.Address.AddressNotFound, StatusCodes.Status404NotFound),
                     AddressIsRemovedException => new ApiException(ValidationErrorMessages.Address.AddressRemoved, StatusCodes.Status410Gone),
+
                     AddressHasInvalidStatusException => CreateValidationException(
                         ValidationErrors.Address.AddressPostalCodeCannotBeChanged,
                         string.Empty,
                         ValidationErrorMessages.Address.AddressPostalCodeCannotBeChanged),
+
                     PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException => CreateValidationException(
                         ValidationErrors.Address.PostalCodeNotInMunicipality,
-                        string.Empty,
+                        nameof(request.PostInfoId),
                         ValidationErrorMessages.Address.PostalCodeNotInMunicipality),
 
                     _ => new ValidationException(new List<ValidationFailure>

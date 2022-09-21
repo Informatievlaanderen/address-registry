@@ -303,11 +303,6 @@ namespace AddressRegistry.StreetName
 
         public void CorrectAddressHouseNumber(AddressPersistentLocalId addressPersistentLocalId, HouseNumber houseNumber)
         {
-            if (StreetNameAddresses.HasActiveAddressForOtherThan(houseNumber, addressPersistentLocalId))
-            {
-                throw new ParentAddressAlreadyExistsException();
-            }
-
             StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
                 .CorrectHouseNumber(houseNumber, () => GuardHouseNumberAddressIsUnique(addressPersistentLocalId, houseNumber));

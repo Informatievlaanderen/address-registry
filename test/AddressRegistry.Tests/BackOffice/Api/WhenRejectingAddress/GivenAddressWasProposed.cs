@@ -36,15 +36,15 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRejectingAddress
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
             var mockRequestValidator = new Mock<IValidator<AddressRejectRequest>>();
-            mockRequestValidator.Setup(x => x.ValidateAsync(It.IsAny<AddressRejectRequest>(), CancellationToken.None))
+            mockRequestValidator
+                .Setup(x => x.ValidateAsync(It.IsAny<AddressRejectRequest>(), CancellationToken.None))
                 .Returns(Task.FromResult(new ValidationResult()));
 
-            MockMediator.Setup(x => x.Send(It.IsAny<AddressRejectRequest>(), CancellationToken.None))
-                .Returns(Task.FromResult(new ETagResponse(lastEventHash)));
+            MockMediator
+                .Setup(x => x.Send(It.IsAny<AddressRejectRequest>(), CancellationToken.None))
+                .Returns(Task.FromResult(new ETagResponse(string.Empty, lastEventHash)));
 
-            _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.Add(
-                new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));
-            _backOfficeContext.SaveChanges();
+            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentIds(addressPersistentLocalId, streetNamePersistentId);
 
             var result = (AcceptedWithETagResult)await _controller.Reject(
                 _backOfficeContext,

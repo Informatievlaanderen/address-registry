@@ -10,7 +10,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
     using Microsoft.AspNetCore.Http;
     using Microsoft.EntityFrameworkCore;
 
-    public class IdempotentCommandHandler : IIdempotentCommandHandler
+    public sealed class IdempotentCommandHandler : IIdempotentCommandHandler
     {
         private readonly ICommandHandlerResolver _bus;
         private readonly IdempotencyContext _idempotencyContext;

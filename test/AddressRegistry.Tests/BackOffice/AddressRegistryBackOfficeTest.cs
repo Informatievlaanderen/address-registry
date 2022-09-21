@@ -7,6 +7,7 @@ namespace AddressRegistry.Tests.BackOffice
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.Api.BackOffice.Abstractions.Responses;
+    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Infrastructure;
     using AddressRegistry.Api.BackOffice.Infrastructure.Options;
     using StreetName;
@@ -73,13 +74,6 @@ namespace AddressRegistry.Tests.BackOffice
             return mockRequestValidator.Object;
         }
 
-        protected Mock<ITicketingUrl> MockTicketingUrl()
-        {
-            var ticketingUrl = new Mock<ITicketingUrl>();
-            ticketingUrl.Setup(x => x.For(It.IsAny<Guid>())).Returns(Fixture.Create<Uri>());
-            return ticketingUrl;
-        }
-
         protected Mock<ITicketing> MockTicketing(Action<ETagResponse> ticketingCompleteCallback)
         {
             var ticketing = new Mock<ITicketing>();
@@ -92,6 +86,28 @@ namespace AddressRegistry.Tests.BackOffice
                 });
 
             return ticketing;
+        }
+
+        protected Mock<IIdempotentCommandHandler> MockExceptionIdempotentCommandHandler<TException>()
+            where TException : Exception, new()
+        {
+            var idempotentCommandHandler = new Mock<IIdempotentCommandHandler>();
+            idempotentCommandHandler
+                .Setup(x => x.Dispatch(It.IsAny<Guid>(), It.IsAny<object>(),
+                    It.IsAny<IDictionary<string, object>>(), CancellationToken.None))
+                .Throws<TException>();
+            return idempotentCommandHandler;
+        }
+
+        protected Mock<IIdempotentCommandHandler> MockExceptionIdempotentCommandHandler<TException>(Func<TException> exceptionFactory)
+            where TException : Exception
+        {
+            var idempotentCommandHandler = new Mock<IIdempotentCommandHandler>();
+            idempotentCommandHandler
+                .Setup(x => x.Dispatch(It.IsAny<Guid>(), It.IsAny<object>(),
+                    It.IsAny<IDictionary<string, object>>(), CancellationToken.None))
+                .Throws(exceptionFactory());
+            return idempotentCommandHandler;
         }
 
         public T CreateApiBusControllerWithUser<T>() where T : ApiController

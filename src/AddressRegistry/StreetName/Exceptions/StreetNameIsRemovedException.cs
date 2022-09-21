@@ -6,6 +6,9 @@ namespace AddressRegistry.StreetName.Exceptions
     [Serializable]
     public sealed class StreetNameIsRemovedException : AddressRegistryException
     {
+        public StreetNameIsRemovedException()
+        { }
+
         public StreetNameIsRemovedException(StreetNamePersistentLocalId streetNameId)
             : base($"StreetName with Id '{streetNameId}' is removed.")
         { }

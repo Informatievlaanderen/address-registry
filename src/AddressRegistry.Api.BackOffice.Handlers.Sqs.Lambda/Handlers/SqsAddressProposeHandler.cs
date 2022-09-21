@@ -90,9 +90,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
             await _backOfficeContext.SaveChangesAsync(cancellationToken);
 
 
-            var lastHash = await GetHash(request.StreetNamePersistentLocalId, addressPersistentLocalId,
-                cancellationToken);
-            return new ETagResponse(lastHash);
+            var lastHash = await GetHash(request.StreetNamePersistentLocalId, addressPersistentLocalId, cancellationToken);
+            return new ETagResponse(string.Format(DetailUrlFormat, addressPersistentLocalId), lastHash);
         }
 
         protected override TicketError? MapDomainException(DomainException exception, SqsLambdaAddressProposeRequest request)

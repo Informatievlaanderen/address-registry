@@ -5,7 +5,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Infrastructure
     using Polly;
     using Polly.Retry;
 
-    public class LambdaHandlerRetryPolicy : ICustomRetryPolicy
+    public sealed class LambdaHandlerRetryPolicy : ICustomRetryPolicy
     {
         private readonly AsyncRetryPolicy _policy;
 

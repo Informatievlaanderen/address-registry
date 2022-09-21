@@ -35,7 +35,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRemovingAddress
 
             MockMediator
                 .Setup(x => x.Send(It.IsAny<AddressRemoveRequest>(), CancellationToken.None))
-                .Returns(Task.FromResult(new ETagResponse(lastEventHash)));
+                .Returns(Task.FromResult(new ETagResponse(string.Empty, lastEventHash)));
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentIds(addressPersistentLocalId, streetNamePersistentId);
 

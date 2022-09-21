@@ -31,6 +31,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
 
         protected override async Task<ETagResponse> InnerHandle(SqsLambdaAddressDeregulateRequest request, CancellationToken cancellationToken)
         {
+            var addressPersistentLocalId = new AddressPersistentLocalId(request.AddressPersistentLocalId);
             var cmd = request.ToCommand();
 
             try
@@ -46,8 +47,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
                 // Idempotent: Do Nothing return last etag
             }
 
-            var lastHash = await GetHash(request.StreetNamePersistentLocalId, new AddressPersistentLocalId(request.AddressPersistentLocalId), cancellationToken);
-            return new ETagResponse(lastHash);
+            var lastHash = await GetHash(request.StreetNamePersistentLocalId, addressPersistentLocalId, cancellationToken);
+            return new ETagResponse(string.Format(DetailUrlFormat, addressPersistentLocalId), lastHash);
         }
 
         protected override TicketError? MapDomainException(DomainException exception, SqsLambdaAddressDeregulateRequest request)

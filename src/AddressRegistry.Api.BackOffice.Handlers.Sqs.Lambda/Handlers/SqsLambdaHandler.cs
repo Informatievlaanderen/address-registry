@@ -1,12 +1,12 @@
 namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
 {
-    using AddressRegistry.Api.BackOffice.Abstractions;
-    using AddressRegistry.Api.BackOffice.Abstractions.Exceptions;
-    using AddressRegistry.Api.BackOffice.Abstractions.Responses;
-    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Requests;
+    using Abstractions;
+    using Abstractions.Exceptions;
+    using Abstractions.Responses;
+    using Requests;
     using AddressRegistry.Infrastructure;
-    using AddressRegistry.StreetName;
-    using AddressRegistry.StreetName.Exceptions;
+    using StreetName;
+    using StreetName.Exceptions;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using MediatR;

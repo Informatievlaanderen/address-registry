@@ -88,7 +88,7 @@ namespace AddressRegistry.Api.BackOffice
 
                 return new AcceptedWithETagResult(
                     new Uri(string.Format(options.Value.DetailUrl, request.PersistentLocalId)),
-                    response.LastEventHash);
+                    response.ETag);
             }
             catch (IdempotencyException)
             {

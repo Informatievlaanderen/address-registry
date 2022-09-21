@@ -1,16 +1,8 @@
 namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
 {
-    using System.Collections.Generic;
     using System.Runtime.Serialization;
-    using Converters;
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
-    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using MediatR;
     using Newtonsoft.Json;
-    using Responses;
-    using StreetName;
-    using StreetName.Commands;
-    using Swashbuckle.AspNetCore.Filters;
 
     [DataContract(Name = "VoorstelAdres", Namespace = "")]
     public sealed class AddressBackOfficeProposeRequest

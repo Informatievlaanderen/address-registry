@@ -1,25 +1,29 @@
 namespace AddressRegistry.Tests.BackOffice.Lambda
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Abstractions.Responses;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers;
+    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Requests;
     using Autofac;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentAssertions;
-    using global::AutoFixture;
     using Infrastructure;
+    using Microsoft.Extensions.Configuration;
     using SqlStreamStore;
     using SqlStreamStore.Streams;
     using StreetName;
     using Xunit;
     using Xunit.Abstractions;
+    using global::AutoFixture;
 
     public class WhenChangingAddressPosition : AddressRegistryBackOfficeTest
     {
@@ -57,30 +61,33 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 new HouseNumber("11"),
                 null);
 
-            ETagResponse? etag = null;
-
+            ETagResponse? eTag = null;
             var sut = new SqsAddressChangePositionHandler(
-                MockTicketing(result =>
-                {
-                    etag = result;
-                }).Object,
-                MockTicketingUrl().Object,
-                Container.Resolve<ICommandHandlerResolver>(),
+                Container.Resolve<IConfiguration>(),
+                new FakeRetryPolicy(),
+                MockTicketing(result => { eTag = result; }).Object,
                 _streetNames,
-                _idempotencyContext);
+                new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext));
 
             // Act
-            await sut.Handle(new SqsAddressChangePositionRequest
+            await sut.Handle(new SqsLambdaAddressChangePositionRequest
+            {
+                Request = new AddressBackOfficeChangePositionRequest
                 {
-                PersistentLocalId = addressPersistentLocalId,
+                    PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
+                },
+                AddressPersistentLocalId = addressPersistentLocalId,
                 MessageGroupId = streetNamePersistentLocalId,
-                PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
+                TicketId = Guid.NewGuid(),
+                Metadata = new Dictionary<string, object>(),
+                Provenance = Fixture.Create<Provenance>()
             },
             CancellationToken.None);
 
             // Assert
-            var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))), 2, 1);
-            stream.Messages.First().JsonMetadata.Should().Contain(etag!.LastEventHash);
+            var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(
+                new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))), 2, 1);
+            stream.Messages.First().JsonMetadata.Should().Contain(eTag!.LastEventHash);
         }
     }
 }

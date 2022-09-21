@@ -22,6 +22,7 @@ namespace AddressRegistry.Tests.BackOffice
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Options;
     using Moq;
+    using Newtonsoft.Json;
     using StreetName.Commands;
     using TicketingService.Abstractions;
     using Xunit.Abstractions;
@@ -75,17 +76,19 @@ namespace AddressRegistry.Tests.BackOffice
         protected Mock<ITicketingUrl> MockTicketingUrl()
         {
             var ticketingUrl = new Mock<ITicketingUrl>();
-            ticketingUrl.Setup(x => x.For(It.IsAny<Guid>())).Returns("");
+            ticketingUrl.Setup(x => x.For(It.IsAny<Guid>())).Returns(Fixture.Create<Uri>());
             return ticketingUrl;
         }
 
-        protected Mock<ITicketing> MockTicketing(Action<ETagResponse> callback)
+        protected Mock<ITicketing> MockTicketing(Action<ETagResponse> ticketingCompleteCallback)
         {
             var ticketing = new Mock<ITicketing>();
-            ticketing.Setup(x => x.Complete(It.IsAny<Guid>(), It.IsAny<TicketResult>(), CancellationToken.None))
+            ticketing
+                .Setup(x => x.Complete(It.IsAny<Guid>(), It.IsAny<TicketResult>(), CancellationToken.None))
                 .Callback<Guid, TicketResult, CancellationToken>((_, ticketResult, _) =>
                 {
-                    callback((ETagResponse)ticketResult.Result);
+                    var eTagResponse = JsonConvert.DeserializeObject<ETagResponse>(ticketResult.ResultAsJson!)!;
+                    ticketingCompleteCallback(eTagResponse);
                 });
 
             return ticketing;

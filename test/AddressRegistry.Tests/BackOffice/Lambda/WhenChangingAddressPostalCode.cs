@@ -1,24 +1,28 @@
 namespace AddressRegistry.Tests.BackOffice.Lambda
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Abstractions.Responses;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers;
+    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Requests;
     using Autofac;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentAssertions;
-    using global::AutoFixture;
     using Infrastructure;
+    using Microsoft.Extensions.Configuration;
     using SqlStreamStore;
     using SqlStreamStore.Streams;
     using StreetName;
     using Xunit;
     using Xunit.Abstractions;
+    using global::AutoFixture;
 
     public class WhenChangingAddressPostalCode : AddressRegistryBackOfficeTest
     {
@@ -55,26 +59,30 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             ETagResponse? etag = null;
 
             var sut = new SqsAddressChangePostalCodeHandler(
-                MockTicketing(result =>
-                {
-                    etag = result;
-                }).Object,
-                MockTicketingUrl().Object,
-                Container.Resolve<ICommandHandlerResolver>(),
+                Container.Resolve<IConfiguration>(),
+                new FakeRetryPolicy(),
+                MockTicketing(result => { etag = result; }).Object,
                 _streetNames,
-                _idempotencyContext);
+                new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext));
 
             // Act
-            await sut.Handle(new SqsAddressChangePostalCodeRequest()
+            await sut.Handle(new SqsLambdaAddressChangePostalCodeRequest
             {
-                PersistentLocalId = addressPersistentLocalId,
+                Request = new AddressBackOfficeChangePostalCodeRequest
+                {
+                    PostInfoId = "https://data.vlaanderen.be/id/postinfo/123"
+                },
+                AddressPersistentLocalId = addressPersistentLocalId,
                 MessageGroupId = streetNamePersistentLocalId,
-                PostInfoId = $"https://data.vlaanderen.be/id/postinfo/123",
+                TicketId = Guid.NewGuid(),
+                Metadata = new Dictionary<string, object>(),
+                Provenance = Fixture.Create<Provenance>()
             },
             CancellationToken.None);
 
             // Assert
-            var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))), 2, 1);
+            var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(
+                new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))), 2, 1);
             stream.Messages.First().JsonMetadata.Should().Contain(etag!.LastEventHash);
         }
     }

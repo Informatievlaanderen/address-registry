@@ -8,25 +8,25 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     using Address;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Abstractions.Responses;
-    using AddressRegistry.Api.BackOffice.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers;
+    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Requests;
     using Autofac;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
-    using Consumer.Read.Municipality.Projections;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentAssertions;
-    using global::AutoFixture;
     using Infrastructure;
+    using Microsoft.Extensions.Configuration;
     using Moq;
-    using Projections.Syndication.Municipality;
     using Projections.Syndication.PostalInfo;
     using SqlStreamStore;
     using SqlStreamStore.Streams;
     using StreetName;
     using Xunit;
     using Xunit.Abstractions;
+    using global::AutoFixture;
     using MunicipalityLatestItem = Consumer.Read.Municipality.Projections.MunicipalityLatestItem;
 
     public class WhenProposingAddress : AddressRegistryBackOfficeTest
@@ -52,23 +52,23 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
         public async Task GivenRequest_ThenPersistentLocalIdETagResponse()
         {
             var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
-            var niscode = new NisCode("12345");
+            var nisCode = new NisCode("12345");
             var postInfoId = "2018";
 
             var mockPersistentLocalIdGenerator = new Mock<IPersistentLocalIdGenerator>();
             mockPersistentLocalIdGenerator
                 .Setup(x => x.GenerateNextPersistentLocalId())
                 .Returns(new PersistentLocalId(123));
-            
+
             _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
             {
                 PostalCode = postInfoId,
-                NisCode = niscode,
+                NisCode = nisCode,
             });
             _municipalityContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem
             {
                 MunicipalityId = Fixture.Create<MunicipalityId>(),
-                NisCode = niscode
+                NisCode = nisCode
             });
             await _municipalityContext.SaveChangesAsync();
             await _syndicationContext.SaveChangesAsync();
@@ -76,42 +76,44 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             ImportMigratedStreetName(
                 new AddressRegistry.StreetName.StreetNameId(Guid.NewGuid()),
                 streetNamePersistentLocalId,
-                niscode);
+                nisCode);
 
-            ETagResponse? etag = null;
-
+            var eTag = new ETagResponse(string.Empty);
             var sut = new SqsAddressProposeHandler(
-                MockTicketing(result =>
-                {
-                    etag = result;
-                }).Object,
-                MockTicketingUrl().Object,
-                Container.Resolve<ICommandHandlerResolver>(),
+                Container.Resolve<IConfiguration>(),
+                new FakeRetryPolicy(),
+                MockTicketing(result => { eTag = result; }).Object,
                 _streetNames,
+                new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext),
                 _backOfficeContext,
-                _idempotencyContext,
                 _syndicationContext,
                 _municipalityContext,
                 mockPersistentLocalIdGenerator.Object);
 
             // Act
-            var result = await sut.Handle(new SqsAddressProposeRequest
+            await sut.Handle(new SqsLambdaAddressProposeRequest
             {
-                StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
-                PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
-                Huisnummer = "11",
-                Busnummer = null,
-                PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                PositieSpecificatie = PositieSpecificatie.Ingang,
-                Positie = GeometryHelpers.GmlPointGeometry,
+                Request = new AddressBackOfficeProposeRequest
+                {
+                    StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
+                    PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
+                    Huisnummer = "11",
+                    Busnummer = null,
+                    PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
+                    PositieSpecificatie = PositieSpecificatie.Ingang,
+                    Positie = GeometryHelpers.GmlPointGeometry
+                },
+                MessageGroupId = streetNamePersistentLocalId,
                 Metadata = new Dictionary<string, object>(),
-                MessageGroupId = streetNamePersistentLocalId
+                TicketId = Guid.NewGuid(),
+                Provenance = Fixture.Create<Provenance>()
             },
                 CancellationToken.None);
 
             // Assert
-            var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))), 1, 1); //1 = version of stream (zero based)
-            stream.Messages.First().JsonMetadata.Should().Contain(etag.LastEventHash);
+            var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(
+                new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))), 1, 1);
+            stream.Messages.First().JsonMetadata.Should().Contain(eTag.LastEventHash);
         }
     }
 }

@@ -31,9 +31,6 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
 
         protected override async Task<ETagResponse> InnerHandle(SqsLambdaAddressDeregulateRequest request, CancellationToken cancellationToken)
         {
-            var streetNamePersistentLocalId = new StreetNamePersistentLocalId(int.Parse(request.MessageGroupId));
-            var addressPersistentLocalId = new AddressPersistentLocalId(request.AddressPersistentLocalId);
-
             var cmd = request.ToCommand();
 
             try
@@ -49,7 +46,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
                 // Idempotent: Do Nothing return last etag
             }
 
-            var lastHash = await GetHash(request.StreetNamePersistentLocalId, addressPersistentLocalId, cancellationToken);
+            var lastHash = await GetHash(request.StreetNamePersistentLocalId, new AddressPersistentLocalId(request.AddressPersistentLocalId), cancellationToken);
             return new ETagResponse(lastHash);
         }
 

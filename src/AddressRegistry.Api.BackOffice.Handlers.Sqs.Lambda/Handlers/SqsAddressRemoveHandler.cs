@@ -2,18 +2,13 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
 {
     using System.Threading;
     using System.Threading.Tasks;
-    using Abstractions;
     using Abstractions.Exceptions;
     using Abstractions.Responses;
     using AddressRegistry.Infrastructure;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
-    using Be.Vlaanderen.Basisregisters.CommandHandling;
-    using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Microsoft.Extensions.Configuration;
     using Requests;
     using StreetName;
-    using StreetName.Commands;
-    using StreetName.Exceptions;
     using TicketingService.Abstractions;
 
     public sealed class SqsAddressRemoveHandler : SqsLambdaHandler<SqsLambdaAddressRemoveRequest>
@@ -34,7 +29,6 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
 
         protected override async Task<ETagResponse> InnerHandle(SqsLambdaAddressRemoveRequest request, CancellationToken cancellationToken)
         {
-            var streetNamePersistentLocalId = new AddressPersistentLocalId(request.Request.PersistentLocalId);
             var cmd = request.ToCommand();
 
             try
@@ -50,7 +44,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
                 // Idempotent: Do Nothing return last etag
             }
 
-            var lastHash = await GetHash(request.StreetNamePersistentLocalId, streetNamePersistentLocalId, cancellationToken);
+            var lastHash = await GetHash(request.StreetNamePersistentLocalId, new AddressPersistentLocalId(request.AddressPersistentLocalId), cancellationToken);
             return new ETagResponse(lastHash);
         }
 

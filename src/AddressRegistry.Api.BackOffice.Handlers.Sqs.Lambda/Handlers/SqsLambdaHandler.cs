@@ -1,20 +1,17 @@
-namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda
+namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
 {
-    using Abstractions;
-    using Abstractions.Exceptions;
-    using Abstractions.Responses;
-    using Address;
+    using AddressRegistry.Api.BackOffice.Abstractions;
+    using AddressRegistry.Api.BackOffice.Abstractions.Exceptions;
+    using AddressRegistry.Api.BackOffice.Abstractions.Responses;
+    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Requests;
     using AddressRegistry.Infrastructure;
+    using AddressRegistry.StreetName;
+    using AddressRegistry.StreetName.Exceptions;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
-    using Handlers;
     using MediatR;
     using Microsoft.Extensions.Configuration;
-    using Requests;
-    using StreetName;
-    using StreetName.Exceptions;
     using TicketingService.Abstractions;
-    using IHasAddressPersistentLocalId = Abstractions.IHasAddressPersistentLocalId;
 
     public abstract class SqsLambdaHandler<TSqsLambdaRequest> : IRequestHandler<TSqsLambdaRequest>
         where TSqsLambdaRequest : SqsLambdaRequest
@@ -99,7 +96,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda
 
         private async Task ValidateIfMatchHeaderValue(TSqsLambdaRequest request, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(request.IfMatchHeaderValue) || request is not IHasAddressPersistentLocalId id)
+            if (string.IsNullOrWhiteSpace(request.IfMatchHeaderValue) || request is not Abstractions.IHasAddressPersistentLocalId id)
                 return;
 
             var lastHash = await GetHash(

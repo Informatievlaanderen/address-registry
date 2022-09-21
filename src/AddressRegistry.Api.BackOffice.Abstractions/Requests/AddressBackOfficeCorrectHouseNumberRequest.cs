@@ -1,8 +1,6 @@
 namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
 {
-    using MediatR;
     using Newtonsoft.Json;
-    using Responses;
     using System.Runtime.Serialization;
 
     [DataContract(Name = "CorrigerenHuisnummerAdres", Namespace = "")]

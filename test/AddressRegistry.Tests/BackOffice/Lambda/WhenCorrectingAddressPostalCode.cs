@@ -1,26 +1,30 @@
 namespace AddressRegistry.Tests.BackOffice.Lambda
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Abstractions.Responses;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers;
+    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Requests;
     using Autofac;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Consumer.Read.Municipality.Projections;
     using FluentAssertions;
-    using global::AutoFixture;
     using Infrastructure;
+    using Microsoft.Extensions.Configuration;
     using Projections.Syndication.PostalInfo;
     using SqlStreamStore;
     using SqlStreamStore.Streams;
     using StreetName;
     using Xunit;
     using Xunit.Abstractions;
+    using global::AutoFixture;
 
     public class WhenCorrectingAddressPostalCode : AddressRegistryBackOfficeTest
     {
@@ -42,8 +46,8 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
         [Fact]
         public async Task GivenRequest_ThenPersistentLocalIdETagResponse()
         {
-            var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
-            var addressPersistentLocalId = new AddressPersistentLocalId(456);
+            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
+            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
 
             var postInfoId = "2018";
             var correctPostInfoId = "2019";
@@ -82,33 +86,35 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 new HouseNumber("11"),
                 null);
 
-            ETagResponse? etag = null;
-
+            var eTag = new ETagResponse(string.Empty);
             var sut = new SqsAddressCorrectPostalCodeHandler(
-                MockTicketing(result =>
-                {
-                    etag = result;
-                }).Object,
-                MockTicketingUrl().Object,
-                Container.Resolve<ICommandHandlerResolver>(),
+                Container.Resolve<IConfiguration>(),
+                new FakeRetryPolicy(),
+                MockTicketing(result => { eTag = result; }).Object,
                 _streetNames,
-                _idempotencyContext,
+                new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext),
                 _syndicationContext,
                 _municipalityContext);
 
             // Act
-            await sut.Handle(new SqsAddressCorrectPostalCodeRequest
+            await sut.Handle(new SqsLambdaAddressCorrectPostalCodeRequest
             {
-                PersistentLocalId = addressPersistentLocalId,
+                Request = new AddressBackOfficeCorrectPostalCodeRequest
+                {
+                    PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{correctPostInfoId}"
+                },
+                AddressPersistentLocalId = addressPersistentLocalId,
                 MessageGroupId = streetNamePersistentLocalId,
-                PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{correctPostInfoId}",
+                TicketId = Guid.NewGuid(),
+                Metadata = new Dictionary<string, object>(),
+                Provenance = Fixture.Create<Provenance>()
             },
             CancellationToken.None);
 
             // Assert
             var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(
                 new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))), 2, 1);
-            stream.Messages.First().JsonMetadata.Should().Contain(etag!.LastEventHash);
+            stream.Messages.First().JsonMetadata.Should().Contain(eTag!.LastEventHash);
         }
     }
 }

@@ -10,15 +10,16 @@ namespace AddressRegistry.Api.BackOffice
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentValidation;
     using FluentValidation.Results;
+    using Handlers.Sqs.Requests;
     using Infrastructure.Options;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Options;
     using StreetName.Exceptions;
     using Swashbuckle.AspNetCore.Filters;
-    using Validators;
 
     public partial class AddressController
     {
@@ -51,6 +52,19 @@ namespace AddressRegistry.Api.BackOffice
 
             try
             {
+                if (_useSqsToggle.FeatureEnabled)
+                {
+                    var sqsRequest = new SqsAddressProposeRequest
+                    {
+                        Request = request,
+                        Metadata = GetMetadata(),
+                        ProvenanceData = new ProvenanceData(CreateFakeProvenance())
+                    };
+                    var sqsResult = await _mediator.Send(sqsRequest, cancellationToken);
+
+                    return Accepted(sqsResult.Location);
+                }
+
                 request.Metadata = GetMetadata();
                 var response = await _mediator.Send(request, cancellationToken);
 

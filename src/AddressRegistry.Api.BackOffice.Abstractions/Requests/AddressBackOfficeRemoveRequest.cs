@@ -4,7 +4,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
     using Newtonsoft.Json;
 
     [DataContract(Name = "VerwijderenAdres", Namespace = "")]
-    public sealed class AddressBackOfficeRemoveRequest
+    public class AddressBackOfficeRemoveRequest
     {
         /// <summary>
         /// De unieke en persistente identificator van het adres.

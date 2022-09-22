@@ -85,7 +85,6 @@ namespace AddressRegistry.Api.BackOffice
                     return new PreconditionFailedResult();
                 }
 
-
                 if (_useSqsToggle.FeatureEnabled)
                 {
                     var sqsRequest = new SqsAddressCorrectHouseNumberRequest

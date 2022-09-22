@@ -31,13 +31,15 @@ namespace AddressRegistry.Tests.BackOffice.Infrastructure
         }
 
 
-        public async Task AddAddressPersistentIdStreetNamePersistentIds(
+        public async Task<AddressPersistentIdStreetNamePersistentId> AddAddressPersistentIdStreetNamePersistentId(
             AddressPersistentLocalId addressPersistentLocalId,
             StreetNamePersistentLocalId streetNamePersistentId)
         {
-            AddressPersistentIdStreetNamePersistentIds.Add(
-                new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));
+            var addressPersistentIdStreetNamePersistentId = new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
+            AddressPersistentIdStreetNamePersistentIds.Add(addressPersistentIdStreetNamePersistentId);
             await SaveChangesAsync();
+
+            return addressPersistentIdStreetNamePersistentId;
         }
     }
 

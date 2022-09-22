@@ -38,7 +38,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
                 .Setup(x => x.Send(It.IsAny<AddressApproveRequest>(), CancellationToken.None))
                 .Returns(Task.FromResult(new ETagResponse(string.Empty, lastEventHash)));
 
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentIds(addressPersistentLocalId, streetNamePersistentId);
+            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             var result = (NoContentWithETagResult)await _controller.Approve(
                 _backOfficeContext,

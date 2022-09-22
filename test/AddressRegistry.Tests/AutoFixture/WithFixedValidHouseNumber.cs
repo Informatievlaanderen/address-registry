@@ -1,6 +1,5 @@
 namespace AddressRegistry.Tests.AutoFixture
 {
-    using System;
     using Address;
     using global::AutoFixture;
     using global::AutoFixture.Kernel;

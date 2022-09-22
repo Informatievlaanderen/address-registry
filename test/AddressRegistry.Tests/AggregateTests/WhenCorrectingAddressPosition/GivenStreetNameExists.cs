@@ -3,11 +3,11 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressPosition
     using System.Collections.Generic;
     using System.Linq;
     using AddressRegistry.Api.BackOffice.Abstractions;
-    using AddressRegistry.StreetName;
-    using AddressRegistry.StreetName.Commands;
-    using AddressRegistry.StreetName.Events;
-    using AddressRegistry.StreetName.Exceptions;
-    using AddressRegistry.Tests.AutoFixture;
+    using StreetName;
+    using StreetName.Commands;
+    using StreetName.Events;
+    using StreetName.Exceptions;
+    using AutoFixture;
     using AddressRegistry.Tests.BackOffice.Infrastructure;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.AggregateSource;

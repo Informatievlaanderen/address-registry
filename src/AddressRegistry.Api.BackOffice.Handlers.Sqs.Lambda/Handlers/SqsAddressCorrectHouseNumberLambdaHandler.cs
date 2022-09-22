@@ -13,9 +13,9 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
     using System.Threading.Tasks;
     using TicketingService.Abstractions;
 
-    public sealed class SqsAddressRegularizeHandler : SqsLambdaHandler<SqsLambdaAddressRegularizeRequest>
+    public sealed class SqsAddressCorrectHouseNumberLambdaHandler : SqsLambdaHandler<SqsLambdaAddressCorrectHouseNumberRequest>
     {
-        public SqsAddressRegularizeHandler(
+        public SqsAddressCorrectHouseNumberLambdaHandler(
             IConfiguration configuration,
             ICustomRetryPolicy retryPolicy,
             ITicketing ticketing,
@@ -29,7 +29,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
                 idempotentCommandHandler)
         { }
 
-        protected override async Task<ETagResponse> InnerHandle(SqsLambdaAddressRegularizeRequest request, CancellationToken cancellationToken)
+        protected override async Task<ETagResponse> InnerHandle(SqsLambdaAddressCorrectHouseNumberRequest request, CancellationToken cancellationToken)
         {
             var addressPersistentLocalId = new AddressPersistentLocalId(request.AddressPersistentLocalId);
             var cmd = request.ToCommand();
@@ -51,13 +51,22 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
             return new ETagResponse(string.Format(DetailUrlFormat, addressPersistentLocalId), lastHash);
         }
 
-        protected override TicketError? MapDomainException(DomainException exception, SqsLambdaAddressRegularizeRequest request)
+        protected override TicketError? MapDomainException(DomainException exception, SqsLambdaAddressCorrectHouseNumberRequest request)
         {
             return exception switch
             {
                 AddressHasInvalidStatusException => new TicketError(
-                    ValidationErrorMessages.Address.AddressCannotBeRegularized,
-                    ValidationErrors.Address.AddressCannotBeRegularized),
+                    ValidationErrorMessages.Address.AddressPostalCodeCannotBeChanged,
+                    ValidationErrors.Address.AddressPostalCodeCannotBeChanged),
+                ParentAddressAlreadyExistsException => new TicketError(
+                    ValidationErrorMessages.Address.AddressAlreadyExists,
+                    ValidationErrors.Address.AddressAlreadyExists),
+                HouseNumberHasInvalidFormatException => new TicketError(
+                    ValidationErrorMessages.Address.HouseNumberInvalid,
+                    ValidationErrors.Address.HouseNumberInvalid),
+                HouseNumberToCorrectHasBoxNumberException => new TicketError(
+                    ValidationErrorMessages.Address.HouseNumberOfBoxNumberCannotBeChanged,
+                    ValidationErrors.Address.HouseNumberOfBoxNumberCannotBeChanged),
                 _ => null
             };
         }

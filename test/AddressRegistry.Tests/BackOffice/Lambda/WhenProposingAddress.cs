@@ -82,7 +82,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 nisCode);
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new SqsAddressProposeHandler(
+            var sut = new SqsAddressProposeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -147,7 +147,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             await _municipalityContext.SaveChangesAsync();
             await _syndicationContext.SaveChangesAsync();
 
-            var sut = new SqsAddressProposeHandler(
+            var sut = new SqsAddressProposeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -215,7 +215,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             await _municipalityContext.SaveChangesAsync();
             await _syndicationContext.SaveChangesAsync();
 
-            var sut = new SqsAddressProposeHandler(
+            var sut = new SqsAddressProposeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -283,7 +283,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             await _municipalityContext.SaveChangesAsync();
             await _syndicationContext.SaveChangesAsync();
 
-            var sut = new SqsAddressProposeHandler(
+            var sut = new SqsAddressProposeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -352,7 +352,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             await _municipalityContext.SaveChangesAsync();
             await _syndicationContext.SaveChangesAsync();
 
-            var sut = new SqsAddressProposeHandler(
+            var sut = new SqsAddressProposeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -421,7 +421,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             await _municipalityContext.SaveChangesAsync();
             await _syndicationContext.SaveChangesAsync();
 
-            var sut = new SqsAddressProposeHandler(
+            var sut = new SqsAddressProposeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -489,7 +489,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             await _municipalityContext.SaveChangesAsync();
             await _syndicationContext.SaveChangesAsync();
 
-            var sut = new SqsAddressProposeHandler(
+            var sut = new SqsAddressProposeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -558,7 +558,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             await _municipalityContext.SaveChangesAsync();
             await _syndicationContext.SaveChangesAsync();
 
-            var sut = new SqsAddressProposeHandler(
+            var sut = new SqsAddressProposeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,

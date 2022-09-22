@@ -47,7 +47,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
             var postalCode = new PostalCode("2018");
             var houseNumber = new HouseNumber("11");
 
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentIds(addressPersistentLocalId, streetNamePersistentLocalId);
+            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentLocalId);
 
             _municipalityConsumerContext.AddMunicipality(municipalityId, GeometryHelpers.ValidGmlPolygon);
 

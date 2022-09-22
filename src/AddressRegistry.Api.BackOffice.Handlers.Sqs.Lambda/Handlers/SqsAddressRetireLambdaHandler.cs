@@ -13,9 +13,9 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
     using System.Threading.Tasks;
     using TicketingService.Abstractions;
 
-    public sealed class SqsAddressRetireHandler : SqsLambdaHandler<SqsLambdaAddressRetireRequest>
+    public sealed class SqsAddressRetireLambdaHandler : SqsLambdaHandler<SqsLambdaAddressRetireRequest>
     {
-        public SqsAddressRetireHandler(
+        public SqsAddressRetireLambdaHandler(
             IConfiguration configuration,
             ICustomRetryPolicy retryPolicy,
             ITicketing ticketing,

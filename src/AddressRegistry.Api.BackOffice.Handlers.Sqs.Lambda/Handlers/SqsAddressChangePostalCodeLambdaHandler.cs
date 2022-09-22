@@ -13,9 +13,9 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
     using System.Threading.Tasks;
     using TicketingService.Abstractions;
 
-    public sealed class SqsAddressChangePostalCodeHandler : SqsLambdaHandler<SqsLambdaAddressChangePostalCodeRequest>
+    public sealed class SqsAddressChangePostalCodeLambdaHandler : SqsLambdaHandler<SqsLambdaAddressChangePostalCodeRequest>
     {
-       public SqsAddressChangePostalCodeHandler(
+       public SqsAddressChangePostalCodeLambdaHandler(
              IConfiguration configuration,
              ICustomRetryPolicy retryPolicy,
              ITicketing ticketing,

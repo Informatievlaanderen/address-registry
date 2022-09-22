@@ -3,7 +3,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
     using System;
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
-    using AddressRegistry.Api.BackOffice.Validators;
     using BackOffice;
     using Infrastructure;
     using FluentAssertions;

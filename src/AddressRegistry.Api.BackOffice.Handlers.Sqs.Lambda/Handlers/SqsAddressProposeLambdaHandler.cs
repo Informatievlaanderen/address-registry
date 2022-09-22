@@ -18,14 +18,14 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
     using TicketingService.Abstractions;
     using PostalCode = StreetName.PostalCode;
 
-    public sealed class SqsAddressProposeHandler : SqsLambdaHandler<SqsLambdaAddressProposeRequest>
+    public sealed class SqsAddressProposeLambdaHandler : SqsLambdaHandler<SqsLambdaAddressProposeRequest>
     {
         private readonly BackOfficeContext _backOfficeContext;
         private readonly SyndicationContext _syndicationContext;
         private readonly MunicipalityConsumerContext _municipalityConsumerContext;
         private readonly IPersistentLocalIdGenerator _persistentLocalIdGenerator;
 
-        public SqsAddressProposeHandler(
+        public SqsAddressProposeLambdaHandler(
             IConfiguration configuration,
             ICustomRetryPolicy retryPolicy,
             ITicketing ticketing,

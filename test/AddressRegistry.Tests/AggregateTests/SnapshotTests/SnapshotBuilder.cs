@@ -1,7 +1,6 @@
 namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;

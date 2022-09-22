@@ -1,7 +1,6 @@
 namespace AddressRegistry.Tests.ProjectionTests.Municipality
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using AddressRegistry.Consumer.Read.Municipality;
     using AddressRegistry.Consumer.Read.Municipality.Projections;

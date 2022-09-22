@@ -2,12 +2,11 @@ namespace AddressRegistry.Tests.AggregateTests.Legacy.WhenMarkingAddressAsMigrat
 {
     using Address;
     using Address.Events;
-    using AddressRegistry.Address.Commands;
+    using Address.Commands;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using global::AutoFixture;
-    using StreetName.Commands;
     using Xunit;
     using Xunit.Abstractions;
 

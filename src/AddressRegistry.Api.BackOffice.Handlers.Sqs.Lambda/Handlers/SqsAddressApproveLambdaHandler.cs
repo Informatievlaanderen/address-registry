@@ -13,9 +13,9 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
     using System.Threading.Tasks;
     using TicketingService.Abstractions;
 
-    public sealed class SqsAddressChangePositionHandler : SqsLambdaHandler<SqsLambdaAddressChangePositionRequest>
+    public sealed class SqsAddressApproveLambdaHandler : SqsLambdaHandler<SqsLambdaAddressApproveRequest>
     {
-        public SqsAddressChangePositionHandler(
+        public SqsAddressApproveLambdaHandler(
              IConfiguration configuration,
              ICustomRetryPolicy retryPolicy,
              ITicketing ticketing,
@@ -29,9 +29,9 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
                  idempotentCommandHandler)
         { }
 
-        protected override async Task<ETagResponse> InnerHandle(SqsLambdaAddressChangePositionRequest request, CancellationToken cancellationToken)
+        protected override async Task<ETagResponse> InnerHandle(SqsLambdaAddressApproveRequest request, CancellationToken cancellationToken)
         {
-            var addressPersistentLocalId = new AddressPersistentLocalId(request.AddressPersistentLocalId);
+            var addressPersistentLocalId = new AddressPersistentLocalId(request.Request.PersistentLocalId);
             var cmd = request.ToCommand();
 
             try
@@ -51,22 +51,22 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
             return new ETagResponse(string.Format(DetailUrlFormat, addressPersistentLocalId), lastHash);
         }
 
-        protected override TicketError? MapDomainException(DomainException exception, SqsLambdaAddressChangePositionRequest request)
+        protected override TicketError? MapDomainException(DomainException exception, SqsLambdaAddressApproveRequest request)
         {
             return exception switch
             {
+                StreetNameHasInvalidStatusException => new TicketError(
+                    ValidationErrorMessages.StreetName.StreetNameIsNotActive,
+                    ValidationErrors.StreetName.StreetNameIsNotActive),
+                StreetNameIsRemovedException => new TicketError(
+                    ValidationErrorMessages.StreetName.StreetNameInvalid(request.StreetNamePersistentLocalId),
+                    ValidationErrors.StreetName.StreetNameInvalid),
                 AddressHasInvalidStatusException => new TicketError(
-                    ValidationErrorMessages.Address.AddressPositionCannotBeChanged,
-                    ValidationErrors.Address.AddressPositionCannotBeChanged),
-                AddressHasInvalidGeometryMethodException => new TicketError(
-                    ValidationErrorMessages.Address.GeometryMethodInvalid,
-                    ValidationErrors.Address.GeometryMethodInvalid),
-                AddressHasMissingGeometrySpecificationException => new TicketError(
-                    ValidationErrorMessages.Address.PositionSpecificationRequired,
-                    ValidationErrors.Address.PositionSpecificationRequired),
-                AddressHasInvalidGeometrySpecificationException => new TicketError(
-                    ValidationErrorMessages.Address.PositionSpecificationInvalid,
-                    ValidationErrors.Address.PositionSpecificationInvalid),
+                    ValidationErrorMessages.Address.AddressCannotBeApproved,
+                    ValidationErrors.Address.AddressCannotBeApproved),
+                ParentAddressHasInvalidStatusException => new TicketError(
+                    ValidationErrorMessages.Address.AddressCannotBeApprovedBecauseOfParent,
+                    ValidationErrors.Address.AddressCannotBeApprovedBecauseOfParent),
                 _ => null
             };
         }

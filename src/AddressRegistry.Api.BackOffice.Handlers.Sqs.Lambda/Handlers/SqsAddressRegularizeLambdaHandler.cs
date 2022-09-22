@@ -1,7 +1,6 @@
 namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
 {
-    using System.Threading;
-    using System.Threading.Tasks;
+    using Abstractions;
     using Abstractions.Exceptions;
     using Abstractions.Responses;
     using AddressRegistry.Infrastructure;
@@ -9,11 +8,14 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
     using Microsoft.Extensions.Configuration;
     using Requests;
     using StreetName;
+    using StreetName.Exceptions;
+    using System.Threading;
+    using System.Threading.Tasks;
     using TicketingService.Abstractions;
 
-    public sealed class SqsAddressRemoveHandler : SqsLambdaHandler<SqsLambdaAddressRemoveRequest>
+    public sealed class SqsAddressRegularizeLambdaHandler : SqsLambdaHandler<SqsLambdaAddressRegularizeRequest>
     {
-        public SqsAddressRemoveHandler(
+        public SqsAddressRegularizeLambdaHandler(
             IConfiguration configuration,
             ICustomRetryPolicy retryPolicy,
             ITicketing ticketing,
@@ -27,7 +29,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
                 idempotentCommandHandler)
         { }
 
-        protected override async Task<ETagResponse> InnerHandle(SqsLambdaAddressRemoveRequest request, CancellationToken cancellationToken)
+        protected override async Task<ETagResponse> InnerHandle(SqsLambdaAddressRegularizeRequest request, CancellationToken cancellationToken)
         {
             var addressPersistentLocalId = new AddressPersistentLocalId(request.AddressPersistentLocalId);
             var cmd = request.ToCommand();
@@ -49,9 +51,15 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
             return new ETagResponse(string.Format(DetailUrlFormat, addressPersistentLocalId), lastHash);
         }
 
-        protected override TicketError? MapDomainException(DomainException exception, SqsLambdaAddressRemoveRequest request)
+        protected override TicketError? MapDomainException(DomainException exception, SqsLambdaAddressRegularizeRequest request)
         {
-            return null;
+            return exception switch
+            {
+                AddressHasInvalidStatusException => new TicketError(
+                    ValidationErrorMessages.Address.AddressCannotBeRegularized,
+                    ValidationErrors.Address.AddressCannotBeRegularized),
+                _ => null
+            };
         }
     }
 }

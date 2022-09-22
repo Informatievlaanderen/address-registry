@@ -10,8 +10,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
     using Infrastructure;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using FluentAssertions;
-    using FluentValidation;
-    using FluentValidation.Results;
     using global::AutoFixture;
     using Microsoft.AspNetCore.Http;
     using Moq;

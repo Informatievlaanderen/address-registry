@@ -70,7 +70,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             );
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new SqsAddressRetireHandler(
+            var sut = new SqsAddressRetireLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -103,7 +103,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressRetireHandler(
+            var sut = new SqsAddressRetireLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -136,7 +136,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressRetireHandler(
+            var sut = new SqsAddressRetireLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -170,7 +170,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             var ticketing = new Mock<ITicketing>();
             var streetNamePersistentId = Fixture.Create<int>().ToString();
 
-            var sut = new SqsAddressRetireHandler(
+            var sut = new SqsAddressRetireLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -228,7 +228,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 Fixture.Create<Provenance>());
             DispatchArrangeCommand(retireAddress);
 
-            var sut = new SqsAddressRetireHandler(
+            var sut = new SqsAddressRetireLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,

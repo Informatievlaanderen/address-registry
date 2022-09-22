@@ -71,7 +71,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             DispatchArrangeCommand(deregulateAddress);
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new SqsAddressRegularizeHandler(
+            var sut = new SqsAddressRegularizeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -104,7 +104,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressRegularizeHandler(
+            var sut = new SqsAddressRegularizeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -165,7 +165,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 Fixture.Create<Provenance>());
             DispatchArrangeCommand(regularizeAddress);
 
-            var sut = new SqsAddressRegularizeHandler(
+            var sut = new SqsAddressRegularizeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,

@@ -44,7 +44,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRejectingAddress
                 .Setup(x => x.Send(It.IsAny<AddressRejectRequest>(), CancellationToken.None))
                 .Returns(Task.FromResult(new ETagResponse(string.Empty, lastEventHash)));
 
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentIds(addressPersistentLocalId, streetNamePersistentId);
+            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             var result = (AcceptedWithETagResult)await _controller.Reject(
                 _backOfficeContext,

@@ -37,7 +37,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRemovingAddress
                 .Setup(x => x.Send(It.IsAny<AddressRemoveRequest>(), CancellationToken.None))
                 .Returns(Task.FromResult(new ETagResponse(string.Empty, lastEventHash)));
 
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentIds(addressPersistentLocalId, streetNamePersistentId);
+            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             var result = await _controller.Remove(
                 _backOfficeContext,
@@ -58,7 +58,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRemovingAddress
             var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentIds(addressPersistentLocalId, streetNamePersistentId);
+            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             //Act
             var result = await _controller.Remove(

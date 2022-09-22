@@ -61,7 +61,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 null);
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new SqsAddressChangePostalCodeHandler(
+            var sut = new SqsAddressChangePostalCodeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -95,7 +95,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressChangePostalCodeHandler(
+            var sut = new SqsAddressChangePostalCodeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -151,7 +151,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 houseNumber,
                 null);
 
-            var sut = new SqsAddressChangePostalCodeHandler(
+            var sut = new SqsAddressChangePostalCodeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,

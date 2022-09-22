@@ -36,7 +36,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPostalCode
                 .Setup(x => x.Send(It.IsAny<AddressChangePostalCodeRequest>(), CancellationToken.None))
                 .Returns(Task.FromResult(new ETagResponse(string.Empty, lastEventHash)));
 
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentIds(addressPersistentLocalId, streetNamePersistentId);
+            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             //Act
             var result = (AcceptedWithETagResult) await _controller.ChangePostalCode(
@@ -61,7 +61,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPostalCode
             var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
-           await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentIds(addressPersistentLocalId, streetNamePersistentId);
+           await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             //Act
             var result = await _controller.ChangePostalCode(

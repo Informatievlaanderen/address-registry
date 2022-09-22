@@ -1,5 +1,7 @@
 namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
 {
+    using System.Threading;
+    using System.Threading.Tasks;
     using Abstractions;
     using Abstractions.Exceptions;
     using Abstractions.Responses;
@@ -9,13 +11,11 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
     using Requests;
     using StreetName;
     using StreetName.Exceptions;
-    using System.Threading;
-    using System.Threading.Tasks;
     using TicketingService.Abstractions;
 
-    public sealed class SqsAddressCorrectHouseNumberHandler : SqsLambdaHandler<SqsLambdaAddressCorrectHouseNumberRequest>
+    public sealed class SqsAddressCorrectPositionLambdaHandler : SqsLambdaHandler<SqsLambdaAddressCorrectPositionRequest>
     {
-        public SqsAddressCorrectHouseNumberHandler(
+        public SqsAddressCorrectPositionLambdaHandler(
             IConfiguration configuration,
             ICustomRetryPolicy retryPolicy,
             ITicketing ticketing,
@@ -29,7 +29,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
                 idempotentCommandHandler)
         { }
 
-        protected override async Task<ETagResponse> InnerHandle(SqsLambdaAddressCorrectHouseNumberRequest request, CancellationToken cancellationToken)
+        protected override async Task<ETagResponse> InnerHandle(SqsLambdaAddressCorrectPositionRequest request, CancellationToken cancellationToken)
         {
             var addressPersistentLocalId = new AddressPersistentLocalId(request.AddressPersistentLocalId);
             var cmd = request.ToCommand();
@@ -51,22 +51,22 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
             return new ETagResponse(string.Format(DetailUrlFormat, addressPersistentLocalId), lastHash);
         }
 
-        protected override TicketError? MapDomainException(DomainException exception, SqsLambdaAddressCorrectHouseNumberRequest request)
+        protected override TicketError? MapDomainException(DomainException exception, SqsLambdaAddressCorrectPositionRequest request)
         {
             return exception switch
             {
                 AddressHasInvalidStatusException => new TicketError(
-                    ValidationErrorMessages.Address.AddressPostalCodeCannotBeChanged,
-                    ValidationErrors.Address.AddressPostalCodeCannotBeChanged),
-                ParentAddressAlreadyExistsException => new TicketError(
-                    ValidationErrorMessages.Address.AddressAlreadyExists,
-                    ValidationErrors.Address.AddressAlreadyExists),
-                HouseNumberHasInvalidFormatException => new TicketError(
-                    ValidationErrorMessages.Address.HouseNumberInvalid,
-                    ValidationErrors.Address.HouseNumberInvalid),
-                HouseNumberToCorrectHasBoxNumberException => new TicketError(
-                    ValidationErrorMessages.Address.HouseNumberOfBoxNumberCannotBeChanged,
-                    ValidationErrors.Address.HouseNumberOfBoxNumberCannotBeChanged),
+                    ValidationErrorMessages.Address.AddressPositionCannotBeChanged,
+                    ValidationErrors.Address.AddressPositionCannotBeChanged),
+                AddressHasInvalidGeometryMethodException => new TicketError(
+                    ValidationErrorMessages.Address.GeometryMethodInvalid,
+                    ValidationErrors.Address.GeometryMethodInvalid),
+                AddressHasMissingGeometrySpecificationException => new TicketError(
+                    ValidationErrorMessages.Address.PositionSpecificationRequired,
+                    ValidationErrors.Address.PositionSpecificationRequired),
+                AddressHasInvalidGeometrySpecificationException => new TicketError(
+                    ValidationErrorMessages.Address.PositionSpecificationInvalid,
+                    ValidationErrors.Address.PositionSpecificationInvalid),
                 _ => null
             };
         }

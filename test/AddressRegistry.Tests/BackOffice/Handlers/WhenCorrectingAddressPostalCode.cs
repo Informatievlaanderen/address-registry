@@ -51,7 +51,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
             var nisCode = Fixture.Create<NisCode>();
             var municipalityId = Fixture.Create<MunicipalityId>();
 
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentIds(addressPersistentLocalId, streetNamePersistentLocalId);
+            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentLocalId);
 
             _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
             {

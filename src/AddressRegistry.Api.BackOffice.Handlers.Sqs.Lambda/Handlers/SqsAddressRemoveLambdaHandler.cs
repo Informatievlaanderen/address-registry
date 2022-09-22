@@ -1,6 +1,7 @@
 namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
 {
-    using Abstractions;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Abstractions.Exceptions;
     using Abstractions.Responses;
     using AddressRegistry.Infrastructure;
@@ -8,14 +9,11 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
     using Microsoft.Extensions.Configuration;
     using Requests;
     using StreetName;
-    using StreetName.Exceptions;
-    using System.Threading;
-    using System.Threading.Tasks;
     using TicketingService.Abstractions;
 
-    public sealed class SqsAddressRejectHandler : SqsLambdaHandler<SqsLambdaAddressRejectRequest>
+    public sealed class SqsAddressRemoveLambdaHandler : SqsLambdaHandler<SqsLambdaAddressRemoveRequest>
     {
-        public SqsAddressRejectHandler(
+        public SqsAddressRemoveLambdaHandler(
             IConfiguration configuration,
             ICustomRetryPolicy retryPolicy,
             ITicketing ticketing,
@@ -29,7 +27,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
                 idempotentCommandHandler)
         { }
 
-        protected override async Task<ETagResponse> InnerHandle(SqsLambdaAddressRejectRequest request, CancellationToken cancellationToken)
+        protected override async Task<ETagResponse> InnerHandle(SqsLambdaAddressRemoveRequest request, CancellationToken cancellationToken)
         {
             var addressPersistentLocalId = new AddressPersistentLocalId(request.AddressPersistentLocalId);
             var cmd = request.ToCommand();
@@ -51,15 +49,9 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
             return new ETagResponse(string.Format(DetailUrlFormat, addressPersistentLocalId), lastHash);
         }
 
-        protected override TicketError? MapDomainException(DomainException exception, SqsLambdaAddressRejectRequest request)
+        protected override TicketError? MapDomainException(DomainException exception, SqsLambdaAddressRemoveRequest request)
         {
-            return exception switch
-            {
-                AddressHasInvalidStatusException => new TicketError(
-                    ValidationErrorMessages.Address.AddressCannotBeRejected,
-                    ValidationErrors.Address.AddressCannotBeRejected),
-                _ => null
-            };
+            return null;
         }
     }
 }

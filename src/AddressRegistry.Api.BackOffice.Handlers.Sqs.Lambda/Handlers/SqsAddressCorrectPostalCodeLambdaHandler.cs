@@ -17,12 +17,12 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
     using StreetName.Exceptions;
     using TicketingService.Abstractions;
 
-    public sealed class SqsAddressCorrectPostalCodeHandler : SqsLambdaHandler<SqsLambdaAddressCorrectPostalCodeRequest>
+    public sealed class SqsAddressCorrectPostalCodeLambdaHandler : SqsLambdaHandler<SqsLambdaAddressCorrectPostalCodeRequest>
     {
         private readonly SyndicationContext _syndicationContext;
         private readonly MunicipalityConsumerContext _municipalityConsumerContext;
 
-        public SqsAddressCorrectPostalCodeHandler(
+        public SqsAddressCorrectPostalCodeLambdaHandler(
              IConfiguration configuration,
              ICustomRetryPolicy retryPolicy,
              ITicketing ticketing,

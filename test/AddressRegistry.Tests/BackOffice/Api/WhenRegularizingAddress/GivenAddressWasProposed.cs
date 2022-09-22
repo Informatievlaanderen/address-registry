@@ -45,7 +45,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRegularizingAddress
                 .Setup(x => x.Send(It.IsAny<AddressRegularizeRequest>(), CancellationToken.None))
                 .Returns(Task.FromResult(new ETagResponse(string.Empty, lastEventHash)));
 
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentIds(addressPersistentLocalId, streetNamePersistentId);
+            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             var result = (AcceptedWithETagResult)await _controller.Regularize(
                 _backOfficeContext,

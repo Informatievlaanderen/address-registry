@@ -2,7 +2,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
 {
     using System.Threading;
     using System.Threading.Tasks;
-    using AddressRegistry.Address;
+    using Address;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Abstractions.Responses;
     using FluentValidation;

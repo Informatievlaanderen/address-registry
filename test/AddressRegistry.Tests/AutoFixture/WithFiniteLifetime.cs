@@ -1,6 +1,5 @@
 namespace AddressRegistry.Tests.AutoFixture
 {
-    using System;
     using Be.Vlaanderen.Basisregisters.Crab;
     using global::AutoFixture;
     using NodaTime;

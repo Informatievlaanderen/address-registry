@@ -39,7 +39,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
 
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentIds(addressPersistentLocalId, streetNamePersistentLocalId);
+            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentLocalId);
 
             ImportMigratedStreetName(
                 Fixture.Create<StreetNameId>(),

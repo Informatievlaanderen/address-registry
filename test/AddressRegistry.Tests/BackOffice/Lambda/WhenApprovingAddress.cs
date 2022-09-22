@@ -64,7 +64,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 null);
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new SqsAddressApproveHandler(
+            var sut = new SqsAddressApproveLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -97,7 +97,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressApproveHandler(
+            var sut = new SqsAddressApproveLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -130,7 +130,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressApproveHandler(
+            var sut = new SqsAddressApproveLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -164,7 +164,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressApproveHandler(
+            var sut = new SqsAddressApproveLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -197,7 +197,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressApproveHandler(
+            var sut = new SqsAddressApproveLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -249,7 +249,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 houseNumber,
                 null);
 
-            var sut = new SqsAddressApproveHandler(
+            var sut = new SqsAddressApproveLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,

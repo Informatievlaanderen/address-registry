@@ -91,7 +91,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 null);
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new SqsAddressCorrectPostalCodeHandler(
+            var sut = new SqsAddressCorrectPostalCodeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -150,7 +150,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             });
             await _municipalityContext.SaveChangesAsync();
 
-            var sut = new SqsAddressCorrectPostalCodeHandler(
+            var sut = new SqsAddressCorrectPostalCodeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -212,7 +212,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             });
             await _municipalityContext.SaveChangesAsync();
 
-            var sut = new SqsAddressCorrectPostalCodeHandler(
+            var sut = new SqsAddressCorrectPostalCodeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -291,7 +291,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             });
             await _municipalityContext.SaveChangesAsync();
 
-            var sut = new SqsAddressCorrectPostalCodeHandler(
+            var sut = new SqsAddressCorrectPostalCodeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,

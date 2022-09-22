@@ -13,9 +13,9 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
     using StreetName.Exceptions;
     using TicketingService.Abstractions;
 
-    public sealed class SqsAddressCorrectPositionHandler : SqsLambdaHandler<SqsLambdaAddressCorrectPositionRequest>
+    public sealed class SqsAddressDeregulateLambdaHandler : SqsLambdaHandler<SqsLambdaAddressDeregulateRequest>
     {
-        public SqsAddressCorrectPositionHandler(
+        public SqsAddressDeregulateLambdaHandler(
             IConfiguration configuration,
             ICustomRetryPolicy retryPolicy,
             ITicketing ticketing,
@@ -29,7 +29,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
                 idempotentCommandHandler)
         { }
 
-        protected override async Task<ETagResponse> InnerHandle(SqsLambdaAddressCorrectPositionRequest request, CancellationToken cancellationToken)
+        protected override async Task<ETagResponse> InnerHandle(SqsLambdaAddressDeregulateRequest request, CancellationToken cancellationToken)
         {
             var addressPersistentLocalId = new AddressPersistentLocalId(request.AddressPersistentLocalId);
             var cmd = request.ToCommand();
@@ -51,22 +51,13 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers
             return new ETagResponse(string.Format(DetailUrlFormat, addressPersistentLocalId), lastHash);
         }
 
-        protected override TicketError? MapDomainException(DomainException exception, SqsLambdaAddressCorrectPositionRequest request)
+        protected override TicketError? MapDomainException(DomainException exception, SqsLambdaAddressDeregulateRequest request)
         {
             return exception switch
             {
                 AddressHasInvalidStatusException => new TicketError(
-                    ValidationErrorMessages.Address.AddressPositionCannotBeChanged,
-                    ValidationErrors.Address.AddressPositionCannotBeChanged),
-                AddressHasInvalidGeometryMethodException => new TicketError(
-                    ValidationErrorMessages.Address.GeometryMethodInvalid,
-                    ValidationErrors.Address.GeometryMethodInvalid),
-                AddressHasMissingGeometrySpecificationException => new TicketError(
-                    ValidationErrorMessages.Address.PositionSpecificationRequired,
-                    ValidationErrors.Address.PositionSpecificationRequired),
-                AddressHasInvalidGeometrySpecificationException => new TicketError(
-                    ValidationErrorMessages.Address.PositionSpecificationInvalid,
-                    ValidationErrors.Address.PositionSpecificationInvalid),
+                    ValidationErrorMessages.Address.AddressCannotBeDeregulated,
+                    ValidationErrors.Address.AddressCannotBeDeregulated),
                 _ => null
             };
         }

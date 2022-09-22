@@ -37,7 +37,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPostalCode
                 .Setup(x => x.Send(It.IsAny<AddressCorrectPostalCodeRequest>(), CancellationToken.None))
                 .Throws(new AddressIsRemovedException(addressPersistentLocalId));
 
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentIds(addressPersistentLocalId, streetNamePersistentId);
+            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             //Act
             Func<Task> act = async () => await _controller.CorrectPostalCode(

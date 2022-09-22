@@ -65,7 +65,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 null);
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new SqsAddressRejectHandler(
+            var sut = new SqsAddressRejectLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -98,7 +98,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressRejectHandler(
+            var sut = new SqsAddressRejectLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -156,7 +156,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 Fixture.Create<Provenance>());
             DispatchArrangeCommand(rejectAddress);
 
-            var sut = new SqsAddressRejectHandler(
+            var sut = new SqsAddressRejectLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,

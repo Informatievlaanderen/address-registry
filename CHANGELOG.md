@@ -1,3 +1,10 @@
+## [3.50.4](https://github.com/informatievlaanderen/address-registry/compare/v3.50.3...v3.50.4) (2022-09-22)
+
+
+### Bug Fixes
+
+* correct xml serialization syndication ([8b642ee](https://github.com/informatievlaanderen/address-registry/commit/8b642ee91e8310d7f084c6fceb5427bc9568bcb3))
+
 ## [3.50.3](https://github.com/informatievlaanderen/address-registry/compare/v3.50.2...v3.50.3) (2022-09-21)
 
 

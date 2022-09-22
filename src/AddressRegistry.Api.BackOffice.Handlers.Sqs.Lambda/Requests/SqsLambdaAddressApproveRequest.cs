@@ -14,7 +14,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Requests
         public int AddressPersistentLocalId => Request.PersistentLocalId;
 
         /// <summary>
-        /// Map to ApproveAddress command.
+        /// Map to ApproveAddress command
         /// </summary>
         /// <returns>ApproveAddress.</returns>
         public ApproveAddress ToCommand()

@@ -92,8 +92,8 @@ nuget Microsoft.Extensions.Configuration.Json 6.0.0
 nuget Microsoft.Extensions.DependencyInjection 6.0.0
 nuget MediatR.Extensions.Microsoft.DependencyInjection 10.0.1
 
-nuget Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple 4.3.0
-nuget Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple 4.3.0
+nuget Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple 4.3.2
+nuget Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple 4.3.2
 
 // .NET CLASSIC STUFF
 nuget EntityFramework 6.4.4

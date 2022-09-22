@@ -5,33 +5,29 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
     using Microsoft.Extensions.DependencyInjection;
     using TicketingService.Abstractions;
     using TicketingService.Proxy.HttpProxy;
+    using Module = Autofac.Module;
 
-    public class TicketingModule : Module
+    public sealed class TicketingModule : Module
     {
         private const string TicketingServiceConfigKey = "TicketingService";
 
-        private readonly IConfiguration _configuration;
-        private readonly IServiceCollection _services;
+        private readonly string _baseUrl;
 
         public TicketingModule(
             IConfiguration configuration,
             IServiceCollection services)
         {
-            _configuration = configuration;
-            _services = services;
+            _baseUrl = configuration.GetSection(TicketingServiceConfigKey)["BaseUrl"];
+            services
+                .AddHttpProxyTicketing(_baseUrl);
         }
 
         protected override void Load(ContainerBuilder builder)
         {
-            var baseUrl = _configuration.GetSection(TicketingServiceConfigKey)["BaseUrl"];
             builder
-                .Register(_ => new TicketingUrl(baseUrl))
+                .Register(c => new TicketingUrl(_baseUrl))
                 .As<ITicketingUrl>()
                 .SingleInstance();
-
-            _services
-                .AddHttpClient()
-                .AddHttpProxyTicketing(baseUrl);
         }
     }
 }

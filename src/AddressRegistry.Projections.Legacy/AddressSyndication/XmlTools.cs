@@ -61,13 +61,16 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             {
                 var name = input.GetType().Name;
 
-                var elementValue = arrayIndex != null
-                    ? arrayName + "_" + arrayIndex
-                    : name;
-                
+                string GetArrayElement()
+                {
+                    return arrayIndex != null
+                        ? arrayName + "_" + arrayIndex
+                        : name;
+                }
+
                 element = name.Contains("AnonymousType")
                     ? "Object"
-                    : elementValue;
+                    : GetArrayElement();
             }
 
             element = XmlConvert.EncodeName(element);
@@ -80,14 +83,16 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                 let pType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType
                 let name = XmlConvert.EncodeName(prop.Name)
                 let val = pType.IsArray ? "array" : prop.GetValue(input, null)
-                let elementValue = pType.IsSimpleType() ? new XElement(name, GetValue(val)) : val.ToXml(name) 
                 let value = pType.IsEnumerable()
-                    ? GetEnumerableElements(prop, (IEnumerable)prop.GetValue(input, null))
-                    : elementValue
+                    ? GetEnumerableElements(prop, (IEnumerable)prop.GetValue(input, null)!)
+                    : GetElement(pType, name, val)
                 where value != null && !pType.IsExcludedType() && !name.IsExcludedPropertyName()
                 select value;
 
-            ret.Add(elements);
+            XElement? GetElement(Type pType, string s, object o)
+                => pType.IsSimpleType() ? new XElement(s, GetValue(o)) : o.ToXml(s);
+
+            ret.Add(elements.ToList());
 
             return ret;
         }

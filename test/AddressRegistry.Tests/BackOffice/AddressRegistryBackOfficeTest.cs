@@ -110,9 +110,9 @@ namespace AddressRegistry.Tests.BackOffice
             return idempotentCommandHandler;
         }
 
-        public T CreateApiBusControllerWithUser<T>() where T : ApiController
+        public T CreateApiBusControllerWithUser<T>(bool useSqs = false) where T : ApiController
         {
-            var controller = Activator.CreateInstance(typeof(T), MockMediator.Object) as T;
+            var controller = Activator.CreateInstance(typeof(T), MockMediator.Object, new UseSqsToggle(useSqs)) as T;
 
             var claims = new List<Claim>()
             {

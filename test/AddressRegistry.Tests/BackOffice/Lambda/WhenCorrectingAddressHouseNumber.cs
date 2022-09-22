@@ -11,6 +11,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Requests;
     using Autofac;
     using AutoFixture;
+    using BackOffice.Infrastructure;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;

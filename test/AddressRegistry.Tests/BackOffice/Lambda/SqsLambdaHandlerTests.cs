@@ -1,4 +1,4 @@
-﻿namespace AddressRegistry.Tests.BackOffice.Lambda
+namespace AddressRegistry.Tests.BackOffice.Lambda
 {
     using System;
     using System.Collections.Generic;
@@ -21,6 +21,7 @@
     using Xunit;
     using Xunit.Abstractions;
     using global::AutoFixture;
+    using Infrastructure;
 
     public class SqsLambdaHandlerTests : AddressRegistryBackOfficeTest
     {

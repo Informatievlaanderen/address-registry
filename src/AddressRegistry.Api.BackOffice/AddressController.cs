@@ -3,8 +3,10 @@ namespace AddressRegistry.Api.BackOffice
     using System.Collections.Generic;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Middleware;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentValidation;
     using FluentValidation.Results;
+    using Infrastructure;
     using MediatR;
     using Microsoft.AspNetCore.Mvc;
 
@@ -15,9 +17,12 @@ namespace AddressRegistry.Api.BackOffice
     public partial class AddressController : ApiController
     {
         private readonly IMediator _mediator;
-        public AddressController(IMediator mediator)
+        private readonly UseSqsToggle _useSqsToggle;
+
+        public AddressController(IMediator mediator, UseSqsToggle useSqsToggle)
         {
             _mediator = mediator;
+            _useSqsToggle = useSqsToggle;
         }
 
         private ValidationException CreateValidationException(string errorCode, string propertyName, string message)
@@ -43,6 +48,18 @@ namespace AddressRegistry.Api.BackOffice
                 { "UserId", userId },
                 { "CorrelationId", correlationId }
             };
+        }
+
+        private Provenance CreateFakeProvenance()
+        {
+            return new Provenance(
+                NodaTime.SystemClock.Instance.GetCurrentInstant(),
+                Application.AddressRegistry,
+                new Reason(""), // TODO: TBD
+                new Operator(""), // TODO: from claims
+                Modification.Insert,
+                Organisation.DigitaalVlaanderen // TODO: from claims
+            );
         }
     }
 }

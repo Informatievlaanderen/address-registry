@@ -52,6 +52,7 @@ Target.create "Publish_Solution" (fun _ ->
     "AddressRegistry.Api.CrabImport"
     "AddressRegistry.Api.BackOffice"
     "AddressRegistry.Api.BackOffice.Abstractions"
+    "AddressRegistry.Api.BackOffice.Handlers.Lambda"
     "AddressRegistry.Consumer"
     "AddressRegistry.Consumer.Read.Municipality"
     "AddressRegistry.Consumer.Read.StreetName"

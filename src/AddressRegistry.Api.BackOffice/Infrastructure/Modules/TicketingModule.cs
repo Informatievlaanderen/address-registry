@@ -9,7 +9,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
 
     public sealed class TicketingModule : Module
     {
-        private const string TicketingServiceConfigKey = "TicketingService";
+        internal const string TicketingServiceConfigKey = "TicketingService";
 
         private readonly string _baseUrl;
 
@@ -17,7 +17,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
             IConfiguration configuration,
             IServiceCollection services)
         {
-            _baseUrl = configuration.GetSection(TicketingServiceConfigKey)["BaseUrl"];
+            _baseUrl = configuration.GetSection(TicketingServiceConfigKey)["InternalBaseUrl"];
             services
                 .AddHttpProxyTicketing(_baseUrl);
         }

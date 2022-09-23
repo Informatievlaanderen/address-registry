@@ -6,9 +6,12 @@ namespace AddressRegistry.Api.BackOffice
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentValidation;
     using FluentValidation.Results;
+    using Handlers.Sqs.Requests;
     using Infrastructure;
+    using Infrastructure.Options;
     using MediatR;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Options;
 
     [ApiVersion("2.0")]
     [AdvertiseApiVersions("2.0")]
@@ -18,11 +21,13 @@ namespace AddressRegistry.Api.BackOffice
     {
         private readonly IMediator _mediator;
         private readonly UseSqsToggle _useSqsToggle;
+        private readonly TicketingOptions _ticketingOptions;
 
-        public AddressController(IMediator mediator, UseSqsToggle useSqsToggle)
+        public AddressController(IMediator mediator, UseSqsToggle useSqsToggle, IOptions<TicketingOptions> ticketingOptions)
         {
             _mediator = mediator;
             _useSqsToggle = useSqsToggle;
+            _ticketingOptions = ticketingOptions.Value;
         }
 
         private ValidationException CreateValidationException(string errorCode, string propertyName, string message)
@@ -36,6 +41,14 @@ namespace AddressRegistry.Api.BackOffice
             {
                 failure
             });
+        }
+
+        public IActionResult Accepted(LocationResult locationResult)
+        {
+            return Accepted(locationResult
+                .Location
+                .ToString()
+                .Replace(_ticketingOptions.InternalBaseUrl, _ticketingOptions.PublicBaseUrl));
         }
 
         private IDictionary<string, object?> GetMetadata()

@@ -32,13 +32,15 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
         [Fact]
         public async Task ThenTicketLocationIsReturned()
         {
-            var ticketLocation = Fixture.Create<Uri>();
+            var ticketId = Fixture.Create<Guid>();
+            var expectedLocationResult = new LocationResult(CreateTicketUri(ticketId));
+
             var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
             MockMediator
                 .Setup(x => x.Send(It.IsAny<SqsAddressChangePositionRequest>(), CancellationToken.None))
-                .Returns(Task.FromResult(new LocationResult(ticketLocation)));
+                .Returns(Task.FromResult(expectedLocationResult));
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
@@ -56,7 +58,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
                 ifMatchHeaderValue: null);
 
             result.Should().NotBeNull();
-            result.Location.Should().Be(ticketLocation.ToString());
+            AssertLocation(result.Location, ticketId);
         }
 
         [Fact]

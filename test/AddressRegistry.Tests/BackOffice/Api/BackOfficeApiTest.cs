@@ -10,6 +10,7 @@ namespace AddressRegistry.Tests.BackOffice.Api
     using StreetName;
     using Tests;
     using Be.Vlaanderen.Basisregisters.Api;
+    using FluentAssertions;
     using FluentValidation;
     using FluentValidation.Results;
     using global::AutoFixture;
@@ -25,7 +26,11 @@ namespace AddressRegistry.Tests.BackOffice.Api
         protected const string StraatNaamPuri = $"https://data.vlaanderen.be/id/straatnaam/";
         protected const string PostInfoPuri = $"https://data.vlaanderen.be/id/postinfo/";
 
+        protected const string PublicTicketUrl = "https://www.ticketing.com";
+        protected const string InternalTicketUrl = "https://www.internalticketing.com";
+
         protected IOptions<ResponseOptions> ResponseOptions { get; }
+        protected IOptions<TicketingOptions> TicketingOptions { get; }
         protected Mock<IMediator> MockMediator { get; }
 
         protected BackOfficeApiTest(ITestOutputHelper testOutputHelper)
@@ -33,12 +38,22 @@ namespace AddressRegistry.Tests.BackOffice.Api
         {
             ResponseOptions = Options.Create(Fixture.Create<ResponseOptions>());
             ResponseOptions.Value.DetailUrl = DetailUrl;
+
+            TicketingOptions = Options.Create(Fixture.Create<TicketingOptions>());
+            TicketingOptions.Value.PublicBaseUrl = PublicTicketUrl;
+            TicketingOptions.Value.InternalBaseUrl = InternalTicketUrl;
+
             MockMediator = new Mock<IMediator>();
+        }
+
+        protected Uri CreateTicketUri(Guid ticketId)
+        {
+            return new Uri($"{InternalTicketUrl}/tickets/{ticketId:D}");
         }
 
         protected T CreateApiBusControllerWithUser<T>(bool useSqs = false) where T : ApiController
         {
-            var controller = Activator.CreateInstance(typeof(T), MockMediator.Object, new UseSqsToggle(useSqs)) as T;
+            var controller = Activator.CreateInstance(typeof(T), MockMediator.Object, new UseSqsToggle(useSqs), TicketingOptions) as T;
 
             var claims = new List<Claim>
             {
@@ -58,7 +73,6 @@ namespace AddressRegistry.Tests.BackOffice.Api
 
             return controller;
         }
-
 
         protected IIfMatchHeaderValidator MockIfMatchValidator(bool expectedResult)
         {
@@ -81,6 +95,14 @@ namespace AddressRegistry.Tests.BackOffice.Api
                 .Returns(Task.FromResult(new ValidationResult()));
 
             return mockRequestValidator.Object;
+        }
+
+        protected void AssertLocation(string? location, Guid ticketId)
+        {
+            var expectedLocation = $"{PublicTicketUrl}/tickets/{ticketId:D}";
+
+            location.Should().NotBeNullOrWhiteSpace();
+            location.Should().Be(expectedLocation);
         }
     }
 }

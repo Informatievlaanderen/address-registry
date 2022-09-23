@@ -62,7 +62,7 @@ namespace AddressRegistry.Api.BackOffice
                     };
                     var sqsResult = await _mediator.Send(sqsRequest, cancellationToken);
 
-                    return Accepted(sqsResult.Location);
+                    return Accepted(sqsResult);
                 }
 
                 request.Metadata = GetMetadata();

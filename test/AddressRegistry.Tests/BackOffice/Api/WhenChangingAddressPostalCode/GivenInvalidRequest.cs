@@ -14,7 +14,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPostalCode
     using Xunit.Abstractions;
     using global::AutoFixture;
 
-    public class GivenInvalidRequest : AddressRegistryBackOfficeTest
+    public class GivenInvalidRequest : BackOfficeApiTest
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;

@@ -91,7 +91,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers
         {
             return new Provenance(
                 NodaTime.SystemClock.Instance.GetCurrentInstant(),
-                Application.BuildingRegistry,
+                Application.AddressRegistry,
                 new Reason(""), // TODO: TBD
                 new Operator(""), // TODO: from claims
                 Modification.Insert,

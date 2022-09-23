@@ -16,7 +16,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
     using Xunit.Abstractions;
     using global::AutoFixture;
 
-    public class GivenAddressWasProposed : AddressRegistryBackOfficeTest
+    public class GivenAddressWasProposed : BackOfficeApiTest
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;

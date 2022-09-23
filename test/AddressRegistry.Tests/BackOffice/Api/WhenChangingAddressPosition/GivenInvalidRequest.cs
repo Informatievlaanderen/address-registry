@@ -18,7 +18,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
     using Xunit;
     using Xunit.Abstractions;
 
-    public class GivenInvalidRequest : AddressRegistryBackOfficeTest
+    public class GivenInvalidRequest : BackOfficeApiTest
     {
         private readonly AddressController _controller;
 

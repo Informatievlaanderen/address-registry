@@ -5,7 +5,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
     using System.Runtime.Serialization;
 
     [DataContract(Name = "WijzigenAdresPositie", Namespace = "")]
-    public sealed class AddressBackOfficeChangePositionRequest
+    public class AddressBackOfficeChangePositionRequest
     {
         /// <summary>
         /// De geometriemethode van het adres.

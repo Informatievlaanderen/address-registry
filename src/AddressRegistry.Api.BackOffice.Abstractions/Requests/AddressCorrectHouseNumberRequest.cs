@@ -11,20 +11,13 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
     using Swashbuckle.AspNetCore.Filters;
 
     [DataContract(Name = "CorrigerenHuisnummerAdres", Namespace = "")]
-    public class AddressCorrectHouseNumberRequest : IRequest<ETagResponse>
+    public class AddressCorrectHouseNumberRequest : AddressBackOfficeCorrectHouseNumberRequest, IRequest<ETagResponse>
     {
         /// <summary>
         /// De unieke en persistente identificator van het adres.
         /// </summary>
         [JsonIgnore]
         public int PersistentLocalId { get; set; }
-
-        /// <summary>
-        /// Het huisnummer van het adres.
-        /// </summary>
-        [DataMember(Name = "Huisnummer", Order = 0)]
-        [JsonProperty(Required = Required.Always)]
-        public string Huisnummer { get; set; }
 
         [JsonIgnore]
         public IDictionary<string, object> Metadata { get; set; }

@@ -1,4 +1,4 @@
-namespace AddressRegistry.Tests.BackOffice.Lambda
+namespace AddressRegistry.Tests.BackOffice.Lambda.WhenChangingAddressPostalCode
 {
     using System;
     using System.Collections.Generic;
@@ -10,31 +10,31 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     using AddressRegistry.Api.BackOffice.Abstractions.Responses;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Requests;
-    using Autofac;
+    using StreetName;
+    using StreetName.Exceptions;
     using AutoFixture;
+    using AddressRegistry.Tests.BackOffice.Infrastructure;
+    using Infrastructure;
+    using Autofac;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentAssertions;
-    using Infrastructure;
+    using global::AutoFixture;
     using Microsoft.Extensions.Configuration;
+    using Moq;
     using SqlStreamStore;
     using SqlStreamStore.Streams;
-    using StreetName;
+    using TicketingService.Abstractions;
     using Xunit;
     using Xunit.Abstractions;
-    using Moq;
-    using StreetName.Commands;
-    using StreetName.Exceptions;
-    using TicketingService.Abstractions;
-    using global::AutoFixture;
 
-    public class WhenRetiringAddress : AddressRegistryBackOfficeTest
+    public class GivenStreetNameExists : BackOfficeLambdaTest
     {
         private readonly IdempotencyContext _idempotencyContext;
         private readonly IStreetNames _streetNames;
 
-        public WhenRetiringAddress(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public GivenStreetNameExists(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             Fixture.Customize(new WithFixedMunicipalityId());
 
@@ -47,30 +47,22 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
         {
             var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
             var addressPersistentLocalId = new AddressPersistentLocalId(456);
-            var nisCode = new NisCode("12345");
-            var postalCode = new PostalCode("2018");
-            var houseNumber = new HouseNumber("11");
 
             ImportMigratedStreetName(
                 new StreetNameId(Guid.NewGuid()),
                 streetNamePersistentLocalId,
-                nisCode);
+                new NisCode("12345"));
 
             ProposeAddress(
                 streetNamePersistentLocalId,
                 addressPersistentLocalId,
-                postalCode,
+                new PostalCode("2018"),
                 Fixture.Create<MunicipalityId>(),
-                houseNumber,
+                new HouseNumber("11"),
                 null);
 
-            ApproveAddress(
-                streetNamePersistentLocalId,
-                addressPersistentLocalId
-            );
-
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new SqsAddressRetireLambdaHandler(
+            var sut = new SqsAddressChangePostalCodeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -78,32 +70,33 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext));
 
             // Act
-            await sut.Handle(new SqsLambdaAddressRetireRequest
+            await sut.Handle(new SqsLambdaAddressChangePostalCodeRequest
             {
-                Request = new AddressBackOfficeRetireRequest
+                Request = new AddressBackOfficeChangePostalCodeRequest
                 {
-                    PersistentLocalId = addressPersistentLocalId,
+                    PostInfoId = "https://data.vlaanderen.be/id/postinfo/123"
                 },
+                AddressPersistentLocalId = addressPersistentLocalId,
                 MessageGroupId = streetNamePersistentLocalId,
-                Metadata = new Dictionary<string, object>(),
                 TicketId = Guid.NewGuid(),
+                Metadata = new Dictionary<string, object>(),
                 Provenance = Fixture.Create<Provenance>()
             },
             CancellationToken.None);
 
             // Assert
             var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(
-                new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))), 3, 1);
+                new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))), 2, 1);
             stream.Messages.First().JsonMetadata.Should().Contain(eTagResponse.ETag);
         }
 
         [Fact]
-        public async Task WhenAddressHasInvalidStatusException_ThenTicketingErrorIsExpected()
+        public async Task WhenAddressHasInvalidStatus_ThenTicketingErrorIsExpected()
         {
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressRetireLambdaHandler(
+            var sut = new SqsAddressChangePostalCodeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -111,9 +104,13 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 MockExceptionIdempotentCommandHandler<AddressHasInvalidStatusException>().Object);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressRetireRequest
+            await sut.Handle(new SqsLambdaAddressChangePostalCodeRequest
             {
-                Request = new AddressBackOfficeRetireRequest(),
+                Request = new AddressBackOfficeChangePostalCodeRequest
+                {
+                    PostInfoId = "https://data.vlaanderen.be/id/postinfo/123"
+                },
+                AddressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>(),
                 MessageGroupId = Fixture.Create<int>().ToString(),
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object>(),
@@ -125,75 +122,8 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 x.Error(
                     It.IsAny<Guid>(),
                     new TicketError(
-                        "Deze actie is enkel toegestaan op adressen met status 'inGebruik'.",
-                        "AdresVoorgesteldOfAfgekeurd"),
-                    CancellationToken.None));
-        }
-
-        [Fact]
-        public async Task WhenStreetNameHasInvalidStatusException_ThenTicketingErrorIsExpected()
-        {
-            // Arrange
-            var ticketing = new Mock<ITicketing>();
-
-            var sut = new SqsAddressRetireLambdaHandler(
-                Container.Resolve<IConfiguration>(),
-                new FakeRetryPolicy(),
-                ticketing.Object,
-                Mock.Of<IStreetNames>(),
-                MockExceptionIdempotentCommandHandler<StreetNameHasInvalidStatusException>().Object);
-
-            // Act
-            await sut.Handle(new SqsLambdaAddressRetireRequest
-            {
-                Request = new AddressBackOfficeRetireRequest(),
-                MessageGroupId = Fixture.Create<int>().ToString(),
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
-
-            //Assert
-            ticketing.Verify(x =>
-                x.Error(
-                    It.IsAny<Guid>(),
-                    new TicketError(
-                        "De straatnaam is gehistoreerd of afgekeurd.",
-                        "AdresStraatnaamGehistoreerdOfAfgekeurd"),
-                    CancellationToken.None));
-        }
-
-        [Fact]
-        public async Task WhenStreetNameIsRemovedException_ThenTicketingErrorIsExpected()
-        {
-            // Arrange
-            var ticketing = new Mock<ITicketing>();
-            var streetNamePersistentId = Fixture.Create<int>().ToString();
-
-            var sut = new SqsAddressRetireLambdaHandler(
-                Container.Resolve<IConfiguration>(),
-                new FakeRetryPolicy(),
-                ticketing.Object,
-                Mock.Of<IStreetNames>(),
-                MockExceptionIdempotentCommandHandler<StreetNameIsRemovedException>().Object);
-
-            // Act
-            await sut.Handle(new SqsLambdaAddressRetireRequest
-            {
-                Request = new AddressBackOfficeRetireRequest(),
-                MessageGroupId = streetNamePersistentId,
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
-
-            //Assert
-            ticketing.Verify(x =>
-                x.Error(
-                    It.IsAny<Guid>(),
-                    new TicketError(
-                        $"De straatnaam '{streetNamePersistentId}' is niet gekend in het straatnaamregister.",
-                        "AdresStraatnaamNietGekendValidatie"),
+                        "Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik'.",
+                        "AdresGehistoreerdOfAfgekeurd"),
                     CancellationToken.None));
         }
 
@@ -222,13 +152,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 houseNumber,
                 null);
 
-            var retireAddress = new RetireAddress(
-                streetNamePersistentLocalId,
-                addressPersistentLocalId,
-                Fixture.Create<Provenance>());
-            DispatchArrangeCommand(retireAddress);
-
-            var sut = new SqsAddressRetireLambdaHandler(
+            var sut = new SqsAddressChangePostalCodeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -239,12 +163,13 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 await _streetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), CancellationToken.None);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressRetireRequest
+            await sut.Handle(new SqsLambdaAddressChangePostalCodeRequest
             {
-                Request = new AddressBackOfficeRetireRequest
+                Request = new AddressBackOfficeChangePostalCodeRequest
                 {
-                    PersistentLocalId = addressPersistentLocalId
+                    PostInfoId = "https://data.vlaanderen.be/id/postinfo/123"
                 },
+                AddressPersistentLocalId = addressPersistentLocalId,
                 MessageGroupId = streetNamePersistentLocalId,
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object>(),

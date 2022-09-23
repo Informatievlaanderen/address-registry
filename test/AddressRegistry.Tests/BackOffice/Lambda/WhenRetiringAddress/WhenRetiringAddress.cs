@@ -1,38 +1,41 @@
-namespace AddressRegistry.Tests.BackOffice.Lambda
+namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRetiringAddress
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using AddressRegistry.Api.BackOffice.Abstractions.Exceptions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Abstractions.Responses;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Requests;
-    using Autofac;
+    using StreetName;
+    using StreetName.Commands;
+    using StreetName.Exceptions;
     using AutoFixture;
+    using AddressRegistry.Tests.BackOffice.Infrastructure;
+    using Infrastructure;
+    using Autofac;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentAssertions;
-    using Infrastructure;
-    using SqlStreamStore;
-    using SqlStreamStore.Streams;
-    using StreetName;
-    using Xunit;
-    using Xunit.Abstractions;
+    using global::AutoFixture;
     using Microsoft.Extensions.Configuration;
     using Moq;
-    using StreetName.Exceptions;
+    using SqlStreamStore;
+    using SqlStreamStore.Streams;
     using TicketingService.Abstractions;
-    using global::AutoFixture;
+    using Xunit;
+    using Xunit.Abstractions;
 
-    public class WhenCorrectingAddressHouseNumber : AddressRegistryBackOfficeTest
+    public class WhenRetiringAddress : BackOfficeLambdaTest
     {
         private readonly IdempotencyContext _idempotencyContext;
         private readonly IStreetNames _streetNames;
 
-        public WhenCorrectingAddressHouseNumber(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public WhenRetiringAddress(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             Fixture.Customize(new WithFixedMunicipalityId());
 
@@ -45,22 +48,30 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
         {
             var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
             var addressPersistentLocalId = new AddressPersistentLocalId(456);
+            var nisCode = new NisCode("12345");
+            var postalCode = new PostalCode("2018");
+            var houseNumber = new HouseNumber("11");
 
             ImportMigratedStreetName(
                 new StreetNameId(Guid.NewGuid()),
                 streetNamePersistentLocalId,
-                Fixture.Create<NisCode>());
+                nisCode);
 
             ProposeAddress(
                 streetNamePersistentLocalId,
                 addressPersistentLocalId,
-                Fixture.Create<PostalCode>(),
+                postalCode,
                 Fixture.Create<MunicipalityId>(),
-                new HouseNumber("11"),
+                houseNumber,
                 null);
 
+            ApproveAddress(
+                streetNamePersistentLocalId,
+                addressPersistentLocalId
+            );
+
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new SqsAddressCorrectHouseNumberLambdaHandler(
+            var sut = new SqsAddressRetireLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -68,33 +79,32 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext));
 
             // Act
-            await sut.Handle(new SqsLambdaAddressCorrectHouseNumberRequest
+            await sut.Handle(new SqsLambdaAddressRetireRequest
             {
-                Request = new AddressBackOfficeCorrectHouseNumberRequest
+                Request = new AddressBackOfficeRetireRequest
                 {
-                    Huisnummer = "20"
+                    PersistentLocalId = addressPersistentLocalId,
                 },
-                AddressPersistentLocalId = addressPersistentLocalId,
                 MessageGroupId = streetNamePersistentLocalId,
-                TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object>(),
+                TicketId = Guid.NewGuid(),
                 Provenance = Fixture.Create<Provenance>()
             },
             CancellationToken.None);
 
             // Assert
             var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(
-                new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))), 2, 1);
+                new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))), 3, 1);
             stream.Messages.First().JsonMetadata.Should().Contain(eTagResponse.ETag);
         }
 
         [Fact]
-        public async Task WhenAddressHasInvalidStatus_ThenTicketingErrorIsExpected()
+        public async Task WhenAddressHasInvalidStatusException_ThenTicketingErrorIsExpected()
         {
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressCorrectHouseNumberLambdaHandler(
+            var sut = new SqsAddressRetireLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -102,13 +112,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 MockExceptionIdempotentCommandHandler<AddressHasInvalidStatusException>().Object);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressCorrectHouseNumberRequest
+            await sut.Handle(new SqsLambdaAddressRetireRequest
             {
-                Request = new AddressBackOfficeCorrectHouseNumberRequest
-                {
-                    Huisnummer = "20"
-                },
-                AddressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>(),
+                Request = new AddressBackOfficeRetireRequest(),
                 MessageGroupId = Fixture.Create<int>().ToString(),
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object>(),
@@ -120,32 +126,28 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 x.Error(
                     It.IsAny<Guid>(),
                     new TicketError(
-                        "Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik'.",
-                        "AdresGehistoreerdOfAfgekeurd"),
+                        "Deze actie is enkel toegestaan op adressen met status 'inGebruik'.",
+                        "AdresVoorgesteldOfAfgekeurd"),
                     CancellationToken.None));
         }
 
         [Fact]
-        public async Task WhenParentAddressAlreadyExists_ThenTicketingErrorIsExpected()
+        public async Task WhenStreetNameHasInvalidStatusException_ThenTicketingErrorIsExpected()
         {
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressCorrectHouseNumberLambdaHandler(
+            var sut = new SqsAddressRetireLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
                 Mock.Of<IStreetNames>(),
-                MockExceptionIdempotentCommandHandler<ParentAddressAlreadyExistsException>().Object);
+                MockExceptionIdempotentCommandHandler<StreetNameHasInvalidStatusException>().Object);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressCorrectHouseNumberRequest
+            await sut.Handle(new SqsLambdaAddressRetireRequest
             {
-                Request = new AddressBackOfficeCorrectHouseNumberRequest
-                {
-                    Huisnummer = "20"
-                },
-                AddressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>(),
+                Request = new AddressBackOfficeRetireRequest(),
                 MessageGroupId = Fixture.Create<int>().ToString(),
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object>(),
@@ -157,33 +159,30 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 x.Error(
                     It.IsAny<Guid>(),
                     new TicketError(
-                        "Deze combinatie huisnummer-busnummer bestaat reeds voor de opgegeven straatnaam.",
-                        "AdresBestaandeHuisnummerBusnummerCombinatie"),
+                        "De straatnaam is gehistoreerd of afgekeurd.",
+                        "AdresStraatnaamGehistoreerdOfAfgekeurd"),
                     CancellationToken.None));
         }
 
         [Fact]
-        public async Task WhenHouseNumberHasInvalidFormat_ThenTicketingErrorIsExpected()
+        public async Task WhenStreetNameIsRemovedException_ThenTicketingErrorIsExpected()
         {
             // Arrange
             var ticketing = new Mock<ITicketing>();
+            var streetNamePersistentId = Fixture.Create<int>().ToString();
 
-            var sut = new SqsAddressCorrectHouseNumberLambdaHandler(
+            var sut = new SqsAddressRetireLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
                 Mock.Of<IStreetNames>(),
-                MockExceptionIdempotentCommandHandler<HouseNumberHasInvalidFormatException>().Object);
+                MockExceptionIdempotentCommandHandler<StreetNameIsRemovedException>().Object);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressCorrectHouseNumberRequest
+            await sut.Handle(new SqsLambdaAddressRetireRequest
             {
-                Request = new AddressBackOfficeCorrectHouseNumberRequest
-                {
-                    Huisnummer = "20"
-                },
-                AddressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>(),
-                MessageGroupId = Fixture.Create<int>().ToString(),
+                Request = new AddressBackOfficeRetireRequest(),
+                MessageGroupId = streetNamePersistentId,
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object>(),
                 Provenance = Fixture.Create<Provenance>()
@@ -194,45 +193,74 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 x.Error(
                     It.IsAny<Guid>(),
                     new TicketError(
-                        "Ongeldig huisnummerformaat.",
-                        "AdresOngeldigHuisnummerformaat"),
+                        $"De straatnaam '{streetNamePersistentId}' is niet gekend in het straatnaamregister.",
+                        "AdresStraatnaamNietGekendValidatie"),
                     CancellationToken.None));
         }
 
         [Fact]
-        public async Task WhenHouseNumberToCorrectHasBoxNumber_ThenTicketingErrorIsExpected()
+        public async Task WhenIdempotencyException_ThenTicketingCompleteIsExpected()
         {
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressCorrectHouseNumberLambdaHandler(
+            var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
+            var addressPersistentLocalId = new AddressPersistentLocalId(456);
+            var nisCode = new NisCode("12345");
+            var postalCode = new PostalCode("2018");
+            var houseNumber = new HouseNumber("11");
+
+            ImportMigratedStreetName(
+                new StreetNameId(Guid.NewGuid()),
+                streetNamePersistentLocalId,
+                nisCode);
+
+            ProposeAddress(
+                streetNamePersistentLocalId,
+                addressPersistentLocalId,
+                postalCode,
+                Fixture.Create<MunicipalityId>(),
+                houseNumber,
+                null);
+
+            var retireAddress = new RetireAddress(
+                streetNamePersistentLocalId,
+                addressPersistentLocalId,
+                Fixture.Create<Provenance>());
+            DispatchArrangeCommand(retireAddress);
+
+            var sut = new SqsAddressRetireLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
-                Mock.Of<IStreetNames>(),
-                MockExceptionIdempotentCommandHandler<HouseNumberToCorrectHasBoxNumberException>().Object);
+                _streetNames,
+                MockExceptionIdempotentCommandHandler(() => new IdempotencyException(string.Empty)).Object);
+
+            var streetName =
+                await _streetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), CancellationToken.None);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressCorrectHouseNumberRequest
+            await sut.Handle(new SqsLambdaAddressRetireRequest
             {
-                Request = new AddressBackOfficeCorrectHouseNumberRequest
+                Request = new AddressBackOfficeRetireRequest
                 {
-                    Huisnummer = "20"
+                    PersistentLocalId = addressPersistentLocalId
                 },
-                AddressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>(),
-                MessageGroupId = Fixture.Create<int>().ToString(),
+                MessageGroupId = streetNamePersistentLocalId,
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object>(),
                 Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
+            },
+            CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
-                x.Error(
+                x.Complete(
                     It.IsAny<Guid>(),
-                    new TicketError(
-                        "Te corrigeren huisnummer mag geen busnummer bevatten.",
-                        "AdresCorrectieHuisnummermetBusnummer"),
+                    new TicketResult(
+                        new ETagResponse(
+                            string.Format(ConfigDetailUrl, addressPersistentLocalId),
+                            streetName.GetAddressHash(addressPersistentLocalId))),
                     CancellationToken.None));
         }
     }

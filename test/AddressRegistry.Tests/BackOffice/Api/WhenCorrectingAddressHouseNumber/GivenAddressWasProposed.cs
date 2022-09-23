@@ -19,7 +19,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressHouseNumber
     using Xunit;
     using Xunit.Abstractions;
 
-    public class GivenAddressWasProposed : AddressRegistryBackOfficeTest
+    public class GivenAddressWasProposed : BackOfficeApiTest
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;

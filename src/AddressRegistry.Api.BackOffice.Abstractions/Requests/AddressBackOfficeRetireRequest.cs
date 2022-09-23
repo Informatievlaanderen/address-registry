@@ -4,7 +4,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
     using Newtonsoft.Json;
 
     [DataContract(Name = "OpheffenAdres", Namespace = "")]
-    public sealed class AddressBackOfficeRetireRequest
+    public class AddressBackOfficeRetireRequest
     {
         /// <summary>
         /// De unieke en persistente identificator van het adres.

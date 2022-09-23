@@ -21,7 +21,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
     using Xunit.Abstractions;
     using global::AutoFixture;
 
-    public class WhenRegularizingAddress : AddressRegistryBackOfficeTest
+    public class WhenRegularizingAddress : BackOfficeHandlerTest
     {
         private readonly TestBackOfficeContext _backOfficeContext;
         private readonly IdempotencyContext _idempotencyContext;

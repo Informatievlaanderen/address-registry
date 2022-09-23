@@ -1,4 +1,4 @@
-namespace AddressRegistry.Tests.BackOffice.Lambda
+namespace AddressRegistry.Tests.BackOffice.Lambda.WhenDeregulatingAddress
 {
     using System;
     using System.Collections.Generic;
@@ -10,31 +10,31 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     using AddressRegistry.Api.BackOffice.Abstractions.Responses;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Requests;
-    using Autofac;
+    using StreetName;
+    using StreetName.Exceptions;
     using AutoFixture;
+    using AddressRegistry.Tests.BackOffice.Infrastructure;
+    using Infrastructure;
+    using Autofac;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentAssertions;
-    using Infrastructure;
-    using SqlStreamStore;
-    using SqlStreamStore.Streams;
-    using StreetName;
-    using StreetName.Commands;
-    using Xunit;
-    using Xunit.Abstractions;
+    using global::AutoFixture;
     using Microsoft.Extensions.Configuration;
     using Moq;
-    using StreetName.Exceptions;
+    using SqlStreamStore;
+    using SqlStreamStore.Streams;
     using TicketingService.Abstractions;
-    using global::AutoFixture;
+    using Xunit;
+    using Xunit.Abstractions;
 
-    public class WhenRegularizingAddress : AddressRegistryBackOfficeTest
+    public class GivenStreetNameExists : BackOfficeLambdaTest
     {
         private readonly IdempotencyContext _idempotencyContext;
         private readonly IStreetNames _streetNames;
 
-        public WhenRegularizingAddress(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public GivenStreetNameExists(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             Fixture.Customize(new WithFixedMunicipalityId());
 
@@ -64,14 +64,8 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 houseNumber,
                 null);
 
-            var deregulateAddress = new DeregulateAddress(
-                streetNamePersistentLocalId,
-                addressPersistentLocalId,
-                Fixture.Create<Provenance>());
-            DispatchArrangeCommand(deregulateAddress);
-
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new SqsAddressRegularizeLambdaHandler(
+            var sut = new SqsAddressDeregulateLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -79,22 +73,22 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext));
 
             // Act
-            await sut.Handle(new SqsLambdaAddressRegularizeRequest
+            await sut.Handle(new SqsLambdaAddressDeregulateRequest
             {
-                Request = new AddressBackOfficeRegularizeRequest
+                Request = new AddressBackOfficeDeregulateRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
                 },
                 MessageGroupId = streetNamePersistentLocalId,
-                Metadata = new Dictionary<string, object>(),
                 TicketId = Guid.NewGuid(),
+                Metadata = new Dictionary<string, object>(),
                 Provenance = Fixture.Create<Provenance>()
             },
             CancellationToken.None);
 
             // Assert
             var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(
-                new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))), 3, 1);
+                new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))), 2, 1);
             stream.Messages.First().JsonMetadata.Should().Contain(eTagResponse.ETag);
         }
 
@@ -104,7 +98,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressRegularizeLambdaHandler(
+            var sut = new SqsAddressDeregulateLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -112,12 +106,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 MockExceptionIdempotentCommandHandler<AddressHasInvalidStatusException>().Object);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressRegularizeRequest
+            await sut.Handle(new SqsLambdaAddressDeregulateRequest
             {
-                Request = new AddressBackOfficeRegularizeRequest
-                {
-                    PersistentLocalId = Fixture.Create<int>(),
-                },
+                Request = new AddressBackOfficeDeregulateRequest(),
                 MessageGroupId = Fixture.Create<int>().ToString(),
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object>(),
@@ -159,13 +150,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 houseNumber,
                 null);
 
-            var regularizeAddress = new RegularizeAddress(
-                streetNamePersistentLocalId,
-                addressPersistentLocalId,
-                Fixture.Create<Provenance>());
-            DispatchArrangeCommand(regularizeAddress);
-
-            var sut = new SqsAddressRegularizeLambdaHandler(
+            var sut = new SqsAddressDeregulateLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -176,9 +161,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 await _streetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), CancellationToken.None);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressRegularizeRequest
+            await sut.Handle(new SqsLambdaAddressDeregulateRequest
             {
-                Request = new AddressBackOfficeRegularizeRequest
+                Request = new AddressBackOfficeDeregulateRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
                 },

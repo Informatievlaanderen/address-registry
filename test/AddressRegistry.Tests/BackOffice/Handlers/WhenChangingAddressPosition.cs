@@ -21,7 +21,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenChangingAddressPosition : AddressRegistryBackOfficeTest
+    public class WhenChangingAddressPosition : BackOfficeHandlerTest
     {
         private readonly TestBackOfficeContext _backOfficeContext;
         private readonly IdempotencyContext _idempotencyContext;

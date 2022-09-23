@@ -17,7 +17,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
     using Xunit.Abstractions;
     using AddressController = AddressRegistry.Api.BackOffice.AddressController;
 
-    public class GivenAddressDoesNotExist : AddressRegistryBackOfficeTest
+    public class GivenAddressDoesNotExist : BackOfficeApiTest
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;

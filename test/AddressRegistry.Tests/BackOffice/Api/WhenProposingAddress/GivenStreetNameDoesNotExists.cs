@@ -16,7 +16,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     using Xunit.Abstractions;
     using AddressController = AddressRegistry.Api.BackOffice.AddressController;
 
-    public class GivenStreetNameDoesNotExists : AddressRegistryBackOfficeTest
+    public class GivenStreetNameDoesNotExists : BackOfficeApiTest
     {
         private readonly AddressController _controller;
 

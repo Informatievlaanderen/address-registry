@@ -1,4 +1,4 @@
-namespace AddressRegistry.Tests.BackOffice.Lambda
+namespace AddressRegistry.Tests.BackOffice.Lambda.WhenApprovingAddress
 {
     using System;
     using System.Collections.Generic;
@@ -10,31 +10,31 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     using AddressRegistry.Api.BackOffice.Abstractions.Responses;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Requests;
-    using Autofac;
+    using StreetName;
+    using StreetName.Exceptions;
     using AutoFixture;
+    using AddressRegistry.Tests.BackOffice.Infrastructure;
+    using Infrastructure;
+    using Autofac;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentAssertions;
-    using Infrastructure;
+    using global::AutoFixture;
     using Microsoft.Extensions.Configuration;
+    using Moq;
     using SqlStreamStore;
     using SqlStreamStore.Streams;
-    using StreetName;
+    using TicketingService.Abstractions;
     using Xunit;
     using Xunit.Abstractions;
-    using Moq;
-    using StreetName.Commands;
-    using StreetName.Exceptions;
-    using TicketingService.Abstractions;
-    using global::AutoFixture;
 
-    public class WhenRejectingAddress : AddressRegistryBackOfficeTest
+    public class GivenStreetNameExists : BackOfficeLambdaTest
     {
         private readonly IdempotencyContext _idempotencyContext;
         private readonly IStreetNames _streetNames;
 
-        public WhenRejectingAddress(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public GivenStreetNameExists(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             Fixture.Customize(new WithFixedMunicipalityId());
 
@@ -65,7 +65,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 null);
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new SqsAddressRejectLambdaHandler(
+            var sut = new SqsAddressApproveLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -73,15 +73,15 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext));
 
             // Act
-            await sut.Handle(new SqsLambdaAddressRejectRequest
+            await sut.Handle(new SqsLambdaAddressApproveRequest
             {
-                Request = new AddressBackOfficeRejectRequest
+                Request = new AddressBackOfficeApproveRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
                 },
                 MessageGroupId = streetNamePersistentLocalId,
-                Metadata = new Dictionary<string, object>(),
                 TicketId = Guid.NewGuid(),
+                Metadata = new Dictionary<string, object>(),
                 Provenance = Fixture.Create<Provenance>()
             },
             CancellationToken.None);
@@ -93,12 +93,79 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
         }
 
         [Fact]
-        public async Task WhenAddressHasInvalidStatusException_ThenTicketingErrorIsExpected()
+        public async Task WhenStreetNameHasInvalidStatus_ThenTicketingErrorIsExpected()
         {
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressRejectLambdaHandler(
+            var sut = new SqsAddressApproveLambdaHandler(
+                Container.Resolve<IConfiguration>(),
+                new FakeRetryPolicy(),
+                ticketing.Object,
+                Mock.Of<IStreetNames>(),
+                MockExceptionIdempotentCommandHandler<StreetNameHasInvalidStatusException>().Object);
+
+            // Act
+            await sut.Handle(new SqsLambdaAddressApproveRequest
+            {
+                Request = new AddressBackOfficeApproveRequest(),
+                MessageGroupId = Fixture.Create<int>().ToString(),
+                TicketId = Guid.NewGuid(),
+                Metadata = new Dictionary<string, object>(),
+                Provenance = Fixture.Create<Provenance>()
+            }, CancellationToken.None);
+
+            //Assert
+            ticketing.Verify(x =>
+                x.Error(
+                    It.IsAny<Guid>(),
+                    new TicketError(
+                        "De straatnaam is gehistoreerd of afgekeurd.",
+                        "AdresStraatnaamGehistoreerdOfAfgekeurd"),
+                    CancellationToken.None));
+        }
+
+        [Fact]
+        public async Task WhenStreetNameIsRemoved_ThenTicketingErrorIsExpected()
+        {
+            // Arrange
+            var ticketing = new Mock<ITicketing>();
+
+            var sut = new SqsAddressApproveLambdaHandler(
+                Container.Resolve<IConfiguration>(),
+                new FakeRetryPolicy(),
+                ticketing.Object,
+                Mock.Of<IStreetNames>(),
+                MockExceptionIdempotentCommandHandler<StreetNameIsRemovedException>().Object);
+
+            // Act
+            var request = new SqsLambdaAddressApproveRequest
+            {
+                Request = new AddressBackOfficeApproveRequest(),
+                MessageGroupId = Fixture.Create<int>().ToString(),
+                TicketId = Guid.NewGuid(),
+                Metadata = new Dictionary<string, object>(),
+                Provenance = Fixture.Create<Provenance>()
+            };
+            await sut.Handle(request, CancellationToken.None);
+
+            //Assert
+            ticketing.Verify(x =>
+                x.Error(
+                    It.IsAny<Guid>(),
+                    new TicketError(
+                        $"De straatnaam '{request.StreetNamePersistentLocalId}' is niet gekend in het straatnaamregister.",
+                        "AdresStraatnaamNietGekendValidatie"),
+                    CancellationToken.None));
+        }
+
+        [Fact]
+        public async Task WhenAddressHasInvalidStatus_ThenTicketingErrorIsExpected()
+        {
+            // Arrange
+            var ticketing = new Mock<ITicketing>();
+
+            var sut = new SqsAddressApproveLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -106,9 +173,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 MockExceptionIdempotentCommandHandler<AddressHasInvalidStatusException>().Object);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressRejectRequest
+            await sut.Handle(new SqsLambdaAddressApproveRequest
             {
-                Request = new AddressBackOfficeRejectRequest(),
+                Request = new AddressBackOfficeApproveRequest(),
                 MessageGroupId = Fixture.Create<int>().ToString(),
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object>(),
@@ -121,7 +188,40 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                     It.IsAny<Guid>(),
                     new TicketError(
                         "Deze actie is enkel toegestaan op adressen met status 'voorgesteld'.",
-                        "AdresGehistoreerdOfInGebruik"),
+                        "AdresGehistoreerdOfAfgekeurd"),
+                    CancellationToken.None));
+        }
+
+        [Fact]
+        public async Task WhenParentAddressHasInvalidStatus_ThenTicketingErrorIsExpected()
+        {
+            // Arrange
+            var ticketing = new Mock<ITicketing>();
+
+            var sut = new SqsAddressApproveLambdaHandler(
+                Container.Resolve<IConfiguration>(),
+                new FakeRetryPolicy(),
+                ticketing.Object,
+                Mock.Of<IStreetNames>(),
+                MockExceptionIdempotentCommandHandler<ParentAddressHasInvalidStatusException>().Object);
+
+            // Act
+            await sut.Handle(new SqsLambdaAddressApproveRequest
+            {
+                Request = new AddressBackOfficeApproveRequest(),
+                MessageGroupId = Fixture.Create<int>().ToString(),
+                TicketId = Guid.NewGuid(),
+                Metadata = new Dictionary<string, object>(),
+                Provenance = Fixture.Create<Provenance>()
+            }, CancellationToken.None);
+
+            //Assert
+            ticketing.Verify(x =>
+                x.Error(
+                    It.IsAny<Guid>(),
+                    new TicketError(
+                        "Deze actie is enkel toegestaan op adressen waarbij het huisnummer de status 'inGebruik' heeft.",
+                        "AdresHuisnummerVoorgesteldGehistoreerdOfAfgekeurd"),
                     CancellationToken.None));
         }
 
@@ -150,13 +250,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 houseNumber,
                 null);
 
-            var rejectAddress = new RejectAddress(
-                streetNamePersistentLocalId,
-                addressPersistentLocalId,
-                Fixture.Create<Provenance>());
-            DispatchArrangeCommand(rejectAddress);
-
-            var sut = new SqsAddressRejectLambdaHandler(
+            var sut = new SqsAddressApproveLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -167,9 +261,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 await _streetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), CancellationToken.None);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressRejectRequest
+            await sut.Handle(new SqsLambdaAddressApproveRequest
             {
-                Request = new AddressBackOfficeRejectRequest
+                Request = new AddressBackOfficeApproveRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
                 },

@@ -92,7 +92,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             XElement? GetElement(Type pType, string s, object o)
                 => pType.IsSimpleType() ? new XElement(s, GetValue(o)) : o.ToXml(s);
 
-            ret.Add(elements.ToList());
+            ret.Add(elements);
 
             return ret;
         }

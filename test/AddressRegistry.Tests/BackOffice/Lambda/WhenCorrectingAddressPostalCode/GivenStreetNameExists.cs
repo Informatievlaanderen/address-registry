@@ -1,4 +1,4 @@
-namespace AddressRegistry.Tests.BackOffice.Lambda
+namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCode
 {
     using System;
     using System.Collections.Generic;
@@ -10,34 +10,35 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     using AddressRegistry.Api.BackOffice.Abstractions.Responses;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Requests;
-    using Autofac;
+    using AddressRegistry.Consumer.Read.Municipality.Projections;
+    using Projections.Syndication.PostalInfo;
+    using StreetName;
+    using StreetName.Exceptions;
     using AutoFixture;
+    using AddressRegistry.Tests.BackOffice.Infrastructure;
+    using Infrastructure;
+    using Autofac;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using Consumer.Read.Municipality.Projections;
     using FluentAssertions;
-    using Infrastructure;
+    using global::AutoFixture;
     using Microsoft.Extensions.Configuration;
-    using Projections.Syndication.PostalInfo;
+    using Moq;
     using SqlStreamStore;
     using SqlStreamStore.Streams;
-    using StreetName;
+    using TicketingService.Abstractions;
     using Xunit;
     using Xunit.Abstractions;
-    using Moq;
-    using StreetName.Exceptions;
-    using TicketingService.Abstractions;
-    using global::AutoFixture;
 
-    public class WhenCorrectingAddressPostalCode : AddressRegistryBackOfficeTest
+    public class GivenStreetNameExists : BackOfficeLambdaTest
     {
         private readonly IdempotencyContext _idempotencyContext;
         private readonly TestSyndicationContext _syndicationContext;
         private readonly TestMunicipalityConsumerContext _municipalityContext;
         private readonly IStreetNames _streetNames;
 
-        public WhenCorrectingAddressPostalCode(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public GivenStreetNameExists(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             Fixture.Customize(new WithFixedMunicipalityId());
 

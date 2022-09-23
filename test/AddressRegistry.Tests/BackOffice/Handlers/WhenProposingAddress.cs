@@ -25,7 +25,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
     using Xunit.Abstractions;
     using MunicipalityLatestItem = Consumer.Read.Municipality.Projections.MunicipalityLatestItem;
 
-    public class WhenProposingAddress : AddressRegistryBackOfficeTest
+    public class WhenProposingAddress : BackOfficeHandlerTest
     {
         private readonly TestBackOfficeContext _backOfficeContext;
         private readonly IdempotencyContext _idempotencyContext;

@@ -5,7 +5,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRemovingAddress
     using AddressRegistry.Api.BackOffice;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Validators;
-    using BackOffice;
     using Infrastructure;
     using FluentAssertions;
     using global::AutoFixture;
@@ -13,7 +12,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRemovingAddress
     using Xunit;
     using Xunit.Abstractions;
 
-    public class GivenStreetNameDoesNotExist : AddressRegistryBackOfficeTest
+    public class GivenStreetNameDoesNotExist : BackOfficeApiTest
     {
         private readonly Fixture _fixture;
         private readonly AddressController _controller;

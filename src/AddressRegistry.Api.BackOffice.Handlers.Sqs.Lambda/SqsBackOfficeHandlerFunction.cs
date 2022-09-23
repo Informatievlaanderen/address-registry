@@ -5,6 +5,7 @@ using Amazon.Lambda.Core;
 namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda
 {
     using System.Reflection;
+    using Abstractions;
     using AddressRegistry.Infrastructure;
     using AddressRegistry.Infrastructure.Modules;
     using Autofac;
@@ -15,11 +16,13 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda
     using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac;
     using Consumer;
+    using Consumer.Read.Municipality.Infrastructure.Modules;
     using Infrastructure;
     using MediatR;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Projections.Syndication;
     using TicketingService.Proxy.HttpProxy;
 
     public class SqsBackOfficeHandlerFunction : FunctionBase
@@ -38,7 +41,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda
             var tempProvider = services.BuildServiceProvider();
             var loggerFactory = tempProvider.GetRequiredService<ILoggerFactory>();
 
-            services.AddHttpProxyTicketing(configuration.GetSection("TicketingService")["BaseUrl"]);
+            services.AddHttpProxyTicketing(configuration.GetSection("TicketingService")["InternalBaseUrl"]);
 
             // RETRY POLICY
             var maxRetryCount = int.Parse(configuration.GetSection("RetryPolicy")["MaxRetryCount"]);
@@ -54,7 +57,11 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda
                 .RegisterModule<EnvelopeModule>()
                 .RegisterModule(new EventHandlingModule(typeof(DomainAssemblyMarker).Assembly, eventSerializerSettings))
                 .RegisterModule(new CommandHandlingModule(configuration))
-                .RegisterModule(new ConsumerModule(configuration, services, loggerFactory));
+                .RegisterModule(new ConsumerModule(configuration, services, loggerFactory))
+                .RegisterModule(new BackOfficeModule(configuration, services, loggerFactory))
+                .RegisterModule(new MunicipalityConsumerModule(configuration, services, loggerFactory))
+                .RegisterModule(new SyndicationModule(configuration, services, loggerFactory));
+
 
             builder.RegisterEventstreamModule(configuration);
             builder.RegisterSnapshotModule(configuration);

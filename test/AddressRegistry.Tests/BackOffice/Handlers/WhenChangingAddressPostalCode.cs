@@ -19,7 +19,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenChangingAddressPostalCode : AddressRegistryBackOfficeTest
+    public class WhenChangingAddressPostalCode : BackOfficeHandlerTest
     {
         private readonly TestBackOfficeContext _backOfficeContext;
         private readonly IdempotencyContext _idempotencyContext;

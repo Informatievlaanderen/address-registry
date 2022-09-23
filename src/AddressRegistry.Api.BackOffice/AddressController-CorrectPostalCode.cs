@@ -12,8 +12,10 @@ namespace AddressRegistry.Api.BackOffice
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentValidation;
     using FluentValidation.Results;
+    using Handlers.Sqs.Requests;
     using Infrastructure;
     using Infrastructure.Options;
     using Microsoft.AspNetCore.Http;
@@ -81,6 +83,21 @@ namespace AddressRegistry.Api.BackOffice
                 if (!await ifMatchHeaderValidator.IsValid(ifMatchHeaderValue, streetNamePersistentLocalId, addressPersistentLocalId, cancellationToken))
                 {
                     return new PreconditionFailedResult();
+                }
+
+                if (_useSqsToggle.FeatureEnabled)
+                {
+                    var sqsRequest = new SqsAddressCorrectPostalCodeRequest
+                    {
+                        PersistentLocalId = request.PersistentLocalId,
+                        Request = request,
+                        IfMatchHeaderValue = ifMatchHeaderValue,
+                        Metadata = GetMetadata(),
+                        ProvenanceData = new ProvenanceData(CreateFakeProvenance())
+                    };
+                    var sqsResult = await _mediator.Send(sqsRequest, cancellationToken);
+
+                    return Accepted(sqsResult);
                 }
 
                 request.Metadata = GetMetadata();

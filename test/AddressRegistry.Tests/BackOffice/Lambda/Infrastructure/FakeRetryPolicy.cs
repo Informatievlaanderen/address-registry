@@ -1,4 +1,4 @@
-﻿namespace AddressRegistry.Tests.BackOffice
+namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
 {
     using System;
     using System.Threading.Tasks;

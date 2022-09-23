@@ -21,7 +21,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenCorrectingAddressPostalCode : AddressRegistryBackOfficeTest
+    public class WhenCorrectingAddressPostalCode : BackOfficeHandlerTest
     {
         private readonly TestBackOfficeContext _backOfficeContext;
         private readonly IdempotencyContext _idempotencyContext;

@@ -11,20 +11,13 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
     using Swashbuckle.AspNetCore.Filters;
 
     [DataContract(Name = "WijzigenPostcodeAdres", Namespace = "")]
-    public class AddressChangePostalCodeRequest : IRequest<ETagResponse>
+    public class AddressChangePostalCodeRequest : AddressBackOfficeChangePostalCodeRequest, IRequest<ETagResponse>
     {
         /// <summary>
         /// De unieke en persistente identificator van het adres.
         /// </summary>
         [JsonIgnore]
         public int PersistentLocalId { get; set; }
-
-        /// <summary>
-        /// De unieke en persistente identificator van de postcode van het adres.
-        /// </summary>
-        [DataMember(Name = "PostinfoId", Order = 0)]
-        [JsonProperty(Required = Required.Always)]
-        public string PostInfoId { get; set; }
 
         [JsonIgnore]
         public IDictionary<string, object> Metadata { get; set; }

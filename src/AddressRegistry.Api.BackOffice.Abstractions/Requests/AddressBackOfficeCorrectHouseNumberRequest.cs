@@ -4,7 +4,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
     using System.Runtime.Serialization;
 
     [DataContract(Name = "CorrigerenHuisnummerAdres", Namespace = "")]
-    public sealed class AddressBackOfficeCorrectHouseNumberRequest
+    public class AddressBackOfficeCorrectHouseNumberRequest
     {
         /// <summary>
         /// Het huisnummer van het adres.

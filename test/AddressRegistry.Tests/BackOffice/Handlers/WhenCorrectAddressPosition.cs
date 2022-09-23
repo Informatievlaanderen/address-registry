@@ -20,7 +20,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
     using Xunit.Abstractions;
     using global::AutoFixture;
 
-    public class WhenCorrectAddressPosition : AddressRegistryBackOfficeTest
+    public class WhenCorrectAddressPosition : BackOfficeHandlerTest
     {
         private readonly TestBackOfficeContext _backOfficeContext;
         private readonly IdempotencyContext _idempotencyContext;

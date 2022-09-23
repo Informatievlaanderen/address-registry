@@ -1,6 +1,7 @@
 namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Requests
 {
     using Abstractions.Requests;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo.Extensions;
     using StreetName;
     using StreetName.Commands;
 
@@ -19,10 +20,15 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Requests
         /// <returns>ChangeAddressPostalCode.</returns>
         public ChangeAddressPostalCode ToCommand()
         {
+            var postInfoIdentifier = Request.PostInfoId
+                .AsIdentifier()
+                .Map(x => x);
+            var postalCode = new PostalCode(postInfoIdentifier.Value);
+
             return new ChangeAddressPostalCode(
                 StreetNamePersistentLocalId,
                 new AddressPersistentLocalId(AddressPersistentLocalId),
-                new PostalCode(Request.PostInfoId),
+                postalCode,
                 Provenance);
         }
     }

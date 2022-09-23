@@ -7,7 +7,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
     using AddressRegistry.Api.BackOffice.Validators;
-    using Azure;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
     using FluentAssertions;
@@ -19,7 +18,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
     using Xunit;
     using Xunit.Abstractions;
 
-    public class GivenSqsToggleEnabled  : AddressRegistryBackOfficeTest
+    public class GivenSqsToggleEnabled  : BackOfficeApiTest
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;

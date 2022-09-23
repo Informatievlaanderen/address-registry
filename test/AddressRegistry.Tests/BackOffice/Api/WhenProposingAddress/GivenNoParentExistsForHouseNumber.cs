@@ -17,7 +17,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     using AddressController = AddressRegistry.Api.BackOffice.AddressController;
     using HouseNumber = StreetName.HouseNumber;
 
-    public class GivenNoParentExistsForHouseNumber : AddressRegistryBackOfficeTest
+    public class GivenNoParentExistsForHouseNumber : BackOfficeApiTest
     {
         private readonly AddressController _controller;
 

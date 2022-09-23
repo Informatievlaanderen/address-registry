@@ -29,7 +29,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     using TicketingService.Abstractions;
     using global::AutoFixture;
 
-    public class WhenRemovingAddress : AddressRegistryBackOfficeTest
+    public class WhenRemovingAddress : BackOfficeLambdaTest
     {
         private readonly IdempotencyContext _idempotencyContext;
         private readonly IStreetNames _streetNames;

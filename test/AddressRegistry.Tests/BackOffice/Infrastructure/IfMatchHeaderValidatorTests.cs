@@ -1,11 +1,13 @@
 ﻿namespace AddressRegistry.Tests.BackOffice.Infrastructure
 {
-    using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.Api.BackOffice.Infrastructure;
     using Autofac;
     using AutoFixture;
+    using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentAssertions;
@@ -13,10 +15,10 @@
     using Xunit;
     using Xunit.Abstractions;
     using global::AutoFixture;
-    using StreetName.Commands;
+    using Moq;
     using StreetName.Events;
 
-    public class IfMatchHeaderValidatorTests : AddressRegistryBackOfficeTest
+    public class IfMatchHeaderValidatorTests : AddressRegistryTest
     {
         public IfMatchHeaderValidatorTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
@@ -32,35 +34,44 @@
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
 
-            var nisCode = new NisCode("12345");
-            var postalCode = new PostalCode("2018");
-            var houseNumber = new HouseNumber("11");
-
-            ImportMigratedStreetName(
-                new StreetNameId(Guid.NewGuid()),
-                streetNamePersistentLocalId,
-                nisCode);
-
-            ProposeAddress(
+            var streetNames = new Mock<IStreetNames>();
+            var addressWasProposedV2 = new AddressWasProposedV2(
                 streetNamePersistentLocalId,
                 addressPersistentLocalId,
-                postalCode,
-                Fixture.Create<MunicipalityId>(),
-                houseNumber,
-                null);
+                null,
+                Fixture.Create<PostalCode>(),
+                Fixture.Create<HouseNumber>(),
+                null,
+                GeometryMethod.DerivedFromObject,
+                GeometrySpecification.Municipality,
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
+            ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
-            var approveAddress = Fixture.Create<ApproveAddress>();
-            DispatchArrangeCommand(approveAddress);
+            streetNames.Setup(x => x.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), CancellationToken.None))
+                .ReturnsAsync(() =>
+                {
+                    var municipality = new StreetNameFactory(NoSnapshotStrategy.Instance).Create();
+                    municipality.Initialize(new List<object>
+                    {
+                        new MigratedStreetNameWasImported(
+                            Fixture.Create<StreetNameId>(),
+                            new StreetNamePersistentLocalId(streetNamePersistentLocalId),
+                            Fixture.Create<MunicipalityId>(),
+                            Fixture.Create<NisCode>(),
+                            StreetNameStatus.Current),
+                        addressWasProposedV2
+                    });
 
-            var lastEvent = new AddressWasApproved(streetNamePersistentLocalId, addressPersistentLocalId);
-            ((ISetProvenance)lastEvent).SetProvenance(approveAddress.Provenance);
+                    return municipality;
+                });
 
-            var validEtag = new ETag(ETagType.Strong, lastEvent.GetHash());
-            var sut = new IfMatchHeaderValidator(Container.Resolve<IStreetNames>());
+            var expectedEtag = new ETag(ETagType.Strong, addressWasProposedV2.GetHash());
+
+            var sut = new IfMatchHeaderValidator(streetNames.Object);
 
             // Act
             var result = await sut.IsValid(
-                validEtag.ToString(),
+                expectedEtag.ToString(),
                 streetNamePersistentLocalId,
                 addressPersistentLocalId,
                 CancellationToken.None);
@@ -72,33 +83,47 @@
         [Fact]
         public async Task WhenNotValidIfMatchHeader()
         {
-            // Arrange
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
 
-            var nisCode = new NisCode("12345");
-            var postalCode = new PostalCode("2018");
-            var houseNumber = new HouseNumber("11");
+            var streetNames = new Mock<IStreetNames>();
+            streetNames
+                .Setup(x => x.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), CancellationToken.None))
+                .ReturnsAsync(() =>
+                {
+                    var municipality = new StreetNameFactory(NoSnapshotStrategy.Instance).Create();
 
-            ImportMigratedStreetName(
-                new StreetNameId(Guid.NewGuid()),
-                streetNamePersistentLocalId,
-                nisCode);
+                    var addressWasProposedV2 = new AddressWasProposedV2(
+                        streetNamePersistentLocalId,
+                        addressPersistentLocalId,
+                        null,
+                        Fixture.Create<PostalCode>(),
+                        Fixture.Create<HouseNumber>(),
+                        null,
+                        GeometryMethod.DerivedFromObject,
+                        GeometrySpecification.Municipality,
+                        GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
+                    ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
-            ProposeAddress(
-                streetNamePersistentLocalId,
-                addressPersistentLocalId,
-                postalCode,
-                Fixture.Create<MunicipalityId>(),
-                houseNumber,
-                null);
+                    municipality.Initialize(new List<object>
+                    {
+                        new MigratedStreetNameWasImported(
+                            Fixture.Create<StreetNameId>(),
+                            new StreetNamePersistentLocalId(streetNamePersistentLocalId),
+                            Fixture.Create<MunicipalityId>(),
+                            Fixture.Create<NisCode>(),
+                            StreetNameStatus.Current),
+                        addressWasProposedV2
+                    });
 
-            var invalidEtag = new ETag(ETagType.Strong, "NotValidHash");
-            var sut = new IfMatchHeaderValidator(Container.Resolve<IStreetNames>());
+                    return municipality;
+                });
+
+            var sut = new IfMatchHeaderValidator(streetNames.Object);
 
             // Act
             var result = await sut.IsValid(
-                invalidEtag.ToString(),
+                "NON MATCHING ETAG",
                 streetNamePersistentLocalId,
                 addressPersistentLocalId,
                 CancellationToken.None);
@@ -106,7 +131,6 @@
             // Assert
             result.Should().BeFalse();
         }
-
 
         [Theory]
         [InlineData("")]

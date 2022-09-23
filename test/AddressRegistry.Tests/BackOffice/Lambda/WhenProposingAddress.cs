@@ -33,7 +33,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     using global::AutoFixture;
     using HouseNumber = StreetName.HouseNumber;
 
-    public class WhenProposingAddress : AddressRegistryBackOfficeTest
+    public class WhenProposingAddress : BackOfficeLambdaTest
     {
         private readonly TestBackOfficeContext _backOfficeContext;
         private readonly IdempotencyContext _idempotencyContext;

@@ -30,7 +30,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     using TicketingService.Abstractions;
     using global::AutoFixture;
 
-    public class WhenCorrectingAddressPosition : AddressRegistryBackOfficeTest
+    public class WhenCorrectingAddressPosition : BackOfficeLambdaTest
     {
         private readonly IdempotencyContext _idempotencyContext;
         private readonly IStreetNames _streetNames;

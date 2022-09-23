@@ -17,7 +17,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
     using Xunit;
     using Xunit.Abstractions;
 
-    public class GivenSqsToggleEnabled  : AddressRegistryBackOfficeTest
+    public class GivenSqsToggleEnabled  : BackOfficeApiTest
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;

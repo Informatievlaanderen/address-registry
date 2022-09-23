@@ -6,9 +6,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPostalCode
     using AddressRegistry.Api.BackOffice;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
-    using AddressRegistry.Api.BackOffice.Validators;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
-    using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
     using FluentAssertions;
     using global::AutoFixture;
     using Infrastructure;
@@ -18,7 +16,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPostalCode
     using Xunit;
     using Xunit.Abstractions;
 
-    public class GivenSqsToggleEnabled  : AddressRegistryBackOfficeTest
+    public class GivenSqsToggleEnabled  : BackOfficeApiTest
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;

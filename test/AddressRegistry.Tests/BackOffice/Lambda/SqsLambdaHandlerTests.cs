@@ -23,7 +23,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     using global::AutoFixture;
     using Infrastructure;
 
-    public class SqsLambdaHandlerTests : AddressRegistryBackOfficeTest
+    public class SqsLambdaHandlerTests : BackOfficeLambdaTest
     {
         public SqsLambdaHandlerTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {

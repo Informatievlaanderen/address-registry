@@ -2,7 +2,6 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
 {
     using AddressRegistry.Api.BackOffice.Abstractions.Exceptions;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs;
-    using BackOffice;
     using Infrastructure;
     using Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple;
     using FluentAssertions;
@@ -22,7 +21,7 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
     using Xunit;
     using Xunit.Abstractions;
 
-    public sealed class GivenAddressBackOfficeProposeRequest : AddressRegistryBackOfficeTest
+    public sealed class GivenAddressBackOfficeProposeRequest : AddressRegistryTest
     {
         private readonly TestMunicipalityConsumerContext _municipalityConsumerContext;
 

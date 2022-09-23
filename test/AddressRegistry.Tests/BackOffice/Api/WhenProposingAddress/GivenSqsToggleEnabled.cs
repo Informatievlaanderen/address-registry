@@ -8,7 +8,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
     using StreetName;
     using Infrastructure;
-    using Be.Vlaanderen.Basisregisters.Api.ETag;
     using FluentAssertions;
     using global::AutoFixture;
     using Microsoft.AspNetCore.Mvc;
@@ -16,7 +15,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     using Xunit;
     using Xunit.Abstractions;
 
-    public class GivenSqsToggleEnabled  : AddressRegistryBackOfficeTest
+    public class GivenSqsToggleEnabled  : BackOfficeApiTest
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;

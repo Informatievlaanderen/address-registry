@@ -31,7 +31,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     using TicketingService.Abstractions;
     using global::AutoFixture;
 
-    public class WhenCorrectingAddressPostalCode : AddressRegistryBackOfficeTest
+    public class WhenCorrectingAddressPostalCode : BackOfficeLambdaTest
     {
         private readonly IdempotencyContext _idempotencyContext;
         private readonly TestSyndicationContext _syndicationContext;

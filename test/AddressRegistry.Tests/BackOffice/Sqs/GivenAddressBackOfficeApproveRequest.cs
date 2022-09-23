@@ -6,7 +6,6 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
     using AutoFixture;
-    using BackOffice;
     using Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple;
     using FluentAssertions;
     using global::AutoFixture;
@@ -21,7 +20,7 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
     using Xunit;
     using Xunit.Abstractions;
 
-    public sealed class GivenAddressBackOfficeApproveRequest : AddressRegistryBackOfficeTest
+    public sealed class GivenAddressBackOfficeApproveRequest : AddressRegistryTest
     {
         private readonly TestBackOfficeContext _backOfficeContext;
 

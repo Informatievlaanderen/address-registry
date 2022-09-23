@@ -16,7 +16,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     using Xunit.Abstractions;
     using AddressController = AddressRegistry.Api.BackOffice.AddressController;
 
-    public class GivenParentAddressAlreadyExists : AddressRegistryBackOfficeTest
+    public class GivenParentAddressAlreadyExists : BackOfficeApiTest
     {
         private readonly AddressController _controller;
 

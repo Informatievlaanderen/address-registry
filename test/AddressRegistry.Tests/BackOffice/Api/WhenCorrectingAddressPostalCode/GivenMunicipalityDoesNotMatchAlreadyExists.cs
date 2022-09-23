@@ -16,7 +16,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPostalCode
     using global::AutoFixture;
     using StreetName.Exceptions;
 
-    public class GivenMunicipalityDoesNotMatchAlreadyExists : AddressRegistryBackOfficeTest
+    public class GivenMunicipalityDoesNotMatchAlreadyExists : BackOfficeApiTest
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;

@@ -17,7 +17,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     using AddressController = AddressRegistry.Api.BackOffice.AddressController;
     using BoxNumber = StreetName.BoxNumber;
 
-    public class GivenChildAddressAlreadyExists : AddressRegistryBackOfficeTest
+    public class GivenChildAddressAlreadyExists : BackOfficeApiTest
     {
         private readonly AddressController _controller;
 

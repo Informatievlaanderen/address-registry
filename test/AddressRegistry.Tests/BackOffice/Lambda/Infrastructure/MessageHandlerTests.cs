@@ -13,7 +13,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
     using Xunit;
     using Xunit.Abstractions;
 
-    public class MessageHandlerTests : AddressRegistryBackOfficeTest
+    public class MessageHandlerTests : BackOfficeLambdaTest
     {
         public MessageHandlerTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         { }

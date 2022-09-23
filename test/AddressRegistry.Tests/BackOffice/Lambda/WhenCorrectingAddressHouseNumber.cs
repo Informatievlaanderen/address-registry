@@ -28,7 +28,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     using TicketingService.Abstractions;
     using global::AutoFixture;
 
-    public class WhenCorrectingAddressHouseNumber : AddressRegistryBackOfficeTest
+    public class WhenCorrectingAddressHouseNumber : BackOfficeLambdaTest
     {
         private readonly IdempotencyContext _idempotencyContext;
         private readonly IStreetNames _streetNames;

@@ -21,7 +21,7 @@ namespace AddressRegistry.StreetName.Events
         [EventPropertyDescription("Objectidentificator van het adres.")]
         public int AddressPersistentLocalId { get; }
 
-        [EventPropertyDescription("Objectidentificatoren van de gekoppelde busnummers.")]
+        [EventPropertyDescription("Objectidentificatoren van de gekoppelde busnummers die de status voorgesteld of inGebruik hebben.")]
         public IEnumerable<int> BoxNumberPersistentLocalIds { get; }
 
         [EventPropertyDescription("Postcode (= objectidentificator) van het PostInfo-object dat deel uitmaakt van het adres.")]

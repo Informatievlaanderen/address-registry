@@ -8,8 +8,8 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
     using AddressRegistry.Api.BackOffice.Abstractions.Exceptions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Abstractions.Responses;
-    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers;
-    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Requests;
+    using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
+    using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
     using AddressRegistry.Consumer.Read.Municipality.Projections;
     using Projections.Syndication.PostalInfo;
     using StreetName;

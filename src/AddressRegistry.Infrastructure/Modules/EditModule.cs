@@ -28,7 +28,6 @@ namespace AddressRegistry.Infrastructure.Modules
                     .UseSqlServer(projectionsConnectionString, sqlServerOptions => sqlServerOptions
                             .EnableRetryOnFailure()
                             .MigrationsHistoryTable(MigrationTables.Sequence, Schema.Sequence)
-                        //.MigrationsAssembly(typeof(EditModule).AssemblyQualifiedName)
                     ));
         }
 

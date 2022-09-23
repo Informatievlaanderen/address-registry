@@ -8,8 +8,8 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRegularizingAddress
     using AddressRegistry.Api.BackOffice.Abstractions.Exceptions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Abstractions.Responses;
-    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers;
-    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Requests;
+    using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
+    using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
     using StreetName;
     using StreetName.Commands;
     using StreetName.Exceptions;

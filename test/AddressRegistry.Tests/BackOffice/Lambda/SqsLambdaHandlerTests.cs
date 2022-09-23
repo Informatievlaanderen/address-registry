@@ -6,8 +6,8 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Abstractions.Responses;
-    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers;
-    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Requests;
+    using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
+    using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
     using AddressRegistry.Infrastructure;
     using Autofac;
     using AutoFixture;

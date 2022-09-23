@@ -189,7 +189,7 @@ NUGET
     Be.Vlaanderen.Basisregisters.Aws.DistributedMutex (3.0)
       AWSSDK.DynamoDBv2 (>= 3.7.3.14) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
       Microsoft.Extensions.Logging (>= 6.0) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
-    Be.Vlaanderen.Basisregisters.Aws.Lambda (1.2.1)
+    Be.Vlaanderen.Basisregisters.Aws.Lambda (1.2.3)
       Amazon.Lambda.Core (>= 2.1) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
       Amazon.Lambda.Serialization.Json (>= 2.0) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
       Amazon.Lambda.SQSEvents (>= 2.1) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)

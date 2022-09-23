@@ -5,7 +5,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     using System.Threading;
     using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.Api.BackOffice.Abstractions.Responses;
-    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers;
+    using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using StreetName;
     using StreetName.Commands;
     using Tests;

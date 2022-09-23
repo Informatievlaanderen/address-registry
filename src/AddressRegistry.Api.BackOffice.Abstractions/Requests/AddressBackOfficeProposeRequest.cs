@@ -38,7 +38,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
         /// <summary>
         /// De geometriemethode van het adres.
         /// </summary>
-        [DataMember(Name= "PositieGeometrieMethode", Order = 4)]
+        [DataMember(Name= "PositieGeometriemethode", Order = 4)]
         [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Ignore)]
         public PositieGeometrieMethode? PositieGeometrieMethode { get; set; }
 

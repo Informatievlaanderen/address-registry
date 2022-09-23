@@ -1,4 +1,4 @@
-namespace AddressRegistry.Tests.BackOffice.Lambda
+namespace AddressRegistry.Tests.BackOffice.Lambda.WhenChangingAddressPostalCode
 {
     using System;
     using System.Collections.Generic;
@@ -10,32 +10,31 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     using AddressRegistry.Api.BackOffice.Abstractions.Responses;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Lambda.Requests;
-    using Autofac;
+    using StreetName;
+    using StreetName.Exceptions;
     using AutoFixture;
-    using BackOffice.Infrastructure;
+    using AddressRegistry.Tests.BackOffice.Infrastructure;
+    using Infrastructure;
+    using Autofac;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
-    using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentAssertions;
-    using Infrastructure;
+    using global::AutoFixture;
     using Microsoft.Extensions.Configuration;
+    using Moq;
     using SqlStreamStore;
     using SqlStreamStore.Streams;
-    using StreetName;
+    using TicketingService.Abstractions;
     using Xunit;
     using Xunit.Abstractions;
-    using Moq;
-    using StreetName.Exceptions;
-    using TicketingService.Abstractions;
-    using global::AutoFixture;
 
-    public class WhenChangingAddressPosition : BackOfficeLambdaTest
+    public class GivenStreetNameExists : BackOfficeLambdaTest
     {
         private readonly IdempotencyContext _idempotencyContext;
         private readonly IStreetNames _streetNames;
 
-        public WhenChangingAddressPosition(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public GivenStreetNameExists(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             Fixture.Customize(new WithFixedMunicipalityId());
 
@@ -46,12 +45,8 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
         [Fact]
         public async Task GivenRequest_ThenPersistentLocalIdETagResponse()
         {
-            var municipalityId = Fixture.Create<MunicipalityId>();
             var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
             var addressPersistentLocalId = new AddressPersistentLocalId(456);
-
-            var municipalities = Container.Resolve<TestMunicipalityConsumerContext>();
-            municipalities.AddMunicipality(municipalityId, GeometryHelpers.ValidGmlPolygon);
 
             ImportMigratedStreetName(
                 new StreetNameId(Guid.NewGuid()),
@@ -67,7 +62,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 null);
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new SqsAddressChangePositionLambdaHandler(
+            var sut = new SqsAddressChangePostalCodeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -75,11 +70,11 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext));
 
             // Act
-            await sut.Handle(new SqsLambdaAddressChangePositionRequest
+            await sut.Handle(new SqsLambdaAddressChangePostalCodeRequest
             {
-                Request = new AddressBackOfficeChangePositionRequest
+                Request = new AddressBackOfficeChangePostalCodeRequest
                 {
-                    PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
+                    PostInfoId = "https://data.vlaanderen.be/id/postinfo/123"
                 },
                 AddressPersistentLocalId = addressPersistentLocalId,
                 MessageGroupId = streetNamePersistentLocalId,
@@ -101,7 +96,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressChangePositionLambdaHandler(
+            var sut = new SqsAddressChangePostalCodeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -109,12 +104,13 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 MockExceptionIdempotentCommandHandler<AddressHasInvalidStatusException>().Object);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressChangePositionRequest
+            await sut.Handle(new SqsLambdaAddressChangePostalCodeRequest
             {
-                Request = new AddressBackOfficeChangePositionRequest
+                Request = new AddressBackOfficeChangePostalCodeRequest
                 {
-                    PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
+                    PostInfoId = "https://data.vlaanderen.be/id/postinfo/123"
                 },
+                AddressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>(),
                 MessageGroupId = Fixture.Create<int>().ToString(),
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object>(),
@@ -128,114 +124,6 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                     new TicketError(
                         "Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik'.",
                         "AdresGehistoreerdOfAfgekeurd"),
-                    CancellationToken.None));
-        }
-
-        [Fact]
-        public async Task WhenAddressHasInvalidGeometryMethod_ThenTicketingErrorIsExpected()
-        {
-            // Arrange
-            var ticketing = new Mock<ITicketing>();
-
-            var sut = new SqsAddressChangePositionLambdaHandler(
-                Container.Resolve<IConfiguration>(),
-                new FakeRetryPolicy(),
-                ticketing.Object,
-                Mock.Of<IStreetNames>(),
-                MockExceptionIdempotentCommandHandler<AddressHasInvalidGeometryMethodException>().Object);
-
-            // Act
-            await sut.Handle(new SqsLambdaAddressChangePositionRequest
-            {
-                Request = new AddressBackOfficeChangePositionRequest
-                {
-                    PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
-                },
-                MessageGroupId = Fixture.Create<int>().ToString(),
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
-
-            //Assert
-            ticketing.Verify(x =>
-                x.Error(
-                    It.IsAny<Guid>(),
-                    new TicketError(
-                        "Ongeldige positieGeometrieMethode.",
-                        "AdresPositieGeometriemethodeValidatie"),
-                    CancellationToken.None));
-        }
-
-        [Fact]
-        public async Task WhenAddressHasMissingGeometrySpecification_ThenTicketingErrorIsExpected()
-        {
-            // Arrange
-            var ticketing = new Mock<ITicketing>();
-
-            var sut = new SqsAddressChangePositionLambdaHandler(
-                Container.Resolve<IConfiguration>(),
-                new FakeRetryPolicy(),
-                ticketing.Object,
-                Mock.Of<IStreetNames>(),
-                MockExceptionIdempotentCommandHandler<AddressHasMissingGeometrySpecificationException>().Object);
-
-            // Act
-            await sut.Handle(new SqsLambdaAddressChangePositionRequest
-            {
-                Request = new AddressBackOfficeChangePositionRequest
-                {
-                    PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
-                },
-                MessageGroupId = Fixture.Create<int>().ToString(),
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
-
-            //Assert
-            ticketing.Verify(x =>
-                x.Error(
-                    It.IsAny<Guid>(),
-                    new TicketError(
-                        "PositieSpecificatie is verplicht bij een manuele aanduiding van de positie.",
-                        "AdresPositieSpecificatieVerplichtBijManueleAanduiding"),
-                    CancellationToken.None));
-        }
-
-        [Fact]
-        public async Task WhenAddressHasInvalidGeometrySpecification_ThenTicketingErrorIsExpected()
-        {
-            // Arrange
-            var ticketing = new Mock<ITicketing>();
-
-            var sut = new SqsAddressChangePositionLambdaHandler(
-                Container.Resolve<IConfiguration>(),
-                new FakeRetryPolicy(),
-                ticketing.Object,
-                Mock.Of<IStreetNames>(),
-                MockExceptionIdempotentCommandHandler<AddressHasInvalidGeometrySpecificationException>().Object);
-
-            // Act
-            await sut.Handle(new SqsLambdaAddressChangePositionRequest
-            {
-                Request = new AddressBackOfficeChangePositionRequest
-                {
-                    PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
-                },
-                MessageGroupId = Fixture.Create<int>().ToString(),
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
-
-            //Assert
-            ticketing.Verify(x =>
-                x.Error(
-                    It.IsAny<Guid>(),
-                    new TicketError(
-                        "Ongeldige positieSpecificatie.",
-                        "AdresPositieSpecificatieValidatie"),
                     CancellationToken.None));
         }
 
@@ -264,7 +152,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 houseNumber,
                 null);
 
-            var sut = new SqsAddressChangePositionLambdaHandler(
+            var sut = new SqsAddressChangePostalCodeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -275,11 +163,11 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 await _streetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), CancellationToken.None);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressChangePositionRequest
+            await sut.Handle(new SqsLambdaAddressChangePostalCodeRequest
             {
-                Request = new AddressBackOfficeChangePositionRequest
+                Request = new AddressBackOfficeChangePostalCodeRequest
                 {
-                    PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
+                    PostInfoId = "https://data.vlaanderen.be/id/postinfo/123"
                 },
                 AddressPersistentLocalId = addressPersistentLocalId,
                 MessageGroupId = streetNamePersistentLocalId,

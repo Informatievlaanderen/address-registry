@@ -6,8 +6,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRemovingAddress
     using AddressRegistry.Api.BackOffice;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
-    using AddressRegistry.StreetName;
-    using AddressRegistry.Tests.BackOffice.Infrastructure;
+    using StreetName;
+    using Infrastructure;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using FluentAssertions;
     using global::AutoFixture;

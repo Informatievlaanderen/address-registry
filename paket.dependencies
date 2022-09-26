@@ -80,8 +80,8 @@ nuget Be.Vlaanderen.Basisregisters.GrAr.Extracts 17.24.1
 
 nuget Be.Vlaanderen.Basisregisters.Shaperon 9.0.1
 
-nuget Be.Vlaanderen.Basisregisters.TicketingService.Abstractions 1.7.1
-nuget Be.Vlaanderen.Basisregisters.TicketingService.Proxy.HttpProxy 1.7.1
+nuget Be.Vlaanderen.Basisregisters.TicketingService.Abstractions 1.7.6
+nuget Be.Vlaanderen.Basisregisters.TicketingService.Proxy.HttpProxy 1.7.6
 
 // LAMBDA STUFF
 

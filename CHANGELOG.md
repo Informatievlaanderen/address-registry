@@ -1,3 +1,10 @@
+## [3.51.1](https://github.com/informatievlaanderen/address-registry/compare/v3.51.0...v3.51.1) (2022-09-26)
+
+
+### Bug Fixes
+
+* remove datacontract attr from some requests ([f62b908](https://github.com/informatievlaanderen/address-registry/commit/f62b908333fc09284cbb755482f3961c4ff9eddb))
+
 # [3.51.0](https://github.com/informatievlaanderen/address-registry/compare/v3.50.4...v3.51.0) (2022-09-26)
 
 

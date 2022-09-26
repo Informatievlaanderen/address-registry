@@ -1,3 +1,16 @@
+# [3.51.0](https://github.com/informatievlaanderen/address-registry/compare/v3.50.4...v3.51.0) (2022-09-26)
+
+
+### Bug Fixes
+
+* lambda csproj for multiple publish output files problem ([e41c47f](https://github.com/informatievlaanderen/address-registry/commit/e41c47f0a0282a6ea1c97c36acfa9045e9b399a8))
+* remove elemetns from csproj file ([6349afc](https://github.com/informatievlaanderen/address-registry/commit/6349afc919455fd9e12f3dc4a2392f2ccde8b65d))
+
+
+### Features
+
+* refactor to async ([4efef58](https://github.com/informatievlaanderen/address-registry/commit/4efef58bbfa9f400c86ee481fe9590e6fa3feca3))
+
 ## [3.50.3](https://github.com/informatievlaanderen/address-registry/compare/v3.50.2...v3.50.3) (2022-09-21)
 
 

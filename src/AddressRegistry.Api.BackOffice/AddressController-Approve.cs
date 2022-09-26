@@ -11,15 +11,16 @@ namespace AddressRegistry.Api.BackOffice
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentValidation;
     using FluentValidation.Results;
+    using Handlers.Sqs.Requests;
     using Infrastructure;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using StreetName;
     using StreetName.Exceptions;
     using Swashbuckle.AspNetCore.Filters;
-    using Validators;
 
     public partial class AddressController
     {
@@ -77,10 +78,24 @@ namespace AddressRegistry.Api.BackOffice
                     return new PreconditionFailedResult();
                 }
 
+                if (_useSqsToggle.FeatureEnabled)
+                {
+                    var sqsRequest = new SqsAddressApproveRequest
+                    {
+                        Request = request,
+                        IfMatchHeaderValue = ifMatchHeaderValue,
+                        Metadata = GetMetadata(),
+                        ProvenanceData = new ProvenanceData(CreateFakeProvenance())
+                    };
+                    var sqsResult = await _mediator.Send(sqsRequest, cancellationToken);
+
+                    return Accepted(sqsResult);
+                }
+
                 request.Metadata = GetMetadata();
                 var response = await _mediator.Send(request, cancellationToken);
 
-                return new NoContentWithETagResult(response.LastEventHash);
+                return new NoContentWithETagResult(response.ETag);
             }
             catch (IdempotencyException)
             {

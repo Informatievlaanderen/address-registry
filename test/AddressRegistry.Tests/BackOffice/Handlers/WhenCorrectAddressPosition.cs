@@ -4,7 +4,6 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers;
     using Autofac;
@@ -13,15 +12,15 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
     using FluentAssertions;
-    using global::AutoFixture;
     using Infrastructure;
     using SqlStreamStore;
     using SqlStreamStore.Streams;
     using StreetName;
     using Xunit;
     using Xunit.Abstractions;
+    using global::AutoFixture;
 
-    public class WhenCorrectAddressPosition : AddressRegistryBackOfficeTest
+    public class WhenCorrectAddressPosition : BackOfficeHandlerTest
     {
         private readonly TestBackOfficeContext _backOfficeContext;
         private readonly IdempotencyContext _idempotencyContext;
@@ -48,9 +47,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
             var postalCode = new PostalCode("2018");
             var houseNumber = new HouseNumber("11");
 
-            _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.Add(
-                new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentLocalId));
-            _backOfficeContext.SaveChanges();
+            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentLocalId);
 
             _municipalityConsumerContext.AddMunicipality(municipalityId, GeometryHelpers.ValidGmlPolygon);
 
@@ -85,7 +82,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
 
             // Assert
             var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))), 2, 1); //1 = version of stream (zero based)
-            stream.Messages.First().JsonMetadata.Should().Contain(result.LastEventHash);
+            stream.Messages.First().JsonMetadata.Should().Contain(result.ETag);
         }
     }
 }

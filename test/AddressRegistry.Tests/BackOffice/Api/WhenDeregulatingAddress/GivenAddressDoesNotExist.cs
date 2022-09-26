@@ -19,7 +19,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenDeregulatingAddress
     using Xunit;
     using Xunit.Abstractions;
 
-    public class GivenAddressDoesNotExist : AddressRegistryBackOfficeTest
+    public class GivenAddressDoesNotExist : BackOfficeApiTest
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;

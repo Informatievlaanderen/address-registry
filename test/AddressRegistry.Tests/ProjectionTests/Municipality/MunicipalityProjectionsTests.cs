@@ -14,7 +14,6 @@ namespace AddressRegistry.Tests.ProjectionTests.Municipality
     using Microsoft.EntityFrameworkCore;
     using NodaTime;
     using NodaTime.Text;
-    using StreetName;
     using Xunit;
     using Xunit.Abstractions;
 

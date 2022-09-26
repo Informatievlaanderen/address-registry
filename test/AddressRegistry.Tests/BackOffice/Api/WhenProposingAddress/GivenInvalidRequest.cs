@@ -21,7 +21,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     using PositieGeometrieMethode = Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts.PositieGeometrieMethode;
     using PositieSpecificatie = Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts.PositieSpecificatie;
 
-    public class GivenInvalidRequest : AddressRegistryBackOfficeTest
+    public class GivenInvalidRequest : BackOfficeApiTest
     {
         private readonly AddressController _controller;
 

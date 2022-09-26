@@ -11,6 +11,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
     using Consumer;
     using Consumer.Read.Municipality;
     using Consumer.Read.Municipality.Infrastructure.Modules;
+    using Handlers.Sqs;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -19,6 +20,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
 
     public class ApiModule : Module
     {
+        internal const string SqsQueueUrlConfigKey = "SqsQueueUrl";
         private readonly IConfiguration _configuration;
         private readonly IServiceCollection _services;
         private readonly ILoggerFactory _loggerFactory;
@@ -60,8 +62,9 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
             builder.RegisterModule(new SyndicationModule(_configuration, _services, _loggerFactory));
             builder.RegisterModule(new EditModule(_configuration, _services, _loggerFactory));
             builder.RegisterModule(new ConsumerModule(_configuration, _services, _loggerFactory));
+            builder.RegisterModule(new SqsHandlersModule(_configuration[SqsQueueUrlConfigKey]));
             builder.RegisterModule(new MediatRModule());
-            builder.RegisterModule(new TicketingModule(_configuration));
+            builder.RegisterModule(new TicketingModule(_configuration, _services));
             builder.RegisterModule(new MunicipalityConsumerModule(_configuration,_services, _loggerFactory));
             builder.RegisterSnapshotModule(_configuration);
 

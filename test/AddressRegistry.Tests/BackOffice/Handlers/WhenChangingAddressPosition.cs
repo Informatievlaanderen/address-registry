@@ -21,7 +21,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenChangingAddressPosition : AddressRegistryBackOfficeTest
+    public class WhenChangingAddressPosition : BackOfficeHandlerTest
     {
         private readonly TestBackOfficeContext _backOfficeContext;
         private readonly IdempotencyContext _idempotencyContext;
@@ -44,7 +44,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
             var municipalityId = Fixture.Create<MunicipalityId>();
             var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
             var addressPersistentLocalId = new AddressPersistentLocalId(456);
-            var niscode = new NisCode("12345");
+            var nisCode = new NisCode("12345");
             var postalCode = new PostalCode("2018");
             var houseNumber = new HouseNumber("11");
 
@@ -57,7 +57,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
             ImportMigratedStreetName(
                 new StreetNameId(Guid.NewGuid()),
                 streetNamePersistentLocalId,
-                niscode);
+                nisCode);
 
             ProposeAddress(
                 streetNamePersistentLocalId,
@@ -65,8 +65,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
                 postalCode,
                 Fixture.Create<MunicipalityId>(),
                 houseNumber,
-                null
-                );
+                null);
 
             var sut = new AddressChangePositionHandler(
                 Container.Resolve<ICommandHandlerResolver>(),
@@ -85,7 +84,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
 
             // Assert
             var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))), 2, 1); //1 = version of stream (zero based)
-            stream.Messages.First().JsonMetadata.Should().Contain(result.LastEventHash);
+            stream.Messages.First().JsonMetadata.Should().Contain(result.ETag);
         }
     }
 }

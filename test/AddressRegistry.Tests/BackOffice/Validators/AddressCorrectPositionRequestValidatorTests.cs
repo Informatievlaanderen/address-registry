@@ -3,7 +3,6 @@ namespace AddressRegistry.Tests.BackOffice.Validators
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Validators;
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
-    using Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple;
     using FluentAssertions;
     using FluentValidation.TestHelper;
     using Xunit;

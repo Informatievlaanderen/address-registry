@@ -18,7 +18,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRetiringAddress
     using Xunit.Abstractions;
     using AddressController = AddressRegistry.Api.BackOffice.AddressController;
 
-    public class GivenAddressHasInvalidStatus : AddressRegistryBackOfficeTest
+    public class GivenAddressHasInvalidStatus : BackOfficeApiTest
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;

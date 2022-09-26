@@ -16,7 +16,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPostalCode
     using global::AutoFixture;
     using StreetName.Exceptions;
 
-    public class GivenMunicipalityDoesNotMatchAlreadyExists : AddressRegistryBackOfficeTest
+    public class GivenMunicipalityDoesNotMatchAlreadyExists : BackOfficeApiTest
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;
@@ -37,7 +37,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPostalCode
                 .Setup(x => x.Send(It.IsAny<AddressCorrectPostalCodeRequest>(), CancellationToken.None))
                 .ThrowsAsync(new PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException());
 
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentIds(addressPersistentLocalId, streetNamePersistentId);
+            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             //Act
             Func<Task> act = async () => await _controller.CorrectPostalCode(

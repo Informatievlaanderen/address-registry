@@ -5,9 +5,9 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressHouseNumber
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
-    using AddressRegistry.StreetName;
-    using AddressRegistry.StreetName.Exceptions;
-    using AddressRegistry.Tests.BackOffice.Infrastructure;
+    using StreetName;
+    using StreetName.Exceptions;
+    using Infrastructure;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using FluentAssertions;
     using global::AutoFixture;
@@ -16,7 +16,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressHouseNumber
     using Xunit;
     using Xunit.Abstractions;
 
-    public class GivenAddressIsRemoved : AddressRegistryBackOfficeTest
+    public class GivenAddressIsRemoved : BackOfficeApiTest
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;
@@ -37,7 +37,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressHouseNumber
                 .Setup(x => x.Send(It.IsAny<AddressCorrectHouseNumberRequest>(), CancellationToken.None))
                 .Throws(new AddressIsRemovedException(addressPersistentLocalId));
 
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentIds(addressPersistentLocalId, streetNamePersistentId);
+            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             //Act
             Func<Task> act = async () => await _controller.CorrectHouseNumber(

@@ -19,7 +19,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressHouseNumber
     using Xunit;
     using Xunit.Abstractions;
 
-    public class GivenAddressWasProposed : AddressRegistryBackOfficeTest
+    public class GivenAddressWasProposed : BackOfficeApiTest
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;
@@ -39,9 +39,9 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressHouseNumber
 
             MockMediator
                 .Setup(x => x.Send(It.IsAny<AddressCorrectHouseNumberRequest>(), CancellationToken.None))
-                .Returns(Task.FromResult(new ETagResponse(lastEventHash)));
+                .Returns(Task.FromResult(new ETagResponse(string.Empty, lastEventHash)));
 
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentIds(addressPersistentLocalId, streetNamePersistentId);
+            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             //Act
             var result = (AcceptedWithETagResult) await _controller.CorrectHouseNumber(
@@ -63,7 +63,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressHouseNumber
             var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
-           await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentIds(addressPersistentLocalId, streetNamePersistentId);
+           await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             //Act
             var result = await _controller.CorrectHouseNumber(
@@ -89,7 +89,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressHouseNumber
                 .Setup(x => x.Send(It.IsAny<AddressCorrectHouseNumberRequest>(), CancellationToken.None))
                 .Throws(new ParentAddressAlreadyExistsException());
 
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentIds(addressPersistentLocalId, streetNamePersistentId);
+            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             Func<Task> act = async () => await _controller.CorrectHouseNumber(
                 _backOfficeContext,
@@ -121,7 +121,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressHouseNumber
                 .Setup(x => x.Send(It.IsAny<AddressCorrectHouseNumberRequest>(), CancellationToken.None))
                 .Throws(new HouseNumberToCorrectHasBoxNumberException());
 
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentIds(addressPersistentLocalId, streetNamePersistentId);
+            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             Func<Task> act = async () => await _controller.CorrectHouseNumber(
                 _backOfficeContext,

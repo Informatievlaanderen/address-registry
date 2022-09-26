@@ -11,15 +11,13 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
     using Infrastructure;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using FluentAssertions;
-    using FluentValidation;
-    using FluentValidation.Results;
     using global::AutoFixture;
     using Microsoft.AspNetCore.Http;
     using Moq;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class GivenAddressIsRemoved : AddressRegistryBackOfficeTest
+    public class GivenAddressIsRemoved : BackOfficeApiTest
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;

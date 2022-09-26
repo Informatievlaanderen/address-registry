@@ -20,7 +20,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
     using Xunit;
     using Xunit.Abstractions;
 
-    public class GivenAddressWasProposed : AddressRegistryBackOfficeTest
+    public class GivenAddressWasProposed : BackOfficeApiTest
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;
@@ -38,12 +38,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
             var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
-            MockMediator.Setup(x => x.Send(It.IsAny<AddressChangePositionRequest>(), CancellationToken.None))
-                .Returns(Task.FromResult(new ETagResponse(lastEventHash)));
+            MockMediator
+                .Setup(x => x.Send(It.IsAny<AddressChangePositionRequest>(), CancellationToken.None))
+                .Returns(Task.FromResult(new ETagResponse(string.Empty, lastEventHash)));
 
-            _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.Add(
-                new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));
-            _backOfficeContext.SaveChanges();
+            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             var result = (AcceptedWithETagResult)await _controller.ChangePosition(
                 _backOfficeContext,

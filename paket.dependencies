@@ -44,7 +44,7 @@ nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit 7.0.0
 nuget Be.Vlaanderen.Basisregisters.Api 18.1.0
 
 nuget Be.Vlaanderen.Basisregisters.Aws.DistributedMutex 3.0.0
-nuget Be.Vlaanderen.Basisregisters.Aws.Lambda 1.2.0
+nuget Be.Vlaanderen.Basisregisters.Aws.Lambda 1.2.4
 
 nuget Be.Vlaanderen.Basisregisters.CommandHandling 7.0.0
 nuget Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency 7.0.0
@@ -80,8 +80,8 @@ nuget Be.Vlaanderen.Basisregisters.GrAr.Extracts 17.24.1
 
 nuget Be.Vlaanderen.Basisregisters.Shaperon 9.0.1
 
-nuget Be.Vlaanderen.Basisregisters.TicketingService.Abstractions 1.3.1
-nuget Be.Vlaanderen.Basisregisters.TicketingService.Proxy.HttpProxy 1.3.1
+nuget Be.Vlaanderen.Basisregisters.TicketingService.Abstractions 1.7.1
+nuget Be.Vlaanderen.Basisregisters.TicketingService.Proxy.HttpProxy 1.7.1
 
 // LAMBDA STUFF
 
@@ -92,8 +92,8 @@ nuget Microsoft.Extensions.Configuration.Json 6.0.0
 nuget Microsoft.Extensions.DependencyInjection 6.0.0
 nuget MediatR.Extensions.Microsoft.DependencyInjection 10.0.1
 
-nuget Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple 4.2.3
-nuget Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple 4.2.3
+nuget Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple 4.3.2
+nuget Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple 4.3.2
 
 // .NET CLASSIC STUFF
 nuget EntityFramework 6.4.4

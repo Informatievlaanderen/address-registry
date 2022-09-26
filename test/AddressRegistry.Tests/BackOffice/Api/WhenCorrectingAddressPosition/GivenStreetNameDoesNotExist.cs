@@ -3,7 +3,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
     using System;
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
-    using BackOffice;
     using FluentAssertions;
     using global::AutoFixture;
     using Infrastructure;
@@ -12,7 +11,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
     using Xunit.Abstractions;
     using AddressController = AddressRegistry.Api.BackOffice.AddressController;
 
-    public class GivenStreetNameDoesNotExist : AddressRegistryBackOfficeTest
+    public class GivenStreetNameDoesNotExist : BackOfficeApiTest
     {
         private readonly Fixture _fixture;
         private readonly AddressController _controller;

@@ -4,7 +4,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AddressRegistry.Address;
+    using Address;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using FluentAssertions;
@@ -16,7 +16,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     using Xunit.Abstractions;
     using AddressController = AddressRegistry.Api.BackOffice.AddressController;
 
-    public class GivenStreetNameDoesNotExists : AddressRegistryBackOfficeTest
+    public class GivenStreetNameDoesNotExists : BackOfficeApiTest
     {
         private readonly AddressController _controller;
 

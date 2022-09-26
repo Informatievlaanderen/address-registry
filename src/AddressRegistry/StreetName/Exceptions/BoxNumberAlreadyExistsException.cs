@@ -6,6 +6,9 @@ namespace AddressRegistry.StreetName.Exceptions
     [Serializable]
     public sealed class BoxNumberAlreadyExistsException : AddressRegistryException
     {
+        public BoxNumberAlreadyExistsException()
+        { }
+
         public BoxNumberAlreadyExistsException(BoxNumber boxNumber)
             : base($"Attempt to add child address with duplicate boxnumber '{boxNumber}'.")
         { }

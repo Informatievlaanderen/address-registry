@@ -21,7 +21,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenCorrectingAddressPostalCode : AddressRegistryBackOfficeTest
+    public class WhenCorrectingAddressPostalCode : BackOfficeHandlerTest
     {
         private readonly TestBackOfficeContext _backOfficeContext;
         private readonly IdempotencyContext _idempotencyContext;
@@ -51,7 +51,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
             var nisCode = Fixture.Create<NisCode>();
             var municipalityId = Fixture.Create<MunicipalityId>();
 
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentIds(addressPersistentLocalId, streetNamePersistentLocalId);
+            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentLocalId);
 
             _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
             {
@@ -104,7 +104,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
             // Assert
             var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(
                 new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))), 2, 1);
-            stream.Messages.First().JsonMetadata.Should().Contain(result.LastEventHash);
+            stream.Messages.First().JsonMetadata.Should().Contain(result.ETag);
         }
     }
 }

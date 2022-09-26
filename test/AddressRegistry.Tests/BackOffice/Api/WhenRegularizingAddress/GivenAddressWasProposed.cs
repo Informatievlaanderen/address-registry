@@ -18,7 +18,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRegularizingAddress
     using Xunit.Abstractions;
     using AddressController = AddressRegistry.Api.BackOffice.AddressController;
 
-    public class GivenAddressWasProposed : AddressRegistryBackOfficeTest
+    public class GivenAddressWasProposed : BackOfficeApiTest
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;
@@ -37,15 +37,15 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRegularizingAddress
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
             var mockRequestValidator = new Mock<IValidator<AddressRegularizeRequest>>();
-            mockRequestValidator.Setup(x => x.ValidateAsync(It.IsAny<AddressRegularizeRequest>(), CancellationToken.None))
+            mockRequestValidator
+                .Setup(x => x.ValidateAsync(It.IsAny<AddressRegularizeRequest>(), CancellationToken.None))
                 .Returns(Task.FromResult(new ValidationResult()));
 
-            MockMediator.Setup(x => x.Send(It.IsAny<AddressRegularizeRequest>(), CancellationToken.None))
-                .Returns(Task.FromResult(new ETagResponse(lastEventHash)));
+            MockMediator
+                .Setup(x => x.Send(It.IsAny<AddressRegularizeRequest>(), CancellationToken.None))
+                .Returns(Task.FromResult(new ETagResponse(string.Empty, lastEventHash)));
 
-            _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.Add(
-                new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));
-            _backOfficeContext.SaveChanges();
+            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             var result = (AcceptedWithETagResult)await _controller.Regularize(
                 _backOfficeContext,

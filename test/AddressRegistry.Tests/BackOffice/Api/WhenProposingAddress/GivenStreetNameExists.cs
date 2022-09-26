@@ -2,7 +2,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
 {
     using System.Threading;
     using System.Threading.Tasks;
-    using AddressRegistry.Address;
+    using Address;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Abstractions.Responses;
     using FluentValidation;
@@ -13,7 +13,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     using Xunit.Abstractions;
     using AddressController = AddressRegistry.Api.BackOffice.AddressController;
 
-    public class GivenStreetNameExists : AddressRegistryBackOfficeTest
+    public class GivenStreetNameExists : BackOfficeApiTest
     {
         private readonly AddressController _controller;
 

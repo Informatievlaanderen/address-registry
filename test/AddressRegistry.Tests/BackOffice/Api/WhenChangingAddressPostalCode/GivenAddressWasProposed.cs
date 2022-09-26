@@ -14,7 +14,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPostalCode
     using Xunit;
     using Xunit.Abstractions;
 
-    public class GivenAddressWasProposed : AddressRegistryBackOfficeTest
+    public class GivenAddressWasProposed : BackOfficeApiTest
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;
@@ -32,10 +32,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPostalCode
             var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
-            MockMediator.Setup(x => x.Send(It.IsAny<AddressChangePostalCodeRequest>(), CancellationToken.None))
-                .Returns(Task.FromResult(new ETagResponse(lastEventHash)));
+            MockMediator
+                .Setup(x => x.Send(It.IsAny<AddressChangePostalCodeRequest>(), CancellationToken.None))
+                .Returns(Task.FromResult(new ETagResponse(string.Empty, lastEventHash)));
 
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentIds(addressPersistentLocalId, streetNamePersistentId);
+            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             //Act
             var result = (AcceptedWithETagResult) await _controller.ChangePostalCode(
@@ -60,7 +61,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPostalCode
             var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
-           await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentIds(addressPersistentLocalId, streetNamePersistentId);
+           await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             //Act
             var result = await _controller.ChangePostalCode(

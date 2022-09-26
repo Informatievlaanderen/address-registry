@@ -13,7 +13,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers
     using StreetName;
     using StreetName.Commands;
 
-    public class AddressRegularizeHandler : BusHandler, IRequestHandler<AddressRegularizeRequest, ETagResponse>
+    public sealed class AddressRegularizeHandler : BusHandler, IRequestHandler<AddressRegularizeRequest, ETagResponse>
     {
         private readonly IStreetNames _streetNames;
         private readonly BackOfficeContext _backOfficeContext;
@@ -59,7 +59,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers
                 addressPersistentLocalId,
                 cancellationToken);
 
-            return new ETagResponse(etag);
+            return new ETagResponse(string.Empty, etag);
         }
     }
 }

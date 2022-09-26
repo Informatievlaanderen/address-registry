@@ -4,7 +4,6 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers;
     using Autofac;
@@ -13,7 +12,6 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentAssertions;
-    using global::AutoFixture;
     using Infrastructure;
     using SqlStreamStore;
     using SqlStreamStore.Streams;
@@ -21,8 +19,9 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
     using StreetName.Commands;
     using Xunit;
     using Xunit.Abstractions;
+    using global::AutoFixture;
 
-    public class WhenRegularizingAddress : AddressRegistryBackOfficeTest
+    public class WhenRegularizingAddress : BackOfficeHandlerTest
     {
         private readonly TestBackOfficeContext _backOfficeContext;
         private readonly IdempotencyContext _idempotencyContext;
@@ -42,18 +41,16 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
         {
             var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
             var addressPersistentLocalId = new AddressPersistentLocalId(456);
-            var niscode = new NisCode("12345");
+            var nisCode = new NisCode("12345");
             var postalCode = new PostalCode("2018");
             var houseNumber = new HouseNumber("11");
 
-            _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.Add(
-                new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentLocalId));
-            _backOfficeContext.SaveChanges();
+            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentLocalId);
 
             ImportMigratedStreetName(
                 new StreetNameId(Guid.NewGuid()),
                 streetNamePersistentLocalId,
-                niscode);
+                nisCode);
 
             ProposeAddress(
                 streetNamePersistentLocalId,
@@ -61,8 +58,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
                 postalCode,
                 Fixture.Create<MunicipalityId>(),
                 houseNumber,
-                null
-                );
+                null);
 
             var deregulateAddress = new DeregulateAddress(
                 streetNamePersistentLocalId,
@@ -86,7 +82,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
 
             // Assert
             var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))), 3, 1); //1 = version of stream (zero based)
-            stream.Messages.First().JsonMetadata.Should().Contain(result.LastEventHash);
+            stream.Messages.First().JsonMetadata.Should().Contain(result.ETag);
         }
     }
 }

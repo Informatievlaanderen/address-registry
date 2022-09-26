@@ -16,7 +16,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPostalCode
     using Xunit;
     using Xunit.Abstractions;
 
-    public class GivenAddressIsRemoved : AddressRegistryBackOfficeTest
+    public class GivenAddressIsRemoved : BackOfficeApiTest
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;
@@ -37,7 +37,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPostalCode
                 .Setup(x => x.Send(It.IsAny<AddressChangePostalCodeRequest>(), CancellationToken.None))
                 .Throws(new AddressIsRemovedException(addressPersistentLocalId));
 
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentIds(addressPersistentLocalId, streetNamePersistentId);
+            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             //Act
             Func<Task> act = async () => await _controller.ChangePostalCode(

@@ -4,7 +4,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AddressRegistry.Address;
+    using Address;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using FluentAssertions;
     using FluentValidation;
@@ -17,7 +17,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     using AddressController = AddressRegistry.Api.BackOffice.AddressController;
     using HouseNumber = StreetName.HouseNumber;
 
-    public class GivenNoParentExistsForHouseNumber : AddressRegistryBackOfficeTest
+    public class GivenNoParentExistsForHouseNumber : BackOfficeApiTest
     {
         private readonly AddressController _controller;
 

@@ -8,8 +8,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
     using AddressRegistry.Api.BackOffice.Validators;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using FluentAssertions;
-    using FluentValidation;
-    using FluentValidation.Results;
     using global::AutoFixture;
     using Infrastructure;
     using Microsoft.AspNetCore.Http;
@@ -20,7 +18,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
     using Xunit.Abstractions;
     using AddressController = AddressRegistry.Api.BackOffice.AddressController;
 
-    public class GivenAddressIsRemoved : AddressRegistryBackOfficeTest
+    public class GivenAddressIsRemoved : BackOfficeApiTest
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;

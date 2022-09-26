@@ -3,7 +3,6 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using System.Xml;
     using AddressRegistry.Consumer.Read.StreetName;
     using AddressRegistry.Consumer.Read.StreetName.Projections;
     using AddressRegistry.StreetName;

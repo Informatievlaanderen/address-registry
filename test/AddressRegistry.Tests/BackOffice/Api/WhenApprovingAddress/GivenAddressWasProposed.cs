@@ -2,23 +2,21 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using AddressRegistry.Api.BackOffice;
     using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Abstractions.Responses;
     using AddressRegistry.Api.BackOffice.Validators;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using FluentAssertions;
-    using FluentValidation;
-    using FluentValidation.Results;
-    using global::AutoFixture;
     using Infrastructure;
     using Moq;
     using StreetName;
     using Xunit;
     using Xunit.Abstractions;
-    using AddressController = AddressRegistry.Api.BackOffice.AddressController;
+    using global::AutoFixture;
 
-    public class GivenAddressWasProposed : AddressRegistryBackOfficeTest
+    public class GivenAddressWasProposed : BackOfficeApiTest
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;
@@ -36,12 +34,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
             var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
-            MockMediator.Setup(x => x.Send(It.IsAny<AddressApproveRequest>(), CancellationToken.None))
-                .Returns(Task.FromResult(new ETagResponse(lastEventHash)));
+            MockMediator
+                .Setup(x => x.Send(It.IsAny<AddressApproveRequest>(), CancellationToken.None))
+                .Returns(Task.FromResult(new ETagResponse(string.Empty, lastEventHash)));
 
-            _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.Add(
-                new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));
-            _backOfficeContext.SaveChanges();
+            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             var result = (NoContentWithETagResult)await _controller.Approve(
                 _backOfficeContext,

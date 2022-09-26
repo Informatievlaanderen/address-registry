@@ -25,10 +25,14 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
     using Projections.Syndication;
+    using Sqs.Requests;
     using TicketingService.Proxy.HttpProxy;
 
     public class Function : FunctionBase
     {
+        public Function() : base(new List<Assembly> { typeof(SqsRequest).Assembly })
+        { }
+
         protected override IServiceProvider ConfigureServices(IServiceCollection services)
         {
             var configuration = new ConfigurationBuilder()

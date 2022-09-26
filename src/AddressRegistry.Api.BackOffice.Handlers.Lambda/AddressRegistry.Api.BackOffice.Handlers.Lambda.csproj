@@ -11,14 +11,9 @@
     <!-- Generate ready to run images during publishing to improve cold start time. -->
     <PublishReadyToRun>true</PublishReadyToRun>
     <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
-  </PropertyGroup>
 
-  <PropertyGroup>
     <!-- Error NETSDK1152: https://docs.microsoft.com/en-us/dotnet/core/compatibility/sdk/6.0/duplicate-files-in-output -->
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
-    <ServerGarbageCollection>true</ServerGarbageCollection>
-    <EnableDefaultContentItems>false</EnableDefaultContentItems>
-    <LangVersion>9.0</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

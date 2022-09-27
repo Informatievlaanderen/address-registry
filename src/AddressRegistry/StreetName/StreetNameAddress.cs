@@ -377,6 +377,35 @@ namespace AddressRegistry.StreetName
                 houseNumber));
         }
 
+        public void CorrectBoxNumber(BoxNumber boxNumber, Action guardBoxNumberAddressIsUnique)
+        {
+            GuardNotRemovedAddress();
+
+            if (BoxNumber is null)
+            {
+                throw new AddressHasNoBoxNumberException();
+            }
+
+            if (BoxNumber == boxNumber)
+            {
+                return;
+            }
+
+            var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
+
+            if (!validStatuses.Contains(Status))
+            {
+                throw new AddressHasInvalidStatusException();
+            }
+
+            guardBoxNumberAddressIsUnique();
+
+            Apply(new AddressBoxNumberWasCorrectedV2(
+                _streetNamePersistentLocalId,
+                AddressPersistentLocalId,
+                boxNumber));
+        }
+
         public static AddressGeometry GetFinalGeometry(
             GeometryMethod geometryMethod,
             GeometrySpecification? geometrySpecification,

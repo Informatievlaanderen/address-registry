@@ -6,6 +6,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Validators;
     using FluentValidation;
     using Projections.Syndication;
+    using StreetName;
 
     public class AddressProposeRequestValidator : AbstractValidator<AddressProposeRequest>
     {
@@ -27,7 +28,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
                 .WithErrorCode(ValidationErrors.Address.HouseNumberInvalid);
 
             RuleFor(x => x.Busnummer)
-                .Must(BoxNumberValidator.IsValid)
+                .Must(BoxNumber.HasValidFormat)
                 .WithMessage(ValidationErrorMessages.Address.BoxNumberInvalid)
                 .WithErrorCode(ValidationErrors.Address.BoxNumberInvalid);
 

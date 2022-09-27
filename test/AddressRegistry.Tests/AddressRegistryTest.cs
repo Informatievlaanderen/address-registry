@@ -72,6 +72,7 @@ namespace AddressRegistry.Tests
             StreetNamePersistentLocalId? streetNamePersistentLocalId = null,
             AddressPersistentLocalId? parentAddressPersistentLocalId = null,
             HouseNumber? houseNumber = null,
+            BoxNumber? boxNumber = null,
             PostalCode? postalCode = null,
             AddressStatus addressStatus = AddressStatus.Proposed,
             bool isRemoved = false)
@@ -83,7 +84,9 @@ namespace AddressRegistry.Tests
                 addressPersistentLocalId ?? Fixture.Create<AddressPersistentLocalId>(),
                 addressStatus,
                 houseNumber ?? Fixture.Create<HouseNumber>(),
-                boxNumber: parentAddressPersistentLocalId is not null ? Fixture.Create<BoxNumber>() : null,
+                boxNumber: boxNumber != null
+                    ? boxNumber
+                    : parentAddressPersistentLocalId is not null ? Fixture.Create<BoxNumber>() : null,
                 Fixture.Create<AddressGeometry>(),
                 officiallyAssigned: true,
                 postalCode ?? Fixture.Create<PostalCode>(),

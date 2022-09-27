@@ -292,6 +292,31 @@ namespace AddressRegistry.StreetName
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
                 .CorrectPostalCode(postalCode, () => GuardPostalCodeMunicipalityMatchesStreetNameMunicipality(municipalityIdByPostalCode));
         }
+        
+        public void CorrectAddressHouseNumber(AddressPersistentLocalId addressPersistentLocalId, HouseNumber houseNumber)
+        {
+            StreetNameAddresses
+                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
+                .CorrectHouseNumber(houseNumber, () => GuardHouseNumberAddressIsUnique(addressPersistentLocalId, houseNumber));
+        }
+
+        public void CorrectAddressBoxNumber(AddressPersistentLocalId addressPersistentLocalId, BoxNumber boxNumber)
+        {
+            var addressToCorrect = StreetNameAddresses.GetByPersistentLocalId(addressPersistentLocalId);
+            addressToCorrect.CorrectBoxNumber(
+                boxNumber,
+                () => GuardBoxNumberAddressIsUnique(
+                    addressPersistentLocalId,
+                    addressToCorrect.HouseNumber,
+                    boxNumber));
+        }
+
+        public void RemoveAddress(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            StreetNameAddresses
+                .GetByPersistentLocalId(addressPersistentLocalId)
+                .Remove();
+        }
 
         private void GuardPostalCodeMunicipalityMatchesStreetNameMunicipality(MunicipalityId municipalityIdByPostalCode)
         {
@@ -299,13 +324,6 @@ namespace AddressRegistry.StreetName
             {
                 throw new PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException();
             }
-        }
-
-        public void CorrectAddressHouseNumber(AddressPersistentLocalId addressPersistentLocalId, HouseNumber houseNumber)
-        {
-            StreetNameAddresses
-                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
-                .CorrectHouseNumber(houseNumber, () => GuardHouseNumberAddressIsUnique(addressPersistentLocalId, houseNumber));
         }
 
         private void GuardHouseNumberAddressIsUnique(AddressPersistentLocalId addressPersistentLocalId, HouseNumber houseNumber)
@@ -316,11 +334,12 @@ namespace AddressRegistry.StreetName
             }
         }
 
-        public void RemoveAddress(AddressPersistentLocalId addressPersistentLocalId)
+        private void GuardBoxNumberAddressIsUnique(AddressPersistentLocalId addressPersistentLocalId, HouseNumber houseNumber, BoxNumber boxNumber)
         {
-            StreetNameAddresses
-                .GetByPersistentLocalId(addressPersistentLocalId)
-                .Remove();
+            if (StreetNameAddresses.HasActiveAddressForOtherThan(houseNumber, boxNumber, addressPersistentLocalId))
+            {
+                throw new BoxNumberAlreadyExistsException(boxNumber);
+            }
         }
 
         private Func<MunicipalityData> GetMunicipalityData(IMunicipalities municipalities) =>

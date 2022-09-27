@@ -58,6 +58,7 @@ namespace AddressRegistry.StreetName
             Register<AddressPositionWasCorrectedV2>(When);
             Register<AddressPostalCodeWasCorrectedV2>(When);
             Register<AddressHouseNumberWasCorrectedV2>(When);
+            Register<AddressBoxNumberWasCorrectedV2>(When);
             Register<AddressWasRemovedV2>(When);
             Register<AddressWasRemovedBecauseHouseNumberWasRemoved>(When);
         }
@@ -225,6 +226,12 @@ namespace AddressRegistry.StreetName
                 boxNumberAddress.HouseNumber = new HouseNumber(@event.HouseNumber);
             }
 
+            _lastEvent = @event;
+        }
+
+        private void When(AddressBoxNumberWasCorrectedV2 @event)
+        {
+            BoxNumber = new BoxNumber(@event.BoxNumber);
             _lastEvent = @event;
         }
 

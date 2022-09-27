@@ -1,5 +1,6 @@
 namespace AddressRegistry.Consumer.Read.Municipality
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using Autofac;
@@ -37,6 +38,7 @@ namespace AddressRegistry.Consumer.Read.Municipality
                     _municipalityConsumerOptions.Topic,
                     async message =>
                     {
+                        Console.WriteLine($"consuming...");
                         var municipalityConsumerContext = _container.Resolve<MunicipalityConsumerContext>();
                         await projector.ProjectAsync(municipalityConsumerContext, message, cancellationToken);
                         await municipalityConsumerContext.SaveChangesAsync(cancellationToken);

@@ -629,6 +629,19 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                 }
             });
 
+            When<Envelope<AddressBoxNumberWasCorrectedV2>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressPersistentLocalId,
+                    message,
+                    x => x.BoxNumber = message.Message.BoxNumber,
+                    ct);
+                await context.UpdateAddressBoxNumberSyndicationHelper(
+                    message.Message.AddressPersistentLocalId,
+                    x => x.BoxNumber = message.Message.BoxNumber,
+                    ct);
+            });
+
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>
             {
                 await context.CreateNewAddressSyndicationItem(

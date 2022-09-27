@@ -229,6 +229,16 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
                 }
             });
 
+            When<Envelope<AddressBoxNumberWasCorrectedV2>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    item => item.BoxNumber = message.Message.BoxNumber,
+                    ct);
+
+                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+            });
+
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressDetail(

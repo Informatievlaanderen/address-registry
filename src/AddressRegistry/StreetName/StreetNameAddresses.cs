@@ -77,5 +77,17 @@ namespace AddressRegistry.StreetName
                 && x.HouseNumber == houseNumber
                 && x.BoxNumber is null);
         }
+
+        public bool HasActiveAddressForOtherThan(
+            HouseNumber houseNumber,
+            BoxNumber boxNumber,
+            AddressPersistentLocalId addressPersistentLocalId)
+        {
+            return this.Any(x =>
+                x.IsActive
+                && x.AddressPersistentLocalId != addressPersistentLocalId
+                && x.HouseNumber == houseNumber
+                && x.BoxNumber == boxNumber);
+        }
     }
 }

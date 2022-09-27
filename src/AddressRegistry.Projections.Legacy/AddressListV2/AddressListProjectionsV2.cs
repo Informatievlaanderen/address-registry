@@ -276,6 +276,20 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
                 }
             });
 
+            When<Envelope<AddressBoxNumberWasCorrectedV2>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressListItemV2(
+                    message.Message.AddressPersistentLocalId,
+                    item =>
+                    {
+                        item.BoxNumber = message.Message.BoxNumber;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+
+                UpdateHash(item, message);
+            });
+
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressListItemV2(

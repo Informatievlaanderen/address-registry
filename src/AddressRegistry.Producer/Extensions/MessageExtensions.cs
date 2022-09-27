@@ -163,6 +163,13 @@ namespace AddressRegistry.Producer.Extensions
                 message.HouseNumber,
                 message.Provenance.ToContract());
 
+        public static Contracts.AddressBoxNumberWasCorrectedV2 ToContract(this StreetNameAggregate.AddressBoxNumberWasCorrectedV2 message) =>
+            new Contracts.AddressBoxNumberWasCorrectedV2(
+                message.StreetNamePersistentLocalId,
+                message.AddressPersistentLocalId,
+                message.BoxNumber,
+                message.Provenance.ToContract());
+
         public static Contracts.AddressPositionWasChanged ToContract(this StreetNameAggregate.AddressPositionWasChanged message) =>
             new Contracts.AddressPositionWasChanged(
                 message.StreetNamePersistentLocalId,

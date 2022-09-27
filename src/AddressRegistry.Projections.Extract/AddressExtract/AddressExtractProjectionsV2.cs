@@ -233,6 +233,13 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 }
             });
 
+            When<Envelope<AddressBoxNumberWasCorrectedV2>>(async (context, message, ct) =>
+            {
+                var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);
+                UpdateDbaseRecordField(item, record => record.busnr.Value = message.Message.BoxNumber);
+                UpdateVersie(item, message.Message.Provenance.Timestamp);
+            });
+
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>
             {
                 var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);

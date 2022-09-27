@@ -63,6 +63,12 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                     new TicketResult(etag),
                     cancellationToken);
             }
+            catch (AggregateIdIsNotFoundException)
+            {
+                await _ticketing.Error(request.TicketId,
+                    new TicketError(ValidationErrorMessages.Address.AddressNotFound, "404"),
+                    cancellationToken);
+            }
             catch (IfMatchHeaderValueMismatchException)
             {
                 await _ticketing.Error(

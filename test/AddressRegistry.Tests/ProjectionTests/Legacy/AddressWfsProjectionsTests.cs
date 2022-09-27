@@ -6,6 +6,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
     using AddressRegistry.StreetName.Events;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Pipes;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using Extensions;
@@ -532,6 +533,47 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                     boxNumberItem.Should().NotBeNull();
                     boxNumberItem!.HouseNumber.Should().BeEquivalentTo(addressHouseNumberWasCorrectedV2.HouseNumber);
                     boxNumberItem.VersionTimestamp.Should().Be(addressHouseNumberWasCorrectedV2.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressBoxNumberWasCorrectedV2()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(1))
+                .WithHouseNumber(new HouseNumber("101"))
+                .WithBoxNumber(new BoxNumber("A1"));
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressBoxNumberWasCorrectedV2 = new AddressBoxNumberWasCorrectedV2(
+                new StreetNamePersistentLocalId(2),
+                new AddressPersistentLocalId(addressWasProposedV2.AddressPersistentLocalId),
+                new BoxNumber("1B"));
+            ((ISetProvenance)addressBoxNumberWasCorrectedV2).SetProvenance(_fixture.Create<Provenance>());
+
+            var addressHouseNumberWasCorrectedV2Metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressBoxNumberWasCorrectedV2.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressBoxNumberWasCorrectedV2>(new Envelope(addressBoxNumberWasCorrectedV2, addressHouseNumberWasCorrectedV2Metadata)))
+                .Then(async ct =>
+                {
+                    var item = await ct.AddressWfsItems.FindAsync(addressBoxNumberWasCorrectedV2.AddressPersistentLocalId);
+                    item.Should().NotBeNull();
+                    item!.BoxNumber.Should().Be(addressBoxNumberWasCorrectedV2.BoxNumber);
+                    item.VersionTimestamp.Should().Be(addressBoxNumberWasCorrectedV2.Provenance.Timestamp);
+
+                    var boxNumberItem = await ct.AddressWfsItems.FindAsync(addressBoxNumberWasCorrectedV2.AddressPersistentLocalId);
+                    boxNumberItem.Should().NotBeNull();
+                    boxNumberItem!.BoxNumber.Should().BeEquivalentTo(addressBoxNumberWasCorrectedV2.BoxNumber);
+                    boxNumberItem.VersionTimestamp.Should().Be(addressBoxNumberWasCorrectedV2.Provenance.Timestamp);
                 });
         }
 

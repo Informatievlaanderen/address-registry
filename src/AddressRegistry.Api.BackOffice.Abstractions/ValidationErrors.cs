@@ -18,6 +18,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions
             public const string HouseNumberOfBoxNumberCannotBeChanged = "AdresCorrectieHuisnummermetBusnummer";
 
             public const string BoxNumberInvalid = "AdresOngeldigBusnummerformaat";
+            public const string HasNoBoxNumber = "AdresHuisnummerZonderBusnummer";
 
             public const string PositionSpecificationRequired = "AdresPositieSpecificatieVerplichtBijManueleAanduiding";
             public const string PositionSpecificationInvalid = "AdresPositieSpecificatieValidatie";
@@ -64,6 +65,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions
             public const string HouseNumberOfBoxNumberCannotBeChanged = "Te corrigeren huisnummer mag geen busnummer bevatten.";
 
             public const string BoxNumberInvalid = "Ongeldig busnummerformaat.";
+            public const string HasNoBoxNumber = "Het adres heeft geen te corrigeren busnummer.";
 
             public const string PositionSpecificationRequired = "PositieSpecificatie is verplicht bij een manuele aanduiding van de positie.";
 

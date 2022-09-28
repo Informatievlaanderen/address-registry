@@ -97,6 +97,10 @@ namespace AddressRegistry.Api.BackOffice
 
                 return new NoContentWithETagResult(response.ETag);
             }
+            catch (AggregateIdIsNotFoundException)
+            {
+                throw new ApiException(ValidationErrorMessages.Address.AddressNotFound, StatusCodes.Status404NotFound);
+            }
             catch (IdempotencyException)
             {
                 return Accepted();

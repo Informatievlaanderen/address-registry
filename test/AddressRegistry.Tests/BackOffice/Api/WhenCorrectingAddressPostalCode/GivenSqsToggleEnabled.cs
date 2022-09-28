@@ -4,13 +4,16 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPostalCode
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice;
+    using AddressRegistry.Api.BackOffice.Abstractions.Exceptions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
     using StreetName;
     using Infrastructure;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
+    using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using FluentAssertions;
     using global::AutoFixture;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Moq;
     using Xunit;
@@ -99,6 +102,37 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPostalCode
                 ifMatchHeaderValue: null);
 
             result.Should().BeOfType<NotFoundResult>();
+        }
+
+        [Fact]
+        public async Task WithAggregateIdIsNotFound_ThenThrowsApiException()
+        {
+            var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
+            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
+
+            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
+
+            MockMediator
+                .Setup(x => x.Send(It.IsAny<SqsAddressCorrectPostalCodeRequest>(), CancellationToken.None))
+                .Throws(new AggregateIdIsNotFoundException());
+
+            Func<Task> act = async () => await _controller.CorrectPostalCode(
+                _backOfficeContext,
+                MockValidRequestValidator<AddressCorrectPostalCodeRequest>(),
+                MockIfMatchValidator(true),
+                ResponseOptions,
+                addressPersistentLocalId,
+                new AddressCorrectPostalCodeRequest(),
+                string.Empty);
+
+            //Assert
+            act
+                .Should()
+                .ThrowAsync<ApiException>()
+                .Result
+                .Where(x =>
+                    x.Message.Contains("Onbestaand adres.")
+                    && x.StatusCode == StatusCodes.Status404NotFound);
         }
     }
 }

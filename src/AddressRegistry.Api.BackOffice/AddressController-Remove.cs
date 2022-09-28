@@ -101,6 +101,10 @@ namespace AddressRegistry.Api.BackOffice
 
                 return Accepted(new Uri(string.Format(options.Value.DetailUrl, request.PersistentLocalId)));
             }
+            catch (AggregateIdIsNotFoundException)
+            {
+                throw new ApiException(ValidationErrorMessages.Address.AddressNotFound, StatusCodes.Status404NotFound);
+            }
             catch (IdempotencyException)
             {
                 return Accepted();

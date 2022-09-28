@@ -1,3 +1,11 @@
+# [3.52.0](https://github.com/informatievlaanderen/address-registry/compare/v3.51.1...v3.52.0) (2022-09-28)
+
+
+### Features
+
+* add correct boxnumber ([0ba67b4](https://github.com/informatievlaanderen/address-registry/commit/0ba67b437b96c6dd8d66412c4bd42087768e9f6c))
+* handle AggregateIdIsNotFoundException in API ([b35add9](https://github.com/informatievlaanderen/address-registry/commit/b35add98ae90afe020594cea73fb834922f0904d))
+
 ## [3.51.1](https://github.com/informatievlaanderen/address-registry/compare/v3.51.0...v3.51.1) (2022-09-26)
 
 

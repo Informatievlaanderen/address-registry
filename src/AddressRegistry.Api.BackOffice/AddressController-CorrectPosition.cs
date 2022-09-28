@@ -24,7 +24,6 @@ namespace AddressRegistry.Api.BackOffice
     using StreetName;
     using StreetName.Exceptions;
     using Swashbuckle.AspNetCore.Filters;
-    using Validators;
 
     public partial class AddressController
     {
@@ -106,6 +105,10 @@ namespace AddressRegistry.Api.BackOffice
                 return new AcceptedWithETagResult(
                     new Uri(string.Format(options.Value.DetailUrl, request.PersistentLocalId)),
                     response.ETag);
+            }
+            catch (AggregateIdIsNotFoundException)
+            {
+                throw new ApiException(ValidationErrorMessages.Address.AddressNotFound, StatusCodes.Status404NotFound);
             }
             catch (IdempotencyException)
             {

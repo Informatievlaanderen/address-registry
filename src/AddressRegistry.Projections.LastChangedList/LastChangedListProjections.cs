@@ -321,6 +321,11 @@ namespace AddressRegistry.Projections.LastChangedList
             {
                 await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
             });
+
+            When<Envelope<AddressWasCorrectedFromRejectedToProposed>>(async (context, message, ct) =>
+            {
+                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
+            });
         }
 
         private static void RebuildKeyAndUri(IEnumerable<LastChangedRecord>? attachedRecords, int persistentLocalId)

@@ -6,6 +6,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
     using AddressRegistry.StreetName.Events;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Pipes;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
@@ -691,6 +692,41 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                     item.Should().NotBeNull();
                     item.Removed.Should().BeTrue();
                     item.VersionTimestamp.Should().Be(addressWasRemoved.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressWasCorrectedFromRejectedToProposed()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasRejected = _fixture.Create<AddressWasRejected>();
+            var rejectedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasRejected.GetHash() }
+            };
+
+            var addressRejectionWasCorrected = _fixture.Create<AddressWasCorrectedFromRejectedToProposed>();
+            var addressRejectionWasCorrectedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressRejectionWasCorrected.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasRejected>(new Envelope(addressWasRejected, rejectedMetadata)),
+                    new Envelope<AddressWasCorrectedFromRejectedToProposed>(new Envelope(addressRejectionWasCorrected, addressRejectionWasCorrectedMetadata)))
+                .Then(async ct =>
+                {
+                    var item = (await ct.AddressWfsItems.FindAsync(addressRejectionWasCorrected.AddressPersistentLocalId));
+                    item.Should().NotBeNull();
+                    item.Status.Should().Be(AdresStatus.Voorgesteld.ToString());
+                    item.VersionTimestamp.Should().Be(addressRejectionWasCorrected.Provenance.Timestamp);
                 });
         }
 

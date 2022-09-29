@@ -325,6 +325,13 @@ namespace AddressRegistry.StreetName
                 .Remove();
         }
 
+        public void CorrectAddressRejection(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            StreetNameAddresses
+                .GetByPersistentLocalId(addressPersistentLocalId)
+                .CorrectAddressRejection();
+        }
+
         private void GuardPostalCodeMunicipalityMatchesStreetNameMunicipality(MunicipalityId municipalityIdByPostalCode)
         {
             if (municipalityIdByPostalCode != MunicipalityId)

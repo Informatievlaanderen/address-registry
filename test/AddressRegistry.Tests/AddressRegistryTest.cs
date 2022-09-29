@@ -75,6 +75,7 @@ namespace AddressRegistry.Tests
             BoxNumber? boxNumber = null,
             PostalCode? postalCode = null,
             AddressStatus addressStatus = AddressStatus.Proposed,
+            bool isOfficiallyAssigned = true,
             bool isRemoved = false)
         {
             var addressWasMigratedToStreetName = new AddressWasMigratedToStreetName(
@@ -84,11 +85,9 @@ namespace AddressRegistry.Tests
                 addressPersistentLocalId ?? Fixture.Create<AddressPersistentLocalId>(),
                 addressStatus,
                 houseNumber ?? Fixture.Create<HouseNumber>(),
-                boxNumber: boxNumber != null
-                    ? boxNumber
-                    : parentAddressPersistentLocalId is not null ? Fixture.Create<BoxNumber>() : null,
+                boxNumber: boxNumber ?? (parentAddressPersistentLocalId is not null ? Fixture.Create<BoxNumber>() : null),
                 Fixture.Create<AddressGeometry>(),
-                officiallyAssigned: true,
+                officiallyAssigned: isOfficiallyAssigned,
                 postalCode ?? Fixture.Create<PostalCode>(),
                 isCompleted: false,
                 isRemoved: isRemoved,

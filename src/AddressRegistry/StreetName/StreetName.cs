@@ -227,6 +227,13 @@ namespace AddressRegistry.StreetName
                 .Approve();
         }
 
+        public void CorrectAddressApproval(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            StreetNameAddresses
+                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
+                .CorrectApproval();
+        }
+
         public void RejectAddress(AddressPersistentLocalId addressPersistentLocalId)
         {
             StreetNameAddresses
@@ -292,7 +299,7 @@ namespace AddressRegistry.StreetName
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
                 .CorrectPostalCode(postalCode, () => GuardPostalCodeMunicipalityMatchesStreetNameMunicipality(municipalityIdByPostalCode));
         }
-        
+
         public void CorrectAddressHouseNumber(AddressPersistentLocalId addressPersistentLocalId, HouseNumber houseNumber)
         {
             StreetNameAddresses

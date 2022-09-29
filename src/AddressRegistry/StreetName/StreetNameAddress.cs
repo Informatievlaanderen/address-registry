@@ -59,6 +59,50 @@ namespace AddressRegistry.StreetName
             }
         }
 
+        public void CorrectApproval()
+        {
+            GuardNotRemovedAddress();
+
+            if (!IsOfficiallyAssigned)
+            {
+                throw new AddressIsNotOfficiallyAssignedException();
+            }
+
+            switch (Status)
+            {
+                case AddressStatus.Proposed:
+                    return;
+                case AddressStatus.Retired or AddressStatus.Rejected:
+                    throw new AddressHasInvalidStatusException();
+                case AddressStatus.Current:
+                    foreach (var child in _children)
+                    {
+                        child.CorrectApprovalBecauseParentWasCorrected();
+                    }
+
+                    Apply(new AddressApprovalWasCorrected(_streetNamePersistentLocalId, AddressPersistentLocalId));
+                    break;
+            }
+        }
+
+        private void CorrectApprovalBecauseParentWasCorrected()
+        {
+            if (IsRemoved)
+            {
+                return;
+            }
+
+            if (!IsOfficiallyAssigned)
+            {
+                return;
+            }
+
+            if (Status == AddressStatus.Current)
+            {
+                Apply(new AddressApprovalWasCorrectedBecauseHouseNumberWasCorrected(_streetNamePersistentLocalId, AddressPersistentLocalId));
+            }
+        }
+
         public void Reject()
         {
             GuardNotRemovedAddress();

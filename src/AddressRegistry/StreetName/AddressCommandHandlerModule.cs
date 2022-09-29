@@ -234,6 +234,18 @@ namespace AddressRegistry.StreetName
 
                     streetName.RemoveAddress(message.Command.AddressPersistentLocalId);
                 });
+
+            For<CorrectAddressRejection>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<CorrectAddressRejection, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streetNameStreamId = new StreetNameStreamId(message.Command.StreetNamePersistentLocalId);
+                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+
+                    streetName.CorrectAddressRejection(message.Command.AddressPersistentLocalId);
+                });
         }
     }
 }

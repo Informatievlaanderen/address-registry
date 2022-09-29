@@ -3,6 +3,7 @@ namespace AddressRegistry.StreetName
     using System;
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Commands;
     using DataStructures;
     using Events;
     using Exceptions;
@@ -489,6 +490,23 @@ namespace AddressRegistry.StreetName
             }
 
             Apply(new AddressWasRemovedBecauseHouseNumberWasRemoved(_streetNamePersistentLocalId, AddressPersistentLocalId));
+        }
+
+        public void CorrectAddressRejection()
+        {
+            GuardNotRemovedAddress();
+
+            if (Status == AddressStatus.Proposed)
+            {
+                return;
+            }
+
+            if (Status != AddressStatus.Rejected)
+            {
+                throw new AddressHasInvalidStatusException();
+            }
+
+            Apply(new AddressWasCorrectedFromRejectedToProposed(_streetNamePersistentLocalId, AddressPersistentLocalId));
         }
 
         /// <summary>

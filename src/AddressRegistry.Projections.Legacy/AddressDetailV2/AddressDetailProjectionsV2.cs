@@ -363,6 +363,20 @@ namespace AddressRegistry.Projections.Legacy.AddressDetailV2
 
                 UpdateHash(item, message);
             });
+
+            When<Envelope<AddressWasCorrectedFromRejectedToProposed>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressDetailV2(
+                    message.Message.AddressPersistentLocalId,
+                    item =>
+                    {
+                        item.Status = AddressStatus.Proposed;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+
+                UpdateHash(item, message);
+            });
         }
 
         private static void UpdateHash<T>(AddressDetailItemV2 entity, Envelope<T> wrappedEvent) where T : IHaveHash, IMessage

@@ -51,6 +51,7 @@ namespace AddressRegistry.StreetName
             Register<AddressHouseNumberWasCorrectedV2>(When);
             Register<AddressBoxNumberWasCorrectedV2>(When);
             Register<AddressWasRemovedV2>(When);
+            Register<AddressWasCorrectedFromRejectedToProposed>(When);
             Register<AddressWasRemovedBecauseHouseNumberWasRemoved>(When);
         }
 
@@ -224,6 +225,12 @@ namespace AddressRegistry.StreetName
         {
             var addressToRemove = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
             addressToRemove.Route(@event);
+        }
+
+        private void When(AddressWasCorrectedFromRejectedToProposed @event)
+        {
+            var addressToCorrect = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
+            addressToCorrect.Route(@event);
         }
 
         private void When(AddressWasRemovedBecauseHouseNumberWasRemoved @event)

@@ -221,6 +221,12 @@ namespace AddressRegistry.Producer.Extensions
                 message.ExtendedWkbGeometry,
                 message.Provenance.ToContract());
 
+        public static Contracts.AddressWasCorrectedFromRejectedToProposed ToContract(this StreetNameAggregate.AddressWasCorrectedFromRejectedToProposed message) =>
+            new Contracts.AddressWasCorrectedFromRejectedToProposed(
+                message.StreetNamePersistentLocalId,
+                message.AddressPersistentLocalId,
+                message.Provenance.ToContract());
+
         public static Contracts.MigratedStreetNameWasImported ToContract(this StreetNameAggregate.MigratedStreetNameWasImported message) =>
             new Contracts.MigratedStreetNameWasImported(
                 message.StreetNameId.ToString("D"),

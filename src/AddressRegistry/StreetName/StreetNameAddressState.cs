@@ -44,6 +44,8 @@ namespace AddressRegistry.StreetName
             Register<AddressWasMigratedToStreetName>(When);
             Register<AddressWasProposedV2>(When);
             Register<AddressWasApproved>(When);
+            Register<AddressApprovalWasCorrected>(When);
+            Register<AddressApprovalWasCorrectedBecauseHouseNumberWasCorrected>(When);
             Register<AddressWasRejected>(When);
             Register<AddressWasRejectedBecauseHouseNumberWasRejected>(When);
             Register<AddressWasRejectedBecauseHouseNumberWasRetired>(When);
@@ -103,6 +105,20 @@ namespace AddressRegistry.StreetName
         private void When(AddressWasApproved @event)
         {
             Status = AddressStatus.Current;
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressApprovalWasCorrected @event)
+        {
+            Status = AddressStatus.Proposed;
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressApprovalWasCorrectedBecauseHouseNumberWasCorrected @event)
+        {
+            Status = AddressStatus.Proposed;
 
             _lastEvent = @event;
         }

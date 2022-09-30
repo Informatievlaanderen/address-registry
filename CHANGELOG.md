@@ -1,3 +1,10 @@
+# [3.53.0](https://github.com/informatievlaanderen/address-registry/compare/v3.52.0...v3.53.0) (2022-09-30)
+
+
+### Features
+
+* correct address approval domain ([4fa8372](https://github.com/informatievlaanderen/address-registry/commit/4fa837258a8b09c42486bbc08594c33ac00ea7b3))
+
 # [3.52.0](https://github.com/informatievlaanderen/address-registry/compare/v3.51.1...v3.52.0) (2022-09-28)
 
 

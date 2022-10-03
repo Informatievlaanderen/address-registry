@@ -1,3 +1,10 @@
+# [3.54.0](https://github.com/informatievlaanderen/address-registry/compare/v3.53.0...v3.54.0) (2022-10-03)
+
+
+### Features
+
+* deregulated address becomes current ([c5c64bd](https://github.com/informatievlaanderen/address-registry/commit/c5c64bdd066e6fd2dc0adc94efcbfb1c19e5eb53))
+
 # [3.53.0](https://github.com/informatievlaanderen/address-registry/compare/v3.52.0...v3.53.0) (2022-09-30)
 
 

@@ -93,6 +93,18 @@ namespace AddressRegistry.StreetName
                     streetName.CorrectAddressApproval(message.Command.AddressPersistentLocalId);
                 });
 
+            For<CorrectAddressRetirement>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<CorrectAddressRetirement, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streetNameStreamId = new StreetNameStreamId(message.Command.StreetNamePersistentLocalId);
+                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+
+                    streetName.CorrectAddressRetirement(message.Command.AddressPersistentLocalId);
+                });
+
             For<RejectAddress>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
                 .AddEventHash<RejectAddress, StreetName>(getUnitOfWork)

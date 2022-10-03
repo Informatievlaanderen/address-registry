@@ -209,6 +209,13 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 UpdateVersie(item, message.Message.Provenance.Timestamp);
             });
 
+            When<Envelope<AddressWasCorrectedFromRetiredToCurrent>>(async (context, message, ct) =>
+            {
+                var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);
+                UpdateDbaseRecordField(item, record => record.status.Value = Map(AddressStatus.Current));
+                UpdateVersie(item, message.Message.Provenance.Timestamp);
+            });
+
             When<Envelope<AddressPostalCodeWasChangedV2>>(async (context, message, ct) =>
             {
                 var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);

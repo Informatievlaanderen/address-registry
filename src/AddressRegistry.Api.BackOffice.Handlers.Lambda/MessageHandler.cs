@@ -190,6 +190,17 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
                         Provenance = request.ProvenanceData.ToProvenance()
                     }, cancellationToken);
                     break;
+                case SqsAddressCorrectRetirementRequest request:
+                    await mediator.Send(new SqsLambdaAddressCorrectRetirementRequest
+                    {
+                        Request = request.Request,
+                        TicketId = request.TicketId,
+                        MessageGroupId = messageMetadata.MessageGroupId!,
+                        IfMatchHeaderValue = request.IfMatchHeaderValue,
+                        Metadata = request.Metadata,
+                        Provenance = request.ProvenanceData.ToProvenance()
+                    }, cancellationToken);
+                    break;
             }
         }
     }

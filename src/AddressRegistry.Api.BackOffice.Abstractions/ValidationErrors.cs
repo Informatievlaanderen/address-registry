@@ -34,10 +34,12 @@ namespace AddressRegistry.Api.BackOffice.Abstractions
             public const string AddressCannotBeApprovedBecauseOfParent = "AdresHuisnummerVoorgesteldGehistoreerdOfAfgekeurd";
             public const string AddressCannotBeRejected = "AdresGehistoreerdOfInGebruik";
             public const string AddressCannotBeDeregulated = "AdresGehistoreerdOfAfgekeurd";
+
             public const string AddressCannotBeRegularized = "AdresGehistoreerdOfAfgekeurd";
             public const string AddressCannotBeRetired = "AdresVoorgesteldOfAfgekeurd";
             public const string AddressPositionCannotBeChanged = "AdresGehistoreerdOfAfgekeurd";
             public const string AddressPostalCodeCannotBeChanged = "AdresGehistoreerdOfAfgekeurd";
+            public const string AddressCannotCorrectRetirement = "AdresVoorgesteldOfAfgekeurd";
             public const string AddressIsNotOfficiallyAssigned = "AdresNietOfficeeltoegekend";
             public const string CannotBeCorrectToProposedFromRejected = "AdresVoorgesteldOfIngebruikOfGehistoreerd";
 
@@ -91,6 +93,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions
             public const string AddressPostalCodeCannotBeChanged = "Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik'.";
             public const string AddressIsNotOfficiallyAssigned = "Deze actie is enkel toegestaan voor officieel toegekende adressen.";
             public const string CannotBeCorrectToProposedFromRejected = "Deze actie is enkel toegestaan op een adres met status 'Afgekeurd'.";
+            public const string AddressCannotCorrectRetirement = "Deze actie is enkel toegestaan op adressen met status 'gehistoreerd'.";
 
             public const string PostalCodeNotInMunicipality = "De ingevoerde postcode wordt niet gebruikt binnen deze gemeente.";
         }

@@ -56,6 +56,7 @@ namespace AddressRegistry.StreetName
             Register<AddressWasRetiredV2>(When);
             Register<AddressWasRetiredBecauseHouseNumberWasRetired>(When);
             Register<AddressWasRetiredBecauseStreetNameWasRetired>(When);
+            Register<AddressWasCorrectedFromRetiredToCurrent>(When);
             Register<AddressPositionWasChanged>(When);
             Register<AddressPostalCodeWasChangedV2>(When);
             Register<AddressPositionWasCorrectedV2>(When);
@@ -189,6 +190,13 @@ namespace AddressRegistry.StreetName
         private void When(AddressWasRetiredBecauseStreetNameWasRetired @event)
         {
             Status = AddressStatus.Retired;
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressWasCorrectedFromRetiredToCurrent @event)
+        {
+            Status = AddressStatus.Current;
 
             _lastEvent = @event;
         }

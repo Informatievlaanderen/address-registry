@@ -123,5 +123,16 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 Fixture.Create<Provenance>());
             DispatchArrangeCommand(approveAddress);
         }
+
+        protected void RetireAddress(
+            StreetNamePersistentLocalId streetNamePersistentLocalId,
+            AddressPersistentLocalId addressPersistentLocalId)
+        {
+            var approveAddress = new RetireAddress(
+                streetNamePersistentLocalId,
+                addressPersistentLocalId,
+                Fixture.Create<Provenance>());
+            DispatchArrangeCommand(approveAddress);
+        }
     }
 }

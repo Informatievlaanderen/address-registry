@@ -123,7 +123,11 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
             {
                 var item = await context.FindAndUpdateAddressDetail(
                     message.Message.AddressPersistentLocalId,
-                    item => item.OfficiallyAssigned = false,
+                    item =>
+                    {
+                        item.OfficiallyAssigned = false;
+                        item.Status = AdresStatusInGebruik;
+                    },
                     ct);
 
                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);

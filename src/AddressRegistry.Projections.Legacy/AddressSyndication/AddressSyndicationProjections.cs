@@ -513,12 +513,20 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                 await context.CreateNewAddressSyndicationItem(
                     message.Message.AddressPersistentLocalId,
                     message,
-                    x => x.IsOfficiallyAssigned = false,
+                    x =>
+                    {
+                        x.IsOfficiallyAssigned = false;
+                        x.Status = AddressStatus.Current;
+                    },
                     ct);
 
                 await context.UpdateAddressBoxNumberSyndicationHelper(
                     message.Message.AddressPersistentLocalId,
-                    x => x.IsOfficiallyAssigned = false,
+                    x =>
+                    {
+                        x.IsOfficiallyAssigned = false;
+                        x.Status = AddressStatus.Current;
+                    },
                     ct);
             });
 

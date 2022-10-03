@@ -154,6 +154,7 @@ namespace AddressRegistry.StreetName
         private void When(AddressWasDeregulated @event)
         {
             IsOfficiallyAssigned = false;
+            Status = AddressStatus.Current;
 
             _lastEvent = @event;
         }

@@ -230,6 +230,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenDeregulatingAddress
             var address = sut.StreetNameAddresses.First(x => x.AddressPersistentLocalId == addressPersistentLocalId);
 
             address.IsOfficiallyAssigned.Should().BeFalse();
+            address.Status.Should().Be(AddressStatus.Current);
         }
     }
 }

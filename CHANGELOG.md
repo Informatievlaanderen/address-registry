@@ -1,3 +1,11 @@
+# [3.55.0](https://github.com/informatievlaanderen/address-registry/compare/v3.54.0...v3.55.0) (2022-10-03)
+
+
+### Features
+
+* add correct reject ([1436410](https://github.com/informatievlaanderen/address-registry/commit/143641090ced207aa502efb4290e20620efc118f))
+* correct addres approval backoffice and projection ([bb2d51b](https://github.com/informatievlaanderen/address-registry/commit/bb2d51b064a0b0bcc323b40d2cbe7ae792ee1b79))
+
 # [3.54.0](https://github.com/informatievlaanderen/address-registry/compare/v3.53.0...v3.54.0) (2022-10-03)
 
 

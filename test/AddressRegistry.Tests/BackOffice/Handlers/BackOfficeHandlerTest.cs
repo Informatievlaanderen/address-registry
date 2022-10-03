@@ -61,6 +61,17 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
             DispatchArrangeCommand(proposeCommand);
         }
 
+        protected void RetireAddress(
+            StreetNamePersistentLocalId streetNamePersistentLocalId,
+            AddressPersistentLocalId addressPersistentLocalId)
+        {
+            var retireAddress = new RetireAddress(
+                streetNamePersistentLocalId,
+                addressPersistentLocalId,
+                Fixture.Create<Provenance>());
+            DispatchArrangeCommand(retireAddress);
+        }
+
         protected void ApproveAddress(
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             AddressPersistentLocalId addressPersistentLocalId)

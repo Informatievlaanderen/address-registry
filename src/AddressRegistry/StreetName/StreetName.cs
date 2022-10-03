@@ -234,6 +234,13 @@ namespace AddressRegistry.StreetName
                 .CorrectApproval();
         }
 
+        public void CorrectAddressRetirement(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            StreetNameAddresses
+                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
+                .CorrectRetirement();
+        }
+
         public void RejectAddress(AddressPersistentLocalId addressPersistentLocalId)
         {
             StreetNameAddresses

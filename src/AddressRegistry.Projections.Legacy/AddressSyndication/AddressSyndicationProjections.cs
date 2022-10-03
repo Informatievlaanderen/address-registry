@@ -614,6 +614,20 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     ct);
             });
 
+            When<Envelope<AddressWasCorrectedFromRetiredToCurrent>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressPersistentLocalId,
+                    message,
+                    x => x.Status = AddressStatus.Current,
+                    ct);
+
+                await context.UpdateAddressBoxNumberSyndicationHelper(
+                    message.Message.AddressPersistentLocalId,
+                    x => x.Status = AddressStatus.Current,
+                    ct);
+            });
+
             When<Envelope<AddressPostalCodeWasChangedV2>>(async (context, message, ct) =>
             {
                 await context.CreateNewAddressSyndicationItem(

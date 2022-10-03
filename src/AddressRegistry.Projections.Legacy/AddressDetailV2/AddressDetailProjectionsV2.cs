@@ -140,6 +140,7 @@ namespace AddressRegistry.Projections.Legacy.AddressDetailV2
                     item =>
                     {
                         item.OfficiallyAssigned = false;
+                        item.Status = AddressStatus.Current;
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);

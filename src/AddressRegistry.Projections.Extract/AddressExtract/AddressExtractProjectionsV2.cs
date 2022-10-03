@@ -159,7 +159,11 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
             When<Envelope<AddressWasDeregulated>>(async (context, message, ct) =>
             {
                 var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);
-                UpdateDbaseRecordField(item, record => record.offtoegknd.Value = false);
+                UpdateDbaseRecordField(item, record =>
+                {
+                    record.offtoegknd.Value = false;
+                    record.status.Value = Map(AddressStatus.Current);
+                });
                 UpdateVersie(item, message.Message.Provenance.Timestamp);
             });
 

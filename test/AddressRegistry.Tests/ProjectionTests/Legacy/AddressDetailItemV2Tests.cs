@@ -366,7 +366,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                 {
                     var addressDetailItemV2 = (await ct.AddressDetailV2.FindAsync(addressWasDeregulated.AddressPersistentLocalId));
                     addressDetailItemV2.Should().NotBeNull();
-                    addressDetailItemV2.OfficiallyAssigned.Should().BeFalse();
+                    addressDetailItemV2!.OfficiallyAssigned.Should().BeFalse();
+                    addressDetailItemV2.Status.Should().Be(AddressStatus.Current);
                     addressDetailItemV2.VersionTimestamp.Should().Be(addressWasDeregulated.Provenance.Timestamp);
                     addressDetailItemV2.LastEventHash.Should().Be(addressWasDeregulated.GetHash());
                 });

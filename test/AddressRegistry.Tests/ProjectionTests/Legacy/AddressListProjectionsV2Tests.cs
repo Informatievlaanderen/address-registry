@@ -160,6 +160,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                 {
                     var addressListItemV2 = (await ct.AddressListV2.FindAsync(addressWasDeregulated.AddressPersistentLocalId));
                     addressListItemV2.Should().NotBeNull();
+                    addressListItemV2!.Status.Should().Be(AddressStatus.Current);
                     addressListItemV2.VersionTimestamp.Should().Be(addressWasDeregulated.Provenance.Timestamp);
                     addressListItemV2.LastEventHash.Should().Be(addressWasDeregulated.GetHash());
                 });

@@ -172,6 +172,7 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
                     message.Message.AddressPersistentLocalId,
                     item =>
                     {
+                        item.Status = AddressStatus.Current;
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);

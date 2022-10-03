@@ -355,7 +355,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                 {
                     var item = (await ct.AddressWfsItems.FindAsync(addressWasDeregulated.AddressPersistentLocalId));
                     item.Should().NotBeNull();
-                    item.OfficiallyAssigned.Should().BeFalse();
+                    item!.OfficiallyAssigned.Should().BeFalse();
+                    item.Status.Should().Be(AddressWfsProjections.MapStatus(AddressStatus.Current));
                     item.VersionTimestamp.Should().Be(addressWasDeregulated.Provenance.Timestamp);
                 });
         }

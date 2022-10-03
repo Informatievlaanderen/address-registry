@@ -117,6 +117,76 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
         }
 
         [Fact]
+        public async Task WhenAddressWasCorrectedFromApprovedToProposed()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasApproved = _fixture.Create<AddressWasApproved>();
+            var approvedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasApproved.GetHash() }
+            };
+
+            var addressApprovalWasCorrected = _fixture.Create<AddressWasCorrectedFromApprovedToProposed>();
+            var correctionMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressApprovalWasCorrected.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasApproved>(new Envelope(addressWasApproved, approvedMetadata)),
+                    new Envelope<AddressWasCorrectedFromApprovedToProposed>(new Envelope(addressApprovalWasCorrected, correctionMetadata)))
+                .Then(async ct =>
+                {
+                    var item = (await ct.AddressWfsItems.FindAsync(addressWasApproved.AddressPersistentLocalId));
+                    item.Should().NotBeNull();
+                    item.Status.Should().Be(AddressWfsProjections.MapStatus(AddressStatus.Proposed));
+                    item.VersionTimestamp.Should().Be(addressApprovalWasCorrected.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasApproved = _fixture.Create<AddressWasApproved>();
+            var approvedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasApproved.GetHash() }
+            };
+
+            var addressApprovalWasCorrected = _fixture.Create<AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected>();
+            var correctionMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressApprovalWasCorrected.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasApproved>(new Envelope(addressWasApproved, approvedMetadata)),
+                    new Envelope<AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected>(new Envelope(addressApprovalWasCorrected, correctionMetadata)))
+                .Then(async ct =>
+                {
+                    var item = (await ct.AddressWfsItems.FindAsync(addressWasApproved.AddressPersistentLocalId));
+                    item.Should().NotBeNull();
+                    item.Status.Should().Be(AddressWfsProjections.MapStatus(AddressStatus.Proposed));
+                    item.VersionTimestamp.Should().Be(addressApprovalWasCorrected.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
         public async Task WhenAddressWasRejected()
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();

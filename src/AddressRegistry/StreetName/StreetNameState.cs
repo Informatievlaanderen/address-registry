@@ -33,8 +33,8 @@ namespace AddressRegistry.StreetName
             Register<AddressWasMigratedToStreetName>(When);
             Register<AddressWasProposedV2>(When);
             Register<AddressWasApproved>(When);
-            Register<AddressApprovalWasCorrected>(When);
-            Register<AddressApprovalWasCorrectedBecauseHouseNumberWasCorrected>(When);
+            Register<AddressWasCorrectedFromApprovedToProposed>(When);
+            Register<AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected>(When);
             Register<AddressWasRejected>(When);
             Register<AddressWasRejectedBecauseHouseNumberWasRejected>(When);
             Register<AddressWasRejectedBecauseHouseNumberWasRetired>(When);
@@ -119,13 +119,13 @@ namespace AddressRegistry.StreetName
             addressToApprove.Route(@event);
         }
 
-        private void When(AddressApprovalWasCorrected @event)
+        private void When(AddressWasCorrectedFromApprovedToProposed @event)
         {
             var addressToCorrect = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
             addressToCorrect.Route(@event);
         }
 
-        private void When(AddressApprovalWasCorrectedBecauseHouseNumberWasCorrected @event)
+        private void When(AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected @event)
         {
             var addressToCorrect = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
             addressToCorrect.Route(@event);

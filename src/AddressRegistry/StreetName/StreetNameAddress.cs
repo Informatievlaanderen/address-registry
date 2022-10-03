@@ -81,7 +81,7 @@ namespace AddressRegistry.StreetName
                         child.CorrectApprovalBecauseParentWasCorrected();
                     }
 
-                    Apply(new AddressApprovalWasCorrected(_streetNamePersistentLocalId, AddressPersistentLocalId));
+                    Apply(new AddressWasCorrectedFromApprovedToProposed(_streetNamePersistentLocalId, AddressPersistentLocalId));
                     break;
             }
         }
@@ -100,7 +100,7 @@ namespace AddressRegistry.StreetName
 
             if (Status == AddressStatus.Current)
             {
-                Apply(new AddressApprovalWasCorrectedBecauseHouseNumberWasCorrected(_streetNamePersistentLocalId, AddressPersistentLocalId));
+                Apply(new AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected(_streetNamePersistentLocalId, AddressPersistentLocalId));
             }
         }
 

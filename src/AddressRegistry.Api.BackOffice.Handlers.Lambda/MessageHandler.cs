@@ -43,6 +43,17 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
                         Provenance = request.ProvenanceData.ToProvenance()
                     }, cancellationToken);
                     break;
+                case SqsAddressCorrectApprovalRequest request:
+                    await mediator.Send(new SqsLambdaAddressCorrectApprovalRequest
+                    {
+                        Request = request.Request,
+                        TicketId = request.TicketId,
+                        MessageGroupId = messageMetadata.MessageGroupId!,
+                        IfMatchHeaderValue = request.IfMatchHeaderValue,
+                        Metadata = request.Metadata,
+                        Provenance = request.ProvenanceData.ToProvenance()
+                    }, cancellationToken);
+                    break;
                 case SqsAddressChangePositionRequest request:
                     await mediator.Send(new SqsLambdaAddressChangePositionRequest
                     {

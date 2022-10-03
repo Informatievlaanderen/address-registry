@@ -10,10 +10,10 @@
 
     [EventTags(EventTag.For.Edit, EventTag.For.Sync)]
     [EventName(EventName)]
-    [EventDescription("De goedkeuring van het adres werd gecorrigeerd door correctie huisnummer.")]
-    public class AddressApprovalWasCorrectedBecauseHouseNumberWasCorrected : IStreetNameEvent, IHasAddressPersistentLocalId
+    [EventDescription("De goedkeuring van het adres werd gecorrigeerd.")]
+    public class AddressWasCorrectedFromApprovedToProposed : IStreetNameEvent, IHasAddressPersistentLocalId
     {
-        public const string EventName = "AddressApprovalWasCorrectedBecauseHouseNumberWasCorrected"; // BE CAREFUL CHANGING THIS!!
+        public const string EventName = "AddressWasCorrectedFromApprovedToProposed"; // BE CAREFUL CHANGING THIS!!
 
         [EventPropertyDescription("Objectidentificator van de straatnaam aan dewelke het adres is toegewezen.")]
         public int StreetNamePersistentLocalId { get; }
@@ -24,7 +24,7 @@
         [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
-        public AddressApprovalWasCorrectedBecauseHouseNumberWasCorrected(
+        public AddressWasCorrectedFromApprovedToProposed(
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             AddressPersistentLocalId addressPersistentLocalId)
         {
@@ -33,7 +33,7 @@
         }
 
         [JsonConstructor]
-        private AddressApprovalWasCorrectedBecauseHouseNumberWasCorrected(
+        private AddressWasCorrectedFromApprovedToProposed(
             int streetNamePersistentLocalId,
             int addressPersistentLocalId,
             ProvenanceData provenance)

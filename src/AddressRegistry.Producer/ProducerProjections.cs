@@ -283,6 +283,16 @@ namespace AddressRegistry.Producer
                 await Produce(message.Message.StreetNamePersistentLocalId, message.Message.ToContract(), ct);
             });
 
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetName.AddressWasCorrectedFromApprovedToProposed>>(async (_, message, ct) =>
+            {
+                await Produce(message.Message.StreetNamePersistentLocalId, message.Message.ToContract(), ct);
+            });
+
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetName.AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected>>(async (_, message, ct) =>
+            {
+                await Produce(message.Message.StreetNamePersistentLocalId, message.Message.ToContract(), ct);
+            });
+
             When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetName.AddressWasMigratedToStreetName>>(async (_, message, ct) =>
             {
                 await Produce(message.Message.StreetNamePersistentLocalId, message.Message.ToContract(), ct);

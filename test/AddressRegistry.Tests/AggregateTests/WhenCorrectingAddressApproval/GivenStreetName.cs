@@ -48,7 +48,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressApproval
                 .When(correctAddressApproval)
                 .Then(
                     new Fact(_streamId,
-                        new AddressApprovalWasCorrected(
+                        new AddressWasCorrectedFromApprovedToProposed(
                             correctAddressApproval.StreetNamePersistentLocalId,
                             correctAddressApproval.AddressPersistentLocalId))));
         }
@@ -84,11 +84,11 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressApproval
                 .When(correctAddressApproval)
                 .Then(
                     new Fact(_streamId,
-                        new AddressApprovalWasCorrectedBecauseHouseNumberWasCorrected(
+                        new AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected(
                             correctAddressApproval.StreetNamePersistentLocalId,
                             childAddressPersistentLocalId)),
                     new Fact(_streamId,
-                        new AddressApprovalWasCorrected(
+                        new AddressWasCorrectedFromApprovedToProposed(
                             correctAddressApproval.StreetNamePersistentLocalId,
                             parentAddressPersistentLocalId))));
         }

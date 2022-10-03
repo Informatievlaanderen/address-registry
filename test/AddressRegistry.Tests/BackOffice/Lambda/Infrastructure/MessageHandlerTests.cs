@@ -75,6 +75,38 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
         }
 
         [Fact]
+        public async Task WhenSqsAddressCorrectApprovalRequest_ThenSqsLambdaAddressCorrectApprovalRequestIsSent()
+        {
+            // Arrange
+            var mediator = new Mock<IMediator>();
+            var containerBuilder = new ContainerBuilder();
+            containerBuilder.Register(_ => mediator.Object);
+            var container = containerBuilder.Build();
+
+            var messageData = Fixture.Create<SqsAddressCorrectApprovalRequest>();
+            var messageMetadata = new MessageMetadata { MessageGroupId = Fixture.Create<string>() };
+
+            var sut = new MessageHandler(container);
+
+            // Act
+            await sut.HandleMessage(
+                messageData,
+                messageMetadata,
+                CancellationToken.None);
+
+            // Assert
+            mediator
+                .Verify(x => x.Send(It.Is<SqsLambdaAddressCorrectApprovalRequest>(request =>
+                    request.TicketId == messageData.TicketId
+                    && request.MessageGroupId == messageMetadata.MessageGroupId
+                    && request.Request == messageData.Request
+                    && request.IfMatchHeaderValue == messageData.IfMatchHeaderValue
+                    && request.Provenance == messageData.ProvenanceData.ToProvenance()
+                    && request.Metadata == messageData.Metadata
+                ), CancellationToken.None), Times.Once);
+        }
+
+        [Fact]
         public async Task WhenSqsAddressChangePositionRequest_ThenSqsLambdaAddressChangePositionRequestIsSent()
         {
             // Arrange

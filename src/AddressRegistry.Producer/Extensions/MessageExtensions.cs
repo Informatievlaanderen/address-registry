@@ -106,6 +106,14 @@ namespace AddressRegistry.Producer.Extensions
         public static Contracts.AddressWasApproved ToContract(this StreetNameAggregate.AddressWasApproved message) =>
             new Contracts.AddressWasApproved(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
 
+        public static Contracts.AddressWasCorrectedFromApprovedToProposed ToContract(this StreetNameAggregate.AddressWasCorrectedFromApprovedToProposed message) =>
+            new Contracts.AddressWasCorrectedFromApprovedToProposed(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
+
+        public static Contracts.AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected ToContract(
+            this StreetNameAggregate.AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected message) =>
+            new Contracts.AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected(
+                message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
+
         public static Contracts.AddressWasRemovedV2 ToContract(this StreetNameAggregate.AddressWasRemovedV2 message) =>
             new Contracts.AddressWasRemovedV2(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
 

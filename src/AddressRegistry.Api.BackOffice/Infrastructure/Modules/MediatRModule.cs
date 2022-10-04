@@ -3,6 +3,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
     using System.Reflection;
     using Autofac;
     using Handlers;
+    using Handlers.Sqs.Handlers;
     using MediatR;
     using Module = Autofac.Module;
 
@@ -23,6 +24,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
             });
 
             builder.RegisterAssemblyTypes(typeof(AddressProposeHandler).GetTypeInfo().Assembly).AsImplementedInterfaces();
+            builder.RegisterAssemblyTypes(typeof(SqsAddressProposeHandler).GetTypeInfo().Assembly).AsImplementedInterfaces();
         }
     }
 }

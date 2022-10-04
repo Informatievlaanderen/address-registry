@@ -1,3 +1,11 @@
+## [3.56.1](https://github.com/informatievlaanderen/address-registry/compare/v3.56.0...v3.56.1) (2022-10-04)
+
+
+### Bug Fixes
+
+* event documentation ([6d9ce80](https://github.com/informatievlaanderen/address-registry/commit/6d9ce80a10b62652fdcd7aa8353c3d4fa3c2c92d))
+* sqs handler registration ([cb3e5e8](https://github.com/informatievlaanderen/address-registry/commit/cb3e5e84891b278383c52fdcb74aba255561d4a2))
+
 # [3.56.0](https://github.com/informatievlaanderen/address-registry/compare/v3.55.0...v3.56.0) (2022-10-03)
 
 

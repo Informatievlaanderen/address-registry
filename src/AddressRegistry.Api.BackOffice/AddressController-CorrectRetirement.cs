@@ -54,7 +54,7 @@ namespace AddressRegistry.Api.BackOffice
             [FromServices] IValidator<AddressCorrectRetirementRequest> validator,
             [FromServices] IIfMatchHeaderValidator ifMatchHeaderValidator,
             [FromServices] IOptions<ResponseOptions> options,
-            [FromBody] AddressCorrectRetirementRequest request,
+            [FromRoute] AddressCorrectRetirementRequest request,
             [FromHeader(Name = "If-Match")] string? ifMatchHeaderValue,
             CancellationToken cancellationToken = default)
         {

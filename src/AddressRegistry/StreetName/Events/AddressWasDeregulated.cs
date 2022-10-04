@@ -10,7 +10,7 @@ namespace AddressRegistry.StreetName.Events
 
     [EventTags(EventTag.For.Edit, EventTag.For.Sync)]
     [EventName(EventName)]
-    [EventDescription("Het adres kreeg aanduiding 'niet officieel toegekend'.")]
+    [EventDescription("Het adres kreeg aanduiding 'niet officieel toegekend'. Wanneer de status van het adres voorgesteld is, zal de status wijzigen naar 'inGebruik'.")]
     public class AddressWasDeregulated : IStreetNameEvent, IHasAddressPersistentLocalId
     {
         public const string EventName = "AddressWasDeregulated"; // BE CAREFUL CHANGING THIS!!

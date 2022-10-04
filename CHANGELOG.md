@@ -1,3 +1,10 @@
+## [3.56.2](https://github.com/informatievlaanderen/address-registry/compare/v3.56.1...v3.56.2) (2022-10-04)
+
+
+### Bug Fixes
+
+* correct address retirement route ([0a5ecfa](https://github.com/informatievlaanderen/address-registry/commit/0a5ecfac6da58f09d4a1f3505fff1c843a776ddf))
+
 ## [3.56.1](https://github.com/informatievlaanderen/address-registry/compare/v3.56.0...v3.56.1) (2022-10-04)
 
 

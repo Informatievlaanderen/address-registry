@@ -44,7 +44,9 @@ namespace AddressRegistry.Address
             CrabOrganisation? organisation)
         {
             if (IsRemoved && !IsSubaddress)
+            {
                 throw new AddressRemovedException($"Cannot change removed address for address id {_addressId}");
+            }
 
             if (!(_coupledHouseNumberId != null && _coupledHouseNumberId != houseNumberId) && !IsRemoved)
             {

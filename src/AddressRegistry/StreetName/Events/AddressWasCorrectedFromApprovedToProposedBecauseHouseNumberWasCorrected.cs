@@ -10,7 +10,7 @@
 
     [EventTags(EventTag.For.Edit, EventTag.For.Sync)]
     [EventName(EventName)]
-    [EventDescription("De goedkeuring van het adres werd gecorrigeerd door correctie huisnummer.")]
+    [EventDescription("Het adres met status inGebruik werd gecorrigeerd naar status voorgesteld door correctie huisnummer.")]
     public class AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected : IStreetNameEvent, IHasAddressPersistentLocalId
     {
         public const string EventName = "AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected"; // BE CAREFUL CHANGING THIS!!

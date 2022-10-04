@@ -7,7 +7,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
     public class AddressBackOfficeCorrectBoxNumberRequest
     {
         /// <summary>
-        /// Het Busnummer van het adres.
+        /// Het busnummer van het adres.
         /// </summary>
         [DataMember(Name = "Busnummer", Order = 0)]
         [JsonProperty(Required = Required.Always)]

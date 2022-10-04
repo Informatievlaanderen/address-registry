@@ -10,7 +10,7 @@ namespace AddressRegistry.StreetName.Events
 
     [EventTags(EventTag.For.Edit, EventTag.For.Sync)]
     [EventName(EventName)]
-    [EventDescription("De historering van het adres werd gecorrigeerd.")]
+    [EventDescription("Het adres met status gehistoreerd werd gecorrigeerd naar status inGebruik.")]
     public class AddressWasCorrectedFromRetiredToCurrent : IStreetNameEvent, IHasAddressPersistentLocalId
     {
         public const string EventName = "AddressWasCorrectedFromRetiredToCurrent"; // BE CAREFUL CHANGING THIS!!

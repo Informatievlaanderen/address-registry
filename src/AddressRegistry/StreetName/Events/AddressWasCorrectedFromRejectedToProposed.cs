@@ -10,7 +10,7 @@ namespace AddressRegistry.StreetName.Events
 
     [EventTags(EventTag.For.Edit, EventTag.For.Sync)]
     [EventName(EventName)]
-    [EventDescription("Het adres afkeuring werd gecorrigeerd.")]
+    [EventDescription("Het adres met status afgekeurd werd gecorrigeerd naar status voorgesteld.")]
     public class AddressWasCorrectedFromRejectedToProposed : IStreetNameEvent, IHasAddressPersistentLocalId
     {
         public const string EventName = "AddressWasCorrectedFromRejectedToProposed"; // BE CAREFUL CHANGING THIS!!

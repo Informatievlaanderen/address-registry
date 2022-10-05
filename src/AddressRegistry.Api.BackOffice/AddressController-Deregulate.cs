@@ -119,6 +119,10 @@ namespace AddressRegistry.Api.BackOffice
                 {
                     AddressIsNotFoundException => new ApiException(ValidationErrorMessages.Address.AddressNotFound, StatusCodes.Status404NotFound),
                     AddressIsRemovedException => new ApiException(ValidationErrorMessages.Address.AddressRemoved, StatusCodes.Status410Gone),
+                    ParentAddressHasInvalidStatusException => CreateValidationException(
+                        ValidationErrors.Address.AddressCannotBeDeregulatedBecauseOfParent,
+                        string.Empty,
+                        ValidationErrorMessages.Address.AddressCannotBeDeregulatedBecauseOfParent),
                     AddressHasInvalidStatusException => CreateValidationException(
                         ValidationErrors.Address.AddressCannotBeDeregulated,
                         string.Empty,

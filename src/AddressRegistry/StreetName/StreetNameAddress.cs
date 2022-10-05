@@ -3,7 +3,6 @@ namespace AddressRegistry.StreetName
     using System;
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
-    using Commands;
     using DataStructures;
     using Events;
     using Exceptions;
@@ -181,6 +180,11 @@ namespace AddressRegistry.StreetName
             if (!validStatuses.Contains(Status))
             {
                 throw new AddressHasInvalidStatusException();
+            }
+
+            if (Parent is not null && Parent.Status == AddressStatus.Proposed)
+            {
+                throw new ParentAddressHasInvalidStatusException();
             }
 
             if (!IsOfficiallyAssigned)

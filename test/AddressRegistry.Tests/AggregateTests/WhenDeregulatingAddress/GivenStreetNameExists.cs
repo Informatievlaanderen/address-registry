@@ -163,6 +163,35 @@ namespace AddressRegistry.Tests.AggregateTests.WhenDeregulatingAddress
         }
 
         [Fact]
+        public void WithParentHouseNumberAddressHasStatusProposed_ThenThrowsParentAddressHasInvalidStatusException()
+        {
+            var parentAddressPersistentLocalId = new AddressPersistentLocalId(1);
+            var childAddressPersistentLocalId = new AddressPersistentLocalId(2);
+
+            var parentAddressWasMigrated = CreateAddressWasMigratedToStreetName(
+                parentAddressPersistentLocalId,
+                addressStatus: AddressStatus.Proposed);
+
+            var childAddressWasMigrated = CreateAddressWasMigratedToStreetName(
+                childAddressPersistentLocalId,
+                parentAddressPersistentLocalId: parentAddressPersistentLocalId,
+                addressStatus: AddressStatus.Proposed);
+
+            var deregulateAddress = new DeregulateAddress(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                childAddressPersistentLocalId,
+                Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    Fixture.Create<StreetNameWasImported>(),
+                    parentAddressWasMigrated,
+                    childAddressWasMigrated)
+                .When(deregulateAddress)
+                .Throws(new ParentAddressHasInvalidStatusException()));
+        }
+
+        [Fact]
         public void WithAlreadyDeregulatedAddress_ThenNone()
         {
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();

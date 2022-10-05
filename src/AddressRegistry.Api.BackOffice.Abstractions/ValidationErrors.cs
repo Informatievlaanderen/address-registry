@@ -34,6 +34,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions
             public const string AddressCannotBeApprovedBecauseOfParent = "AdresHuisnummerVoorgesteldGehistoreerdOfAfgekeurd";
             public const string AddressCannotBeRejected = "AdresGehistoreerdOfInGebruik";
             public const string AddressCannotBeDeregulated = "AdresGehistoreerdOfAfgekeurd";
+            public const string AddressCannotBeDeregulatedBecauseOfParent = "AdresHuisnummerVoorgesteldGehistoreerdOfAfgekeurd";
 
             public const string AddressCannotBeRegularized = "AdresGehistoreerdOfAfgekeurd";
             public const string AddressCannotBeRetired = "AdresVoorgesteldOfAfgekeurd";
@@ -87,6 +88,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions
             public const string AddressCannotBeApprovedBecauseOfParent = "Deze actie is enkel toegestaan op adressen waarbij het huisnummer de status 'inGebruik' heeft.";
             public const string AddressCannotBeRejected = "Deze actie is enkel toegestaan op adressen met status 'voorgesteld'.";
             public const string AddressCannotBeDeregulated = "Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik'.";
+            public const string AddressCannotBeDeregulatedBecauseOfParent = "Deze actie is enkel toegestaan op adressen waarbij het huisnummer de status 'inGebruik' heeft.";
             public const string AddressCannotBeRegularized = "Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik'.";
             public const string AddressCannotBeRetired = "Deze actie is enkel toegestaan op adressen met status 'inGebruik'.";
             public const string AddressPositionCannotBeChanged = "Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik'.";

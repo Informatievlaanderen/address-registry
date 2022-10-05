@@ -1,3 +1,10 @@
+## [3.57.2](https://github.com/informatievlaanderen/address-registry/compare/v3.57.1...v3.57.2) (2022-10-05)
+
+
+### Bug Fixes
+
+* clean up unneeded execution ([3d314ee](https://github.com/informatievlaanderen/address-registry/commit/3d314ee2b7a814e65ae10258fa4f69d3107ef2cf))
+
 ## [3.57.1](https://github.com/informatievlaanderen/address-registry/compare/v3.57.0...v3.57.1) (2022-10-05)
 
 

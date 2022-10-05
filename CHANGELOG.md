@@ -1,3 +1,10 @@
+## [3.57.1](https://github.com/informatievlaanderen/address-registry/compare/v3.57.0...v3.57.1) (2022-10-05)
+
+
+### Bug Fixes
+
+* error code when correcting address rejection ([895aeca](https://github.com/informatievlaanderen/address-registry/commit/895aeca5d46777d85dbc45c88b9566c8eecf7038))
+
 # [3.57.0](https://github.com/informatievlaanderen/address-registry/compare/v3.56.3...v3.57.0) (2022-10-05)
 
 

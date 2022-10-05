@@ -42,7 +42,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions
             public const string AddressPostalCodeCannotBeChanged = "AdresGehistoreerdOfAfgekeurd";
             public const string AddressCannotCorrectRetirement = "AdresVoorgesteldOfAfgekeurd";
             public const string AddressIsNotOfficiallyAssigned = "AdresNietOfficeeltoegekend";
-            public const string CannotBeCorrectToProposedFromRejected = "AdresVoorgesteldOfIngebruikOfGehistoreerd";
+            public const string CannotBeCorrectToProposedFromRejected = "AdresInGebruikOfGehistoreerd";
 
             public const string PostalCodeNotInMunicipality = "AdresPostinfoNietInGemeente";
         }

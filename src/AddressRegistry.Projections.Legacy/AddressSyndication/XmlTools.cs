@@ -83,7 +83,6 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                 let pType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType
                 let name = XmlConvert.EncodeName(prop.Name)
                 let val = pType.IsArray ? "array" : prop.GetValue(input, null)
-                let elementValue = pType.IsSimpleType() ? new XElement(name, GetValue(val)) : val.ToXml(name) 
                 let value = pType.IsEnumerable()
                     ? GetEnumerableElements(prop, (IEnumerable)prop.GetValue(input, null)!)
                     : GetElement(pType, name, val)

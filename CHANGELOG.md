@@ -1,3 +1,10 @@
+# [3.57.0](https://github.com/informatievlaanderen/address-registry/compare/v3.56.3...v3.57.0) (2022-10-05)
+
+
+### Features
+
+* add parent addresss status validation for deregulate box number address ([6cd774c](https://github.com/informatievlaanderen/address-registry/commit/6cd774ce98feb763e62dd32d3082ba9e10a2fd7b))
+
 ## [3.56.3](https://github.com/informatievlaanderen/address-registry/compare/v3.56.2...v3.56.3) (2022-10-04)
 
 

@@ -1,16 +1,16 @@
-namespace AddressRegistry.Tests.ProjectionTests.Legacy
+namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
 {
     using System.Threading.Tasks;
     using Address;
     using Address.Events;
+    using AddressRegistry.Projections.Wms;
+    using AddressRegistry.Projections.Wms.AddressDetail;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing;
     using Microsoft.EntityFrameworkCore;
     using NetTopologySuite.IO;
-    using Projections.Wms;
-    using Projections.Wms.AddressDetail;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -271,19 +271,21 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
 
             ((ISetProvenance)addressPositionWasCorrected).SetProvenance(provenance);
 
+            var expected = new AddressDetailItem
+            {
+                AddressId = addressWasRegistered.AddressId,
+                StreetNameId = addressWasRegistered.StreetNameId,
+                HouseNumber = addressWasRegistered.HouseNumber,
+                PositionSpecification = null,
+                PositionMethod = null,
+                VersionTimestamp = addressPositionWasRemoved.Provenance.Timestamp
+            };
+            expected.SetPosition(null);
+
             await Assert(
                 Given(addressWasRegistered,
                         addressPositionWasCorrected, addressPositionWasRemoved)
-                    .Expect(ctx => ctx.AddressDetail, new AddressDetailItem
-                    {
-                        AddressId = addressWasRegistered.AddressId,
-                        StreetNameId = addressWasRegistered.StreetNameId,
-                        HouseNumber = addressWasRegistered.HouseNumber,
-                        Position = null,
-                        PositionSpecification = null,
-                        PositionMethod = null,
-                        VersionTimestamp = addressPositionWasRemoved.Provenance.Timestamp
-                    }));
+                    .Expect(ctx => ctx.AddressDetail, expected));
         }
 
         [Theory]
@@ -564,21 +566,23 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
             AddressWasRemoved addressWasRemoved,
             AddressPositionWasRemoved addressPositionWasRemoved)
         {
+            var expected = new AddressDetailItem
+            {
+                AddressId = addressWasRegistered.AddressId,
+                StreetNameId = addressWasRegistered.StreetNameId,
+                HouseNumber = addressWasRegistered.HouseNumber,
+                PositionMethod = null,
+                PositionSpecification = null,
+                Removed = true,
+                VersionTimestamp = addressPositionWasRemoved.Provenance.Timestamp
+            };
+            expected.SetPosition(null);
+
             await Assert(
                 Given(addressWasRegistered,
                         addressWasRemoved,
                         addressPositionWasRemoved)
-                    .Expect(ctx => ctx.AddressDetail, new AddressDetailItem
-                    {
-                        AddressId = addressWasRegistered.AddressId,
-                        StreetNameId = addressWasRegistered.StreetNameId,
-                        HouseNumber = addressWasRegistered.HouseNumber,
-                        Position = null,
-                        PositionMethod = null,
-                        PositionSpecification = null,
-                        Removed = true,
-                        VersionTimestamp = addressPositionWasRemoved.Provenance.Timestamp
-                    }));
+                    .Expect(ctx => ctx.AddressDetail, expected));
         }
 
         [Theory]
@@ -671,7 +675,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
 
         [Theory]
         [DefaultData]
-        public async Task AddressBecameIncompleAfterRemoveIsSet(
+        public async Task AddressBecameIncompleteAfterRemoveIsSet(
             AddressWasRegistered addressWasRegistered,
             AddressWasRemoved addressWasRemoved,
             AddressBecameIncomplete addressBecameIncomplete)
@@ -690,7 +694,6 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                         VersionTimestamp = addressBecameIncomplete.Provenance.Timestamp
                     }));
         }
-
 
         protected override WmsContext CreateContext(DbContextOptions<WmsContext> options) => new(options);
         protected override AddressDetailProjections CreateProjection() => new(_wkbReader);

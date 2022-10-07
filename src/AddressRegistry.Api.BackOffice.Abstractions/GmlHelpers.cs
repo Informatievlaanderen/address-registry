@@ -1,4 +1,4 @@
-﻿namespace AddressRegistry.Api.BackOffice.Abstractions
+namespace AddressRegistry.Api.BackOffice.Abstractions
 {
     using NetTopologySuite.Geometries;
     using NetTopologySuite.Geometries.Implementation;

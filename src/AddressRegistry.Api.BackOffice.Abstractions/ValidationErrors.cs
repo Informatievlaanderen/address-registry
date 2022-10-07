@@ -94,7 +94,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions
             public const string AddressPositionCannotBeChanged = "Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik'.";
             public const string AddressPostalCodeCannotBeChanged = "Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik'.";
             public const string AddressIsNotOfficiallyAssigned = "Deze actie is enkel toegestaan voor officieel toegekende adressen.";
-            public const string CannotBeCorrectToProposedFromRejected = "Deze actie is enkel toegestaan op een adres met status 'Afgekeurd'.";
+            public const string CannotBeCorrectToProposedFromRejected = "Deze actie is enkel toegestaan op een adres met status 'afgekeurd'.";
             public const string AddressCannotCorrectRetirement = "Deze actie is enkel toegestaan op adressen met status 'gehistoreerd'.";
 
             public const string PostalCodeNotInMunicipality = "De ingevoerde postcode wordt niet gebruikt binnen deze gemeente.";

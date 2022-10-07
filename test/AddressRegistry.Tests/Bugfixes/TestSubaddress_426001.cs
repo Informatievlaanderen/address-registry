@@ -26,8 +26,6 @@ namespace AddressRegistry.Tests.Bugfixes
         public TestSubaddress_426001(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             _ = new TestSubaddress_426001Data();
-            JsonConvert.DefaultSettings =
-                () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureDefaultForApi();
         }
 
         [Fact]
@@ -206,134 +204,149 @@ namespace AddressRegistry.Tests.Bugfixes
 
         private class TestSubaddress_426001Data
         {
+            private JsonSerializerSettings _serializerSettings;
+
+            public TestSubaddress_426001Data()
+            {
+                _serializerSettings = JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureDefaultForApi();
+            }
+
+            private T Deserialize<T>(string s) => JsonConvert.DeserializeObject<T>(s, _serializerSettings);
+
             public string Id => new AddressId(new CrabSubaddressId(426001).CreateDeterministicId());
             public AddressId AddressId => new AddressId(new CrabSubaddressId(426001).CreateDeterministicId());
 
             public ImportHouseNumberSubaddressFromCrab Command001 =>
-                JsonConvert.DeserializeObject<ImportHouseNumberSubaddressFromCrab>(
+                Deserialize<ImportHouseNumberSubaddressFromCrab>(
                     "{\"houseNumberId\":{\"value\":2525586},\"subaddressId\":{\"value\":426001},\"streetNameId\":{\"value\":8550},\"houseNumber\":{\"value\":\"27B\"},\"grbNotation\":{\"value\":null},\"lifetime\":{\"beginDateTime\":\"1830-01-01T00:00:00\",\"endDateTime\":null},\"timestamp\":{\"value\":\"2007-11-09T12:10:45.237Z\"},\"operator\":{\"value\":\"VLM\\\\dalewynsa\"},\"modification\":0,\"organisation\":4}");
 
             public ImportHouseNumberSubaddressFromCrab Command002 =>
-                JsonConvert.DeserializeObject<ImportHouseNumberSubaddressFromCrab>(
+                Deserialize<ImportHouseNumberSubaddressFromCrab>(
                     "{\"houseNumberId\":{\"value\":2343242},\"subaddressId\":{\"value\":426001},\"streetNameId\":{\"value\":8550},\"houseNumber\":{\"value\":\"27\"},\"grbNotation\":{\"value\":\"27\"},\"lifetime\":{\"beginDateTime\":\"2005-01-01T00:00:00\",\"endDateTime\":null},\"timestamp\":{\"value\":\"2006-07-13T00:00:08.603Z\"},\"operator\":{\"value\":\"VLM\\\\thijsge\"},\"modification\":0,\"organisation\":2}");
 
             public ImportSubaddressMailCantonFromCrab Command003 =>
-                JsonConvert.DeserializeObject<ImportSubaddressMailCantonFromCrab>(
+                Deserialize<ImportSubaddressMailCantonFromCrab>(
                     "{\"houseNumberMailCantonId\":{\"value\":2314772},\"houseNumberId\":{\"value\":2343242},\"subaddressId\":{\"value\":426001},\"mailCantonId\":{\"value\":136},\"mailCantonCode\":{\"value\":\"2070\"},\"lifetime\":{\"beginDateTime\":\"2005-01-01T00:00:00\",\"endDateTime\":null},\"timestamp\":{\"value\":\"2006-07-13T01:17:18.617Z\"},\"operator\":{\"value\":\"VLM\\\\thijsge\"},\"modification\":0,\"organisation\":2}");
 
             public ImportSubaddressFromCrab Command004 =>
-                JsonConvert.DeserializeObject<ImportSubaddressFromCrab>(
+                Deserialize<ImportSubaddressFromCrab>(
                     "{\"subaddressId\":{\"value\":426001},\"houseNumberId\":{\"value\":2525586},\"boxNumber\":{\"value\":\"5\"},\"boxNumberType\":{\"value\":\"2\"},\"lifetime\":{\"beginDateTime\":\"1830-01-01T00:00:00\",\"endDateTime\":null},\"timestamp\":{\"value\":\"2007-11-09T19:53:16.033Z\"},\"operator\":{\"value\":\"VLM\\\\dalewynsa\"},\"modification\":0,\"organisation\":4}");
 
             public ImportSubaddressMailCantonFromCrab Command005 =>
-                JsonConvert.DeserializeObject<ImportSubaddressMailCantonFromCrab>(
+                Deserialize<ImportSubaddressMailCantonFromCrab>(
                     "{\"houseNumberMailCantonId\":{\"value\":2496457},\"houseNumberId\":{\"value\":2525586},\"subaddressId\":{\"value\":426001},\"mailCantonId\":{\"value\":136},\"mailCantonCode\":{\"value\":\"2070\"},\"lifetime\":{\"beginDateTime\":\"1830-01-01T00:00:00\",\"endDateTime\":null},\"timestamp\":{\"value\":\"2007-11-09T21:25:55.15Z\"},\"operator\":{\"value\":\"VLM\\\\dalewynsa\"},\"modification\":0,\"organisation\":4}");
 
             public ImportHouseNumberSubaddressFromCrab Command006 =>
-                JsonConvert.DeserializeObject<ImportHouseNumberSubaddressFromCrab>(
+                Deserialize<ImportHouseNumberSubaddressFromCrab>(
                     "{\"houseNumberId\":{\"value\":2343242},\"subaddressId\":{\"value\":426001},\"streetNameId\":{\"value\":8550},\"houseNumber\":{\"value\":\"27\"},\"grbNotation\":{\"value\":\"27\"},\"lifetime\":{\"beginDateTime\":\"2005-01-01T00:00:00\",\"endDateTime\":null},\"timestamp\":{\"value\":\"2008-06-11T08:45:31.25Z\"},\"operator\":{\"value\":\"VLM\\\\thijsge\"},\"modification\":2,\"organisation\":0}");
 
             public ImportHouseNumberSubaddressFromCrab Command007 =>
-                JsonConvert.DeserializeObject<ImportHouseNumberSubaddressFromCrab>(
+                Deserialize<ImportHouseNumberSubaddressFromCrab>(
                     "{\"houseNumberId\":{\"value\":2525586},\"subaddressId\":{\"value\":426001},\"streetNameId\":{\"value\":8550},\"houseNumber\":{\"value\":\"27B\"},\"grbNotation\":{\"value\":null},\"lifetime\":{\"beginDateTime\":\"1830-01-01T00:00:00\",\"endDateTime\":null},\"timestamp\":{\"value\":\"2008-06-11T08:45:31.25Z\"},\"operator\":{\"value\":\"VLM\\\\thijsge\"},\"modification\":2,\"organisation\":0}");
 
             public ImportSubaddressMailCantonFromCrab Command008 =>
-                JsonConvert.DeserializeObject<ImportSubaddressMailCantonFromCrab>(
+                Deserialize<ImportSubaddressMailCantonFromCrab>(
                     "{\"houseNumberMailCantonId\":{\"value\":2314772},\"houseNumberId\":{\"value\":2343242},\"subaddressId\":{\"value\":426001},\"mailCantonId\":{\"value\":136},\"mailCantonCode\":{\"value\":\"2070\"},\"lifetime\":{\"beginDateTime\":\"2005-01-01T00:00:00\",\"endDateTime\":null},\"timestamp\":{\"value\":\"2008-06-11T08:45:45.61Z\"},\"operator\":{\"value\":\"VLM\\\\thijsge\"},\"modification\":2,\"organisation\":6}");
 
             public ImportSubaddressMailCantonFromCrab Command009 =>
-                JsonConvert.DeserializeObject<ImportSubaddressMailCantonFromCrab>(
+                Deserialize<ImportSubaddressMailCantonFromCrab>(
                     "{\"houseNumberMailCantonId\":{\"value\":2496457},\"houseNumberId\":{\"value\":2525586},\"subaddressId\":{\"value\":426001},\"mailCantonId\":{\"value\":136},\"mailCantonCode\":{\"value\":\"2070\"},\"lifetime\":{\"beginDateTime\":\"1830-01-01T00:00:00\",\"endDateTime\":null},\"timestamp\":{\"value\":\"2008-06-11T08:45:45.61Z\"},\"operator\":{\"value\":\"VLM\\\\thijsge\"},\"modification\":2,\"organisation\":6}");
 
             public ImportHouseNumberSubaddressFromCrab Command010 =>
-                JsonConvert.DeserializeObject<ImportHouseNumberSubaddressFromCrab>(
+                Deserialize<ImportHouseNumberSubaddressFromCrab>(
                     "{\"houseNumberId\":{\"value\":2343242},\"subaddressId\":{\"value\":426001},\"streetNameId\":{\"value\":8550},\"houseNumber\":{\"value\":\"27\"},\"grbNotation\":{\"value\":\"27\"},\"lifetime\":{\"beginDateTime\":\"2005-01-01T00:00:00\",\"endDateTime\":null},\"timestamp\":{\"value\":\"2008-06-11T09:22:41.967Z\"},\"operator\":{\"value\":\"VLM\\\\thijsge\"},\"modification\":2,\"organisation\":4}");
 
             public ImportHouseNumberSubaddressFromCrab Command011 =>
-                JsonConvert.DeserializeObject<ImportHouseNumberSubaddressFromCrab>(
+                Deserialize<ImportHouseNumberSubaddressFromCrab>(
                     "{\"houseNumberId\":{\"value\":2525586},\"subaddressId\":{\"value\":426001},\"streetNameId\":{\"value\":8550},\"houseNumber\":{\"value\":\"27B\"},\"grbNotation\":{\"value\":null},\"lifetime\":{\"beginDateTime\":\"1830-01-01T00:00:00\",\"endDateTime\":null},\"timestamp\":{\"value\":\"2008-06-11T09:22:41.967Z\"},\"operator\":{\"value\":\"VLM\\\\thijsge\"},\"modification\":2,\"organisation\":4}");
 
             public ImportSubaddressMailCantonFromCrab Command012 =>
-                JsonConvert.DeserializeObject<ImportSubaddressMailCantonFromCrab>(
+                Deserialize<ImportSubaddressMailCantonFromCrab>(
                     "{\"houseNumberMailCantonId\":{\"value\":2314772},\"houseNumberId\":{\"value\":2343242},\"subaddressId\":{\"value\":426001},\"mailCantonId\":{\"value\":136},\"mailCantonCode\":{\"value\":\"2070\"},\"lifetime\":{\"beginDateTime\":\"2005-01-01T00:00:00\",\"endDateTime\":null},\"timestamp\":{\"value\":\"2008-06-11T09:22:52.827Z\"},\"operator\":{\"value\":\"VLM\\\\thijsge\"},\"modification\":2,\"organisation\":4}");
 
             public ImportSubaddressMailCantonFromCrab Command013 =>
-                JsonConvert.DeserializeObject<ImportSubaddressMailCantonFromCrab>(
+                Deserialize<ImportSubaddressMailCantonFromCrab>(
                     "{\"houseNumberMailCantonId\":{\"value\":2496457},\"houseNumberId\":{\"value\":2525586},\"subaddressId\":{\"value\":426001},\"mailCantonId\":{\"value\":136},\"mailCantonCode\":{\"value\":\"2070\"},\"lifetime\":{\"beginDateTime\":\"1830-01-01T00:00:00\",\"endDateTime\":null},\"timestamp\":{\"value\":\"2008-06-11T09:22:52.827Z\"},\"operator\":{\"value\":\"VLM\\\\thijsge\"},\"modification\":2,\"organisation\":4}");
 
             public ImportHouseNumberSubaddressFromCrab Command014 =>
-                JsonConvert.DeserializeObject<ImportHouseNumberSubaddressFromCrab>(
+                Deserialize<ImportHouseNumberSubaddressFromCrab>(
                     "{\"houseNumberId\":{\"value\":2343242},\"subaddressId\":{\"value\":426001},\"streetNameId\":{\"value\":8550},\"houseNumber\":{\"value\":\"27\"},\"grbNotation\":{\"value\":null},\"lifetime\":{\"beginDateTime\":\"1830-01-01T00:00:00\",\"endDateTime\":null},\"timestamp\":{\"value\":\"2010-06-11T11:25:02.417Z\"},\"operator\":{\"value\":\"gis@zwijndrecht.be\"},\"modification\":2,\"organisation\":0}");
 
             public ImportSubaddressFromCrab Command015 =>
-                JsonConvert.DeserializeObject<ImportSubaddressFromCrab>(
+                Deserialize<ImportSubaddressFromCrab>(
                     "{\"subaddressId\":{\"value\":426001},\"houseNumberId\":{\"value\":2343242},\"boxNumber\":{\"value\":\"5\"},\"boxNumberType\":{\"value\":\"2\"},\"lifetime\":{\"beginDateTime\":\"1830-01-01T00:00:00\",\"endDateTime\":null},\"timestamp\":{\"value\":\"2010-06-11T11:25:03.39Z\"},\"operator\":{\"value\":\"gis@zwijndrecht.be\"},\"modification\":2,\"organisation\":0}");
 
             public ImportSubaddressStatusFromCrab Command016 =>
-                JsonConvert.DeserializeObject<ImportSubaddressStatusFromCrab>(
+                Deserialize<ImportSubaddressStatusFromCrab>(
                     "{\"subaddressStatusId\":{\"value\":105865},\"subaddressId\":{\"value\":426001},\"addressStatus\":2,\"lifetime\":{\"beginDateTime\":\"1830-01-01T00:00:00\",\"endDateTime\":null},\"timestamp\":{\"value\":\"2011-04-29T11:23:17.667Z\"},\"operator\":{\"value\":\"VLM\\\\thijsge\"},\"modification\":0,\"organisation\":4}");
 
             public ImportSubaddressMailCantonFromCrab Command017 =>
-                JsonConvert.DeserializeObject<ImportSubaddressMailCantonFromCrab>(
+                Deserialize<ImportSubaddressMailCantonFromCrab>(
                     "{\"houseNumberMailCantonId\":{\"value\":2496457},\"houseNumberId\":{\"value\":2525586},\"subaddressId\":{\"value\":426001},\"mailCantonId\":{\"value\":136},\"mailCantonCode\":{\"value\":\"2070\"},\"lifetime\":{\"beginDateTime\":\"1830-01-01T00:00:00\",\"endDateTime\":null},\"timestamp\":{\"value\":\"2012-03-05T10:30:15.983Z\"},\"operator\":{\"value\":\"Zwijndrecht:gis@zwijndrecht.be\"},\"modification\":1,\"organisation\":0}");
 
             public ImportHouseNumberSubaddressFromCrab Command018 =>
-                JsonConvert.DeserializeObject<ImportHouseNumberSubaddressFromCrab>(
+                Deserialize<ImportHouseNumberSubaddressFromCrab>(
                     "{\"houseNumberId\":{\"value\":2525586},\"subaddressId\":{\"value\":426001},\"streetNameId\":{\"value\":8550},\"houseNumber\":{\"value\":\"27B\"},\"grbNotation\":{\"value\":null},\"lifetime\":{\"beginDateTime\":\"1830-01-01T00:00:00\",\"endDateTime\":null},\"timestamp\":{\"value\":\"2012-03-05T10:30:17.737Z\"},\"operator\":{\"value\":\"Zwijndrecht:gis@zwijndrecht.be\"},\"modification\":1,\"organisation\":0}");
 
             public ImportSubaddressPositionFromCrab Command019 =>
-                JsonConvert.DeserializeObject<ImportSubaddressPositionFromCrab>(
+                Deserialize<ImportSubaddressPositionFromCrab>(
                     "{\"addressPositionId\":{\"value\":3048114},\"subaddressId\":{\"value\":426001},\"addressPosition\":{\"value\":\"AQEAAAAUrkfhGhgCQcP1KFxHswlB\"},\"addressNature\":{\"value\":\"1\"},\"addressPositionOrigin\":10,\"lifetime\":{\"beginDateTime\":\"1830-01-01T00:00:00\",\"endDateTime\":null},\"timestamp\":{\"value\":\"2012-03-27T23:00:18.67Z\"},\"operator\":{\"value\":\"VLM\\\\thijsge\"},\"modification\":2,\"organisation\":4}");
 
             public ImportSubaddressPositionFromCrab Command020 =>
-                JsonConvert.DeserializeObject<ImportSubaddressPositionFromCrab>(
+                Deserialize<ImportSubaddressPositionFromCrab>(
                     "{\"addressPositionId\":{\"value\":3048114},\"subaddressId\":{\"value\":426001},\"addressPosition\":{\"value\":\"AQEAAAAUrkfhGhgCQcP1KFxHswlB\"},\"addressNature\":{\"value\":\"1\"},\"addressPositionOrigin\":10,\"lifetime\":{\"beginDateTime\":\"1830-01-01T00:00:00\",\"endDateTime\":null},\"timestamp\":{\"value\":\"2012-03-27T23:00:18.67Z\"},\"operator\":{\"value\":\"VLM\\\\thijsge\"},\"modification\":2,\"organisation\":4}");
 
             public ImportHouseNumberSubaddressFromCrab Command021 =>
-                JsonConvert.DeserializeObject<ImportHouseNumberSubaddressFromCrab>(
+                Deserialize<ImportHouseNumberSubaddressFromCrab>(
                     "{\"houseNumberId\":{\"value\":2343242},\"subaddressId\":{\"value\":426001},\"streetNameId\":{\"value\":8550},\"houseNumber\":{\"value\":\"27\"},\"grbNotation\":{\"value\":null},\"lifetime\":{\"beginDateTime\":\"1830-01-01T00:00:00\",\"endDateTime\":null},\"timestamp\":{\"value\":\"2012-09-25T15:47:36.523Z\"},\"operator\":{\"value\":\"VLM\\\\thijsge\"},\"modification\":2,\"organisation\":0}");
 
             public ImportSubaddressMailCantonFromCrab Command022 =>
-                JsonConvert.DeserializeObject<ImportSubaddressMailCantonFromCrab>(
+                Deserialize<ImportSubaddressMailCantonFromCrab>(
                     "{\"houseNumberMailCantonId\":{\"value\":2314772},\"houseNumberId\":{\"value\":2343242},\"subaddressId\":{\"value\":426001},\"mailCantonId\":{\"value\":136},\"mailCantonCode\":{\"value\":\"2070\"},\"lifetime\":{\"beginDateTime\":\"2005-01-01T00:00:00\",\"endDateTime\":null},\"timestamp\":{\"value\":\"2012-09-25T15:48:03.847Z\"},\"operator\":{\"value\":\"VLM\\\\thijsge\"},\"modification\":2,\"organisation\":0}");
 
             public ImportSubaddressFromCrab Command023 =>
-                JsonConvert.DeserializeObject<ImportSubaddressFromCrab>(
+                Deserialize<ImportSubaddressFromCrab>(
                     "{\"subaddressId\":{\"value\":426001},\"houseNumberId\":{\"value\":2343242},\"boxNumber\":{\"value\":\"5\"},\"boxNumberType\":{\"value\":\"2\"},\"lifetime\":{\"beginDateTime\":\"1830-01-01T00:00:00\",\"endDateTime\":null},\"timestamp\":{\"value\":\"2012-09-25T15:53:11.64Z\"},\"operator\":{\"value\":\"VLM\\\\thijsge\"},\"modification\":2,\"organisation\":0}");
 
             public ImportHouseNumberSubaddressFromCrab Command024 =>
-                JsonConvert.DeserializeObject<ImportHouseNumberSubaddressFromCrab>(
+                Deserialize<ImportHouseNumberSubaddressFromCrab>(
                     "{\"houseNumberId\":{\"value\":2343242},\"subaddressId\":{\"value\":426001},\"streetNameId\":{\"value\":8550},\"houseNumber\":{\"value\":\"27\"},\"grbNotation\":{\"value\":\"27\"},\"lifetime\":{\"beginDateTime\":\"1830-01-01T00:00:00\",\"endDateTime\":null},\"timestamp\":{\"value\":\"2013-04-10T16:52:32.763Z\"},\"operator\":{\"value\":\"VLM\\\\CRABSSISservice\"},\"modification\":2,\"organisation\":0}");
 
             public ImportSubaddressMailCantonFromCrab Command025 =>
-                JsonConvert.DeserializeObject<ImportSubaddressMailCantonFromCrab>(
+                Deserialize<ImportSubaddressMailCantonFromCrab>(
                     "{\"houseNumberMailCantonId\":{\"value\":2314772},\"houseNumberId\":{\"value\":2343242},\"subaddressId\":{\"value\":426001},\"mailCantonId\":{\"value\":136},\"mailCantonCode\":{\"value\":\"2070\"},\"lifetime\":{\"beginDateTime\":\"2005-01-01T00:00:00\",\"endDateTime\":null},\"timestamp\":{\"value\":\"2013-04-10T16:53:06.937Z\"},\"operator\":{\"value\":\"VLM\\\\CRABSSISservice\"},\"modification\":2,\"organisation\":0}");
 
             public ImportSubaddressFromCrab Command026 =>
-                JsonConvert.DeserializeObject<ImportSubaddressFromCrab>(
+                Deserialize<ImportSubaddressFromCrab>(
                     "{\"subaddressId\":{\"value\":426001},\"houseNumberId\":{\"value\":2343242},\"boxNumber\":{\"value\":\"5\"},\"boxNumberType\":{\"value\":\"2\"},\"lifetime\":{\"beginDateTime\":\"1830-01-01T00:00:00\",\"endDateTime\":null},\"timestamp\":{\"value\":\"2013-04-10T16:53:40.993Z\"},\"operator\":{\"value\":\"VLM\\\\CRABSSISservice\"},\"modification\":2,\"organisation\":0}");
 
             public ImportSubaddressStatusFromCrab Command027 =>
-                JsonConvert.DeserializeObject<ImportSubaddressStatusFromCrab>(
+                Deserialize<ImportSubaddressStatusFromCrab>(
                     "{\"subaddressStatusId\":{\"value\":105865},\"subaddressId\":{\"value\":426001},\"addressStatus\":2,\"lifetime\":{\"beginDateTime\":\"1830-01-01T00:00:00\",\"endDateTime\":null},\"timestamp\":{\"value\":\"2013-04-10T16:53:47.483Z\"},\"operator\":{\"value\":\"VLM\\\\CRABSSISservice\"},\"modification\":2,\"organisation\":0}");
 
             public ImportSubaddressFromCrab Command028 =>
-                JsonConvert.DeserializeObject<ImportSubaddressFromCrab>(
+                Deserialize<ImportSubaddressFromCrab>(
                     "{\"subaddressId\":{\"value\":426001},\"houseNumberId\":{\"value\":2343242},\"boxNumber\":{\"value\":\"5\"},\"boxNumberType\":{\"value\":\"2\"},\"lifetime\":{\"beginDateTime\":\"1830-01-01T00:00:00\",\"endDateTime\":null},\"timestamp\":{\"value\":\"2017-10-18T12:11:21.03Z\"},\"operator\":{\"value\":\"VLM\\\\godderisdr\"},\"modification\":2,\"organisation\":0}");
 
             public AssignPersistentLocalIdForCrabSubaddressId Command029 =>
-                JsonConvert.DeserializeObject<AssignPersistentLocalIdForCrabSubaddressId>(
+                Deserialize<AssignPersistentLocalIdForCrabSubaddressId>(
                     "{\"subaddressId\":{\"value\":426001},\"persistentLocalId\":{\"value\":\"4298295\"},\"assignmentDate\":{\"value\":\"2017-10-10T14:39:22.2052275Z\"}}");
         }
 
         private TestSubaddress_426001Data _ { get; }
 
-        public IEventCentricTestSpecificationBuilder Command001() => new AutoFixtureScenario(new Fixture())
-            .GivenNone()
-            .When(_.Command001)
-            .Then(_.Id,
-                new AddressWasRegistered(_.AddressId, new StreetNameId(_.Command001.StreetNameId.CreateDeterministicId()), _.Command001.HouseNumber),
-                _.Command001.ToLegacyEvent());
+        public IEventCentricTestSpecificationBuilder Command001()
+        {
+            var f = new Fixture();
+            f.Customize(new NodaTimeCustomization());
+            return new AutoFixtureScenario(f)
+                .GivenNone()
+                .When(_.Command001)
+                .Then(_.Id,
+                    new AddressWasRegistered(_.AddressId,
+                        new StreetNameId(_.Command001.StreetNameId.CreateDeterministicId()), _.Command001.HouseNumber),
+                    _.Command001.ToLegacyEvent());
+        }
 
         public IEventCentricTestSpecificationBuilder Command002() => new AutoFixtureScenario(new Fixture())
             .Given(Command001())

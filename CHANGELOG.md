@@ -1,3 +1,15 @@
+# [3.58.0](https://github.com/informatievlaanderen/address-registry/compare/v3.57.2...v3.58.0) (2022-10-07)
+
+
+### Bug Fixes
+
+* build wms refactoring ([2ed5c53](https://github.com/informatievlaanderen/address-registry/commit/2ed5c53ac2b90d3fe5c4f42be118c1ab36db4ac5))
+
+
+### Features
+
+* refactor wms ([f4acdab](https://github.com/informatievlaanderen/address-registry/commit/f4acdab1a1c4603e15070058d8c699dbb9788fa2))
+
 ## [3.57.2](https://github.com/informatievlaanderen/address-registry/compare/v3.57.1...v3.57.2) (2022-10-05)
 
 

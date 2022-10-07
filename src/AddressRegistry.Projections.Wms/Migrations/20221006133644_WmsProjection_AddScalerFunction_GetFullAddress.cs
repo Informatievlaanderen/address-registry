@@ -1,9 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
-
-#nullable disable
-
 namespace AddressRegistry.Projections.Wms.Migrations
 {
+    using Microsoft.EntityFrameworkCore.Migrations;
+
     public partial class WmsProjection_AddScalerFunction_GetFullAddress : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)

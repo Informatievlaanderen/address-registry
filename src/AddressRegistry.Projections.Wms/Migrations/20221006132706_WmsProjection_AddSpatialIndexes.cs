@@ -1,4 +1,4 @@
-﻿namespace AddressRegistry.Projections.Wms.Migrations
+namespace AddressRegistry.Projections.Wms.Migrations
 {
     using Infrastructure;
     using Microsoft.EntityFrameworkCore.Migrations;

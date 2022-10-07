@@ -8,19 +8,22 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 
+#nullable disable
+
 namespace AddressRegistry.Projections.Wms.Migrations
 {
     [DbContext(typeof(WmsContext))]
-    [Migration("20220323162455_WmsProjection_AddSpatialIndexes")]
-    partial class WmsProjection_AddSpatialIndexes
+    [Migration("20221006092707_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.6")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "6.0.3")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("AddressRegistry.Projections.Wms.AddressDetail.AddressDetailItem", b =>
                 {
@@ -37,6 +40,12 @@ namespace AddressRegistry.Projections.Wms.Migrations
                     b.Property<string>("HouseNumber")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("HouseNumberLabel")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("HouseNumberLabelLength")
+                        .HasColumnType("int");
+
                     b.Property<int>("LabelType")
                         .HasColumnType("int");
 
@@ -49,16 +58,17 @@ namespace AddressRegistry.Projections.Wms.Migrations
                     b.Property<Point>("Position")
                         .HasColumnType("sys.geometry");
 
-                    b.Property<string>("PositionAsText")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("nvarchar(max)")
-                        .HasComputedColumnSql("[Position].STAsText()", true);
-
                     b.Property<string>("PositionMethod")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PositionSpecification")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("PositionX")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("PositionY")
+                        .HasColumnType("float");
 
                     b.Property<string>("PostalCode")
                         .HasColumnType("nvarchar(max)");
@@ -79,8 +89,9 @@ namespace AddressRegistry.Projections.Wms.Migrations
                         .HasColumnType("datetimeoffset")
                         .HasColumnName("VersionTimestamp");
 
-                    b.HasKey("AddressId")
-                        .IsClustered();
+                    b.HasKey("AddressId");
+
+                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("AddressId"));
 
                     b.HasIndex("PersistentLocalId");
 
@@ -88,7 +99,9 @@ namespace AddressRegistry.Projections.Wms.Migrations
 
                     b.HasIndex("StreetNameId");
 
-                    b.HasIndex("Removed", "Complete");
+                    b.HasIndex("PositionX", "PositionY", "Removed", "Complete", "Status");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("PositionX", "PositionY", "Removed", "Complete", "Status"), new[] { "StreetNameId" });
 
                     b.ToTable("AddressDetails", "wms.address");
                 });
@@ -110,8 +123,9 @@ namespace AddressRegistry.Projections.Wms.Migrations
                     b.Property<long>("Position")
                         .HasColumnType("bigint");
 
-                    b.HasKey("Name")
-                        .IsClustered();
+                    b.HasKey("Name");
+
+                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Name"));
 
                     b.ToTable("ProjectionStates", "wms.address");
                 });

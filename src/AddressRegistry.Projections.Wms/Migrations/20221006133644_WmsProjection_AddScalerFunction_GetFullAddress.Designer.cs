@@ -13,8 +13,8 @@ using NetTopologySuite.Geometries;
 namespace AddressRegistry.Projections.Wms.Migrations
 {
     [DbContext(typeof(WmsContext))]
-    [Migration("20220405223000_WmsProjection_AddScalerFunction_FnSplitString")]
-    partial class WmsProjection_AddScalerFunction_FnSplitString
+    [Migration("20221006133644_WmsProjection_AddScalerFunction_GetFullAddress")]
+    partial class WmsProjection_AddScalerFunction_GetFullAddress
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -40,6 +40,12 @@ namespace AddressRegistry.Projections.Wms.Migrations
                     b.Property<string>("HouseNumber")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("HouseNumberLabel")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("HouseNumberLabelLength")
+                        .HasColumnType("int");
+
                     b.Property<int>("LabelType")
                         .HasColumnType("int");
 
@@ -52,16 +58,17 @@ namespace AddressRegistry.Projections.Wms.Migrations
                     b.Property<Point>("Position")
                         .HasColumnType("sys.geometry");
 
-                    b.Property<string>("PositionAsText")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("nvarchar(max)")
-                        .HasComputedColumnSql("[Position].STAsText()", true);
-
                     b.Property<string>("PositionMethod")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PositionSpecification")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("PositionX")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("PositionY")
+                        .HasColumnType("float");
 
                     b.Property<string>("PostalCode")
                         .HasColumnType("nvarchar(max)");
@@ -92,7 +99,9 @@ namespace AddressRegistry.Projections.Wms.Migrations
 
                     b.HasIndex("StreetNameId");
 
-                    b.HasIndex("Removed", "Complete");
+                    b.HasIndex("PositionX", "PositionY", "Removed", "Complete", "Status");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("PositionX", "PositionY", "Removed", "Complete", "Status"), new[] { "StreetNameId" });
 
                     b.ToTable("AddressDetails", "wms.address");
                 });

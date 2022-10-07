@@ -1,7 +1,6 @@
 namespace AddressRegistry.Projections.Wms.AddressDetail
 {
     using System;
-    using System.ComponentModel.DataAnnotations.Schema;
     using Address;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.Utilities;
@@ -19,15 +18,17 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
         public Guid StreetNameId { get; set; }
         public string? PostalCode { get; set; }
         public string? HouseNumber { get; set; }
+        public string? HouseNumberLabel { get; private set; }
+        public int? HouseNumberLabelLength { get; private set; }
         public WmsAddressLabelType LabelType { get; set; }
 
         public string? BoxNumber { get; set; }
         public string? Status { get; set; }
         public bool? OfficiallyAssigned { get; set; }
-        public Point? Position { get; set; }
+        public Point? Position { get; private set; }
+        public double? PositionX { get; private set; }
+        public double? PositionY { get; private set; }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public string? PositionAsText { get; }
         public string? PositionMethod { get; set; }
         public string? PositionSpecification { get; set; }
 
@@ -47,6 +48,19 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
         }
 
         public string? VersionAsString { get; protected set; }
+
+        public void SetHouseNumberLabel(string? label)
+        {
+            HouseNumberLabel = label;
+            HouseNumberLabelLength = label?.Length;
+        }
+
+        public void SetPosition(Point? position)
+        {
+            Position = position;
+            PositionX = position?.X;
+            PositionY = position?.Y;
+        }
     }
 
     public class AddressDetailItemConfiguration : IEntityTypeConfiguration<AddressDetailItem>
@@ -73,9 +87,6 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
             b.Property(p => p.Position)
                 .HasColumnType("sys.geometry");
 
-            b.Property(p => p.PositionAsText)
-                .HasComputedColumnSql("[Position].STAsText()", stored: true);
-
             b.Property(p => p.PositionSpecification);
             b.Property(p => p.PositionMethod);
             b.Property(p => p.Complete);
@@ -86,7 +97,7 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
             b.HasIndex(p => p.PersistentLocalId);
             b.HasIndex(p => p.Status);
             b.HasIndex(p => p.StreetNameId);
-            b.HasIndex(p => new  {p.Removed, p.Complete, p.Status} ).IncludeProperties(x => x.StreetNameId);
+            b.HasIndex(p => new  {p.PositionX, p.PositionY, p.Removed, p.Complete, p.Status} ).IncludeProperties(x => x.StreetNameId);
         }
     }
 }

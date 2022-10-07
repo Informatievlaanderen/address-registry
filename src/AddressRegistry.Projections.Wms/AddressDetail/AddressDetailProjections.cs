@@ -16,10 +16,10 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
     [ConnectedProjectionDescription("Projectie die de adressen data voor het WMS adressenregister voorziet.")]
     public class AddressDetailProjections : ConnectedProjection<WmsContext>
     {
-        private static readonly string AdresStatusInGebruik = AdresStatus.InGebruik.ToString();
-        private static readonly string AdresStatusGehistoreerd = AdresStatus.Gehistoreerd.ToString();
-        private static readonly string AdresStatusVoorgesteld = AdresStatus.Voorgesteld.ToString();
-        private static readonly string AdresStatusAfgekeurd = AdresStatus.Afgekeurd.ToString();
+        public static readonly string AdresStatusInGebruik = AdresStatus.InGebruik.ToString();
+        public static readonly string AdresStatusGehistoreerd = AdresStatus.Gehistoreerd.ToString();
+        public static readonly string AdresStatusVoorgesteld = AdresStatus.Voorgesteld.ToString();
+        public static readonly string AdresStatusAfgekeurd = AdresStatus.Afgekeurd.ToString();
 
         private readonly WKBReader _wkbReader;
 
@@ -45,36 +45,41 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
             {
                 await context.FindAndUpdateAddressDetail(
                     message.Message.AddressId,
-                    item =>
+                    address =>
                     {
-                        item.Complete = true;
-                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                        address.Complete = true;
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct);
+                    ct,
+                    updateHouseNumberLabelsAfterAddressUpdate: true);
             });
 
             When<Envelope<AddressBecameCurrent>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressDetail(
                     message.Message.AddressId,
-                    item =>
+                    address =>
                     {
-                        item.Status = AdresStatusInGebruik;
-                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                        address.Status = AdresStatusInGebruik;
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct);
+                    ct,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true);
             });
 
             When<Envelope<AddressBecameIncomplete>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressDetail(
                     message.Message.AddressId,
-                    item =>
+                    address =>
                     {
-                        item.Complete = false;
-                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                        address.Complete = false;
+                        address.SetHouseNumberLabel(null);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
                     ct,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
                     allowUpdateRemovedAddress: true);
             });
 
@@ -153,12 +158,14 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
             {
                 await context.FindAndUpdateAddressDetail(
                     message.Message.AddressId,
-                    item =>
+                    address =>
                     {
-                        item.Status = null;
-                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                        address.Status = null;
+                        address.SetHouseNumberLabel(null);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
                     ct,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
                     allowUpdateRemovedAddress: true);
             });
 
@@ -166,12 +173,14 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
             {
                 await context.FindAndUpdateAddressDetail(
                     message.Message.AddressId,
-                    item =>
+                    address =>
                     {
-                        item.Status = null;
-                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                        address.Status = null;
+                        address.SetHouseNumberLabel(null);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
                     ct,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
                     allowUpdateRemovedAddress: true);
             });
 
@@ -203,12 +212,14 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
             {
                 await context.FindAndUpdateAddressDetail(
                     message.Message.AddressId,
-                    item =>
+                    address =>
                     {
-                        item.Status = AdresStatusInGebruik;
-                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                        address.Status = AdresStatusInGebruik;
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct);
+                    ct,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true);
             });
 
             When<Envelope<AddressWasCorrectedToNotOfficiallyAssigned>>(async (context, message, ct) =>
@@ -239,24 +250,28 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
             {
                 await context.FindAndUpdateAddressDetail(
                     message.Message.AddressId,
-                    item =>
+                    address =>
                     {
-                        item.Status = AdresStatusVoorgesteld;
-                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                        address.Status = AdresStatusVoorgesteld;
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct);
+                    ct,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true);
             });
 
             When<Envelope<AddressWasCorrectedToRetired>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressDetail(
                     message.Message.AddressId,
-                    item =>
+                    address =>
                     {
-                        item.Status = AdresStatusGehistoreerd;
-                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                        address.Status = AdresStatusGehistoreerd;
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct);
+                    ct,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true);
             });
 
             When<Envelope<AddressWasOfficiallyAssigned>>(async (context, message, ct) =>
@@ -275,55 +290,62 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
             {
                 await context.FindAndUpdateAddressDetail(
                     message.Message.AddressId,
-                    item =>
+                    address =>
                     {
-                        item.Status = AdresStatusVoorgesteld;
-                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                        address.Status = AdresStatusVoorgesteld;
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct);
+                    ct,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true);
             });
 
             When<Envelope<AddressWasRetired>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressDetail(
                     message.Message.AddressId,
-                    item =>
+                    address =>
                     {
-                        item.Status = AdresStatusGehistoreerd;
-                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                        address.Status = AdresStatusGehistoreerd;
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct);
+                    ct,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true);
             });
 
             When<Envelope<AddressWasRemoved>>(async (context, message, ct) =>
             {
-                _ = await context.FindAndUpdateAddressDetail(
+                await context.FindAndUpdateAddressDetail(
                     message.Message.AddressId,
-                    item =>
+                    address =>
                     {
-                        item.Removed = true;
-                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                        address.Removed = true;
+                        address.SetHouseNumberLabel(null);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
                     ct,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
                     allowUpdateRemovedAddress: true);
             });
 
             When<Envelope<AddressWasPositioned>>(async (context, message, ct) =>
             {
-                var newPosition = ParsePosition(message.Message.ExtendedWkbGeometry);
                 await context.FindAndUpdateAddressDetail(
                     message.Message.AddressId,
-                    (address) =>
+                    address =>
                     {
-                        address.Position = newPosition;
-                        address.PositionMethod = ConvertGeometryMethodToString(message.Message.GeometryMethod)
-                            ?.ToString();
+                        address.SetPosition(ParsePosition(message.Message.ExtendedWkbGeometry));
+                        address.PositionMethod =
+                            ConvertGeometryMethodToString(message.Message.GeometryMethod)?.ToString();
                         address.PositionSpecification =
                             MapGeometrySpecificationToPositieSpecificatie(message.Message.GeometrySpecification)
                                 ?.ToString();
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
                     ct,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true,
                     allowUpdateRemovedAddress: true);
             });
 
@@ -331,56 +353,62 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
             {
                 await context.FindAndUpdateAddressDetail(
                     message.Message.AddressId,
-                    item =>
+                    address =>
                     {
-                        item.HouseNumber = message.Message.HouseNumber;
-                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                        address.HouseNumber = message.Message.HouseNumber;
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct);
+                    ct,
+                    updateHouseNumberLabelsAfterAddressUpdate: true);
             });
 
             When<Envelope<AddressHouseNumberWasCorrected>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressDetail(
                     message.Message.AddressId,
-                    item =>
+                    address =>
                     {
-                        item.HouseNumber = message.Message.HouseNumber;
-                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                        address.HouseNumber = message.Message.HouseNumber;
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct);
+                    ct,
+                    updateHouseNumberLabelsAfterAddressUpdate: true);
             });
 
             When<Envelope<AddressPositionWasCorrected>>(async (context, message, ct) =>
             {
-                var newPosition = ParsePosition(message.Message.ExtendedWkbGeometry);
                 await context.FindAndUpdateAddressDetail(
                     message.Message.AddressId,
-                    (address) =>
+                    address =>
                     {
-                        address.Position = newPosition;
-                        address.PositionMethod = ConvertGeometryMethodToString(message.Message.GeometryMethod)
-                            ?.ToString();
+                        address.SetPosition(ParsePosition(message.Message.ExtendedWkbGeometry));
+                        address.PositionMethod =
+                            ConvertGeometryMethodToString(message.Message.GeometryMethod)?.ToString();
                         address.PositionSpecification =
                             MapGeometrySpecificationToPositieSpecificatie(message.Message.GeometrySpecification)
                                 ?.ToString();
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct);
+                    ct,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true,
+                    allowUpdateRemovedAddress: true);
             });
 
             When<Envelope<AddressPositionWasRemoved>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressDetail(
                     message.Message.AddressId,
-                    (address) =>
+                    address =>
                     {
-                        address.Position = null;
+                        address.SetPosition(null);
                         address.PositionMethod = null;
                         address.PositionSpecification = null;
+                        address.SetHouseNumberLabel(null);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
                     ct,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
                     allowUpdateRemovedAddress: true);
             });
 
@@ -430,7 +458,7 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
         }
 
         private Point ParsePosition(string extendedWkbGeometry)
-            => (Point) _wkbReader.Read(extendedWkbGeometry.ToByteArray());
+            => (Point)_wkbReader.Read(extendedWkbGeometry.ToByteArray());
 
         private static void UpdateVersionTimestamp(AddressDetailItem addressDetailItem, Instant versionTimestamp)
             => addressDetailItem.VersionTimestamp = versionTimestamp;

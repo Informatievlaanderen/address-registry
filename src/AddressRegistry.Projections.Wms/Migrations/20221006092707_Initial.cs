@@ -2,9 +2,11 @@
 using Microsoft.EntityFrameworkCore.Migrations;
 using NetTopologySuite.Geometries;
 
+#nullable disable
+
 namespace AddressRegistry.Projections.Wms.Migrations
 {
-    public partial class Initial_WmsProjection : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -21,12 +23,15 @@ namespace AddressRegistry.Projections.Wms.Migrations
                     StreetNameId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     PostalCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     HouseNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    HouseNumberLabel = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    HouseNumberLabelLength = table.Column<int>(type: "int", nullable: true),
                     LabelType = table.Column<int>(type: "int", nullable: false),
                     BoxNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     OfficiallyAssigned = table.Column<bool>(type: "bit", nullable: true),
                     Position = table.Column<Point>(type: "sys.geometry", nullable: true),
-                    PositionAsText = table.Column<string>(type: "nvarchar(max)", nullable: true, computedColumnSql: "[Position].STAsText()", stored: true),
+                    PositionX = table.Column<double>(type: "float", nullable: true),
+                    PositionY = table.Column<double>(type: "float", nullable: true),
                     PositionMethod = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PositionSpecification = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Complete = table.Column<bool>(type: "bit", nullable: false),
@@ -64,10 +69,11 @@ namespace AddressRegistry.Projections.Wms.Migrations
                 column: "PersistentLocalId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AddressDetails_Removed_Complete",
+                name: "IX_AddressDetails_PositionX_PositionY_Removed_Complete_Status",
                 schema: "wms.address",
                 table: "AddressDetails",
-                columns: new[] { "Removed", "Complete" });
+                columns: new[] { "PositionX", "PositionY", "Removed", "Complete", "Status" })
+                .Annotation("SqlServer:Include", new[] { "StreetNameId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AddressDetails_Status",

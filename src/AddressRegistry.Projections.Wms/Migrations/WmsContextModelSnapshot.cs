@@ -38,6 +38,12 @@ namespace AddressRegistry.Projections.Wms.Migrations
                     b.Property<string>("HouseNumber")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("HouseNumberLabel")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("HouseNumberLabelLength")
+                        .HasColumnType("int");
+
                     b.Property<int>("LabelType")
                         .HasColumnType("int");
 
@@ -50,16 +56,17 @@ namespace AddressRegistry.Projections.Wms.Migrations
                     b.Property<Point>("Position")
                         .HasColumnType("sys.geometry");
 
-                    b.Property<string>("PositionAsText")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("nvarchar(max)")
-                        .HasComputedColumnSql("[Position].STAsText()", true);
-
                     b.Property<string>("PositionMethod")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PositionSpecification")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("PositionX")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("PositionY")
+                        .HasColumnType("float");
 
                     b.Property<string>("PostalCode")
                         .HasColumnType("nvarchar(max)");
@@ -90,9 +97,9 @@ namespace AddressRegistry.Projections.Wms.Migrations
 
                     b.HasIndex("StreetNameId");
 
-                    b.HasIndex("Removed", "Complete", "Status");
+                    b.HasIndex("PositionX", "PositionY", "Removed", "Complete", "Status");
 
-                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("Removed", "Complete", "Status"), new[] { "StreetNameId" });
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("PositionX", "PositionY", "Removed", "Complete", "Status"), new[] { "StreetNameId" });
 
                     b.ToTable("AddressDetails", "wms.address");
                 });

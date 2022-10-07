@@ -1,7 +1,10 @@
 namespace AddressRegistry.Tests
 {
     using Address;
+    using NetTopologySuite.Geometries;
+    using NetTopologySuite.Geometries.Implementation;
     using NetTopologySuite.IO;
+    using NetTopologySuite.IO.GML2;
 
     public static class GeometryHelpers
     {
@@ -46,6 +49,23 @@ namespace AddressRegistry.Tests
         {
             var geometry = new WKTReader { DefaultSRID = SpatialReferenceSystemId.Lambert72 }.Read(wkt);
             return new WkbGeometry(WkbWriter.Write(geometry));
+        }
+
+        public static GMLReader CreateGmlReader() =>
+            new GMLReader(
+                new GeometryFactory(
+                    new PrecisionModel(PrecisionModels.Floating),
+                    StreetName.ExtendedWkbGeometry.SridLambert72,
+                    new DotSpatialAffineCoordinateSequenceFactory(Ordinates.XY)));
+
+        public static ExtendedWkbGeometry ToAddressExtendedWkbGeometry(this string gml)
+        {
+            var gmlReader = CreateGmlReader();
+            var geometry = gmlReader.Read(gml);
+
+            geometry.SRID = SpatialReferenceSystemId.Lambert72;
+
+            return new ExtendedWkbGeometry(geometry.AsBinary());
         }
     }
 }

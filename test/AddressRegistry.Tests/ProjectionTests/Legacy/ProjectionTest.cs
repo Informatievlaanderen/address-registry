@@ -25,6 +25,11 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
             await specification.Assert(CreateContext, _logger);
         }
 
+        protected async Task Assert(ConnectedProjectionTestSpecification<TContext> specification, TContext context)
+        {
+            await specification.Assert(() => context, _logger);
+        }
+
         protected ConnectedProjectionScenario<TContext> Given(params object[] messages)
         {
             var projection = CreateProjection();
@@ -37,7 +42,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
         protected abstract TContext CreateContext(DbContextOptions<TContext> options);
         protected abstract TProjection CreateProjection();
 
-        private TContext CreateContext()
+        protected TContext CreateContext()
         {
             var options = new DbContextOptionsBuilder<TContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())

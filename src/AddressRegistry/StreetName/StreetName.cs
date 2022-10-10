@@ -256,12 +256,6 @@ namespace AddressRegistry.StreetName
                 }
             }
 
-            GuardAddressIsUnique(
-                    addressToCorrect.AddressPersistentLocalId,
-                    addressToCorrect.HouseNumber,
-                    addressToCorrect.BoxNumber);
-
-            addressToCorrect.CorrectRetirement();
             addressToCorrect.CorrectRetirement(() => GuardAddressIsUnique(
                 addressToCorrect.AddressPersistentLocalId,
                 addressToCorrect.HouseNumber,
@@ -381,7 +375,6 @@ namespace AddressRegistry.StreetName
                 }
             }
 
-            GuardAddressIsUnique(
             addressToCorrect.CorrectAddressRejection(() => GuardAddressIsUnique(
                 addressToCorrect.AddressPersistentLocalId,
                 addressToCorrect.HouseNumber,

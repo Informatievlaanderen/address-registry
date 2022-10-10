@@ -262,6 +262,10 @@ namespace AddressRegistry.StreetName
                     addressToCorrect.BoxNumber);
 
             addressToCorrect.CorrectRetirement();
+            addressToCorrect.CorrectRetirement(() => GuardAddressIsUnique(
+                addressToCorrect.AddressPersistentLocalId,
+                addressToCorrect.HouseNumber,
+                addressToCorrect.BoxNumber));
         }
 
         public void RejectAddress(AddressPersistentLocalId addressPersistentLocalId)
@@ -378,11 +382,10 @@ namespace AddressRegistry.StreetName
             }
 
             GuardAddressIsUnique(
+            addressToCorrect.CorrectAddressRejection(() => GuardAddressIsUnique(
                 addressToCorrect.AddressPersistentLocalId,
                 addressToCorrect.HouseNumber,
-                addressToCorrect.BoxNumber);
-
-            addressToCorrect.CorrectAddressRejection();
+                addressToCorrect.BoxNumber));
         }
 
         private void GuardPostalCodeMunicipalityMatchesStreetNameMunicipality(MunicipalityId municipalityIdByPostalCode)

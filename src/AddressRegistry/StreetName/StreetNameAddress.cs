@@ -103,7 +103,7 @@ namespace AddressRegistry.StreetName
             }
         }
 
-        public void CorrectRetirement()
+        public void CorrectRetirement(Action guardAddressIsUnique)
         {
             GuardNotRemovedAddress();
 
@@ -114,6 +114,7 @@ namespace AddressRegistry.StreetName
                 case AddressStatus.Proposed or AddressStatus.Rejected:
                     throw new AddressHasInvalidStatusException();
                 case AddressStatus.Retired:
+                    guardAddressIsUnique();
                     Apply(new AddressWasCorrectedFromRetiredToCurrent(_streetNamePersistentLocalId, AddressPersistentLocalId));
                     break;
             }
@@ -512,7 +513,7 @@ namespace AddressRegistry.StreetName
             Apply(new AddressWasRemovedBecauseHouseNumberWasRemoved(_streetNamePersistentLocalId, AddressPersistentLocalId));
         }
 
-        public void CorrectAddressRejection()
+        public void CorrectAddressRejection(Action guardAddressIsUnique)
         {
             GuardNotRemovedAddress();
 
@@ -525,6 +526,8 @@ namespace AddressRegistry.StreetName
             {
                 throw new AddressHasInvalidStatusException();
             }
+
+            guardAddressIsUnique();
 
             Apply(new AddressWasCorrectedFromRejectedToProposed(_streetNamePersistentLocalId, AddressPersistentLocalId));
         }

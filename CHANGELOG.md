@@ -1,3 +1,10 @@
+# [3.59.0](https://github.com/informatievlaanderen/address-registry/compare/v3.58.2...v3.59.0) (2022-10-10)
+
+
+### Features
+
+* wms v2 ([9af46cf](https://github.com/informatievlaanderen/address-registry/commit/9af46cfb57080c5f7e8bd8c8524258a66c7e2209))
+
 ## [3.58.2](https://github.com/informatievlaanderen/address-registry/compare/v3.58.1...v3.58.2) (2022-10-10)
 
 

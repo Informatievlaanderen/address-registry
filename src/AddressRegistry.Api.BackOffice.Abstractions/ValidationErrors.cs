@@ -44,6 +44,12 @@ namespace AddressRegistry.Api.BackOffice.Abstractions
             public const string AddressIsNotOfficiallyAssigned = "AdresNietOfficeeltoegekend";
             public const string CannotBeCorrectToProposedFromRejected = "AdresInGebruikOfGehistoreerd";
 
+            public const string AddressRejectionCannotBeCorrectedBecauseParentInvalidStatus =
+                "AdresHuisnummerVoorgesteldAfgekeurdOfGehistoreerd";
+
+            public const string AddressRetirementCannotBeCorrectedBecauseParentInvalidStatus =
+                AddressRejectionCannotBeCorrectedBecauseParentInvalidStatus;
+
             public const string PostalCodeNotInMunicipality = "AdresPostinfoNietInGemeente";
         }
     }
@@ -97,7 +103,66 @@ namespace AddressRegistry.Api.BackOffice.Abstractions
             public const string CannotBeCorrectToProposedFromRejected = "Deze actie is enkel toegestaan op een adres met status 'afgekeurd'.";
             public const string AddressCannotCorrectRetirement = "Deze actie is enkel toegestaan op adressen met status 'gehistoreerd'.";
 
+            public const string AddressRejectionCannotBeCorrectedBecauseParentInvalidStatus =
+                "Deze actie is enkel toegestaan op adressen waarbij het huisnummer de status ‘inGebruik’ heeft.";
+
+            public const string AddressRetirementCannotBeCorrectedBecauseParentInvalidStatus =
+                AddressRejectionCannotBeCorrectedBecauseParentInvalidStatus;
+
             public const string PostalCodeNotInMunicipality = "De ingevoerde postcode wordt niet gebruikt binnen deze gemeente.";
+        }
+    }
+
+    // Voorstel om errors te refactoren per feature
+    public static class ValidationErrors2
+    {
+        public static class Common
+        {
+            public static class AddressAlreadyExists
+            {
+                public const string Code = "AdresBestaandeHuisnummerBusnummerCombinatie";
+                public const string Message = "Deze combinatie huisnummer-busnummer bestaat reeds voor de opgegeven straatnaam.";
+            }
+
+            public static class AddressRemoved
+            {
+                public const string Message = "Verwijderde adres.";
+            }
+
+            public static class AddressNotFound
+            {
+                public const string Message = "Onbestaand adres.";
+            }
+        }
+
+        public static class CorrectRejection
+        {
+            public static class ParentInvalidStatus
+            {
+                public const string Code = "AdresHuisnummerVoorgesteldAfgekeurdOfGehistoreerd";
+                public const string Message = "Deze actie is enkel toegestaan op adressen waarbij het huisnummer de status ‘inGebruik’ heeft.";
+            }
+
+            public static class AddressIncorrectStatus
+            {
+                public const string Code = "AdresInGebruikOfGehistoreerd";
+                public const string Message = "Deze actie is enkel toegestaan op een adres met status 'afgekeurd'.";
+            }
+        }
+
+        public static class CorrectRetirement
+        {
+            public static class ParentInvalidStatus
+            {
+                public const string Code = "AdresHuisnummerVoorgesteldAfgekeurdOfGehistoreerd";
+                public const string Message = "Deze actie is enkel toegestaan op adressen waarbij het huisnummer de status ‘inGebruik’ heeft.";
+            }
+
+            public static class AddressIncorrectStatus
+            {
+                public const string Code = "AdresInGebruikOfGehistoreerd";
+                public const string Message = "Deze actie is enkel toegestaan op een adres met status 'afgekeurd'.";
+            }
         }
     }
 }

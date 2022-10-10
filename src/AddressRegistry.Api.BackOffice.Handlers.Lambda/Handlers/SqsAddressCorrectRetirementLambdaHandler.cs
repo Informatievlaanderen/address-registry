@@ -63,6 +63,10 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                     ValidationErrorMessages.Address.AddressAlreadyExists,
                     ValidationErrors.Address.AddressAlreadyExists),
 
+                ParentAddressHasInvalidStatusException => new TicketError(
+                    ValidationErrors2.CorrectRetirement.ParentInvalidStatus.Message,
+                    ValidationErrors2.CorrectRetirement.ParentInvalidStatus.Code),
+
                 _ => null
             };
         }

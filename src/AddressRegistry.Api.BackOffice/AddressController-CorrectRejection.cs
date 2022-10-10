@@ -118,17 +118,22 @@ namespace AddressRegistry.Api.BackOffice
             {
                 throw exception switch
                 {
-                    AddressIsNotFoundException => new ApiException(ValidationErrorMessages.Address.AddressNotFound, StatusCodes.Status404NotFound),
-                    AddressIsRemovedException => new ApiException(ValidationErrorMessages.Address.AddressRemoved, StatusCodes.Status410Gone),
+                    AddressIsNotFoundException => new ApiException(ValidationErrors2.Common.AddressNotFound.Message, StatusCodes.Status404NotFound),
+                    AddressIsRemovedException => new ApiException(ValidationErrors2.Common.AddressRemoved.Message, StatusCodes.Status410Gone),
                     AddressHasInvalidStatusException => CreateValidationException(
-                        ValidationErrors.Address.CannotBeCorrectToProposedFromRejected,
+                        ValidationErrors2.CorrectRejection.AddressIncorrectStatus.Code,
                         string.Empty,
-                        ValidationErrorMessages.Address.CannotBeCorrectToProposedFromRejected),
+                        ValidationErrors2.CorrectRejection.AddressIncorrectStatus.Message),
 
                     AddressAlreadyExistsException => CreateValidationException(
-                        ValidationErrors.Address.AddressAlreadyExists,
+                        ValidationErrors2.Common.AddressAlreadyExists.Code,
                         string.Empty,
-                        ValidationErrorMessages.Address.AddressAlreadyExists),
+                        ValidationErrors2.Common.AddressAlreadyExists.Message),
+
+                    ParentAddressHasInvalidStatusException => CreateValidationException(
+                        ValidationErrors2.CorrectRejection.ParentInvalidStatus.Code,
+                        string.Empty,
+                        ValidationErrors2.CorrectRejection.ParentInvalidStatus.Message),
 
                     _ => new ValidationException(new List<ValidationFailure>
                         { new(string.Empty, exception.Message) })

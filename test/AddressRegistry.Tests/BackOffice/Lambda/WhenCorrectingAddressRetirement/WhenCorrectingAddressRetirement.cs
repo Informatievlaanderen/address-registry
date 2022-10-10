@@ -173,6 +173,42 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRetiremen
         }
 
         [Fact]
+        public async Task WhenParentAddressHasInvalidStatusException_ThenTicketingErrorIsExpected()
+        {
+            // Arrange
+            var ticketing = new Mock<ITicketing>();
+
+            var sut = new SqsAddressCorrectRetirementLambdaHandler(
+                Container.Resolve<IConfiguration>(),
+                new FakeRetryPolicy(),
+                ticketing.Object,
+                Mock.Of<IStreetNames>(),
+                MockExceptionIdempotentCommandHandler<ParentAddressHasInvalidStatusException>().Object);
+
+            // Act
+            await sut.Handle(new SqsLambdaAddressCorrectRetirementRequest
+            {
+                Request = new AddressBackOfficeCorrectRetirementRequest
+                {
+                    PersistentLocalId = Fixture.Create<int>(),
+                },
+                MessageGroupId = Fixture.Create<int>().ToString(),
+                TicketId = Guid.NewGuid(),
+                Metadata = new Dictionary<string, object>(),
+                Provenance = Fixture.Create<Provenance>()
+            }, CancellationToken.None);
+
+            //Assert
+            ticketing.Verify(x =>
+                x.Error(
+                    It.IsAny<Guid>(),
+                    new TicketError(
+                        "Deze actie is enkel toegestaan op adressen waarbij het huisnummer de status ‘inGebruik’ heeft.",
+                        "AdresHuisnummerVoorgesteldAfgekeurdOfGehistoreerd"),
+                    CancellationToken.None));
+        }
+
+        [Fact]
         public async Task WhenIdempotencyException_ThenTicketingCompleteIsExpected()
         {
             // Arrange

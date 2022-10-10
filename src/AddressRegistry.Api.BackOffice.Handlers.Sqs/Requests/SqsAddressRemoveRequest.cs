@@ -4,6 +4,6 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests
 
     public sealed class SqsAddressRemoveRequest : SqsRequest, IHasBackOfficeRequest<AddressBackOfficeRemoveRequest>
     {
-        public AddressBackOfficeRemoveRequest Request { get; set; }
+        public AddressBackOfficeRemoveRequest? Request { get; set; }
     }
 }

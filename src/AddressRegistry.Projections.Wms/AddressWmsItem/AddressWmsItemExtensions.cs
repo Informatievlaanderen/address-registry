@@ -1,6 +1,6 @@
 // ReSharper disable CompareOfFloatsByEqualityOperator
 
-namespace AddressRegistry.Projections.Wms.AddressDetail
+namespace AddressRegistry.Projections.Wms.AddressWmsItem
 {
     using System;
     using System.Collections.Generic;
@@ -10,17 +10,17 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Microsoft.EntityFrameworkCore;
 
-    public static class AddressDetailExtensions
+    public static class AddressWmsItemExtensions
     {
         public static async Task FindAndUpdateAddressDetail(this WmsContext context,
-            Guid addressId,
-            Action<AddressDetailItem> updateAddressAction,
+            int addressPersistentLocalId,
+            Action<AddressWmsItem> updateAddressAction,
             CancellationToken ct,
             bool updateHouseNumberLabelsBeforeAddressUpdate = false,
             bool updateHouseNumberLabelsAfterAddressUpdate = false,
             bool allowUpdateRemovedAddress = false)
         {
-            var address = await context.FindAddressDetail(addressId, ct, allowUpdateRemovedAddress);
+            var address = await context.FindAddressDetail(addressPersistentLocalId, ct, allowUpdateRemovedAddress);
 
             if (updateHouseNumberLabelsBeforeAddressUpdate)
             {
@@ -29,24 +29,24 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
 
             updateAddressAction(address);
 
-            if (updateHouseNumberLabelsAfterAddressUpdate && address.Position is not null)
+            if (updateHouseNumberLabelsAfterAddressUpdate)
             {
                 await context.UpdateHouseNumberLabels(address, ct, includeAddressInUpdate: true);
             }
         }
 
-        private static async Task<AddressDetailItem> FindAddressDetail(
+        private static async Task<AddressWmsItem> FindAddressDetail(
             this WmsContext context,
-            Guid addressId,
+            int addressPersistentLocalId,
             CancellationToken ct,
             bool allowRemovedAddress = false)
         {
             // NOTE: We cannot depend on SQL computed columns when facing with bulk insert that needs to perform queries.
-            var address = await context.AddressDetail.FindAsync(addressId, cancellationToken: ct);
+            var address = await context.AddressWmsItems.FindAsync(addressPersistentLocalId, cancellationToken: ct);
 
             if (address == null)
             {
-                throw DatabaseItemNotFound(addressId);
+                throw DatabaseItemNotFound(addressPersistentLocalId);
             }
 
             // exclude soft deleted entries, unless allowed
@@ -55,21 +55,16 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
                 return address;
             }
 
-            throw DatabaseItemNotFound(addressId);
+            throw DatabaseItemNotFound(addressPersistentLocalId);
         }
 
-        private static async Task UpdateHouseNumberLabels(this WmsContext context,
-            AddressDetailItem address,
+        public static async Task UpdateHouseNumberLabels(this WmsContext context,
+            AddressWmsItem address,
             CancellationToken ct,
             bool includeAddressInUpdate = false)
         {
-            if (address.Position is null)
-            {
-                return;
-            }
-
             var addressesWithSharedPosition = await context.FindAddressesWithSharedPosition(
-                address.AddressId,
+                address.AddressPersistentLocalId,
                 address.Position,
                 address.Status,
                 ct);
@@ -87,40 +82,38 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
             }
         }
 
-        private static async Task<IList<AddressDetailItem>> FindAddressesWithSharedPosition(
+        private static async Task<IList<AddressWmsItem>> FindAddressesWithSharedPosition(
             this WmsContext context,
-            Guid addressId,
+            int addressPersistentLocalId,
             NetTopologySuite.Geometries.Point position,
             string? status,
             CancellationToken ct)
         {
             return context
-                .AddressDetail
+                .AddressWmsItems
                 .Local
                 .Where(i =>
                     i.PositionX == position.X && i.PositionY == position.Y
-                                              && i.AddressId != addressId
+                                              && i.AddressPersistentLocalId != addressPersistentLocalId
                                               && i.Status == status
-                                              && i.Removed == false
-                                              && i.Complete)
-                .Union(await context.AddressDetail
+                                              && i.Removed == false)
+                .Union(await context.AddressWmsItems
                     .Where(i =>
                         i.PositionX == position.X && i.PositionY == position.Y
-                                                  && i.AddressId != addressId
+                                                  && i.AddressPersistentLocalId != addressPersistentLocalId
                                                   && i.Status == status
-                                                  && i.Removed == false
-                                                  && i.Complete)
+                                                  && i.Removed == false)
                     .ToListAsync(ct))
                 .ToList();
         }
 
-        private static string? CalculateHouseNumberLabel(this IEnumerable<AddressDetailItem> addresses)
+        private static string? CalculateHouseNumberLabel(this IEnumerable<AddressWmsItem> addresses)
         {
             var houseNumberComparer = new HouseNumberComparer();
 
             var orderedAddresses = addresses
-                .Where(i => !string.IsNullOrWhiteSpace(i.HouseNumber) && !i.Removed)
-                .OrderBy(i => i.HouseNumber, houseNumberComparer!)
+                .Where(i => !i.Removed)
+                .OrderBy(i => i.HouseNumber, houseNumberComparer)
                 .ToList();
 
             if (!orderedAddresses.Any())
@@ -136,7 +129,7 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
                 : smallestNumber;
         }
 
-        private static ProjectionItemNotFoundException<AddressDetailProjections> DatabaseItemNotFound(Guid addressId) =>
-            new ProjectionItemNotFoundException<AddressDetailProjections>(addressId.ToString("D"));
+        private static ProjectionItemNotFoundException<AddressWmsItemProjections> DatabaseItemNotFound(int addressPersistentLocalId) =>
+            new ProjectionItemNotFoundException<AddressWmsItemProjections>(addressPersistentLocalId.ToString());
     }
 }

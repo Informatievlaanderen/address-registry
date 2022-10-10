@@ -2,6 +2,7 @@ namespace AddressRegistry.Projections.Wms
 {
     using System;
     using AddressDetail;
+    using AddressWmsItem;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ namespace AddressRegistry.Projections.Wms
     {
         public override string ProjectionStateSchema => Schema.Wms;
         public DbSet<AddressDetailItem> AddressDetail { get; set; }
+        public DbSet<AddressWmsItem.AddressWmsItem> AddressWmsItems { get; set; }
 
         public DbSet<T> Get<T>() where T : class, new()
         {

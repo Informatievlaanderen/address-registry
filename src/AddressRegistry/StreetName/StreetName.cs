@@ -239,12 +239,10 @@ namespace AddressRegistry.StreetName
             var addressToCorrect = StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId);
 
-            GuardAddressIsUnique(
-                    addressToCorrect.AddressPersistentLocalId,
-                    addressToCorrect.HouseNumber,
-                    addressToCorrect.BoxNumber);
-
-            addressToCorrect.CorrectRetirement();
+            addressToCorrect.CorrectRetirement(() => GuardAddressIsUnique(
+                addressToCorrect.AddressPersistentLocalId,
+                addressToCorrect.HouseNumber,
+                addressToCorrect.BoxNumber));
         }
 
         public void RejectAddress(AddressPersistentLocalId addressPersistentLocalId)
@@ -334,7 +332,7 @@ namespace AddressRegistry.StreetName
         public void RemoveAddress(AddressPersistentLocalId addressPersistentLocalId)
         {
             StreetNameAddresses
-                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
+                .GetByPersistentLocalId(addressPersistentLocalId)
                 .Remove();
         }
 
@@ -343,12 +341,10 @@ namespace AddressRegistry.StreetName
             var addressToCorrect = StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId);
 
-            GuardAddressIsUnique(
+            addressToCorrect.CorrectAddressRejection(() => GuardAddressIsUnique(
                 addressToCorrect.AddressPersistentLocalId,
                 addressToCorrect.HouseNumber,
-                addressToCorrect.BoxNumber);
-
-            addressToCorrect.CorrectAddressRejection();
+                addressToCorrect.BoxNumber));
         }
 
         private void GuardPostalCodeMunicipalityMatchesStreetNameMunicipality(MunicipalityId municipalityIdByPostalCode)

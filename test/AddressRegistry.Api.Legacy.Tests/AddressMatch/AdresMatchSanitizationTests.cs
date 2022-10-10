@@ -601,11 +601,11 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
             try
             {
                 _matchActions[testNumber - 1](testNumber);
-                _testContinuations[testNumber - 1].Wait();
+                _testContinuations[testNumber - 1].GetAwaiter().GetResult();
             }
             catch (Exception e)
             {
-                Exception inner = e;
+                var inner = e;
                 while (inner.InnerException != null)
                     inner = inner.InnerException;
 

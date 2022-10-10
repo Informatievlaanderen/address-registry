@@ -131,6 +131,11 @@ namespace AddressRegistry.Api.BackOffice
                         string.Empty,
                         ValidationErrorMessages.Address.AddressAlreadyExists),
 
+                    ParentAddressHasInvalidStatusException => CreateValidationException(
+                        ValidationErrors2.CorrectRetirement.ParentInvalidStatus.Code,
+                        string.Empty,
+                        ValidationErrors2.CorrectRetirement.ParentInvalidStatus.Message),
+
                     _ => new ValidationException(new List<ValidationFailure>
                         { new(string.Empty, exception.Message) })
                 };

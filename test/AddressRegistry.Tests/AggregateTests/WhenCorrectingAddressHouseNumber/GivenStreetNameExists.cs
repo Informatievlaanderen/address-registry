@@ -128,7 +128,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressHouseNumber
                     firstAddressWasMigratedToStreetName,
                     secondAddressWasMigratedToStreetName)
                 .When(command)
-                .Throws(new ParentAddressAlreadyExistsException()));
+                .Throws(new AddressAlreadyExistsException(houseNumberSecondAddress, null)));
         }
 
         [Fact]

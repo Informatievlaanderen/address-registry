@@ -289,7 +289,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                 new FakeRetryPolicy(),
                 ticketing.Object,
                 Mock.Of<IStreetNames>(),
-                MockExceptionIdempotentCommandHandler<BoxNumberAlreadyExistsException>().Object,
+                MockExceptionIdempotentCommandHandler<AddressAlreadyExistsException>().Object,
                 _backOfficeContext,
                 _syndicationContext,
                 _municipalityContext,

@@ -85,6 +85,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressBoxNumber
         [Fact]
         public void WithDuplicateBoxNumberForHouseNumber_ThenThrowsAddressNotFoundException()
         {
+            var houseNumber = new HouseNumber("404");
             var newBoxNumber = new BoxNumber("101");
 
             var command = new CorrectAddressBoxNumber(
@@ -98,7 +99,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressBoxNumber
                 Fixture.Create<AddressPersistentLocalId>(),
                 parentPersistentLocalId: null,
                 Fixture.Create<PostalCode>(),
-                new HouseNumber("404"),
+                houseNumber,
                 new BoxNumber("1XYZ"),
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Lot,
@@ -110,7 +111,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressBoxNumber
                 new AddressPersistentLocalId(456), // DIFFERENT PERSISTENTID
                 parentPersistentLocalId: null,
                 Fixture.Create<PostalCode>(),
-                new HouseNumber("404"), // SAME HOUSENUMBER
+                houseNumber, // SAME HOUSENUMBER
                 newBoxNumber, // SAME BOXNUMBER
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Lot,
@@ -123,7 +124,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressBoxNumber
                     proposeAddressToCorrect,
                     addressToTestFiltering)
                 .When(command)
-                .Throws(new BoxNumberAlreadyExistsException(new BoxNumber("101"))));
+                .Throws(new AddressAlreadyExistsException(houseNumber, newBoxNumber)));
         }
 
         [Fact]

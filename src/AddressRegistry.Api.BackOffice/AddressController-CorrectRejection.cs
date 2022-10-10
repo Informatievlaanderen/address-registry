@@ -49,7 +49,7 @@ namespace AddressRegistry.Api.BackOffice
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(BadRequestResponseExamples))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
-        public async Task<IActionResult> CorrectAddressRejection(
+        public async Task<IActionResult> CorrectRejection(
             [FromServices] BackOfficeContext backOfficeContext,
             [FromServices] IValidator<CorrectAddressFromRejectedToProposedRequest> validator,
             [FromServices] IIfMatchHeaderValidator ifMatchHeaderValidator,
@@ -124,6 +124,11 @@ namespace AddressRegistry.Api.BackOffice
                         ValidationErrors.Address.CannotBeCorrectToProposedFromRejected,
                         string.Empty,
                         ValidationErrorMessages.Address.CannotBeCorrectToProposedFromRejected),
+
+                    AddressAlreadyExistsException => CreateValidationException(
+                        ValidationErrors.Address.AddressAlreadyExists,
+                        string.Empty,
+                        ValidationErrorMessages.Address.AddressAlreadyExists),
 
                     _ => new ValidationException(new List<ValidationFailure>
                         { new(string.Empty, exception.Message) })

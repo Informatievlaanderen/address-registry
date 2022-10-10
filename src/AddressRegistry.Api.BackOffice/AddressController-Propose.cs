@@ -98,7 +98,7 @@ namespace AddressRegistry.Api.BackOffice
                             nameof(request.Huisnummer),
                             ValidationErrorMessages.Address.HouseNumberInvalid),
 
-                    BoxNumberAlreadyExistsException _ =>
+                    AddressAlreadyExistsException _ =>
                         CreateValidationException(
                             ValidationErrors.Address.AddressAlreadyExists,
                             nameof(request.Busnummer),

@@ -53,7 +53,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
             };
 
             //Act
-            Func<Task> act = async () => await _controller.CorrectAddressRejection(
+            Func<Task> act = async () => await _controller.CorrectRejection(
                 _backOfficeContext,
                 mockRequestValidator.Object,
                 MockIfMatchValidator(true),

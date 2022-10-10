@@ -179,7 +179,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressBoxNumber
 
             MockMediator
                 .Setup(x => x.Send(It.IsAny<SqsAddressCorrectBoxNumberRequest>(), CancellationToken.None))
-                .Throws<BoxNumberAlreadyExistsException>();
+                .Throws<AddressAlreadyExistsException>();
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 

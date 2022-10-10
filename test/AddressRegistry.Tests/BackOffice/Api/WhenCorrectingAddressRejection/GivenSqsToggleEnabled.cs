@@ -45,7 +45,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
-            var result = (AcceptedResult)await _controller.CorrectAddressRejection(
+            var result = (AcceptedResult)await _controller.CorrectRejection(
                 _backOfficeContext,
                 MockValidRequestValidator<CorrectAddressFromRejectedToProposedRequest>(),
                 MockIfMatchValidator(true),
@@ -69,7 +69,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             //Act
-            var result = await _controller.CorrectAddressRejection(
+            var result = await _controller.CorrectRejection(
                 _backOfficeContext,
                 MockValidRequestValidator<CorrectAddressFromRejectedToProposedRequest>(),
                 MockIfMatchValidator(false),
@@ -87,7 +87,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
         [Fact]
         public async Task ForUnknownAddress_ThenNotFoundResponse()
         {
-            var result = await _controller.CorrectAddressRejection(
+            var result = await _controller.CorrectRejection(
                 _backOfficeContext,
                 MockValidRequestValidator<CorrectAddressFromRejectedToProposedRequest>(),
                 MockIfMatchValidator(true),
@@ -113,7 +113,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
                 .Setup(x => x.Send(It.IsAny<SqsAddressCorrectRejectionRequest>(), CancellationToken.None))
                 .Throws(new AggregateIdIsNotFoundException());
 
-            Func<Task> act = async () => await _controller.CorrectAddressRejection(
+            Func<Task> act = async () => await _controller.CorrectRejection(
                 _backOfficeContext,
                 MockValidRequestValidator<CorrectAddressFromRejectedToProposedRequest>(),
                 MockIfMatchValidator(true),
@@ -146,7 +146,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
             };
 
             //Act
-            var result = await _controller.CorrectAddressRejection(
+            var result = await _controller.CorrectRejection(
                 _backOfficeContext,
                 MockValidRequestValidator<CorrectAddressFromRejectedToProposedRequest>(),
                 MockIfMatchValidator(true),

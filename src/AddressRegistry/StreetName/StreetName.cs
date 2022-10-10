@@ -195,7 +195,7 @@ namespace AddressRegistry.StreetName
 
             if (isChild && !parent.BoxNumberIsUnique(boxNumber!))
             {
-                throw new BoxNumberAlreadyExistsException(boxNumber!);
+                throw new AddressAlreadyExistsException(houseNumber, boxNumber!);
             }
 
             var finalGeometryMethod = geometryMethod ?? GeometryMethod.DerivedFromObject;
@@ -236,9 +236,15 @@ namespace AddressRegistry.StreetName
 
         public void CorrectAddressRetirement(AddressPersistentLocalId addressPersistentLocalId)
         {
-            StreetNameAddresses
-                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
-                .CorrectRetirement();
+            var addressToCorrect = StreetNameAddresses
+                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId);
+
+            GuardAddressIsUnique(
+                    addressToCorrect.AddressPersistentLocalId,
+                    addressToCorrect.HouseNumber,
+                    addressToCorrect.BoxNumber);
+
+            addressToCorrect.CorrectRetirement();
         }
 
         public void RejectAddress(AddressPersistentLocalId addressPersistentLocalId)
@@ -311,7 +317,7 @@ namespace AddressRegistry.StreetName
         {
             StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
-                .CorrectHouseNumber(houseNumber, () => GuardHouseNumberAddressIsUnique(addressPersistentLocalId, houseNumber));
+                .CorrectHouseNumber(houseNumber, () => GuardAddressIsUnique(addressPersistentLocalId, houseNumber, null));
         }
 
         public void CorrectAddressBoxNumber(AddressPersistentLocalId addressPersistentLocalId, BoxNumber boxNumber)
@@ -319,7 +325,7 @@ namespace AddressRegistry.StreetName
             var addressToCorrect = StreetNameAddresses.GetByPersistentLocalId(addressPersistentLocalId);
             addressToCorrect.CorrectBoxNumber(
                 boxNumber,
-                () => GuardBoxNumberAddressIsUnique(
+                () => GuardAddressIsUnique(
                     addressPersistentLocalId,
                     addressToCorrect.HouseNumber,
                     boxNumber));
@@ -328,15 +334,21 @@ namespace AddressRegistry.StreetName
         public void RemoveAddress(AddressPersistentLocalId addressPersistentLocalId)
         {
             StreetNameAddresses
-                .GetByPersistentLocalId(addressPersistentLocalId)
+                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
                 .Remove();
         }
 
         public void CorrectAddressRejection(AddressPersistentLocalId addressPersistentLocalId)
         {
-            StreetNameAddresses
-                .GetByPersistentLocalId(addressPersistentLocalId)
-                .CorrectAddressRejection();
+            var addressToCorrect = StreetNameAddresses
+                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId);
+
+            GuardAddressIsUnique(
+                addressToCorrect.AddressPersistentLocalId,
+                addressToCorrect.HouseNumber,
+                addressToCorrect.BoxNumber);
+
+            addressToCorrect.CorrectAddressRejection();
         }
 
         private void GuardPostalCodeMunicipalityMatchesStreetNameMunicipality(MunicipalityId municipalityIdByPostalCode)
@@ -347,19 +359,11 @@ namespace AddressRegistry.StreetName
             }
         }
 
-        private void GuardHouseNumberAddressIsUnique(AddressPersistentLocalId addressPersistentLocalId, HouseNumber houseNumber)
-        {
-            if (StreetNameAddresses.HasActiveAddressForOtherThan(houseNumber, addressPersistentLocalId))
-            {
-                throw new ParentAddressAlreadyExistsException();
-            }
-        }
-
-        private void GuardBoxNumberAddressIsUnique(AddressPersistentLocalId addressPersistentLocalId, HouseNumber houseNumber, BoxNumber boxNumber)
+        private void GuardAddressIsUnique(AddressPersistentLocalId addressPersistentLocalId, HouseNumber houseNumber, BoxNumber boxNumber)
         {
             if (StreetNameAddresses.HasActiveAddressForOtherThan(houseNumber, boxNumber, addressPersistentLocalId))
             {
-                throw new BoxNumberAlreadyExistsException(boxNumber);
+                throw new AddressAlreadyExistsException(houseNumber, boxNumber);
             }
         }
 

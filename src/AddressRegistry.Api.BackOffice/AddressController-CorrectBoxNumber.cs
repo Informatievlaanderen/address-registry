@@ -141,7 +141,7 @@ namespace AddressRegistry.Api.BackOffice
                             nameof(request.Busnummer),
                             ValidationErrorMessages.Address.HasNoBoxNumber),
 
-                    BoxNumberAlreadyExistsException _ =>
+                    AddressAlreadyExistsException _ =>
                         CreateValidationException(
                             ValidationErrors.Address.AddressAlreadyExists,
                             nameof(request.Busnummer),

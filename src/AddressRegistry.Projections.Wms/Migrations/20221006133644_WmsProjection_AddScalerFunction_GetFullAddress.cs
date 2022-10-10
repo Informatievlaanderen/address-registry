@@ -7,7 +7,7 @@ namespace AddressRegistry.Projections.Wms.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
-CREATE FUNCTION [wms.address].[GetFullAddress](
+CREATE FUNCTION [wms].[GetFullAddress](
     @StreetName NVARCHAR(max),
     @HouseNumber NVARCHAR(max),
     @BoxNumber NVARCHAR(max),
@@ -30,8 +30,8 @@ END");
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
-IF OBJECT_ID (N'[wms.address].[GetFullAddress]', N'FN') IS NOT NULL
-    DROP FUNCTION [wms.address].[GetFullAddress];");
+IF OBJECT_ID (N'[wms].[GetFullAddress]', N'FN') IS NOT NULL
+    DROP FUNCTION [wms].[GetFullAddress];");
         }
     }
 }

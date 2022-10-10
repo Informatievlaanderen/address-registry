@@ -332,7 +332,7 @@ namespace AddressRegistry.StreetName
         public void RemoveAddress(AddressPersistentLocalId addressPersistentLocalId)
         {
             StreetNameAddresses
-                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
+                .GetByPersistentLocalId(addressPersistentLocalId)
                 .Remove();
         }
 

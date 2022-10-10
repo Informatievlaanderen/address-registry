@@ -8,11 +8,9 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
     using AddressRegistry.Projections.Wms;
     using AddressRegistry.Projections.Wms.AddressDetail;
     using AutoFixture;
-    using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Formatters.Json;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing;
     using global::AutoFixture;
-    using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
     using Microsoft.EntityFrameworkCore;
     using NetTopologySuite.Geometries;
     using NetTopologySuite.IO;
@@ -20,11 +18,11 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
     using Xunit;
     using Xunit.Abstractions;
 
-    public class AddressDetailsWmsHouseNumberLabelTests : ProjectionTest<WmsContext, AddressDetailProjections>
+    public class AddressDetailHouseNumberLabelTests : ProjectionTest<WmsContext, AddressDetailProjections>
     {
         private readonly Fixture _fixture;
 
-        public AddressDetailsWmsHouseNumberLabelTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public AddressDetailHouseNumberLabelTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             LogExtensions.LogSerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
 
@@ -37,7 +35,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
         public async Task AddressBecameComplete()
         {
             var ctx = CreateContext();
-            
+
             var houseNumber1 = CreateAddress("1", 111, 222);
             ctx.AddressDetail.Add(houseNumber1);
 

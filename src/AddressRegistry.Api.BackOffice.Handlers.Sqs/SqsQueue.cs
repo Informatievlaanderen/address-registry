@@ -15,9 +15,9 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs
             _queueUrl = queueUrl;
         }
 
-        public async Task<bool> Copy<T>(T message, SqsQueueOptions sqsQueueOptions, CancellationToken cancellationToken) where T : class
+        public async Task<bool> Copy<T>(T message, SqsQueueOptions queueOptions, CancellationToken cancellationToken) where T : class
         {
-            return await Sqs.CopyToQueue(_sqsOptions, _queueUrl, message, sqsQueueOptions, cancellationToken);
+            return await Sqs.CopyToQueue(_sqsOptions, _queueUrl, message, queueOptions, cancellationToken);
         }
     }
 }

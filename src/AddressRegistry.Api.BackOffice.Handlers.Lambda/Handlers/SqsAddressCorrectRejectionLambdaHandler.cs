@@ -62,6 +62,11 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 AddressAlreadyExistsException => new TicketError(
                     ValidationErrorMessages.Address.AddressAlreadyExists,
                     ValidationErrors.Address.AddressAlreadyExists),
+
+                ParentAddressHasInvalidStatusException => new TicketError(
+                    ValidationErrors2.CorrectRejection.ParentInvalidStatus.Message,
+                    ValidationErrors2.CorrectRejection.ParentInvalidStatus.Code),
+
                 _ => null
             };
         }

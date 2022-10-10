@@ -67,6 +67,15 @@ namespace AddressRegistry.StreetName
             return result;
         }
 
+        public StreetNameAddress? FindParentByHouseNumber(HouseNumber houseNumber)
+        {
+            var result = this.SingleOrDefault(x => 
+                x.HouseNumber == houseNumber
+                && x.BoxNumber is null);
+
+            return result;
+        }
+
         public bool HasActiveAddressForOtherThan(
             HouseNumber houseNumber,
             BoxNumber boxNumber,

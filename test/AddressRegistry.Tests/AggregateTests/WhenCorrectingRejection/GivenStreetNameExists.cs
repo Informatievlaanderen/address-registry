@@ -215,5 +215,59 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRejection
                 .When(correctAddress1Rejection)
                 .Throws(new AddressAlreadyExistsException(houseNumber, null)));
         }
+
+        [Theory]
+        [InlineData(AddressStatus.Proposed)]
+        [InlineData(AddressStatus.Rejected)]
+        [InlineData(AddressStatus.Retired)]
+        public void WhenParentAddressHasInvalidStatus_ThrowParentAddressHasInvalidStatusException(AddressStatus invalidStatus)
+        {
+            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
+            var parentAddress = new AddressPersistentLocalId(123);
+            var childAddress = new AddressPersistentLocalId(456);
+            var houseNumber = new HouseNumber("11");
+
+            var migrateParentAddress = new AddressWasMigratedToStreetName(
+                streetNamePersistentLocalId,
+                Fixture.Create<AddressId>(),
+                Fixture.Create<AddressStreetNameId>(),
+                parentAddress,
+                invalidStatus,
+                houseNumber,
+                boxNumber: null,
+                Fixture.Create<AddressGeometry>(),
+                officiallyAssigned: false,
+                postalCode: null,
+                isCompleted: false,
+                isRemoved: false,
+                parentPersistentLocalId: null);
+            ((ISetProvenance)migrateParentAddress).SetProvenance(Fixture.Create<Provenance>());
+
+            var childAddressWasProposed = new AddressWasProposedV2(
+                streetNamePersistentLocalId,
+                childAddress,
+                parentPersistentLocalId: parentAddress,
+                Fixture.Create<PostalCode>(),
+                houseNumber,
+                boxNumber: new BoxNumber("1A"),
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Lot,
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
+            ((ISetProvenance)childAddressWasProposed).SetProvenance(Fixture.Create<Provenance>());
+
+            var correctChildAddressRejection = new CorrectAddressRejection(
+                streetNamePersistentLocalId,
+                childAddress,
+                Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    Fixture.Create<StreetNameWasImported>(),
+                    migrateParentAddress,
+                    childAddressWasProposed
+                    )
+                .When(correctChildAddressRejection)
+                .Throws(new ParentAddressHasInvalidStatusException()));
+        }
     }
 }

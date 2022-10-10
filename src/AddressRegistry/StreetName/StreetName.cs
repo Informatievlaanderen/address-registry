@@ -239,6 +239,29 @@ namespace AddressRegistry.StreetName
             var addressToCorrect = StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId);
 
+            if (addressToCorrect.IsBoxNumberAddress)
+            {
+                var parent = StreetNameAddresses.FindParentByHouseNumber(addressToCorrect.HouseNumber);
+
+                if (parent == null || parent.IsRemoved)
+                {
+                    throw new ParentAddressNotFoundException(PersistentLocalId, addressToCorrect.HouseNumber);
+                }
+
+                if (parent.Status == AddressStatus.Proposed
+                        || parent.Status == AddressStatus.Rejected
+                        || parent.Status == AddressStatus.Retired)
+                {
+                    throw new ParentAddressHasInvalidStatusException();
+                }
+            }
+
+            GuardAddressIsUnique(
+                    addressToCorrect.AddressPersistentLocalId,
+                    addressToCorrect.HouseNumber,
+                    addressToCorrect.BoxNumber);
+
+            addressToCorrect.CorrectRetirement();
             addressToCorrect.CorrectRetirement(() => GuardAddressIsUnique(
                 addressToCorrect.AddressPersistentLocalId,
                 addressToCorrect.HouseNumber,
@@ -341,6 +364,24 @@ namespace AddressRegistry.StreetName
             var addressToCorrect = StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId);
 
+            if (addressToCorrect.IsBoxNumberAddress)
+            {
+                var parent = StreetNameAddresses.FindParentByHouseNumber(addressToCorrect.HouseNumber);
+
+                if (parent == null || parent.IsRemoved)
+                {
+                    throw new ParentAddressNotFoundException(PersistentLocalId, addressToCorrect.HouseNumber);
+                }
+
+                if (parent.Status == AddressStatus.Proposed
+                    || parent.Status == AddressStatus.Rejected
+                    || parent.Status == AddressStatus.Retired)
+                {
+                    throw new ParentAddressHasInvalidStatusException();
+                }
+            }
+
+            GuardAddressIsUnique(
             addressToCorrect.CorrectAddressRejection(() => GuardAddressIsUnique(
                 addressToCorrect.AddressPersistentLocalId,
                 addressToCorrect.HouseNumber,

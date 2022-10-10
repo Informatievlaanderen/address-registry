@@ -1,3 +1,11 @@
+## [3.58.2](https://github.com/informatievlaanderen/address-registry/compare/v3.58.1...v3.58.2) (2022-10-10)
+
+
+### Bug Fixes
+
+* add duplicate address validation for correct reject/retire ([1c482cd](https://github.com/informatievlaanderen/address-registry/commit/1c482cdfbaf66d81d440942c85979474c66e5364))
+* parent address status validations before correct reject/retire ([9b54848](https://github.com/informatievlaanderen/address-registry/commit/9b54848367ca8e0f2a52685b47b917790dc1a8d8))
+
 ## [3.58.1](https://github.com/informatievlaanderen/address-registry/compare/v3.58.0...v3.58.1) (2022-10-10)
 
 

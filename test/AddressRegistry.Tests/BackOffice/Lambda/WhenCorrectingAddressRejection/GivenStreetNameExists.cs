@@ -136,6 +136,42 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
         }
 
         [Fact]
+        public async Task WhenAddressAlreadyExistsException_ThenTicketingErrorIsExpected()
+        {
+            // Arrange
+            var ticketing = new Mock<ITicketing>();
+
+            var sut = new SqsAddressCorrectRejectionLambdaHandler(
+                Container.Resolve<IConfiguration>(),
+                new FakeRetryPolicy(),
+                ticketing.Object,
+                Mock.Of<IStreetNames>(),
+                MockExceptionIdempotentCommandHandler<AddressAlreadyExistsException>().Object);
+
+            // Act
+            await sut.Handle(new SqsLambdaAddressCorrectRejectionRequest
+            {
+                Request = new AddressBackOfficeCorrectAddressFromRejectedRequest
+                {
+                    PersistentLocalId = Fixture.Create<int>(),
+                },
+                MessageGroupId = Fixture.Create<int>().ToString(),
+                TicketId = Guid.NewGuid(),
+                Metadata = new Dictionary<string, object>(),
+                Provenance = Fixture.Create<Provenance>()
+            }, CancellationToken.None);
+
+            //Assert
+            ticketing.Verify(x =>
+                x.Error(
+                    It.IsAny<Guid>(),
+                    new TicketError(
+                        "Deze combinatie huisnummer-busnummer bestaat reeds voor de opgegeven straatnaam.",
+                        "AdresBestaandeHuisnummerBusnummerCombinatie"),
+                    CancellationToken.None));
+        }
+
+        [Fact]
         public async Task WhenIdempotencyException_ThenTicketingCompleteIsExpected()
         {
             // Arrange

@@ -4,7 +4,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Address;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using FluentAssertions;
     using FluentValidation;
@@ -32,14 +31,14 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
             string houseNumber = "11";
             string boxNumber = "1A";
             var streetNamePersistentId = new StreetNamePersistentLocalId(123);
-            var postInfoId = new PersistentLocalId(456);
+            var postInfoId = new Address.PersistentLocalId(456);
 
             var mockRequestValidator = new Mock<IValidator<AddressProposeRequest>>();
             mockRequestValidator.Setup(x => x.ValidateAsync(It.IsAny<AddressProposeRequest>(), CancellationToken.None))
                 .Returns(Task.FromResult(new ValidationResult()));
 
             MockMediator.Setup(x => x.Send(It.IsAny<AddressProposeRequest>(), CancellationToken.None))
-                .Throws(new BoxNumberAlreadyExistsException(new BoxNumber(boxNumber)));
+                .Throws(new AddressAlreadyExistsException(HouseNumber.Create(houseNumber), new BoxNumber(boxNumber)));
 
             var body = new AddressProposeRequest
             {

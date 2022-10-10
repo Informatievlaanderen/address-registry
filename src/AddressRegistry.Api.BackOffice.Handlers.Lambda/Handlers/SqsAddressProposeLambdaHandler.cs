@@ -104,7 +104,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 HouseNumberHasInvalidFormatException => new TicketError(
                     ValidationErrorMessages.Address.HouseNumberInvalid,
                     ValidationErrors.Address.HouseNumberInvalid),
-                BoxNumberAlreadyExistsException => new TicketError(
+                AddressAlreadyExistsException => new TicketError(
                     ValidationErrorMessages.Address.AddressAlreadyExists,
                     ValidationErrors.Address.AddressAlreadyExists),
                 ParentAddressNotFoundException e => new TicketError(

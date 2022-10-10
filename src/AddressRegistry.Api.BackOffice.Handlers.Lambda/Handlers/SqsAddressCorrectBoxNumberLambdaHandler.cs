@@ -64,7 +64,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 AddressHasNoBoxNumberException => new TicketError(
                     ValidationErrorMessages.Address.HasNoBoxNumber,
                     ValidationErrors.Address.HasNoBoxNumber),
-                BoxNumberAlreadyExistsException => new TicketError(
+                AddressAlreadyExistsException => new TicketError(
                     ValidationErrorMessages.Address.AddressAlreadyExists,
                     ValidationErrors.Address.AddressAlreadyExists),
                 _ => null

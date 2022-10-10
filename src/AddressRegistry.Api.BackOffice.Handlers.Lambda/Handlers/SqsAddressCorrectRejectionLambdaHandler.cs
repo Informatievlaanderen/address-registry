@@ -58,6 +58,10 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 AddressHasInvalidStatusException => new TicketError(
                     ValidationErrorMessages.Address.CannotBeCorrectToProposedFromRejected,
                     ValidationErrors.Address.CannotBeCorrectToProposedFromRejected),
+
+                AddressAlreadyExistsException => new TicketError(
+                    ValidationErrorMessages.Address.AddressAlreadyExists,
+                    ValidationErrors.Address.AddressAlreadyExists),
                 _ => null
             };
         }

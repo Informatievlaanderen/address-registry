@@ -16,9 +16,9 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
         public IDictionary<string, object> Metadata { get; set; }
 
         /// <summary>
-        /// Map to CorrectAddressRejection command
+        /// Map to CorrectRejection command
         /// </summary>
-        /// <returns>CorrectAddressRejection.</returns>
+        /// <returns>CorrectRejection.</returns>
         public CorrectAddressRejection ToCommand(
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             Provenance provenance)

@@ -69,17 +69,6 @@ namespace AddressRegistry.StreetName
 
         public bool HasActiveAddressForOtherThan(
             HouseNumber houseNumber,
-            AddressPersistentLocalId addressPersistentLocalId)
-        {
-            return this.Any(x =>
-                x.IsActive
-                && x.AddressPersistentLocalId != addressPersistentLocalId
-                && x.HouseNumber == houseNumber
-                && x.BoxNumber is null);
-        }
-
-        public bool HasActiveAddressForOtherThan(
-            HouseNumber houseNumber,
             BoxNumber boxNumber,
             AddressPersistentLocalId addressPersistentLocalId)
         {

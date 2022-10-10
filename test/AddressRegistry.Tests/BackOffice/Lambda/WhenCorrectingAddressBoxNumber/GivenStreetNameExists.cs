@@ -224,7 +224,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressBoxNumber
                 new FakeRetryPolicy(),
                 ticketing.Object,
                 Mock.Of<IStreetNames>(),
-                MockExceptionIdempotentCommandHandler<BoxNumberAlreadyExistsException>().Object);
+                MockExceptionIdempotentCommandHandler<AddressAlreadyExistsException>().Object);
 
             // Act
             await sut.Handle(new SqsLambdaAddressCorrectBoxNumberRequest

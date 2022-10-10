@@ -1,8 +1,5 @@
 namespace AddressRegistry.Api.BackOffice.Abstractions
 {
-    using Amazon.DynamoDBv2;
-    using Amazon.Runtime;
-
     public static class ValidationErrors
     {
         public static class StreetName

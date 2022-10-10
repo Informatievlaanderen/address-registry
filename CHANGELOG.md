@@ -1,3 +1,10 @@
+## [3.58.1](https://github.com/informatievlaanderen/address-registry/compare/v3.58.0...v3.58.1) (2022-10-10)
+
+
+### Bug Fixes
+
+* schema of wms views ([de1beaf](https://github.com/informatievlaanderen/address-registry/commit/de1beaff1058936d938a0f09e3c1b15601d51027))
+
 # [3.58.0](https://github.com/informatievlaanderen/address-registry/compare/v3.57.2...v3.58.0) (2022-10-07)
 
 

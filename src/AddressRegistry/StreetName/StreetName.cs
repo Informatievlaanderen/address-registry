@@ -227,41 +227,6 @@ namespace AddressRegistry.StreetName
                 .Approve();
         }
 
-        public void CorrectAddressApproval(AddressPersistentLocalId addressPersistentLocalId)
-        {
-            StreetNameAddresses
-                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
-                .CorrectApproval();
-        }
-
-        public void CorrectAddressRetirement(AddressPersistentLocalId addressPersistentLocalId)
-        {
-            var addressToCorrect = StreetNameAddresses
-                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId);
-
-            if (addressToCorrect.IsBoxNumberAddress)
-            {
-                var parent = StreetNameAddresses.FindParentByHouseNumber(addressToCorrect.HouseNumber);
-
-                if (parent == null || parent.IsRemoved)
-                {
-                    throw new ParentAddressNotFoundException(PersistentLocalId, addressToCorrect.HouseNumber);
-                }
-
-                if (parent.Status == AddressStatus.Proposed
-                        || parent.Status == AddressStatus.Rejected
-                        || parent.Status == AddressStatus.Retired)
-                {
-                    throw new ParentAddressHasInvalidStatusException();
-                }
-            }
-
-            addressToCorrect.CorrectRetirement(() => GuardAddressIsUnique(
-                addressToCorrect.AddressPersistentLocalId,
-                addressToCorrect.HouseNumber,
-                addressToCorrect.BoxNumber));
-        }
-
         public void RejectAddress(AddressPersistentLocalId addressPersistentLocalId)
         {
             StreetNameAddresses
@@ -346,11 +311,37 @@ namespace AddressRegistry.StreetName
                     boxNumber));
         }
 
-        public void RemoveAddress(AddressPersistentLocalId addressPersistentLocalId)
+        public void CorrectAddressApproval(AddressPersistentLocalId addressPersistentLocalId)
         {
             StreetNameAddresses
-                .GetByPersistentLocalId(addressPersistentLocalId)
-                .Remove();
+                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
+                .CorrectApproval();
+        }
+
+        public void CorrectAddressRetirement(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            var addressToCorrect = StreetNameAddresses
+                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId);
+
+            if (addressToCorrect.IsBoxNumberAddress)
+            {
+                var parent = addressToCorrect.Parent;
+
+                if (parent == null || parent.IsRemoved)
+                {
+                    throw new ParentAddressNotFoundException(PersistentLocalId, addressToCorrect.HouseNumber);
+                }
+
+                if (parent.Status is AddressStatus.Rejected or AddressStatus.Retired)
+                {
+                    throw new ParentAddressHasInvalidStatusException();
+                }
+            }
+
+            addressToCorrect.CorrectRetirement(() => GuardAddressIsUnique(
+                addressToCorrect.AddressPersistentLocalId,
+                addressToCorrect.HouseNumber,
+                addressToCorrect.BoxNumber));
         }
 
         public void CorrectAddressRejection(AddressPersistentLocalId addressPersistentLocalId)
@@ -360,16 +351,14 @@ namespace AddressRegistry.StreetName
 
             if (addressToCorrect.IsBoxNumberAddress)
             {
-                var parent = StreetNameAddresses.FindParentByHouseNumber(addressToCorrect.HouseNumber);
+                var parent = addressToCorrect.Parent;
 
                 if (parent == null || parent.IsRemoved)
                 {
                     throw new ParentAddressNotFoundException(PersistentLocalId, addressToCorrect.HouseNumber);
                 }
 
-                if (parent.Status == AddressStatus.Proposed
-                    || parent.Status == AddressStatus.Rejected
-                    || parent.Status == AddressStatus.Retired)
+                if (parent.Status is AddressStatus.Rejected or AddressStatus.Retired)
                 {
                     throw new ParentAddressHasInvalidStatusException();
                 }
@@ -379,6 +368,13 @@ namespace AddressRegistry.StreetName
                 addressToCorrect.AddressPersistentLocalId,
                 addressToCorrect.HouseNumber,
                 addressToCorrect.BoxNumber));
+        }
+
+        public void RemoveAddress(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            StreetNameAddresses
+                .GetByPersistentLocalId(addressPersistentLocalId)
+                .Remove();
         }
 
         private void GuardPostalCodeMunicipalityMatchesStreetNameMunicipality(MunicipalityId municipalityIdByPostalCode)

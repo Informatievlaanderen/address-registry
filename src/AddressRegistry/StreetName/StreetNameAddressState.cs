@@ -18,7 +18,7 @@ namespace AddressRegistry.StreetName
 
         public AddressPersistentLocalId AddressPersistentLocalId { get; private set; }
         public AddressStatus Status { get; private set; }
-        public bool IsActive => Status is AddressStatus.Proposed or AddressStatus.Current;
+        public bool IsActive => Status is AddressStatus.Proposed or AddressStatus.Current && !IsRemoved;
         public HouseNumber HouseNumber { get; private set; }
         public BoxNumber? BoxNumber { get; private set; }
         public bool IsHouseNumberAddress => !IsBoxNumberAddress;

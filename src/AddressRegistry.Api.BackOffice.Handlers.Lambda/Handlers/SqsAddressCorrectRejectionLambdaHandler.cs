@@ -5,6 +5,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
     using Abstractions;
     using Abstractions.Exceptions;
     using Abstractions.Responses;
+    using Abstractions.Validation;
     using AddressRegistry.Infrastructure;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Microsoft.Extensions.Configuration;
@@ -57,15 +58,15 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             {
                 AddressHasInvalidStatusException => new TicketError(
                     ValidationErrorMessages.Address.CannotBeCorrectToProposedFromRejected,
-                    ValidationErrors.Address.CannotBeCorrectToProposedFromRejected),
+                    Deprecated.Address.CannotBeCorrectToProposedFromRejected),
 
                 AddressAlreadyExistsException => new TicketError(
-                    ValidationErrorMessages.Address.AddressAlreadyExists,
-                    ValidationErrors.Address.AddressAlreadyExists),
+                    ValidationErrors.Common.AddressAlreadyExists.Message,
+                    ValidationErrors.Common.AddressAlreadyExists.Code),
 
                 ParentAddressHasInvalidStatusException => new TicketError(
-                    ValidationErrors2.CorrectRejection.ParentInvalidStatus.Message,
-                    ValidationErrors2.CorrectRejection.ParentInvalidStatus.Code),
+                    ValidationErrors.CorrectRejection.ParentInvalidStatus.Message,
+                    ValidationErrors.CorrectRejection.ParentInvalidStatus.Code),
 
                 _ => null
             };

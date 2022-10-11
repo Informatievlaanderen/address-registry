@@ -57,7 +57,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             {
                 AddressHasInvalidStatusException => new TicketError(
                     ValidationErrorMessages.Address.AddressCannotBeRegularized,
-                    ValidationErrors.Address.AddressCannotBeRegularized),
+                    Deprecated.Address.AddressCannotBeRegularized),
                 _ => null
             };
         }

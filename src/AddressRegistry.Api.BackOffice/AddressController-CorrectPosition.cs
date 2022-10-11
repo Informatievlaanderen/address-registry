@@ -8,6 +8,7 @@ namespace AddressRegistry.Api.BackOffice
     using Abstractions;
     using Abstractions.Exceptions;
     using Abstractions.Requests;
+    using Abstractions.Validation;
     using Address;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
@@ -108,7 +109,7 @@ namespace AddressRegistry.Api.BackOffice
             }
             catch (AggregateIdIsNotFoundException)
             {
-                throw new ApiException(ValidationErrorMessages.Address.AddressNotFound, StatusCodes.Status404NotFound);
+                throw new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound);
             }
             catch (IdempotencyException)
             {
@@ -116,30 +117,30 @@ namespace AddressRegistry.Api.BackOffice
             }
             catch (AggregateNotFoundException)
             {
-                throw new ApiException(ValidationErrorMessages.Address.AddressNotFound, StatusCodes.Status404NotFound);
+                throw new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound);
             }
             catch (DomainException exception)
             {
                 throw exception switch
                 {
-                    AddressIsNotFoundException => new ApiException(ValidationErrorMessages.Address.AddressNotFound, StatusCodes.Status404NotFound),
-                    AddressIsRemovedException => new ApiException(ValidationErrorMessages.Address.AddressRemoved, StatusCodes.Status410Gone),
+                    AddressIsNotFoundException => new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound),
+                    AddressIsRemovedException => new ApiException(ValidationErrors.Common.AddressRemoved.Message, StatusCodes.Status410Gone),
                     AddressHasInvalidStatusException => CreateValidationException(
-                        ValidationErrors.Address.AddressPositionCannotBeChanged,
+                        Deprecated.Address.AddressPositionCannotBeChanged,
                         string.Empty,
                         ValidationErrorMessages.Address.AddressPositionCannotBeChanged),
                     AddressHasInvalidGeometryMethodException => CreateValidationException(
-                        ValidationErrors.Address.GeometryMethodInvalid,
+                        ValidationErrors.Common.PositionGeometryMethod.Invalid.Code,
                         string.Empty,
-                        ValidationErrorMessages.Address.GeometryMethodInvalid),
+                        ValidationErrors.Common.PositionGeometryMethod.Invalid.Message),
                     AddressHasMissingGeometrySpecificationException => CreateValidationException(
-                        ValidationErrors.Address.PositionSpecificationRequired,
+                        ValidationErrors.Common.PositionSpecification.Required.Code,
                         string.Empty,
-                        ValidationErrorMessages.Address.PositionSpecificationRequired),
+                        ValidationErrors.Common.PositionSpecification.Required.Message),
                     AddressHasInvalidGeometrySpecificationException => CreateValidationException(
-                        ValidationErrors.Address.PositionSpecificationInvalid,
+                        ValidationErrors.Common.PositionSpecification.Invalid.Code,
                         string.Empty,
-                        ValidationErrorMessages.Address.PositionSpecificationInvalid),
+                        ValidationErrors.Common.PositionSpecification.Invalid.Message),
 
                     _ => new ValidationException(new List<ValidationFailure>
                         { new ValidationFailure(string.Empty, exception.Message) })

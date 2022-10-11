@@ -4,6 +4,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
     using System.Threading.Tasks;
     using Abstractions;
     using Abstractions.Responses;
+    using Abstractions.Validation;
     using Address;
     using AddressRegistry.Infrastructure;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
@@ -99,26 +100,26 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             return exception switch
             {
                 ParentAddressAlreadyExistsException => new TicketError(
-                    ValidationErrorMessages.Address.AddressAlreadyExists,
-                    ValidationErrors.Address.AddressAlreadyExists),
+                    ValidationErrors.Common.AddressAlreadyExists.Message,
+                    ValidationErrors.Common.AddressAlreadyExists.Code),
                 HouseNumberHasInvalidFormatException => new TicketError(
-                    ValidationErrorMessages.Address.HouseNumberInvalid,
-                    ValidationErrors.Address.HouseNumberInvalid),
+                    ValidationErrors.Common.HouseNumberInvalidFormat.Message,
+                    ValidationErrors.Common.HouseNumberInvalidFormat.Code),
                 AddressAlreadyExistsException => new TicketError(
-                    ValidationErrorMessages.Address.AddressAlreadyExists,
-                    ValidationErrors.Address.AddressAlreadyExists),
+                    ValidationErrors.Common.AddressAlreadyExists.Message,
+                    ValidationErrors.Common.AddressAlreadyExists.Code),
                 ParentAddressNotFoundException e => new TicketError(
                     ValidationErrorMessages.Address.AddressHouseNumberUnknown(request.Request.StraatNaamId, e.HouseNumber),
-                    ValidationErrors.Address.AddressHouseNumberUnknown),
+                    Deprecated.Address.AddressHouseNumberUnknown),
                 StreetNameHasInvalidStatusException => new TicketError(
-                    ValidationErrorMessages.StreetName.StreetNameIsNotActive,
-                    ValidationErrors.StreetName.StreetNameIsNotActive),
+                    ValidationErrors.Common.StreetNameIsNotActive.Message,
+                    ValidationErrors.Common.StreetNameIsNotActive.Code),
                 StreetNameIsRemovedException => new TicketError(
-                    ValidationErrorMessages.StreetName.StreetNameInvalid(request.Request.StraatNaamId),
-                    ValidationErrors.StreetName.StreetNameInvalid),
+                    ValidationErrors.Common.StreetNameInvalid.Message(request.Request.StraatNaamId),
+                    ValidationErrors.Common.StreetNameInvalid.Code),
                 PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException => new TicketError(
                     ValidationErrorMessages.Address.PostalCodeNotInMunicipality,
-                    ValidationErrors.Address.PostalCodeNotInMunicipality),
+                    Deprecated.Address.PostalCodeNotInMunicipality),
                 _ => null
             };
         }

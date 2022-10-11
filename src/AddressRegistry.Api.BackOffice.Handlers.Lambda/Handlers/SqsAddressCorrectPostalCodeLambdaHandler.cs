@@ -84,10 +84,10 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             {
                 AddressHasInvalidStatusException => new TicketError(
                     ValidationErrorMessages.Address.AddressPostalCodeCannotBeChanged,
-                    ValidationErrors.Address.AddressPostalCodeCannotBeChanged),
+                    Deprecated.Address.AddressPostalCodeCannotBeChanged),
                 PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException => new TicketError(
                     ValidationErrorMessages.Address.PostalCodeNotInMunicipality,
-                    ValidationErrors.Address.PostalCodeNotInMunicipality),
+                    Deprecated.Address.PostalCodeNotInMunicipality),
                 _ => null
             };
         }

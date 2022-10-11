@@ -2,6 +2,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
 {
     using Abstractions;
     using Abstractions.Requests;
+    using Abstractions.Validation;
     using FluentValidation;
     using StreetName;
 
@@ -11,8 +12,8 @@ namespace AddressRegistry.Api.BackOffice.Validators
         {
             RuleFor(x => x.Busnummer)
                 .Must(BoxNumber.HasValidFormat)
-                .WithMessage(ValidationErrorMessages.Address.BoxNumberInvalid)
-                .WithErrorCode(ValidationErrors.Address.BoxNumberInvalid);
+                .WithMessage(ValidationErrors.Common.BoxNumberInvalidFormat.Message)
+                .WithErrorCode(ValidationErrors.Common.BoxNumberInvalidFormat.Code);
         }
     }
 }

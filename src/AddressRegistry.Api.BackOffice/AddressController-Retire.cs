@@ -133,9 +133,9 @@ namespace AddressRegistry.Api.BackOffice
                     AddressIsNotFoundException => new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound),
                     AddressIsRemovedException => new ApiException(ValidationErrors.Common.AddressRemoved.Message, StatusCodes.Status410Gone),
                     AddressHasInvalidStatusException => CreateValidationException(
-                        Deprecated.Address.AddressCannotBeRetired,
+                        ValidationErrors.RetireAddress.AddressInvalidStatus.Code,
                         string.Empty,
-                        ValidationErrorMessages.Address.AddressCannotBeRetired),
+                        ValidationErrors.RetireAddress.AddressInvalidStatus.Message),
 
                     _ => new ValidationException(new List<ValidationFailure>
                         { new ValidationFailure(string.Empty, exception.Message) })

@@ -57,14 +57,14 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             return exception switch
             {
                 AddressHasInvalidStatusException => new TicketError(
-                    ValidationErrorMessages.Address.AddressPostalCodeCannotBeChanged,
-                    Deprecated.Address.AddressPostalCodeCannotBeChanged),
+                    ValidationErrors.Common.PostalCode.CannotBeChanged.Message,
+                    ValidationErrors.Common.PostalCode.CannotBeChanged.Code),
                 BoxNumberHasInvalidFormatException => new TicketError(
                     ValidationErrors.Common.BoxNumberInvalidFormat.Message,
                     ValidationErrors.Common.BoxNumberInvalidFormat.Code),
                 AddressHasNoBoxNumberException => new TicketError(
-                    ValidationErrorMessages.Address.HasNoBoxNumber,
-                    Deprecated.Address.HasNoBoxNumber),
+                    ValidationErrors.CorrectBoxNumber.HasNoBoxNumber.Message,
+                    ValidationErrors.CorrectBoxNumber.HasNoBoxNumber.Code),
                 AddressAlreadyExistsException => new TicketError(
                     ValidationErrors.Common.AddressAlreadyExists.Message,
                     ValidationErrors.Common.AddressAlreadyExists.Code),

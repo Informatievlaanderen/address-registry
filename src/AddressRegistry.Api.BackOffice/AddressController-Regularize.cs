@@ -121,9 +121,9 @@ namespace AddressRegistry.Api.BackOffice
                     AddressIsNotFoundException => new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound),
                     AddressIsRemovedException => new ApiException(ValidationErrors.Common.AddressRemoved.Message, StatusCodes.Status410Gone),
                     AddressHasInvalidStatusException => CreateValidationException(
-                        Deprecated.Address.AddressCannotBeRegularized,
+                        ValidationErrors.RegularizeAddress.AddressInvalidStatus.Code,
                         string.Empty,
-                        ValidationErrorMessages.Address.AddressCannotBeRegularized),
+                        ValidationErrors.RegularizeAddress.AddressInvalidStatus.Message),
 
                     _ => new ValidationException(new List<ValidationFailure>
                         { new ValidationFailure(string.Empty, exception.Message) })

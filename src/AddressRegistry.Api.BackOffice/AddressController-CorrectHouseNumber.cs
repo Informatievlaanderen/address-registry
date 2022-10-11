@@ -126,9 +126,9 @@ namespace AddressRegistry.Api.BackOffice
                     AddressIsNotFoundException => new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound),
                     AddressIsRemovedException => new ApiException(ValidationErrors.Common.AddressRemoved.Message, StatusCodes.Status410Gone),
                     AddressHasInvalidStatusException => CreateValidationException(
-                        Deprecated.Address.AddressPostalCodeCannotBeChanged,
+                        ValidationErrors.Common.PostalCode.CannotBeChanged.Code,
                         string.Empty,
-                        ValidationErrorMessages.Address.AddressPostalCodeCannotBeChanged),
+                        ValidationErrors.Common.PostalCode.CannotBeChanged.Message),
 
                     ParentAddressAlreadyExistsException _ =>
                         CreateValidationException(
@@ -144,9 +144,9 @@ namespace AddressRegistry.Api.BackOffice
 
                     HouseNumberToCorrectHasBoxNumberException _ =>
                         CreateValidationException(
-                            Deprecated.Address.HouseNumberOfBoxNumberCannotBeChanged,
+                            ValidationErrors.CorrectHouseNumber.HouseNumberOfBoxNumberCannotBeChanged.Code,
                             nameof(request.Huisnummer),
-                            ValidationErrorMessages.Address.HouseNumberOfBoxNumberCannotBeChanged),
+                            ValidationErrors.CorrectHouseNumber.HouseNumberOfBoxNumberCannotBeChanged.Message),
 
                     _ => new ValidationException(new List<ValidationFailure>
                         { new(string.Empty, exception.Message) })

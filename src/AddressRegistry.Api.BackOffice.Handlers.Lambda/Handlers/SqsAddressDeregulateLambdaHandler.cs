@@ -57,8 +57,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             return exception switch
             {
                 ParentAddressHasInvalidStatusException => new TicketError(
-                    ValidationErrorMessages.Address.AddressCannotBeDeregulatedBecauseOfParent,
-                    Deprecated.Address.AddressCannotBeDeregulatedBecauseOfParent),
+                    ValidationErrors.DeregulateAddress.ParentInvalidStatus.Message,
+                    ValidationErrors.DeregulateAddress.ParentInvalidStatus.Code),
                 AddressHasInvalidStatusException => new TicketError(
                     ValidationErrors.DeregulateAddress.AddressInvalidStatus.Message,
                     ValidationErrors.DeregulateAddress.AddressInvalidStatus.Code),

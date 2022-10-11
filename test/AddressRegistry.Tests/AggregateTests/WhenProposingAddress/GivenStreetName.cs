@@ -50,7 +50,6 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
-
             ((ISetProvenance)parentAddressWasProposed).SetProvenance(Fixture.Create<Provenance>());
 
             var proposeChildAddress = new ProposeAddress(
@@ -59,7 +58,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 Fixture.Create<MunicipalityId>(),
                 Fixture.Create<AddressPersistentLocalId>(),
                 houseNumber,
-                Fixture.Create<BoxNumber>(),
+                new BoxNumber("1A"),
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),

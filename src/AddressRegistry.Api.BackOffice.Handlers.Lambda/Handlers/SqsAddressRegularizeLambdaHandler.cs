@@ -5,6 +5,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
     using Abstractions;
     using Abstractions.Exceptions;
     using Abstractions.Responses;
+    using Abstractions.Validation;
     using AddressRegistry.Infrastructure;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Microsoft.Extensions.Configuration;
@@ -56,8 +57,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             return exception switch
             {
                 AddressHasInvalidStatusException => new TicketError(
-                    ValidationErrorMessages.Address.AddressCannotBeRegularized,
-                    Deprecated.Address.AddressCannotBeRegularized),
+                    ValidationErrors.RegularizeAddress.AddressInvalidStatus.Message,
+                    ValidationErrors.RegularizeAddress.AddressInvalidStatus.Code),
                 _ => null
             };
         }

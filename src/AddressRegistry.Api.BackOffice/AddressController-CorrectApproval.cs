@@ -118,9 +118,9 @@ namespace AddressRegistry.Api.BackOffice
                         string.Empty,
                         ValidationErrors.CorrectApproval.AddressInvalidStatus.Message),
                     AddressIsNotOfficiallyAssignedException => CreateValidationException(
-                        Deprecated.Address.AddressIsNotOfficiallyAssigned,
+                        ValidationErrors.CorrectApproval.AddressIsNotOfficiallyAssigned.Code,
                         string.Empty,
-                        ValidationErrorMessages.Address.AddressIsNotOfficiallyAssigned),
+                        ValidationErrors.CorrectApproval.AddressIsNotOfficiallyAssigned.Message),
 
                     _ => new ValidationException(new List<ValidationFailure>
                         { new ValidationFailure(string.Empty, exception.Message) })

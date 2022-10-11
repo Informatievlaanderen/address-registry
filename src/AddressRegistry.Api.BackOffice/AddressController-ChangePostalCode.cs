@@ -126,9 +126,9 @@ namespace AddressRegistry.Api.BackOffice
                     AddressIsNotFoundException => new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound),
                     AddressIsRemovedException => new ApiException(ValidationErrors.Common.AddressRemoved.Message, StatusCodes.Status410Gone),
                     AddressHasInvalidStatusException => CreateValidationException(
-                        Deprecated.Address.AddressPostalCodeCannotBeChanged,
+                        ValidationErrors.Common.PostalCode.CannotBeChanged.Code,
                         string.Empty,
-                        ValidationErrorMessages.Address.AddressPostalCodeCannotBeChanged),
+                        ValidationErrors.Common.PostalCode.CannotBeChanged.Message),
 
                     _ => new ValidationException(new List<ValidationFailure>
                         { new ValidationFailure(string.Empty, exception.Message) })

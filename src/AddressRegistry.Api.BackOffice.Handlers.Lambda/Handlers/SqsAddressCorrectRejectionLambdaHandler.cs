@@ -57,8 +57,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             return exception switch
             {
                 AddressHasInvalidStatusException => new TicketError(
-                    ValidationErrorMessages.Address.CannotBeCorrectToProposedFromRejected,
-                    Deprecated.Address.CannotBeCorrectToProposedFromRejected),
+                    ValidationErrors.CorrectRejection.AddressInvalidStatus.Message,
+                    ValidationErrors.CorrectRejection.AddressInvalidStatus.Code),
 
                 AddressAlreadyExistsException => new TicketError(
                     ValidationErrors.Common.AddressAlreadyExists.Message,

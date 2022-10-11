@@ -107,9 +107,9 @@ namespace AddressRegistry.Api.BackOffice
 
                     ParentAddressNotFoundException e =>
                         CreateValidationException(
-                            Deprecated.Address.AddressHouseNumberUnknown,
+                            ValidationErrors.Propose.AddressHouseNumberUnknown.Code,
                             nameof(request.Huisnummer),
-                            ValidationErrorMessages.Address.AddressHouseNumberUnknown(
+                            ValidationErrors.Propose.AddressHouseNumberUnknown.Message(
                                 request.StraatNaamId,
                                 e.HouseNumber)),
 
@@ -127,9 +127,9 @@ namespace AddressRegistry.Api.BackOffice
 
                     PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException _ =>
                         CreateValidationException(
-                            Deprecated.Address.PostalCodeNotInMunicipality,
+                            ValidationErrors.Common.PostalCode.PostalCodeNotInMunicipality.Code,
                             nameof(request.PostInfoId),
-                            ValidationErrorMessages.Address.PostalCodeNotInMunicipality),
+                            ValidationErrors.Common.PostalCode.PostalCodeNotInMunicipality.Message),
 
                     _ => new ValidationException(new List<ValidationFailure>
                         { new ValidationFailure(string.Empty, exception.Message) })

@@ -123,9 +123,9 @@ namespace AddressRegistry.Api.BackOffice
                     AddressIsRemovedException => new ApiException(ValidationErrors.Common.AddressRemoved.Message, StatusCodes.Status410Gone),
 
                     AddressHasInvalidStatusException => CreateValidationException(
-                        Deprecated.Address.AddressCannotCorrectRetirement,
+                        ValidationErrors.CorrectRetirement.AddressInvalidStatus.Code,
                         string.Empty,
-                        ValidationErrorMessages.Address.AddressCannotCorrectRetirement),
+                        ValidationErrors.CorrectRetirement.AddressInvalidStatus.Message),
 
                     AddressAlreadyExistsException => CreateValidationException(
                         ValidationErrors.Common.AddressAlreadyExists.Code,

@@ -2,6 +2,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
 {
     using Abstractions;
     using Abstractions.Requests;
+    using Abstractions.Validation;
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Validators;
     using FluentValidation;
@@ -13,8 +14,8 @@ namespace AddressRegistry.Api.BackOffice.Validators
         {
             RuleFor(x => x.PostInfoId)
                 .MustAsync((_, postInfoId, ct) => PostalCodeValidator.PostalCodeExists(syndicationContext, postInfoId, ct))
-                .WithMessage((_, postInfoId) => ValidationErrorMessages.Address.PostalCodeDoesNotExist(postInfoId))
-                .WithErrorCode(Deprecated.Address.PostalCodeDoesNotExist);
+                .WithMessage((_, postInfoId) => ValidationErrors.Common.PostalCode.DoesNotExist.Message(postInfoId))
+                .WithErrorCode(ValidationErrors.Common.PostalCode.DoesNotExist.Code);
         }
     }
 }

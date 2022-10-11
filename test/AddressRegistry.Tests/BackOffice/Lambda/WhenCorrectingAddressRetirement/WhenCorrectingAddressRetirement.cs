@@ -203,7 +203,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRetiremen
                 x.Error(
                     It.IsAny<Guid>(),
                     new TicketError(
-                        "Deze actie is enkel toegestaan op adressen waarbij het huisnummer de status ‘inGebruik’ heeft.",
+                        "Deze actie is enkel toegestaan op adressen waarbij het huisnummer de status 'inGebruik' heeft.",
                         "AdresHuisnummerVoorgesteldAfgekeurdOfGehistoreerd"),
                     CancellationToken.None));
         }

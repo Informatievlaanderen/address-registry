@@ -140,6 +140,35 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressPostalCode
         }
 
         [Theory]
+        [InlineData(StreetNameStatus.Rejected)]
+        [InlineData(StreetNameStatus.Retired)]
+        public void OnStreetNameInvalidStatus_ThenThrowsStreetNameHasInvalidStatusException(StreetNameStatus streetNameStatus)
+        {
+            var command = new CorrectAddressPostalCode(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<AddressPersistentLocalId>(),
+                Fixture.Create<PostalCode>(),
+                Fixture.Create<MunicipalityId>(),
+                Fixture.Create<Provenance>());
+
+            var migratedStreetNameWasImported = new MigratedStreetNameWasImported(
+                Fixture.Create<StreetNameId>(),
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<MunicipalityId>(),
+                Fixture.Create<NisCode>(),
+                streetNameStatus);
+            ((ISetProvenance)migratedStreetNameWasImported).SetProvenance(Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    migratedStreetNameWasImported,
+                    CreateAddressWasMigratedToStreetName(
+                        addressPersistentLocalId: Fixture.Create<AddressPersistentLocalId>()))
+                .When(command)
+                .Throws(new StreetNameHasInvalidStatusException()));
+        }
+
+        [Theory]
         [InlineData(AddressStatus.Rejected)]
         [InlineData(AddressStatus.Retired)]
         public void AddressWithInvalidStatuses_ThenThrowsAddressHasInvalidStatusException(AddressStatus addressStatus)

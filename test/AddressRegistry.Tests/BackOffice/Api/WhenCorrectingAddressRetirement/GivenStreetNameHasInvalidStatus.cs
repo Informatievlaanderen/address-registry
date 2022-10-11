@@ -4,42 +4,42 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRetirement
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AddressRegistry.Api.BackOffice;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
-    using StreetName;
-    using StreetName.Exceptions;
-    using Infrastructure;
     using FluentAssertions;
     using FluentValidation;
     using global::AutoFixture;
+    using Infrastructure;
     using Moq;
+    using StreetName;
+    using StreetName.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
+    using AddressController = AddressRegistry.Api.BackOffice.AddressController;
 
-    public class GivenParentAddressHasInvalidStatus : BackOfficeApiTest
+    public class GivenStreetNameHasInvalidStatus : BackOfficeApiTest
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;
 
-        public GivenParentAddressHasInvalidStatus(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public GivenStreetNameHasInvalidStatus(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             _controller = CreateApiBusControllerWithUser<AddressController>();
-            _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
+            _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext(Array.Empty<string>());
         }
 
         [Fact]
         public async Task ThenThrowsValidationException()
         {
             var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
+            var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
             MockMediator
                 .Setup(x => x.Send(It.IsAny<AddressCorrectRetirementRequest>(), CancellationToken.None))
-                .Throws(new ParentAddressHasInvalidStatusException());
+                .Throws(new StreetNameHasInvalidStatusException());
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
-            var correctRetirementRequest = new AddressCorrectRetirementRequest
+            var request = new AddressCorrectRetirementRequest
             {
                 PersistentLocalId = addressPersistentLocalId
             };
@@ -50,8 +50,9 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRetirement
                 MockValidRequestValidator<AddressCorrectRetirementRequest>(),
                 MockIfMatchValidator(true),
                 ResponseOptions,
-                correctRetirementRequest,
-                null, CancellationToken.None);
+                request,
+                ifMatchHeaderValue: null,
+                CancellationToken.None);
 
             // Assert
             act
@@ -59,8 +60,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRetirement
                 .ThrowAsync<ValidationException>()
                 .Result
                 .Where(x =>
-                    x.Errors.Any(e => e.ErrorCode == "AdresHuisnummerVoorgesteldAfgekeurdOfGehistoreerd"
-                                    && e.ErrorMessage == "Deze actie is enkel toegestaan op adressen waarbij het huisnummer de status 'inGebruik' heeft."));
+                    x.Errors.Any(e => e.ErrorCode == "AdresStraatnaamVoorgesteldOfInGebruik"
+                                      && e.ErrorMessage == "Deze actie is enkel toegestaan binnen straatnamen met status 'voorgesteld' of 'inGebruik'."));
         }
     }
 }

@@ -21,6 +21,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     public class BackOfficeLambdaTest : AddressRegistryTest
     {
         protected const string StraatNaamPuri = "https://data.vlaanderen.be/id/straatnaam/";
+        protected const string PostInfoPuri = "https://data.vlaanderen.be/id/postinfo/";
 
         protected BackOfficeLambdaTest(
             ITestOutputHelper testOutputHelper)

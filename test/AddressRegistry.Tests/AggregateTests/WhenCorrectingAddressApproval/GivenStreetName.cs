@@ -145,6 +145,34 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressApproval
         }
 
         [Theory]
+        [InlineData(StreetNameStatus.Rejected)]
+        [InlineData(StreetNameStatus.Retired)]
+        public void OnStreetNameInvalidStatus_ThenThrowsStreetNameHasInvalidStatusException(StreetNameStatus streetNameStatus)
+        {
+            var correctAddressApproval = new CorrectAddressApproval(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<AddressPersistentLocalId>(),
+                Fixture.Create<Provenance>());
+
+            var migratedStreetNameWasImported = new MigratedStreetNameWasImported(
+                Fixture.Create<StreetNameId>(),
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<MunicipalityId>(),
+                Fixture.Create<NisCode>(),
+                streetNameStatus);
+            ((ISetProvenance)migratedStreetNameWasImported).SetProvenance(Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    migratedStreetNameWasImported,
+                    CreateAddressWasMigratedToStreetName(
+                        addressPersistentLocalId: Fixture.Create<AddressPersistentLocalId>(),
+                        addressStatus: AddressStatus.Current))
+                .When(correctAddressApproval)
+                .Throws(new StreetNameHasInvalidStatusException()));
+        }
+
+        [Theory]
         [InlineData(AddressStatus.Rejected)]
         [InlineData(AddressStatus.Retired)]
         public void AddressWithInvalidStatuses_ThenThrowsAddressHasInvalidStatusException(AddressStatus addressStatus)

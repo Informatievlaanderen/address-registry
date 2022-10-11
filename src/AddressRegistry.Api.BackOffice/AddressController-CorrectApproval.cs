@@ -111,8 +111,14 @@ namespace AddressRegistry.Api.BackOffice
             {
                 throw exception switch
                 {
+                    StreetNameHasInvalidStatusException => CreateValidationException(
+                        ValidationErrors.Common.StreetNameStatusInvalidForCorrection.Code,
+                        string.Empty,
+                        ValidationErrors.Common.StreetNameStatusInvalidForCorrection.Message),
+
                     AddressIsNotFoundException => new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound),
                     AddressIsRemovedException => new ApiException(ValidationErrors.Common.AddressRemoved.Message, StatusCodes.Status410Gone),
+
                     AddressHasInvalidStatusException => CreateValidationException(
                         ValidationErrors.CorrectApproval.AddressInvalidStatus.Code,
                         string.Empty,

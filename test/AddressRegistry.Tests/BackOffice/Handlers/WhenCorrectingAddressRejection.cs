@@ -73,7 +73,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
                 _idempotencyContext);
 
             // Act
-            var result = await sut.Handle(new CorrectAddressFromRejectedToProposedRequest
+            var result = await sut.Handle(new AddressCorrectRejectionRequest
             {
                 PersistentLocalId = addressPersistentLocalId
             },

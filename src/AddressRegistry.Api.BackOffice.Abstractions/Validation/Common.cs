@@ -28,6 +28,13 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
                 public static string Message(string streetNamePuri) => $"De straatnaam '{streetNamePuri}' is niet gekend in het straatnaamregister.";
             }
 
+            public static class StreetNameStatusInvalidForCorrection
+            {
+                public const string Code = "AdresStraatnaamVoorgesteldOfInGebruik";
+                public const string Message = "Deze actie is enkel toegestaan binnen straatnamen met status 'voorgesteld' of 'inGebruik'.";
+
+            }
+
             public static class StreetNameIsNotActive
             {
                 public const string Code = "AdresStraatnaamGehistoreerdOfAfgekeurd";

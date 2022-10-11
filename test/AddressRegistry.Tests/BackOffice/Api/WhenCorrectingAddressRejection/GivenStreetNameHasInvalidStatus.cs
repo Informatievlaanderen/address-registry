@@ -4,11 +4,9 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using FluentAssertions;
     using FluentValidation;
-    using FluentValidation.Results;
     using global::AutoFixture;
     using Infrastructure;
     using Moq;
@@ -18,33 +16,28 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
     using Xunit.Abstractions;
     using AddressController = AddressRegistry.Api.BackOffice.AddressController;
 
-    public class GivenAddressHasInvalidStatus : BackOfficeApiTest
+    public class GivenStreetNameHasInvalidStatus : BackOfficeApiTest
     {
         private readonly AddressController _controller;
         private readonly TestBackOfficeContext _backOfficeContext;
 
-        public GivenAddressHasInvalidStatus(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public GivenStreetNameHasInvalidStatus(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             _controller = CreateApiBusControllerWithUser<AddressController>();
-            _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
+            _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext(Array.Empty<string>());
         }
 
         [Fact]
-        public void ThenThrowsValidationException()
+        public async Task ThenThrowsValidationException()
         {
             var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
-            var mockRequestValidator = new Mock<IValidator<AddressCorrectRejectionRequest>>();
-            mockRequestValidator.Setup(x => x.ValidateAsync(It.IsAny<AddressCorrectRejectionRequest>(), CancellationToken.None))
-                .Returns(Task.FromResult(new ValidationResult()));
+            MockMediator
+                .Setup(x => x.Send(It.IsAny<AddressCorrectRejectionRequest>(), CancellationToken.None))
+                .Throws(new StreetNameHasInvalidStatusException());
 
-            MockMediator.Setup(x => x.Send(It.IsAny<AddressCorrectRejectionRequest>(), CancellationToken.None))
-                .Throws(new AddressHasInvalidStatusException());
-
-            _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.Add(
-                new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));
-            _backOfficeContext.SaveChanges();
+            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             var request = new AddressCorrectRejectionRequest
             {
@@ -54,11 +47,12 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
             //Act
             Func<Task> act = async () => await _controller.CorrectRejection(
                 _backOfficeContext,
-                mockRequestValidator.Object,
+                MockValidRequestValidator<AddressCorrectRejectionRequest>(),
                 MockIfMatchValidator(true),
                 ResponseOptions,
                 request,
-                null, CancellationToken.None);
+                ifMatchHeaderValue: null,
+                CancellationToken.None);
 
             // Assert
             act
@@ -66,8 +60,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
                 .ThrowAsync<ValidationException>()
                 .Result
                 .Where(x =>
-                     x.Errors.Any(e => e.ErrorCode == "AdresInGebruikOfGehistoreerd"
-                     && e.ErrorMessage == "Deze actie is enkel toegestaan op adressen met status 'afgekeurd'."));
+                    x.Errors.Any(e => e.ErrorCode == "AdresStraatnaamVoorgesteldOfInGebruik"
+                                      && e.ErrorMessage == "Deze actie is enkel toegestaan binnen straatnamen met status 'voorgesteld' of 'inGebruik'."));
         }
     }
 }

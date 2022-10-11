@@ -332,7 +332,7 @@ namespace AddressRegistry.StreetName
                     throw new ParentAddressNotFoundException(PersistentLocalId, addressToCorrect.HouseNumber);
                 }
 
-                if (parent.Status is AddressStatus.Rejected or AddressStatus.Retired)
+                if (parent.Status is AddressStatus.Proposed or AddressStatus.Rejected or AddressStatus.Retired)
                 {
                     throw new ParentAddressHasInvalidStatusException();
                 }

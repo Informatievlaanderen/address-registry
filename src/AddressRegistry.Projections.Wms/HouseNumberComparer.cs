@@ -2,10 +2,16 @@
 {
     using System;
     using System.Collections.Generic;
-    using AddressRegistry.StreetName;
+    using System.Text.RegularExpressions;
 
     public class HouseNumberComparer : IComparer<string>
     {
+        private static readonly Regex HouseNumberDigits =
+            new (@"\d+", RegexOptions.Compiled);
+
+        private static readonly Regex HouseNumberLetters =
+            new (@"([A-Z]){0,1}$", RegexOptions.Compiled);
+
         public int Compare(string? x, string? y)
         {
             if (ReferenceEquals(x, null) && ReferenceEquals(y, null))
@@ -15,13 +21,28 @@
             if (ReferenceEquals(y, null))
                 return 1;
 
-            var digitsOfX = int.Parse(HouseNumber.HouseNumberDigits.Match(x).Value);
-            var digitsOfY = int.Parse(HouseNumber.HouseNumberDigits.Match(y).Value);
+            var possibleDigitsOfX = HouseNumberDigits.Match(x).Value;
+            var possibleDigitsOfY = HouseNumberDigits.Match(y).Value;
 
-            if (digitsOfX != digitsOfY) return digitsOfX.CompareTo(digitsOfY);
+            var xHasDigits = !string.IsNullOrWhiteSpace(possibleDigitsOfX);
+            var yHasDigits = !string.IsNullOrWhiteSpace(possibleDigitsOfY);
 
-            var lettersOfX = HouseNumber.HouseNumberLetters.Match(x).Value;
-            var lettersOfY = HouseNumber.HouseNumberLetters.Match(y).Value;
+            if (xHasDigits && yHasDigits)
+            {
+                var digitsOfX = int.Parse(possibleDigitsOfX);
+                var digitsOfY = int.Parse(possibleDigitsOfY);
+
+                if (digitsOfX != digitsOfY) return digitsOfX.CompareTo(digitsOfY);
+            }
+
+            if (xHasDigits && !yHasDigits)
+                return -1;
+
+            if (yHasDigits && !xHasDigits)
+                return 1;
+
+            var lettersOfX = HouseNumberLetters.Match(x).Value;
+            var lettersOfY = HouseNumberLetters.Match(y).Value;
 
             return string.Compare(lettersOfX, lettersOfY, StringComparison.Ordinal);
         }

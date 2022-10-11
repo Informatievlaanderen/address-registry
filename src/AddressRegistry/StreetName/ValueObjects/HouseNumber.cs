@@ -9,12 +9,6 @@ namespace AddressRegistry.StreetName
         private static readonly Regex FormatRegex =
             new("^[1-9]([0-9]{0,8}([A-H]|[K-N]|[P]|[R-T]|[V-Z]){0,1}|[0-9]{0,9})$", RegexOptions.Compiled);
 
-        public static readonly Regex HouseNumberDigits =
-            new (@"\d+", RegexOptions.Compiled);
-
-        public static readonly Regex HouseNumberLetters =
-            new (@"([A-H]|[K-N]|[P]|[R-T]|[V-Z]){0,1}$", RegexOptions.Compiled);
-
         internal HouseNumber(string houseNumber) : base(houseNumber.RemoveUnicodeControlCharacters()) { }
 
         public static HouseNumber Create(string houseNumber)

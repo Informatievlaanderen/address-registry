@@ -1,6 +1,5 @@
 namespace AddressRegistry.Api.BackOffice.Validators
 {
-    using Abstractions;
     using Abstractions.Requests;
     using Abstractions.Validation;
     using FluentValidation;
@@ -10,6 +9,11 @@ namespace AddressRegistry.Api.BackOffice.Validators
     {
         public AddressCorrectBoxNumberRequestValidator()
         {
+            RuleFor(x => x.Busnummer)
+                .NotEmpty()
+                .WithMessage(ValidationErrors.CorrectBoxNumber.BoxNumberIsRequired.Message)
+                .WithErrorCode(ValidationErrors.CorrectBoxNumber.BoxNumberIsRequired.Code);
+
             RuleFor(x => x.Busnummer)
                 .Must(BoxNumber.HasValidFormat)
                 .WithMessage(ValidationErrors.Common.BoxNumberInvalidFormat.Message)

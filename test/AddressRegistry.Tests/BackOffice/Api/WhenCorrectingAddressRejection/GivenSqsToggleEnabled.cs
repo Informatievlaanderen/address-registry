@@ -47,10 +47,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
 
             var result = (AcceptedResult)await _controller.CorrectRejection(
                 _backOfficeContext,
-                MockValidRequestValidator<CorrectAddressFromRejectedToProposedRequest>(),
+                MockValidRequestValidator<AddressCorrectRejectionRequest>(),
                 MockIfMatchValidator(true),
                 ResponseOptions,
-                request: new CorrectAddressFromRejectedToProposedRequest
+                request: new AddressCorrectRejectionRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
                 },
@@ -71,10 +71,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
             //Act
             var result = await _controller.CorrectRejection(
                 _backOfficeContext,
-                MockValidRequestValidator<CorrectAddressFromRejectedToProposedRequest>(),
+                MockValidRequestValidator<AddressCorrectRejectionRequest>(),
                 MockIfMatchValidator(false),
                 ResponseOptions,
-                request: new CorrectAddressFromRejectedToProposedRequest
+                request: new AddressCorrectRejectionRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
                 },
@@ -89,10 +89,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
         {
             var result = await _controller.CorrectRejection(
                 _backOfficeContext,
-                MockValidRequestValidator<CorrectAddressFromRejectedToProposedRequest>(),
+                MockValidRequestValidator<AddressCorrectRejectionRequest>(),
                 MockIfMatchValidator(true),
                 ResponseOptions,
-                new CorrectAddressFromRejectedToProposedRequest
+                new AddressCorrectRejectionRequest
                 {
                     PersistentLocalId = Fixture.Create<AddressPersistentLocalId>()
                 },
@@ -115,10 +115,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
 
             Func<Task> act = async () => await _controller.CorrectRejection(
                 _backOfficeContext,
-                MockValidRequestValidator<CorrectAddressFromRejectedToProposedRequest>(),
+                MockValidRequestValidator<AddressCorrectRejectionRequest>(),
                 MockIfMatchValidator(true),
                 ResponseOptions,
-                new CorrectAddressFromRejectedToProposedRequest
+                new AddressCorrectRejectionRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
                 },
@@ -140,7 +140,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
             //Arrange
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
 
-            var request = new CorrectAddressFromRejectedToProposedRequest
+            var request = new AddressCorrectRejectionRequest
             {
                 PersistentLocalId = addressPersistentLocalId
             };
@@ -148,7 +148,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
             //Act
             var result = await _controller.CorrectRejection(
                 _backOfficeContext,
-                MockValidRequestValidator<CorrectAddressFromRejectedToProposedRequest>(),
+                MockValidRequestValidator<AddressCorrectRejectionRequest>(),
                 MockIfMatchValidator(true),
                 ResponseOptions,
                 request,

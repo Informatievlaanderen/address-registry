@@ -13,7 +13,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers
     using StreetName;
     using StreetName.Commands;
 
-    public sealed class AddressCorrectRejectionHandler : BusHandler, IRequestHandler<CorrectAddressFromRejectedToProposedRequest, ETagResponse>
+    public sealed class AddressCorrectRejectionHandler : BusHandler, IRequestHandler<AddressCorrectRejectionRequest, ETagResponse>
     {
         private readonly IStreetNames _streetNames;
         private readonly BackOfficeContext _backOfficeContext;
@@ -31,7 +31,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers
             _idempotencyContext = idempotencyContext;
         }
 
-        public async Task<ETagResponse> Handle(CorrectAddressFromRejectedToProposedRequest request, CancellationToken cancellationToken)
+        public async Task<ETagResponse> Handle(AddressCorrectRejectionRequest request, CancellationToken cancellationToken)
         {
             var addressPersistentLocalId =
                 new AddressPersistentLocalId(new PersistentLocalId(request.PersistentLocalId));

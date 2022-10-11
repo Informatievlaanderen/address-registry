@@ -52,10 +52,10 @@ namespace AddressRegistry.Api.BackOffice
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
         public async Task<IActionResult> CorrectRejection(
             [FromServices] BackOfficeContext backOfficeContext,
-            [FromServices] IValidator<CorrectAddressFromRejectedToProposedRequest> validator,
+            [FromServices] IValidator<AddressCorrectRejectionRequest> validator,
             [FromServices] IIfMatchHeaderValidator ifMatchHeaderValidator,
             [FromServices] IOptions<ResponseOptions> options,
-            [FromRoute] CorrectAddressFromRejectedToProposedRequest request,
+            [FromRoute] AddressCorrectRejectionRequest request,
             [FromHeader(Name = "If-Match")] string? ifMatchHeaderValue,
             CancellationToken cancellationToken = default)
         {
@@ -119,6 +119,10 @@ namespace AddressRegistry.Api.BackOffice
             {
                 throw exception switch
                 {
+                    StreetNameHasInvalidStatusException => CreateValidationException(
+                        ValidationErrors.Common.StreetNameStatusInvalidForCorrection.Code,
+                        string.Empty,
+                        ValidationErrors.Common.StreetNameStatusInvalidForCorrection.Message),
                     AddressIsNotFoundException => new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound),
                     AddressIsRemovedException => new ApiException(ValidationErrors.Common.AddressRemoved.Message, StatusCodes.Status410Gone),
                     AddressHasInvalidStatusException => CreateValidationException(

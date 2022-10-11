@@ -281,13 +281,17 @@ namespace AddressRegistry.StreetName
             ExtendedWkbGeometry? position,
             IMunicipalities municipalities)
         {
+            GuardStreetNameStatusForCorrection();
+
             StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
                 .CorrectPosition(geometryMethod, geometrySpecification, position, GetMunicipalityData(municipalities));
         }
-
+        
         public void CorrectAddressPostalCode(AddressPersistentLocalId addressPersistentLocalId, PostalCode postalCode, MunicipalityId municipalityIdByPostalCode)
         {
+            GuardStreetNameStatusForCorrection();
+
             StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
                 .CorrectPostalCode(postalCode, () => GuardPostalCodeMunicipalityMatchesStreetNameMunicipality(municipalityIdByPostalCode));
@@ -295,6 +299,8 @@ namespace AddressRegistry.StreetName
 
         public void CorrectAddressHouseNumber(AddressPersistentLocalId addressPersistentLocalId, HouseNumber houseNumber)
         {
+            GuardStreetNameStatusForCorrection();
+
             StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
                 .CorrectHouseNumber(houseNumber, () => GuardAddressIsUnique(addressPersistentLocalId, houseNumber, null));
@@ -302,6 +308,8 @@ namespace AddressRegistry.StreetName
 
         public void CorrectAddressBoxNumber(AddressPersistentLocalId addressPersistentLocalId, BoxNumber boxNumber)
         {
+            GuardStreetNameStatusForCorrection();
+
             var addressToCorrect = StreetNameAddresses.GetByPersistentLocalId(addressPersistentLocalId);
             addressToCorrect.CorrectBoxNumber(
                 boxNumber,
@@ -313,6 +321,8 @@ namespace AddressRegistry.StreetName
 
         public void CorrectAddressApproval(AddressPersistentLocalId addressPersistentLocalId)
         {
+            GuardStreetNameStatusForCorrection();
+
             StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
                 .CorrectApproval();
@@ -320,6 +330,8 @@ namespace AddressRegistry.StreetName
 
         public void CorrectAddressRetirement(AddressPersistentLocalId addressPersistentLocalId)
         {
+            GuardStreetNameStatusForCorrection();
+
             var addressToCorrect = StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId);
 
@@ -346,6 +358,8 @@ namespace AddressRegistry.StreetName
 
         public void CorrectAddressRejection(AddressPersistentLocalId addressPersistentLocalId)
         {
+            GuardStreetNameStatusForCorrection();
+
             var addressToCorrect = StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId);
 
@@ -382,6 +396,13 @@ namespace AddressRegistry.StreetName
             if (municipalityIdByPostalCode != MunicipalityId)
             {
                 throw new PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException();
+            }
+        }
+        private void GuardStreetNameStatusForCorrection()
+        {
+            if (Status != StreetNameStatus.Proposed && Status != StreetNameStatus.Current)
+            {
+                throw new StreetNameHasInvalidStatusException();
             }
         }
 

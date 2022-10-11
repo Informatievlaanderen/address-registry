@@ -35,18 +35,18 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
             var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
-            var mockRequestValidator = new Mock<IValidator<CorrectAddressFromRejectedToProposedRequest>>();
-            mockRequestValidator.Setup(x => x.ValidateAsync(It.IsAny<CorrectAddressFromRejectedToProposedRequest>(), CancellationToken.None))
+            var mockRequestValidator = new Mock<IValidator<AddressCorrectRejectionRequest>>();
+            mockRequestValidator.Setup(x => x.ValidateAsync(It.IsAny<AddressCorrectRejectionRequest>(), CancellationToken.None))
                 .Returns(Task.FromResult(new ValidationResult()));
 
-            MockMediator.Setup(x => x.Send(It.IsAny<CorrectAddressFromRejectedToProposedRequest>(), CancellationToken.None))
+            MockMediator.Setup(x => x.Send(It.IsAny<AddressCorrectRejectionRequest>(), CancellationToken.None))
                 .Throws(new ParentAddressHasInvalidStatusException());
 
             _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.Add(
                 new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));
             _backOfficeContext.SaveChanges();
 
-            var request = new CorrectAddressFromRejectedToProposedRequest
+            var request = new AddressCorrectRejectionRequest
             {
                 PersistentLocalId = addressPersistentLocalId
             };

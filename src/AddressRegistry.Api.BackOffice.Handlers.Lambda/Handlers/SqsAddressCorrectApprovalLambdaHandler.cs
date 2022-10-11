@@ -59,6 +59,9 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 StreetNameIsRemovedException => new TicketError(
                     ValidationErrors.Common.StreetNameInvalid.Message(request.StreetNamePersistentLocalId),
                     ValidationErrors.Common.StreetNameInvalid.Code),
+                StreetNameHasInvalidStatusException => new TicketError(
+                    ValidationErrors.Common.StreetNameStatusInvalidForCorrection.Message,
+                    ValidationErrors.Common.StreetNameStatusInvalidForCorrection.Code),
                 AddressHasInvalidStatusException => new TicketError(
                     ValidationErrors.CorrectApproval.AddressInvalidStatus.Message,
                     ValidationErrors.CorrectApproval.AddressInvalidStatus.Code),

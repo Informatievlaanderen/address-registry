@@ -63,8 +63,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                     ValidationErrors.CorrectApproval.AddressInvalidStatus.Message,
                     ValidationErrors.CorrectApproval.AddressInvalidStatus.Code),
                 AddressIsNotOfficiallyAssignedException => new TicketError(
-                    ValidationErrorMessages.Address.AddressIsNotOfficiallyAssigned,
-                    Deprecated.Address.AddressIsNotOfficiallyAssigned),
+                    ValidationErrors.CorrectApproval.AddressIsNotOfficiallyAssigned.Message,
+                    ValidationErrors.CorrectApproval.AddressIsNotOfficiallyAssigned.Code),
                 _ => null
             };
         }

@@ -57,8 +57,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             return exception switch
             {
                 AddressHasInvalidStatusException => new TicketError(
-                    ValidationErrorMessages.Address.AddressPositionCannotBeChanged,
-                    Deprecated.Address.AddressPositionCannotBeChanged),
+                    ValidationErrors.Common.Position.CannotBeChanged.Message,
+                    ValidationErrors.Common.Position.CannotBeChanged.Code),
                 AddressHasInvalidGeometryMethodException => new TicketError(
                     ValidationErrors.Common.PositionGeometryMethod.Invalid.Message,
                     ValidationErrors.Common.PositionGeometryMethod.Invalid.Code),

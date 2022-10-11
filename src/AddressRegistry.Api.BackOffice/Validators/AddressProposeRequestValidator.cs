@@ -20,8 +20,8 @@ namespace AddressRegistry.Api.BackOffice.Validators
 
             RuleFor(x => x.PostInfoId)
                 .MustAsync((_, postInfoId, ct) => PostalCodeValidator.PostalCodeExists(syndicationContext, postInfoId, ct))
-                .WithMessage((_, postInfoId) => ValidationErrorMessages.Address.PostalCodeDoesNotExist(postInfoId))
-                .WithErrorCode(Deprecated.Address.PostalCodeDoesNotExist);
+                .WithMessage((_, postInfoId) => ValidationErrors.Common.PostalCode.DoesNotExist.Message(postInfoId))
+                .WithErrorCode(ValidationErrors.Common.PostalCode.DoesNotExist.Code);
 
             RuleFor(x => x.Huisnummer)
                 .Must(HouseNumberValidator.IsValid)

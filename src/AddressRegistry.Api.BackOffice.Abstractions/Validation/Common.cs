@@ -7,9 +7,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
             public static class AddressAlreadyExists
             {
                 public const string Code = "AdresBestaandeHuisnummerBusnummerCombinatie";
-
-                public const string Message =
-                    "Deze combinatie huisnummer-busnummer bestaat reeds voor de opgegeven straatnaam.";
+                public const string Message = "Deze combinatie huisnummer-busnummer bestaat reeds voor de opgegeven straatnaam.";
             }
 
             public static class AddressRemoved
@@ -62,6 +60,12 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
                     public const string Code = "AdresPositieformaatValidatie";
                     public const string Message = "De positie is geen geldige gml-puntgeometrie.";
                 }
+
+                public static class CannotBeChanged
+                {
+                    public const string Code = "AdresGehistoreerdOfAfgekeurd";
+                    public const string Message = "Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik'.";
+                }
             }
 
             public static class PositionSpecification
@@ -85,6 +89,28 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
                 {
                     public const string Code = "AdresPositieGeometriemethodeValidatie";
                     public const string Message = "Ongeldige positieGeometrieMethode.";
+                }
+            }
+
+            public static class PostalCode
+            {
+                public static class DoesNotExist
+                {
+                    public const string Code = "AdresPostinfoNietGekendValidatie";
+                    public static string Message(string postInfoPuri)
+                        => $"De postinfo '{postInfoPuri}' is niet gekend in het postinforegister.";
+                }
+
+                public static class CannotBeChanged
+                {
+                    public const string Code = "AdresGehistoreerdOfAfgekeurd";
+                    public const string Message = "Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik'.";
+                }
+
+                public static class PostalCodeNotInMunicipality
+                {
+                    public const string Code = "AdresPostinfoNietInGemeente";
+                    public const string Message = "De ingevoerde postcode wordt niet gebruikt binnen deze gemeente.";
                 }
             }
         }

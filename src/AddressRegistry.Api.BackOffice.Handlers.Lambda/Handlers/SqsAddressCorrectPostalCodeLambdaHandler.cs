@@ -5,6 +5,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
     using Abstractions;
     using Abstractions.Exceptions;
     using Abstractions.Responses;
+    using Abstractions.Validation;
     using AddressRegistry.Infrastructure;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo.Extensions;
@@ -83,11 +84,11 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             return exception switch
             {
                 AddressHasInvalidStatusException => new TicketError(
-                    ValidationErrorMessages.Address.AddressPostalCodeCannotBeChanged,
-                    Deprecated.Address.AddressPostalCodeCannotBeChanged),
+                    ValidationErrors.Common.PostalCode.CannotBeChanged.Message,
+                    ValidationErrors.Common.PostalCode.CannotBeChanged.Code),
                 PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException => new TicketError(
-                    ValidationErrorMessages.Address.PostalCodeNotInMunicipality,
-                    Deprecated.Address.PostalCodeNotInMunicipality),
+                    ValidationErrors.Common.PostalCode.PostalCodeNotInMunicipality.Message,
+                    ValidationErrors.Common.PostalCode.PostalCodeNotInMunicipality.Code),
                 _ => null
             };
         }

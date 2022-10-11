@@ -109,8 +109,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                     ValidationErrors.Common.AddressAlreadyExists.Message,
                     ValidationErrors.Common.AddressAlreadyExists.Code),
                 ParentAddressNotFoundException e => new TicketError(
-                    ValidationErrorMessages.Address.AddressHouseNumberUnknown(request.Request.StraatNaamId, e.HouseNumber),
-                    Deprecated.Address.AddressHouseNumberUnknown),
+                    ValidationErrors.Propose.AddressHouseNumberUnknown.Message(request.Request.StraatNaamId, e.HouseNumber),
+                    ValidationErrors.Propose.AddressHouseNumberUnknown.Code),
                 StreetNameHasInvalidStatusException => new TicketError(
                     ValidationErrors.Common.StreetNameIsNotActive.Message,
                     ValidationErrors.Common.StreetNameIsNotActive.Code),
@@ -118,8 +118,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                     ValidationErrors.Common.StreetNameInvalid.Message(request.Request.StraatNaamId),
                     ValidationErrors.Common.StreetNameInvalid.Code),
                 PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException => new TicketError(
-                    ValidationErrorMessages.Address.PostalCodeNotInMunicipality,
-                    Deprecated.Address.PostalCodeNotInMunicipality),
+                    ValidationErrors.Common.PostalCode.PostalCodeNotInMunicipality.Message,
+                    ValidationErrors.Common.PostalCode.PostalCodeNotInMunicipality.Code),
                 _ => null
             };
         }

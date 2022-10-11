@@ -57,8 +57,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             return exception switch
             {
                 AddressHasInvalidStatusException => new TicketError(
-                    ValidationErrorMessages.Address.AddressPostalCodeCannotBeChanged,
-                    Deprecated.Address.AddressPostalCodeCannotBeChanged),
+                    ValidationErrors.Common.PostalCode.CannotBeChanged.Message,
+                    ValidationErrors.Common.PostalCode.CannotBeChanged.Code),
                 ParentAddressAlreadyExistsException => new TicketError(
                     ValidationErrors.Common.AddressAlreadyExists.Message,
                     ValidationErrors.Common.AddressAlreadyExists.Code),
@@ -66,8 +66,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                     ValidationErrors.Common.HouseNumberInvalidFormat.Message,
                     ValidationErrors.Common.HouseNumberInvalidFormat.Code),
                 HouseNumberToCorrectHasBoxNumberException => new TicketError(
-                    ValidationErrorMessages.Address.HouseNumberOfBoxNumberCannotBeChanged,
-                    Deprecated.Address.HouseNumberOfBoxNumberCannotBeChanged),
+                    ValidationErrors.CorrectHouseNumber.HouseNumberOfBoxNumberCannotBeChanged.Message,
+                    ValidationErrors.CorrectHouseNumber.HouseNumberOfBoxNumberCannotBeChanged.Code),
                 _ => null
             };
         }

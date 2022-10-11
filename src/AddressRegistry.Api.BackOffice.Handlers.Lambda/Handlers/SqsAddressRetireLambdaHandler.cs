@@ -63,8 +63,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                     ValidationErrors.Common.StreetNameInvalid.Message(request.StreetNamePersistentLocalId),
                     ValidationErrors.Common.StreetNameInvalid.Code),
                 AddressHasInvalidStatusException => new TicketError(
-                    ValidationErrorMessages.Address.AddressCannotBeRetired,
-                    Deprecated.Address.AddressCannotBeRetired),
+                    ValidationErrors.RetireAddress.AddressInvalidStatus.Message,
+                    ValidationErrors.RetireAddress.AddressInvalidStatus.Code),
                 _ => null
             };
         }

@@ -127,14 +127,14 @@ namespace AddressRegistry.Api.BackOffice
                     AddressIsRemovedException => new ApiException(ValidationErrors.Common.AddressRemoved.Message, StatusCodes.Status410Gone),
 
                     AddressHasInvalidStatusException => CreateValidationException(
-                        Deprecated.Address.AddressPostalCodeCannotBeChanged,
+                        ValidationErrors.Common.PostalCode.CannotBeChanged.Code,
                         string.Empty,
-                        ValidationErrorMessages.Address.AddressPostalCodeCannotBeChanged),
+                        ValidationErrors.Common.PostalCode.CannotBeChanged.Message),
 
                     PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException => CreateValidationException(
-                        Deprecated.Address.PostalCodeNotInMunicipality,
+                        ValidationErrors.Common.PostalCode.PostalCodeNotInMunicipality.Code,
                         nameof(request.PostInfoId),
-                        ValidationErrorMessages.Address.PostalCodeNotInMunicipality),
+                        ValidationErrors.Common.PostalCode.PostalCodeNotInMunicipality.Message),
 
                     _ => new ValidationException(new List<ValidationFailure>
                         { new(string.Empty, exception.Message) })

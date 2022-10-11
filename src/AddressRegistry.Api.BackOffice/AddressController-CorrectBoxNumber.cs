@@ -126,9 +126,9 @@ namespace AddressRegistry.Api.BackOffice
                     AddressIsNotFoundException => new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound),
                     AddressIsRemovedException => new ApiException(ValidationErrors.Common.AddressRemoved.Message, StatusCodes.Status410Gone),
                     AddressHasInvalidStatusException => CreateValidationException(
-                        Deprecated.Address.AddressPostalCodeCannotBeChanged,
+                        ValidationErrors.Common.PostalCode.CannotBeChanged.Code,
                         string.Empty,
-                        ValidationErrorMessages.Address.AddressPostalCodeCannotBeChanged),
+                        ValidationErrors.Common.PostalCode.CannotBeChanged.Message),
 
                     BoxNumberHasInvalidFormatException _ =>
                         CreateValidationException(
@@ -138,9 +138,9 @@ namespace AddressRegistry.Api.BackOffice
 
                     AddressHasNoBoxNumberException _ =>
                         CreateValidationException(
-                            Deprecated.Address.HasNoBoxNumber,
+                            ValidationErrors.CorrectBoxNumber.HasNoBoxNumber.Code,
                             nameof(request.Busnummer),
-                            ValidationErrorMessages.Address.HasNoBoxNumber),
+                            ValidationErrors.CorrectBoxNumber.HasNoBoxNumber.Message),
 
                     AddressAlreadyExistsException _ =>
                         CreateValidationException(

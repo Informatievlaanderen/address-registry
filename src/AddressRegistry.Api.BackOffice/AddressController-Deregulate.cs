@@ -121,9 +121,9 @@ namespace AddressRegistry.Api.BackOffice
                     AddressIsNotFoundException => new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound),
                     AddressIsRemovedException => new ApiException(ValidationErrors.Common.AddressRemoved.Message, StatusCodes.Status410Gone),
                     ParentAddressHasInvalidStatusException => CreateValidationException(
-                        Deprecated.Address.AddressCannotBeDeregulatedBecauseOfParent,
+                        ValidationErrors.DeregulateAddress.ParentInvalidStatus.Code,
                         string.Empty,
-                        ValidationErrorMessages.Address.AddressCannotBeDeregulatedBecauseOfParent),
+                        ValidationErrors.DeregulateAddress.ParentInvalidStatus.Message),
                     AddressHasInvalidStatusException => CreateValidationException(
                         ValidationErrors.DeregulateAddress.AddressInvalidStatus.Code,
                         string.Empty,

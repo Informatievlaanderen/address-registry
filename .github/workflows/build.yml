@@ -1,9 +1,9 @@
 name: Build
 
 on:
-#  push:
-#    branches: [ main ]
-  workflow_dispatch:
+  push:
+    branches: [ main ]
+  workflow_dispatch: 
 
 jobs:
   build:
@@ -38,6 +38,12 @@ jobs:
       shell: bash
       run: dotnet --info
 
+    - name: Restore packages
+      shell: bash
+      run: |
+        dotnet tool restore
+        dotnet paket install
+
     - name: Cache SonarCloud packages
       uses: actions/cache@v1
       with:
@@ -67,17 +73,14 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       shell: bash
       run: |
-        ./.sonar/scanner/dotnet-sonarscanner begin /k:"Informatievlaanderen_streetname-registry" /o:"informatievlaanderen" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" > /dev/null 2>&1
+        ./.sonar/scanner/dotnet-sonarscanner begin /k:"Informatievlaanderen_address-registry" /o:"informatievlaanderen" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" > /dev/null 2>&1
 
     - name: Build
       shell: bash
       run: |
-        dotnet tool restore
-        dotnet paket install
         dotnet build --nologo --no-restore --configuration Debug AddressRegistry.sln
-        
+
     - name: Sonar end build & analyze
-      if: env.RELEASE_VERSION != 'none'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

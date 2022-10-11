@@ -1,3 +1,10 @@
+## [3.59.3](https://github.com/informatievlaanderen/address-registry/compare/v3.59.2...v3.59.3) (2022-10-11)
+
+
+### Bug Fixes
+
+* compare house numbers with letters only ([8b8250f](https://github.com/informatievlaanderen/address-registry/commit/8b8250f96694952112eb72c407362a927298d5f7))
+
 ## [3.59.2](https://github.com/informatievlaanderen/address-registry/compare/v3.59.1...v3.59.2) (2022-10-11)
 
 ## [3.59.1](https://github.com/informatievlaanderen/address-registry/compare/v3.59.0...v3.59.1) (2022-10-11)

@@ -121,7 +121,6 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
             var childBoxNumber = Fixture.Create<BoxNumber>();
 
             // Act
-
             aggregate.ProposeAddress(
                 aggregateId,
                 childPersistentLocalId,
@@ -148,6 +147,53 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
             child.Geometry.GeometryMethod.Should().Be(geometryMethod);
             child.Geometry.GeometrySpecification.Should().Be(geometrySpecification);
             child.Geometry.Geometry.Should().Be(geometryPosition);
+        }
+
+        [Fact]
+        public void WithExistingParentRemoved_ThenParentAddressNotFoundExceptionWasThrown()
+        {
+            var houseNumber = Fixture.Create<HouseNumber>();
+
+            var parentAddressWasProposed = new AddressWasProposedV2(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<AddressPersistentLocalId>(),
+                parentPersistentLocalId: null,
+                Fixture.Create<PostalCode>(),
+                houseNumber,
+                boxNumber: null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
+
+            ((ISetProvenance)parentAddressWasProposed).SetProvenance(Fixture.Create<Provenance>());
+
+            var parentAddressWasRemoved = new AddressWasRemovedV2(
+                new StreetNamePersistentLocalId(parentAddressWasProposed.StreetNamePersistentLocalId),
+                new AddressPersistentLocalId(parentAddressWasProposed.AddressPersistentLocalId));
+
+            ((ISetProvenance)parentAddressWasRemoved).SetProvenance(Fixture.Create<Provenance>());
+
+            var proposeChildAddress = new ProposeAddress(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<PostalCode>(),
+                Fixture.Create<MunicipalityId>(),
+                Fixture.Create<AddressPersistentLocalId>(),
+                houseNumber,
+                Fixture.Create<BoxNumber>(),
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
+                Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    Fixture.Create<MigratedStreetNameWasImported>(),
+                    parentAddressWasProposed,
+                    parentAddressWasRemoved)
+                .When(proposeChildAddress)
+                .Throws(new ParentAddressNotFoundException(
+                    new StreetNamePersistentLocalId(parentAddressWasProposed.StreetNamePersistentLocalId),
+                    houseNumber)));
         }
 
         [Fact]

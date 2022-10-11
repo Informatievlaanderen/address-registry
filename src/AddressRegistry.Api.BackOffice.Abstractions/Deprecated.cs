@@ -56,7 +56,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions
             public const string AddressCannotCorrectRetirement = "Deze actie is enkel toegestaan op adressen met status 'gehistoreerd'.";
 
             public const string AddressRejectionCannotBeCorrectedBecauseParentInvalidStatus =
-                "Deze actie is enkel toegestaan op adressen waarbij het huisnummer de status ‘inGebruik’ heeft.";
+                "Deze actie is enkel toegestaan op adressen waarbij het huisnummer de status 'inGebruik' heeft.";
 
             public const string AddressRetirementCannotBeCorrectedBecauseParentInvalidStatus =
                 AddressRejectionCannotBeCorrectedBecauseParentInvalidStatus;

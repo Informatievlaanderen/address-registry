@@ -202,7 +202,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
                 x.Error(
                     It.IsAny<Guid>(),
                     new TicketError(
-                        "Deze actie is enkel toegestaan op adressen waarbij het huisnummer de status ‘voorgesteld' of ‘inGebruik’ heeft.",
+                        "Deze actie is enkel toegestaan op adressen waarbij het huisnummer de status 'voorgesteld' of 'inGebruik' heeft.",
                         "AdresHuisnummerAfgekeurdOfGehistoreerd"),
                     CancellationToken.None));
         }

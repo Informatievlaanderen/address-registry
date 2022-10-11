@@ -217,7 +217,6 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRejection
         }
 
         [Theory]
-        [InlineData(AddressStatus.Proposed)]
         [InlineData(AddressStatus.Rejected)]
         [InlineData(AddressStatus.Retired)]
         public void WhenParentAddressHasInvalidStatus_ThrowParentAddressHasInvalidStatusException(AddressStatus invalidStatus)

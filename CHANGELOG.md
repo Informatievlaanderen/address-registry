@@ -1,3 +1,12 @@
+## [3.59.4](https://github.com/informatievlaanderen/address-registry/compare/v3.59.3...v3.59.4) (2022-10-11)
+
+
+### Bug Fixes
+
+* parent check for corrections ([51ecd35](https://github.com/informatievlaanderen/address-registry/commit/51ecd35a402fc4d8d717c1237eb19aa172def30c))
+* propose status check correctretirement ([3e3e5fa](https://github.com/informatievlaanderen/address-registry/commit/3e3e5fafaabab1916488e87b4b04ee31062cdfba))
+* use generated build.yml ([742bd50](https://github.com/informatievlaanderen/address-registry/commit/742bd5029b7a583891a35750e1d6cc7586f8d086))
+
 ## [3.59.3](https://github.com/informatievlaanderen/address-registry/compare/v3.59.2...v3.59.3) (2022-10-11)
 
 

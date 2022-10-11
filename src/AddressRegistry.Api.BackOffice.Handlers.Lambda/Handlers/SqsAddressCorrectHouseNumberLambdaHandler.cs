@@ -5,6 +5,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
     using Abstractions;
     using Abstractions.Exceptions;
     using Abstractions.Responses;
+    using Abstractions.Validation;
     using AddressRegistry.Infrastructure;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Microsoft.Extensions.Configuration;
@@ -57,16 +58,16 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             {
                 AddressHasInvalidStatusException => new TicketError(
                     ValidationErrorMessages.Address.AddressPostalCodeCannotBeChanged,
-                    ValidationErrors.Address.AddressPostalCodeCannotBeChanged),
+                    Deprecated.Address.AddressPostalCodeCannotBeChanged),
                 ParentAddressAlreadyExistsException => new TicketError(
-                    ValidationErrorMessages.Address.AddressAlreadyExists,
-                    ValidationErrors.Address.AddressAlreadyExists),
+                    ValidationErrors.Common.AddressAlreadyExists.Message,
+                    ValidationErrors.Common.AddressAlreadyExists.Code),
                 HouseNumberHasInvalidFormatException => new TicketError(
-                    ValidationErrorMessages.Address.HouseNumberInvalid,
-                    ValidationErrors.Address.HouseNumberInvalid),
+                    ValidationErrors.Common.HouseNumberInvalidFormat.Message,
+                    ValidationErrors.Common.HouseNumberInvalidFormat.Code),
                 HouseNumberToCorrectHasBoxNumberException => new TicketError(
                     ValidationErrorMessages.Address.HouseNumberOfBoxNumberCannotBeChanged,
-                    ValidationErrors.Address.HouseNumberOfBoxNumberCannotBeChanged),
+                    Deprecated.Address.HouseNumberOfBoxNumberCannotBeChanged),
                 _ => null
             };
         }

@@ -5,6 +5,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
     using Abstractions;
     using Abstractions.Exceptions;
     using Abstractions.Responses;
+    using Abstractions.Validation;
     using AddressRegistry.Infrastructure;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Microsoft.Extensions.Configuration;
@@ -56,14 +57,14 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             return exception switch
             {
                 StreetNameIsRemovedException => new TicketError(
-                    ValidationErrorMessages.StreetName.StreetNameInvalid(request.StreetNamePersistentLocalId),
-                    ValidationErrors.StreetName.StreetNameInvalid),
+                    ValidationErrors.Common.StreetNameInvalid.Message(request.StreetNamePersistentLocalId),
+                    ValidationErrors.Common.StreetNameInvalid.Code),
                 AddressHasInvalidStatusException => new TicketError(
-                    ValidationErrorMessages.Address.AddressApprovalCannotBeCorrected,
-                    ValidationErrors.Address.AddressApprovalCannotBeCorrected),
+                    ValidationErrors.CorrectApproval.AddressInvalidStatus.Message,
+                    ValidationErrors.CorrectApproval.AddressInvalidStatus.Code),
                 AddressIsNotOfficiallyAssignedException => new TicketError(
                     ValidationErrorMessages.Address.AddressIsNotOfficiallyAssigned,
-                    ValidationErrors.Address.AddressIsNotOfficiallyAssigned),
+                    Deprecated.Address.AddressIsNotOfficiallyAssigned),
                 _ => null
             };
         }

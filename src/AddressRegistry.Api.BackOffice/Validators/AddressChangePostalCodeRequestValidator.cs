@@ -14,7 +14,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
             RuleFor(x => x.PostInfoId)
                 .MustAsync((_, postInfoId, ct) => PostalCodeValidator.PostalCodeExists(syndicationContext, postInfoId, ct))
                 .WithMessage((_, postInfoId) => ValidationErrorMessages.Address.PostalCodeDoesNotExist(postInfoId))
-                .WithErrorCode(ValidationErrors.Address.PostalCodeDoesNotExist);
+                .WithErrorCode(Deprecated.Address.PostalCodeDoesNotExist);
         }
     }
 }

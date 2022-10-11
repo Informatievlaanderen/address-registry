@@ -202,8 +202,8 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
                 x.Error(
                     It.IsAny<Guid>(),
                     new TicketError(
-                        "Deze actie is enkel toegestaan op adressen waarbij het huisnummer de status ‘inGebruik’ heeft.",
-                        "AdresHuisnummerVoorgesteldAfgekeurdOfGehistoreerd"),
+                        "Deze actie is enkel toegestaan op adressen waarbij het huisnummer de status ‘voorgesteld' of ‘inGebruik’ heeft.",
+                        "AdresHuisnummerAfgekeurdOfGehistoreerd"),
                     CancellationToken.None));
         }
 

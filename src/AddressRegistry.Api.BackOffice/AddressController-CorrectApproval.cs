@@ -7,6 +7,7 @@ namespace AddressRegistry.Api.BackOffice
     using Abstractions;
     using Abstractions.Exceptions;
     using Abstractions.Requests;
+    using Abstractions.Validation;
     using Address;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
@@ -96,7 +97,7 @@ namespace AddressRegistry.Api.BackOffice
             }
             catch (AggregateIdIsNotFoundException)
             {
-                throw new ApiException(ValidationErrorMessages.Address.AddressNotFound, StatusCodes.Status404NotFound);
+                throw new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound);
             }
             catch (IdempotencyException)
             {
@@ -104,20 +105,20 @@ namespace AddressRegistry.Api.BackOffice
             }
             catch (AggregateNotFoundException)
             {
-                throw new ApiException(ValidationErrorMessages.Address.AddressNotFound, StatusCodes.Status404NotFound);
+                throw new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound);
             }
             catch (DomainException exception)
             {
                 throw exception switch
                 {
-                    AddressIsNotFoundException => new ApiException(ValidationErrorMessages.Address.AddressNotFound, StatusCodes.Status404NotFound),
-                    AddressIsRemovedException => new ApiException(ValidationErrorMessages.Address.AddressRemoved, StatusCodes.Status410Gone),
+                    AddressIsNotFoundException => new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound),
+                    AddressIsRemovedException => new ApiException(ValidationErrors.Common.AddressRemoved.Message, StatusCodes.Status410Gone),
                     AddressHasInvalidStatusException => CreateValidationException(
-                        ValidationErrors.Address.AddressApprovalCannotBeCorrected,
+                        ValidationErrors.CorrectApproval.AddressInvalidStatus.Code,
                         string.Empty,
-                        ValidationErrorMessages.Address.AddressApprovalCannotBeCorrected),
+                        ValidationErrors.CorrectApproval.AddressInvalidStatus.Message),
                     AddressIsNotOfficiallyAssignedException => CreateValidationException(
-                        ValidationErrors.Address.AddressIsNotOfficiallyAssigned,
+                        Deprecated.Address.AddressIsNotOfficiallyAssigned,
                         string.Empty,
                         ValidationErrorMessages.Address.AddressIsNotOfficiallyAssigned),
 

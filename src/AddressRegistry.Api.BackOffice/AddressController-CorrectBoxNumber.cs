@@ -8,6 +8,7 @@ namespace AddressRegistry.Api.BackOffice
     using Abstractions;
     using Abstractions.Exceptions;
     using Abstractions.Requests;
+    using Abstractions.Validation;
     using Address;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
@@ -108,7 +109,7 @@ namespace AddressRegistry.Api.BackOffice
             }
             catch (AggregateIdIsNotFoundException)
             {
-                throw new ApiException(ValidationErrorMessages.Address.AddressNotFound, StatusCodes.Status404NotFound);
+                throw new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound);
             }
             catch (IdempotencyException)
             {
@@ -116,36 +117,36 @@ namespace AddressRegistry.Api.BackOffice
             }
             catch (AggregateNotFoundException)
             {
-                throw new ApiException(ValidationErrorMessages.Address.AddressNotFound, StatusCodes.Status404NotFound);
+                throw new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound);
             }
             catch (DomainException exception)
             {
                 throw exception switch
                 {
-                    AddressIsNotFoundException => new ApiException(ValidationErrorMessages.Address.AddressNotFound, StatusCodes.Status404NotFound),
-                    AddressIsRemovedException => new ApiException(ValidationErrorMessages.Address.AddressRemoved, StatusCodes.Status410Gone),
+                    AddressIsNotFoundException => new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound),
+                    AddressIsRemovedException => new ApiException(ValidationErrors.Common.AddressRemoved.Message, StatusCodes.Status410Gone),
                     AddressHasInvalidStatusException => CreateValidationException(
-                        ValidationErrors.Address.AddressPostalCodeCannotBeChanged,
+                        Deprecated.Address.AddressPostalCodeCannotBeChanged,
                         string.Empty,
                         ValidationErrorMessages.Address.AddressPostalCodeCannotBeChanged),
 
                     BoxNumberHasInvalidFormatException _ =>
                         CreateValidationException(
-                            ValidationErrors.Address.BoxNumberInvalid,
+                            ValidationErrors.Common.BoxNumberInvalidFormat.Code,
                             nameof(request.Busnummer),
-                            ValidationErrorMessages.Address.BoxNumberInvalid),
+                            ValidationErrors.Common.BoxNumberInvalidFormat.Message),
 
                     AddressHasNoBoxNumberException _ =>
                         CreateValidationException(
-                            ValidationErrors.Address.HasNoBoxNumber,
+                            Deprecated.Address.HasNoBoxNumber,
                             nameof(request.Busnummer),
                             ValidationErrorMessages.Address.HasNoBoxNumber),
 
                     AddressAlreadyExistsException _ =>
                         CreateValidationException(
-                            ValidationErrors.Address.AddressAlreadyExists,
+                            ValidationErrors.Common.AddressAlreadyExists.Code,
                             nameof(request.Busnummer),
-                            ValidationErrorMessages.Address.AddressAlreadyExists),
+                            ValidationErrors.Common.AddressAlreadyExists.Message),
 
                     _ => new ValidationException(new List<ValidationFailure>
                         { new(string.Empty, exception.Message) })

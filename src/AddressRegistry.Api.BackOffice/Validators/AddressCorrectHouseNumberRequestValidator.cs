@@ -2,6 +2,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
 {
     using Abstractions;
     using Abstractions.Requests;
+    using Abstractions.Validation;
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Validators;
     using FluentValidation;
@@ -13,8 +14,8 @@ namespace AddressRegistry.Api.BackOffice.Validators
         {
             RuleFor(x => x.Huisnummer)
                 .Must(HouseNumberValidator.IsValid)
-                .WithMessage(ValidationErrorMessages.Address.HouseNumberInvalid)
-                .WithErrorCode(ValidationErrors.Address.HouseNumberInvalid);
+                .WithMessage(ValidationErrors.Common.HouseNumberInvalidFormat.Message)
+                .WithErrorCode(ValidationErrors.Common.HouseNumberInvalidFormat.Code);
         }
     }
 }

@@ -4,6 +4,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
     using Abstractions;
     using Abstractions.Exceptions;
     using Abstractions.Responses;
+    using Abstractions.Validation;
     using AddressRegistry.Infrastructure;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
@@ -67,7 +68,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             catch (AggregateIdIsNotFoundException)
             {
                 await _ticketing.Error(request.TicketId,
-                    new TicketError(ValidationErrorMessages.Address.AddressNotFound, "404"),
+                    new TicketError(ValidationErrors.Common.AddressNotFound.Message, "404"),
                     cancellationToken);
             }
             catch (IfMatchHeaderValueMismatchException)
@@ -82,11 +83,11 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 var ticketError = exception switch
                 {
                     AddressIsNotFoundException => new TicketError(
-                        ValidationErrorMessages.Address.AddressNotFound,
-                        ValidationErrors.Address.AddressNotFound),
+                        ValidationErrors.Common.AddressNotFound.Message,
+                        ValidationErrors.Common.AddressNotFound.Code),
                     AddressIsRemovedException => new TicketError(
-                        ValidationErrorMessages.Address.AddressRemoved,
-                        ValidationErrors.Address.AddressRemoved),
+                        ValidationErrors.Common.AddressRemoved.Message,
+                        ValidationErrors.Common.AddressRemoved.Code),
                     _ => MapDomainException(exception, request)
                 };
 

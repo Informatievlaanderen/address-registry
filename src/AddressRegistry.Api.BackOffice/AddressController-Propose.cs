@@ -7,6 +7,7 @@ namespace AddressRegistry.Api.BackOffice
     using Abstractions;
     using Abstractions.Exceptions;
     using Abstractions.Requests;
+    using Abstractions.Validation;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
@@ -78,9 +79,9 @@ namespace AddressRegistry.Api.BackOffice
             catch (AggregateNotFoundException)
             {
                 throw CreateValidationException(
-                    ValidationErrors.StreetName.StreetNameInvalid,
+                    ValidationErrors.Common.StreetNameInvalid.Code,
                     nameof(request.StraatNaamId),
-                    ValidationErrorMessages.StreetName.StreetNameInvalid(request.StraatNaamId));
+                    ValidationErrors.Common.StreetNameInvalid.Message(request.StraatNaamId));
             }
             catch (DomainException exception)
             {
@@ -88,25 +89,25 @@ namespace AddressRegistry.Api.BackOffice
                 {
                     ParentAddressAlreadyExistsException _ =>
                         CreateValidationException(
-                            ValidationErrors.Address.AddressAlreadyExists,
+                            ValidationErrors.Common.AddressAlreadyExists.Code,
                             nameof(request.Huisnummer),
-                            ValidationErrorMessages.Address.AddressAlreadyExists),
+                            ValidationErrors.Common.AddressAlreadyExists.Message),
 
                     HouseNumberHasInvalidFormatException _ =>
                         CreateValidationException(
-                            ValidationErrors.Address.HouseNumberInvalid,
+                            ValidationErrors.Common.HouseNumberInvalidFormat.Code,
                             nameof(request.Huisnummer),
-                            ValidationErrorMessages.Address.HouseNumberInvalid),
+                            ValidationErrors.Common.HouseNumberInvalidFormat.Message),
 
                     AddressAlreadyExistsException _ =>
                         CreateValidationException(
-                            ValidationErrors.Address.AddressAlreadyExists,
+                            ValidationErrors.Common.AddressAlreadyExists.Code,
                             nameof(request.Busnummer),
-                            ValidationErrorMessages.Address.AddressAlreadyExists),
+                            ValidationErrors.Common.AddressAlreadyExists.Message),
 
                     ParentAddressNotFoundException e =>
                         CreateValidationException(
-                            ValidationErrors.Address.AddressHouseNumberUnknown,
+                            Deprecated.Address.AddressHouseNumberUnknown,
                             nameof(request.Huisnummer),
                             ValidationErrorMessages.Address.AddressHouseNumberUnknown(
                                 request.StraatNaamId,
@@ -114,19 +115,19 @@ namespace AddressRegistry.Api.BackOffice
 
                     StreetNameHasInvalidStatusException _ =>
                         CreateValidationException(
-                            ValidationErrors.StreetName.StreetNameIsNotActive,
-                            nameof(request.StraatNaamId),
-                            ValidationErrorMessages.StreetName.StreetNameIsNotActive),
+                                ValidationErrors.Common.StreetNameIsNotActive.Code,
+                                nameof(request.StraatNaamId),
+                                ValidationErrors.Common.StreetNameIsNotActive.Message),
 
                     StreetNameIsRemovedException _ =>
                         CreateValidationException(
-                            ValidationErrors.StreetName.StreetNameInvalid,
+                            ValidationErrors.Common.StreetNameInvalid.Code,
                             nameof(request.StraatNaamId),
-                            ValidationErrorMessages.StreetName.StreetNameInvalid(request.StraatNaamId)),
+                            ValidationErrors.Common.StreetNameInvalid.Message(request.StraatNaamId)),
 
                     PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException _ =>
                         CreateValidationException(
-                            ValidationErrors.Address.PostalCodeNotInMunicipality,
+                            Deprecated.Address.PostalCodeNotInMunicipality,
                             nameof(request.PostInfoId),
                             ValidationErrorMessages.Address.PostalCodeNotInMunicipality),
 

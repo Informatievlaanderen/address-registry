@@ -5,6 +5,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
     using Abstractions;
     using Abstractions.Exceptions;
     using Abstractions.Responses;
+    using Abstractions.Validation;
     using AddressRegistry.Infrastructure;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Microsoft.Extensions.Configuration;
@@ -57,16 +58,16 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             {
                 AddressHasInvalidStatusException => new TicketError(
                     ValidationErrorMessages.Address.AddressPositionCannotBeChanged,
-                    ValidationErrors.Address.AddressPositionCannotBeChanged),
+                    Deprecated.Address.AddressPositionCannotBeChanged),
                 AddressHasInvalidGeometryMethodException => new TicketError(
-                    ValidationErrorMessages.Address.GeometryMethodInvalid,
-                    ValidationErrors.Address.GeometryMethodInvalid),
+                    ValidationErrors.Common.PositionGeometryMethod.Invalid.Message,
+                    ValidationErrors.Common.PositionGeometryMethod.Invalid.Code),
                 AddressHasMissingGeometrySpecificationException => new TicketError(
-                    ValidationErrorMessages.Address.PositionSpecificationRequired,
-                    ValidationErrors.Address.PositionSpecificationRequired),
+                    ValidationErrors.Common.PositionSpecification.Required.Message,
+                    ValidationErrors.Common.PositionSpecification.Required.Code),
                 AddressHasInvalidGeometrySpecificationException => new TicketError(
-                    ValidationErrorMessages.Address.PositionSpecificationInvalid,
-                    ValidationErrors.Address.PositionSpecificationInvalid),
+                    ValidationErrors.Common.PositionSpecification.Invalid.Message,
+                    ValidationErrors.Common.PositionSpecification.Invalid.Code),
                 _ => null
             };
         }

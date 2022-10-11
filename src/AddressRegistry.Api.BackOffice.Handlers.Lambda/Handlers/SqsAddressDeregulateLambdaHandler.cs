@@ -5,6 +5,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
     using Abstractions;
     using Abstractions.Exceptions;
     using Abstractions.Responses;
+    using Abstractions.Validation;
     using AddressRegistry.Infrastructure;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Microsoft.Extensions.Configuration;
@@ -57,10 +58,10 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             {
                 ParentAddressHasInvalidStatusException => new TicketError(
                     ValidationErrorMessages.Address.AddressCannotBeDeregulatedBecauseOfParent,
-                    ValidationErrors.Address.AddressCannotBeDeregulatedBecauseOfParent),
+                    Deprecated.Address.AddressCannotBeDeregulatedBecauseOfParent),
                 AddressHasInvalidStatusException => new TicketError(
-                    ValidationErrorMessages.Address.AddressCannotBeDeregulated,
-                    ValidationErrors.Address.AddressCannotBeDeregulated),
+                    ValidationErrors.DeregulateAddress.AddressInvalidStatus.Message,
+                    ValidationErrors.DeregulateAddress.AddressInvalidStatus.Code),
                 _ => null
             };
         }

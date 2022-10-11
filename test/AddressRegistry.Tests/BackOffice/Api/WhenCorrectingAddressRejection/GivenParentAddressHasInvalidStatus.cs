@@ -66,8 +66,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
                 .ThrowAsync<ValidationException>()
                 .Result
                 .Where(x =>
-                     x.Errors.Any(e => e.ErrorCode == "AdresHuisnummerVoorgesteldAfgekeurdOfGehistoreerd"
-                     && e.ErrorMessage == "Deze actie is enkel toegestaan op adressen waarbij het huisnummer de status ‘inGebruik’ heeft."));
+                     x.Errors.Any(e => e.ErrorCode == "AdresHuisnummerAfgekeurdOfGehistoreerd"
+                     && e.ErrorMessage == "Deze actie is enkel toegestaan op adressen waarbij het huisnummer de status ‘voorgesteld' of ‘inGebruik’ heeft."));
         }
     }
 }

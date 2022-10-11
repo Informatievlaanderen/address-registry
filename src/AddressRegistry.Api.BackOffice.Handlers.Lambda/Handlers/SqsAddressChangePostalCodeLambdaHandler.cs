@@ -57,7 +57,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             {
                 AddressHasInvalidStatusException => new TicketError(
                     ValidationErrorMessages.Address.AddressPostalCodeCannotBeChanged,
-                    ValidationErrors.Address.AddressPostalCodeCannotBeChanged),
+                    Deprecated.Address.AddressPostalCodeCannotBeChanged),
                 _ => null
             };
         }

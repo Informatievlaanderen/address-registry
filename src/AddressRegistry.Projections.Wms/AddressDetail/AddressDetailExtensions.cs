@@ -98,18 +98,19 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
                 .AddressDetail
                 .Local
                 .Where(i =>
-                    i.PositionX == position.X && i.PositionY == position.Y
-                                              && i.AddressId != addressId
-                                              && i.Status == status
-                                              && i.Removed == false
-                                              && i.Complete)
+                    i.PositionX == position.X
+                        && i.PositionY == position.Y
+                        && i.AddressId != addressId
+                        && i.Status == status
+                        && !i.Removed
+                        && i.Complete)
                 .Union(await context.AddressDetail
-                    .Where(i =>
-                        i.PositionX == position.X && i.PositionY == position.Y
-                                                  && i.AddressId != addressId
-                                                  && i.Status == status
-                                                  && i.Removed == false
-                                                  && i.Complete)
+                    .Where(i => i.PositionX == position.X
+                        && i.PositionY == position.Y
+                        && i.AddressId != addressId
+                        && i.Status == status
+                        && !i.Removed
+                        && i.Complete)
                     .ToListAsync(ct))
                 .ToList();
         }

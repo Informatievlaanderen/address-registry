@@ -97,7 +97,7 @@ namespace AddressRegistry.Api.BackOffice
                 }
 
                 request.Metadata = GetMetadata();
-                var _ = await _mediator.Send(request, cancellationToken);
+                _ = await _mediator.Send(request, cancellationToken);
 
                 return Accepted(new Uri(string.Format(options.Value.DetailUrl, request.PersistentLocalId)));
             }

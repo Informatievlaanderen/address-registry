@@ -10,7 +10,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests
         public Guid TicketId { get; set; }
         public string? IfMatchHeaderValue { get; set; }
         public ProvenanceData ProvenanceData { get; set; }
-        public IDictionary<string, object> Metadata { get; set; }
+        public IDictionary<string, object?> Metadata { get; set; }
     }
 
     public record LocationResult(Uri Location);

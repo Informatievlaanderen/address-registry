@@ -4,7 +4,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Exceptions
     using System.Runtime.Serialization;
 
     [Serializable]
-    public class AggregateIdIsNotFoundException : Exception
+    public sealed class AggregateIdIsNotFoundException : Exception
     {
         public AggregateIdIsNotFoundException()
         { }

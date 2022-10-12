@@ -45,17 +45,21 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressBoxNumber
                 expectedBoxNumber,
                 Fixture.Create<Provenance>());
 
-            var proposeAddressToTestFiltering = new AddressWasProposedV2(
+            var migrateRemovedAddressToTestFiltering = new AddressWasMigratedToStreetName(
                 Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<AddressId>(),
+                Fixture.Create<AddressStreetNameId>(),
                 new AddressPersistentLocalId(456),
-                parentPersistentLocalId: null,
-                Fixture.Create<PostalCode>(),
-                new HouseNumber("1"),
-                new BoxNumber("1B"),
-                GeometryMethod.AppointedByAdministrator,
-                GeometrySpecification.Lot,
-                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
-            ((ISetProvenance)proposeAddressToTestFiltering).SetProvenance(Fixture.Create<Provenance>());
+                AddressStatus.Current,
+                new HouseNumber("404"),
+                new BoxNumber("1XYZ"),
+                Fixture.Create<AddressGeometry>(),
+                officiallyAssigned: true,
+                postalCode: null,
+                isCompleted: false,
+                isRemoved: true,
+                parentPersistentLocalId: null);
+            ((ISetProvenance)migrateRemovedAddressToTestFiltering).SetProvenance(Fixture.Create<Provenance>());
 
             var proposeAddressToCorrect = new AddressWasProposedV2(
                 Fixture.Create<StreetNamePersistentLocalId>(),
@@ -72,7 +76,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressBoxNumber
             Assert(new Scenario()
                 .Given(_streamId,
                     Fixture.Create<StreetNameWasImported>(),
-                    proposeAddressToTestFiltering,
+                    migrateRemovedAddressToTestFiltering,
                     proposeAddressToCorrect)
                 .When(command)
                 .Then(new Fact(_streamId,

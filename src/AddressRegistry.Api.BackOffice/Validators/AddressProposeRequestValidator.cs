@@ -24,12 +24,13 @@ namespace AddressRegistry.Api.BackOffice.Validators
                 .WithErrorCode(ValidationErrors.Common.PostalCode.DoesNotExist.Code);
 
             RuleFor(x => x.Huisnummer)
-                .Must(HouseNumberValidator.IsValid)
+                .Must(HouseNumber.HasValidFormat)
                 .WithMessage(ValidationErrors.Common.HouseNumberInvalidFormat.Message)
                 .WithErrorCode(ValidationErrors.Common.HouseNumberInvalidFormat.Code);
 
             RuleFor(x => x.Busnummer)
-                .Must(BoxNumber.HasValidFormat)
+                .Must(BoxNumber.HasValidFormat!)
+                .When(x => !string.IsNullOrEmpty(x.Busnummer))
                 .WithMessage(ValidationErrors.Common.BoxNumberInvalidFormat.Message)
                 .WithErrorCode(ValidationErrors.Common.BoxNumberInvalidFormat.Code);
 

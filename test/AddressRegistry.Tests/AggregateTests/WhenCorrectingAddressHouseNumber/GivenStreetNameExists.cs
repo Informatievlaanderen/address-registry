@@ -37,18 +37,35 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressHouseNumber
         public void ThenAddressHouseNumberWasCorrected()
         {
             var expectedHouseNumber = new HouseNumber("101");
+
             var command = new CorrectAddressHouseNumber(
                 Fixture.Create<StreetNamePersistentLocalId>(),
                 Fixture.Create<AddressPersistentLocalId>(),
                 expectedHouseNumber,
                 Fixture.Create<Provenance>());
 
+            var migrateRemovedAddressToTestFiltering = new AddressWasMigratedToStreetName(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<AddressId>(),
+                Fixture.Create<AddressStreetNameId>(),
+                new AddressPersistentLocalId(456),
+                AddressStatus.Current,
+                new HouseNumber("404"),
+                boxNumber: null,
+                Fixture.Create<AddressGeometry>(),
+                officiallyAssigned: true,
+                postalCode: null,
+                isCompleted: false,
+                isRemoved: true,
+                parentPersistentLocalId: null);
+            ((ISetProvenance)migrateRemovedAddressToTestFiltering).SetProvenance(Fixture.Create<Provenance>());
+
             var addressWasProposedV2 = new AddressWasProposedV2(
                 Fixture.Create<StreetNamePersistentLocalId>(),
                 Fixture.Create<AddressPersistentLocalId>(),
                 parentPersistentLocalId: null,
                 Fixture.Create<PostalCode>(),
-                Fixture.Create<HouseNumber>(),
+                new HouseNumber("404"),
                 boxNumber: null,
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Lot,
@@ -58,7 +75,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressHouseNumber
             Assert(new Scenario()
                 .Given(_streamId,
                     Fixture.Create<StreetNameWasImported>(),
-                    addressWasProposedV2)
+                    addressWasProposedV2,
+                    migrateRemovedAddressToTestFiltering)
                 .When(command)
                 .Then(new Fact(_streamId,
                     new AddressHouseNumberWasCorrectedV2(

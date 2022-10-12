@@ -126,40 +126,6 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenApprovingAddress
         }
 
         [Fact]
-        public async Task WhenStreetNameIsRemoved_ThenTicketingErrorIsExpected()
-        {
-            // Arrange
-            var ticketing = new Mock<ITicketing>();
-
-            var sut = new SqsAddressApproveLambdaHandler(
-                Container.Resolve<IConfiguration>(),
-                new FakeRetryPolicy(),
-                ticketing.Object,
-                Mock.Of<IStreetNames>(),
-                MockExceptionIdempotentCommandHandler<StreetNameIsRemovedException>().Object);
-
-            // Act
-            var request = new SqsLambdaAddressApproveRequest
-            {
-                Request = new AddressBackOfficeApproveRequest(),
-                MessageGroupId = Fixture.Create<int>().ToString(),
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            };
-            await sut.Handle(request, CancellationToken.None);
-
-            //Assert
-            ticketing.Verify(x =>
-                x.Error(
-                    It.IsAny<Guid>(),
-                    new TicketError(
-                        $"De straatnaam '{request.StreetNamePersistentLocalId}' is niet gekend in het straatnaamregister.",
-                        "AdresStraatnaamNietGekendValidatie"),
-                    CancellationToken.None));
-        }
-
-        [Fact]
         public async Task WhenAddressHasInvalidStatus_ThenTicketingErrorIsExpected()
         {
             // Arrange

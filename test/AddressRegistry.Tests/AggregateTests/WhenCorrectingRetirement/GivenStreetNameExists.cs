@@ -31,6 +31,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRetirement
         [Fact]
         public void WithRetiredAddress_ThenAddressWasCorrected()
         {
+            var houseNumber = Fixture.Create<HouseNumber>();
+
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
             var correctAddressRetirement = new CorrectAddressRetirement(
                 Fixture.Create<StreetNamePersistentLocalId>(),
@@ -39,12 +41,30 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRetirement
 
             var addressWasMigrated = CreateAddressWasMigratedToStreetName(
                 addressPersistentLocalId,
-                addressStatus: AddressStatus.Retired);
+                addressStatus: AddressStatus.Retired,
+                houseNumber: houseNumber);
+
+            var migrateRemovedAddressToTestFiltering = new AddressWasMigratedToStreetName(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<AddressId>(),
+                Fixture.Create<AddressStreetNameId>(),
+                new AddressPersistentLocalId(456),
+                AddressStatus.Current,
+                houseNumber,
+                boxNumber: null,
+                Fixture.Create<AddressGeometry>(),
+                officiallyAssigned: true,
+                postalCode: null,
+                isCompleted: false,
+                isRemoved: true,
+                parentPersistentLocalId: null);
+            ((ISetProvenance)migrateRemovedAddressToTestFiltering).SetProvenance(Fixture.Create<Provenance>());
 
             Assert(new Scenario()
                 .Given(_streamId,
                     Fixture.Create<StreetNameWasImported>(),
-                    addressWasMigrated)
+                    addressWasMigrated,
+                    migrateRemovedAddressToTestFiltering)
                 .When(correctAddressRetirement)
                 .Then(new Fact(_streamId,
                     new AddressWasCorrectedFromRetiredToCurrent(

@@ -98,6 +98,9 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
             var geometrySpecification = GeometrySpecification.Entry;
             var geometryPosition = GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry();
 
+            var childPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
+            var childBoxNumber = Fixture.Create<BoxNumber>();
+
             var parentAddressWasProposed = new AddressWasProposedV2(
                 Fixture.Create<StreetNamePersistentLocalId>(),
                 Fixture.Create<AddressPersistentLocalId>(),
@@ -110,14 +113,45 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 geometryPosition);
             ((ISetProvenance)parentAddressWasProposed).SetProvenance(Fixture.Create<Provenance>());
 
+            var migrateRemovedIdenticalParentAddress = new AddressWasMigratedToStreetName(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<AddressId>(),
+                Fixture.Create<AddressStreetNameId>(),
+                Fixture.Create<AddressPersistentLocalId>(),
+                AddressStatus.Current,
+                houseNumber,
+                boxNumber: null,
+                Fixture.Create<AddressGeometry>(),
+                officiallyAssigned: true,
+                postalCode: null,
+                isCompleted: false,
+                isRemoved: true,
+                parentPersistentLocalId: null);
+            ((ISetProvenance)migrateRemovedIdenticalParentAddress).SetProvenance(Fixture.Create<Provenance>());
+
+            var migrateRemovedIdenticalChildAddress = new AddressWasMigratedToStreetName(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<AddressId>(),
+                Fixture.Create<AddressStreetNameId>(),
+                Fixture.Create<AddressPersistentLocalId>(),
+                AddressStatus.Current,
+                houseNumber,
+                boxNumber: childBoxNumber,
+                Fixture.Create<AddressGeometry>(),
+                officiallyAssigned: true,
+                postalCode: null,
+                isCompleted: false,
+                isRemoved: true,
+                parentPersistentLocalId: null);
+            ((ISetProvenance)migrateRemovedIdenticalChildAddress).SetProvenance(Fixture.Create<Provenance>());
+
             aggregate.Initialize(new List<object>
             {
                 Fixture.Create<MigratedStreetNameWasImported>(),
                 parentAddressWasProposed,
+                migrateRemovedIdenticalParentAddress,
+                migrateRemovedIdenticalChildAddress
             });
-
-            var childPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-            var childBoxNumber = Fixture.Create<BoxNumber>();
 
             // Act
             aggregate.ProposeAddress(

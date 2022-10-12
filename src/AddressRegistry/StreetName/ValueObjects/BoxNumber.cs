@@ -21,12 +21,8 @@ namespace AddressRegistry.StreetName
             return new BoxNumber(boxNumber);
         }
 
-        public static bool HasValidFormat(string? boxNumber)
+        public static bool HasValidFormat(string boxNumber)
         {
-            if (boxNumber is null)
-            {
-                return true;
-            }
             if (boxNumber == "0")
             {
                 return false;

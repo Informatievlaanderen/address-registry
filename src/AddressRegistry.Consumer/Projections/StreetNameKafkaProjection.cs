@@ -60,6 +60,15 @@ namespace AddressRegistry.Consumer.Projections
                 );
             }
 
+            if (type == typeof(StreetNameWasRejected))
+            {
+                var msg = (StreetNameWasRejected)message;
+                return new RejectStreetName(
+                    new StreetNamePersistentLocalId(msg.PersistentLocalId),
+                    FromProvenance(msg.Provenance)
+                );
+            }
+
             if (type == typeof(StreetNameWasRetiredV2))
             {
                 var msg = (StreetNameWasRetiredV2)message;
@@ -96,6 +105,12 @@ namespace AddressRegistry.Consumer.Projections
             });
 
             When<StreetNameWasApproved>(async (commandHandler, message, ct) =>
+            {
+                var command = GetCommand(message);
+                await commandHandler.Handle(command, ct);
+            });
+
+            When<StreetNameWasRejected>(async (commandHandler, message, ct) =>
             {
                 var command = GetCommand(message);
                 await commandHandler.Handle(command, ct);

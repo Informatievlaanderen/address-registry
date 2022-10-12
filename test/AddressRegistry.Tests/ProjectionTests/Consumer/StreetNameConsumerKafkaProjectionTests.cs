@@ -58,6 +58,7 @@ public class StreetNameConsumerKafkaProjectionTests : KafkaProjectionTest<Comman
                     new object[] { new StreetNameWasMigratedToMunicipality(municipalityId, nisCode, _fixture.Create<Guid>().ToString("D"), streetNamePersistentLocalId, _fixture.Create<StreetNameStatus>().ToString(), null, null,null,null, true, false, provenance ) },
                     new object[] { new StreetNameWasProposedV2(municipalityId, nisCode, null, streetNamePersistentLocalId, provenance) },
                     new object[] { new StreetNameWasApproved(municipalityId, streetNamePersistentLocalId, provenance) },
+                    new object[] { new StreetNameWasRejected(municipalityId, streetNamePersistentLocalId, provenance) },
                     new object[] { new StreetNameWasRetiredV2(municipalityId, streetNamePersistentLocalId, provenance) }
                 };
             return result.GetEnumerator();

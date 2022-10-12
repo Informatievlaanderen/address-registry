@@ -137,6 +137,32 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
         }
 
         [Fact]
+        public async Task StreetNameWasCorrectedFromApprovedToProposed()
+        {
+            var streetNamePersistentLocalId = _fixture.Create<StreetNamePersistentLocalId>();
+
+            var streetNameWasApproved = new StreetNameWasApproved(
+                _fixture.Create<Guid>().ToString(),
+                streetNamePersistentLocalId,
+                _provenance);
+
+            var @event = new StreetNameWasCorrectedFromApprovedToProposed(
+                _fixture.Create<Guid>().ToString(),
+                streetNamePersistentLocalId,
+                _provenance);
+
+            Given(_streetNameWasProposedV2, streetNameWasApproved, @event);
+            await Then(async ctx =>
+            {
+                var result = await ctx.StreetNameBosaItems.FindAsync((int)streetNamePersistentLocalId);
+                result.Should().NotBeNull();
+                result!.PersistentLocalId.Should().Be(@event.PersistentLocalId);
+                result.Status.Should().Be(AddressRegistry.Consumer.Read.StreetName.Projections.StreetNameStatus.Proposed);
+                result.VersionTimestamp.Should().Be(InstantPattern.General.Parse(@event.Provenance.Timestamp).Value);
+            });
+        }
+
+        [Fact]
         public async Task StreetNameWasRejected()
         {
             var streetNamePersistentLocalId = _fixture.Create<StreetNamePersistentLocalId>();
@@ -158,6 +184,32 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
         }
 
         [Fact]
+        public async Task StreetNameWasCorrectedFromRejectedToProposed()
+        {
+            var streetNamePersistentLocalId = _fixture.Create<StreetNamePersistentLocalId>();
+
+            var streetNameWasRejected = new StreetNameWasRejected(
+                _fixture.Create<Guid>().ToString(),
+                streetNamePersistentLocalId,
+                _provenance);
+
+            var @event = new StreetNameWasCorrectedFromRejectedToProposed(
+                _fixture.Create<Guid>().ToString(),
+                streetNamePersistentLocalId,
+                _provenance);
+
+            Given(_streetNameWasProposedV2, streetNameWasRejected, @event);
+            await Then(async ctx =>
+            {
+                var result = await ctx.StreetNameBosaItems.FindAsync((int)streetNamePersistentLocalId);
+                result.Should().NotBeNull();
+                result!.PersistentLocalId.Should().Be(@event.PersistentLocalId);
+                result.Status.Should().Be(AddressRegistry.Consumer.Read.StreetName.Projections.StreetNameStatus.Proposed);
+                result.VersionTimestamp.Should().Be(InstantPattern.General.Parse(@event.Provenance.Timestamp).Value);
+            });
+        }
+
+        [Fact]
         public async Task StreetNameWasRetiredV2()
         {
             var streetNamePersistentLocalId = _fixture.Create<StreetNamePersistentLocalId>();
@@ -175,6 +227,37 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
                 result.PersistentLocalId.Should().Be(e.PersistentLocalId);
                 result.Status.Should().Be(AddressRegistry.Consumer.Read.StreetName.Projections.StreetNameStatus.Retired);
                 result.VersionTimestamp.Should().Be(InstantPattern.General.Parse(e.Provenance.Timestamp).Value);
+            });
+        }
+
+        [Fact]
+        public async Task StreetNameWasCorrectedFromRetiredToCurrent()
+        {
+            var streetNamePersistentLocalId = _fixture.Create<StreetNamePersistentLocalId>();
+
+            var streetNameWasApproved = new StreetNameWasApproved(
+                _fixture.Create<Guid>().ToString(),
+                streetNamePersistentLocalId,
+                _provenance);
+
+            var streetNameWasRetiredV2 = new StreetNameWasRetiredV2(
+                _fixture.Create<Guid>().ToString(),
+                streetNamePersistentLocalId,
+                _provenance);
+
+            var @event = new StreetNameWasCorrectedFromRetiredToCurrent(
+                _fixture.Create<Guid>().ToString(),
+                streetNamePersistentLocalId,
+                _provenance);
+
+            Given(_streetNameWasProposedV2, streetNameWasApproved, streetNameWasRetiredV2, @event);
+            await Then(async ctx =>
+            {
+                var result = await ctx.StreetNameBosaItems.FindAsync((int)streetNamePersistentLocalId);
+                result.Should().NotBeNull();
+                result!.PersistentLocalId.Should().Be(@event.PersistentLocalId);
+                result.Status.Should().Be(AddressRegistry.Consumer.Read.StreetName.Projections.StreetNameStatus.Current);
+                result.VersionTimestamp.Should().Be(InstantPattern.General.Parse(@event.Provenance.Timestamp).Value);
             });
         }
 

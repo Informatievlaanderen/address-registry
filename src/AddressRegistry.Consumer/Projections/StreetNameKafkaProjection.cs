@@ -60,6 +60,24 @@ namespace AddressRegistry.Consumer.Projections
                 );
             }
 
+            if (type == typeof(StreetNameWasCorrectedFromApprovedToProposed))
+            {
+                var msg = (StreetNameWasCorrectedFromApprovedToProposed)message;
+                return new CorrectStreetNameApproval(
+                    new StreetNamePersistentLocalId(msg.PersistentLocalId),
+                    FromProvenance(msg.Provenance)
+                );
+            }
+
+            if (type == typeof(StreetNameWasCorrectedFromRejectedToProposed))
+            {
+                var msg = (StreetNameWasCorrectedFromRejectedToProposed)message;
+                return new CorrectStreetNameRejection(
+                    new StreetNamePersistentLocalId(msg.PersistentLocalId),
+                    FromProvenance(msg.Provenance)
+                );
+            }
+
             if (type == typeof(StreetNameWasRejected))
             {
                 var msg = (StreetNameWasRejected)message;
@@ -73,6 +91,15 @@ namespace AddressRegistry.Consumer.Projections
             {
                 var msg = (StreetNameWasRetiredV2)message;
                 return new RetireStreetName(
+                    new StreetNamePersistentLocalId(msg.PersistentLocalId),
+                    FromProvenance(msg.Provenance)
+                );
+            }
+
+            if (type == typeof(StreetNameWasCorrectedFromRetiredToCurrent))
+            {
+                var msg = (StreetNameWasCorrectedFromRetiredToCurrent)message;
+                return new CorrectStreetNameRetirement(
                     new StreetNamePersistentLocalId(msg.PersistentLocalId),
                     FromProvenance(msg.Provenance)
                 );
@@ -110,13 +137,31 @@ namespace AddressRegistry.Consumer.Projections
                 await commandHandler.Handle(command, ct);
             });
 
+            When<StreetNameWasCorrectedFromApprovedToProposed>(async (commandHandler, message, ct) =>
+            {
+                var command = GetCommand(message);
+                await commandHandler.Handle(command, ct);
+            });
+
             When<StreetNameWasRejected>(async (commandHandler, message, ct) =>
             {
                 var command = GetCommand(message);
                 await commandHandler.Handle(command, ct);
             });
 
+            When<StreetNameWasCorrectedFromRejectedToProposed>(async (commandHandler, message, ct) =>
+            {
+                var command = GetCommand(message);
+                await commandHandler.Handle(command, ct);
+            });
+
             When<StreetNameWasRetiredV2>(async (commandHandler, message, ct) =>
+            {
+                var command = GetCommand(message);
+                await commandHandler.Handle(command, ct);
+            });
+
+            When<StreetNameWasCorrectedFromRetiredToCurrent>(async (commandHandler, message, ct) =>
             {
                 var command = GetCommand(message);
                 await commandHandler.Handle(command, ct);

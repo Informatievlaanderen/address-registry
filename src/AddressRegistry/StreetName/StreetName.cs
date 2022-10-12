@@ -54,6 +54,14 @@ namespace AddressRegistry.StreetName
             }
         }
 
+        public void RejectStreetName()
+        {
+            if (Status != StreetNameStatus.Rejected)
+            {
+                ApplyChange(new StreetNameWasRejected(PersistentLocalId));
+            }
+        }
+
         public void RetireStreetName()
         {
             if (Status == StreetNameStatus.Retired)
@@ -287,7 +295,7 @@ namespace AddressRegistry.StreetName
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
                 .CorrectPosition(geometryMethod, geometrySpecification, position, GetMunicipalityData(municipalities));
         }
-        
+
         public void CorrectAddressPostalCode(AddressPersistentLocalId addressPersistentLocalId, PostalCode postalCode, MunicipalityId municipalityIdByPostalCode)
         {
             GuardStreetNameStatusForCorrection();

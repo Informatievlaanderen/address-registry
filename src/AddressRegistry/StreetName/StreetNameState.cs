@@ -27,6 +27,7 @@ namespace AddressRegistry.StreetName
             Register<MigratedStreetNameWasImported>(When);
 
             Register<StreetNameWasApproved>(When);
+            Register<StreetNameWasRejected>(When);
             Register<StreetNameWasRetired>(When);
             Register<StreetNameWasRemoved>(When);
 
@@ -72,6 +73,11 @@ namespace AddressRegistry.StreetName
         private void When(StreetNameWasApproved @event)
         {
             Status = StreetNameStatus.Current;
+        }
+
+        private void When(StreetNameWasRejected @event)
+        {
+            Status = StreetNameStatus.Rejected;
         }
 
         private void When(StreetNameWasRetired @event)

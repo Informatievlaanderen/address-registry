@@ -1,3 +1,10 @@
+# [3.62.0](https://github.com/informatievlaanderen/address-registry/compare/v3.61.0...v3.62.0) (2022-10-12)
+
+
+### Features
+
+* streetname status corrections ([2dfcacd](https://github.com/informatievlaanderen/address-registry/commit/2dfcacda5789d11e0731e39f86de1e87a31d35ac))
+
 # [3.61.0](https://github.com/informatievlaanderen/address-registry/compare/v3.60.0...v3.61.0) (2022-10-12)
 
 

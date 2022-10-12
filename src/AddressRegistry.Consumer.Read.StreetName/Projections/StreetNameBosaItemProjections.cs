@@ -49,6 +49,15 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections
                 }, ct);
             });
 
+            When<StreetNameWasCorrectedFromApprovedToProposed>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateBosaItem(message.PersistentLocalId, item =>
+                {
+                    item.Status = StreetNameStatus.Proposed;
+                    UpdateVersionTimestamp(item, message.Provenance.Timestamp);
+                }, ct);
+            });
+
             When<StreetNameWasRejected>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateBosaItem(message.PersistentLocalId, item =>
@@ -58,11 +67,30 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections
                 }, ct);
             });
 
+            When<StreetNameWasCorrectedFromRejectedToProposed>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateBosaItem(message.PersistentLocalId, item =>
+                {
+                    item.Status = StreetNameStatus.Proposed;
+                    UpdateVersionTimestamp(item, message.Provenance.Timestamp);
+                }, ct);
+            });
+
+
             When<StreetNameWasRetiredV2>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateBosaItem(message.PersistentLocalId, item =>
                 {
                     item.Status = StreetNameStatus.Retired;
+                    UpdateVersionTimestamp(item, message.Provenance.Timestamp);
+                }, ct);
+            });
+
+            When<StreetNameWasCorrectedFromRetiredToCurrent>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateBosaItem(message.PersistentLocalId, item =>
+                {
+                    item.Status = StreetNameStatus.Current;
                     UpdateVersionTimestamp(item, message.Provenance.Timestamp);
                 }, ct);
             });

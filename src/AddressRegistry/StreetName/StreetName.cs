@@ -54,11 +54,27 @@ namespace AddressRegistry.StreetName
             }
         }
 
+        public void CorrectStreetNameApproval()
+        {
+            if (Status != StreetNameStatus.Proposed)
+            {
+                ApplyChange(new StreetNameWasCorrectedFromApprovedToProposed(PersistentLocalId));
+            }
+        }
+
         public void RejectStreetName()
         {
             if (Status != StreetNameStatus.Rejected)
             {
                 ApplyChange(new StreetNameWasRejected(PersistentLocalId));
+            }
+        }
+
+        public void CorrectStreetNameRejection()
+        {
+            if (Status != StreetNameStatus.Proposed)
+            {
+                ApplyChange(new StreetNameWasCorrectedFromRejectedToProposed(PersistentLocalId));
             }
         }
 
@@ -80,6 +96,14 @@ namespace AddressRegistry.StreetName
                 StreetNameAddresses.CurrentStreetNameAddresses.Where(address => address.IsHouseNumberAddress));
 
             ApplyChange(new StreetNameWasRetired(PersistentLocalId));
+        }
+
+        public void CorrectStreetNameRetirement()
+        {
+            if (Status != StreetNameStatus.Current)
+            {
+                ApplyChange(new StreetNameWasCorrectedFromRetiredToCurrent(PersistentLocalId));
+            }
         }
 
         private static void RejectAddressesBecauseStreetNameWasRetired(IEnumerable<StreetNameAddress> addresses)

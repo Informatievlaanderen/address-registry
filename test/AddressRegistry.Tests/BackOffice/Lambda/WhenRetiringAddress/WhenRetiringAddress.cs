@@ -165,40 +165,6 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRetiringAddress
         }
 
         [Fact]
-        public async Task WhenStreetNameIsRemovedException_ThenTicketingErrorIsExpected()
-        {
-            // Arrange
-            var ticketing = new Mock<ITicketing>();
-            var streetNamePersistentId = Fixture.Create<int>().ToString();
-
-            var sut = new SqsAddressRetireLambdaHandler(
-                Container.Resolve<IConfiguration>(),
-                new FakeRetryPolicy(),
-                ticketing.Object,
-                Mock.Of<IStreetNames>(),
-                MockExceptionIdempotentCommandHandler<StreetNameIsRemovedException>().Object);
-
-            // Act
-            await sut.Handle(new SqsLambdaAddressRetireRequest
-            {
-                Request = new AddressBackOfficeRetireRequest(),
-                MessageGroupId = streetNamePersistentId,
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
-
-            //Assert
-            ticketing.Verify(x =>
-                x.Error(
-                    It.IsAny<Guid>(),
-                    new TicketError(
-                        $"De straatnaam '{streetNamePersistentId}' is niet gekend in het straatnaamregister.",
-                        "AdresStraatnaamNietGekendValidatie"),
-                    CancellationToken.None));
-        }
-
-        [Fact]
         public async Task WhenIdempotencyException_ThenTicketingCompleteIsExpected()
         {
             // Arrange

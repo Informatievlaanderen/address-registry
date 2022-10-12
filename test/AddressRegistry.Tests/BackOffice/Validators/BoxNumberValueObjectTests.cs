@@ -4,7 +4,7 @@ namespace AddressRegistry.Tests.BackOffice.Validators
     using StreetName;
     using Xunit;
 
-    public class BoxNumberValidatorTests
+    public class BoxNumberValueObjectTests
     {
         [Theory]
         [InlineData("", false)]
@@ -16,7 +16,7 @@ namespace AddressRegistry.Tests.BackOffice.Validators
         [InlineData("0A", true)]
         [InlineData("abc", true)]
         [InlineData("123456789A", true)]
-        public void Validate(string boxNumber, bool expectedResult)
+        public void HasValidFormat(string boxNumber, bool expectedResult)
         {
             BoxNumber.HasValidFormat(boxNumber).Should().Be(expectedResult);
         }

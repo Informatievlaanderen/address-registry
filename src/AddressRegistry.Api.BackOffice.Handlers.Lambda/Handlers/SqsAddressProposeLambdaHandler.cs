@@ -99,6 +99,9 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
         {
             return exception switch
             {
+                StreetNameIsRemovedException => new TicketError(
+                    ValidationErrors.Common.StreetNameInvalid.Message(request.Request.StraatNaamId),
+                    ValidationErrors.Common.StreetNameInvalid.Code),
                 ParentAddressAlreadyExistsException => new TicketError(
                     ValidationErrors.Common.AddressAlreadyExists.Message,
                     ValidationErrors.Common.AddressAlreadyExists.Code),
@@ -114,9 +117,6 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 StreetNameHasInvalidStatusException => new TicketError(
                     ValidationErrors.Common.StreetNameIsNotActive.Message,
                     ValidationErrors.Common.StreetNameIsNotActive.Code),
-                StreetNameIsRemovedException => new TicketError(
-                    ValidationErrors.Common.StreetNameInvalid.Message(request.Request.StraatNaamId),
-                    ValidationErrors.Common.StreetNameInvalid.Code),
                 PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException => new TicketError(
                     ValidationErrors.Common.PostalCode.PostalCodeNotInMunicipality.Message,
                     ValidationErrors.Common.PostalCode.PostalCodeNotInMunicipality.Code),

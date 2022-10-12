@@ -1,3 +1,15 @@
+# [3.61.0](https://github.com/informatievlaanderen/address-registry/compare/v3.60.0...v3.61.0) (2022-10-12)
+
+
+### Bug Fixes
+
+* add boxnumber validation for empty ([8542af5](https://github.com/informatievlaanderen/address-registry/commit/8542af5a2c3ee02d87b2c6a2f41ada324db63f61))
+
+
+### Features
+
+* reject streetname in domain ([a546bd0](https://github.com/informatievlaanderen/address-registry/commit/a546bd038d635cde559db3f90d1b4c79635097f5))
+
 # [3.60.0](https://github.com/informatievlaanderen/address-registry/compare/v3.59.4...v3.60.0) (2022-10-11)
 
 

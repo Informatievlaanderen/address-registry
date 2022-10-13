@@ -10,6 +10,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressBoxNumber
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
+    using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
+    using Be.Vlaanderen.Basisregisters.Sqs.Requests;
     using FluentAssertions;
     using FluentValidation;
     using global::AutoFixture;

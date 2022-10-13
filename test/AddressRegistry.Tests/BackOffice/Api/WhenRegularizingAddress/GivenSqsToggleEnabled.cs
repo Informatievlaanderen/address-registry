@@ -11,6 +11,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRegularizingAddress
     using Infrastructure;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
+    using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
+    using Be.Vlaanderen.Basisregisters.Sqs.Requests;
     using FluentAssertions;
     using global::AutoFixture;
     using Microsoft.AspNetCore.Http;

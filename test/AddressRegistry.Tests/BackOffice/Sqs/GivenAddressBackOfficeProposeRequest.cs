@@ -13,6 +13,7 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
     using AutoFixture;
+    using Be.Vlaanderen.Basisregisters.Sqs;
     using TicketingService.Abstractions;
     using Xunit;
     using Xunit.Abstractions;

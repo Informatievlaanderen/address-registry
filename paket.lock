@@ -367,6 +367,8 @@ NUGET
       Polly (>= 7.2.3) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
       System.Threading.Tasks.Dataflow (>= 6.0) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
     Be.Vlaanderen.Basisregisters.Shaperon (9.0.1)
+    Be.Vlaanderen.Basisregisters.Sqs (1.0.8)
+      MediatR (>= 10.0.1) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
     Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events (3.0) - copy_local: true, copy_content_to_output_dir: always, content: true
       Be.Vlaanderen.Basisregisters.AggregateSource (>= 6.0) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
       Be.Vlaanderen.Basisregisters.EventHandling (>= 4.0) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)

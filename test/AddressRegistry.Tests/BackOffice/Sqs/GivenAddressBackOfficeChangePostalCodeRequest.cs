@@ -16,6 +16,8 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using Be.Vlaanderen.Basisregisters.Sqs;
+    using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
     using TicketingService.Abstractions;
     using Xunit;
     using Xunit.Abstractions;

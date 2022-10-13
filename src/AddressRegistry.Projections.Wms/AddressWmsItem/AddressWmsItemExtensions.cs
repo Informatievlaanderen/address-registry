@@ -92,17 +92,17 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
             return context
                 .AddressWmsItems
                 .Local
-                .Where(i =>
-                    i.PositionX == position.X && i.PositionY == position.Y
-                                              && i.AddressPersistentLocalId != addressPersistentLocalId
-                                              && i.Status == status
-                                              && i.Removed == false)
-                .Union(await context.AddressWmsItems
-                    .Where(i =>
-                        i.PositionX == position.X && i.PositionY == position.Y
-                                                  && i.AddressPersistentLocalId != addressPersistentLocalId
-                                                  && i.Status == status
-                                                  && i.Removed == false)
+                .Where(i => i.PositionX == position.X
+                    && i.PositionY == position.Y
+                    && i.AddressPersistentLocalId != addressPersistentLocalId
+                    && i.Status == status 
+                    && !i.Removed)                              
+                .Union(await context.AddressWmsItems 
+                    .Where(i => i.PositionX == position.X
+                        && i.PositionY == position.Y
+                        && i.AddressPersistentLocalId != addressPersistentLocalId
+                        && i.Status == status
+                        && !i.Removed)
                     .ToListAsync(ct))
                 .ToList();
         }

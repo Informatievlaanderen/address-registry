@@ -14,7 +14,6 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.EventHandling;
-    using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac;
     using Consumer;
     using Consumer.Read.Municipality.Infrastructure.Modules;
@@ -30,7 +29,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
 
     public class Function : FunctionBase
     {
-        public Function() : base(new List<Assembly> { typeof(SqsRequest).Assembly })
+        public Function() : base(new List<Assembly> { typeof(SqsAddressApproveRequest).Assembly })
         { }
 
         protected override IServiceProvider ConfigureServices(IServiceCollection services)

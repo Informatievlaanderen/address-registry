@@ -6,6 +6,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     using AddressRegistry.Api.BackOffice;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
+    using Be.Vlaanderen.Basisregisters.Sqs.Requests;
     using StreetName;
     using Infrastructure;
     using FluentAssertions;

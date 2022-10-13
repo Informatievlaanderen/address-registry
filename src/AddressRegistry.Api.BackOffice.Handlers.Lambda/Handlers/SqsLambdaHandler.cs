@@ -1,7 +1,6 @@
 namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
 {
     using System.Configuration;
-    using Abstractions;
     using Abstractions.Exceptions;
     using Abstractions.Responses;
     using Abstractions.Validation;

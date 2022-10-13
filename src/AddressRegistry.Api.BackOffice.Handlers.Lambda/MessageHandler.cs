@@ -10,9 +10,9 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
 
     public sealed class MessageHandler : IMessageHandler
     {
-        private readonly IContainer _container;
+        private readonly ILifetimeScope _container;
 
-        public MessageHandler(IContainer container)
+        public MessageHandler(ILifetimeScope container)
         {
             _container = container;
         }

@@ -1,3 +1,10 @@
+## [3.62.2](https://github.com/informatievlaanderen/address-registry/compare/v3.62.1...v3.62.2) (2022-10-13)
+
+
+### Bug Fixes
+
+* register IMunicipalies in lambda ([cb45e84](https://github.com/informatievlaanderen/address-registry/commit/cb45e84f2cee82bf39285a30aa214bba8d13ea39))
+
 ## [3.62.1](https://github.com/informatievlaanderen/address-registry/compare/v3.62.0...v3.62.1) (2022-10-13)
 
 

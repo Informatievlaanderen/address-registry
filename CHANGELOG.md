@@ -1,3 +1,10 @@
+## [3.62.1](https://github.com/informatievlaanderen/address-registry/compare/v3.62.0...v3.62.1) (2022-10-13)
+
+
+### Bug Fixes
+
+* use ILifetimescope instead of IContainer ([a71278a](https://github.com/informatievlaanderen/address-registry/commit/a71278a5f4e4e9424d44082edafd484bb8a1fb32))
+
 # [3.62.0](https://github.com/informatievlaanderen/address-registry/compare/v3.61.0...v3.62.0) (2022-10-12)
 
 

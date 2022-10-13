@@ -14,9 +14,9 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.EventHandling;
-    using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac;
     using Consumer;
+    using Consumer.Read.Municipality;
     using Consumer.Read.Municipality.Infrastructure.Modules;
     using Infrastructure;
     using MediatR;
@@ -26,6 +26,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
     using Newtonsoft.Json;
     using Projections.Syndication;
     using Sqs.Requests;
+    using StreetName;
     using TicketingService.Proxy.HttpProxy;
 
     public class Function : FunctionBase
@@ -88,6 +89,10 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
                 .RegisterModule(new BackOfficeModule(configuration, services, loggerFactory))
                 .RegisterModule(new MunicipalityConsumerModule(configuration, services, loggerFactory))
                 .RegisterModule(new SyndicationModule(configuration, services, loggerFactory));
+
+            builder.RegisterType<MunicipalityConsumerContext>()
+                .As<IMunicipalities>()
+                .AsSelf();
 
             builder.RegisterModule(new IdempotencyModule(
                 services,

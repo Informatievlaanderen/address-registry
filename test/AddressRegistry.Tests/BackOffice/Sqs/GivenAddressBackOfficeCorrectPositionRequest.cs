@@ -11,6 +11,8 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple;
+    using Be.Vlaanderen.Basisregisters.Sqs;
+    using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
     using FluentAssertions;
     using global::AutoFixture;
     using Infrastructure;

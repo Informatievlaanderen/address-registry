@@ -3,6 +3,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Handlers
     using Abstractions;
     using Requests;
     using System.Collections.Generic;
+    using Be.Vlaanderen.Basisregisters.Sqs;
+    using Be.Vlaanderen.Basisregisters.Sqs.Handlers;
     using TicketingService.Abstractions;
 
     public sealed class SqsAddressRegularizeHandler : SqsHandler<SqsAddressRegularizeRequest>

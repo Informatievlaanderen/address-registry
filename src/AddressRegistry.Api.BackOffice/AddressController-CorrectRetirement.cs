@@ -14,6 +14,7 @@ namespace AddressRegistry.Api.BackOffice
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
     using FluentValidation;
     using FluentValidation.Results;
     using Handlers.Sqs.Requests;

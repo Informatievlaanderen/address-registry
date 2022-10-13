@@ -7,6 +7,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
     using AddressRegistry.Infrastructure;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
+    using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
     using MediatR;
     using Microsoft.Extensions.Configuration;
     using Requests;

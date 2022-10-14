@@ -9,7 +9,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Handlers
 
     public sealed class SqsAddressRejectHandler : SqsHandler<SqsAddressRejectRequest>
     {
-        public const string Action = "´RejectAddress";
+        public const string Action = "RejectAddress";
 
         private readonly BackOfficeContext _backOfficeContext;
 

@@ -56,7 +56,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressBoxNumber
                 .Result
                 .Where(x =>
                      x.StatusCode == StatusCodes.Status410Gone
-                     && x.Message == "Verwijderde adres.");
+                     && x.Message == "Verwijderd adres.");
         }
     }
 }

@@ -12,8 +12,8 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
 
             public static class AddressRemoved
             {
-                public const string Code = "AdresIsVerwijderd";
-                public const string Message = "Verwijderde adres.";
+                public const string Code = "VerwijderdAdres";
+                public const string Message = "Verwijderd adres.";
             }
 
             public static class AddressNotFound

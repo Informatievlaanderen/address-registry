@@ -1,3 +1,19 @@
+# [3.63.0](https://github.com/informatievlaanderen/address-registry/compare/v3.62.2...v3.63.0) (2022-10-14)
+
+
+### Bug Fixes
+
+* removed address error message and code ([0f0c815](https://github.com/informatievlaanderen/address-registry/commit/0f0c81577884dd747b1a50a6dbd719302f8ce45f))
+* restore build.fsx ([b3d0582](https://github.com/informatievlaanderen/address-registry/commit/b3d05825ccc2cc29fdeafc8383cc322327cca889))
+* typo in reject handler ([95cdb33](https://github.com/informatievlaanderen/address-registry/commit/95cdb33a09128ecb3d113a188cb6b543a325c02d))
+* use Be.Vlaanderen.Basisregisters.Sqs ([1c82098](https://github.com/informatievlaanderen/address-registry/commit/1c820980bfc2f801e82bc215d2cd88655d8e5642))
+* use Build.Pipeline 6.0.5 ([a6863e3](https://github.com/informatievlaanderen/address-registry/commit/a6863e390f54410659a869bb2e92e9f7e2eb7fec))
+
+
+### Features
+
+* throw when sqs request is not mapped to lambda request ([ee7f89e](https://github.com/informatievlaanderen/address-registry/commit/ee7f89e850e792c35ae65c90b258a06b7cc49d7a))
+
 ## [3.62.2](https://github.com/informatievlaanderen/address-registry/compare/v3.62.1...v3.62.2) (2022-10-13)
 
 

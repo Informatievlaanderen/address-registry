@@ -60,7 +60,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRetirement
                 .Result
                 .Where(x =>
                      x.StatusCode == StatusCodes.Status410Gone
-                     && x.Message == "Verwijderde adres.");
+                     && x.Message == "Verwijderd adres.");
         }
     }
 }

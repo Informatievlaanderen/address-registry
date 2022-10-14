@@ -115,7 +115,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
 
             //Assert
             ticketing.Verify(x =>
-                x.Error(sqsLambdaRequest.TicketId, new TicketError("Verwijderde adres.", "AdresIsVerwijderd"),
+                x.Error(sqsLambdaRequest.TicketId, new TicketError("Verwijderd adres.", "VerwijderdAdres"),
                     CancellationToken.None));
             ticketing.Verify(x => x.Complete(It.IsAny<Guid>(), It.IsAny<TicketResult>(), CancellationToken.None),
                 Times.Never);

@@ -5,14 +5,15 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
-    using AddressRegistry.Api.BackOffice.Abstractions.Responses;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
-    using AddressRegistry.Infrastructure;
     using Autofac;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
+    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Infrastructure;
+    using Be.Vlaanderen.Basisregisters.Sqs.Responses;
     using Microsoft.Extensions.Configuration;
     using Moq;
     using StreetName;

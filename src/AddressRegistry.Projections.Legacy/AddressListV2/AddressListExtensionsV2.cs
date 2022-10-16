@@ -3,7 +3,6 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using AddressList;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
 
     public static class AddressListExtensionsV2

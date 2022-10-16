@@ -2,7 +2,6 @@ namespace AddressRegistry.Projections.Wms
 {
     using System;
     using AddressDetail;
-    using AddressWmsItem;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;

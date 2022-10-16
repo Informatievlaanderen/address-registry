@@ -1,6 +1,5 @@
 namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressBoxNumber
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Api.BackOffice.Abstractions;

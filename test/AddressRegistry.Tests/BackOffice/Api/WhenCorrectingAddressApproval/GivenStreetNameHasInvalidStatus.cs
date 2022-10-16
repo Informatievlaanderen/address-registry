@@ -5,7 +5,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressApproval
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
-    using AddressRegistry.Api.BackOffice.Validators;
     using Infrastructure;
     using FluentAssertions;
     using FluentValidation;

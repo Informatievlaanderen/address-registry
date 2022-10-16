@@ -3,6 +3,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
     using Abstractions;
     using Abstractions.Converters;
     using Abstractions.Requests;
+    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Requests;
     using StreetName;
     using StreetName.Commands;
 
@@ -22,7 +23,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
         public ChangeAddressPosition ToCommand()
         {
             return new ChangeAddressPosition(
-                StreetNamePersistentLocalId,
+                this.StreetNamePersistentLocalId(),
                 new AddressPersistentLocalId(AddressPersistentLocalId),
                 Request.PositieGeometrieMethode.Map(),
                 Request.PositieSpecificatie.Map(),

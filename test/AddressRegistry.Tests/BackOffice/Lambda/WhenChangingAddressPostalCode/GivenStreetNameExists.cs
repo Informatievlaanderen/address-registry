@@ -5,9 +5,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenChangingAddressPostalCode
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AddressRegistry.Api.BackOffice.Abstractions.Exceptions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
-    using AddressRegistry.Api.BackOffice.Abstractions.Responses;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
     using StreetName;
@@ -19,6 +17,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenChangingAddressPostalCode
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
+    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
+    using Be.Vlaanderen.Basisregisters.Sqs.Responses;
     using FluentAssertions;
     using global::AutoFixture;
     using Microsoft.Extensions.Configuration;

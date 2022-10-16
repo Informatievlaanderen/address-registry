@@ -9,8 +9,6 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressBoxNumber
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
     using Autofac;
     using AutoFixture;
-    using BackOffice.Infrastructure;
-    using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using global::AutoFixture;
     using Infrastructure;

@@ -7,7 +7,6 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
     using System.Threading.Tasks;
     using AddressRegistry.Address;
     using AddressRegistry.Address.Commands;
-    using Api.BackOffice;
     using Api.BackOffice.Abstractions;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.CommandHandling;

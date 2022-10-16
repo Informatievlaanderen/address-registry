@@ -5,7 +5,6 @@ namespace AddressRegistry.Api.BackOffice
     using System.Threading;
     using System.Threading.Tasks;
     using Abstractions;
-    using Abstractions.Exceptions;
     using Abstractions.Requests;
     using Abstractions.Validation;
     using Address;

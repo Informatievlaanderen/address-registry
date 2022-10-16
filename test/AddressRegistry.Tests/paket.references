@@ -18,4 +18,5 @@ Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector
 Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing
 Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit
 Be.Vlaanderen.Basisregisters.Sqs
+Be.Vlaanderen.Basisregisters.Sqs.Lambda
 Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events

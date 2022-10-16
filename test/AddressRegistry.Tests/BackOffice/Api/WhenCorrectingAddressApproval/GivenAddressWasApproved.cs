@@ -4,11 +4,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressApproval
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
-    using AddressRegistry.Api.BackOffice.Abstractions.Responses;
     using AddressRegistry.Api.BackOffice.Validators;
     using AddressRegistry.StreetName;
     using AddressRegistry.Tests.BackOffice.Infrastructure;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
+    using Be.Vlaanderen.Basisregisters.Sqs.Responses;
     using FluentAssertions;
     using global::AutoFixture;
     using Moq;

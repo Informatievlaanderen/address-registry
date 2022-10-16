@@ -1,29 +1,20 @@
 namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
 {
-    using System.Configuration;
-    using Abstractions.Exceptions;
-    using Abstractions.Responses;
     using Abstractions.Validation;
-    using AddressRegistry.Infrastructure;
-    using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
-    using MediatR;
+    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
+    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Infrastructure;
+    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Requests;
     using Microsoft.Extensions.Configuration;
     using Requests;
     using StreetName;
-    using StreetName.Exceptions;
     using TicketingService.Abstractions;
 
-    public abstract class SqsLambdaHandler<TSqsLambdaRequest> : IRequestHandler<TSqsLambdaRequest>
+    public abstract class SqsLambdaHandler<TSqsLambdaRequest> : SqsLambdaHandlerBase<TSqsLambdaRequest>
         where TSqsLambdaRequest : SqsLambdaRequest
     {
-        private readonly ITicketing _ticketing;
-        private readonly ICustomRetryPolicy _retryPolicy;
         private readonly IStreetNames _streetNames;
-
-        protected IIdempotentCommandHandler IdempotentCommandHandler { get; }
-        protected string DetailUrlFormat { get; }
 
         protected SqsLambdaHandler(
             IConfiguration configuration,
@@ -31,78 +22,12 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             IStreetNames streetNames,
             ITicketing ticketing,
             IIdempotentCommandHandler idempotentCommandHandler)
+            : base(configuration, retryPolicy, ticketing, idempotentCommandHandler)
         {
-            _retryPolicy = retryPolicy;
             _streetNames = streetNames;
-            _ticketing = ticketing;
-            IdempotentCommandHandler = idempotentCommandHandler;
-
-            DetailUrlFormat = configuration["DetailUrl"];
-            if (string.IsNullOrEmpty(DetailUrlFormat))
-            {
-                throw new ConfigurationErrorsException("'DetailUrl' cannot be found in the configuration");
-            }
         }
 
-        protected abstract Task<ETagResponse> InnerHandle(TSqsLambdaRequest request, CancellationToken cancellationToken);
-
-        protected abstract TicketError? MapDomainException(DomainException exception, TSqsLambdaRequest request);
-
-        public async Task<Unit> Handle(TSqsLambdaRequest request, CancellationToken cancellationToken)
-        {
-            try
-            {
-                await ValidateIfMatchHeaderValue(request, cancellationToken);
-
-                await _ticketing.Pending(request.TicketId, cancellationToken);
-
-                ETagResponse? etag = null;
-
-                await _retryPolicy.Retry(async () => etag = await InnerHandle(request, cancellationToken));
-
-                await _ticketing.Complete(
-                    request.TicketId,
-                    new TicketResult(etag),
-                    cancellationToken);
-            }
-            catch (AggregateIdIsNotFoundException)
-            {
-                await _ticketing.Error(request.TicketId,
-                    new TicketError(ValidationErrors.Common.AddressNotFound.Message, "404"),
-                    cancellationToken);
-            }
-            catch (IfMatchHeaderValueMismatchException)
-            {
-                await _ticketing.Error(
-                    request.TicketId,
-                    new TicketError("Als de If-Match header niet overeenkomt met de laatste ETag.", "PreconditionFailed"),
-                    cancellationToken);
-            }
-            catch (DomainException exception)
-            {
-                var ticketError = exception switch
-                {
-                    AddressIsNotFoundException => new TicketError(
-                        ValidationErrors.Common.AddressNotFound.Message,
-                        ValidationErrors.Common.AddressNotFound.Code),
-                    AddressIsRemovedException => new TicketError(
-                        ValidationErrors.Common.AddressRemoved.Message,
-                        ValidationErrors.Common.AddressRemoved.Code),
-                    _ => MapDomainException(exception, request)
-                };
-
-                ticketError ??= new TicketError(exception.Message, "");
-
-                await _ticketing.Error(
-                    request.TicketId,
-                    ticketError,
-                    cancellationToken);
-            }
-
-            return Unit.Value;
-        }
-
-        private async Task ValidateIfMatchHeaderValue(TSqsLambdaRequest request, CancellationToken cancellationToken)
+        protected override async Task ValidateIfMatchHeaderValue(TSqsLambdaRequest request, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(request.IfMatchHeaderValue) || request is not Abstractions.IHasAddressPersistentLocalId id)
             {
@@ -110,7 +35,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             }
 
             var lastHash = await GetHash(
-                request.StreetNamePersistentLocalId,
+                request.StreetNamePersistentLocalId(),
                 new AddressPersistentLocalId(id.AddressPersistentLocalId),
                 cancellationToken);
 
@@ -131,6 +56,13 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 await _streetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), cancellationToken);
             var streetNameHash = aggregate.GetAddressHash(addressPersistentLocalId);
             return streetNameHash;
+        }
+        
+        protected override async Task HandleException<T>(TSqsLambdaRequest request, CancellationToken cancellationToken)
+        {
+            await Ticketing.Error(request.TicketId,
+                new TicketError(ValidationErrors.Common.AddressNotFound.Message, "404"),
+                cancellationToken);
         }
     }
 }

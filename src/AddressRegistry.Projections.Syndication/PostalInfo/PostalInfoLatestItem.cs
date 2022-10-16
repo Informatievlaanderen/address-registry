@@ -4,7 +4,6 @@ namespace AddressRegistry.Projections.Syndication.PostalInfo
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using System;
     using System.Collections.Generic;
 
     public class PostalInfoLatestItem

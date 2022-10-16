@@ -7,7 +7,6 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
     using System.Threading.Tasks;
     using Address;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
-    using AddressRegistry.Api.BackOffice.Abstractions.Responses;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
     using Projections.Syndication.PostalInfo;
@@ -21,6 +20,8 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
+    using Be.Vlaanderen.Basisregisters.Sqs.Responses;
     using FluentAssertions;
     using global::AutoFixture;
     using Microsoft.Extensions.Configuration;

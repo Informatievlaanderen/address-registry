@@ -6,10 +6,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
     using AddressRegistry.Api.BackOffice;
     using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
-    using AddressRegistry.Api.BackOffice.Abstractions.Responses;
     using AddressRegistry.Api.BackOffice.Validators;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
+    using Be.Vlaanderen.Basisregisters.Sqs.Responses;
     using FluentAssertions;
     using FluentValidation;
     using global::AutoFixture;

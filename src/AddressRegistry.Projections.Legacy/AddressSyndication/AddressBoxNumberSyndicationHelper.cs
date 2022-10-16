@@ -1,11 +1,8 @@
 namespace AddressRegistry.Projections.Legacy.AddressSyndication
 {
-    using System;
-    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using NodaTime;
     using StreetName;
 
     public class AddressBoxNumberSyndicationHelper

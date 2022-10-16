@@ -1,6 +1,5 @@
 namespace AddressRegistry.Address.Events
 {
-    using AddressRegistry;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Newtonsoft.Json;

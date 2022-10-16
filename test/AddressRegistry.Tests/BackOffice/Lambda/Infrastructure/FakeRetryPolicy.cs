@@ -2,7 +2,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
 {
     using System;
     using System.Threading.Tasks;
-    using AddressRegistry.Infrastructure;
+    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Infrastructure;
 
     internal class FakeRetryPolicy : ICustomRetryPolicy
     {

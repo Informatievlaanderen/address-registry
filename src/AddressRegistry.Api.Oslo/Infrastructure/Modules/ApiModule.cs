@@ -8,7 +8,6 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
-    using Consumer.Read.Municipality;
     using Consumer.Read.Municipality.Infrastructure.Modules;
     using Consumer.Read.StreetName.Infrastructure.Modules;
     using Microsoft.EntityFrameworkCore;

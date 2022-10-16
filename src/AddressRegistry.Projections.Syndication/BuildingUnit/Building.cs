@@ -1,6 +1,5 @@
 namespace AddressRegistry.Projections.Syndication.BuildingUnit
 {
-    using System;
     using System.Collections.Generic;
     using System.Runtime.Serialization;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;

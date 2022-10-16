@@ -4,10 +4,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRetirement
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
-    using AddressRegistry.Api.BackOffice.Abstractions.Responses;
     using StreetName;
     using Infrastructure;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
+    using Be.Vlaanderen.Basisregisters.Sqs.Responses;
     using FluentAssertions;
     using global::AutoFixture;
     using Moq;

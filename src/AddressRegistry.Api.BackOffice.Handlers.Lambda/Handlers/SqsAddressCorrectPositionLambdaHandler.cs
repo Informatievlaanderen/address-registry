@@ -52,7 +52,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             return new ETagResponse(string.Format(DetailUrlFormat, addressPersistentLocalId), lastHash);
         }
 
-        protected override TicketError? MapDomainException(DomainException exception, SqsLambdaAddressCorrectPositionRequest request)
+        protected override TicketError? InnerMapDomainException(DomainException exception, SqsLambdaAddressCorrectPositionRequest request)
         {
             return exception switch
             {

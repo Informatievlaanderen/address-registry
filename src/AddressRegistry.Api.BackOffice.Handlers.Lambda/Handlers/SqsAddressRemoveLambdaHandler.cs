@@ -50,7 +50,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             return new ETagResponse(string.Format(DetailUrlFormat, addressPersistentLocalId), lastHash);
         }
 
-        protected override TicketError? MapDomainException(DomainException exception, SqsLambdaAddressRemoveRequest request)
+        protected override TicketError? InnerMapDomainException(DomainException exception, SqsLambdaAddressRemoveRequest request)
         {
             return null;
         }

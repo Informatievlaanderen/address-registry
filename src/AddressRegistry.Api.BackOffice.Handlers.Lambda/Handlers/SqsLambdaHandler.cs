@@ -67,8 +67,16 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 cancellationToken);
         }
 
+        protected abstract TicketError? InnerMapDomainException(DomainException exception, TSqsLambdaRequest request);
+
         protected override TicketError? MapDomainException(DomainException exception, TSqsLambdaRequest request)
         {
+            var error = InnerMapDomainException(exception, request);
+            if (error is not null)
+            {
+                return error;
+            }
+
             return exception switch
             {
                 AddressIsNotFoundException => new TicketError(

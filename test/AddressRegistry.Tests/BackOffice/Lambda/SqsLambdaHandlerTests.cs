@@ -5,6 +5,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
+    using AddressRegistry.Api.BackOffice.Abstractions.Validation;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
     using Autofac;
@@ -208,7 +209,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
         }
     }
 
-    public class FakeLambdaHandler : SqsLambdaHandler<SqsLambdaAddressApproveRequest>
+    public sealed class FakeLambdaHandler : SqsLambdaHandler<SqsLambdaAddressApproveRequest>
     {
         public FakeLambdaHandler(
             IConfiguration configuration,
@@ -235,6 +236,20 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 cancellationToken);
 
             return Task.FromResult(new ETagResponse("bla", "etag"));
+        }
+
+        protected override TicketError? InnerMapDomainException(DomainException exception, SqsLambdaAddressApproveRequest request)
+        {
+            return exception switch
+            {
+                StreetNameHasInvalidStatusException => new TicketError(
+                    ValidationErrors.Common.StreetNameIsNotActive.Message,
+                    ValidationErrors.Common.StreetNameIsNotActive.Code),
+                AddressHasInvalidStatusException => new TicketError(
+                    ValidationErrors.RetireAddress.AddressInvalidStatus.Message,
+                    ValidationErrors.RetireAddress.AddressInvalidStatus.Code),
+                _ => null
+            };
         }
     }
 }

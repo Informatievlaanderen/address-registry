@@ -1,3 +1,12 @@
+## [3.63.1](https://github.com/informatievlaanderen/address-registry/compare/v3.63.0...v3.63.1) (2022-10-17)
+
+
+### Bug Fixes
+
+* add SqsAddressCorrectBoxNumberRequest to messagehandler ([fa83213](https://github.com/informatievlaanderen/address-registry/commit/fa83213bfffe8e9ed377f26e725123852614f116))
+* base lambdahandler innermapdomainexception ([fa183e8](https://github.com/informatievlaanderen/address-registry/commit/fa183e840de86558b57534107d79913cbc07b06d))
+* use basisregisters.sqs.lamba ([58f7e7c](https://github.com/informatievlaanderen/address-registry/commit/58f7e7ccc318707d5de8d3a31fb2b8b50430c940))
+
 # [3.63.0](https://github.com/informatievlaanderen/address-registry/compare/v3.62.2...v3.63.0) (2022-10-14)
 
 

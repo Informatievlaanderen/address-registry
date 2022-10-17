@@ -1,3 +1,10 @@
+## [3.63.3](https://github.com/informatievlaanderen/address-registry/compare/v3.63.2...v3.63.3) (2022-10-17)
+
+
+### Bug Fixes
+
+* update sqs packages ([7672710](https://github.com/informatievlaanderen/address-registry/commit/7672710932d3dec0425ea63c34f6a6b0ca4f702d))
+
 ## [3.63.2](https://github.com/informatievlaanderen/address-registry/compare/v3.63.1...v3.63.2) (2022-10-17)
 
 

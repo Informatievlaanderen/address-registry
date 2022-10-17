@@ -4,14 +4,13 @@ namespace AddressRegistry.Api.BackOffice
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using Abstractions;
-    using Abstractions.Exceptions;
     using Abstractions.Requests;
     using Abstractions.Validation;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
     using FluentValidation;
     using FluentValidation.Results;
     using Handlers.Sqs.Requests;

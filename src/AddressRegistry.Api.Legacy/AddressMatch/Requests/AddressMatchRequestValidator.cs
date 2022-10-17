@@ -4,7 +4,6 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Requests
     using System.Linq;
     using System.Linq.Expressions;
     using FluentValidation;
-    using FluentValidation.Validators;
 
     public class AddressMatchRequestValidator : AbstractValidator<AddressMatchRequest>
     {

@@ -5,11 +5,11 @@ namespace AddressRegistry.Api.BackOffice.Handlers
     using System.Threading.Tasks;
     using Abstractions;
     using Abstractions.Requests;
-    using Abstractions.Responses;
     using Address;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo.Extensions;
+    using Be.Vlaanderen.Basisregisters.Sqs.Responses;
     using Consumer.Read.Municipality;
     using MediatR;
     using Microsoft.EntityFrameworkCore;

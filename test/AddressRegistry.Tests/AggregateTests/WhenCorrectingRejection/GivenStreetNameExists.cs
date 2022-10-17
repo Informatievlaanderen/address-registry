@@ -1,6 +1,5 @@
 namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRejection
 {
-    using Address.Exceptions;
     using Api.BackOffice.Abstractions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;

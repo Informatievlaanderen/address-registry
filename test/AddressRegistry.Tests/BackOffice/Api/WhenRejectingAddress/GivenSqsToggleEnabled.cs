@@ -4,7 +4,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRejectingAddress
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice;
-    using AddressRegistry.Api.BackOffice.Abstractions.Exceptions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
     using StreetName;

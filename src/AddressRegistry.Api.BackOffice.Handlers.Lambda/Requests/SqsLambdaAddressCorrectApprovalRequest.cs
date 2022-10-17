@@ -1,6 +1,7 @@
 namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
 {
     using Abstractions.Requests;
+    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Requests;
     using StreetName;
     using StreetName.Commands;
 
@@ -19,7 +20,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
         /// <returns>CorrectAddressApproval.</returns>
         public CorrectAddressApproval ToCommand()
         {
-            return new CorrectAddressApproval(StreetNamePersistentLocalId, new AddressPersistentLocalId(AddressPersistentLocalId), Provenance);
+            return new CorrectAddressApproval(this.StreetNamePersistentLocalId(), new AddressPersistentLocalId(AddressPersistentLocalId), Provenance);
         }
     }
 }

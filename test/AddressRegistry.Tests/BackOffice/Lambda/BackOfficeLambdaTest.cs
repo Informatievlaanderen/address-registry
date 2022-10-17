@@ -4,14 +4,14 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     using System.Collections.Generic;
     using System.Threading;
     using AddressRegistry.Api.BackOffice.Abstractions;
-    using AddressRegistry.Api.BackOffice.Abstractions.Responses;
-    using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using StreetName;
     using StreetName.Commands;
     using Tests;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
+    using Be.Vlaanderen.Basisregisters.Sqs.Responses;
     using global::AutoFixture;
     using Moq;
     using Newtonsoft.Json;

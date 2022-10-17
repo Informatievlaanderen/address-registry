@@ -2,12 +2,12 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
 {
     using System.Threading;
     using System.Threading.Tasks;
-    using Abstractions;
-    using Abstractions.Exceptions;
-    using Abstractions.Responses;
     using Abstractions.Validation;
-    using AddressRegistry.Infrastructure;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
+    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
+    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Infrastructure;
+    using Be.Vlaanderen.Basisregisters.Sqs.Responses;
     using Microsoft.Extensions.Configuration;
     using Requests;
     using StreetName;
@@ -48,7 +48,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 // Idempotent: Do Nothing return last etag
             }
 
-            var lastHash = await GetHash(request.StreetNamePersistentLocalId, addressPersistentLocalId, cancellationToken);
+            var lastHash = await GetHash(request.StreetNamePersistentLocalId(), addressPersistentLocalId, cancellationToken);
             return new ETagResponse(string.Format(DetailUrlFormat, addressPersistentLocalId), lastHash);
         }
 

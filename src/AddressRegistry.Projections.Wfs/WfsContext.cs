@@ -1,6 +1,5 @@
 namespace AddressRegistry.Projections.Wfs
 {
-    using System;
     using AddressDetail;
     using AddressWfs;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;

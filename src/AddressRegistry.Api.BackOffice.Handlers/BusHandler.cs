@@ -7,11 +7,11 @@ namespace AddressRegistry.Api.BackOffice.Handlers
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-    using Abstractions.Exceptions;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using Microsoft.AspNetCore.Http;
     using Microsoft.EntityFrameworkCore;

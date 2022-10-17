@@ -4,9 +4,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
-    using AddressRegistry.Api.BackOffice.Abstractions.Exceptions;
-    using AddressRegistry.Api.BackOffice.Handlers.Lambda.Infrastructure;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
+    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Infrastructure;
     using FluentAssertions;
     using Microsoft.Data.SqlClient;
     using Xunit;

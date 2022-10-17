@@ -1,6 +1,7 @@
 namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
 {
     using Abstractions.Requests;
+    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Requests;
     using StreetName;
     using StreetName.Commands;
 
@@ -20,7 +21,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
         public CorrectAddressBoxNumber ToCommand()
         {
             return new CorrectAddressBoxNumber(
-                StreetNamePersistentLocalId,
+                this.StreetNamePersistentLocalId(),
                 new AddressPersistentLocalId(AddressPersistentLocalId),
                 BoxNumber.Create(Request.Busnummer),
                 Provenance);

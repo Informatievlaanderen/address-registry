@@ -4,7 +4,6 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
-    using System.Text;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
 
     public static class Extensions

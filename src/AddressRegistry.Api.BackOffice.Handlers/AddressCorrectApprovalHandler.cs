@@ -2,7 +2,6 @@ namespace AddressRegistry.Api.BackOffice.Handlers
 {
     using Abstractions;
     using Abstractions.Requests;
-    using Abstractions.Responses;
     using Address;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
@@ -12,6 +11,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Be.Vlaanderen.Basisregisters.Sqs.Responses;
 
     public sealed class AddressCorrectApprovalHandler : BusHandler, IRequestHandler<AddressCorrectApprovalRequest, ETagResponse>
     {

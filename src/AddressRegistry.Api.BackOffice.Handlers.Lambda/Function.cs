@@ -15,10 +15,10 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac;
+    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Infrastructure;
     using Consumer;
     using Consumer.Read.Municipality;
     using Consumer.Read.Municipality.Infrastructure.Modules;
-    using Infrastructure;
     using MediatR;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;

@@ -5,10 +5,10 @@ namespace AddressRegistry.Api.BackOffice.Handlers
     using System.Threading.Tasks;
     using Abstractions;
     using Abstractions.Requests;
-    using Abstractions.Responses;
     using Address;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
+    using Be.Vlaanderen.Basisregisters.Sqs.Responses;
     using MediatR;
     using StreetName;
     using StreetName.Commands;

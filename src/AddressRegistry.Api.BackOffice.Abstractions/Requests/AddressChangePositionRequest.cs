@@ -4,10 +4,10 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
     using System.Runtime.Serialization;
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Be.Vlaanderen.Basisregisters.Sqs.Responses;
     using Converters;
     using MediatR;
     using Newtonsoft.Json;
-    using Responses;
     using StreetName;
     using StreetName.Commands;
     using Swashbuckle.AspNetCore.Filters;

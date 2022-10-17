@@ -1,6 +1,5 @@
 namespace AddressRegistry.Tests.BackOffice.Sqs
 {
-    using AddressRegistry.Api.BackOffice.Handlers.Sqs;
     using Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple;
     using FluentAssertions;
     using global::AutoFixture;

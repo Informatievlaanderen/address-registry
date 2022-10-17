@@ -3,12 +3,13 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
     using System.Threading;
     using System.Threading.Tasks;
     using Abstractions;
-    using Abstractions.Responses;
     using Abstractions.Validation;
     using Address;
-    using AddressRegistry.Infrastructure;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo.Extensions;
+    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
+    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Infrastructure;
+    using Be.Vlaanderen.Basisregisters.Sqs.Responses;
     using Consumer.Read.Municipality;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -86,12 +87,12 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 .AddAsync(
                     new AddressPersistentIdStreetNamePersistentId(
                         addressPersistentLocalId,
-                        request.StreetNamePersistentLocalId),
+                        request.StreetNamePersistentLocalId()),
                     cancellationToken);
             await _backOfficeContext.SaveChangesAsync(cancellationToken);
 
 
-            var lastHash = await GetHash(request.StreetNamePersistentLocalId, addressPersistentLocalId, cancellationToken);
+            var lastHash = await GetHash(request.StreetNamePersistentLocalId(), addressPersistentLocalId, cancellationToken);
             return new ETagResponse(string.Format(DetailUrlFormat, addressPersistentLocalId), lastHash);
         }
 

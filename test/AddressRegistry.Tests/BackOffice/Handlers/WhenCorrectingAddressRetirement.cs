@@ -18,7 +18,6 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
     using Xunit;
     using Xunit.Abstractions;
     using global::AutoFixture;
-    using StreetName.Commands;
 
     public class WhenCorrectingAddressRetirement : BackOfficeHandlerTest
     {

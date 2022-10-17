@@ -1,6 +1,5 @@
 namespace AddressRegistry.Projections.Syndication.AddressLink
 {
-    using System;
     using System.Runtime.Serialization;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;

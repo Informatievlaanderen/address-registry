@@ -10,8 +10,6 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
     using Autofac;
     using AutoFixture;
     using BackOffice.Infrastructure;
-    using Be.Vlaanderen.Basisregisters.CommandHandling;
-    using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Consumer.Read.Municipality.Projections;
     using global::AutoFixture;

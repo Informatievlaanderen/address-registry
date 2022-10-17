@@ -15,6 +15,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac;
+    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Infrastructure;
     using Consumer;
     using Consumer.Read.Municipality;
@@ -89,6 +90,11 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
                 .RegisterModule(new BackOfficeModule(configuration, services, loggerFactory))
                 .RegisterModule(new MunicipalityConsumerModule(configuration, services, loggerFactory))
                 .RegisterModule(new SyndicationModule(configuration, services, loggerFactory));
+
+            builder.RegisterType<IdempotentCommandHandler>()
+                .As<IIdempotentCommandHandler>()
+                .AsSelf()
+                .InstancePerLifetimeScope();
 
             builder.RegisterType<MunicipalityConsumerContext>()
                 .As<IMunicipalities>()

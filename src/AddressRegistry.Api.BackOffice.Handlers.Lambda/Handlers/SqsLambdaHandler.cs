@@ -1,6 +1,7 @@
 namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
 {
     using Abstractions.Validation;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
@@ -9,6 +10,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
     using Microsoft.Extensions.Configuration;
     using Requests;
     using StreetName;
+    using StreetName.Exceptions;
     using TicketingService.Abstractions;
 
     public abstract class SqsLambdaHandler<TSqsLambdaRequest> : SqsLambdaHandlerBase<TSqsLambdaRequest>
@@ -57,12 +59,26 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             var streetNameHash = aggregate.GetAddressHash(addressPersistentLocalId);
             return streetNameHash;
         }
-        
-        protected override async Task HandleException<T>(TSqsLambdaRequest request, CancellationToken cancellationToken)
+
+        protected override async Task HandleAggregateIdIsNotFoundException(TSqsLambdaRequest request, CancellationToken cancellationToken)
         {
             await Ticketing.Error(request.TicketId,
                 new TicketError(ValidationErrors.Common.AddressNotFound.Message, "404"),
                 cancellationToken);
+        }
+
+        protected override TicketError? MapDomainException(DomainException exception, TSqsLambdaRequest request)
+        {
+            return exception switch
+            {
+                AddressIsNotFoundException => new TicketError(
+                    ValidationErrors.Common.AddressNotFound.Message,
+                    ValidationErrors.Common.AddressNotFound.Code),
+                AddressIsRemovedException => new TicketError(
+                    ValidationErrors.Common.AddressRemoved.Message,
+                    ValidationErrors.Common.AddressRemoved.Code),
+                _ => null
+            };
         }
     }
 }

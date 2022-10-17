@@ -527,7 +527,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                 x.Error(
                     It.IsAny<Guid>(),
                     new TicketError(
-                        $"De straatnaam '{StraatNaamPuri}{request.StreetNamePersistentLocalId}' is niet gekend in het straatnaamregister.",
+                        $"De straatnaam '{StraatNaamPuri}{request.StreetNamePersistentLocalId()}' is niet gekend in het straatnaamregister.",
                         "AdresStraatnaamNietGekendValidatie"),
                     CancellationToken.None));
         }

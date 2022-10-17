@@ -1,3 +1,10 @@
+## [3.63.2](https://github.com/informatievlaanderen/address-registry/compare/v3.63.1...v3.63.2) (2022-10-17)
+
+
+### Bug Fixes
+
+* register idempotent command handler ([a33663e](https://github.com/informatievlaanderen/address-registry/commit/a33663e87b219f967ac080eedeef181a2c49d1c4))
+
 ## [3.63.1](https://github.com/informatievlaanderen/address-registry/compare/v3.63.0...v3.63.1) (2022-10-17)
 
 

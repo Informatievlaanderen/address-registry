@@ -62,7 +62,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 AddressHasInvalidStatusException => new TicketError(
                     ValidationErrors.Common.PostalCode.CannotBeChanged.Message,
                     ValidationErrors.Common.PostalCode.CannotBeChanged.Code),
-                ParentAddressAlreadyExistsException => new TicketError(
+                AddressAlreadyExistsException => new TicketError(
                     ValidationErrors.Common.AddressAlreadyExists.Message,
                     ValidationErrors.Common.AddressAlreadyExists.Code),
                 HouseNumberHasInvalidFormatException => new TicketError(

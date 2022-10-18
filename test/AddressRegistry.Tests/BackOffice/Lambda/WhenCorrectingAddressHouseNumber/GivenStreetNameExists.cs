@@ -128,7 +128,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
         }
 
         [Fact]
-        public async Task WhenParentAddressAlreadyExists_ThenTicketingErrorIsExpected()
+        public async Task WhenAddressAlreadyExists_ThenTicketingErrorIsExpected()
         {
             // Arrange
             var ticketing = new Mock<ITicketing>();
@@ -138,7 +138,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
                 new FakeRetryPolicy(),
                 ticketing.Object,
                 Mock.Of<IStreetNames>(),
-                MockExceptionIdempotentCommandHandler<ParentAddressAlreadyExistsException>().Object);
+                MockExceptionIdempotentCommandHandler<AddressAlreadyExistsException>().Object);
 
             // Act
             await sut.Handle(new SqsLambdaAddressCorrectHouseNumberRequest

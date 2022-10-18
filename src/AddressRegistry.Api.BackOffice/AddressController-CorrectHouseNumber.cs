@@ -135,7 +135,7 @@ namespace AddressRegistry.Api.BackOffice
                         string.Empty,
                         ValidationErrors.Common.PostalCode.CannotBeChanged.Message),
 
-                    ParentAddressAlreadyExistsException _ =>
+                    AddressAlreadyExistsException _ =>
                         CreateValidationException(
                             ValidationErrors.Common.AddressAlreadyExists.Code,
                             nameof(request.Huisnummer),

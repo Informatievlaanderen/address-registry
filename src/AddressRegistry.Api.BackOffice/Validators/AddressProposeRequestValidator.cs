@@ -11,10 +11,14 @@ namespace AddressRegistry.Api.BackOffice.Validators
 
     public class AddressProposeRequestValidator : AbstractValidator<AddressProposeRequest>
     {
-        public AddressProposeRequestValidator(SyndicationContext syndicationContext)
+        public AddressProposeRequestValidator(
+            StreetNameExistsValidator streetNameExistsValidator,
+            SyndicationContext syndicationContext)
         {
             RuleFor(x => x.StraatNaamId)
-                .Must((_, straatNaamId) => OsloPuriValidator.TryParseIdentifier(straatNaamId, out var _))
+                .MustAsync(async (straatNaamId, ct) =>
+                    OsloPuriValidator.TryParseIdentifier(straatNaamId, out var _)
+                    && await streetNameExistsValidator.Exists(straatNaamId, ct))
                 .WithMessage((_, straatNaamId) =>  ValidationErrors.Common.StreetNameInvalid.Message(straatNaamId))
                 .WithErrorCode(ValidationErrors.Common.StreetNameInvalid.Code);
 

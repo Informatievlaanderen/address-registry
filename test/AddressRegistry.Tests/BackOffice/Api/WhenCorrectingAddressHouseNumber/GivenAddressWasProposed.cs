@@ -87,7 +87,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressHouseNumber
 
             MockMediator
                 .Setup(x => x.Send(It.IsAny<AddressCorrectHouseNumberRequest>(), CancellationToken.None))
-                .Throws(new ParentAddressAlreadyExistsException());
+                .Throws(new AddressAlreadyExistsException());
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 

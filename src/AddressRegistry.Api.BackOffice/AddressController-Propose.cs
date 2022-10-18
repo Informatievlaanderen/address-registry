@@ -24,14 +24,13 @@ namespace AddressRegistry.Api.BackOffice
     public partial class AddressController
     {
         /// <summary>
-        /// Stel een address voor.
+        /// Stel een adres voor.
         /// </summary>
         /// <param name="options"></param>
-        /// <param name="request"></param>
         /// <param name="validator"></param>
+        /// <param name="request"></param>
         /// <param name="cancellationToken"></param>
-        /// <response code="201">Als de adres voorgesteld is.</response>
-        /// <response code="202">Als de adres reeds voorgesteld is.</response>
+        /// <response code="202">Als het adres reeds voorgesteld is.</response>
         /// <returns></returns>
         [HttpPost("acties/voorstellen")]
         [ProducesResponseType(StatusCodes.Status201Created)]

@@ -16,6 +16,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     using Microsoft.AspNetCore.Mvc;
     using Moq;
     using Projections.Syndication.PostalInfo;
+    using SqlStreamStore;
+    using SqlStreamStore.Streams;
     using Xunit;
     using Xunit.Abstractions;
     using PositieGeometrieMethode = Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts.PositieGeometrieMethode;
@@ -24,10 +26,14 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     public class GivenInvalidRequest : BackOfficeApiTest
     {
         private readonly AddressController _controller;
+        private readonly Mock<IStreamStore> _streamStore;
 
         public GivenInvalidRequest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            MockMediator.Setup(x => x.Send(It.IsAny<AddressProposeRequest>(), CancellationToken.None))
+            _streamStore = new Mock<IStreamStore>();
+
+            MockMediator
+                .Setup(x => x.Send(It.IsAny<AddressProposeRequest>(), CancellationToken.None))
                 .Returns(Task.FromResult(new PersistentLocalIdETagResponse(123, "lasteventhash")));
 
             _controller = CreateApiBusControllerWithUser<AddressController>();
@@ -36,6 +42,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
         [Fact]
         public void WithInvalidStreetName_ThenThrowsValidationException()
         {
+            WithStreamExists();
+
             var invalidStraatNaamId = "invalid";
 
             var act = SetupController(new AddressProposeRequest
@@ -55,8 +63,34 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
         }
 
         [Fact]
+        public void WithUnexistingStreetName_ThenThrowsValidationException()
+        {
+            WithStreamDoesNotExist();
+
+            var straatNaamId = StraatNaamPuri + "123";
+
+            var act = SetupController(new AddressProposeRequest
+            {
+                StraatNaamId = straatNaamId,
+                Huisnummer = "11"
+            });
+
+            // Assert
+            act
+                .Should()
+                .ThrowAsync<ValidationException>()
+                .Result
+                .Where(x =>
+                    x.Errors.Any(e =>
+                        e.ErrorCode == "AdresStraatnaamNietGekendValidatie"
+                        && e.ErrorMessage == $"De straatnaam '{straatNaamId}' is niet gekend in het straatnaamregister."));
+        }
+
+        [Fact]
         public void WithNonExistentPostInfo_ThenThrowsValidationException()
         {
+            WithStreamExists();
+
             var nonExistentPostInfo = PostInfoPuri + "123456";
 
             var act = SetupController(new AddressProposeRequest
@@ -79,6 +113,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
         [Fact]
         public void WithInvalidHouseNumber_ThenThrowsValidationException()
         {
+            WithStreamExists();
+
             var act = SetupController(new AddressProposeRequest
             {
                 StraatNaamId = StraatNaamPuri + "123",
@@ -99,6 +135,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
         [Fact]
         public void WithInvalidBoxNumber_ThenThrowsValidationException()
         {
+            WithStreamExists();
+
             var act = SetupController(new AddressProposeRequest
             {
                 StraatNaamId = StraatNaamPuri + "123",
@@ -120,6 +158,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
         [Fact]
         public void WithGeometryMethodIsInvalid_ThenThrowsValidationException()
         {
+            WithStreamExists();
+
             var act = SetupController(new AddressProposeRequest
             {
                 StraatNaamId = StraatNaamPuri + "123",
@@ -142,6 +182,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
         [Fact]
         public void WithSpecificationHasNoValueAndMethodAppointedByAdmin_ThenThrowsValidationException()
         {
+            WithStreamExists();
+
             var act = SetupController(new AddressProposeRequest
             {
                 StraatNaamId = StraatNaamPuri + "123",
@@ -166,6 +208,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
         [Fact]
         public void WithInvalidSpecificationAndMethodAppointedByAdmin_ThenThrowsValidationException()
         {
+            WithStreamExists();
+
             var act = SetupController(new AddressProposeRequest
             {
                 StraatNaamId = StraatNaamPuri + "123",
@@ -190,6 +234,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
         [Fact]
         public void WithNoPositionAndMethodAppointedByAdmin_ThenThrowsValidationException()
         {
+            WithStreamExists();
+
             var act = SetupController(new AddressProposeRequest
             {
                 StraatNaamId = StraatNaamPuri + "123",
@@ -215,6 +261,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
         [Fact]
         public void WithInvalidGml_ThenThrowsValidationException()
         {
+            WithStreamExists();
+
             var act = SetupController(new AddressProposeRequest
             {
                 StraatNaamId = StraatNaamPuri + "123",
@@ -245,6 +293,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
         [InlineData(PositieSpecificatie.Ingang)]
         public void WithInvalidSpecificationAndDerivedFromObject_ThenThrowsValidationException(PositieSpecificatie specificatie)
         {
+            WithStreamExists();
+
             var act = SetupController(new AddressProposeRequest
             {
                 StraatNaamId = StraatNaamPuri + "123",
@@ -289,9 +339,25 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
 
             return async () => await _controller.Propose(
                 ResponseOptions,
-                new AddressProposeRequestValidator(syndicationContext),
+                new AddressProposeRequestValidator(
+                    new StreetNameExistsValidator(_streamStore.Object),
+                    syndicationContext),
                 request,
                 CancellationToken.None);
+        }
+
+        private void WithStreamExists()
+        {
+            _streamStore
+                .Setup(store => store.ReadStreamBackwards(It.IsAny<StreamId>(), StreamVersion.End, 1, false, CancellationToken.None))
+                .ReturnsAsync(() => new ReadStreamPage("id", PageReadStatus.Success, 1, 2, 2, 2, ReadDirection.Backward, false, messages: new []{ new StreamMessage() }));
+        }
+
+        private void WithStreamDoesNotExist()
+        {
+            _streamStore
+                .Setup(store => store.ReadStreamBackwards(It.IsAny<StreamId>(), StreamVersion.End, 1, false, CancellationToken.None))
+                .ReturnsAsync(() => new ReadStreamPage("id", PageReadStatus.StreamNotFound, -1, -1, -1, -1, ReadDirection.Backward, false, messages: Array.Empty<StreamMessage>()));
         }
     }
 }

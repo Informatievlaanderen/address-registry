@@ -1,24 +1,41 @@
 namespace AddressRegistry.Tests.BackOffice.Validators
 {
+    using System.Threading;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Validators;
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
     using FluentValidation.TestHelper;
     using Infrastructure;
+    using Moq;
+    using SqlStreamStore;
+    using SqlStreamStore.Streams;
     using Xunit;
 
     public class AddressProposeRequestValidatorTests
     {
         private readonly AddressProposeRequestValidator _sut;
+        private readonly Mock<IStreamStore> _streamStore;
 
         public AddressProposeRequestValidatorTests()
         {
-            _sut = new AddressProposeRequestValidator(new TestSyndicationContext());
+            _streamStore = new Mock<IStreamStore>();
+            _sut = new AddressProposeRequestValidator(
+                new StreetNameExistsValidator(_streamStore.Object),
+                new TestSyndicationContext());
+        }
+
+        private void WithStreamExists()
+        {
+            _streamStore
+                .Setup(store => store.ReadStreamBackwards(It.IsAny<StreamId>(), StreamVersion.End, 1, false, CancellationToken.None))
+                .ReturnsAsync(() => new ReadStreamPage("id", PageReadStatus.Success, 1, 2, 2, 2, ReadDirection.Backward, false, messages: new []{ new StreamMessage() }));
         }
 
         [Fact]
         public void GivenNoPositionSpecificationAndPositionGeometryMethodIsAppointedByAdministrator_ThenReturnsExpectedFailure()
         {
+            WithStreamExists();
+
             var result = _sut.TestValidate(new AddressProposeRequest
             {
                 PostInfoId = "12",
@@ -38,6 +55,8 @@ namespace AddressRegistry.Tests.BackOffice.Validators
         [InlineData(PositieSpecificatie.Gemeente)]
         public void GivenInvalidPositionSpecificationForPositionGeometryMethodAppointedByAdministrator_ThenReturnsExpectedFailure(PositieSpecificatie specificatie)
         {
+            WithStreamExists();
+
             var result = _sut.TestValidate(new AddressProposeRequest
             {
                 PostInfoId = "12",
@@ -60,6 +79,8 @@ namespace AddressRegistry.Tests.BackOffice.Validators
         [InlineData(PositieSpecificatie.Ligplaats)]
         public void GivenInvalidPositionSpecificationForPositionGeometryMethodDerivedFromObject_ThenReturnsExpectedFailure(PositieSpecificatie specificatie)
         {
+            WithStreamExists();
+
             var result = _sut.TestValidate(new AddressProposeRequest
             {
                 PostInfoId = "12",
@@ -77,6 +98,8 @@ namespace AddressRegistry.Tests.BackOffice.Validators
         [Fact]
         public void GivenNoPositionAndPositionGeometryMethodIsAppointedByAdministrator_ThenReturnsExpectedFailure()
         {
+            WithStreamExists();
+
             var result = _sut.TestValidate(new AddressProposeRequest
             {
                 PostInfoId = "12",
@@ -100,6 +123,8 @@ namespace AddressRegistry.Tests.BackOffice.Validators
                     "<gml:missingPositionAttribute>140285.15277253836 186725.74131567031</gml:pos></gml:Point>")]
         public void GivenInvalidPosition_ThenReturnsExpectedFailure(string position)
         {
+            WithStreamExists();
+
             var result = _sut.TestValidate(new AddressProposeRequest
             {
                 PostInfoId = "12",

@@ -17,6 +17,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
     using Microsoft.Extensions.Logging;
     using Projections.Syndication;
     using StreetName;
+    using Validators;
 
     public class ApiModule : Module
     {
@@ -48,6 +49,11 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
                 .RegisterType<IfMatchHeaderValidator>()
                 .As<IIfMatchHeaderValidator>()
                 .AsSelf();
+
+            builder
+                .RegisterType<StreetNameExistsValidator>()
+                .AsSelf()
+                .InstancePerLifetimeScope();
 
             builder.RegisterModule(new IdempotencyModule(
                 _services,

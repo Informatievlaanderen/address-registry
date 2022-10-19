@@ -9,7 +9,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Handlers
 
     public sealed class SqsAddressCorrectRejectionHandler : SqsHandler<SqsAddressCorrectRejectionRequest>
     {
-        public const string Action = "CorrectRejection";
+        public const string Action = "CorrectAddressRejection";
 
         private readonly BackOfficeContext _backOfficeContext;
 

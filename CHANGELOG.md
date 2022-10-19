@@ -1,3 +1,16 @@
+# [3.64.0](https://github.com/informatievlaanderen/address-registry/compare/v3.63.4...v3.64.0) (2022-10-19)
+
+
+### Bug Fixes
+
+* actions ([2a16f1d](https://github.com/informatievlaanderen/address-registry/commit/2a16f1d2e5b432b3a6e478dadb4223fea466c086))
+* add parameter to KafkaProducerOptions ctor ([03c68a8](https://github.com/informatievlaanderen/address-registry/commit/03c68a86015b6c34b2ef2bf48db79a82b49b737b))
+
+
+### Features
+
+* add ldes ([6c71632](https://github.com/informatievlaanderen/address-registry/commit/6c71632aebc34bcf9b1b1572f29044047ae81176))
+
 ## [3.63.4](https://github.com/informatievlaanderen/address-registry/compare/v3.63.3...v3.63.4) (2022-10-19)
 
 

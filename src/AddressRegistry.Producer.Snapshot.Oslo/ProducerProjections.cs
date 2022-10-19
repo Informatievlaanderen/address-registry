@@ -32,137 +32,6 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                 false,
                 EventsJsonSerializerSettingsProvider.CreateSerializerSettings());
 
-            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressBoxNumberWasCorrectedV2>>(async (_, message, ct) =>
-            {
-                await FindAndProduce(async () =>
-                        await snapshotManager.FindMatchingSnapshot(
-                            message.Message.AddressPersistentLocalId.ToString(),
-                            message.Message.Provenance.Timestamp,
-                            throwStaleWhenGone: false,
-                            ct),
-                        ct);
-            });
-
-            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressHouseNumberWasCorrectedV2>>(async (_, message, ct) =>
-            {
-                await FindAndProduce(async () =>
-                        await snapshotManager.FindMatchingSnapshot(
-                            message.Message.AddressPersistentLocalId.ToString(),
-                            message.Message.Provenance.Timestamp,
-                            throwStaleWhenGone: false,
-                            ct),
-                        ct);
-            });
-
-            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressPositionWasChanged>>(async (_, message, ct) =>
-            {
-                await FindAndProduce(async () =>
-                        await snapshotManager.FindMatchingSnapshot(
-                            message.Message.AddressPersistentLocalId.ToString(),
-                            message.Message.Provenance.Timestamp,
-                            throwStaleWhenGone: false,
-                            ct),
-                        ct);
-            });
-
-            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressPositionWasCorrectedV2>>(async (_, message, ct) =>
-            {
-                await FindAndProduce(async () =>
-                        await snapshotManager.FindMatchingSnapshot(
-                            message.Message.AddressPersistentLocalId.ToString(),
-                            message.Message.Provenance.Timestamp,
-                            throwStaleWhenGone: false,
-                            ct),
-                        ct);
-            });
-
-            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressPostalCodeWasChangedV2>>(async (_, message, ct) =>
-            {
-                await FindAndProduce(async () =>
-                        await snapshotManager.FindMatchingSnapshot(
-                            message.Message.AddressPersistentLocalId.ToString(),
-                            message.Message.Provenance.Timestamp,
-                            throwStaleWhenGone: false,
-                            ct),
-                        ct);
-            });
-
-            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressPostalCodeWasCorrectedV2>>(async (_, message, ct) =>
-            {
-                await FindAndProduce(async () =>
-                        await snapshotManager.FindMatchingSnapshot(
-                            message.Message.AddressPersistentLocalId.ToString(),
-                            message.Message.Provenance.Timestamp,
-                            throwStaleWhenGone: false,
-                            ct),
-                        ct);
-            });
-
-            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasApproved>>(async (_, message, ct) =>
-            {
-                await FindAndProduce(async () =>
-                        await snapshotManager.FindMatchingSnapshot(
-                            message.Message.AddressPersistentLocalId.ToString(),
-                            message.Message.Provenance.Timestamp,
-                            throwStaleWhenGone: false,
-                            ct),
-                        ct);
-            });
-            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasCorrectedFromApprovedToProposed>>(async (_, message, ct) =>
-            {
-                await FindAndProduce(async () =>
-                        await snapshotManager.FindMatchingSnapshot(
-                            message.Message.AddressPersistentLocalId.ToString(),
-                            message.Message.Provenance.Timestamp,
-                            throwStaleWhenGone: false,
-                            ct),
-                        ct);
-            });
-
-            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected>>(async (_, message, ct) =>
-            {
-                await FindAndProduce(async () =>
-                        await snapshotManager.FindMatchingSnapshot(
-                            message.Message.AddressPersistentLocalId.ToString(),
-                            message.Message.Provenance.Timestamp,
-                            throwStaleWhenGone: false,
-                            ct),
-                        ct);
-            });
-
-            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasCorrectedFromRejectedToProposed>>(async (_, message, ct) =>
-            {
-                await FindAndProduce(async () =>
-                        await snapshotManager.FindMatchingSnapshot(
-                            message.Message.AddressPersistentLocalId.ToString(),
-                            message.Message.Provenance.Timestamp,
-                            throwStaleWhenGone: false,
-                            ct),
-                        ct);
-            });
-
-            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasCorrectedFromRetiredToCurrent>>(async (_, message, ct) =>
-            {
-                await FindAndProduce(async () =>
-                        await snapshotManager.FindMatchingSnapshot(
-                            message.Message.AddressPersistentLocalId.ToString(),
-                            message.Message.Provenance.Timestamp,
-                            throwStaleWhenGone: false,
-                            ct),
-                        ct);
-            });
-
-            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasDeregulated>>(async (_, message, ct) =>
-            {
-                await FindAndProduce(async () =>
-                        await snapshotManager.FindMatchingSnapshot(
-                            message.Message.AddressPersistentLocalId.ToString(),
-                            message.Message.Provenance.Timestamp,
-                            throwStaleWhenGone: false,
-                            ct),
-                        ct);
-            });
-
             When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasMigratedToStreetName>>(async (_, message, ct) =>
             {
                 await FindAndProduce(async () =>
@@ -184,7 +53,8 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             ct),
                         ct);
             });
-            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasRegularized>>(async (_, message, ct) =>
+
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasApproved>>(async (_, message, ct) =>
             {
                 await FindAndProduce(async () =>
                         await snapshotManager.FindMatchingSnapshot(
@@ -238,14 +108,39 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             ct),
                         ct);
             });
-            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasRemovedBecauseHouseNumberWasRemoved>>(async (_, message, ct) =>
+
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasRegularized>>(async (_, message, ct) =>
             {
-                await Produce($"{osloNamespace}/{message.Message.AddressPersistentLocalId}", "{}", ct);
+                await FindAndProduce(async () =>
+                        await snapshotManager.FindMatchingSnapshot(
+                            message.Message.AddressPersistentLocalId.ToString(),
+                            message.Message.Provenance.Timestamp,
+                            throwStaleWhenGone: false,
+                            ct),
+                        ct);
             });
 
-            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasRemovedV2>>(async (_, message, ct) =>
+
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasDeregulated>>(async (_, message, ct) =>
             {
-                await Produce($"{osloNamespace}/{message.Message.AddressPersistentLocalId}", "{}", ct);
+                await FindAndProduce(async () =>
+                        await snapshotManager.FindMatchingSnapshot(
+                            message.Message.AddressPersistentLocalId.ToString(),
+                            message.Message.Provenance.Timestamp,
+                            throwStaleWhenGone: false,
+                            ct),
+                        ct);
+            });
+
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasRetiredV2>>(async (_, message, ct) =>
+            {
+                await FindAndProduce(async () =>
+                        await snapshotManager.FindMatchingSnapshot(
+                            message.Message.AddressPersistentLocalId.ToString(),
+                            message.Message.Provenance.Timestamp,
+                            throwStaleWhenGone: false,
+                            ct),
+                        ct);
             });
 
             When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasRetiredBecauseHouseNumberWasRetired>>(async (_, message, ct) =>
@@ -270,7 +165,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         ct);
             });
 
-            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasRetiredV2>>(async (_, message, ct) =>
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressBoxNumberWasCorrectedV2>>(async (_, message, ct) =>
             {
                 await FindAndProduce(async () =>
                         await snapshotManager.FindMatchingSnapshot(
@@ -279,6 +174,126 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             throwStaleWhenGone: false,
                             ct),
                         ct);
+            });
+
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressHouseNumberWasCorrectedV2>>(async (_, message, ct) =>
+            {
+                await FindAndProduce(async () =>
+                        await snapshotManager.FindMatchingSnapshot(
+                            message.Message.AddressPersistentLocalId.ToString(),
+                            message.Message.Provenance.Timestamp,
+                            throwStaleWhenGone: false,
+                            ct),
+                        ct);
+            });
+
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressPositionWasCorrectedV2>>(async (_, message, ct) =>
+            {
+                await FindAndProduce(async () =>
+                        await snapshotManager.FindMatchingSnapshot(
+                            message.Message.AddressPersistentLocalId.ToString(),
+                            message.Message.Provenance.Timestamp,
+                            throwStaleWhenGone: false,
+                            ct),
+                        ct);
+            });
+
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressPostalCodeWasCorrectedV2>>(async (_, message, ct) =>
+            {
+                await FindAndProduce(async () =>
+                        await snapshotManager.FindMatchingSnapshot(
+                            message.Message.AddressPersistentLocalId.ToString(),
+                            message.Message.Provenance.Timestamp,
+                            throwStaleWhenGone: false,
+                            ct),
+                        ct);
+            });
+
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasCorrectedFromApprovedToProposed>>(async (_, message, ct) =>
+            {
+                await FindAndProduce(async () =>
+                        await snapshotManager.FindMatchingSnapshot(
+                            message.Message.AddressPersistentLocalId.ToString(),
+                            message.Message.Provenance.Timestamp,
+                            throwStaleWhenGone: false,
+                            ct),
+                        ct);
+            });
+
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected>>(async (_, message, ct) =>
+            {
+                await FindAndProduce(async () =>
+                        await snapshotManager.FindMatchingSnapshot(
+                            message.Message.AddressPersistentLocalId.ToString(),
+                            message.Message.Provenance.Timestamp,
+                            throwStaleWhenGone: false,
+                            ct),
+                        ct);
+            });
+
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasCorrectedFromRejectedToProposed>>(async (_, message, ct) =>
+            {
+                await FindAndProduce(async () =>
+                        await snapshotManager.FindMatchingSnapshot(
+                            message.Message.AddressPersistentLocalId.ToString(),
+                            message.Message.Provenance.Timestamp,
+                            throwStaleWhenGone: false,
+                            ct),
+                        ct);
+            });
+
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasCorrectedFromRetiredToCurrent>>(async (_, message, ct) =>
+            {
+                await FindAndProduce(async () =>
+                        await snapshotManager.FindMatchingSnapshot(
+                            message.Message.AddressPersistentLocalId.ToString(),
+                            message.Message.Provenance.Timestamp,
+                            throwStaleWhenGone: false,
+                            ct),
+                        ct);
+            });
+
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressPositionWasChanged>>(async (_, message, ct) =>
+            {
+                await FindAndProduce(async () =>
+                        await snapshotManager.FindMatchingSnapshot(
+                            message.Message.AddressPersistentLocalId.ToString(),
+                            message.Message.Provenance.Timestamp,
+                            throwStaleWhenGone: false,
+                            ct),
+                        ct);
+            });
+
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressPostalCodeWasChangedV2>>(async (_, message, ct) =>
+            {
+                await FindAndProduce(async () =>
+                        await snapshotManager.FindMatchingSnapshot(
+                            message.Message.AddressPersistentLocalId.ToString(),
+                            message.Message.Provenance.Timestamp,
+                            throwStaleWhenGone: false,
+                            ct),
+                        ct);
+            });
+
+            //When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressCorrectRemovedV2>>(async (_, message, ct) =>
+            //{
+            //    await FindAndProduce(async () =>
+            //            await snapshotManager.FindMatchingSnapshot(
+            //                message.Message.AddressPersistentLocalId.ToString(),
+            //                message.Message.Provenance.Timestamp,
+            //                throwStaleWhenGone: true, // retry getting snapshot if statuscode 410 is returned because the oslo projection hasn't received the event yet
+            //                ct),
+            //            ct);
+            //});
+
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasRemovedBecauseHouseNumberWasRemoved>>(async (_, message, ct) =>
+            {
+                await Produce($"{osloNamespace}/{message.Message.AddressPersistentLocalId}", "{}", ct);
+            });
+
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasRemovedV2>>(async (_, message, ct) =>
+            {
+                await Produce($"{osloNamespace}/{message.Message.AddressPersistentLocalId}", "{}", ct);
             });
         }
 

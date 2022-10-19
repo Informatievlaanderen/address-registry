@@ -58,6 +58,7 @@ Target.create "Publish_Solution" (fun _ ->
     "AddressRegistry.Consumer.Read.StreetName"
     "AddressRegistry.Migrator.Address"
     "AddressRegistry.Producer"
+    "AddressRegistry.Producer.Snapshot.Oslo"
     "AddressRegistry.Projections.Legacy"
     "AddressRegistry.Projections.Extract"
     "AddressRegistry.Projections.LastChangedList"
@@ -122,6 +123,9 @@ Target.create "PushContainer_Migrator_Address" (fun _ -> push "migrator-address"
 Target.create "Containerize_Producer" (fun _ -> containerize "AddressRegistry.Producer" "producer")
 Target.create "PushContainer_Producer" (fun _ -> push "producer")
 
+Target.create "Containerize_Producer_Snapshot_Oslo" (fun _ -> containerize "AddressRegistry.Producer.Snapshot.Oslo" "producer-snapshot-oslo")
+Target.create "PushContainer_Producer_Snapshot_Oslo" (fun _ -> push "producer-snapshot-oslo")
+
 Target.create "Containerize_ProjectionsSyndication" (fun _ -> containerize "AddressRegistry.Projections.Syndication" "projections-syndication")
 Target.create "PushContainer_ProjectionsSyndication" (fun _ -> push "projections-syndication")
 
@@ -168,6 +172,7 @@ Target.create "Push" ignore
   ==> "Containerize_ConsumerStreetName"
   ==> "Containerize_Migrator_Address"
   ==> "Containerize_Producer"
+  ==> "Containerize_Producer_Snapshot_Oslo"
   ==> "Containerize_ProjectionsSyndication"
   ==> "Containerize_CacheWarmer"
   ==> "Containerize"
@@ -186,6 +191,7 @@ Target.create "Push" ignore
   ==> "PushContainer_ConsumerStreetName"
   ==> "PushContainer_Migrator_Address"
   ==> "PushContainer_Producer"
+  ==> "PushContainer_Producer_Snapshot_Oslo"
   ==> "PushContainer_ProjectionsSyndication"
   ==> "PushContainer_CacheWarmer"
   ==> "Push"

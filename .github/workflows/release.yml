@@ -126,6 +126,7 @@ jobs:
         docker push $BUILD_DOCKER_REGISTRY/address-registry/consumer-read-streetname:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/migrator-address:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/producer:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY/address-registry/producer-snapshot-oslo:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/projector:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/projections-syndication:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/cache-warmer:$SEMVER
@@ -202,6 +203,9 @@ jobs:
 
         docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/producer:$SEMVER $BUILD_DOCKER_REGISTRY/address-registry/producer:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/producer:$SEMVER
+
+        docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/producer-snapshot-oslo:$SEMVER $BUILD_DOCKER_REGISTRY/address-registry/producer-snapshot-oslo:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY/address-registry/producer-snapshot-oslo:$SEMVER
         
         docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/projector:$SEMVER $BUILD_DOCKER_REGISTRY/address-registry/projector:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/address-registry/projector:$SEMVER
@@ -265,6 +269,8 @@ jobs:
         docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/migrator-address:$SEMVER
         docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/producer:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/producer:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/producer:$SEMVER
+        docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/producer-snapshot-oslo:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/producer-snapshot-oslo:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/producer-snapshot-oslo:$SEMVER
         docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/projector:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/projector:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/projector:$SEMVER
         docker tag  $BUILD_DOCKER_REGISTRY_TST/address-registry/projections-syndication:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/projections-syndication:$SEMVER

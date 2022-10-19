@@ -15,7 +15,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
     public sealed class ProducerProjections : ConnectedProjection<ProducerContext>
     {
         private readonly KafkaProducerOptions _kafkaOptions;
-        private readonly string _TopicKey = "Topic";
+        private readonly string _TopicKey = "AddressTopic";
 
         public ProducerProjections(IConfiguration configuration, ISnapshotManager snapshotManager)
         {

@@ -1,3 +1,10 @@
+## [3.64.1](https://github.com/informatievlaanderen/address-registry/compare/v3.64.0...v3.64.1) (2022-10-19)
+
+
+### Bug Fixes
+
+* address topic key produce oslo snapshot ([bfeeea6](https://github.com/informatievlaanderen/address-registry/commit/bfeeea63c8dfa1e02d6e1cdec2ede46c8dd96218))
+
 # [3.64.0](https://github.com/informatievlaanderen/address-registry/compare/v3.63.4...v3.64.0) (2022-10-19)
 
 

@@ -27,6 +27,7 @@ namespace AddressRegistry.Producer
                 configuration["Kafka:SaslUserName"],
                 configuration["Kafka:SaslPassword"],
                 topic,
+                true,
                 EventsJsonSerializerSettingsProvider.CreateSerializerSettings());
 
             // StreetName Aggregate Events

@@ -28,6 +28,7 @@ namespace AddressRegistry.Producer
                 configuration["Kafka:SaslUserName"],
                 configuration["Kafka:SaslPassword"],
                 topic,
+                true,
                 EventsJsonSerializerSettingsProvider.CreateSerializerSettings());
 
             #region AddressAggregate Events

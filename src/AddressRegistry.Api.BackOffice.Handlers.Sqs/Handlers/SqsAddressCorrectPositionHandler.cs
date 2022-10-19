@@ -9,7 +9,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Handlers
 
     public sealed class SqsAddressCorrectPositionHandler : SqsHandler<SqsAddressCorrectPositionRequest>
     {
-        public const string Action = "CorrectPosition";
+        public const string Action = "CorrectAddressPosition";
 
         private readonly BackOfficeContext _backOfficeContext;
 

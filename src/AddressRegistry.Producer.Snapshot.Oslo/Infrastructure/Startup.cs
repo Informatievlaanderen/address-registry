@@ -7,6 +7,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo.Infrastructure
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
+    using Be.Vlaanderen.Basisregisters.GrAr.Oslo.SnapshotProducer;
     using Be.Vlaanderen.Basisregisters.Projector;
     using Configuration;
     using Microsoft.AspNetCore.Builder;
@@ -100,12 +101,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo.Infrastructure
                                     tags: new[] { DatabaseTag, "sql", "sqlserver" });
                             }
                         }
-                    });
-
-            services.AddHttpClient<IPublicApiHttpProxy, PublicApiHttpProxy>(c =>
-            {
-                c.BaseAddress = new Uri(_configuration["PublicApiUrl"].TrimEnd('/'));
-            });
+                    }).AddOsloProxy(_configuration["OsloApiUrl"]);
 
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterModule(new LoggingModule(_configuration, services));

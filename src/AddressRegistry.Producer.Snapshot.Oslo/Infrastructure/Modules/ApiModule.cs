@@ -16,6 +16,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo.Infrastructure.Modules
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using AddressRegistry.Infrastructure;
+    using Be.Vlaanderen.Basisregisters.GrAr.Oslo.SnapshotProducer;
 
     public class ApiModule : Module
     {
@@ -81,15 +82,18 @@ namespace AddressRegistry.Producer.Snapshot.Oslo.Infrastructure.Modules
                 x.ConfigureCatchUpUpdatePositionMessageInterval(Convert.ToInt32(_configuration["CatchUpSaveInterval"]));
             });
 
-            var maxRetryWaitIntervalSeconds = Convert.ToInt32(_configuration["MaxRetryWaitIntervalSeconds"]);
-            var retryBackoffFactor = Convert.ToInt32(_configuration["RetryBackoffFactor"]);
-
             builder
                 .RegisterProjectionMigrator<ProducerContextMigrationFactory>(
                     _configuration,
                     _loggerFactory)
                 .RegisterProjections<ProducerProjections, ProducerContext>(c =>
-                        new ProducerProjections(_configuration, new SnapshotManager(c.Resolve<IPublicApiHttpProxy>(), maxRetryWaitIntervalSeconds, retryBackoffFactor)),
+                        new ProducerProjections(_configuration,
+                            new SnapshotManager(
+                                c.Resolve<ILoggerFactory>(),
+                                c.Resolve<IOsloProxy>(),
+                                    SnapshotManagerOptions.Create(
+                                        _configuration["RetryPolicy:MaxRetryWaitIntervalSeconds"],
+                                        _configuration["RetryPolicy:RetryBackoffFactor"]))),
                     connectedProjectionSettings);
         }
     }

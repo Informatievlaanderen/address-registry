@@ -37,9 +37,10 @@ namespace AddressRegistry.Consumer.Read.StreetName
                     _streetNameConsumerOptions.Topic,
                     async message =>
                     {
+                        //Cannot cancel in between
                         var streetnameConsumerContext = _container.Resolve<StreetNameConsumerContext>();
-                        await latestItemProjector.ProjectAsync(streetnameConsumerContext, message, cancellationToken);
-                        await streetnameConsumerContext.SaveChangesAsync(cancellationToken);
+                        await latestItemProjector.ProjectAsync(streetnameConsumerContext, message, CancellationToken.None);
+                        await streetnameConsumerContext.SaveChangesAsync(CancellationToken.None);
                     },
                     noMessageFoundDelay: 300,
                     offset: null,

@@ -38,8 +38,8 @@ namespace AddressRegistry.Consumer.Read.Municipality
                     async message =>
                     {
                         var municipalityConsumerContext = _container.Resolve<MunicipalityConsumerContext>();
-                        await projector.ProjectAsync(municipalityConsumerContext, message, cancellationToken);
-                        await municipalityConsumerContext.SaveChangesAsync(cancellationToken);
+                        await projector.ProjectAsync(municipalityConsumerContext, message, CancellationToken.None);
+                        await municipalityConsumerContext.SaveChangesAsync(CancellationToken.None);
                     },
                     noMessageFoundDelay: 300,
                     offset: null,

@@ -38,8 +38,8 @@ namespace AddressRegistry.Consumer.Read.StreetName
                     async message =>
                     {
                         var streetnameConsumerContext = _container.Resolve<StreetNameConsumerContext>();
-                        await bosaItemProjections.ProjectAsync(streetnameConsumerContext, message, cancellationToken);
-                        await streetnameConsumerContext.SaveChangesAsync(cancellationToken);
+                        await bosaItemProjections.ProjectAsync(streetnameConsumerContext, message, CancellationToken.None);
+                        await streetnameConsumerContext.SaveChangesAsync(CancellationToken.None);
                     },
                     noMessageFoundDelay: 300,
                     offset: null,

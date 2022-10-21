@@ -1,3 +1,10 @@
+## [3.64.2](https://github.com/informatievlaanderen/address-registry/compare/v3.64.1...v3.64.2) (2022-10-21)
+
+
+### Bug Fixes
+
+* prevent half consumption of kafka GAWR-3859 GAWR-3879 ([1f2cb42](https://github.com/informatievlaanderen/address-registry/commit/1f2cb422fd453ba0fa4b5ff4482d9177922b55cf))
+
 ## [3.64.1](https://github.com/informatievlaanderen/address-registry/compare/v3.64.0...v3.64.1) (2022-10-19)
 
 

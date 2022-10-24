@@ -8,6 +8,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
+    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
     using StreetName;
     using StreetName.Exceptions;
     using AutoFixture;
@@ -62,7 +63,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
                 null);
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new SqsAddressCorrectHouseNumberLambdaHandler(
+            var sut = new CorrectHouseNumberLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -70,18 +71,14 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext));
 
             // Act
-            await sut.Handle(new SqsLambdaAddressCorrectHouseNumberRequest
-            {
-                Request = new AddressBackOfficeCorrectHouseNumberRequest
+            await sut.Handle(new CorrectHouseNumberLambdaRequest(streetNamePersistentLocalId, new CorrectHouseNumberSqsRequest()
                 {
-                    Huisnummer = "20"
-                },
-                AddressPersistentLocalId = addressPersistentLocalId,
-                MessageGroupId = streetNamePersistentLocalId,
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            },
+                    Request = new BackOfficeCorrectHouseNumberRequest { Huisnummer = "20" },
+                    PersistentLocalId = addressPersistentLocalId,
+                    TicketId = Guid.NewGuid(),
+                    Metadata = new Dictionary<string, object?>(),
+                    ProvenanceData = Fixture.Create<ProvenanceData>()
+                }),
             CancellationToken.None);
 
             // Assert
@@ -96,7 +93,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressCorrectHouseNumberLambdaHandler(
+            var sut = new CorrectHouseNumberLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -104,18 +101,13 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
                 MockExceptionIdempotentCommandHandler<AddressHasInvalidStatusException>().Object);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressCorrectHouseNumberRequest
+            await sut.Handle(new CorrectHouseNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectHouseNumberSqsRequest()
             {
-                Request = new AddressBackOfficeCorrectHouseNumberRequest
-                {
-                    Huisnummer = "20"
-                },
-                AddressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>(),
-                MessageGroupId = Fixture.Create<int>().ToString(),
+                Request = new BackOfficeCorrectHouseNumberRequest { Huisnummer = "20" },
                 TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            }), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -133,7 +125,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressCorrectHouseNumberLambdaHandler(
+            var sut = new CorrectHouseNumberLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -141,18 +133,13 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
                 MockExceptionIdempotentCommandHandler<AddressAlreadyExistsException>().Object);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressCorrectHouseNumberRequest
+            await sut.Handle(new CorrectHouseNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectHouseNumberSqsRequest()
             {
-                Request = new AddressBackOfficeCorrectHouseNumberRequest
-                {
-                    Huisnummer = "20"
-                },
-                AddressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>(),
-                MessageGroupId = Fixture.Create<int>().ToString(),
+                Request = new BackOfficeCorrectHouseNumberRequest { Huisnummer = "20" },
                 TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            }), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -170,7 +157,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressCorrectHouseNumberLambdaHandler(
+            var sut = new CorrectHouseNumberLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -178,18 +165,13 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
                 MockExceptionIdempotentCommandHandler<HouseNumberHasInvalidFormatException>().Object);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressCorrectHouseNumberRequest
+            await sut.Handle(new CorrectHouseNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectHouseNumberSqsRequest()
             {
-                Request = new AddressBackOfficeCorrectHouseNumberRequest
-                {
-                    Huisnummer = "20"
-                },
-                AddressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>(),
-                MessageGroupId = Fixture.Create<int>().ToString(),
+                Request = new BackOfficeCorrectHouseNumberRequest { Huisnummer = "20" },
                 TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            }), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -207,7 +189,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressCorrectHouseNumberLambdaHandler(
+            var sut = new CorrectHouseNumberLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -215,18 +197,13 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
                 MockExceptionIdempotentCommandHandler<HouseNumberToCorrectHasBoxNumberException>().Object);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressCorrectHouseNumberRequest
+            await sut.Handle(new CorrectHouseNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectHouseNumberSqsRequest()
             {
-                Request = new AddressBackOfficeCorrectHouseNumberRequest
-                {
-                    Huisnummer = "20"
-                },
-                AddressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>(),
-                MessageGroupId = Fixture.Create<int>().ToString(),
+                Request = new BackOfficeCorrectHouseNumberRequest { Huisnummer = "20" },
                 TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            }), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>

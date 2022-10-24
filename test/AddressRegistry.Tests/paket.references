@@ -20,3 +20,5 @@ Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit
 Be.Vlaanderen.Basisregisters.Sqs
 Be.Vlaanderen.Basisregisters.Sqs.Lambda
 Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events
+
+Be.Vlaanderen.Basisregisters.GrAr.Oslo

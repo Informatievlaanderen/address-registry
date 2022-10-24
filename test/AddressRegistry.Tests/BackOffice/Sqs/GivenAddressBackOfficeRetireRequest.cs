@@ -49,15 +49,15 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
 
             var sqsQueue = new Mock<ISqsQueue>();
 
-            var sut = new SqsAddressRetireHandler(
+            var sut = new RetireSqsHandler(
                 sqsQueue.Object,
                 ticketingMock.Object,
                 ticketingUrl,
                 _backOfficeContext);
 
-            var sqsRequest = new SqsAddressRetireRequest
+            var sqsRequest = new RetireSqsRequest
             {
-                Request = new AddressBackOfficeRetireRequest
+                Request = new BackOfficeRetireRequest
                 {
                     PersistentLocalId = Fixture.Create<AddressPersistentLocalId>()
                 }
@@ -79,7 +79,7 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
         public void WithNoStreetNameFoundByAddressPersistentLocalId_ThrowsAggregateIdNotFound()
         {
             // Arrange
-            var sut = new SqsAddressRetireHandler(
+            var sut = new RetireSqsHandler(
                 Mock.Of<ISqsQueue>(),
                 Mock.Of<ITicketing>(),
                 Mock.Of<ITicketingUrl>(),
@@ -87,9 +87,9 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
 
             // Act
             var act = async () => await sut.Handle(
-                new SqsAddressRetireRequest
+                new RetireSqsRequest
                 {
-                    Request = Fixture.Create<AddressBackOfficeRetireRequest>()
+                    Request = Fixture.Create<BackOfficeRetireRequest>()
                 }, CancellationToken.None);
 
             // Assert

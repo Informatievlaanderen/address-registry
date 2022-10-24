@@ -53,7 +53,7 @@ namespace AddressRegistry.Api.BackOffice
             {
                 if (_useSqsToggle.FeatureEnabled)
                 {
-                    var sqsRequest = new SqsAddressProposeRequest
+                    var sqsRequest = new ProposeSqsRequest
                     {
                         Request = request,
                         Metadata = GetMetadata(),

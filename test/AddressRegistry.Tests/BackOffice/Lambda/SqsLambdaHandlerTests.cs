@@ -8,6 +8,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     using AddressRegistry.Api.BackOffice.Abstractions.Validation;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
+    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
     using Autofac;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
@@ -37,14 +38,13 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
         {
             var ticketing = new Mock<ITicketing>();
 
-            var sqsLambdaRequest = new SqsLambdaAddressApproveRequest
+            var sqsLambdaRequest = new ApproveLambdaRequest(Guid.NewGuid().ToString(), new ApproveSqsRequest
             {
-                Request = new AddressBackOfficeApproveRequest{ PersistentLocalId = 1 },
-                MessageGroupId = Guid.NewGuid().ToString(),
+                Request = new BackOfficeApproveRequest { PersistentLocalId = 1 },
                 TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            };
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            });
 
             var sut = new FakeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
@@ -66,14 +66,13 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
         {
             var ticketing = new Mock<ITicketing>();
 
-            var sqsLambdaRequest = new SqsLambdaAddressApproveRequest
+            var sqsLambdaRequest = new ApproveLambdaRequest(Guid.NewGuid().ToString(), new ApproveSqsRequest
             {
-                Request = new AddressBackOfficeApproveRequest(),
-                MessageGroupId = Guid.NewGuid().ToString(),
+                Request = new BackOfficeApproveRequest { PersistentLocalId = 1 },
                 TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            };
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            });
 
             var sut = new FakeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
@@ -97,14 +96,13 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
         {
             var ticketing = new Mock<ITicketing>();
 
-            var sqsLambdaRequest = new SqsLambdaAddressApproveRequest
+            var sqsLambdaRequest = new ApproveLambdaRequest(Guid.NewGuid().ToString(), new ApproveSqsRequest
             {
-                Request = new AddressBackOfficeApproveRequest(),
-                MessageGroupId = Guid.NewGuid().ToString(),
+                Request = new BackOfficeApproveRequest { PersistentLocalId = 1 },
                 TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            };
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            });
 
             var sut = new FakeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
@@ -155,19 +153,17 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 ticketing.Object,
                 Mock.Of<IIdempotentCommandHandler>());
 
-            // Act
-            await sut.Handle(new SqsLambdaAddressApproveRequest
+            var sqsLambdaRequest = new ApproveLambdaRequest(streetNamePersistentLocalId, new ApproveSqsRequest
             {
+                Request = new BackOfficeApproveRequest { PersistentLocalId = addressPersistentLocalId },
                 IfMatchHeaderValue = "Outdated",
-                Request = new AddressBackOfficeApproveRequest
-                {
-                    PersistentLocalId = addressPersistentLocalId
-                },
-                MessageGroupId = streetNamePersistentLocalId,
                 TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            });
+
+            // Act
+            await sut.Handle(sqsLambdaRequest, CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -182,15 +178,13 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
         {
             var idempotentCommandHandler = new Mock<IIdempotentCommandHandler>();
 
-            var sqsLambdaRequest = new SqsLambdaAddressApproveRequest
+            var sqsLambdaRequest = new ApproveLambdaRequest(Guid.NewGuid().ToString(), new ApproveSqsRequest
             {
-                IfMatchHeaderValue = string.Empty,
-                Request = new AddressBackOfficeApproveRequest(),
-                MessageGroupId = Guid.NewGuid().ToString(),
+                Request = new BackOfficeApproveRequest { PersistentLocalId = 1 },
                 TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            };
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            });
 
             var sut = new FakeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
@@ -209,7 +203,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
         }
     }
 
-    public sealed class FakeLambdaHandler : SqsLambdaHandler<SqsLambdaAddressApproveRequest>
+    public sealed class FakeLambdaHandler : SqsLambdaHandler<ApproveLambdaRequest>
     {
         public FakeLambdaHandler(
             IConfiguration configuration,
@@ -226,7 +220,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
         { }
 
         protected override Task<ETagResponse> InnerHandle(
-            SqsLambdaAddressApproveRequest request,
+            ApproveLambdaRequest request,
             CancellationToken cancellationToken)
         {
             IdempotentCommandHandler.Dispatch(
@@ -238,7 +232,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             return Task.FromResult(new ETagResponse("bla", "etag"));
         }
 
-        protected override TicketError? InnerMapDomainException(DomainException exception, SqsLambdaAddressApproveRequest request)
+        protected override TicketError? InnerMapDomainException(DomainException exception, ApproveLambdaRequest request)
         {
             return exception switch
             {

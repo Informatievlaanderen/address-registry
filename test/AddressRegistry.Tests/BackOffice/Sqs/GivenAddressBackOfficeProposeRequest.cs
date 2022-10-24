@@ -30,9 +30,9 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
             // Arrange
             var streetNameId = 45041;
 
-            var request = Fixture.Create<AddressBackOfficeProposeRequest>();
+            var request = Fixture.Create<BackOfficeProposeRequest>();
             request.StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNameId}";
-            var sqsRequest = new SqsAddressProposeRequest { Request = request };
+            var sqsRequest = new ProposeSqsRequest { Request = request };
 
             var ticketId = Fixture.Create<Guid>();
             var ticketingMock = new Mock<ITicketing>();
@@ -44,7 +44,7 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
 
             var sqsQueue = new Mock<ISqsQueue>();
 
-            var sut = new SqsAddressProposeHandler(
+            var sut = new ProposeSqsHandler(
                 sqsQueue.Object,
                 ticketingMock.Object,
                 ticketingUrl);

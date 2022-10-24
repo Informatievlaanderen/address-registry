@@ -83,7 +83,7 @@ namespace AddressRegistry.Api.BackOffice
 
                 if (_useSqsToggle.FeatureEnabled)
                 {
-                    var sqsRequest = new SqsAddressRetireRequest
+                    var sqsRequest = new RetireSqsRequest
                     {
                         Request = request,
                         IfMatchHeaderValue = ifMatchHeaderValue,

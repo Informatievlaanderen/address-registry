@@ -9,6 +9,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
+    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
     using Projections.Syndication.PostalInfo;
     using StreetName;
     using StreetName.Exceptions;
@@ -84,7 +85,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                 nisCode);
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new SqsAddressProposeLambdaHandler(
+            var sut = new ProposeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -96,23 +97,22 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                 mockPersistentLocalIdGenerator.Object);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressProposeRequest
-            {
-                Request = new AddressBackOfficeProposeRequest
+            await sut.Handle(new ProposeLambdaRequest(streetNamePersistentLocalId, new ProposeSqsRequest()
                 {
-                    StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
-                    PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
-                    Huisnummer = "11",
-                    Busnummer = null,
-                    PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                    PositieSpecificatie = PositieSpecificatie.Ingang,
-                    Positie = GeometryHelpers.GmlPointGeometry
-                },
-                MessageGroupId = streetNamePersistentLocalId,
-                Metadata = new Dictionary<string, object>(),
-                TicketId = Guid.NewGuid(),
-                Provenance = Fixture.Create<Provenance>()
-            },
+                    Request = new BackOfficeProposeRequest
+                    {
+                        StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
+                        PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
+                        Huisnummer = "11",
+                        Busnummer = null,
+                        PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
+                        PositieSpecificatie = PositieSpecificatie.Ingang,
+                        Positie = GeometryHelpers.GmlPointGeometry
+                    },
+                    TicketId = Guid.NewGuid(),
+                    Metadata = new Dictionary<string, object?>(),
+                    ProvenanceData = Fixture.Create<ProvenanceData>()
+                }),
                 CancellationToken.None);
 
             // Assert
@@ -149,7 +149,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             await _municipalityContext.SaveChangesAsync();
             await _syndicationContext.SaveChangesAsync();
 
-            var sut = new SqsAddressProposeLambdaHandler(
+            var sut = new ProposeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -161,9 +161,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                 mockPersistentLocalIdGenerator.Object);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressProposeRequest
+            await sut.Handle(new ProposeLambdaRequest(Fixture.Create<int>().ToString(), new ProposeSqsRequest()
             {
-                Request = new AddressBackOfficeProposeRequest
+                Request = new BackOfficeProposeRequest
                 {
                     StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
                     PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
@@ -173,11 +173,10 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                     PositieSpecificatie = PositieSpecificatie.Ingang,
                     Positie = GeometryHelpers.GmlPointGeometry
                 },
-                MessageGroupId = Fixture.Create<int>().ToString(),
                 TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            }), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -217,7 +216,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             await _municipalityContext.SaveChangesAsync();
             await _syndicationContext.SaveChangesAsync();
 
-            var sut = new SqsAddressProposeLambdaHandler(
+            var sut = new ProposeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -229,9 +228,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                 mockPersistentLocalIdGenerator.Object);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressProposeRequest
+            await sut.Handle(new ProposeLambdaRequest(Fixture.Create<int>().ToString(), new ProposeSqsRequest
             {
-                Request = new AddressBackOfficeProposeRequest
+                Request = new BackOfficeProposeRequest
                 {
                     StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
                     PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
@@ -241,11 +240,10 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                     PositieSpecificatie = PositieSpecificatie.Ingang,
                     Positie = GeometryHelpers.GmlPointGeometry
                 },
-                MessageGroupId = Fixture.Create<int>().ToString(),
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            }), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -285,7 +283,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             await _municipalityContext.SaveChangesAsync();
             await _syndicationContext.SaveChangesAsync();
 
-            var sut = new SqsAddressProposeLambdaHandler(
+            var sut = new ProposeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -297,9 +295,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                 mockPersistentLocalIdGenerator.Object);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressProposeRequest
+            await sut.Handle(new ProposeLambdaRequest(Fixture.Create<int>().ToString(), new ProposeSqsRequest
             {
-                Request = new AddressBackOfficeProposeRequest
+                Request = new BackOfficeProposeRequest
                 {
                     StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
                     PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
@@ -309,11 +307,10 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                     PositieSpecificatie = PositieSpecificatie.Ingang,
                     Positie = GeometryHelpers.GmlPointGeometry
                 },
-                MessageGroupId = Fixture.Create<int>().ToString(),
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            }), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -354,7 +351,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             await _municipalityContext.SaveChangesAsync();
             await _syndicationContext.SaveChangesAsync();
 
-            var sut = new SqsAddressProposeLambdaHandler(
+            var sut = new ProposeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -367,9 +364,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                 mockPersistentLocalIdGenerator.Object);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressProposeRequest
+            await sut.Handle(new ProposeLambdaRequest(Fixture.Create<int>().ToString(), new ProposeSqsRequest()
             {
-                Request = new AddressBackOfficeProposeRequest
+                Request = new BackOfficeProposeRequest
                 {
                     StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
                     PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
@@ -379,11 +376,11 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                     PositieSpecificatie = PositieSpecificatie.Ingang,
                     Positie = GeometryHelpers.GmlPointGeometry
                 },
-                MessageGroupId = Fixture.Create<int>().ToString(),
                 TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            }),
+                CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -423,7 +420,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             await _municipalityContext.SaveChangesAsync();
             await _syndicationContext.SaveChangesAsync();
 
-            var sut = new SqsAddressProposeLambdaHandler(
+            var sut = new ProposeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -435,23 +432,23 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                 mockPersistentLocalIdGenerator.Object);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressProposeRequest
-            {
-                Request = new AddressBackOfficeProposeRequest
+            await sut.Handle(new ProposeLambdaRequest(Fixture.Create<int>().ToString(), new ProposeSqsRequest()
                 {
-                    StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
-                    PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
-                    Huisnummer = "11",
-                    Busnummer = null,
-                    PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                    PositieSpecificatie = PositieSpecificatie.Ingang,
-                    Positie = GeometryHelpers.GmlPointGeometry
-                },
-                MessageGroupId = Fixture.Create<int>().ToString(),
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
+                    Request = new BackOfficeProposeRequest
+                    {
+                        StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
+                        PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
+                        Huisnummer = "11",
+                        Busnummer = null,
+                        PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
+                        PositieSpecificatie = PositieSpecificatie.Ingang,
+                        Positie = GeometryHelpers.GmlPointGeometry
+                    },
+                    TicketId = Guid.NewGuid(),
+                    Metadata = new Dictionary<string, object?>(),
+                    ProvenanceData = Fixture.Create<ProvenanceData>()
+                }),
+                CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -491,7 +488,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             await _municipalityContext.SaveChangesAsync();
             await _syndicationContext.SaveChangesAsync();
 
-            var sut = new SqsAddressProposeLambdaHandler(
+            var sut = new ProposeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -503,9 +500,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                 mockPersistentLocalIdGenerator.Object);
 
             // Act
-            var request = new SqsLambdaAddressProposeRequest
+            var request = new ProposeLambdaRequest(streetNamePersistentLocalId, new ProposeSqsRequest()
             {
-                Request = new AddressBackOfficeProposeRequest
+                Request = new BackOfficeProposeRequest
                 {
                     StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
                     PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
@@ -515,11 +512,10 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                     PositieSpecificatie = PositieSpecificatie.Ingang,
                     Positie = GeometryHelpers.GmlPointGeometry
                 },
-                MessageGroupId = streetNamePersistentLocalId,
                 TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            };
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            });
             await sut.Handle(request, CancellationToken.None);
 
             //Assert
@@ -560,7 +556,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             await _municipalityContext.SaveChangesAsync();
             await _syndicationContext.SaveChangesAsync();
 
-            var sut = new SqsAddressProposeLambdaHandler(
+            var sut = new ProposeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -572,9 +568,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                 mockPersistentLocalIdGenerator.Object);
 
             // Act
-            var request = new SqsLambdaAddressProposeRequest
+            var request = new ProposeLambdaRequest(Fixture.Create<int>().ToString(), new ProposeSqsRequest()
             {
-                Request = new AddressBackOfficeProposeRequest
+                Request = new BackOfficeProposeRequest
                 {
                     StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
                     PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
@@ -584,11 +580,10 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                     PositieSpecificatie = PositieSpecificatie.Ingang,
                     Positie = GeometryHelpers.GmlPointGeometry
                 },
-                MessageGroupId = streetNamePersistentLocalId,
                 TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            };
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            });
             await sut.Handle(request, CancellationToken.None);
 
             //Assert

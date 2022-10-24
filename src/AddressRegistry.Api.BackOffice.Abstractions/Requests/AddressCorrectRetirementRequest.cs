@@ -5,7 +5,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
     using MediatR;
     using Newtonsoft.Json;
 
-    public class AddressCorrectRetirementRequest : AddressBackOfficeCorrectRetirementRequest, IRequest<ETagResponse>
+    public class AddressCorrectRetirementRequest : BackOfficeCorrectRetirementRequest, IRequest<ETagResponse>
     {
         [JsonIgnore]
         public IDictionary<string, object> Metadata { get; set; }

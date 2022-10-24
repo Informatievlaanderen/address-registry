@@ -11,7 +11,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
     using Swashbuckle.AspNetCore.Filters;
 
     [DataContract(Name = "CorrigerenBusnummerAdres", Namespace = "")]
-    public class AddressCorrectBoxNumberRequest : AddressBackOfficeCorrectBoxNumberRequest, IRequest<ETagResponse>
+    public class AddressCorrectBoxNumberRequest : BackOfficeCorrectBoxNumberRequest, IRequest<ETagResponse>
     {
         /// <summary>
         /// De unieke en persistente identificator van het adres.

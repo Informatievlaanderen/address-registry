@@ -24,7 +24,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
             });
 
             builder.RegisterAssemblyTypes(typeof(AddressProposeHandler).GetTypeInfo().Assembly).AsImplementedInterfaces();
-            builder.RegisterAssemblyTypes(typeof(SqsAddressProposeHandler).GetTypeInfo().Assembly).AsImplementedInterfaces();
+            builder.RegisterAssemblyTypes(typeof(ProposeSqsHandler).GetTypeInfo().Assembly).AsImplementedInterfaces();
         }
     }
 }

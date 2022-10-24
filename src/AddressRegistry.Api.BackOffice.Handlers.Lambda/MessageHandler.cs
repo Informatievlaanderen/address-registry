@@ -33,186 +33,53 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
 
             switch (sqsRequest)
             {
-                case SqsAddressApproveRequest request:
-                    await mediator.Send(new SqsLambdaAddressApproveRequest
-                    {
-                        Request = request.Request,
-                        TicketId = request.TicketId,
-                        MessageGroupId = messageMetadata.MessageGroupId!,
-                        IfMatchHeaderValue = request.IfMatchHeaderValue,
-                        Metadata = request.Metadata,
-                        Provenance = request.ProvenanceData.ToProvenance()
-                    }, cancellationToken);
+                case ApproveSqsRequest request:
+                    await mediator.Send(new ApproveLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case SqsAddressCorrectApprovalRequest request:
-                    await mediator.Send(new SqsLambdaAddressCorrectApprovalRequest
-                    {
-                        Request = request.Request,
-                        TicketId = request.TicketId,
-                        MessageGroupId = messageMetadata.MessageGroupId!,
-                        IfMatchHeaderValue = request.IfMatchHeaderValue,
-                        Metadata = request.Metadata,
-                        Provenance = request.ProvenanceData.ToProvenance()
-                    }, cancellationToken);
+                case CorrectApprovalSqsRequest request:
+                    await mediator.Send(new CorrectApprovalLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case SqsAddressChangePositionRequest request:
-                    await mediator.Send(new SqsLambdaAddressChangePositionRequest
-                    {
-                        Request = request.Request,
-                        TicketId = request.TicketId,
-                        AddressPersistentLocalId = request.PersistentLocalId,
-                        MessageGroupId = messageMetadata.MessageGroupId!,
-                        IfMatchHeaderValue = request.IfMatchHeaderValue,
-                        Metadata = request.Metadata,
-                        Provenance = request.ProvenanceData.ToProvenance()
-                    }, cancellationToken);
+                case ChangePositionSqsRequest request:
+                    await mediator.Send(new ChangePositionLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case SqsAddressChangePostalCodeRequest request:
-                    await mediator.Send(new SqsLambdaAddressChangePostalCodeRequest
-                    {
-                        Request = request.Request,
-                        TicketId = request.TicketId,
-                        AddressPersistentLocalId = request.PersistentLocalId,
-                        MessageGroupId = messageMetadata.MessageGroupId!,
-                        IfMatchHeaderValue = request.IfMatchHeaderValue,
-                        Metadata = request.Metadata,
-                        Provenance = request.ProvenanceData.ToProvenance()
-                    }, cancellationToken);
+                case ChangePostalCodeSqsRequest request:
+                    await mediator.Send(new ChangePostalCodeLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case SqsAddressCorrectHouseNumberRequest request:
-                    await mediator.Send(new SqsLambdaAddressCorrectHouseNumberRequest
-                    {
-                        Request = request.Request,
-                        TicketId = request.TicketId,
-                        AddressPersistentLocalId = request.PersistentLocalId,
-                        MessageGroupId = messageMetadata.MessageGroupId!,
-                        IfMatchHeaderValue = request.IfMatchHeaderValue,
-                        Metadata = request.Metadata,
-                        Provenance = request.ProvenanceData.ToProvenance()
-                    }, cancellationToken);
+                case CorrectHouseNumberSqsRequest request:
+                    await mediator.Send(new CorrectHouseNumberLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case SqsAddressCorrectPositionRequest request:
-                    await mediator.Send(new SqsLambdaAddressCorrectPositionRequest
-                    {
-                        Request = request.Request,
-                        TicketId = request.TicketId,
-                        AddressPersistentLocalId = request.PersistentLocalId,
-                        MessageGroupId = messageMetadata.MessageGroupId!,
-                        IfMatchHeaderValue = request.IfMatchHeaderValue,
-                        Metadata = request.Metadata,
-                        Provenance = request.ProvenanceData.ToProvenance()
-                    }, cancellationToken);
+                case CorrectPositionSqsRequest request:
+                    await mediator.Send(new CorrectPositionLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case SqsAddressCorrectPostalCodeRequest request:
-                    await mediator.Send(new SqsLambdaAddressCorrectPostalCodeRequest
-                    {
-                        Request = request.Request,
-                        TicketId = request.TicketId,
-                        AddressPersistentLocalId = request.PersistentLocalId,
-                        MessageGroupId = messageMetadata.MessageGroupId!,
-                        IfMatchHeaderValue = request.IfMatchHeaderValue,
-                        Metadata = request.Metadata,
-                        Provenance = request.ProvenanceData.ToProvenance()
-                    }, cancellationToken);
+                case CorrectPostalCodeSqsRequest request:
+                    await mediator.Send(new CorrectPostalCodeLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case SqsAddressCorrectRejectionRequest request:
-                    await mediator.Send(new SqsLambdaAddressCorrectRejectionRequest
-                    {
-                        Request = request.Request,
-                        TicketId = request.TicketId,
-                        MessageGroupId = messageMetadata.MessageGroupId!,
-                        IfMatchHeaderValue = request.IfMatchHeaderValue,
-                        Metadata = request.Metadata,
-                        Provenance = request.ProvenanceData.ToProvenance()
-                    }, cancellationToken);
+                case CorrectRejectionSqsRequest request:
+                    await mediator.Send(new CorrectRejectionLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case SqsAddressDeregulateRequest request:
-                    await mediator.Send(new SqsLambdaAddressDeregulateRequest
-                    {
-                        Request = request.Request,
-                        TicketId = request.TicketId,
-                        MessageGroupId = messageMetadata.MessageGroupId!,
-                        IfMatchHeaderValue = request.IfMatchHeaderValue,
-                        Metadata = request.Metadata,
-                        Provenance = request.ProvenanceData.ToProvenance()
-                    }, cancellationToken);
+                case DeregulateSqsRequest request:
+                    await mediator.Send(new DeregulateLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case SqsAddressProposeRequest request:
-                    await mediator.Send(new SqsLambdaAddressProposeRequest
-                    {
-                        Request = request.Request,
-                        TicketId = request.TicketId,
-                        MessageGroupId = messageMetadata.MessageGroupId!,
-                        Metadata = request.Metadata,
-                        Provenance = request.ProvenanceData.ToProvenance()
-                    }, cancellationToken);
+                case ProposeSqsRequest request:
+                    await mediator.Send(new ProposeLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case SqsAddressRegularizeRequest request:
-                    await mediator.Send(new SqsLambdaAddressRegularizeRequest
-                    {
-                        Request = request.Request,
-                        TicketId = request.TicketId,
-                        MessageGroupId = messageMetadata.MessageGroupId!,
-                        IfMatchHeaderValue = request.IfMatchHeaderValue,
-                        Metadata = request.Metadata,
-                        Provenance = request.ProvenanceData.ToProvenance()
-                    }, cancellationToken);
+                case RegularizeSqsRequest request:
+                    await mediator.Send(new RegularizeLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case SqsAddressRejectRequest request:
-                    await mediator.Send(new SqsLambdaAddressRejectRequest
-                    {
-                        Request = request.Request,
-                        TicketId = request.TicketId,
-                        MessageGroupId = messageMetadata.MessageGroupId!,
-                        IfMatchHeaderValue = request.IfMatchHeaderValue,
-                        Metadata = request.Metadata,
-                        Provenance = request.ProvenanceData.ToProvenance()
-                    }, cancellationToken);
+                case RejectSqsRequest request:
+                    await mediator.Send(new RejectLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case SqsAddressRemoveRequest request:
-                    await mediator.Send(new SqsLambdaAddressRemoveRequest
-                    {
-                        Request = request.Request,
-                        TicketId = request.TicketId,
-                        MessageGroupId = messageMetadata.MessageGroupId!,
-                        IfMatchHeaderValue = request.IfMatchHeaderValue,
-                        Metadata = request.Metadata,
-                        Provenance = request.ProvenanceData.ToProvenance()
-                    }, cancellationToken);
+                case RemoveSqsRequest request:
+                    await mediator.Send(new RemoveLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case SqsAddressRetireRequest request:
-                    await mediator.Send(new SqsLambdaAddressRetireRequest
-                    {
-                        Request = request.Request,
-                        TicketId = request.TicketId,
-                        MessageGroupId = messageMetadata.MessageGroupId!,
-                        IfMatchHeaderValue = request.IfMatchHeaderValue,
-                        Metadata = request.Metadata,
-                        Provenance = request.ProvenanceData.ToProvenance()
-                    }, cancellationToken);
+                case RetireSqsRequest request:
+                    await mediator.Send(new RetireLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case SqsAddressCorrectRetirementRequest request:
-                    await mediator.Send(new SqsLambdaAddressCorrectRetirementRequest
-                    {
-                        Request = request.Request,
-                        TicketId = request.TicketId,
-                        MessageGroupId = messageMetadata.MessageGroupId!,
-                        IfMatchHeaderValue = request.IfMatchHeaderValue,
-                        Metadata = request.Metadata,
-                        Provenance = request.ProvenanceData.ToProvenance()
-                    }, cancellationToken);
+                case CorrectRetirementSqsRequest request:
+                    await mediator.Send(new CorrectRetirementLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case SqsAddressCorrectBoxNumberRequest request:
-                    await mediator.Send(new SqsLambdaAddressCorrectBoxNumberRequest
-                    {
-                        Request = request.Request,
-                        TicketId = request.TicketId,
-                        AddressPersistentLocalId = request.PersistentLocalId,
-                        MessageGroupId = messageMetadata.MessageGroupId!,
-                        IfMatchHeaderValue = request.IfMatchHeaderValue,
-                        Metadata = request.Metadata,
-                        Provenance = request.ProvenanceData.ToProvenance()
-                    }, cancellationToken);
+                case CorrectBoxNumberSqsRequest request:
+                    await mediator.Send(new CorrectBoxNumberLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
                 default:
                     throw new NotImplementedException(

@@ -83,7 +83,7 @@ namespace AddressRegistry.Api.BackOffice
 
                 if (_useSqsToggle.FeatureEnabled)
                 {
-                    var sqsRequest = new SqsAddressDeregulateRequest
+                    var sqsRequest = new DeregulateSqsRequest
                     {
                         Request = request,
                         IfMatchHeaderValue = ifMatchHeaderValue,

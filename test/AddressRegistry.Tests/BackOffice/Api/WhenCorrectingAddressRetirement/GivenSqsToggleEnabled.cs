@@ -41,7 +41,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRetirement
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
 
             MockMediator
-                .Setup(x => x.Send(It.IsAny<SqsAddressCorrectRetirementRequest>(), CancellationToken.None))
+                .Setup(x => x.Send(It.IsAny<CorrectRetirementSqsRequest>(), CancellationToken.None))
                 .Returns(Task.FromResult(expectedLocationResult));
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
@@ -111,7 +111,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRetirement
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             MockMediator
-                .Setup(x => x.Send(It.IsAny<SqsAddressCorrectRetirementRequest>(), CancellationToken.None))
+                .Setup(x => x.Send(It.IsAny<CorrectRetirementSqsRequest>(), CancellationToken.None))
                 .Throws(new AggregateIdIsNotFoundException());
 
             Func<Task> act = async () => await _controller.CorrectRetirement(

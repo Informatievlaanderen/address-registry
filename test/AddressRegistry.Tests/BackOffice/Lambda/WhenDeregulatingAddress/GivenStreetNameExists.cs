@@ -8,6 +8,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenDeregulatingAddress
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
+    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
     using StreetName;
     using StreetName.Exceptions;
     using AutoFixture;
@@ -66,7 +67,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenDeregulatingAddress
                 null);
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new SqsAddressDeregulateLambdaHandler(
+            var sut = new DeregulateLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -74,17 +75,13 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenDeregulatingAddress
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext));
 
             // Act
-            await sut.Handle(new SqsLambdaAddressDeregulateRequest
-            {
-                Request = new AddressBackOfficeDeregulateRequest
+            await sut.Handle(new DeregulateLambdaRequest(streetNamePersistentLocalId, new DeregulateSqsRequest()
                 {
-                    PersistentLocalId = addressPersistentLocalId
-                },
-                MessageGroupId = streetNamePersistentLocalId,
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            },
+                    Request = new BackOfficeDeregulateRequest { PersistentLocalId = addressPersistentLocalId },
+                    TicketId = Guid.NewGuid(),
+                    Metadata = new Dictionary<string, object?>(),
+                    ProvenanceData = Fixture.Create<ProvenanceData>()
+                }),
             CancellationToken.None);
 
             // Assert
@@ -99,7 +96,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenDeregulatingAddress
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressDeregulateLambdaHandler(
+            var sut = new DeregulateLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -107,14 +104,13 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenDeregulatingAddress
                 MockExceptionIdempotentCommandHandler<ParentAddressHasInvalidStatusException>().Object);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressDeregulateRequest
+            await sut.Handle(new DeregulateLambdaRequest(Fixture.Create<int>().ToString(), new DeregulateSqsRequest()
             {
-                Request = new AddressBackOfficeDeregulateRequest(),
-                MessageGroupId = Fixture.Create<int>().ToString(),
+                Request = new BackOfficeDeregulateRequest(),
                 TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            }), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -132,7 +128,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenDeregulatingAddress
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressDeregulateLambdaHandler(
+            var sut = new DeregulateLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -140,14 +136,13 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenDeregulatingAddress
                 MockExceptionIdempotentCommandHandler<AddressHasInvalidStatusException>().Object);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressDeregulateRequest
+            await sut.Handle(new DeregulateLambdaRequest(Fixture.Create<int>().ToString(), new DeregulateSqsRequest()
             {
-                Request = new AddressBackOfficeDeregulateRequest(),
-                MessageGroupId = Fixture.Create<int>().ToString(),
+                Request = new BackOfficeDeregulateRequest(),
                 TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            }), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -184,7 +179,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenDeregulatingAddress
                 houseNumber,
                 null);
 
-            var sut = new SqsAddressDeregulateLambdaHandler(
+            var sut = new DeregulateLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -195,17 +190,14 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenDeregulatingAddress
                 await _streetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), CancellationToken.None);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressDeregulateRequest
-            {
-                Request = new AddressBackOfficeDeregulateRequest
+            await sut.Handle(
+                new DeregulateLambdaRequest(streetNamePersistentLocalId, new DeregulateSqsRequest()
                 {
-                    PersistentLocalId = addressPersistentLocalId
-                },
-                MessageGroupId = streetNamePersistentLocalId,
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            },
+                    Request = new BackOfficeDeregulateRequest { PersistentLocalId = addressPersistentLocalId },
+                    TicketId = Guid.NewGuid(),
+                    Metadata = new Dictionary<string, object?>(),
+                    ProvenanceData = Fixture.Create<ProvenanceData>()
+                }),
             CancellationToken.None);
 
             //Assert

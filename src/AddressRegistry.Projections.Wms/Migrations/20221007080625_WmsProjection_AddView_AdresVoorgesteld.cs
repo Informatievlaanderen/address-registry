@@ -28,7 +28,7 @@ SELECT
     ,[PositieGeometrieMethode]
     ,[PositieSpecificatie]
     ,[OfficieelToegekend]
-FROM [wms].[AdresView] WITH(NOEXPAND)
+FROM [wms].[AdresView]
 WHERE [AdresStatus] = 'Voorgesteld'");
         }
 

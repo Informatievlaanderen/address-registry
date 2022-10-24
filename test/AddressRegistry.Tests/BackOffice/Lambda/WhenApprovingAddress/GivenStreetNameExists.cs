@@ -77,7 +77,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenApprovingAddress
             // Act
             await sut.Handle(new ApproveLambdaRequest(streetNamePersistentLocalId, new ApproveSqsRequest
                 {
-                    Request = new BackOfficeApproveRequest { PersistentLocalId = addressPersistentLocalId },
+                    Request = new ApproveBackOfficeRequest { PersistentLocalId = addressPersistentLocalId },
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
                     ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -107,7 +107,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenApprovingAddress
             await sut.Handle(
                 new ApproveLambdaRequest(Fixture.Create<int>().ToString(), new ApproveSqsRequest
                 {
-                    Request = new BackOfficeApproveRequest(),
+                    Request = new ApproveBackOfficeRequest(),
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
                     ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -139,7 +139,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenApprovingAddress
             // Act
             await sut.Handle(new ApproveLambdaRequest(Fixture.Create<int>().ToString(), new ApproveSqsRequest
             {
-                Request = new BackOfficeApproveRequest(),
+                Request = new ApproveBackOfficeRequest(),
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -171,7 +171,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenApprovingAddress
             // Act
             await sut.Handle(new ApproveLambdaRequest(Fixture.Create<int>().ToString(), new ApproveSqsRequest
             {
-                Request = new BackOfficeApproveRequest(),
+                Request = new ApproveBackOfficeRequest(),
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -225,7 +225,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenApprovingAddress
             // Act
             await sut.Handle(new ApproveLambdaRequest(streetNamePersistentLocalId, new ApproveSqsRequest
             {
-                Request = new BackOfficeApproveRequest { PersistentLocalId = addressPersistentLocalId},
+                Request = new ApproveBackOfficeRequest { PersistentLocalId = addressPersistentLocalId},
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()

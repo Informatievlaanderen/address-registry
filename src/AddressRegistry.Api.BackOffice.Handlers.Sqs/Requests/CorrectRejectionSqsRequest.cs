@@ -3,8 +3,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests
     using Abstractions.Requests;
     using Be.Vlaanderen.Basisregisters.Sqs.Requests;
 
-    public sealed class CorrectRejectionSqsRequest : SqsRequest, IHasBackOfficeRequest<BackOfficeCorrectAddressFromRejectedRequest>
+    public sealed class CorrectRejectionSqsRequest : SqsRequest, IHasBackOfficeRequest<CorrectRejectionBackOfficeRequest>
     {
-        public BackOfficeCorrectAddressFromRejectedRequest Request { get; set; }
+        public CorrectRejectionBackOfficeRequest Request { get; set; }
     }
 }

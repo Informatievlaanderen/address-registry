@@ -4,8 +4,8 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
     using Newtonsoft.Json;
     using System.Runtime.Serialization;
 
-    [DataContract(Name = "WijzigenAdresPositie", Namespace = "")]
-    public class BackOfficeChangePositionRequest
+    [DataContract(Name = "CorrigerenAdresPositie", Namespace = "")]
+    public class CorrectPositionBackOfficeRequest
     {
         /// <summary>
         /// De geometriemethode van het adres.

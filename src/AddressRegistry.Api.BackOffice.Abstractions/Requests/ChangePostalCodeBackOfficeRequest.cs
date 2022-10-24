@@ -4,7 +4,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
     using System.Runtime.Serialization;
 
     [DataContract(Name = "WijzigenPostcodeAdres", Namespace = "")]
-    public class BackOfficeChangePostalCodeRequest
+    public class ChangePostalCodeBackOfficeRequest
     {
         /// <summary>
         /// De unieke en persistente identificator van de postcode van het adres.

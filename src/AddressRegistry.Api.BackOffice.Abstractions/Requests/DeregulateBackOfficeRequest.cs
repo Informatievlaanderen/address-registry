@@ -4,7 +4,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
     using Newtonsoft.Json;
 
     [DataContract(Name = "DeregulariserenAdres", Namespace = "")]
-    public class BackOfficeDeregulateRequest
+    public class DeregulateBackOfficeRequest
     {
         /// <summary>
         /// De unieke en persistente identificator van het adres.

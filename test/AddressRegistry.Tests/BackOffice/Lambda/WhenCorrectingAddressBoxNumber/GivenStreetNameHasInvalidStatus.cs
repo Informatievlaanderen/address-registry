@@ -45,7 +45,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressBoxNumber
             var request = new CorrectBoxNumberLambdaRequest(Fixture.Create<int>().ToString(),
                     new CorrectBoxNumberSqsRequest()
                     {
-                        Request = new BackOfficeCorrectBoxNumberRequest { Busnummer = "1A" },
+                        Request = new CorrectBoxNumberBackOfficeRequest { Busnummer = "1A" },
                         TicketId = Guid.NewGuid(),
                         Metadata = new Dictionary<string, object?>(),
                         ProvenanceData = Fixture.Create<ProvenanceData>()

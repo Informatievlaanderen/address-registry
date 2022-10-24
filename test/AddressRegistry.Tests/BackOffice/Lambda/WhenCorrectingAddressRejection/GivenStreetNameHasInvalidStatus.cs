@@ -44,7 +44,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
             // Act
             var request = new CorrectRejectionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectRejectionSqsRequest()
             {
-                Request = new BackOfficeCorrectAddressFromRejectedRequest(),
+                Request = new CorrectRejectionBackOfficeRequest(),
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()

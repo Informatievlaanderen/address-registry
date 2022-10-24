@@ -5,7 +5,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
     using Newtonsoft.Json;
 
     [DataContract(Name = "VoorstelAdres", Namespace = "")]
-    public class BackOfficeProposeRequest
+    public class ProposeBackOfficeRequest
     {
         /// <summary>
         /// De unieke en persistente identificator van de postcode van het adres.

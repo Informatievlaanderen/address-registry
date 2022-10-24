@@ -3,8 +3,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
     using System.Runtime.Serialization;
     using Newtonsoft.Json;
 
-    [DataContract(Name = "CorrigerenAfkeuringAdres", Namespace = "")]
-    public class BackOfficeCorrectAddressFromRejectedRequest
+    public class CorrectRetirementBackOfficeRequest
     {
         /// <summary>
         /// De unieke en persistente identificator van het adres.

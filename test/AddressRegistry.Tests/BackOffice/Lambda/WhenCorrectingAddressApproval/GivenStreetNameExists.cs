@@ -82,7 +82,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressApproval
             await sut.Handle(
                 new CorrectApprovalLambdaRequest(streetNamePersistentLocalId, new CorrectApprovalSqsRequest()
                 {
-                    Request = new BackOfficeCorrectApprovalRequest
+                    Request = new CorrectApprovalBackOfficeRequest
                     {
                         PersistentLocalId = addressPersistentLocalId
                     },
@@ -114,7 +114,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressApproval
             // Act
             await sut.Handle(new CorrectApprovalLambdaRequest(Fixture.Create<int>().ToString(), new CorrectApprovalSqsRequest()
             {
-                Request = new BackOfficeCorrectApprovalRequest(),
+                Request = new CorrectApprovalBackOfficeRequest(),
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -146,7 +146,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressApproval
             // Act
             await sut.Handle(new CorrectApprovalLambdaRequest(Fixture.Create<int>().ToString(), new CorrectApprovalSqsRequest()
             {
-                Request = new BackOfficeCorrectApprovalRequest(),
+                Request = new CorrectApprovalBackOfficeRequest(),
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -200,7 +200,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressApproval
             // Act
             await sut.Handle(new CorrectApprovalLambdaRequest(streetNamePersistentLocalId, new CorrectApprovalSqsRequest()
                 {
-                    Request = new BackOfficeCorrectApprovalRequest
+                    Request = new CorrectApprovalBackOfficeRequest
                     {
                         PersistentLocalId = addressPersistentLocalId
                     },

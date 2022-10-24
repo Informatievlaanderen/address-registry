@@ -44,7 +44,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRetiremen
             // Act
             var request = new CorrectRetirementLambdaRequest(Fixture.Create<int>().ToString(), new CorrectRetirementSqsRequest()
             {
-                Request = new BackOfficeCorrectRetirementRequest(),
+                Request = new CorrectRetirementBackOfficeRequest(),
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()

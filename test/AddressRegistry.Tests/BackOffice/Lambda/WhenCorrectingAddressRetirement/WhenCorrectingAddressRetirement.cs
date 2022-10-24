@@ -85,7 +85,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRetiremen
             // Act
             await sut.Handle(new CorrectRetirementLambdaRequest(streetNamePersistentLocalId, new CorrectRetirementSqsRequest()
                 {
-                    Request = new BackOfficeCorrectRetirementRequest { PersistentLocalId = addressPersistentLocalId },
+                    Request = new CorrectRetirementBackOfficeRequest { PersistentLocalId = addressPersistentLocalId },
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
                     ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -114,7 +114,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRetiremen
             // Act
             await sut.Handle(new CorrectRetirementLambdaRequest(Fixture.Create<int>().ToString(), new CorrectRetirementSqsRequest()
             {
-                Request = new BackOfficeCorrectRetirementRequest { PersistentLocalId = Fixture.Create<AddressPersistentLocalId>() },
+                Request = new CorrectRetirementBackOfficeRequest { PersistentLocalId = Fixture.Create<AddressPersistentLocalId>() },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -147,7 +147,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRetiremen
             await sut.Handle(
                 new CorrectRetirementLambdaRequest(Fixture.Create<int>().ToString(), new CorrectRetirementSqsRequest()
                 {
-                    Request = new BackOfficeCorrectRetirementRequest{ PersistentLocalId = Fixture.Create<int>() },
+                    Request = new CorrectRetirementBackOfficeRequest{ PersistentLocalId = Fixture.Create<int>() },
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
                     ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -179,7 +179,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRetiremen
             // Act
             await sut.Handle(new CorrectRetirementLambdaRequest(Fixture.Create<int>().ToString(), new CorrectRetirementSqsRequest()
             {
-                Request = new BackOfficeCorrectRetirementRequest { PersistentLocalId = Fixture.Create<int>() },
+                Request = new CorrectRetirementBackOfficeRequest { PersistentLocalId = Fixture.Create<int>() },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -233,7 +233,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRetiremen
                     Fixture.Create<StreetNamePersistentLocalId>(),
                         new CorrectRetirementSqsRequest
                         {
-                            Request = new BackOfficeCorrectRetirementRequest{ PersistentLocalId = Fixture.Create<AddressPersistentLocalId>() },
+                            Request = new CorrectRetirementBackOfficeRequest{ PersistentLocalId = Fixture.Create<AddressPersistentLocalId>() },
                             TicketId = Guid.NewGuid(),
                             Metadata = new Dictionary<string, object?>(),
                             ProvenanceData = Fixture.Create<ProvenanceData>()

@@ -83,7 +83,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressBoxNumber
             // Act
             await sut.Handle(new CorrectBoxNumberLambdaRequest(streetNamePersistentLocalId, new CorrectBoxNumberSqsRequest()
                 {
-                    Request = new BackOfficeCorrectBoxNumberRequest { Busnummer = "20" },
+                    Request = new CorrectBoxNumberBackOfficeRequest { Busnummer = "20" },
                     PersistentLocalId = childAddressPersistentLocalId,
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
@@ -113,7 +113,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressBoxNumber
             // Act
             await sut.Handle(new CorrectBoxNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectBoxNumberSqsRequest()
             {
-                Request = new BackOfficeCorrectBoxNumberRequest { Busnummer = "20" },
+                Request = new CorrectBoxNumberBackOfficeRequest { Busnummer = "20" },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -145,7 +145,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressBoxNumber
             // Act
             await sut.Handle(new CorrectBoxNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectBoxNumberSqsRequest()
             {
-                Request = new BackOfficeCorrectBoxNumberRequest { Busnummer = "20" },
+                Request = new CorrectBoxNumberBackOfficeRequest { Busnummer = "20" },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -177,7 +177,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressBoxNumber
             // Act
             await sut.Handle(new CorrectBoxNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectBoxNumberSqsRequest()
             {
-                Request = new BackOfficeCorrectBoxNumberRequest { Busnummer = "20" },
+                Request = new CorrectBoxNumberBackOfficeRequest { Busnummer = "20" },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -209,7 +209,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressBoxNumber
             // Act
             await sut.Handle(new CorrectBoxNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectBoxNumberSqsRequest()
             {
-                Request = new BackOfficeCorrectBoxNumberRequest { Busnummer = "20" },
+                Request = new CorrectBoxNumberBackOfficeRequest { Busnummer = "20" },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -241,7 +241,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressBoxNumber
             // Act
             await sut.Handle(new CorrectBoxNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectBoxNumberSqsRequest()
             {
-                Request = new BackOfficeCorrectBoxNumberRequest{ Busnummer = "20" },
+                Request = new CorrectBoxNumberBackOfficeRequest{ Busnummer = "20" },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()

@@ -99,7 +99,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             // Act
             await sut.Handle(new ProposeLambdaRequest(streetNamePersistentLocalId, new ProposeSqsRequest()
                 {
-                    Request = new BackOfficeProposeRequest
+                    Request = new ProposeBackOfficeRequest
                     {
                         StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
                         PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
@@ -163,7 +163,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             // Act
             await sut.Handle(new ProposeLambdaRequest(Fixture.Create<int>().ToString(), new ProposeSqsRequest()
             {
-                Request = new BackOfficeProposeRequest
+                Request = new ProposeBackOfficeRequest
                 {
                     StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
                     PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
@@ -230,7 +230,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             // Act
             await sut.Handle(new ProposeLambdaRequest(Fixture.Create<int>().ToString(), new ProposeSqsRequest
             {
-                Request = new BackOfficeProposeRequest
+                Request = new ProposeBackOfficeRequest
                 {
                     StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
                     PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
@@ -297,7 +297,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             // Act
             await sut.Handle(new ProposeLambdaRequest(Fixture.Create<int>().ToString(), new ProposeSqsRequest
             {
-                Request = new BackOfficeProposeRequest
+                Request = new ProposeBackOfficeRequest
                 {
                     StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
                     PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
@@ -366,7 +366,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             // Act
             await sut.Handle(new ProposeLambdaRequest(Fixture.Create<int>().ToString(), new ProposeSqsRequest()
             {
-                Request = new BackOfficeProposeRequest
+                Request = new ProposeBackOfficeRequest
                 {
                     StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
                     PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
@@ -434,7 +434,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             // Act
             await sut.Handle(new ProposeLambdaRequest(Fixture.Create<int>().ToString(), new ProposeSqsRequest()
                 {
-                    Request = new BackOfficeProposeRequest
+                    Request = new ProposeBackOfficeRequest
                     {
                         StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
                         PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
@@ -502,7 +502,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             // Act
             var request = new ProposeLambdaRequest(streetNamePersistentLocalId, new ProposeSqsRequest()
             {
-                Request = new BackOfficeProposeRequest
+                Request = new ProposeBackOfficeRequest
                 {
                     StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
                     PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
@@ -570,7 +570,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             // Act
             var request = new ProposeLambdaRequest(Fixture.Create<int>().ToString(), new ProposeSqsRequest()
             {
-                Request = new BackOfficeProposeRequest
+                Request = new ProposeBackOfficeRequest
                 {
                     StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
                     PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",

@@ -73,7 +73,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
             // Act
             await sut.Handle(new CorrectHouseNumberLambdaRequest(streetNamePersistentLocalId, new CorrectHouseNumberSqsRequest()
                 {
-                    Request = new BackOfficeCorrectHouseNumberRequest { Huisnummer = "20" },
+                    Request = new CorrectHouseNumberBackOfficeRequest { Huisnummer = "20" },
                     PersistentLocalId = addressPersistentLocalId,
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
@@ -103,7 +103,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
             // Act
             await sut.Handle(new CorrectHouseNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectHouseNumberSqsRequest()
             {
-                Request = new BackOfficeCorrectHouseNumberRequest { Huisnummer = "20" },
+                Request = new CorrectHouseNumberBackOfficeRequest { Huisnummer = "20" },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -135,7 +135,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
             // Act
             await sut.Handle(new CorrectHouseNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectHouseNumberSqsRequest()
             {
-                Request = new BackOfficeCorrectHouseNumberRequest { Huisnummer = "20" },
+                Request = new CorrectHouseNumberBackOfficeRequest { Huisnummer = "20" },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -167,7 +167,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
             // Act
             await sut.Handle(new CorrectHouseNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectHouseNumberSqsRequest()
             {
-                Request = new BackOfficeCorrectHouseNumberRequest { Huisnummer = "20" },
+                Request = new CorrectHouseNumberBackOfficeRequest { Huisnummer = "20" },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -199,7 +199,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
             // Act
             await sut.Handle(new CorrectHouseNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectHouseNumberSqsRequest()
             {
-                Request = new BackOfficeCorrectHouseNumberRequest { Huisnummer = "20" },
+                Request = new CorrectHouseNumberBackOfficeRequest { Huisnummer = "20" },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()

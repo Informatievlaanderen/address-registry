@@ -4,7 +4,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
     using System.Runtime.Serialization;
 
     [DataContract(Name = "CorrigerenBusnummerAdres", Namespace = "")]
-    public class BackOfficeCorrectBoxNumberRequest
+    public class CorrectBoxNumberBackOfficeRequest
     {
         /// <summary>
         /// Het busnummer van het adres.

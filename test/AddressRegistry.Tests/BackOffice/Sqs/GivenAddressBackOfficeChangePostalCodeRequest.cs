@@ -58,7 +58,7 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
             var sqsRequest = new ChangePostalCodeSqsRequest
             {
                 PersistentLocalId = Fixture.Create<AddressPersistentLocalId>(),
-                Request = new BackOfficeChangePostalCodeRequest()
+                Request = new ChangePostalCodeBackOfficeRequest()
             };
 
             // Act
@@ -87,7 +87,7 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
             var act = async () => await sut.Handle(
                 new ChangePostalCodeSqsRequest
                 {
-                    Request = Fixture.Create<BackOfficeChangePostalCodeRequest>()
+                    Request = Fixture.Create<ChangePostalCodeBackOfficeRequest>()
                 }, CancellationToken.None);
 
             // Assert

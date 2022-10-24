@@ -10,7 +10,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
     using StreetName.Commands;
 
     [DataContract(Name = "CorrigerenAfkeuringAdres", Namespace = "")]
-    public class AddressCorrectRejectionRequest : BackOfficeCorrectAddressFromRejectedRequest, IRequest<ETagResponse>
+    public class AddressCorrectRejectionRequest : CorrectRejectionBackOfficeRequest, IRequest<ETagResponse>
     {
         [JsonIgnore]
         public IDictionary<string, object> Metadata { get; set; }

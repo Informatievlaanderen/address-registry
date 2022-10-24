@@ -10,20 +10,20 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
 
     public record ProposeLambdaRequest :
         SqsLambdaRequest,
-        IHasBackOfficeRequest<BackOfficeProposeRequest>
+        IHasBackOfficeRequest<ProposeBackOfficeRequest>
     {
         public ProposeLambdaRequest(string groupId, ProposeSqsRequest sqsRequest)
             : base(
                 groupId,
                 sqsRequest.TicketId,
-                sqsRequest.IfMatchHeaderValue,
+                null,
                 sqsRequest.ProvenanceData.ToProvenance(),
                 sqsRequest.Metadata)
         {
             Request = sqsRequest.Request;
         }
 
-        public BackOfficeProposeRequest Request { get; set; }
+        public ProposeBackOfficeRequest Request { get; init; }
 
         /// <summary>
         /// Map to ProposeAddress command

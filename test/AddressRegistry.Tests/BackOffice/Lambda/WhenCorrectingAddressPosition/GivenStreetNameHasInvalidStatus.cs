@@ -46,7 +46,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostion
             var request = new CorrectPositionLambdaRequest(Fixture.Create<int>().ToString(),
                 new CorrectPositionSqsRequest
                 {
-                    Request = new BackOfficeCorrectPositionRequest
+                    Request = new CorrectPositionBackOfficeRequest
                     {
                         Positie = "",
                         PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,

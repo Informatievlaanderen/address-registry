@@ -8,7 +8,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
 
     public record CorrectBoxNumberLambdaRequest :
         SqsLambdaRequest,
-        IHasBackOfficeRequest<BackOfficeCorrectBoxNumberRequest>,
+        IHasBackOfficeRequest<CorrectBoxNumberBackOfficeRequest>,
         Abstractions.IHasAddressPersistentLocalId
     {
         public CorrectBoxNumberLambdaRequest(string groupId, CorrectBoxNumberSqsRequest sqsRequest)
@@ -23,9 +23,9 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
             AddressPersistentLocalId = sqsRequest.PersistentLocalId;
         }
 
-        public BackOfficeCorrectBoxNumberRequest Request { get; set; }
+        public CorrectBoxNumberBackOfficeRequest Request { get; set; }
 
-        public int AddressPersistentLocalId { get; set; }
+        public int AddressPersistentLocalId { get; }
 
         /// <summary>
         /// Map to CorrectAddressBoxNumber command

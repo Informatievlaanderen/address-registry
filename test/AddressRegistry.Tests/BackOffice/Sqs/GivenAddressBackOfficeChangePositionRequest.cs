@@ -58,7 +58,7 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
             var sqsRequest = new ChangePositionSqsRequest
             {
                 PersistentLocalId = Fixture.Create<AddressPersistentLocalId>(),
-                Request = new BackOfficeChangePositionRequest()
+                Request = new ChangePositionBackOfficeRequest()
             };
 
             // Act
@@ -87,7 +87,7 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
             var act = async () => await sut.Handle(
                 new ChangePositionSqsRequest
                 {
-                    Request = Fixture.Create<BackOfficeChangePositionRequest>()
+                    Request = Fixture.Create<ChangePositionBackOfficeRequest>()
                 }, CancellationToken.None);
 
             // Assert

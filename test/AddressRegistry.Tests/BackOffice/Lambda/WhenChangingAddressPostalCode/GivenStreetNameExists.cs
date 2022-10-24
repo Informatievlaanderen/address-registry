@@ -75,7 +75,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenChangingAddressPostalCode
             await sut.Handle(
                 new ChangePostalCodeLambdaRequest(streetNamePersistentLocalId, new ChangePostalCodeSqsRequest()
                 {
-                    Request = new BackOfficeChangePostalCodeRequest()
+                    Request = new ChangePostalCodeBackOfficeRequest()
                     {
                         PostInfoId = "https://data.vlaanderen.be/id/postinfo/123"
                     },
@@ -108,7 +108,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenChangingAddressPostalCode
             // Act
             await sut.Handle(new ChangePostalCodeLambdaRequest(Fixture.Create<int>().ToString(), new ChangePostalCodeSqsRequest()
                 {
-                    Request = new BackOfficeChangePostalCodeRequest()
+                    Request = new ChangePostalCodeBackOfficeRequest()
                     {
                         PostInfoId = "https://data.vlaanderen.be/id/postinfo/123"
                     },
@@ -166,7 +166,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenChangingAddressPostalCode
             await sut.Handle(
                 new ChangePostalCodeLambdaRequest(streetNamePersistentLocalId, new ChangePostalCodeSqsRequest
                 {
-                    Request = new BackOfficeChangePostalCodeRequest()
+                    Request = new ChangePostalCodeBackOfficeRequest()
                     {
                         PostInfoId = "https://data.vlaanderen.be/id/postinfo/123",
                     },

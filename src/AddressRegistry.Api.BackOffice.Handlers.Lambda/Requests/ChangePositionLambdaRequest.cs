@@ -10,7 +10,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
 
     public record ChangePositionLambdaRequest :
         SqsLambdaRequest,
-        IHasBackOfficeRequest<BackOfficeChangePositionRequest>,
+        IHasBackOfficeRequest<ChangePositionBackOfficeRequest>,
         Abstractions.IHasAddressPersistentLocalId
     {
         public ChangePositionLambdaRequest(
@@ -27,9 +27,9 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
             AddressPersistentLocalId = sqsRequest.PersistentLocalId;
         }
 
-        public BackOfficeChangePositionRequest Request { get; set; }
+        public ChangePositionBackOfficeRequest Request { get; init; }
 
-        public int AddressPersistentLocalId { get; set; }
+        public int AddressPersistentLocalId { get; }
 
         /// <summary>
         /// Map to ChangeAddressPosition command

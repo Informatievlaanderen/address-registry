@@ -107,7 +107,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
             await sut.Handle(
                 new CorrectPostalCodeLambdaRequest(streetNamePersistentLocalId, new CorrectPostalCodeSqsRequest()
                 {
-                    Request = new BackOfficeCorrectPostalCodeRequest()
+                    Request = new CorrectPostalCodeBackOfficeRequest()
                     {
                         PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{correctPostInfoId}"
                     },
@@ -165,7 +165,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
             // Act
             await sut.Handle(new CorrectPostalCodeLambdaRequest(Fixture.Create<int>().ToString(), new CorrectPostalCodeSqsRequest()
             {
-                Request = new BackOfficeCorrectPostalCodeRequest()
+                Request = new CorrectPostalCodeBackOfficeRequest()
                 {
                     PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{correctPostInfoId}"
                 },
@@ -226,7 +226,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
             // Act
             await sut.Handle(new CorrectPostalCodeLambdaRequest(Fixture.Create<int>().ToString(), new CorrectPostalCodeSqsRequest()
             {
-                Request = new BackOfficeCorrectPostalCodeRequest()
+                Request = new CorrectPostalCodeBackOfficeRequest()
                 {
                     PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{correctPostInfoId}"
                 },
@@ -306,7 +306,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
             // Act
             await sut.Handle(new CorrectPostalCodeLambdaRequest(streetNamePersistentLocalId, new CorrectPostalCodeSqsRequest()
                 {
-                    Request = new BackOfficeCorrectPostalCodeRequest()
+                    Request = new CorrectPostalCodeBackOfficeRequest()
                     {
                         PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}"
                     },

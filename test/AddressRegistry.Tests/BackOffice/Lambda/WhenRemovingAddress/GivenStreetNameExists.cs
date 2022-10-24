@@ -75,7 +75,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRemovingAddress
             await sut.Handle(
                 new RejectLambdaRequest(streetNamePersistentLocalId, new RejectSqsRequest
                 {
-                    Request = new BackOfficeRejectRequest() { PersistentLocalId = addressPersistentLocalId },
+                    Request = new RejectBackOfficeRequest() { PersistentLocalId = addressPersistentLocalId },
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
                     ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -132,7 +132,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRemovingAddress
             // Act
             await sut.Handle(new RemoveLambdaRequest(streetNamePersistentLocalId, new RemoveSqsRequest
                 {
-                    Request = new BackOfficeRemoveRequest { PersistentLocalId = addressPersistentLocalId },
+                    Request = new RemoveBackOfficeRequest { PersistentLocalId = addressPersistentLocalId },
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
                     ProvenanceData = Fixture.Create<ProvenanceData>()

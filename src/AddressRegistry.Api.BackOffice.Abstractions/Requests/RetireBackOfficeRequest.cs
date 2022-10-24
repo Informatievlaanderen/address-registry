@@ -3,8 +3,8 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
     using System.Runtime.Serialization;
     using Newtonsoft.Json;
 
-    [DataContract(Name = "AfkeurenAdres", Namespace = "")]
-    public class BackOfficeRejectRequest
+    [DataContract(Name = "OpheffenAdres", Namespace = "")]
+    public class RetireBackOfficeRequest
     {
         /// <summary>
         /// De unieke en persistente identificator van het adres.

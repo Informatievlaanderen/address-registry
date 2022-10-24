@@ -35,7 +35,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostion
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new CorrectPositionLambdaHandler(
+            var sut = new CorrectAddressPositionLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -43,10 +43,10 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostion
                 MockExceptionIdempotentCommandHandler<StreetNameHasInvalidStatusException>().Object);
 
             // Act
-            var request = new CorrectPositionLambdaRequest(Fixture.Create<int>().ToString(),
-                new CorrectPositionSqsRequest
+            var request = new CorrectAddressPositionLambdaRequest(Fixture.Create<int>().ToString(),
+                new CorrectAddressPositionSqsRequest
                 {
-                    Request = new CorrectPositionBackOfficeRequest
+                    Request = new CorrectAddressPositionBackOfficeRequest
                     {
                         Positie = "",
                         PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,

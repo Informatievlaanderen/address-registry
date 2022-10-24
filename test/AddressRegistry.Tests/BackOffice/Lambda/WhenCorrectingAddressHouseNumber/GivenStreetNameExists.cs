@@ -63,7 +63,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
                 null);
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new CorrectHouseNumberLambdaHandler(
+            var sut = new CorrectAddressHouseNumberLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -71,9 +71,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext));
 
             // Act
-            await sut.Handle(new CorrectHouseNumberLambdaRequest(streetNamePersistentLocalId, new CorrectHouseNumberSqsRequest()
+            await sut.Handle(new CorrectAddressHouseNumberLambdaRequest(streetNamePersistentLocalId, new CorrectAddressHouseNumberSqsRequest()
                 {
-                    Request = new CorrectHouseNumberBackOfficeRequest { Huisnummer = "20" },
+                    Request = new CorrectAddressHouseNumberBackOfficeRequest { Huisnummer = "20" },
                     PersistentLocalId = addressPersistentLocalId,
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
@@ -93,7 +93,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new CorrectHouseNumberLambdaHandler(
+            var sut = new CorrectAddressHouseNumberLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -101,9 +101,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
                 MockExceptionIdempotentCommandHandler<AddressHasInvalidStatusException>().Object);
 
             // Act
-            await sut.Handle(new CorrectHouseNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectHouseNumberSqsRequest()
+            await sut.Handle(new CorrectAddressHouseNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressHouseNumberSqsRequest()
             {
-                Request = new CorrectHouseNumberBackOfficeRequest { Huisnummer = "20" },
+                Request = new CorrectAddressHouseNumberBackOfficeRequest { Huisnummer = "20" },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -125,7 +125,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new CorrectHouseNumberLambdaHandler(
+            var sut = new CorrectAddressHouseNumberLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -133,9 +133,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
                 MockExceptionIdempotentCommandHandler<AddressAlreadyExistsException>().Object);
 
             // Act
-            await sut.Handle(new CorrectHouseNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectHouseNumberSqsRequest()
+            await sut.Handle(new CorrectAddressHouseNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressHouseNumberSqsRequest()
             {
-                Request = new CorrectHouseNumberBackOfficeRequest { Huisnummer = "20" },
+                Request = new CorrectAddressHouseNumberBackOfficeRequest { Huisnummer = "20" },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -157,7 +157,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new CorrectHouseNumberLambdaHandler(
+            var sut = new CorrectAddressHouseNumberLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -165,9 +165,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
                 MockExceptionIdempotentCommandHandler<HouseNumberHasInvalidFormatException>().Object);
 
             // Act
-            await sut.Handle(new CorrectHouseNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectHouseNumberSqsRequest()
+            await sut.Handle(new CorrectAddressHouseNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressHouseNumberSqsRequest()
             {
-                Request = new CorrectHouseNumberBackOfficeRequest { Huisnummer = "20" },
+                Request = new CorrectAddressHouseNumberBackOfficeRequest { Huisnummer = "20" },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -189,7 +189,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new CorrectHouseNumberLambdaHandler(
+            var sut = new CorrectAddressHouseNumberLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -197,9 +197,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
                 MockExceptionIdempotentCommandHandler<HouseNumberToCorrectHasBoxNumberException>().Object);
 
             // Act
-            await sut.Handle(new CorrectHouseNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectHouseNumberSqsRequest()
+            await sut.Handle(new CorrectAddressHouseNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressHouseNumberSqsRequest()
             {
-                Request = new CorrectHouseNumberBackOfficeRequest { Huisnummer = "20" },
+                Request = new CorrectAddressHouseNumberBackOfficeRequest { Huisnummer = "20" },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()

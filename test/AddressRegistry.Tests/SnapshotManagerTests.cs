@@ -1,21 +1,19 @@
 namespace AddressRegistry.Tests
 {
     using System;
-    using System.Net;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
+    using Be.Vlaanderen.Basisregisters.GrAr.Oslo.SnapshotProducer;
     using FluentAssertions;
     using Microsoft.Extensions.Logging.Abstractions;
-    using Moq;
     using NodaTime;
     using Xunit;
-    using Be.Vlaanderen.Basisregisters.GrAr.Oslo.SnapshotProducer;
 
     public sealed class SnapshotManagerTests
     {
         [Fact(Skip = "Tool to test SnapshotManager.")]
-        public async Task T()
+        public async Task ToolToTestSnapshotManager()
         {
             var httpClient = new HttpClient();
             httpClient.BaseAddress = new Uri("https://api.basisregisters.staging-vlaanderen.be/v2/adressen");

@@ -34,7 +34,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressBoxNumber
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new CorrectBoxNumberLambdaHandler(
+            var sut = new CorrectAddressBoxNumberLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -42,10 +42,10 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressBoxNumber
                 MockExceptionIdempotentCommandHandler<StreetNameHasInvalidStatusException>().Object);
 
             // Act
-            var request = new CorrectBoxNumberLambdaRequest(Fixture.Create<int>().ToString(),
-                    new CorrectBoxNumberSqsRequest()
+            var request = new CorrectAddressBoxNumberLambdaRequest(Fixture.Create<int>().ToString(),
+                    new CorrectAddressBoxNumberSqsRequest()
                     {
-                        Request = new CorrectBoxNumberBackOfficeRequest { Busnummer = "1A" },
+                        Request = new CorrectAddressBoxNumberBackOfficeRequest { Busnummer = "1A" },
                         TicketId = Guid.NewGuid(),
                         Metadata = new Dictionary<string, object?>(),
                         ProvenanceData = Fixture.Create<ProvenanceData>()

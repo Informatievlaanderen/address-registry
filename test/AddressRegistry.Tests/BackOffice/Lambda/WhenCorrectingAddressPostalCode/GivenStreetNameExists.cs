@@ -94,7 +94,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
                 null);
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new CorrectPostalCodeLambdaHandler(
+            var sut = new CorrectAddressPostalCodeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -105,9 +105,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
 
             // Act
             await sut.Handle(
-                new CorrectPostalCodeLambdaRequest(streetNamePersistentLocalId, new CorrectPostalCodeSqsRequest()
+                new CorrectAddressPostalCodeLambdaRequest(streetNamePersistentLocalId, new CorrectAddressPostalCodeSqsRequest()
                 {
-                    Request = new CorrectPostalCodeBackOfficeRequest()
+                    Request = new CorrectAddressPostalCodeBackOfficeRequest()
                     {
                         PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{correctPostInfoId}"
                     },
@@ -153,7 +153,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
             });
             await _municipalityContext.SaveChangesAsync();
 
-            var sut = new CorrectPostalCodeLambdaHandler(
+            var sut = new CorrectAddressPostalCodeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -163,9 +163,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
                 _municipalityContext);
 
             // Act
-            await sut.Handle(new CorrectPostalCodeLambdaRequest(Fixture.Create<int>().ToString(), new CorrectPostalCodeSqsRequest()
+            await sut.Handle(new CorrectAddressPostalCodeLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressPostalCodeSqsRequest()
             {
-                Request = new CorrectPostalCodeBackOfficeRequest()
+                Request = new CorrectAddressPostalCodeBackOfficeRequest()
                 {
                     PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{correctPostInfoId}"
                 },
@@ -214,7 +214,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
             });
             await _municipalityContext.SaveChangesAsync();
 
-            var sut = new CorrectPostalCodeLambdaHandler(
+            var sut = new CorrectAddressPostalCodeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -224,9 +224,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
                 _municipalityContext);
 
             // Act
-            await sut.Handle(new CorrectPostalCodeLambdaRequest(Fixture.Create<int>().ToString(), new CorrectPostalCodeSqsRequest()
+            await sut.Handle(new CorrectAddressPostalCodeLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressPostalCodeSqsRequest()
             {
-                Request = new CorrectPostalCodeBackOfficeRequest()
+                Request = new CorrectAddressPostalCodeBackOfficeRequest()
                 {
                     PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{correctPostInfoId}"
                 },
@@ -291,7 +291,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
             });
             await _municipalityContext.SaveChangesAsync();
 
-            var sut = new CorrectPostalCodeLambdaHandler(
+            var sut = new CorrectAddressPostalCodeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -304,9 +304,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
                 await _streetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), CancellationToken.None);
 
             // Act
-            await sut.Handle(new CorrectPostalCodeLambdaRequest(streetNamePersistentLocalId, new CorrectPostalCodeSqsRequest()
+            await sut.Handle(new CorrectAddressPostalCodeLambdaRequest(streetNamePersistentLocalId, new CorrectAddressPostalCodeSqsRequest()
                 {
-                    Request = new CorrectPostalCodeBackOfficeRequest()
+                    Request = new CorrectAddressPostalCodeBackOfficeRequest()
                     {
                         PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}"
                     },

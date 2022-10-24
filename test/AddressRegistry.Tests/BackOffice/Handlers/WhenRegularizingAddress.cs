@@ -67,7 +67,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
             DispatchArrangeCommand(deregulateAddress);
 
 
-            var sut = new AddressRegularizeHandler(
+            var sut = new RegularizeAddressHandler(
                 Container.Resolve<ICommandHandlerResolver>(),
                 _streetNames,
                 _backOfficeContext,

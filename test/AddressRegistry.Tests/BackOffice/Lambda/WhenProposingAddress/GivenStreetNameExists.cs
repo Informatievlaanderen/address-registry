@@ -85,7 +85,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                 nisCode);
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new ProposeLambdaHandler(
+            var sut = new ProposeAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -97,9 +97,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                 mockPersistentLocalIdGenerator.Object);
 
             // Act
-            await sut.Handle(new ProposeLambdaRequest(streetNamePersistentLocalId, new ProposeSqsRequest()
+            await sut.Handle(new ProposeAddressLambdaRequest(streetNamePersistentLocalId, new ProposeAddressSqsRequest()
                 {
-                    Request = new ProposeBackOfficeRequest
+                    Request = new ProposeAddressBackOfficeRequest
                     {
                         StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
                         PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
@@ -149,7 +149,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             await _municipalityContext.SaveChangesAsync();
             await _syndicationContext.SaveChangesAsync();
 
-            var sut = new ProposeLambdaHandler(
+            var sut = new ProposeAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -161,9 +161,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                 mockPersistentLocalIdGenerator.Object);
 
             // Act
-            await sut.Handle(new ProposeLambdaRequest(Fixture.Create<int>().ToString(), new ProposeSqsRequest()
+            await sut.Handle(new ProposeAddressLambdaRequest(Fixture.Create<int>().ToString(), new ProposeAddressSqsRequest()
             {
-                Request = new ProposeBackOfficeRequest
+                Request = new ProposeAddressBackOfficeRequest
                 {
                     StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
                     PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
@@ -216,7 +216,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             await _municipalityContext.SaveChangesAsync();
             await _syndicationContext.SaveChangesAsync();
 
-            var sut = new ProposeLambdaHandler(
+            var sut = new ProposeAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -228,9 +228,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                 mockPersistentLocalIdGenerator.Object);
 
             // Act
-            await sut.Handle(new ProposeLambdaRequest(Fixture.Create<int>().ToString(), new ProposeSqsRequest
+            await sut.Handle(new ProposeAddressLambdaRequest(Fixture.Create<int>().ToString(), new ProposeAddressSqsRequest
             {
-                Request = new ProposeBackOfficeRequest
+                Request = new ProposeAddressBackOfficeRequest
                 {
                     StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
                     PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
@@ -283,7 +283,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             await _municipalityContext.SaveChangesAsync();
             await _syndicationContext.SaveChangesAsync();
 
-            var sut = new ProposeLambdaHandler(
+            var sut = new ProposeAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -295,9 +295,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                 mockPersistentLocalIdGenerator.Object);
 
             // Act
-            await sut.Handle(new ProposeLambdaRequest(Fixture.Create<int>().ToString(), new ProposeSqsRequest
+            await sut.Handle(new ProposeAddressLambdaRequest(Fixture.Create<int>().ToString(), new ProposeAddressSqsRequest
             {
-                Request = new ProposeBackOfficeRequest
+                Request = new ProposeAddressBackOfficeRequest
                 {
                     StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
                     PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
@@ -351,7 +351,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             await _municipalityContext.SaveChangesAsync();
             await _syndicationContext.SaveChangesAsync();
 
-            var sut = new ProposeLambdaHandler(
+            var sut = new ProposeAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -364,9 +364,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                 mockPersistentLocalIdGenerator.Object);
 
             // Act
-            await sut.Handle(new ProposeLambdaRequest(Fixture.Create<int>().ToString(), new ProposeSqsRequest()
+            await sut.Handle(new ProposeAddressLambdaRequest(Fixture.Create<int>().ToString(), new ProposeAddressSqsRequest()
             {
-                Request = new ProposeBackOfficeRequest
+                Request = new ProposeAddressBackOfficeRequest
                 {
                     StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
                     PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
@@ -420,7 +420,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             await _municipalityContext.SaveChangesAsync();
             await _syndicationContext.SaveChangesAsync();
 
-            var sut = new ProposeLambdaHandler(
+            var sut = new ProposeAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -432,9 +432,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                 mockPersistentLocalIdGenerator.Object);
 
             // Act
-            await sut.Handle(new ProposeLambdaRequest(Fixture.Create<int>().ToString(), new ProposeSqsRequest()
+            await sut.Handle(new ProposeAddressLambdaRequest(Fixture.Create<int>().ToString(), new ProposeAddressSqsRequest()
                 {
-                    Request = new ProposeBackOfficeRequest
+                    Request = new ProposeAddressBackOfficeRequest
                     {
                         StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
                         PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
@@ -488,7 +488,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             await _municipalityContext.SaveChangesAsync();
             await _syndicationContext.SaveChangesAsync();
 
-            var sut = new ProposeLambdaHandler(
+            var sut = new ProposeAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -500,9 +500,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                 mockPersistentLocalIdGenerator.Object);
 
             // Act
-            var request = new ProposeLambdaRequest(streetNamePersistentLocalId, new ProposeSqsRequest()
+            var request = new ProposeAddressLambdaRequest(streetNamePersistentLocalId, new ProposeAddressSqsRequest()
             {
-                Request = new ProposeBackOfficeRequest
+                Request = new ProposeAddressBackOfficeRequest
                 {
                     StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
                     PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
@@ -556,7 +556,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             await _municipalityContext.SaveChangesAsync();
             await _syndicationContext.SaveChangesAsync();
 
-            var sut = new ProposeLambdaHandler(
+            var sut = new ProposeAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -568,9 +568,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                 mockPersistentLocalIdGenerator.Object);
 
             // Act
-            var request = new ProposeLambdaRequest(Fixture.Create<int>().ToString(), new ProposeSqsRequest()
+            var request = new ProposeAddressLambdaRequest(Fixture.Create<int>().ToString(), new ProposeAddressSqsRequest()
             {
-                Request = new ProposeBackOfficeRequest
+                Request = new ProposeAddressBackOfficeRequest
                 {
                     StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
                     PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",

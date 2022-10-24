@@ -34,7 +34,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new CorrectHouseNumberLambdaHandler(
+            var sut = new CorrectAddressHouseNumberLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -42,9 +42,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
                 MockExceptionIdempotentCommandHandler<StreetNameHasInvalidStatusException>().Object);
 
             // Act
-            var request = new CorrectHouseNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectHouseNumberSqsRequest()
+            var request = new CorrectAddressHouseNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressHouseNumberSqsRequest()
             {
-                Request = new CorrectHouseNumberBackOfficeRequest { Huisnummer = "20" },
+                Request = new CorrectAddressHouseNumberBackOfficeRequest { Huisnummer = "20" },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()

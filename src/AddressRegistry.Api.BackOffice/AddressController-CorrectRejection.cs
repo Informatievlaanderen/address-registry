@@ -84,7 +84,7 @@ namespace AddressRegistry.Api.BackOffice
 
                 if (_useSqsToggle.FeatureEnabled)
                 {
-                    var sqsRequest = new CorrectRejectionSqsRequest
+                    var sqsRequest = new CorrectAddressRejectionSqsRequest
                     {
                         Request = request,
                         IfMatchHeaderValue = ifMatchHeaderValue,

@@ -73,7 +73,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRetiringAddress
             );
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new RetireLambdaHandler(
+            var sut = new RetireAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -81,9 +81,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRetiringAddress
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext));
 
             // Act
-            await sut.Handle(new RetireLambdaRequest(streetNamePersistentLocalId, new RetireSqsRequest()
+            await sut.Handle(new RetireAddressLambdaRequest(streetNamePersistentLocalId, new RetireAddressSqsRequest()
                 {
-                    Request = new RetireBackOfficeRequest() { PersistentLocalId = addressPersistentLocalId },
+                    Request = new RetireAddressBackOfficeRequest() { PersistentLocalId = addressPersistentLocalId },
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
                     ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -102,7 +102,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRetiringAddress
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new RetireLambdaHandler(
+            var sut = new RetireAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -110,9 +110,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRetiringAddress
                 MockExceptionIdempotentCommandHandler<AddressHasInvalidStatusException>().Object);
 
             // Act
-            await sut.Handle(new RetireLambdaRequest(Fixture.Create<int>().ToString(), new RetireSqsRequest()
+            await sut.Handle(new RetireAddressLambdaRequest(Fixture.Create<int>().ToString(), new RetireAddressSqsRequest()
             {
-                Request = new RetireBackOfficeRequest(),
+                Request = new RetireAddressBackOfficeRequest(),
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -134,7 +134,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRetiringAddress
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new RetireLambdaHandler(
+            var sut = new RetireAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -142,9 +142,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRetiringAddress
                 MockExceptionIdempotentCommandHandler<StreetNameHasInvalidStatusException>().Object);
 
             // Act
-            await sut.Handle(new RetireLambdaRequest(Fixture.Create<int>().ToString(), new RetireSqsRequest()
+            await sut.Handle(new RetireAddressLambdaRequest(Fixture.Create<int>().ToString(), new RetireAddressSqsRequest()
             {
-                Request = new RetireBackOfficeRequest(),
+                Request = new RetireAddressBackOfficeRequest(),
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -191,7 +191,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRetiringAddress
                 Fixture.Create<Provenance>());
             DispatchArrangeCommand(retireAddress);
 
-            var sut = new RetireLambdaHandler(
+            var sut = new RetireAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -202,9 +202,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRetiringAddress
                 await _streetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), CancellationToken.None);
 
             // Act
-            await sut.Handle(new RetireLambdaRequest(streetNamePersistentLocalId, new RetireSqsRequest()
+            await sut.Handle(new RetireAddressLambdaRequest(streetNamePersistentLocalId, new RetireAddressSqsRequest()
                 {
-                    Request = new RetireBackOfficeRequest() { PersistentLocalId = addressPersistentLocalId },
+                    Request = new RetireAddressBackOfficeRequest() { PersistentLocalId = addressPersistentLocalId },
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
                     ProvenanceData = Fixture.Create<ProvenanceData>()

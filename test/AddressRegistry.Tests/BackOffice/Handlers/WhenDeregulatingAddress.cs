@@ -58,7 +58,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
                 houseNumber,
                 null);
 
-            var sut = new AddressDeregulateHandler(
+            var sut = new DeregulateAddressHandler(
                 Container.Resolve<ICommandHandlerResolver>(),
                 _streetNames,
                 _backOfficeContext,

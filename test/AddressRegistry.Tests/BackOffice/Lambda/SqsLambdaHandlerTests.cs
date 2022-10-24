@@ -38,7 +38,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
         {
             var ticketing = new Mock<ITicketing>();
 
-            var sqsLambdaRequest = new ApproveLambdaRequest(Guid.NewGuid().ToString(), new ApproveSqsRequest
+            var sqsLambdaRequest = new ApproveAddressLambdaRequest(Guid.NewGuid().ToString(), new ApproveAddressSqsRequest
             {
                 Request = new ApproveBackOfficeRequest { PersistentLocalId = 1 },
                 TicketId = Guid.NewGuid(),
@@ -66,7 +66,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
         {
             var ticketing = new Mock<ITicketing>();
 
-            var sqsLambdaRequest = new ApproveLambdaRequest(Guid.NewGuid().ToString(), new ApproveSqsRequest
+            var sqsLambdaRequest = new ApproveAddressLambdaRequest(Guid.NewGuid().ToString(), new ApproveAddressSqsRequest
             {
                 Request = new ApproveBackOfficeRequest { PersistentLocalId = 1 },
                 TicketId = Guid.NewGuid(),
@@ -96,7 +96,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
         {
             var ticketing = new Mock<ITicketing>();
 
-            var sqsLambdaRequest = new ApproveLambdaRequest(Guid.NewGuid().ToString(), new ApproveSqsRequest
+            var sqsLambdaRequest = new ApproveAddressLambdaRequest(Guid.NewGuid().ToString(), new ApproveAddressSqsRequest
             {
                 Request = new ApproveBackOfficeRequest { PersistentLocalId = 1 },
                 TicketId = Guid.NewGuid(),
@@ -153,7 +153,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 ticketing.Object,
                 Mock.Of<IIdempotentCommandHandler>());
 
-            var sqsLambdaRequest = new ApproveLambdaRequest(streetNamePersistentLocalId, new ApproveSqsRequest
+            var sqsLambdaRequest = new ApproveAddressLambdaRequest(streetNamePersistentLocalId, new ApproveAddressSqsRequest
             {
                 Request = new ApproveBackOfficeRequest { PersistentLocalId = addressPersistentLocalId },
                 IfMatchHeaderValue = "Outdated",
@@ -178,7 +178,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
         {
             var idempotentCommandHandler = new Mock<IIdempotentCommandHandler>();
 
-            var sqsLambdaRequest = new ApproveLambdaRequest(Guid.NewGuid().ToString(), new ApproveSqsRequest
+            var sqsLambdaRequest = new ApproveAddressLambdaRequest(Guid.NewGuid().ToString(), new ApproveAddressSqsRequest
             {
                 Request = new ApproveBackOfficeRequest { PersistentLocalId = 1 },
                 TicketId = Guid.NewGuid(),
@@ -203,7 +203,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
         }
     }
 
-    public sealed class FakeLambdaHandler : SqsLambdaHandler<ApproveLambdaRequest>
+    public sealed class FakeLambdaHandler : SqsLambdaHandler<ApproveAddressLambdaRequest>
     {
         public FakeLambdaHandler(
             IConfiguration configuration,
@@ -220,7 +220,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
         { }
 
         protected override Task<ETagResponse> InnerHandle(
-            ApproveLambdaRequest request,
+            ApproveAddressLambdaRequest request,
             CancellationToken cancellationToken)
         {
             IdempotentCommandHandler.Dispatch(
@@ -232,7 +232,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             return Task.FromResult(new ETagResponse("bla", "etag"));
         }
 
-        protected override TicketError? InnerMapDomainException(DomainException exception, ApproveLambdaRequest request)
+        protected override TicketError? InnerMapDomainException(DomainException exception, ApproveAddressLambdaRequest request)
         {
             return exception switch
             {

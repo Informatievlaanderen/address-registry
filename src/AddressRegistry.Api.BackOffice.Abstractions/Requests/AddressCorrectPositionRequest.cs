@@ -13,7 +13,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
     using Swashbuckle.AspNetCore.Filters;
 
     [DataContract(Name = "CorrigerenAdresPositie", Namespace = "")]
-    public class AddressCorrectPositionRequest : CorrectPositionBackOfficeRequest, IRequest<ETagResponse>
+    public class AddressCorrectPositionRequest : CorrectAddressPositionBackOfficeRequest, IRequest<ETagResponse>
     {
         /// <summary>
         /// De unieke en persistente identificator van het adres.

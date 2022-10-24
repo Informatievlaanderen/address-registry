@@ -73,7 +73,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressBoxNumber
                 new BoxNumber("1A"));
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new CorrectBoxNumberLambdaHandler(
+            var sut = new CorrectAddressBoxNumberLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -81,9 +81,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressBoxNumber
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext));
 
             // Act
-            await sut.Handle(new CorrectBoxNumberLambdaRequest(streetNamePersistentLocalId, new CorrectBoxNumberSqsRequest()
+            await sut.Handle(new CorrectAddressBoxNumberLambdaRequest(streetNamePersistentLocalId, new CorrectAddressBoxNumberSqsRequest()
                 {
-                    Request = new CorrectBoxNumberBackOfficeRequest { Busnummer = "20" },
+                    Request = new CorrectAddressBoxNumberBackOfficeRequest { Busnummer = "20" },
                     PersistentLocalId = childAddressPersistentLocalId,
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
@@ -103,7 +103,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressBoxNumber
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new CorrectBoxNumberLambdaHandler(
+            var sut = new CorrectAddressBoxNumberLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -111,9 +111,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressBoxNumber
                 MockExceptionIdempotentCommandHandler<AddressHasInvalidStatusException>().Object);
 
             // Act
-            await sut.Handle(new CorrectBoxNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectBoxNumberSqsRequest()
+            await sut.Handle(new CorrectAddressBoxNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressBoxNumberSqsRequest()
             {
-                Request = new CorrectBoxNumberBackOfficeRequest { Busnummer = "20" },
+                Request = new CorrectAddressBoxNumberBackOfficeRequest { Busnummer = "20" },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -135,7 +135,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressBoxNumber
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new CorrectBoxNumberLambdaHandler(
+            var sut = new CorrectAddressBoxNumberLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -143,9 +143,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressBoxNumber
                 MockExceptionIdempotentCommandHandler<AddressHasNoBoxNumberException>().Object);
 
             // Act
-            await sut.Handle(new CorrectBoxNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectBoxNumberSqsRequest()
+            await sut.Handle(new CorrectAddressBoxNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressBoxNumberSqsRequest()
             {
-                Request = new CorrectBoxNumberBackOfficeRequest { Busnummer = "20" },
+                Request = new CorrectAddressBoxNumberBackOfficeRequest { Busnummer = "20" },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -167,7 +167,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressBoxNumber
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new CorrectBoxNumberLambdaHandler(
+            var sut = new CorrectAddressBoxNumberLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -175,9 +175,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressBoxNumber
                 MockExceptionIdempotentCommandHandler<BoxNumberHasInvalidFormatException>().Object);
 
             // Act
-            await sut.Handle(new CorrectBoxNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectBoxNumberSqsRequest()
+            await sut.Handle(new CorrectAddressBoxNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressBoxNumberSqsRequest()
             {
-                Request = new CorrectBoxNumberBackOfficeRequest { Busnummer = "20" },
+                Request = new CorrectAddressBoxNumberBackOfficeRequest { Busnummer = "20" },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -199,7 +199,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressBoxNumber
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new CorrectBoxNumberLambdaHandler(
+            var sut = new CorrectAddressBoxNumberLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -207,9 +207,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressBoxNumber
                 MockExceptionIdempotentCommandHandler<AddressAlreadyExistsException>().Object);
 
             // Act
-            await sut.Handle(new CorrectBoxNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectBoxNumberSqsRequest()
+            await sut.Handle(new CorrectAddressBoxNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressBoxNumberSqsRequest()
             {
-                Request = new CorrectBoxNumberBackOfficeRequest { Busnummer = "20" },
+                Request = new CorrectAddressBoxNumberBackOfficeRequest { Busnummer = "20" },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -231,7 +231,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressBoxNumber
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new CorrectBoxNumberLambdaHandler(
+            var sut = new CorrectAddressBoxNumberLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -239,9 +239,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressBoxNumber
                 MockExceptionIdempotentCommandHandler<AggregateIdIsNotFoundException>().Object);
 
             // Act
-            await sut.Handle(new CorrectBoxNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectBoxNumberSqsRequest()
+            await sut.Handle(new CorrectAddressBoxNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressBoxNumberSqsRequest()
             {
-                Request = new CorrectBoxNumberBackOfficeRequest{ Busnummer = "20" },
+                Request = new CorrectAddressBoxNumberBackOfficeRequest{ Busnummer = "20" },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()

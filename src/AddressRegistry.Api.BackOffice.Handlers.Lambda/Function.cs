@@ -32,7 +32,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
 
     public class Function : FunctionBase
     {
-        public Function() : base(new List<Assembly> { typeof(ApproveSqsRequest).Assembly })
+        public Function() : base(new List<Assembly> { typeof(ApproveAddressSqsRequest).Assembly })
         { }
 
         protected override IServiceProvider ConfigureServices(IServiceCollection services)

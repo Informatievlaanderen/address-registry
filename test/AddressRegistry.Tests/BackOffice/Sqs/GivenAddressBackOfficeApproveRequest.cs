@@ -49,13 +49,13 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
 
             var sqsQueue = new Mock<ISqsQueue>();
 
-            var sut = new ApproveSqsHandler(
+            var sut = new ApproveAddressSqsHandler(
                 sqsQueue.Object,
                 ticketingMock.Object,
                 ticketingUrl,
                 _backOfficeContext);
 
-            var sqsRequest = new ApproveSqsRequest
+            var sqsRequest = new ApproveAddressSqsRequest
             {
                 Request = new ApproveBackOfficeRequest
                 {
@@ -79,7 +79,7 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
         public void WithNoStreetNameFoundByAddressPersistentLocalId_ThrowsAggregateIdNotFound()
         {
             // Arrange
-            var sut = new ApproveSqsHandler(
+            var sut = new ApproveAddressSqsHandler(
                 Mock.Of<ISqsQueue>(),
                 Mock.Of<ITicketing>(),
                 Mock.Of<ITicketingUrl>(),
@@ -87,7 +87,7 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
 
             // Act
             var act = async () => await sut.Handle(
-                new ApproveSqsRequest
+                new ApproveAddressSqsRequest
                 {
                     Request = Fixture.Create<ApproveBackOfficeRequest>()
                 }, CancellationToken.None);

@@ -7,7 +7,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Handlers
     using Be.Vlaanderen.Basisregisters.Sqs.Handlers;
     using TicketingService.Abstractions;
 
-    public sealed class RetireSqsHandler : SqsHandler<RetireSqsRequest>
+    public sealed class RetireSqsHandler : SqsHandler<RetireAddressSqsRequest>
     {
         public const string Action = "RetireAddress";
 
@@ -23,7 +23,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Handlers
             _backOfficeContext = backOfficeContext;
         }
 
-        protected override string? WithAggregateId(RetireSqsRequest request)
+        protected override string? WithAggregateId(RetireAddressSqsRequest request)
         {
             var relation = _backOfficeContext
                 .AddressPersistentIdStreetNamePersistentIds
@@ -32,7 +32,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Handlers
             return relation?.StreetNamePersistentLocalId.ToString();
         }
 
-        protected override IDictionary<string, string> WithTicketMetadata(string aggregateId, RetireSqsRequest sqsRequest)
+        protected override IDictionary<string, string> WithTicketMetadata(string aggregateId, RetireAddressSqsRequest sqsRequest)
         {
             return new Dictionary<string, string>
             {

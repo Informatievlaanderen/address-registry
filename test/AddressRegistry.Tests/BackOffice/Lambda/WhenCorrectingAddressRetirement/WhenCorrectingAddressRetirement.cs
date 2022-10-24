@@ -75,7 +75,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRetiremen
                 addressPersistentLocalId);
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new CorrectRetirementLambdaHandler(
+            var sut = new CorrectAddressRetirementLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -83,9 +83,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRetiremen
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext));
 
             // Act
-            await sut.Handle(new CorrectRetirementLambdaRequest(streetNamePersistentLocalId, new CorrectRetirementSqsRequest()
+            await sut.Handle(new CorrectAddressRetirementLambdaRequest(streetNamePersistentLocalId, new CorrectAddressRetirementSqsRequest()
                 {
-                    Request = new CorrectRetirementBackOfficeRequest { PersistentLocalId = addressPersistentLocalId },
+                    Request = new CorrectAddressRetirementBackOfficeRequest { PersistentLocalId = addressPersistentLocalId },
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
                     ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -104,7 +104,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRetiremen
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new CorrectRetirementLambdaHandler(
+            var sut = new CorrectAddressRetirementLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -112,9 +112,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRetiremen
                 MockExceptionIdempotentCommandHandler<AddressHasInvalidStatusException>().Object);
 
             // Act
-            await sut.Handle(new CorrectRetirementLambdaRequest(Fixture.Create<int>().ToString(), new CorrectRetirementSqsRequest()
+            await sut.Handle(new CorrectAddressRetirementLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressRetirementSqsRequest()
             {
-                Request = new CorrectRetirementBackOfficeRequest { PersistentLocalId = Fixture.Create<AddressPersistentLocalId>() },
+                Request = new CorrectAddressRetirementBackOfficeRequest { PersistentLocalId = Fixture.Create<AddressPersistentLocalId>() },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -136,7 +136,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRetiremen
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new CorrectRetirementLambdaHandler(
+            var sut = new CorrectAddressRetirementLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -145,9 +145,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRetiremen
 
             // Act
             await sut.Handle(
-                new CorrectRetirementLambdaRequest(Fixture.Create<int>().ToString(), new CorrectRetirementSqsRequest()
+                new CorrectAddressRetirementLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressRetirementSqsRequest()
                 {
-                    Request = new CorrectRetirementBackOfficeRequest{ PersistentLocalId = Fixture.Create<int>() },
+                    Request = new CorrectAddressRetirementBackOfficeRequest{ PersistentLocalId = Fixture.Create<int>() },
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
                     ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -169,7 +169,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRetiremen
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new CorrectRetirementLambdaHandler(
+            var sut = new CorrectAddressRetirementLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -177,9 +177,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRetiremen
                 MockExceptionIdempotentCommandHandler<ParentAddressHasInvalidStatusException>().Object);
 
             // Act
-            await sut.Handle(new CorrectRetirementLambdaRequest(Fixture.Create<int>().ToString(), new CorrectRetirementSqsRequest()
+            await sut.Handle(new CorrectAddressRetirementLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressRetirementSqsRequest()
             {
-                Request = new CorrectRetirementBackOfficeRequest { PersistentLocalId = Fixture.Create<int>() },
+                Request = new CorrectAddressRetirementBackOfficeRequest { PersistentLocalId = Fixture.Create<int>() },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -218,7 +218,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRetiremen
                 Fixture.Create<StreetNamePersistentLocalId>(),
                 Fixture.Create<AddressPersistentLocalId>());
 
-            var sut = new CorrectRetirementLambdaHandler(
+            var sut = new CorrectAddressRetirementLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -229,11 +229,11 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRetiremen
                 await _streetNames.GetAsync(new StreetNameStreamId(Fixture.Create<StreetNamePersistentLocalId>()), CancellationToken.None);
 
             // Act
-            await sut.Handle(new CorrectRetirementLambdaRequest(
+            await sut.Handle(new CorrectAddressRetirementLambdaRequest(
                     Fixture.Create<StreetNamePersistentLocalId>(),
-                        new CorrectRetirementSqsRequest
+                        new CorrectAddressRetirementSqsRequest
                         {
-                            Request = new CorrectRetirementBackOfficeRequest{ PersistentLocalId = Fixture.Create<AddressPersistentLocalId>() },
+                            Request = new CorrectAddressRetirementBackOfficeRequest{ PersistentLocalId = Fixture.Create<AddressPersistentLocalId>() },
                             TicketId = Guid.NewGuid(),
                             Metadata = new Dictionary<string, object?>(),
                             ProvenanceData = Fixture.Create<ProvenanceData>()

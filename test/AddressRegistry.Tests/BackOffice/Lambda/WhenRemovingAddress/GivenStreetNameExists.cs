@@ -64,7 +64,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRemovingAddress
                 null);
 
             var etagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new RejectLambdaHandler(
+            var sut = new RejectAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { etagResponse = result; }).Object,
@@ -73,9 +73,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRemovingAddress
 
             // Act
             await sut.Handle(
-                new RejectLambdaRequest(streetNamePersistentLocalId, new RejectSqsRequest
+                new RejectAddressLambdaRequest(streetNamePersistentLocalId, new RejectAddressSqsRequest
                 {
-                    Request = new RejectBackOfficeRequest() { PersistentLocalId = addressPersistentLocalId },
+                    Request = new RejectAddressBackOfficeRequest() { PersistentLocalId = addressPersistentLocalId },
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
                     ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -119,7 +119,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRemovingAddress
                 Fixture.Create<Provenance>());
             DispatchArrangeCommand(removeAddress);
 
-            var sut = new RemoveLambdaHandler(
+            var sut = new RemoveAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -130,9 +130,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRemovingAddress
                 await _streetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), CancellationToken.None);
 
             // Act
-            await sut.Handle(new RemoveLambdaRequest(streetNamePersistentLocalId, new RemoveSqsRequest
+            await sut.Handle(new RemoveAddressLambdaRequest(streetNamePersistentLocalId, new RemoveAddressSqsRequest
                 {
-                    Request = new RemoveBackOfficeRequest { PersistentLocalId = addressPersistentLocalId },
+                    Request = new RemoveAddressBackOfficeRequest { PersistentLocalId = addressPersistentLocalId },
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
                     ProvenanceData = Fixture.Create<ProvenanceData>()

@@ -33,53 +33,53 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
 
             switch (sqsRequest)
             {
-                case ApproveSqsRequest request:
-                    await mediator.Send(new ApproveLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
+                case ApproveAddressSqsRequest request:
+                    await mediator.Send(new ApproveAddressLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case CorrectApprovalSqsRequest request:
-                    await mediator.Send(new CorrectApprovalLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
+                case CorrectAddressApprovalSqsRequest request:
+                    await mediator.Send(new CorrectAddressApprovalLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case ChangePositionSqsRequest request:
-                    await mediator.Send(new ChangePositionLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
+                case ChangeAddressPositionSqsRequest request:
+                    await mediator.Send(new ChangeAddressPositionLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case ChangePostalCodeSqsRequest request:
-                    await mediator.Send(new ChangePostalCodeLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
+                case ChangeAddressPostalCodeSqsRequest request:
+                    await mediator.Send(new ChangeAddressPostalCodeLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case CorrectHouseNumberSqsRequest request:
-                    await mediator.Send(new CorrectHouseNumberLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
+                case CorrectAddressHouseNumberSqsRequest request:
+                    await mediator.Send(new CorrectAddressHouseNumberLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case CorrectPositionSqsRequest request:
-                    await mediator.Send(new CorrectPositionLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
+                case CorrectAddressPositionSqsRequest request:
+                    await mediator.Send(new CorrectAddressPositionLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case CorrectPostalCodeSqsRequest request:
-                    await mediator.Send(new CorrectPostalCodeLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
+                case CorrectAddressPostalCodeSqsRequest request:
+                    await mediator.Send(new CorrectAddressPostalCodeLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case CorrectRejectionSqsRequest request:
-                    await mediator.Send(new CorrectRejectionLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
+                case CorrectAddressRejectionSqsRequest request:
+                    await mediator.Send(new CorrectAddressRejectionLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case DeregulateSqsRequest request:
-                    await mediator.Send(new DeregulateLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
+                case DeregulateAddressSqsRequest request:
+                    await mediator.Send(new DeregulateAddressLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case ProposeSqsRequest request:
-                    await mediator.Send(new ProposeLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
+                case ProposeAddressSqsRequest request:
+                    await mediator.Send(new ProposeAddressLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case RegularizeSqsRequest request:
-                    await mediator.Send(new RegularizeLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
+                case RegularizeAddressSqsRequest request:
+                    await mediator.Send(new RegularizeAddressLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case RejectSqsRequest request:
-                    await mediator.Send(new RejectLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
+                case RejectAddressSqsRequest request:
+                    await mediator.Send(new RejectAddressLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case RemoveSqsRequest request:
-                    await mediator.Send(new RemoveLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
+                case RemoveAddressSqsRequest request:
+                    await mediator.Send(new RemoveAddressLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case RetireSqsRequest request:
-                    await mediator.Send(new RetireLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
+                case RetireAddressSqsRequest request:
+                    await mediator.Send(new RetireAddressLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case CorrectRetirementSqsRequest request:
-                    await mediator.Send(new CorrectRetirementLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
+                case CorrectAddressRetirementSqsRequest request:
+                    await mediator.Send(new CorrectAddressRetirementLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case CorrectBoxNumberSqsRequest request:
-                    await mediator.Send(new CorrectBoxNumberLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
+                case CorrectAddressBoxNumberSqsRequest request:
+                    await mediator.Send(new CorrectAddressBoxNumberLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
                 default:
                     throw new NotImplementedException(

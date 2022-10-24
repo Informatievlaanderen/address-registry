@@ -74,7 +74,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
                 streetNamePersistentLocalId,
                 niscode);
 
-            var sut = new AddressProposeHandler(
+            var sut = new ProposeAddressHandler(
                 Container.Resolve<ICommandHandlerResolver>(),
                 _streetNames,
                 _backOfficeContext,

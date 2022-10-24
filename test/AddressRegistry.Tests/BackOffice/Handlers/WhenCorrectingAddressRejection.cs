@@ -66,7 +66,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
                 Fixture.Create<Provenance>());
             DispatchArrangeCommand(rejectAddress);
             
-            var sut = new AddressCorrectRejectionHandler(
+            var sut = new CorrectAddressRejectionHandler(
                 Container.Resolve<ICommandHandlerResolver>(),
                 _streetNames,
                 _backOfficeContext,

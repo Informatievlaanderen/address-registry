@@ -34,7 +34,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressApproval
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new CorrectApprovalLambdaHandler(
+            var sut = new CorrectAddressApprovalLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -42,11 +42,11 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressApproval
                 MockExceptionIdempotentCommandHandler<StreetNameHasInvalidStatusException>().Object);
 
             // Act
-            var request = new CorrectApprovalLambdaRequest(
+            var request = new CorrectAddressApprovalLambdaRequest(
                 Fixture.Create<int>().ToString(),
-                new CorrectApprovalSqsRequest()
+                new CorrectAddressApprovalSqsRequest()
                 {
-                    Request = new CorrectApprovalBackOfficeRequest(),
+                    Request = new CorrectAddressApprovalBackOfficeRequest(),
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
                     ProvenanceData = Fixture.Create<ProvenanceData>()

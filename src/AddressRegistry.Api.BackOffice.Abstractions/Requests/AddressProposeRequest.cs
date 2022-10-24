@@ -13,7 +13,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
     using Swashbuckle.AspNetCore.Filters;
 
     [DataContract(Name = "VoorstelAdres", Namespace = "")]
-    public class AddressProposeRequest : ProposeBackOfficeRequest, IRequest<PersistentLocalIdETagResponse>
+    public class AddressProposeRequest : ProposeAddressBackOfficeRequest, IRequest<PersistentLocalIdETagResponse>
     {
         [JsonIgnore]
         public IDictionary<string, object> Metadata { get; set; }

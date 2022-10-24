@@ -34,7 +34,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRetiremen
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new CorrectRetirementLambdaHandler(
+            var sut = new CorrectAddressRetirementLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -42,9 +42,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRetiremen
                 MockExceptionIdempotentCommandHandler<StreetNameHasInvalidStatusException>().Object);
 
             // Act
-            var request = new CorrectRetirementLambdaRequest(Fixture.Create<int>().ToString(), new CorrectRetirementSqsRequest()
+            var request = new CorrectAddressRetirementLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressRetirementSqsRequest()
             {
-                Request = new CorrectRetirementBackOfficeRequest(),
+                Request = new CorrectAddressRetirementBackOfficeRequest(),
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()

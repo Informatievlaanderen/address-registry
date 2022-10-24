@@ -41,7 +41,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRegularizingAddress
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
             MockMediator
-                .Setup(x => x.Send(It.IsAny<RegularizeSqsRequest>(), CancellationToken.None))
+                .Setup(x => x.Send(It.IsAny<RegularizeAddressSqsRequest>(), CancellationToken.None))
                 .Returns(Task.FromResult(expectedLocationResult));
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
@@ -111,7 +111,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRegularizingAddress
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             MockMediator
-                .Setup(x => x.Send(It.IsAny<RegularizeSqsRequest>(), CancellationToken.None))
+                .Setup(x => x.Send(It.IsAny<RegularizeAddressSqsRequest>(), CancellationToken.None))
                 .Throws(new AggregateIdIsNotFoundException());
 
             Func<Task> act = async () => await _controller.Regularize(

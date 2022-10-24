@@ -67,7 +67,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
                 houseNumber,
                 null);
 
-            var sut = new AddressChangePositionHandler(
+            var sut = new ChangeAddressPositionHandler(
                 Container.Resolve<ICommandHandlerResolver>(),
                 _streetNames,
                 _backOfficeContext,

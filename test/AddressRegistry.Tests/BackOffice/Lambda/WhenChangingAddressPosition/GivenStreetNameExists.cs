@@ -69,7 +69,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenChangingAddressPosition
                 null);
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new ChangePositionLambdaHandler(
+            var sut = new ChangeAddressPositionLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -78,9 +78,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenChangingAddressPosition
 
             // Act
             await sut.Handle(
-                new ChangePositionLambdaRequest(streetNamePersistentLocalId, new ChangePositionSqsRequest
+                new ChangeAddressPositionLambdaRequest(streetNamePersistentLocalId, new ChangeAddressPositionSqsRequest
                 {
-                    Request = new ChangePositionBackOfficeRequest
+                    Request = new ChangeAddressPositionBackOfficeRequest
                     {
                         PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
                     },
@@ -103,7 +103,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenChangingAddressPosition
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new ChangePositionLambdaHandler(
+            var sut = new ChangeAddressPositionLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -112,9 +112,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenChangingAddressPosition
 
             // Act
             await sut.Handle(
-                new ChangePositionLambdaRequest(Fixture.Create<int>().ToString(), new ChangePositionSqsRequest
+                new ChangeAddressPositionLambdaRequest(Fixture.Create<int>().ToString(), new ChangeAddressPositionSqsRequest
                     {
-                        Request = new ChangePositionBackOfficeRequest
+                        Request = new ChangeAddressPositionBackOfficeRequest
                         {
                             PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
                         },
@@ -139,7 +139,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenChangingAddressPosition
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new ChangePositionLambdaHandler(
+            var sut = new ChangeAddressPositionLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -147,9 +147,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenChangingAddressPosition
                 MockExceptionIdempotentCommandHandler<AddressHasInvalidGeometryMethodException>().Object);
 
             // Act
-            await sut.Handle(new ChangePositionLambdaRequest(Fixture.Create<int>().ToString(), new ChangePositionSqsRequest
+            await sut.Handle(new ChangeAddressPositionLambdaRequest(Fixture.Create<int>().ToString(), new ChangeAddressPositionSqsRequest
             {
-                Request = new ChangePositionBackOfficeRequest
+                Request = new ChangeAddressPositionBackOfficeRequest
                 {
                     PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
                 },
@@ -174,7 +174,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenChangingAddressPosition
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new ChangePositionLambdaHandler(
+            var sut = new ChangeAddressPositionLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -182,9 +182,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenChangingAddressPosition
                 MockExceptionIdempotentCommandHandler<AddressHasMissingGeometrySpecificationException>().Object);
 
             // Act
-            await sut.Handle(new ChangePositionLambdaRequest(Fixture.Create<int>().ToString(), new ChangePositionSqsRequest
+            await sut.Handle(new ChangeAddressPositionLambdaRequest(Fixture.Create<int>().ToString(), new ChangeAddressPositionSqsRequest
             {
-                Request = new ChangePositionBackOfficeRequest
+                Request = new ChangeAddressPositionBackOfficeRequest
                 {
                     PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
                 },
@@ -209,7 +209,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenChangingAddressPosition
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new ChangePositionLambdaHandler(
+            var sut = new ChangeAddressPositionLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -217,9 +217,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenChangingAddressPosition
                 MockExceptionIdempotentCommandHandler<AddressHasInvalidGeometrySpecificationException>().Object);
 
             // Act
-            await sut.Handle(new ChangePositionLambdaRequest(Fixture.Create<int>().ToString(), new ChangePositionSqsRequest
+            await sut.Handle(new ChangeAddressPositionLambdaRequest(Fixture.Create<int>().ToString(), new ChangeAddressPositionSqsRequest
             {
-                Request = new ChangePositionBackOfficeRequest
+                Request = new ChangeAddressPositionBackOfficeRequest
                 {
                     PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
                 },
@@ -263,7 +263,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenChangingAddressPosition
                 houseNumber,
                 null);
 
-            var sut = new ChangePositionLambdaHandler(
+            var sut = new ChangeAddressPositionLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -274,9 +274,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenChangingAddressPosition
                 await _streetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), CancellationToken.None);
 
             // Act
-            await sut.Handle(new ChangePositionLambdaRequest(streetNamePersistentLocalId, new ChangePositionSqsRequest
+            await sut.Handle(new ChangeAddressPositionLambdaRequest(streetNamePersistentLocalId, new ChangeAddressPositionSqsRequest
                 {
-                    Request = new ChangePositionBackOfficeRequest
+                    Request = new ChangeAddressPositionBackOfficeRequest
                     {
                         PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
                     },

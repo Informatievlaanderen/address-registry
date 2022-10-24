@@ -43,7 +43,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
             MockMediator
-                .Setup(x => x.Send(It.IsAny<ChangePositionSqsRequest>(), CancellationToken.None))
+                .Setup(x => x.Send(It.IsAny<ChangeAddressPositionSqsRequest>(), CancellationToken.None))
                 .Returns(Task.FromResult(expectedLocationResult));
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
@@ -119,7 +119,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             MockMediator
-                .Setup(x => x.Send(It.IsAny<ChangePositionSqsRequest>(), CancellationToken.None))
+                .Setup(x => x.Send(It.IsAny<ChangeAddressPositionSqsRequest>(), CancellationToken.None))
                 .Throws(new AggregateIdIsNotFoundException());
 
             Func<Task> act = async () => await _controller.ChangePosition(

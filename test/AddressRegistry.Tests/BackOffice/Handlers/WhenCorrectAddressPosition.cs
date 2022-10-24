@@ -65,7 +65,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
                 null
                 );
 
-            var sut = new AddressCorrectPositionHandler(
+            var sut = new CorrectAddressPositionHandler(
                 Container.Resolve<ICommandHandlerResolver>(),
                 _streetNames,
                 _backOfficeContext,

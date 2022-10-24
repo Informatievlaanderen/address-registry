@@ -70,7 +70,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
 
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new CorrectPostalCodeLambdaHandler(
+            var sut = new CorrectAddressPostalCodeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -80,10 +80,10 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
                 _municipalityContext);
 
             // Act
-            var request = new CorrectPostalCodeLambdaRequest(Fixture.Create<int>().ToString(),
-                new CorrectPostalCodeSqsRequest()
+            var request = new CorrectAddressPostalCodeLambdaRequest(Fixture.Create<int>().ToString(),
+                new CorrectAddressPostalCodeSqsRequest()
                 {
-                    Request = new CorrectPostalCodeBackOfficeRequest()
+                    Request = new CorrectAddressPostalCodeBackOfficeRequest()
                     {
                         PostInfoId = PostInfoPuri + correctPostInfoId
                     },

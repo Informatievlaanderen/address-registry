@@ -71,7 +71,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressApproval
                 addressPersistentLocalId);
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new CorrectApprovalLambdaHandler(
+            var sut = new CorrectAddressApprovalLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -80,9 +80,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressApproval
 
             // Act
             await sut.Handle(
-                new CorrectApprovalLambdaRequest(streetNamePersistentLocalId, new CorrectApprovalSqsRequest()
+                new CorrectAddressApprovalLambdaRequest(streetNamePersistentLocalId, new CorrectAddressApprovalSqsRequest()
                 {
-                    Request = new CorrectApprovalBackOfficeRequest
+                    Request = new CorrectAddressApprovalBackOfficeRequest
                     {
                         PersistentLocalId = addressPersistentLocalId
                     },
@@ -104,7 +104,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressApproval
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new CorrectApprovalLambdaHandler(
+            var sut = new CorrectAddressApprovalLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -112,9 +112,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressApproval
                 MockExceptionIdempotentCommandHandler<AddressHasInvalidStatusException>().Object);
 
             // Act
-            await sut.Handle(new CorrectApprovalLambdaRequest(Fixture.Create<int>().ToString(), new CorrectApprovalSqsRequest()
+            await sut.Handle(new CorrectAddressApprovalLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressApprovalSqsRequest()
             {
-                Request = new CorrectApprovalBackOfficeRequest(),
+                Request = new CorrectAddressApprovalBackOfficeRequest(),
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -136,7 +136,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressApproval
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new CorrectApprovalLambdaHandler(
+            var sut = new CorrectAddressApprovalLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -144,9 +144,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressApproval
                 MockExceptionIdempotentCommandHandler<AddressIsNotOfficiallyAssignedException>().Object);
 
             // Act
-            await sut.Handle(new CorrectApprovalLambdaRequest(Fixture.Create<int>().ToString(), new CorrectApprovalSqsRequest()
+            await sut.Handle(new CorrectAddressApprovalLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressApprovalSqsRequest()
             {
-                Request = new CorrectApprovalBackOfficeRequest(),
+                Request = new CorrectAddressApprovalBackOfficeRequest(),
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -187,7 +187,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressApproval
                 houseNumber,
                 null);
 
-            var sut = new CorrectApprovalLambdaHandler(
+            var sut = new CorrectAddressApprovalLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -198,9 +198,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressApproval
                 await _streetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), CancellationToken.None);
 
             // Act
-            await sut.Handle(new CorrectApprovalLambdaRequest(streetNamePersistentLocalId, new CorrectApprovalSqsRequest()
+            await sut.Handle(new CorrectAddressApprovalLambdaRequest(streetNamePersistentLocalId, new CorrectAddressApprovalSqsRequest()
                 {
-                    Request = new CorrectApprovalBackOfficeRequest
+                    Request = new CorrectAddressApprovalBackOfficeRequest
                     {
                         PersistentLocalId = addressPersistentLocalId
                     },

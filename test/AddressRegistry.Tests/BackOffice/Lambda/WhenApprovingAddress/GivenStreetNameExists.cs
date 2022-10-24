@@ -67,7 +67,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenApprovingAddress
                 null);
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new ApproveLambdaHandler(
+            var sut = new ApproveAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -75,7 +75,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenApprovingAddress
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext));
 
             // Act
-            await sut.Handle(new ApproveLambdaRequest(streetNamePersistentLocalId, new ApproveSqsRequest
+            await sut.Handle(new ApproveAddressLambdaRequest(streetNamePersistentLocalId, new ApproveAddressSqsRequest
                 {
                     Request = new ApproveBackOfficeRequest { PersistentLocalId = addressPersistentLocalId },
                     TicketId = Guid.NewGuid(),
@@ -96,7 +96,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenApprovingAddress
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new ApproveLambdaHandler(
+            var sut = new ApproveAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -105,7 +105,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenApprovingAddress
 
             // Act
             await sut.Handle(
-                new ApproveLambdaRequest(Fixture.Create<int>().ToString(), new ApproveSqsRequest
+                new ApproveAddressLambdaRequest(Fixture.Create<int>().ToString(), new ApproveAddressSqsRequest
                 {
                     Request = new ApproveBackOfficeRequest(),
                     TicketId = Guid.NewGuid(),
@@ -129,7 +129,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenApprovingAddress
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new ApproveLambdaHandler(
+            var sut = new ApproveAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -137,7 +137,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenApprovingAddress
                 MockExceptionIdempotentCommandHandler<AddressHasInvalidStatusException>().Object);
 
             // Act
-            await sut.Handle(new ApproveLambdaRequest(Fixture.Create<int>().ToString(), new ApproveSqsRequest
+            await sut.Handle(new ApproveAddressLambdaRequest(Fixture.Create<int>().ToString(), new ApproveAddressSqsRequest
             {
                 Request = new ApproveBackOfficeRequest(),
                 TicketId = Guid.NewGuid(),
@@ -161,7 +161,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenApprovingAddress
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new ApproveLambdaHandler(
+            var sut = new ApproveAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -169,7 +169,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenApprovingAddress
                 MockExceptionIdempotentCommandHandler<ParentAddressHasInvalidStatusException>().Object);
 
             // Act
-            await sut.Handle(new ApproveLambdaRequest(Fixture.Create<int>().ToString(), new ApproveSqsRequest
+            await sut.Handle(new ApproveAddressLambdaRequest(Fixture.Create<int>().ToString(), new ApproveAddressSqsRequest
             {
                 Request = new ApproveBackOfficeRequest(),
                 TicketId = Guid.NewGuid(),
@@ -212,7 +212,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenApprovingAddress
                 houseNumber,
                 null);
 
-            var sut = new ApproveLambdaHandler(
+            var sut = new ApproveAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -223,7 +223,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenApprovingAddress
                 await _streetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), CancellationToken.None);
 
             // Act
-            await sut.Handle(new ApproveLambdaRequest(streetNamePersistentLocalId, new ApproveSqsRequest
+            await sut.Handle(new ApproveAddressLambdaRequest(streetNamePersistentLocalId, new ApproveAddressSqsRequest
             {
                 Request = new ApproveBackOfficeRequest { PersistentLocalId = addressPersistentLocalId},
                 TicketId = Guid.NewGuid(),

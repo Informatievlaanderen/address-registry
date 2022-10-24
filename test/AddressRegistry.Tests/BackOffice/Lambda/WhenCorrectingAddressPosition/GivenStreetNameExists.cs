@@ -69,7 +69,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
                 null);
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new CorrectPositionLambdaHandler(
+            var sut = new CorrectAddressPositionLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -77,9 +77,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext));
 
             // Act
-            await sut.Handle(new CorrectPositionLambdaRequest(streetNamePersistentLocalId, new CorrectPositionSqsRequest
+            await sut.Handle(new CorrectAddressPositionLambdaRequest(streetNamePersistentLocalId, new CorrectAddressPositionSqsRequest
                 {
-                    Request = new CorrectPositionBackOfficeRequest
+                    Request = new CorrectAddressPositionBackOfficeRequest
                     {
                         PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
                     },
@@ -101,7 +101,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new CorrectPositionLambdaHandler(
+            var sut = new CorrectAddressPositionLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -109,9 +109,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
                 MockExceptionIdempotentCommandHandler<AddressHasInvalidStatusException>().Object);
 
             // Act
-            await sut.Handle(new CorrectPositionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectPositionSqsRequest
+            await sut.Handle(new CorrectAddressPositionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressPositionSqsRequest
             {
-                Request = new CorrectPositionBackOfficeRequest
+                Request = new CorrectAddressPositionBackOfficeRequest
                 {
                     PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
                 },
@@ -136,7 +136,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new CorrectPositionLambdaHandler(
+            var sut = new CorrectAddressPositionLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -144,9 +144,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
                 MockExceptionIdempotentCommandHandler<AddressHasInvalidGeometryMethodException>().Object);
 
             // Act
-            await sut.Handle(new CorrectPositionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectPositionSqsRequest
+            await sut.Handle(new CorrectAddressPositionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressPositionSqsRequest
             {
-                Request = new CorrectPositionBackOfficeRequest
+                Request = new CorrectAddressPositionBackOfficeRequest
                 {
                     PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
                 },
@@ -171,7 +171,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new CorrectPositionLambdaHandler(
+            var sut = new CorrectAddressPositionLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -179,9 +179,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
                 MockExceptionIdempotentCommandHandler<AddressHasMissingGeometrySpecificationException>().Object);
 
             // Act
-            await sut.Handle(new CorrectPositionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectPositionSqsRequest
+            await sut.Handle(new CorrectAddressPositionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressPositionSqsRequest
             {
-                Request = new CorrectPositionBackOfficeRequest
+                Request = new CorrectAddressPositionBackOfficeRequest
                 {
                     PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
                 },
@@ -206,7 +206,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new CorrectPositionLambdaHandler(
+            var sut = new CorrectAddressPositionLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -214,9 +214,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
                 MockExceptionIdempotentCommandHandler<AddressHasInvalidGeometrySpecificationException>().Object);
 
             // Act
-            await sut.Handle(new CorrectPositionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectPositionSqsRequest
+            await sut.Handle(new CorrectAddressPositionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressPositionSqsRequest
             {
-                Request = new CorrectPositionBackOfficeRequest
+                Request = new CorrectAddressPositionBackOfficeRequest
                 {
                     PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
                 },
@@ -260,7 +260,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
                 houseNumber,
                 null);
 
-            var sut = new CorrectPositionLambdaHandler(
+            var sut = new CorrectAddressPositionLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -271,9 +271,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
                 await _streetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), CancellationToken.None);
 
             // Act
-            await sut.Handle(new CorrectPositionLambdaRequest(streetNamePersistentLocalId, new CorrectPositionSqsRequest
+            await sut.Handle(new CorrectAddressPositionLambdaRequest(streetNamePersistentLocalId, new CorrectAddressPositionSqsRequest
                 {
-                    Request = new CorrectPositionBackOfficeRequest
+                    Request = new CorrectAddressPositionBackOfficeRequest
                     {
                         PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
                     },

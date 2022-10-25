@@ -1,3 +1,13 @@
+## [3.64.3](https://github.com/informatievlaanderen/address-registry/compare/v3.64.2...v3.64.3) (2022-10-25)
+
+
+### Bug Fixes
+
+* assertion of failing addressmatch test ([d15f900](https://github.com/informatievlaanderen/address-registry/commit/d15f900e6aff47a717441ea4b65b34be359d5e44))
+* gawr-3884 AddressMatch StripStreetName ([e99649d](https://github.com/informatievlaanderen/address-registry/commit/e99649d98104e7bab305d3dba920497ceecdedf3))
+* remove  from wms views ([b09e0e2](https://github.com/informatievlaanderen/address-registry/commit/b09e0e291398267ba9972fdc5198b569996ea88b))
+* remove unneeded registration in snapshot oslo ([dcc91d9](https://github.com/informatievlaanderen/address-registry/commit/dcc91d9adc7e9c1d2a464338ca79ec0182bf1847))
+
 ## [3.64.2](https://github.com/informatievlaanderen/address-registry/compare/v3.64.1...v3.64.2) (2022-10-21)
 
 

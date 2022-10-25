@@ -62,7 +62,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
                 streetNamePersistentLocalId,
                 addressPersistentLocalId);
 
-            var sut = new AddressCorrectApprovalHandler(
+            var sut = new CorrectAddressApprovalHandler(
                 Container.Resolve<ICommandHandlerResolver>(),
                 _streetNames,
                 _backOfficeContext,

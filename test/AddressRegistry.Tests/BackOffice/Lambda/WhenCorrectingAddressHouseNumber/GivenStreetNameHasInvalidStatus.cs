@@ -7,6 +7,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
+    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
     using Autofac;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
@@ -33,7 +34,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressCorrectHouseNumberLambdaHandler(
+            var sut = new CorrectAddressHouseNumberLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -41,17 +42,13 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
                 MockExceptionIdempotentCommandHandler<StreetNameHasInvalidStatusException>().Object);
 
             // Act
-            var request = new SqsLambdaAddressCorrectHouseNumberRequest
+            var request = new CorrectAddressHouseNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressHouseNumberSqsRequest()
             {
-                Request = new AddressBackOfficeCorrectHouseNumberRequest
-                {
-                    Huisnummer = "11"
-                },
-                MessageGroupId = Fixture.Create<int>().ToString(),
+                Request = new CorrectAddressHouseNumberBackOfficeRequest { Huisnummer = "20" },
                 TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            };
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            });
             await sut.Handle(request, CancellationToken.None);
 
             //Assert

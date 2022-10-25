@@ -56,7 +56,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
                 null
                 );
 
-            var sut = new AddressChangePostalCodeHandler(
+            var sut = new ChangeAddressPostalCodeHandler(
                 Container.Resolve<ICommandHandlerResolver>(),
                 _streetNames,
                 _backOfficeContext,

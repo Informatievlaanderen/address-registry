@@ -54,7 +54,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
                 new HouseNumber("1"),
                 null);
 
-            var sut = new AddressRemoveHandler(
+            var sut = new RemoveAddressHandler(
                 Container.Resolve<ICommandHandlerResolver>(),
                 _streetNames,
                 _backOfficeContext,

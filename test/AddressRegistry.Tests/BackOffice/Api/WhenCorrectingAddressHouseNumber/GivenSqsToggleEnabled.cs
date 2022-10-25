@@ -41,7 +41,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressHouseNumber
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
             MockMediator
-                .Setup(x => x.Send(It.IsAny<SqsAddressCorrectHouseNumberRequest>(), CancellationToken.None))
+                .Setup(x => x.Send(It.IsAny<CorrectAddressHouseNumberSqsRequest>(), CancellationToken.None))
                 .Returns(Task.FromResult(expectedLocationResult));
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
@@ -114,7 +114,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressHouseNumber
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             MockMediator
-                .Setup(x => x.Send(It.IsAny<SqsAddressCorrectHouseNumberRequest>(), CancellationToken.None))
+                .Setup(x => x.Send(It.IsAny<CorrectAddressHouseNumberSqsRequest>(), CancellationToken.None))
                 .Throws(new AggregateIdIsNotFoundException());
 
             Func<Task> act = async () => await _controller.CorrectHouseNumber(

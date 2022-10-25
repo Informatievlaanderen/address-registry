@@ -8,6 +8,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
+    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
     using AddressRegistry.Consumer.Read.Municipality.Projections;
     using Projections.Syndication.PostalInfo;
     using StreetName;
@@ -93,7 +94,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
                 null);
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new SqsAddressCorrectPostalCodeLambdaHandler(
+            var sut = new CorrectAddressPostalCodeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -103,18 +104,18 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
                 _municipalityContext);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressCorrectPostalCodeRequest
-            {
-                Request = new AddressBackOfficeCorrectPostalCodeRequest
+            await sut.Handle(
+                new CorrectAddressPostalCodeLambdaRequest(streetNamePersistentLocalId, new CorrectAddressPostalCodeSqsRequest()
                 {
-                    PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{correctPostInfoId}"
-                },
-                AddressPersistentLocalId = addressPersistentLocalId,
-                MessageGroupId = streetNamePersistentLocalId,
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            },
+                    Request = new CorrectAddressPostalCodeBackOfficeRequest()
+                    {
+                        PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{correctPostInfoId}"
+                    },
+                    PersistentLocalId = addressPersistentLocalId,
+                    TicketId = Guid.NewGuid(),
+                    Metadata = new Dictionary<string, object?>(),
+                    ProvenanceData = Fixture.Create<ProvenanceData>()
+                }),
             CancellationToken.None);
 
             // Assert
@@ -152,7 +153,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
             });
             await _municipalityContext.SaveChangesAsync();
 
-            var sut = new SqsAddressCorrectPostalCodeLambdaHandler(
+            var sut = new CorrectAddressPostalCodeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -162,18 +163,17 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
                 _municipalityContext);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressCorrectPostalCodeRequest
+            await sut.Handle(new CorrectAddressPostalCodeLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressPostalCodeSqsRequest()
             {
-                Request = new AddressBackOfficeCorrectPostalCodeRequest
+                Request = new CorrectAddressPostalCodeBackOfficeRequest()
                 {
-                    PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}"
+                    PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{correctPostInfoId}"
                 },
-                AddressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>(),
-                MessageGroupId = Fixture.Create<int>().ToString(),
+                PersistentLocalId = Fixture.Create<AddressPersistentLocalId>(),
                 TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            }), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -214,7 +214,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
             });
             await _municipalityContext.SaveChangesAsync();
 
-            var sut = new SqsAddressCorrectPostalCodeLambdaHandler(
+            var sut = new CorrectAddressPostalCodeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -224,18 +224,16 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
                 _municipalityContext);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressCorrectPostalCodeRequest
+            await sut.Handle(new CorrectAddressPostalCodeLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressPostalCodeSqsRequest()
             {
-                Request = new AddressBackOfficeCorrectPostalCodeRequest
+                Request = new CorrectAddressPostalCodeBackOfficeRequest()
                 {
-                    PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}"
+                    PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{correctPostInfoId}"
                 },
-                AddressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>(),
-                MessageGroupId = Fixture.Create<int>().ToString(),
                 TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            }), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -293,7 +291,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
             });
             await _municipalityContext.SaveChangesAsync();
 
-            var sut = new SqsAddressCorrectPostalCodeLambdaHandler(
+            var sut = new CorrectAddressPostalCodeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -306,18 +304,17 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
                 await _streetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), CancellationToken.None);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressCorrectPostalCodeRequest
-            {
-                Request = new AddressBackOfficeCorrectPostalCodeRequest
+            await sut.Handle(new CorrectAddressPostalCodeLambdaRequest(streetNamePersistentLocalId, new CorrectAddressPostalCodeSqsRequest()
                 {
-                    PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}"
-                },
-                AddressPersistentLocalId = addressPersistentLocalId,
-                MessageGroupId = streetNamePersistentLocalId,
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            },
+                    Request = new CorrectAddressPostalCodeBackOfficeRequest()
+                    {
+                        PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}"
+                    },
+                    PersistentLocalId = addressPersistentLocalId,
+                    TicketId = Guid.NewGuid(),
+                    Metadata = new Dictionary<string, object?>(),
+                    ProvenanceData = Fixture.Create<ProvenanceData>()
+                }),
             CancellationToken.None);
 
             //Assert

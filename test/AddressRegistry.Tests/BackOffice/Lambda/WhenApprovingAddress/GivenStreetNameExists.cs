@@ -8,6 +8,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenApprovingAddress
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
+    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
     using StreetName;
     using StreetName.Exceptions;
     using AutoFixture;
@@ -66,7 +67,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenApprovingAddress
                 null);
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new SqsAddressApproveLambdaHandler(
+            var sut = new ApproveAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -74,18 +75,14 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenApprovingAddress
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext));
 
             // Act
-            await sut.Handle(new SqsLambdaAddressApproveRequest
-            {
-                Request = new AddressBackOfficeApproveRequest
+            await sut.Handle(new ApproveAddressLambdaRequest(streetNamePersistentLocalId, new ApproveAddressSqsRequest
                 {
-                    PersistentLocalId = addressPersistentLocalId
-                },
-                MessageGroupId = streetNamePersistentLocalId,
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            },
-            CancellationToken.None);
+                    Request = new ApproveAddressBackOfficeRequest { PersistentLocalId = addressPersistentLocalId },
+                    TicketId = Guid.NewGuid(),
+                    Metadata = new Dictionary<string, object?>(),
+                    ProvenanceData = Fixture.Create<ProvenanceData>()
+                }),
+                CancellationToken.None);
 
             // Assert
             var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(
@@ -99,7 +96,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenApprovingAddress
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressApproveLambdaHandler(
+            var sut = new ApproveAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -107,14 +104,14 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenApprovingAddress
                 MockExceptionIdempotentCommandHandler<StreetNameHasInvalidStatusException>().Object);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressApproveRequest
-            {
-                Request = new AddressBackOfficeApproveRequest(),
-                MessageGroupId = Fixture.Create<int>().ToString(),
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
+            await sut.Handle(
+                new ApproveAddressLambdaRequest(Fixture.Create<int>().ToString(), new ApproveAddressSqsRequest
+                {
+                    Request = new ApproveAddressBackOfficeRequest(),
+                    TicketId = Guid.NewGuid(),
+                    Metadata = new Dictionary<string, object?>(),
+                    ProvenanceData = Fixture.Create<ProvenanceData>()
+                }), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -132,7 +129,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenApprovingAddress
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressApproveLambdaHandler(
+            var sut = new ApproveAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -140,14 +137,13 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenApprovingAddress
                 MockExceptionIdempotentCommandHandler<AddressHasInvalidStatusException>().Object);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressApproveRequest
+            await sut.Handle(new ApproveAddressLambdaRequest(Fixture.Create<int>().ToString(), new ApproveAddressSqsRequest
             {
-                Request = new AddressBackOfficeApproveRequest(),
-                MessageGroupId = Fixture.Create<int>().ToString(),
+                Request = new ApproveAddressBackOfficeRequest(),
                 TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            }), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -165,7 +161,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenApprovingAddress
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressApproveLambdaHandler(
+            var sut = new ApproveAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -173,14 +169,13 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenApprovingAddress
                 MockExceptionIdempotentCommandHandler<ParentAddressHasInvalidStatusException>().Object);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressApproveRequest
+            await sut.Handle(new ApproveAddressLambdaRequest(Fixture.Create<int>().ToString(), new ApproveAddressSqsRequest
             {
-                Request = new AddressBackOfficeApproveRequest(),
-                MessageGroupId = Fixture.Create<int>().ToString(),
+                Request = new ApproveAddressBackOfficeRequest(),
                 TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            }), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -217,7 +212,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenApprovingAddress
                 houseNumber,
                 null);
 
-            var sut = new SqsAddressApproveLambdaHandler(
+            var sut = new ApproveAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -228,17 +223,13 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenApprovingAddress
                 await _streetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), CancellationToken.None);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressApproveRequest
+            await sut.Handle(new ApproveAddressLambdaRequest(streetNamePersistentLocalId, new ApproveAddressSqsRequest
             {
-                Request = new AddressBackOfficeApproveRequest
-                {
-                    PersistentLocalId = addressPersistentLocalId
-                },
-                MessageGroupId = streetNamePersistentLocalId,
+                Request = new ApproveAddressBackOfficeRequest { PersistentLocalId = addressPersistentLocalId},
                 TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            },
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            }),
             CancellationToken.None);
 
             //Assert

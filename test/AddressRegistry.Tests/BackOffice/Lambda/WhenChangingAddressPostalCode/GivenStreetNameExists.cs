@@ -8,6 +8,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenChangingAddressPostalCode
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
+    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
     using StreetName;
     using StreetName.Exceptions;
     using AutoFixture;
@@ -63,7 +64,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenChangingAddressPostalCode
                 null);
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new SqsAddressChangePostalCodeLambdaHandler(
+            var sut = new ChangeAddressPostalCodeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -71,18 +72,18 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenChangingAddressPostalCode
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext));
 
             // Act
-            await sut.Handle(new SqsLambdaAddressChangePostalCodeRequest
-            {
-                Request = new AddressBackOfficeChangePostalCodeRequest
+            await sut.Handle(
+                new ChangeAddressPostalCodeLambdaRequest(streetNamePersistentLocalId, new ChangeAddressPostalCodeSqsRequest()
                 {
-                    PostInfoId = "https://data.vlaanderen.be/id/postinfo/123"
-                },
-                AddressPersistentLocalId = addressPersistentLocalId,
-                MessageGroupId = streetNamePersistentLocalId,
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            },
+                    Request = new ChangeAddressPostalCodeBackOfficeRequest()
+                    {
+                        PostInfoId = "https://data.vlaanderen.be/id/postinfo/123"
+                    },
+                    PersistentLocalId = addressPersistentLocalId,
+                    TicketId = Guid.NewGuid(),
+                    Metadata = new Dictionary<string, object?>(),
+                    ProvenanceData = Fixture.Create<ProvenanceData>()
+                }),
             CancellationToken.None);
 
             // Assert
@@ -97,7 +98,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenChangingAddressPostalCode
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressChangePostalCodeLambdaHandler(
+            var sut = new ChangeAddressPostalCodeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -105,18 +106,16 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenChangingAddressPostalCode
                 MockExceptionIdempotentCommandHandler<AddressHasInvalidStatusException>().Object);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressChangePostalCodeRequest
-            {
-                Request = new AddressBackOfficeChangePostalCodeRequest
+            await sut.Handle(new ChangeAddressPostalCodeLambdaRequest(Fixture.Create<int>().ToString(), new ChangeAddressPostalCodeSqsRequest()
                 {
-                    PostInfoId = "https://data.vlaanderen.be/id/postinfo/123"
-                },
-                AddressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>(),
-                MessageGroupId = Fixture.Create<int>().ToString(),
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
+                    Request = new ChangeAddressPostalCodeBackOfficeRequest()
+                    {
+                        PostInfoId = "https://data.vlaanderen.be/id/postinfo/123"
+                    },
+                    TicketId = Guid.NewGuid(),
+                    Metadata = new Dictionary<string, object?>(),
+                    ProvenanceData = Fixture.Create<ProvenanceData>()
+                }), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -153,7 +152,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenChangingAddressPostalCode
                 houseNumber,
                 null);
 
-            var sut = new SqsAddressChangePostalCodeLambdaHandler(
+            var sut = new ChangeAddressPostalCodeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -164,18 +163,18 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenChangingAddressPostalCode
                 await _streetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), CancellationToken.None);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressChangePostalCodeRequest
-            {
-                Request = new AddressBackOfficeChangePostalCodeRequest
+            await sut.Handle(
+                new ChangeAddressPostalCodeLambdaRequest(streetNamePersistentLocalId, new ChangeAddressPostalCodeSqsRequest
                 {
-                    PostInfoId = "https://data.vlaanderen.be/id/postinfo/123"
-                },
-                AddressPersistentLocalId = addressPersistentLocalId,
-                MessageGroupId = streetNamePersistentLocalId,
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            },
+                    Request = new ChangeAddressPostalCodeBackOfficeRequest()
+                    {
+                        PostInfoId = "https://data.vlaanderen.be/id/postinfo/123",
+                    },
+                    PersistentLocalId = addressPersistentLocalId,
+                    TicketId = Guid.NewGuid(),
+                    Metadata = new Dictionary<string, object?>(),
+                    ProvenanceData = Fixture.Create<ProvenanceData>()
+                }),
             CancellationToken.None);
 
             //Assert

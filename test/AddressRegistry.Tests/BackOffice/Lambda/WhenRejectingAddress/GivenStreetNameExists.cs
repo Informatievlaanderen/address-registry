@@ -8,6 +8,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRejectingAddress
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
+    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
     using StreetName;
     using StreetName.Commands;
     using StreetName.Exceptions;
@@ -67,7 +68,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRejectingAddress
                 null);
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new SqsAddressRejectLambdaHandler(
+            var sut = new RejectAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -75,17 +76,13 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRejectingAddress
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext));
 
             // Act
-            await sut.Handle(new SqsLambdaAddressRejectRequest
+            await sut.Handle(new RejectAddressLambdaRequest(streetNamePersistentLocalId, new RejectAddressSqsRequest
             {
-                Request = new AddressBackOfficeRejectRequest
-                {
-                    PersistentLocalId = addressPersistentLocalId
-                },
-                MessageGroupId = streetNamePersistentLocalId,
-                Metadata = new Dictionary<string, object>(),
+                Request = new RejectAddressBackOfficeRequest() { PersistentLocalId = addressPersistentLocalId },
                 TicketId = Guid.NewGuid(),
-                Provenance = Fixture.Create<Provenance>()
-            },
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            }),
             CancellationToken.None);
 
             // Assert
@@ -100,7 +97,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRejectingAddress
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressRejectLambdaHandler(
+            var sut = new RejectAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -108,14 +105,13 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRejectingAddress
                 MockExceptionIdempotentCommandHandler<AddressHasInvalidStatusException>().Object);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressRejectRequest
-            {
-                Request = new AddressBackOfficeRejectRequest(),
-                MessageGroupId = Fixture.Create<int>().ToString(),
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
+            await sut.Handle(new RejectAddressLambdaRequest(Fixture.Create<int>().ToString(), new RejectAddressSqsRequest
+                {
+                    Request = new RejectAddressBackOfficeRequest(),
+                    TicketId = Guid.NewGuid(),
+                    Metadata = new Dictionary<string, object?>(),
+                    ProvenanceData = Fixture.Create<ProvenanceData>()
+                }), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -158,7 +154,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRejectingAddress
                 Fixture.Create<Provenance>());
             DispatchArrangeCommand(rejectAddress);
 
-            var sut = new SqsAddressRejectLambdaHandler(
+            var sut = new RejectAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -169,17 +165,13 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRejectingAddress
                 await _streetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), CancellationToken.None);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressRejectRequest
-            {
-                Request = new AddressBackOfficeRejectRequest
+            await sut.Handle(new RejectAddressLambdaRequest(streetNamePersistentLocalId, new RejectAddressSqsRequest
                 {
-                    PersistentLocalId = addressPersistentLocalId
-                },
-                MessageGroupId = streetNamePersistentLocalId,
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            },
+                    Request = new RejectAddressBackOfficeRequest() { PersistentLocalId = addressPersistentLocalId },
+                    TicketId = Guid.NewGuid(),
+                    Metadata = new Dictionary<string, object?>(),
+                    ProvenanceData = Fixture.Create<ProvenanceData>()
+                }),
             CancellationToken.None);
 
             //Assert

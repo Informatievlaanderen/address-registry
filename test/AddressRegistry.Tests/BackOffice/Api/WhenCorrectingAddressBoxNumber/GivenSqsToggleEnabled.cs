@@ -44,7 +44,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressBoxNumber
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
             MockMediator
-                .Setup(x => x.Send(It.IsAny<SqsAddressCorrectBoxNumberRequest>(), CancellationToken.None))
+                .Setup(x => x.Send(It.IsAny<CorrectAddressBoxNumberSqsRequest>(), CancellationToken.None))
                 .Returns(Task.FromResult(expectedLocationResult));
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
@@ -115,7 +115,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressBoxNumber
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
             MockMediator
-                .Setup(x => x.Send(It.IsAny<SqsAddressCorrectBoxNumberRequest>(), CancellationToken.None))
+                .Setup(x => x.Send(It.IsAny<CorrectAddressBoxNumberSqsRequest>(), CancellationToken.None))
                 .Throws<BoxNumberHasInvalidFormatException>();
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
@@ -147,7 +147,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressBoxNumber
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
             MockMediator
-                .Setup(x => x.Send(It.IsAny<SqsAddressCorrectBoxNumberRequest>(), CancellationToken.None))
+                .Setup(x => x.Send(It.IsAny<CorrectAddressBoxNumberSqsRequest>(), CancellationToken.None))
                 .Throws<AddressHasNoBoxNumberException>();
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
@@ -179,7 +179,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressBoxNumber
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
             MockMediator
-                .Setup(x => x.Send(It.IsAny<SqsAddressCorrectBoxNumberRequest>(), CancellationToken.None))
+                .Setup(x => x.Send(It.IsAny<CorrectAddressBoxNumberSqsRequest>(), CancellationToken.None))
                 .Throws<AddressAlreadyExistsException>();
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
@@ -213,7 +213,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressBoxNumber
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             MockMediator
-                .Setup(x => x.Send(It.IsAny<SqsAddressCorrectBoxNumberRequest>(), CancellationToken.None))
+                .Setup(x => x.Send(It.IsAny<CorrectAddressBoxNumberSqsRequest>(), CancellationToken.None))
                 .Throws(new AggregateIdIsNotFoundException());
 
             Func<Task> act = async () => await _controller.CorrectBoxNumber(

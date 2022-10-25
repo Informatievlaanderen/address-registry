@@ -87,7 +87,7 @@ namespace AddressRegistry.Api.BackOffice
 
                 if (_useSqsToggle.FeatureEnabled)
                 {
-                    var sqsRequest = new SqsAddressCorrectPositionRequest
+                    var sqsRequest = new CorrectAddressPositionSqsRequest
                     {
                         PersistentLocalId = request.PersistentLocalId,
                         Request = request,

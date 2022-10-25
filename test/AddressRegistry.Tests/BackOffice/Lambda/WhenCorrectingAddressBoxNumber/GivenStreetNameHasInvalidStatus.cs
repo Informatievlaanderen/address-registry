@@ -7,6 +7,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressBoxNumber
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
+    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
     using Autofac;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
@@ -33,7 +34,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressBoxNumber
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressCorrectBoxNumberLambdaHandler(
+            var sut = new CorrectAddressBoxNumberLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -41,17 +42,14 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressBoxNumber
                 MockExceptionIdempotentCommandHandler<StreetNameHasInvalidStatusException>().Object);
 
             // Act
-            var request = new SqsLambdaAddressCorrectBoxNumberRequest
-            {
-                Request = new AddressBackOfficeCorrectBoxNumberRequest
-                {
-                    Busnummer = "1A"
-                },
-                MessageGroupId = Fixture.Create<int>().ToString(),
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            };
+            var request = new CorrectAddressBoxNumberLambdaRequest(Fixture.Create<int>().ToString(),
+                    new CorrectAddressBoxNumberSqsRequest()
+                    {
+                        Request = new CorrectAddressBoxNumberBackOfficeRequest { Busnummer = "1A" },
+                        TicketId = Guid.NewGuid(),
+                        Metadata = new Dictionary<string, object?>(),
+                        ProvenanceData = Fixture.Create<ProvenanceData>()
+                    });
             await sut.Handle(request, CancellationToken.None);
 
             //Assert

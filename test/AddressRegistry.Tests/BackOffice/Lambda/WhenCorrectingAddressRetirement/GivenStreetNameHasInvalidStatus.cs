@@ -7,6 +7,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRetiremen
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
+    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
     using Autofac;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
@@ -33,7 +34,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRetiremen
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressCorrectRetirementLambdaHandler(
+            var sut = new CorrectAddressRetirementLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -41,14 +42,13 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRetiremen
                 MockExceptionIdempotentCommandHandler<StreetNameHasInvalidStatusException>().Object);
 
             // Act
-            var request = new SqsLambdaAddressCorrectRetirementRequest()
+            var request = new CorrectAddressRetirementLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressRetirementSqsRequest()
             {
-                Request = new AddressBackOfficeCorrectRetirementRequest(),
-                MessageGroupId = Fixture.Create<int>().ToString(),
+                Request = new CorrectAddressRetirementBackOfficeRequest(),
                 TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            };
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            });
             await sut.Handle(request, CancellationToken.None);
 
             //Assert

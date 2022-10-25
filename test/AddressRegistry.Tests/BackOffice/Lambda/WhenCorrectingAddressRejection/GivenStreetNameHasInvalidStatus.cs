@@ -7,6 +7,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
+    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
     using Autofac;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
@@ -33,7 +34,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressCorrectRejectionLambdaHandler(
+            var sut = new CorrectAddressRejectionLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -41,14 +42,14 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
                 MockExceptionIdempotentCommandHandler<StreetNameHasInvalidStatusException>().Object);
 
             // Act
-            var request = new SqsLambdaAddressCorrectRejectionRequest()
+            var request = new CorrectAddressRejectionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressRejectionSqsRequest()
             {
-                Request = new AddressBackOfficeCorrectAddressFromRejectedRequest(),
-                MessageGroupId = Fixture.Create<int>().ToString(),
+                Request = new CorrectAddressRejectionBackOfficeRequest(),
                 TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            };
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            });
+
             await sut.Handle(request, CancellationToken.None);
 
             //Assert

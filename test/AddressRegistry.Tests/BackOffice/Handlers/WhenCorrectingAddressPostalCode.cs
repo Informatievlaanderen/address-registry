@@ -85,7 +85,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
                 new HouseNumber("11"),
                 null);
 
-            var sut = new AddressCorrectPostalCodeHandler(
+            var sut = new CorrectAddressPostalCodeHandler(
                 Container.Resolve<ICommandHandlerResolver>(),
                 _streetNames,
                 _backOfficeContext,

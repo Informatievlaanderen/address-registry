@@ -8,6 +8,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
+    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
     using StreetName;
     using StreetName.Exceptions;
     using AutoFixture;
@@ -68,7 +69,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
                 null);
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new SqsAddressCorrectPositionLambdaHandler(
+            var sut = new CorrectAddressPositionLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -76,19 +77,17 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext));
 
             // Act
-            await sut.Handle(new SqsLambdaAddressCorrectPositionRequest
-            {
-                Request = new AddressBackOfficeCorrectPositionRequest
+            await sut.Handle(new CorrectAddressPositionLambdaRequest(streetNamePersistentLocalId, new CorrectAddressPositionSqsRequest
                 {
-                    PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
-                },
-                AddressPersistentLocalId = addressPersistentLocalId,
-                MessageGroupId = streetNamePersistentLocalId,
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            },
-            CancellationToken.None);
+                    Request = new CorrectAddressPositionBackOfficeRequest
+                    {
+                        PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
+                    },
+                    PersistentLocalId = addressPersistentLocalId,
+                    TicketId = Guid.NewGuid(),
+                    Metadata = new Dictionary<string, object?>(),
+                    ProvenanceData = Fixture.Create<ProvenanceData>()
+                }), CancellationToken.None);
 
             // Assert
             var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(
@@ -102,7 +101,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressCorrectPositionLambdaHandler(
+            var sut = new CorrectAddressPositionLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -110,17 +109,16 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
                 MockExceptionIdempotentCommandHandler<AddressHasInvalidStatusException>().Object);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressCorrectPositionRequest
+            await sut.Handle(new CorrectAddressPositionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressPositionSqsRequest
             {
-                Request = new AddressBackOfficeCorrectPositionRequest
+                Request = new CorrectAddressPositionBackOfficeRequest
                 {
                     PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
                 },
-                MessageGroupId = Fixture.Create<int>().ToString(),
                 TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            }), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -138,7 +136,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressCorrectPositionLambdaHandler(
+            var sut = new CorrectAddressPositionLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -146,17 +144,16 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
                 MockExceptionIdempotentCommandHandler<AddressHasInvalidGeometryMethodException>().Object);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressCorrectPositionRequest
+            await sut.Handle(new CorrectAddressPositionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressPositionSqsRequest
             {
-                Request = new AddressBackOfficeCorrectPositionRequest
+                Request = new CorrectAddressPositionBackOfficeRequest
                 {
                     PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
                 },
-                MessageGroupId = Fixture.Create<int>().ToString(),
                 TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            }), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -174,7 +171,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressCorrectPositionLambdaHandler(
+            var sut = new CorrectAddressPositionLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -182,17 +179,16 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
                 MockExceptionIdempotentCommandHandler<AddressHasMissingGeometrySpecificationException>().Object);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressCorrectPositionRequest
+            await sut.Handle(new CorrectAddressPositionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressPositionSqsRequest
             {
-                Request = new AddressBackOfficeCorrectPositionRequest
+                Request = new CorrectAddressPositionBackOfficeRequest
                 {
                     PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
                 },
-                MessageGroupId = Fixture.Create<int>().ToString(),
                 TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            }), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -210,7 +206,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressCorrectPositionLambdaHandler(
+            var sut = new CorrectAddressPositionLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -218,17 +214,16 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
                 MockExceptionIdempotentCommandHandler<AddressHasInvalidGeometrySpecificationException>().Object);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressCorrectPositionRequest
+            await sut.Handle(new CorrectAddressPositionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressPositionSqsRequest
             {
-                Request = new AddressBackOfficeCorrectPositionRequest
+                Request = new CorrectAddressPositionBackOfficeRequest
                 {
                     PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
                 },
-                MessageGroupId = Fixture.Create<int>().ToString(),
                 TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            }), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -265,7 +260,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
                 houseNumber,
                 null);
 
-            var sut = new SqsAddressCorrectPositionLambdaHandler(
+            var sut = new CorrectAddressPositionLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -276,18 +271,17 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
                 await _streetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), CancellationToken.None);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressCorrectPositionRequest
-            {
-                Request = new AddressBackOfficeCorrectPositionRequest
+            await sut.Handle(new CorrectAddressPositionLambdaRequest(streetNamePersistentLocalId, new CorrectAddressPositionSqsRequest
                 {
-                    PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
-                },
-                AddressPersistentLocalId = addressPersistentLocalId,
-                MessageGroupId = streetNamePersistentLocalId,
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            },
+                    Request = new CorrectAddressPositionBackOfficeRequest
+                    {
+                        PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
+                    },
+                    PersistentLocalId = addressPersistentLocalId,
+                    TicketId = Guid.NewGuid(),
+                    Metadata = new Dictionary<string, object?>(),
+                    ProvenanceData = Fixture.Create<ProvenanceData>()
+                }),
             CancellationToken.None);
 
             //Assert

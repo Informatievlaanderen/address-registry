@@ -7,7 +7,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
     using Newtonsoft.Json;
 
     [DataContract(Name = "GoedkeurenAdres", Namespace = "")]
-    public class AddressApproveRequest : AddressBackOfficeApproveRequest, IRequest<ETagResponse>
+    public class AddressApproveRequest : ApproveAddressBackOfficeRequest, IRequest<ETagResponse>
     {
         [JsonIgnore]
         public IDictionary<string, object> Metadata { get; set; }

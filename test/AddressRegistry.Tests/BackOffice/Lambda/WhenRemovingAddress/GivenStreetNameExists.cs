@@ -8,6 +8,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRemovingAddress
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
+    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
     using StreetName;
     using StreetName.Commands;
     using AutoFixture;
@@ -63,7 +64,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRemovingAddress
                 null);
 
             var etagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new SqsAddressRejectLambdaHandler(
+            var sut = new RejectAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { etagResponse = result; }).Object,
@@ -72,17 +73,13 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRemovingAddress
 
             // Act
             await sut.Handle(
-                new SqsLambdaAddressRejectRequest
+                new RejectAddressLambdaRequest(streetNamePersistentLocalId, new RejectAddressSqsRequest
                 {
-                    Request = new AddressBackOfficeRejectRequest
-                    {
-                        PersistentLocalId = addressPersistentLocalId
-                    },
-                    MessageGroupId = streetNamePersistentLocalId,
-                    Metadata = new Dictionary<string, object>(),
+                    Request = new RejectAddressBackOfficeRequest() { PersistentLocalId = addressPersistentLocalId },
                     TicketId = Guid.NewGuid(),
-                    Provenance = Fixture.Create<Provenance>()
-                },
+                    Metadata = new Dictionary<string, object?>(),
+                    ProvenanceData = Fixture.Create<ProvenanceData>()
+                }),
                 CancellationToken.None);
 
             // Assert
@@ -122,7 +119,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRemovingAddress
                 Fixture.Create<Provenance>());
             DispatchArrangeCommand(removeAddress);
 
-            var sut = new SqsAddressRemoveLambdaHandler(
+            var sut = new RemoveAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -133,18 +130,16 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRemovingAddress
                 await _streetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), CancellationToken.None);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressRemoveRequest
-            {
-                Request = new AddressBackOfficeRemoveRequest
+            await sut.Handle(new RemoveAddressLambdaRequest(streetNamePersistentLocalId, new RemoveAddressSqsRequest
                 {
-                    PersistentLocalId = addressPersistentLocalId
-                },
-                MessageGroupId = streetNamePersistentLocalId,
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            },
+                    Request = new RemoveAddressBackOfficeRequest { PersistentLocalId = addressPersistentLocalId },
+                    TicketId = Guid.NewGuid(),
+                    Metadata = new Dictionary<string, object?>(),
+                    ProvenanceData = Fixture.Create<ProvenanceData>()
+                }),
             CancellationToken.None);
+
+
 
             //Assert
             ticketing.Verify(x =>

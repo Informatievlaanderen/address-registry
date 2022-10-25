@@ -58,7 +58,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
                 houseNumber,
                 null);
 
-            var sut = new AddressApproveHandler(
+            var sut = new ApproveAddressHandler(
                 Container.Resolve<ICommandHandlerResolver>(),
                 _streetNames,
                 _backOfficeContext,

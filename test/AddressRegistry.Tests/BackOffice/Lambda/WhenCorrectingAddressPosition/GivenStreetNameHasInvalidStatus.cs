@@ -7,6 +7,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostion
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
+    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
     using Autofac;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
@@ -34,7 +35,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostion
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressCorrectPositionLambdaHandler(
+            var sut = new CorrectAddressPositionLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -42,19 +43,20 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostion
                 MockExceptionIdempotentCommandHandler<StreetNameHasInvalidStatusException>().Object);
 
             // Act
-            var request = new SqsLambdaAddressCorrectPositionRequest()
-            {
-                Request = new AddressBackOfficeCorrectPositionRequest
+            var request = new CorrectAddressPositionLambdaRequest(Fixture.Create<int>().ToString(),
+                new CorrectAddressPositionSqsRequest
                 {
-                    Positie = "",
-                    PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                    PositieSpecificatie = PositieSpecificatie.Gemeente
-                },
-                MessageGroupId = Fixture.Create<int>().ToString(),
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            };
+                    Request = new CorrectAddressPositionBackOfficeRequest
+                    {
+                        Positie = "",
+                        PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
+                        PositieSpecificatie = PositieSpecificatie.Gemeente
+                    },
+                    TicketId = Guid.NewGuid(),
+                    Metadata = new Dictionary<string, object?>(),
+                    ProvenanceData = Fixture.Create<ProvenanceData>()
+                });
+
             await sut.Handle(request, CancellationToken.None);
 
             //Assert

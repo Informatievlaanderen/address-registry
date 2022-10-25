@@ -42,7 +42,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
             MockMediator
-                .Setup(x => x.Send(It.IsAny<SqsAddressApproveRequest>(), CancellationToken.None))
+                .Setup(x => x.Send(It.IsAny<ApproveAddressSqsRequest>(), CancellationToken.None))
                 .Returns(Task.FromResult(expectedLocationResult));
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
@@ -109,7 +109,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             MockMediator
-                .Setup(x => x.Send(It.IsAny<SqsAddressApproveRequest>(), CancellationToken.None))
+                .Setup(x => x.Send(It.IsAny<ApproveAddressSqsRequest>(), CancellationToken.None))
                 .Throws(new AggregateIdIsNotFoundException());
 
             Func<Task> act = async () => await _controller.Approve(

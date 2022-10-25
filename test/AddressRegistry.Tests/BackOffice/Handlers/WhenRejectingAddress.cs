@@ -59,7 +59,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
                 null
                 );
 
-            var sut = new AddressRejectHandler(
+            var sut = new RejectAddressHandler(
                 Container.Resolve<ICommandHandlerResolver>(),
                 _streetNames,
                 _backOfficeContext,

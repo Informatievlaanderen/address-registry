@@ -7,6 +7,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
+    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
     using Autofac;
     using AutoFixture;
     using BackOffice.Infrastructure;
@@ -69,7 +70,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
 
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressCorrectPostalCodeLambdaHandler(
+            var sut = new CorrectAddressPostalCodeLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -79,17 +80,18 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
                 _municipalityContext);
 
             // Act
-            var request = new SqsLambdaAddressCorrectPostalCodeRequest
-            {
-                Request = new AddressBackOfficeCorrectPostalCodeRequest
+            var request = new CorrectAddressPostalCodeLambdaRequest(Fixture.Create<int>().ToString(),
+                new CorrectAddressPostalCodeSqsRequest()
                 {
-                    PostInfoId = PostInfoPuri + correctPostInfoId
-                },
-                MessageGroupId = Fixture.Create<int>().ToString(),
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            };
+                    Request = new CorrectAddressPostalCodeBackOfficeRequest()
+                    {
+                        PostInfoId = PostInfoPuri + correctPostInfoId
+                    },
+                    PersistentLocalId = addressPersistentLocalId,
+                    TicketId = Guid.NewGuid(),
+                    Metadata = new Dictionary<string, object?>(),
+                    ProvenanceData = Fixture.Create<ProvenanceData>()
+                });
             await sut.Handle(request, CancellationToken.None);
 
             //Assert

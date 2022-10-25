@@ -37,7 +37,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
             MockMediator
-                .Setup(x => x.Send(It.IsAny<SqsAddressProposeRequest>(), CancellationToken.None))
+                .Setup(x => x.Send(It.IsAny<ProposeAddressSqsRequest>(), CancellationToken.None))
                 .Returns(Task.FromResult(expectedLocationResult));
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);

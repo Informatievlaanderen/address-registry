@@ -8,6 +8,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRegularizingAddress
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
+    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
     using StreetName;
     using StreetName.Commands;
     using StreetName.Exceptions;
@@ -73,7 +74,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRegularizingAddress
             DispatchArrangeCommand(deregulateAddress);
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new SqsAddressRegularizeLambdaHandler(
+            var sut = new RegularizeAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -81,18 +82,14 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRegularizingAddress
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext));
 
             // Act
-            await sut.Handle(new SqsLambdaAddressRegularizeRequest
-            {
-                Request = new AddressBackOfficeRegularizeRequest
+            await sut.Handle(new RegularizeAddressLambdaRequest(streetNamePersistentLocalId, new RegularizeAddressSqsRequest()
                 {
-                    PersistentLocalId = addressPersistentLocalId
-                },
-                MessageGroupId = streetNamePersistentLocalId,
-                Metadata = new Dictionary<string, object>(),
-                TicketId = Guid.NewGuid(),
-                Provenance = Fixture.Create<Provenance>()
-            },
-            CancellationToken.None);
+                    Request = new RegularizeAddressBackOfficeRequest { PersistentLocalId = addressPersistentLocalId },
+                    TicketId = Guid.NewGuid(),
+                    Metadata = new Dictionary<string, object?>(),
+                    ProvenanceData = Fixture.Create<ProvenanceData>()
+                }),
+                CancellationToken.None);
 
             // Assert
             var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(
@@ -106,7 +103,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRegularizingAddress
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressRegularizeLambdaHandler(
+            var sut = new RegularizeAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -114,17 +111,15 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRegularizingAddress
                 MockExceptionIdempotentCommandHandler<AddressHasInvalidStatusException>().Object);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressRegularizeRequest
-            {
-                Request = new AddressBackOfficeRegularizeRequest
+            await sut.Handle(
+                new RegularizeAddressLambdaRequest(Fixture.Create<int>().ToString(), new RegularizeAddressSqsRequest()
                 {
-                    PersistentLocalId = Fixture.Create<int>(),
-                },
-                MessageGroupId = Fixture.Create<int>().ToString(),
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            }, CancellationToken.None);
+                    Request = new RegularizeAddressBackOfficeRequest { PersistentLocalId = Fixture.Create<int>() },
+                    TicketId = Guid.NewGuid(),
+                    Metadata = new Dictionary<string, object?>(),
+                    ProvenanceData = Fixture.Create<ProvenanceData>()
+                })
+                , CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -167,7 +162,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRegularizingAddress
                 Fixture.Create<Provenance>());
             DispatchArrangeCommand(regularizeAddress);
 
-            var sut = new SqsAddressRegularizeLambdaHandler(
+            var sut = new RegularizeAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -178,17 +173,13 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRegularizingAddress
                 await _streetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), CancellationToken.None);
 
             // Act
-            await sut.Handle(new SqsLambdaAddressRegularizeRequest
+            await sut.Handle(new RegularizeAddressLambdaRequest(streetNamePersistentLocalId, new RegularizeAddressSqsRequest()
             {
-                Request = new AddressBackOfficeRegularizeRequest
-                {
-                    PersistentLocalId = addressPersistentLocalId
-                },
-                MessageGroupId = streetNamePersistentLocalId,
+                Request = new RegularizeAddressBackOfficeRequest { PersistentLocalId = addressPersistentLocalId },
                 TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            },
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            }),
             CancellationToken.None);
 
             //Assert

@@ -70,7 +70,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
         }
 
         [Fact]
-        public async Task WhenSqsAddressApproveRequest_ThenSqsLambdaAddressApproveRequestIsSent()
+        public async Task WhenSqsAddressApproveRequest_ThenApproveRequestIsSent()
         {
             // Arrange
             var mediator = new Mock<IMediator>();
@@ -78,7 +78,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             containerBuilder.Register(_ => mediator.Object);
             var container = containerBuilder.Build();
 
-            var messageData = Fixture.Create<SqsAddressApproveRequest>();
+            var messageData = Fixture.Create<ApproveAddressSqsRequest>();
             var messageMetadata = new MessageMetadata { MessageGroupId = Fixture.Create<string>() };
 
             var sut = new MessageHandler(container);
@@ -91,7 +91,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
 
             // Assert
             mediator
-                .Verify(x => x.Send(It.Is<SqsLambdaAddressApproveRequest>(request =>
+                .Verify(x => x.Send(It.Is<ApproveAddressLambdaRequest>(request =>
                     request.TicketId == messageData.TicketId
                     && request.MessageGroupId == messageMetadata.MessageGroupId
                     && request.Request == messageData.Request
@@ -102,7 +102,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
         }
 
         [Fact]
-        public async Task WhenSqsAddressCorrectApprovalRequest_ThenSqsLambdaAddressCorrectApprovalRequestIsSent()
+        public async Task WhenCorrectApprovalRequest_ThenCorrectApprovalRequestIsSent()
         {
             // Arrange
             var mediator = new Mock<IMediator>();
@@ -110,7 +110,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             containerBuilder.Register(_ => mediator.Object);
             var container = containerBuilder.Build();
 
-            var messageData = Fixture.Create<SqsAddressCorrectApprovalRequest>();
+            var messageData = Fixture.Create<CorrectAddressApprovalSqsRequest>();
             var messageMetadata = new MessageMetadata { MessageGroupId = Fixture.Create<string>() };
 
             var sut = new MessageHandler(container);
@@ -123,7 +123,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
 
             // Assert
             mediator
-                .Verify(x => x.Send(It.Is<SqsLambdaAddressCorrectApprovalRequest>(request =>
+                .Verify(x => x.Send(It.Is<CorrectAddressApprovalLambdaRequest>(request =>
                     request.TicketId == messageData.TicketId
                     && request.MessageGroupId == messageMetadata.MessageGroupId
                     && request.Request == messageData.Request
@@ -134,7 +134,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
         }
 
         [Fact]
-        public async Task WhenSqsAddressChangePositionRequest_ThenSqsLambdaAddressChangePositionRequestIsSent()
+        public async Task WhenChangePositionRequest_ThenChangePositionRequestIsSent()
         {
             // Arrange
             var mediator = new Mock<IMediator>();
@@ -142,7 +142,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             containerBuilder.Register(_ => mediator.Object);
             var container = containerBuilder.Build();
 
-            var messageData = Fixture.Create<SqsAddressChangePositionRequest>();
+            var messageData = Fixture.Create<ChangeAddressPositionSqsRequest>();
             var messageMetadata = new MessageMetadata { MessageGroupId = Fixture.Create<string>() };
 
             var sut = new MessageHandler(container);
@@ -155,7 +155,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
 
             // Assert
             mediator
-                .Verify(x => x.Send(It.Is<SqsLambdaAddressChangePositionRequest>(request =>
+                .Verify(x => x.Send(It.Is<ChangeAddressPositionLambdaRequest>(request =>
                     request.TicketId == messageData.TicketId
                     && request.AddressPersistentLocalId == messageData.PersistentLocalId
                     && request.MessageGroupId == messageMetadata.MessageGroupId
@@ -167,7 +167,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
         }
 
         [Fact]
-        public async Task WhenSqsAddressChangePostalCodeRequest_ThenSqsLambdaAddressChangePostalCodeRequestIsSent()
+        public async Task WhenChangePostalCodeRequest_ThenChangePostalCodeRequestIsSent()
         {
             // Arrange
             var mediator = new Mock<IMediator>();
@@ -175,7 +175,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             containerBuilder.Register(_ => mediator.Object);
             var container = containerBuilder.Build();
 
-            var messageData = Fixture.Create<SqsAddressChangePostalCodeRequest>();
+            var messageData = Fixture.Create<ChangeAddressPostalCodeSqsRequest>();
             var messageMetadata = new MessageMetadata { MessageGroupId = Fixture.Create<string>() };
 
             var sut = new MessageHandler(container);
@@ -188,7 +188,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
 
             // Assert
             mediator
-                .Verify(x => x.Send(It.Is<SqsLambdaAddressChangePostalCodeRequest>(request =>
+                .Verify(x => x.Send(It.Is<ChangeAddressPostalCodeLambdaRequest>(request =>
                     request.TicketId == messageData.TicketId
                     && request.AddressPersistentLocalId == messageData.PersistentLocalId
                     && request.MessageGroupId == messageMetadata.MessageGroupId
@@ -200,7 +200,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
         }
 
         [Fact]
-        public async Task WhenSqsAddressCorrectHouseNumberRequest_ThenSqsLambdaAddressCorrectHouseNumberRequestIsSent()
+        public async Task WhenCorrectHouseNumberRequest_ThenCorrectHouseNumberRequestIsSent()
         {
             // Arrange
             var mediator = new Mock<IMediator>();
@@ -208,7 +208,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             containerBuilder.Register(_ => mediator.Object);
             var container = containerBuilder.Build();
 
-            var messageData = Fixture.Create<SqsAddressCorrectHouseNumberRequest>();
+            var messageData = Fixture.Create<CorrectAddressHouseNumberSqsRequest>();
             var messageMetadata = new MessageMetadata { MessageGroupId = Fixture.Create<string>() };
 
             var sut = new MessageHandler(container);
@@ -221,7 +221,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
 
             // Assert
             mediator
-                .Verify(x => x.Send(It.Is<SqsLambdaAddressCorrectHouseNumberRequest>(request =>
+                .Verify(x => x.Send(It.Is<CorrectAddressHouseNumberLambdaRequest>(request =>
                     request.TicketId == messageData.TicketId
                     && request.AddressPersistentLocalId == messageData.PersistentLocalId
                     && request.MessageGroupId == messageMetadata.MessageGroupId
@@ -233,7 +233,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
         }
 
         [Fact]
-        public async Task WhenSqsAddressCorrectPositionRequest_ThenSqsLambdaAddressCorrectPositionRequestIsSent()
+        public async Task WhenCorrectPositionRequest_ThenCorrectPositionRequestIsSent()
         {
             // Arrange
             var mediator = new Mock<IMediator>();
@@ -241,7 +241,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             containerBuilder.Register(_ => mediator.Object);
             var container = containerBuilder.Build();
 
-            var messageData = Fixture.Create<SqsAddressCorrectPositionRequest>();
+            var messageData = Fixture.Create<CorrectAddressPositionSqsRequest>();
             var messageMetadata = new MessageMetadata { MessageGroupId = Fixture.Create<string>() };
 
             var sut = new MessageHandler(container);
@@ -254,7 +254,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
 
             // Assert
             mediator
-                .Verify(x => x.Send(It.Is<SqsLambdaAddressCorrectPositionRequest>(request =>
+                .Verify(x => x.Send(It.Is<CorrectAddressPositionLambdaRequest>(request =>
                     request.TicketId == messageData.TicketId
                     && request.AddressPersistentLocalId == messageData.PersistentLocalId
                     && request.MessageGroupId == messageMetadata.MessageGroupId
@@ -266,7 +266,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
         }
 
         [Fact]
-        public async Task WhenSqsAddressCorrectPostalCodeRequest_ThenSqsLambdaAddressCorrectPostalCodeRequestIsSent()
+        public async Task WhenCorrectPostalCodeRequest_ThenCorrectPostalCodeRequestIsSent()
         {
             // Arrange
             var mediator = new Mock<IMediator>();
@@ -274,7 +274,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             containerBuilder.Register(_ => mediator.Object);
             var container = containerBuilder.Build();
 
-            var messageData = Fixture.Create<SqsAddressCorrectPostalCodeRequest>();
+            var messageData = Fixture.Create<CorrectAddressPostalCodeSqsRequest>();
             var messageMetadata = new MessageMetadata { MessageGroupId = Fixture.Create<string>() };
 
             var sut = new MessageHandler(container);
@@ -287,7 +287,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
 
             // Assert
             mediator
-                .Verify(x => x.Send(It.Is<SqsLambdaAddressCorrectPostalCodeRequest>(request =>
+                .Verify(x => x.Send(It.Is<CorrectAddressPostalCodeLambdaRequest>(request =>
                     request.TicketId == messageData.TicketId
                     && request.AddressPersistentLocalId == messageData.PersistentLocalId
                     && request.MessageGroupId == messageMetadata.MessageGroupId
@@ -299,7 +299,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
         }
 
         [Fact]
-        public async Task WhenSqsAddressDeregulateRequest_ThenSqsLambdaAddressDeregulateRequestIsSent()
+        public async Task WhenSqsAddressDeregulateRequest_ThenDeregulateRequestIsSent()
         {
             // Arrange
             var mediator = new Mock<IMediator>();
@@ -307,7 +307,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             containerBuilder.Register(_ => mediator.Object);
             var container = containerBuilder.Build();
 
-            var messageData = Fixture.Create<SqsAddressDeregulateRequest>();
+            var messageData = Fixture.Create<DeregulateAddressSqsRequest>();
             var messageMetadata = new MessageMetadata { MessageGroupId = Fixture.Create<string>() };
 
             var sut = new MessageHandler(container);
@@ -320,7 +320,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
 
             // Assert
             mediator
-                .Verify(x => x.Send(It.Is<SqsLambdaAddressDeregulateRequest>(request =>
+                .Verify(x => x.Send(It.Is<DeregulateAddressLambdaRequest>(request =>
                     request.TicketId == messageData.TicketId
                     && request.MessageGroupId == messageMetadata.MessageGroupId
                     && request.Request == messageData.Request
@@ -331,7 +331,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
         }
 
         [Fact]
-        public async Task WhenSqsAddressProposeRequest_ThenSqsLambdaAddressProposeRequestIsSent()
+        public async Task WhenProposeRequest_ThenProposeRequestIsSent()
         {
             // Arrange
             var mediator = new Mock<IMediator>();
@@ -339,31 +339,31 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             containerBuilder.Register(_ => mediator.Object);
             var container = containerBuilder.Build();
 
-            var messageData = Fixture.Create<SqsAddressProposeRequest>();
+            var expectedRequest = Fixture.Create<ProposeAddressSqsRequest>();
             var messageMetadata = new MessageMetadata { MessageGroupId = Fixture.Create<string>() };
 
             var sut = new MessageHandler(container);
 
             // Act
             await sut.HandleMessage(
-                messageData,
+                expectedRequest,
                 messageMetadata,
                 CancellationToken.None);
 
             // Assert
             mediator
-                .Verify(x => x.Send(It.Is<SqsLambdaAddressProposeRequest>(request =>
-                    request.TicketId == messageData.TicketId
-                    && request.MessageGroupId == messageMetadata.MessageGroupId
-                    && request.Request == messageData.Request
-                    && request.IfMatchHeaderValue == null
-                    && request.Provenance == messageData.ProvenanceData.ToProvenance()
-                    && request.Metadata == messageData.Metadata
+                .Verify(x => x.Send(It.Is<ProposeAddressLambdaRequest>(actualRequest =>
+                    actualRequest.TicketId == expectedRequest.TicketId
+                    && actualRequest.MessageGroupId == messageMetadata.MessageGroupId
+                    && actualRequest.Request == expectedRequest.Request
+                    && actualRequest.IfMatchHeaderValue == null
+                    && actualRequest.Provenance == expectedRequest.ProvenanceData.ToProvenance()
+                    && actualRequest.Metadata == expectedRequest.Metadata
                 ), CancellationToken.None), Times.Once);
         }
 
         [Fact]
-        public async Task WhenSqsAddressRegularizeRequest_ThenSqsLambdaAddressRegularizeRequestIsSent()
+        public async Task WhenRegularizeRequest_ThenRegularizeRequestIsSent()
         {
             // Arrange
             var mediator = new Mock<IMediator>();
@@ -371,7 +371,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             containerBuilder.Register(_ => mediator.Object);
             var container = containerBuilder.Build();
 
-            var messageData = Fixture.Create<SqsAddressRegularizeRequest>();
+            var messageData = Fixture.Create<RegularizeAddressSqsRequest>();
             var messageMetadata = new MessageMetadata { MessageGroupId = Fixture.Create<string>() };
 
             var sut = new MessageHandler(container);
@@ -384,39 +384,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
 
             // Assert
             mediator
-                .Verify(x => x.Send(It.Is<SqsLambdaAddressRegularizeRequest>(request =>
-                    request.TicketId == messageData.TicketId
-                    && request.MessageGroupId == messageMetadata.MessageGroupId
-                    && request.Request == messageData.Request
-                    && request.IfMatchHeaderValue == messageData.IfMatchHeaderValue
-                    && request.Provenance == messageData.ProvenanceData.ToProvenance()
-                    && request.Metadata == messageData.Metadata
-                ), CancellationToken.None), Times.Once);
-        }
-
-        [Fact]
-        public async Task WhenSqsAddressRejectRequest_ThenSqsLambdaAddressRejectRequestIsSent()
-        {
-            // Arrange
-            var mediator = new Mock<IMediator>();
-            var containerBuilder = new ContainerBuilder();
-            containerBuilder.Register(_ => mediator.Object);
-            var container = containerBuilder.Build();
-
-            var messageData = Fixture.Create<SqsAddressRejectRequest>();
-            var messageMetadata = new MessageMetadata { MessageGroupId = Fixture.Create<string>() };
-
-            var sut = new MessageHandler(container);
-
-            // Act
-            await sut.HandleMessage(
-                messageData,
-                messageMetadata,
-                CancellationToken.None);
-
-            // Assert
-            mediator
-                .Verify(x => x.Send(It.Is<SqsLambdaAddressRejectRequest>(request =>
+                .Verify(x => x.Send(It.Is<RegularizeAddressLambdaRequest>(request =>
                     request.TicketId == messageData.TicketId
                     && request.MessageGroupId == messageMetadata.MessageGroupId
                     && request.Request == messageData.Request
@@ -427,7 +395,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
         }
 
         [Fact]
-        public async Task WhenSqsAddressRemoveRequest_ThenSqsLambdaAddressRemoveRequestIsSent()
+        public async Task WhenRejectRequest_ThenRejectLambdaRequestIsSent()
         {
             // Arrange
             var mediator = new Mock<IMediator>();
@@ -435,7 +403,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             containerBuilder.Register(_ => mediator.Object);
             var container = containerBuilder.Build();
 
-            var messageData = Fixture.Create<SqsAddressRemoveRequest>();
+            var messageData = Fixture.Create<RejectAddressSqsRequest>();
             var messageMetadata = new MessageMetadata { MessageGroupId = Fixture.Create<string>() };
 
             var sut = new MessageHandler(container);
@@ -448,7 +416,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
 
             // Assert
             mediator
-                .Verify(x => x.Send(It.Is<SqsLambdaAddressRemoveRequest>(request =>
+                .Verify(x => x.Send(It.Is<RejectAddressLambdaRequest>(request =>
                     request.TicketId == messageData.TicketId
                     && request.MessageGroupId == messageMetadata.MessageGroupId
                     && request.Request == messageData.Request
@@ -459,7 +427,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
         }
 
         [Fact]
-        public async Task WhenSqsAddressRetireRequest_ThenSqsLambdaAddressRetireRequestIsSent()
+        public async Task WhenRemoveRequest_ThenRemoveLambdaRequestIsSent()
         {
             // Arrange
             var mediator = new Mock<IMediator>();
@@ -467,7 +435,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             containerBuilder.Register(_ => mediator.Object);
             var container = containerBuilder.Build();
 
-            var messageData = Fixture.Create<SqsAddressRetireRequest>();
+            var messageData = Fixture.Create<RemoveAddressSqsRequest>();
             var messageMetadata = new MessageMetadata { MessageGroupId = Fixture.Create<string>() };
 
             var sut = new MessageHandler(container);
@@ -480,7 +448,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
 
             // Assert
             mediator
-                .Verify(x => x.Send(It.Is<SqsLambdaAddressRetireRequest>(request =>
+                .Verify(x => x.Send(It.Is<RemoveAddressLambdaRequest>(request =>
                     request.TicketId == messageData.TicketId
                     && request.MessageGroupId == messageMetadata.MessageGroupId
                     && request.Request == messageData.Request
@@ -491,7 +459,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
         }
 
         [Fact]
-        public async Task WhenSqsAddressCorrectRejectionRequest_ThenSqsLambdaAddressCorrectRejectionRequestIsSent()
+        public async Task WhenRetireRequest_ThenRetireLambdaRequestIsSent()
         {
             // Arrange
             var mediator = new Mock<IMediator>();
@@ -499,7 +467,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             containerBuilder.Register(_ => mediator.Object);
             var container = containerBuilder.Build();
 
-            var messageData = Fixture.Create<SqsAddressCorrectRejectionRequest>();
+            var messageData = Fixture.Create<RetireAddressSqsRequest>();
             var messageMetadata = new MessageMetadata { MessageGroupId = Fixture.Create<string>() };
 
             var sut = new MessageHandler(container);
@@ -512,7 +480,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
 
             // Assert
             mediator
-                .Verify(x => x.Send(It.Is<SqsLambdaAddressCorrectRejectionRequest>(request =>
+                .Verify(x => x.Send(It.Is<RetireAddressLambdaRequest>(request =>
                     request.TicketId == messageData.TicketId
                     && request.MessageGroupId == messageMetadata.MessageGroupId
                     && request.Request == messageData.Request
@@ -523,7 +491,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
         }
 
         [Fact]
-        public async Task WhenSqsAddressCorrectRetirementRequest_ThenSqsLambdaAddressCorrectRetirementRequestIsSent()
+        public async Task WhenCorrectRejectionRequest_ThenCorrectRejectionRequestIsSent()
         {
             // Arrange
             var mediator = new Mock<IMediator>();
@@ -531,7 +499,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             containerBuilder.Register(_ => mediator.Object);
             var container = containerBuilder.Build();
 
-            var messageData = Fixture.Create<SqsAddressCorrectRetirementRequest>();
+            var messageData = Fixture.Create<CorrectAddressRejectionSqsRequest>();
             var messageMetadata = new MessageMetadata { MessageGroupId = Fixture.Create<string>() };
 
             var sut = new MessageHandler(container);
@@ -544,7 +512,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
 
             // Assert
             mediator
-                .Verify(x => x.Send(It.Is<SqsLambdaAddressCorrectRetirementRequest>(request =>
+                .Verify(x => x.Send(It.Is<CorrectAddressRejectionLambdaRequest>(request =>
                     request.TicketId == messageData.TicketId
                     && request.MessageGroupId == messageMetadata.MessageGroupId
                     && request.Request == messageData.Request
@@ -555,7 +523,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
         }
 
         [Fact]
-        public async Task WhenSqsAddressCorrectBoxNumberRequest_ThenSqsLambdaAddressCorrectBoxNumberRequestIsSent()
+        public async Task WhenCorrectRetirementRequest_ThenCorrectRetirementRequestIsSent()
         {
             // Arrange
             var mediator = new Mock<IMediator>();
@@ -563,7 +531,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             containerBuilder.Register(_ => mediator.Object);
             var container = containerBuilder.Build();
 
-            var messageData = Fixture.Create<SqsAddressCorrectBoxNumberRequest>();
+            var messageData = Fixture.Create<CorrectAddressRetirementSqsRequest>();
             var messageMetadata = new MessageMetadata { MessageGroupId = Fixture.Create<string>() };
 
             var sut = new MessageHandler(container);
@@ -576,7 +544,39 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
 
             // Assert
             mediator
-                .Verify(x => x.Send(It.Is<SqsLambdaAddressCorrectBoxNumberRequest>(request =>
+                .Verify(x => x.Send(It.Is<CorrectAddressRetirementLambdaRequest>(request =>
+                    request.TicketId == messageData.TicketId
+                    && request.MessageGroupId == messageMetadata.MessageGroupId
+                    && request.Request == messageData.Request
+                    && request.IfMatchHeaderValue == messageData.IfMatchHeaderValue
+                    && request.Provenance == messageData.ProvenanceData.ToProvenance()
+                    && request.Metadata == messageData.Metadata
+                ), CancellationToken.None), Times.Once);
+        }
+
+        [Fact]
+        public async Task WhenCorrectBoxNumberRequest_ThenCorrectBoxNumberRequestIsSent()
+        {
+            // Arrange
+            var mediator = new Mock<IMediator>();
+            var containerBuilder = new ContainerBuilder();
+            containerBuilder.Register(_ => mediator.Object);
+            var container = containerBuilder.Build();
+
+            var messageData = Fixture.Create<CorrectAddressBoxNumberSqsRequest>();
+            var messageMetadata = new MessageMetadata { MessageGroupId = Fixture.Create<string>() };
+
+            var sut = new MessageHandler(container);
+
+            // Act
+            await sut.HandleMessage(
+                messageData,
+                messageMetadata,
+                CancellationToken.None);
+
+            // Assert
+            mediator
+                .Verify(x => x.Send(It.Is<CorrectAddressBoxNumberLambdaRequest>(request =>
                     request.TicketId == messageData.TicketId
                     && request.MessageGroupId == messageMetadata.MessageGroupId
                     && request.AddressPersistentLocalId == messageData.PersistentLocalId

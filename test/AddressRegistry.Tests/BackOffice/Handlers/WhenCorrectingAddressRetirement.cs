@@ -65,7 +65,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
             RetireAddress(streetNamePersistentLocalId,
                 addressPersistentLocalId);
 
-            var sut = new AddressCorrectRetirementHandler(
+            var sut = new CorrectAddressRetirementHandler(
                 Container.Resolve<ICommandHandlerResolver>(),
                 _streetNames,
                 _backOfficeContext,

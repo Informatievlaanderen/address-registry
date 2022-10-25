@@ -7,15 +7,16 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressApproval
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
-    using StreetName;
-    using StreetName.Exceptions;
-    using AutoFixture;
-    using Infrastructure;
+    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
     using Autofac;
+    using AutoFixture;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using global::AutoFixture;
+    using Infrastructure;
     using Microsoft.Extensions.Configuration;
     using Moq;
+    using StreetName;
+    using StreetName.Exceptions;
     using TicketingService.Abstractions;
     using Xunit;
     using Xunit.Abstractions;
@@ -33,7 +34,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressApproval
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new SqsAddressCorrectApprovalLambdaHandler(
+            var sut = new CorrectAddressApprovalLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -41,14 +42,15 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressApproval
                 MockExceptionIdempotentCommandHandler<StreetNameHasInvalidStatusException>().Object);
 
             // Act
-            var request = new SqsLambdaAddressCorrectApprovalRequest
-            {
-                Request = new AddressBackOfficeCorrectApprovalRequest(),
-                MessageGroupId = Fixture.Create<int>().ToString(),
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                Provenance = Fixture.Create<Provenance>()
-            };
+            var request = new CorrectAddressApprovalLambdaRequest(
+                Fixture.Create<int>().ToString(),
+                new CorrectAddressApprovalSqsRequest()
+                {
+                    Request = new CorrectAddressApprovalBackOfficeRequest(),
+                    TicketId = Guid.NewGuid(),
+                    Metadata = new Dictionary<string, object?>(),
+                    ProvenanceData = Fixture.Create<ProvenanceData>()
+                });
             await sut.Handle(request, CancellationToken.None);
 
             //Assert

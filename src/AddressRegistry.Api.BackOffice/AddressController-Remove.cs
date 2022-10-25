@@ -85,7 +85,7 @@ namespace AddressRegistry.Api.BackOffice
 
                 if (_useSqsToggle.FeatureEnabled)
                 {
-                    var sqsRequest = new SqsAddressRemoveRequest
+                    var sqsRequest = new RemoveAddressSqsRequest
                     {
                         Request = request,
                         IfMatchHeaderValue = ifMatchHeaderValue,

@@ -150,8 +150,10 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                 RrIndex = formattedRrIndex
             };
 
+            var streetNameToStrip = StripStreetName(streetName);
+
             var requestStraatnaamWithoutStraatnaam = streetName
-                .Replace(StripStreetName(streetName), string.Empty)
+                .Replace(string.IsNullOrEmpty(streetNameToStrip) ? string.Empty : streetNameToStrip, string.Empty)
                 .Replace(",", string.Empty)
                 .Replace(" ", string.Empty);
 

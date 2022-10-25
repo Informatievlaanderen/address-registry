@@ -52,8 +52,7 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
                 .Continuation);
 
             Add(MockedSanitizationTest("10, teststraat", null, null) // NOT SUPPORTED
-                .Should().ThrowException()
-                .Continuation);
+                .Should().HaveCount(0).Continuation);
 
             Run();
         }

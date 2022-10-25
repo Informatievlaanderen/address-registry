@@ -577,6 +577,11 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
               .Should().HaveCount(0)
               .Continuation);
 
+            // fix gawr-3884, empty streetname after StripStreetName
+            Add(MockedSanitizationTest("00", null, null)
+                .Should().HaveCount(0)
+                .Continuation);
+
             Run();
         }
 

@@ -8,7 +8,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
     using StreetName;
     using StreetName.Commands;
 
-    public record CorrectAddressPositionLambdaRequest :
+    public sealed record CorrectAddressPositionLambdaRequest :
         SqsLambdaRequest,
         IHasBackOfficeRequest<CorrectAddressPositionBackOfficeRequest>,
         Abstractions.IHasAddressPersistentLocalId

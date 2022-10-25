@@ -6,7 +6,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
     using StreetName;
     using StreetName.Commands;
 
-    public record RemoveAddressLambdaRequest :
+    public sealed record RemoveAddressLambdaRequest :
         SqsLambdaRequest,
         IHasBackOfficeRequest<RemoveAddressBackOfficeRequest>,
         Abstractions.IHasAddressPersistentLocalId

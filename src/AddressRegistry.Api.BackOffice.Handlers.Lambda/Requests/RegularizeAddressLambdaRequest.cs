@@ -6,7 +6,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
     using StreetName;
     using StreetName.Commands;
 
-    public record RegularizeAddressLambdaRequest :
+    public sealed record RegularizeAddressLambdaRequest :
         SqsLambdaRequest,
         IHasBackOfficeRequest<RegularizeAddressBackOfficeRequest>,
         Abstractions.IHasAddressPersistentLocalId

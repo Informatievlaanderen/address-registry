@@ -1,3 +1,10 @@
+## [3.64.4](https://github.com/informatievlaanderen/address-registry/compare/v3.64.3...v3.64.4) (2022-10-26)
+
+
+### Bug Fixes
+
+* add streetname status validation for address changes ([bb607a0](https://github.com/informatievlaanderen/address-registry/commit/bb607a0cd2d63982cf2235b9a0cd2b46a6a2fce5))
+
 ## [3.64.3](https://github.com/informatievlaanderen/address-registry/compare/v3.64.2...v3.64.3) (2022-10-25)
 
 

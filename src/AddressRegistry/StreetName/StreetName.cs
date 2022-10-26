@@ -294,6 +294,8 @@ namespace AddressRegistry.StreetName
             ExtendedWkbGeometry? position,
             IMunicipalities municipalities)
         {
+            GuardStreetNameStatusForChangeAndCorrection();
+
             StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
                 .ChangePosition(geometryMethod, geometrySpecification, position, GetMunicipalityData(municipalities));
@@ -301,6 +303,8 @@ namespace AddressRegistry.StreetName
 
         public void ChangeAddressPostalCode(AddressPersistentLocalId addressPersistentLocalId, PostalCode postalCode)
         {
+            GuardStreetNameStatusForChangeAndCorrection();
+
             StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
                 .ChangePostalCode(postalCode);
@@ -313,7 +317,7 @@ namespace AddressRegistry.StreetName
             ExtendedWkbGeometry? position,
             IMunicipalities municipalities)
         {
-            GuardStreetNameStatusForCorrection();
+            GuardStreetNameStatusForChangeAndCorrection();
 
             StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
@@ -322,7 +326,7 @@ namespace AddressRegistry.StreetName
 
         public void CorrectAddressPostalCode(AddressPersistentLocalId addressPersistentLocalId, PostalCode postalCode, MunicipalityId municipalityIdByPostalCode)
         {
-            GuardStreetNameStatusForCorrection();
+            GuardStreetNameStatusForChangeAndCorrection();
 
             StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
@@ -331,7 +335,7 @@ namespace AddressRegistry.StreetName
 
         public void CorrectAddressHouseNumber(AddressPersistentLocalId addressPersistentLocalId, HouseNumber houseNumber)
         {
-            GuardStreetNameStatusForCorrection();
+            GuardStreetNameStatusForChangeAndCorrection();
 
             StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
@@ -340,7 +344,7 @@ namespace AddressRegistry.StreetName
 
         public void CorrectAddressBoxNumber(AddressPersistentLocalId addressPersistentLocalId, BoxNumber boxNumber)
         {
-            GuardStreetNameStatusForCorrection();
+            GuardStreetNameStatusForChangeAndCorrection();
 
             var addressToCorrect = StreetNameAddresses.GetByPersistentLocalId(addressPersistentLocalId);
             addressToCorrect.CorrectBoxNumber(
@@ -353,7 +357,7 @@ namespace AddressRegistry.StreetName
 
         public void CorrectAddressApproval(AddressPersistentLocalId addressPersistentLocalId)
         {
-            GuardStreetNameStatusForCorrection();
+            GuardStreetNameStatusForChangeAndCorrection();
 
             StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
@@ -362,7 +366,7 @@ namespace AddressRegistry.StreetName
 
         public void CorrectAddressRetirement(AddressPersistentLocalId addressPersistentLocalId)
         {
-            GuardStreetNameStatusForCorrection();
+            GuardStreetNameStatusForChangeAndCorrection();
 
             var addressToCorrect = StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId);
@@ -390,7 +394,7 @@ namespace AddressRegistry.StreetName
 
         public void CorrectAddressRejection(AddressPersistentLocalId addressPersistentLocalId)
         {
-            GuardStreetNameStatusForCorrection();
+            GuardStreetNameStatusForChangeAndCorrection();
 
             var addressToCorrect = StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId);
@@ -430,7 +434,7 @@ namespace AddressRegistry.StreetName
                 throw new PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException();
             }
         }
-        private void GuardStreetNameStatusForCorrection()
+        private void GuardStreetNameStatusForChangeAndCorrection()
         {
             if (Status != StreetNameStatus.Proposed && Status != StreetNameStatus.Current)
             {

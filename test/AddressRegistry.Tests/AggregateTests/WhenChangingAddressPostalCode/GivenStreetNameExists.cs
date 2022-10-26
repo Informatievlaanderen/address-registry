@@ -156,6 +156,52 @@ namespace AddressRegistry.Tests.AggregateTests.WhenChangingAddressPostalCode
         }
 
         [Fact]
+        public void WithStreetNameRetired_ThenThrowsStreetNameHasInvalidStatusException()
+        {
+            var streetNameWasRetired = new StreetNameWasRetired(Fixture.Create<StreetNamePersistentLocalId>());
+            ((ISetProvenance)streetNameWasRetired).SetProvenance(Fixture.Create<Provenance>());
+
+            var addressWasMigratedToStreetName = CreateAddressWasMigratedToStreetName(addressStatus: AddressStatus.Current);
+            ((ISetProvenance)addressWasMigratedToStreetName).SetProvenance(Fixture.Create<Provenance>());
+
+            var command = new ChangeAddressPostalCode(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<AddressPersistentLocalId>(),
+                Fixture.Create<PostalCode>(),
+                Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    addressWasMigratedToStreetName,
+                    streetNameWasRetired)
+                .When(command)
+                .Throws(new StreetNameHasInvalidStatusException()));
+        }
+
+        [Fact]
+        public void WithStreetNameRejected_ThenThrowsStreetNameHasInvalidStatusException()
+        {
+            var streetNameWasRetired = new StreetNameWasRejected(Fixture.Create<StreetNamePersistentLocalId>());
+            ((ISetProvenance)streetNameWasRetired).SetProvenance(Fixture.Create<Provenance>());
+
+            var addressWasMigratedToStreetName = CreateAddressWasMigratedToStreetName(addressStatus: AddressStatus.Current);
+            ((ISetProvenance)addressWasMigratedToStreetName).SetProvenance(Fixture.Create<Provenance>());
+
+            var command = new ChangeAddressPostalCode(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<AddressPersistentLocalId>(),
+                Fixture.Create<PostalCode>(),
+                Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    addressWasMigratedToStreetName,
+                    streetNameWasRetired)
+                .When(command)
+                .Throws(new StreetNameHasInvalidStatusException()));
+        }
+
+        [Fact]
         public void WithNoChangedPostalCode_ThenNone()
         {
             var postalCode = Fixture.Create<PostalCode>();

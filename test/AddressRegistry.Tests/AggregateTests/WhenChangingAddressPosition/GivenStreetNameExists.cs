@@ -219,6 +219,56 @@ namespace AddressRegistry.Tests.AggregateTests.WhenChangingAddressPosition
         }
 
         [Fact]
+        public void WithStreetNameRetired_ThenThrowsStreetNameHasInvalidStatusException()
+        {
+            var streetNameWasRetired = new StreetNameWasRetired(Fixture.Create<StreetNamePersistentLocalId>());
+            ((ISetProvenance)streetNameWasRetired).SetProvenance(Fixture.Create<Provenance>());
+
+            var addressWasMigratedToStreetName = CreateAddressWasMigratedToStreetName(addressStatus: AddressStatus.Current);
+            ((ISetProvenance)addressWasMigratedToStreetName).SetProvenance(Fixture.Create<Provenance>());
+
+            var command = new ChangeAddressPosition(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                new AddressPersistentLocalId(addressWasMigratedToStreetName.AddressPersistentLocalId),
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                Fixture.Create<ExtendedWkbGeometry>(),
+                Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    addressWasMigratedToStreetName,
+                    streetNameWasRetired)
+                .When(command)
+                .Throws(new StreetNameHasInvalidStatusException()));
+        }
+
+        [Fact]
+        public void WithStreetNameRejected_ThenThrowsStreetNameHasInvalidStatusException()
+        {
+            var streetNameWasRetired = new StreetNameWasRejected(Fixture.Create<StreetNamePersistentLocalId>());
+            ((ISetProvenance)streetNameWasRetired).SetProvenance(Fixture.Create<Provenance>());
+
+            var addressWasMigratedToStreetName = CreateAddressWasMigratedToStreetName(addressStatus: AddressStatus.Current);
+            ((ISetProvenance)addressWasMigratedToStreetName).SetProvenance(Fixture.Create<Provenance>());
+
+            var command = new ChangeAddressPosition(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                new AddressPersistentLocalId(addressWasMigratedToStreetName.AddressPersistentLocalId),
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                Fixture.Create<ExtendedWkbGeometry>(),
+                Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    addressWasMigratedToStreetName,
+                    streetNameWasRetired)
+                .When(command)
+                .Throws(new StreetNameHasInvalidStatusException()));
+        }
+
+        [Fact]
         public void WithGeometryMethodAppointedByAdministratorAndNoSpecification_ThenThrowsAddressHasMissingGeometrySpecificationException()
         {
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();

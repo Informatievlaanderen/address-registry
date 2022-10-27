@@ -1,3 +1,11 @@
+## [3.64.5](https://github.com/informatievlaanderen/address-registry/compare/v3.64.4...v3.64.5) (2022-10-27)
+
+
+### Bug Fixes
+
+* add braces ([ceadf6f](https://github.com/informatievlaanderen/address-registry/commit/ceadf6fdbdaf1b6bee88fe54471a22c571bf35e8))
+* add braces ([bff2948](https://github.com/informatievlaanderen/address-registry/commit/bff2948259824290ecc977d16582e37e78a899a1))
+
 ## [3.64.4](https://github.com/informatievlaanderen/address-registry/compare/v3.64.3...v3.64.4) (2022-10-26)
 
 

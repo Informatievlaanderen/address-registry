@@ -96,22 +96,22 @@ namespace AddressRegistry.Api.Legacy.Address
                    .SingleOrDefaultAsync(item => item.AddressPersistentLocalId == persistentLocalId, cancellationToken);
 
                 if (addressV2 != null && addressV2.Removed)
+                {
                     throw new ApiException("Adres werd verwijderd.", StatusCodes.Status410Gone);
+                }
 
                 if (addressV2 == null)
+                {
                     throw new ApiException("Onbestaand adres.", StatusCodes.Status404NotFound);
+                }
 
                 var streetNameV2 = await streetNameConsumerContext.StreetNameLatestItems.FirstOrDefaultAsync(x =>
                     x.PersistentLocalId == addressV2.StreetNamePersistentLocalId, cancellationToken);
 
-                var municipalityV2 =
-                    await municipalityConsumerContext.MunicipalityLatestItems.FirstAsync(m => m.NisCode == streetNameV2.NisCode,
-                        cancellationToken);
+                var municipalityV2 = await municipalityConsumerContext.MunicipalityLatestItems.FirstAsync(m => m.NisCode == streetNameV2.NisCode, cancellationToken);
                 var defaultMunicipalityNameV2 = AddressMapper.GetDefaultMunicipalityName(municipalityV2);
-                var defaultStreetNameV2 =
-                    AddressMapper.GetDefaultStreetNameName(streetNameV2, municipalityV2.PrimaryLanguage);
-                var defaultHomonymAdditionV2 =
-                    AddressMapper.GetDefaultHomonymAddition(streetNameV2, municipalityV2.PrimaryLanguage);
+                var defaultStreetNameV2 = AddressMapper.GetDefaultStreetNameName(streetNameV2, municipalityV2.PrimaryLanguage);
+                var defaultHomonymAdditionV2 = AddressMapper.GetDefaultHomonymAddition(streetNameV2, municipalityV2.PrimaryLanguage);
 
                 var gemeenteV2 = new AdresDetailGemeente(
                     municipalityV2.NisCode,
@@ -162,10 +162,14 @@ namespace AddressRegistry.Api.Legacy.Address
                    .SingleOrDefaultAsync(item => item.PersistentLocalId == persistentLocalId, cancellationToken);
 
             if (address != null && address.Removed)
+            {
                 throw new ApiException("Adres werd verwijderd.", StatusCodes.Status410Gone);
+            }
 
             if (address == null || !address.Complete)
+            {
                 throw new ApiException("Onbestaand adres.", StatusCodes.Status404NotFound);
+            }
 
             var streetName =
                 await syndicationContext.StreetNameLatestItems.FindAsync(new object[] { address.StreetNameId },
@@ -290,7 +294,10 @@ namespace AddressRegistry.Api.Legacy.Address
                         var streetName = streetNamesV2.SingleOrDefault(x => x.PersistentLocalId == a.StreetNamePersistentLocalId.ToString());
                         Consumer.Read.Municipality.Projections.MunicipalityLatestItem municipality = null;
                         if (streetName != null)
+                        {
                             municipality = municipalitiesV2.SingleOrDefault(x => x.NisCode == streetName.NisCode);
+                        }
+
                         return new AddressListItemResponse(
                             a.AddressPersistentLocalId,
                             responseOptions.Value.Naamruimte,
@@ -355,7 +362,10 @@ namespace AddressRegistry.Api.Legacy.Address
                     var streetName = streetNames.SingleOrDefault(x => x.StreetNameId == a.StreetNameId);
                     MunicipalityLatestItem municipality = null;
                     if (streetName != null)
+                    {
                         municipality = municipalities.SingleOrDefault(x => x.NisCode == streetName.NisCode);
+                    }
+
                     return new AddressListItemResponse(
                         a.PersistentLocalId,
                         responseOptions.Value.Naamruimte,
@@ -464,7 +474,9 @@ namespace AddressRegistry.Api.Legacy.Address
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (lastFeedUpdate == default)
+            {
                 lastFeedUpdate = new DateTimeOffset(2020, 1, 1, 0, 0, 0, TimeSpan.Zero);
+            }
 
             var pagedAddresses =
                 new AddressSyndicationQuery(
@@ -505,7 +517,9 @@ namespace AddressRegistry.Api.Legacy.Address
             CancellationToken cancellationToken = default)
         {
             if (Request.ContentLength.HasValue && Request.ContentLength > 0 && addressRequest == null)
+            {
                 return Ok(new AddressBosaResponse());
+            }
 
             if (_useProjectionsV2Toggle.FeatureEnabled)
             {
@@ -550,17 +564,23 @@ namespace AddressRegistry.Api.Legacy.Address
             CancellationToken cancellationToken = default)
         {
             if (Request.ContentLength.HasValue && Request.ContentLength > 0 && request == null)
+            {
                 return Ok(new AddressRepresentationBosaResponse());
+            }
 
             if (string.IsNullOrEmpty(request?.AdresCode?.ObjectId) || !int.TryParse(request.AdresCode.ObjectId, out var addressId))
+            {
                 return BadRequest("Valid objectId is required");
+            }
 
             if (_useProjectionsV2Toggle.FeatureEnabled)
             {
                 var addressV2 = await context.AddressDetailV2
                     .FirstOrDefaultAsync(x => x.AddressPersistentLocalId == addressId, cancellationToken);
                 if (addressV2 == null)
+                {
                     return NotFound();
+                }
 
                 var streetNameV2 = await streetNameConsumerContext
                     .StreetNameBosaItems
@@ -595,7 +615,9 @@ namespace AddressRegistry.Api.Legacy.Address
 
             var address = await context.AddressDetail.FirstOrDefaultAsync(x => x.PersistentLocalId == addressId, cancellationToken);
             if (address == null)
+            {
                 return NotFound();
+            }
 
             var streetName = await syndicationContext
                 .StreetNameBosaItems
@@ -653,10 +675,14 @@ namespace AddressRegistry.Api.Legacy.Address
 
                 var nextUri = BuildNextSyncUri(pagedAddresses.PaginationInfo.Limit, nextFrom, syndicationConfiguration["NextUri"]);
                 if (nextUri != null)
+                {
                     await writer.Write(new SyndicationLink(nextUri, "next"));
+                }
 
                 foreach (var address in addresses)
+                {
                     await writer.WriteAddress(responseOptions, formatter, syndicationConfiguration["Category"], address);
+                }
 
                 xmlWriter.Flush();
             }

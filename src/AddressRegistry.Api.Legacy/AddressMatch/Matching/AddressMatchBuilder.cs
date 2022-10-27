@@ -98,7 +98,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
         internal void ClearAllStreetNames()
         {
             foreach (var municipalityWrapper in _municipalities.Values)
+            {
                 municipalityWrapper.ClearStreetNames();
+            }
         }
 
         public void AddMunicipalities(IEnumerable<MunicipalityLatestItem> municipalities)
@@ -111,7 +113,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
             foreach (var municipality in municipalities)
             {
                 if (string.IsNullOrWhiteSpace(municipality.NisCode))
+                {
                     continue;
+                }
 
                 _municipalities[municipality.NisCode] = new MunicipalityWrapper
                 {
@@ -148,13 +152,17 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
 
             // If addresses are found, forget about the streetnames without addresses
             if (AllAddresses().Any())
+            {
                 relevantStreetNames = relevantStreetNames.Where(s => s.Any());
+            }
 
             string GetStreetName(StreetNameLatestItem streetName)
             {
                 var nisCode = streetName.NisCode;
                 if (string.IsNullOrWhiteSpace(nisCode))
+                {
                     return string.Empty;
+                }
 
                 var municipality = _municipalities[nisCode];
                 return streetName.GetDefaultName(municipality.Municipality.PrimaryLanguage);
@@ -228,6 +236,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                         {
                             // create a representation per sanitized housenumber
                             foreach (var houseNumberWithSubaddress in houseNumbers)
+                            {
                                 yield return CreateRepresentation(
                                     Query.PostalCode,
                                     municipalityName,
@@ -237,6 +246,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
                                         houseNumberWithSubaddress.BoxNumber ?? Query.BoxNumber),
                                     houseNumberWithSubaddress.HouseNumber ?? Query.HouseNumber,
                                     houseNumberWithSubaddress.BoxNumber ?? Query.BoxNumber);
+                            }
                         }
                         else if (houseNumbers.Count == 1)
                         {

@@ -1,5 +1,6 @@
 namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
 {
+    using System.Configuration;
     using Abstractions.Validation;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
@@ -18,15 +19,23 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
     {
         private readonly IStreetNames _streetNames;
 
+        protected string DetailUrlFormat { get; }
+
         protected SqsLambdaHandler(
             IConfiguration configuration,
             ICustomRetryPolicy retryPolicy,
             IStreetNames streetNames,
             ITicketing ticketing,
             IIdempotentCommandHandler idempotentCommandHandler)
-            : base(configuration, retryPolicy, ticketing, idempotentCommandHandler)
+            : base(retryPolicy, ticketing, idempotentCommandHandler)
         {
             _streetNames = streetNames;
+
+            DetailUrlFormat = configuration["DetailUrl"];
+            if (string.IsNullOrEmpty(DetailUrlFormat))
+            {
+                throw new ConfigurationErrorsException("'DetailUrl' cannot be found in the configuration");
+            }
         }
 
         protected override async Task ValidateIfMatchHeaderValue(TSqsLambdaRequest request, CancellationToken cancellationToken)

@@ -1,3 +1,16 @@
+# [3.66.0](https://github.com/informatievlaanderen/address-registry/compare/v3.65.0...v3.66.0) (2022-10-31)
+
+
+### Bug Fixes
+
+* enable pr's & coverage ([27be1fc](https://github.com/informatievlaanderen/address-registry/commit/27be1fc0574a83f091ef5c806f4df571365b1f61))
+
+
+### Features
+
+* add streetnameid filter on V1 Legacy & Oslo ([b601e03](https://github.com/informatievlaanderen/address-registry/commit/b601e030fa496c19274c81473ce4c9250c593921))
+* add streetnameid filter on V2 Legacy & Oslo ([7c3ab0f](https://github.com/informatievlaanderen/address-registry/commit/7c3ab0fca2c81f5ff6165254047ab3b64f0ceb00))
+
 # [3.65.0](https://github.com/informatievlaanderen/address-registry/compare/v3.64.5...v3.65.0) (2022-10-28)
 
 

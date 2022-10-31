@@ -35,7 +35,7 @@ namespace AddressRegistry.Api.Oslo.Address.Query
                 .MunicipalityConsumerLatestItems
                 .AsNoTracking();
 
-            var streetnames = _context
+            var streetNames = _context
                 .StreetNameConsumerLatestItems
                 .AsNoTracking()
                 .Where(x => !x.IsRemoved);
@@ -43,7 +43,9 @@ namespace AddressRegistry.Api.Oslo.Address.Query
             var filterStreet = false;
 
             if (!filtering.ShouldFilter)
+            {
                 return addressesV2;
+            }
 
             if (!string.IsNullOrEmpty(filtering.Filter.BoxNumber))
             {
@@ -58,7 +60,9 @@ namespace AddressRegistry.Api.Oslo.Address.Query
             }
 
             if (!string.IsNullOrEmpty(filtering.Filter.PostalCode))
+            {
                 addressesV2 = addressesV2.Where(a => a.PostalCode == filtering.Filter.PostalCode);
+            }
 
             if (!string.IsNullOrEmpty(filtering.Filter.Status))
             {
@@ -68,13 +72,15 @@ namespace AddressRegistry.Api.Oslo.Address.Query
                     addressesV2 = addressesV2.Where(a => a.Status == addressStatus);
                 }
                 else
+                {
                     //have to filter on EF cannot return new List<>().AsQueryable() cause non-EF provider does not support .CountAsync()
                     addressesV2 = addressesV2.Where(m => (int)m.Status == -1);
+                }
             }
 
             if (!string.IsNullOrEmpty(filtering.Filter.NisCode))
             {
-                streetnames = streetnames.Where(x => x.NisCode == filtering.Filter.NisCode);
+                streetNames = streetNames.Where(x => x.NisCode == filtering.Filter.NisCode);
                 municipalities = municipalities.Where(m => m.NisCode == filtering.Filter.NisCode);
                 filterStreet = true;
             }
@@ -92,9 +98,11 @@ namespace AddressRegistry.Api.Oslo.Address.Query
                     .ToList();
 
                 if (!municipalityNisCodes.Any())
+                {
                     return new List<AddressListItemV2>().AsQueryable();
+                }
 
-                streetnames = streetnames.Where(x => municipalityNisCodes.Contains(x.NisCode));
+                streetNames = streetNames.Where(x => municipalityNisCodes.Contains(x.NisCode));
 
                 filterStreet = true;
             }
@@ -103,7 +111,7 @@ namespace AddressRegistry.Api.Oslo.Address.Query
             {
                 var searchName = filtering.Filter.StreetName.RemoveDiacritics();
 
-                streetnames = streetnames.Where(s =>
+                streetNames = streetNames.Where(s =>
                     s.NameDutchSearch == searchName ||
                     s.NameFrenchSearch == searchName ||
                     s.NameGermanSearch == searchName ||
@@ -114,7 +122,7 @@ namespace AddressRegistry.Api.Oslo.Address.Query
 
             if (!string.IsNullOrEmpty(filtering.Filter.HomonymAddition))
             {
-                streetnames = streetnames.Where(s =>
+                streetNames = streetNames.Where(s =>
                     s.HomonymAdditionDutch == filtering.Filter.HomonymAddition ||
                     s.HomonymAdditionFrench == filtering.Filter.HomonymAddition ||
                     s.HomonymAdditionGerman == filtering.Filter.HomonymAddition ||
@@ -123,10 +131,24 @@ namespace AddressRegistry.Api.Oslo.Address.Query
                 filterStreet = true;
             }
 
+            if (!string.IsNullOrEmpty(filtering.Filter.StreetNameId))
+            {
+                if (int.TryParse(filtering.Filter.StreetNameId, out var streetNameId))
+                {
+                    streetNames = streetNames.Where(x => x.PersistentLocalId == streetNameId);
+                    filterStreet = true;
+                }
+                else
+                {
+                    // don't bother sending to sql, no results will be returned
+                    return new List<AddressListItemV2>().AsQueryable();
+                }
+            }
+
             if (filterStreet)
             {
                 addressesV2 = addressesV2
-                    .Where(x => streetnames
+                    .Where(x => streetNames
                         .Select(y => y.PersistentLocalId)
                         .Contains(x.StreetNamePersistentLocalId));
             }

@@ -43,7 +43,9 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             var filterStreet = false;
 
             if (!filtering.ShouldFilter)
+            {
                 return addresses;
+            }
 
             if (!string.IsNullOrEmpty(filtering.Filter.BoxNumber))
             {
@@ -58,7 +60,9 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             }
 
             if (!string.IsNullOrEmpty(filtering.Filter.PostalCode))
+            {
                 addresses = addresses.Where(a => a.PostalCode == filtering.Filter.PostalCode);
+            }
 
             if (!string.IsNullOrEmpty(filtering.Filter.Status))
             {
@@ -68,8 +72,10 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                     addresses = addresses.Where(a => a.Status == addressStatus);
                 }
                 else
+                {
                     //have to filter on EF cannot return new List<>().AsQueryable() cause non-EF provider does not support .CountAsync()
                     addresses = addresses.Where(m => (int)m.Status == -1);
+                }
             }
 
             if (!string.IsNullOrEmpty(filtering.Filter.NisCode))
@@ -92,7 +98,9 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                     .ToList();
 
                 if (!municipalityNisCodes.Any())
+                {
                     return new List<AddressListItemV2>().AsQueryable();
+                }
 
                 streetnames = streetnames.Where(x => municipalityNisCodes.Contains(x.NisCode));
 
@@ -121,6 +129,20 @@ namespace AddressRegistry.Api.Legacy.Address.Query
                     s.HomonymAdditionEnglish == filtering.Filter.HomonymAddition);
 
                 filterStreet = true;
+            }
+
+            if (!string.IsNullOrEmpty(filtering.Filter.StreetNameId))
+            {
+                if (int.TryParse(filtering.Filter.StreetNameId, out var streetNameId))
+                {
+                    streetnames = streetnames.Where(x => x.PersistentLocalId == streetNameId);
+                    filterStreet = true;
+                }
+                else
+                {
+                    // don't bother sending to sql, no results will be returned
+                    return new List<AddressListItemV2>().AsQueryable();
+                }
             }
 
             if (filterStreet)

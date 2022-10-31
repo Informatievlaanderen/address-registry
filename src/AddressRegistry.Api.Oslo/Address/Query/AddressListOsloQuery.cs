@@ -35,7 +35,7 @@ namespace AddressRegistry.Api.Oslo.Address.Query
                 .MunicipalityLatestItems
                 .AsNoTracking();
 
-            var streetnames = _context
+            var streetNames = _context
                 .StreetNameLatestItems
                 .AsNoTracking()
                 .Where(x => x.IsComplete && !x.IsRemoved);
@@ -43,7 +43,9 @@ namespace AddressRegistry.Api.Oslo.Address.Query
             var filterStreet = false;
 
             if (!filtering.ShouldFilter)
+            {
                 return addresses;
+            }
 
             if (!string.IsNullOrEmpty(filtering.Filter.BoxNumber))
             {
@@ -58,7 +60,9 @@ namespace AddressRegistry.Api.Oslo.Address.Query
             }
 
             if (!string.IsNullOrEmpty(filtering.Filter.PostalCode))
+            {
                 addresses = addresses.Where(a => a.PostalCode == filtering.Filter.PostalCode);
+            }
 
             if (!string.IsNullOrEmpty(filtering.Filter.Status))
             {
@@ -68,13 +72,15 @@ namespace AddressRegistry.Api.Oslo.Address.Query
                     addresses = addresses.Where(a => a.Status.HasValue && a.Status.Value == addressStatus);
                 }
                 else
+                {
                     //have to filter on EF cannot return new List<>().AsQueryable() cause non-EF provider does not support .CountAsync()
                     addresses = addresses.Where(m => m.Status.HasValue && (int)m.Status.Value == -1);
+                }
             }
 
             if (!string.IsNullOrEmpty(filtering.Filter.NisCode))
             {
-                streetnames = streetnames.Where(x => x.NisCode == filtering.Filter.NisCode);
+                streetNames = streetNames.Where(x => x.NisCode == filtering.Filter.NisCode);
                 municipalities = municipalities.Where(m => m.NisCode == filtering.Filter.NisCode);
                 filterStreet = true;
             }
@@ -92,9 +98,11 @@ namespace AddressRegistry.Api.Oslo.Address.Query
                     .ToList();
 
                 if (!municipalityNisCodes.Any())
+                {
                     return new List<AddressListItem>().AsQueryable();
+                }
 
-                streetnames = streetnames.Where(x => municipalityNisCodes.Contains(x.NisCode));
+                streetNames = streetNames.Where(x => municipalityNisCodes.Contains(x.NisCode));
 
                 //streetnames =
                 //    from s in streetnames
@@ -113,7 +121,7 @@ namespace AddressRegistry.Api.Oslo.Address.Query
             {
                 var searchName = filtering.Filter.StreetName.RemoveDiacritics();
 
-                streetnames = streetnames.Where(s =>
+                streetNames = streetNames.Where(s =>
                     s.NameDutchSearch == searchName ||
                     s.NameFrenchSearch == searchName ||
                     s.NameGermanSearch == searchName ||
@@ -124,7 +132,7 @@ namespace AddressRegistry.Api.Oslo.Address.Query
 
             if (!string.IsNullOrEmpty(filtering.Filter.HomonymAddition))
             {
-                streetnames = streetnames.Where(s =>
+                streetNames = streetNames.Where(s =>
                     s.HomonymAdditionDutch == filtering.Filter.HomonymAddition ||
                     s.HomonymAdditionFrench == filtering.Filter.HomonymAddition ||
                     s.HomonymAdditionGerman == filtering.Filter.HomonymAddition ||
@@ -133,10 +141,24 @@ namespace AddressRegistry.Api.Oslo.Address.Query
                 filterStreet = true;
             }
 
+            if (!string.IsNullOrEmpty(filtering.Filter.StreetNameId))
+            {
+                if (int.TryParse(filtering.Filter.StreetNameId, out _))
+                {
+                    streetNames = streetNames.Where(x => x.PersistentLocalId == filtering.Filter.StreetNameId);
+                    filterStreet = true;
+                }
+                else
+                {
+                    // don't bother sending to sql, no results will be returned
+                    return new List<AddressListItem>().AsQueryable();
+                }
+            }
+
             if (filterStreet)
             {
                 addresses = addresses
-                    .Where(x => streetnames
+                    .Where(x => streetNames
                         .Select(y => y.StreetNameId).Contains(x.StreetNameId));
 
                 //addresses =
@@ -173,6 +195,6 @@ namespace AddressRegistry.Api.Oslo.Address.Query
         public string HomonymAddition { get; set; }
         public string Status { get; set; }
         public string? NisCode { get; set; }
-
+        public string? StreetNameId { get; set; }
     }
 }

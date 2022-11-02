@@ -1,3 +1,10 @@
+## [3.66.2](https://github.com/informatievlaanderen/address-registry/compare/v3.66.1...v3.66.2) (2022-11-02)
+
+
+### Bug Fixes
+
+* style to bump build ([eb86325](https://github.com/informatievlaanderen/address-registry/commit/eb8632508f83b3c11ce5acfca2341f9f850d9118))
+
 ## [3.66.1](https://github.com/informatievlaanderen/address-registry/compare/v3.66.0...v3.66.1) (2022-11-02)
 
 

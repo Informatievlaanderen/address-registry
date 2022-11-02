@@ -1,3 +1,12 @@
+## [3.66.1](https://github.com/informatievlaanderen/address-registry/compare/v3.66.0...v3.66.1) (2022-11-02)
+
+
+### Bug Fixes
+
+* add nuget to dependabot ([684faf1](https://github.com/informatievlaanderen/address-registry/commit/684faf1b6fe07dd23ba4ebe112b61c074b93d92e))
+* correct ef registration of bosacontext ([dc4274c](https://github.com/informatievlaanderen/address-registry/commit/dc4274c00dd7cc800b76175b9066566f452ced61))
+* use VBR_SONAR_TOKEN ([55c6aae](https://github.com/informatievlaanderen/address-registry/commit/55c6aaefe2824411d86af002913b9a699a8094b5))
+
 # [3.66.0](https://github.com/informatievlaanderen/address-registry/compare/v3.65.0...v3.66.0) (2022-10-31)
 
 

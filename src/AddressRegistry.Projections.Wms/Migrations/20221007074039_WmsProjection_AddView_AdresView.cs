@@ -9,6 +9,7 @@ namespace AddressRegistry.Projections.Wms.Migrations
             migrationBuilder.Sql("ALTER AUTHORIZATION ON SCHEMA::[wms.municipality] TO wms");
             migrationBuilder.Sql("ALTER AUTHORIZATION ON SCHEMA::[wms.streetname] TO wms");
             migrationBuilder.Sql("ALTER AUTHORIZATION ON SCHEMA::[wms.address] TO wms");
+            migrationBuilder.Sql("ALTER AUTHORIZATION ON SCHEMA::[wms] TO wms");
 
             migrationBuilder.Sql(@"
 CREATE VIEW [wms].[AdresView] WITH SCHEMABINDING AS

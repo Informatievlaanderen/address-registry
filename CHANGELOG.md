@@ -1,3 +1,10 @@
+## [3.66.3](https://github.com/informatievlaanderen/address-registry/compare/v3.66.2...v3.66.3) (2022-11-03)
+
+
+### Bug Fixes
+
+* update ci & test branch protection ([932b2e6](https://github.com/informatievlaanderen/address-registry/commit/932b2e62cd9969943cf0df171afc70d770bfb28b))
+
 ## [3.66.2](https://github.com/informatievlaanderen/address-registry/compare/v3.66.1...v3.66.2) (2022-11-02)
 
 

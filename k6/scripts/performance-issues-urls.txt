@@ -1,4 +1,4 @@
-https://api.basisregisters.staging-vlaanderen.be/v1/adressen?straatnaam=Alsembergsesteenweg
-https://api.basisregisters.staging-vlaanderen.be/v1/adressen?gemeentenaam=deinze&status=inGebruik
-https://api.basisregisters.staging-vlaanderen.be/v1/adressen?gemeentenaam=aalter&status=inGebruik
-https://api.basisregisters.staging-vlaanderen.be/v1/adresmatch?Gemeentenaam=KortrijkStraatnaam=0552
+https://api.basisregisters.vlaanderen.be/v1/adressen?straatnaam=Alsembergsesteenweg
+https://api.basisregisters.vlaanderen.be/v1/adressen?gemeentenaam=deinze&status=inGebruik
+https://api.basisregisters.vlaanderen.be/v1/adressen?gemeentenaam=aalter&status=inGebruik
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?Gemeentenaam=KortrijkStraatnaam=0552

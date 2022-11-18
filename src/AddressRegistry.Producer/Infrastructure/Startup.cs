@@ -3,6 +3,7 @@ namespace AddressRegistry.Producer.Infrastructure
     using System;
     using System.Linq;
     using System.Reflection;
+    using AddressRegistry.Infrastructure.Modules;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api;
@@ -90,10 +91,12 @@ namespace AddressRegistry.Producer.Infrastructure
                                     .GetChildren();
 
                                 foreach (var connectionString in connectionStrings)
+                                {
                                     health.AddSqlServer(
                                         connectionString.Value,
                                         name: $"sqlserver-{connectionString.Key.ToLowerInvariant()}",
                                         tags: new[] { DatabaseTag, "sql", "sqlserver" });
+                                }
 
                                 health.AddDbContextCheck<ProducerContext>(
                                     $"dbcontext-{nameof(ProducerContext).ToLowerInvariant()}",
@@ -138,7 +141,7 @@ namespace AddressRegistry.Producer.Infrastructure
                     },
                     Tracing =
                     {
-                        ServiceName = _configuration["DataDog:ServiceName"],
+                        ServiceName = _configuration["DataDog:ServiceName"]
                     }
                 })
 
@@ -168,7 +171,7 @@ namespace AddressRegistry.Producer.Infrastructure
                     },
                     MiddlewareHooks =
                     {
-                        AfterMiddleware = x => x.UseMiddleware<AddNoCacheHeadersMiddleware>(),
+                        AfterMiddleware = x => x.UseMiddleware<AddNoCacheHeadersMiddleware>()
                     }
                 })
 

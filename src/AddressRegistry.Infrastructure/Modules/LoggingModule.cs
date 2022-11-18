@@ -1,4 +1,4 @@
-namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure.Modules
+namespace AddressRegistry.Infrastructure.Modules
 {
     using System;
     using Autofac;

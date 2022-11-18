@@ -6,7 +6,6 @@ namespace AddressRegistry.Projections.Syndication
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using Modules;
     using Municipality;
     using Serilog;
     using StreetName;
@@ -19,6 +18,7 @@ namespace AddressRegistry.Projections.Syndication
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
     using Be.Vlaanderen.Basisregisters.Shaperon;
     using BuildingUnit;
+    using Infrastructure.Modules;
     using Parcel;
     using PostalInfo;
 

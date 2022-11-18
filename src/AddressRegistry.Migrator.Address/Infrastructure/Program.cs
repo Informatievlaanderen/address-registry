@@ -5,6 +5,7 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
+    using AddressRegistry.Infrastructure.Modules;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;

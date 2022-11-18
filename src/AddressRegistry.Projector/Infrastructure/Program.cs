@@ -27,8 +27,7 @@ namespace AddressRegistry.Projector.Infrastructure
                     },
                     MiddlewareHooks =
                     {
-                        ConfigureDistributedLock =
-                            configuration => DistributedLockOptions.LoadFromConfiguration(configuration)
+                        ConfigureDistributedLock = DistributedLockOptions.LoadFromConfiguration
                     }
                 });
 

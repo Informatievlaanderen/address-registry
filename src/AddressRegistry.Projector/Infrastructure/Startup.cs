@@ -23,6 +23,7 @@ namespace AddressRegistry.Projector.Infrastructure
     using System.Linq;
     using System.Reflection;
     using System.Threading;
+    using AddressRegistry.Infrastructure.Modules;
     using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
     using Microsoft.Extensions.Options;
     using Microsoft.OpenApi.Models;
@@ -97,10 +98,12 @@ namespace AddressRegistry.Projector.Infrastructure
                                 .GetChildren();
 
                             foreach (var connectionString in connectionStrings)
+                            {
                                 health.AddSqlServer(
                                     connectionString.Value,
                                     name: $"sqlserver-{connectionString.Key.ToLowerInvariant()}",
                                     tags: new[] {DatabaseTag, "sql", "sqlserver"});
+                            }
 
                             health.AddDbContextCheck<ExtractContext>(
                                 $"dbcontext-{nameof(ExtractContext).ToLowerInvariant()}",
@@ -164,7 +167,7 @@ namespace AddressRegistry.Projector.Infrastructure
                     },
                     Tracing =
                     {
-                        ServiceName = _configuration["DataDog:ServiceName"],
+                        ServiceName = _configuration["DataDog:ServiceName"]
                     }
                 })
 
@@ -176,7 +179,7 @@ namespace AddressRegistry.Projector.Infrastructure
                         ServiceProvider = serviceProvider,
                         HostingEnvironment = env,
                         ApplicationLifetime = appLifetime,
-                        LoggerFactory = loggerFactory,
+                        LoggerFactory = loggerFactory
                     },
                     Api =
                     {

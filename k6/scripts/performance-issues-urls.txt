@@ -2,3 +2,41 @@ https://api.basisregisters.vlaanderen.be/v1/adressen?straatnaam=Alsembergsesteen
 https://api.basisregisters.vlaanderen.be/v1/adressen?gemeentenaam=deinze&status=inGebruik
 https://api.basisregisters.vlaanderen.be/v1/adressen?gemeentenaam=aalter&status=inGebruik
 https://api.basisregisters.vlaanderen.be/v1/adresmatch?Gemeentenaam=KortrijkStraatnaam=0552
+
+# requests > 1s
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?straatnaam=Mahatma Gandhistraat&huisnummer=49&gemeentenaam=Mechelen
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?straatnaam=Aaigemstraat&huisnummer=1&gemeentenaam=Gent
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?straatnaam=Kardinaal Cardijnstraat&huisnummer=2&postcode=8550   
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?straatnaam=kapelstraat&huisnummer=2&busnummer=3&postcode=3950
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?straatnaam=Bouchoutsesteenweg&huisnummer=169&busnummer=1&postcode=2540&gemeentenaam=hove
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?straatnaam=klein zottegem&huisnummer=57&postcode=9520&gemeentenaam=Sint-Lievens-Houtem
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?straatnaam=Bergstr&huisnummer=11 A&gemeentenaam=Denderleeuw 
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?straatnaam=ST.-MARTENSPLEI&huisnummer=1&gemeentenaam=Aalst
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?straatnaam=BURG.DE CROESE&huisnummer=2&gemeentenaam=Brugge 
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?gemeentenaam=renaix&straatnaam=Rue Saint-Martin&huisnummer=1 
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?gemeentenaam=Pelt&straatnaam=acaciastraat&huisnummer=1&niscode=72043
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?gemeentenaam=Overpelt&straatnaam=acaciastraat&huisnummer=1&niscode=72029
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?postcode=2800&straatnaam=Mahatma%20Gandhistraat%201000E
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?straatnaam=heidestraat&postcode=3621&huisnummer=0
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?straatnaam=heidestraat%20101&postcode=3621
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?straatnaam=heidestraat%2001A&postcode=3621
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?Gemeentenaam=Gent&Straatnaam=Sint-Amandsplein&Huisnummer=3 
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?Gemeentenaam=Geel&Niscode=13008&Straatnaam=Sint-Corneliusstraat&Huisnummer=11+13&Postcode=2440&Index=
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?Gemeentenaam=Antwerpen&Straatnaam=A. Grisarstraat + Lamorinièrestraat&Huisnummer=2 en 217&Postcode=2018  
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?Gemeentenaam=Staden&Straatnaam=Groenstraat&Huisnummer=2&Postcode=8840
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?Gemeentenaam=Menen&Straatnaam=J. %26 M. Sabbestraat&Huisnummer=136&Postcode=8930. 
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?straatnaam=kapelstraat&postcode=3950&huisnummer=2&busnummer=3
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?Gemeentenaam=Leuven&Straatnaam=Oude%2520Diestsesteenweg&Huisnummer=4&Postcode=3010
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?Gemeentenaam=Deerlijk&Straatnaam=Guido%20Gezellestraat&Huisnummer=2&Postcode=8540
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?gemeentenaam=lanaken&straatnaam=101%20Heidestraat
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?gemeentenaam=lanaken&straatnaam=Heidestraat&huisnummer=101 +
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?postcode=2610&straatnaam=Rooiboslaan2-20
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?postcode=2610&huisnummer=1-19&straatnaam=Rooiboslaan
+
+# snellere requests (< 300ms)
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?postcode=9200&straatnaam=lambroeckstraat%2099a
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?gemeentenaam=Gand&straatnaam=ajuinlei
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?Gemeentenaam=Menen&Straatnaam=J. %26 M. Sabbestraat&Huisnummer=136&Postcode=8930 
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?niscode=11001&Straatnaam=ADRIAAN SANDERSLEI&Postcode=2630&Huisnummer=104 
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?niscode=11001&Straatnaam=ADRIAAN SANDERSLEI&Postcode=2630&Huisnummer=104&busnummer=c2 
+https://api.basisregisters.vlaanderen.be/v1/adresmatch?Gemeentenaam=Hove&Straatnaam=Bouchoutsesteenweg&Huisnummer=169%20verd%201&Postcode=2540

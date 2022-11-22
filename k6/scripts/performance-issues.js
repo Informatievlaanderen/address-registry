@@ -11,12 +11,12 @@ const csvData = new SharedArray("performance-issues-urls", function()
 
 export const options = 
 {
-    vus: 1,
-    duration: '1m',
-    thresholds: 
-    {
-        http_req_duration: ['p(95)<1000']
-    },
+    vus: 10,
+    duration: '5m',
+    // thresholds: 
+    // {
+    //       http_req_duration: ['p(95)<1000']
+    // },
 };
 
 export default function() 
@@ -31,7 +31,10 @@ export default function()
 	
 	csvData.forEach(function(item)
     {
-        let response = http.get(item[0], params);
-        sleep(1);	
+		if	(!item[0].startsWith("#") && item[0] != "")
+		{
+			let response = http.get(item[0], params);
+			sleep(1);	
+		}
     });
 }

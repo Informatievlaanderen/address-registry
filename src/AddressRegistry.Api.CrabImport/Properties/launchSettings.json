@@ -8,13 +8,6 @@
     }
   },
   "profiles": {
-    "IIS Express": {
-      "commandName": "Project",
-      "launchBrowser": true,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
     "AddressRegistry.Api.CrabImport": {
       "commandName": "Project",
       "environmentVariables": {

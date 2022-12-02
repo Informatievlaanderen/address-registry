@@ -193,6 +193,38 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
         }
 
         [Fact]
+        public async Task WhenAddressBoxNumberHasInconsistentHouseNumberException_ThenTicketingErrorIsExpected()
+        {
+            // Arrange
+            var ticketing = new Mock<ITicketing>();
+
+            var sut = new CorrectAddressRejectionLambdaHandler(
+                Container.Resolve<IConfiguration>(),
+                new FakeRetryPolicy(),
+                ticketing.Object,
+                Mock.Of<IStreetNames>(),
+                MockExceptionIdempotentCommandHandler<AddressBoxNumberHasInconsistentHouseNumberException>().Object);
+
+            // Act
+            await sut.Handle(new CorrectAddressRejectionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressRejectionSqsRequest
+            {
+                Request = new CorrectAddressRejectionBackOfficeRequest { PersistentLocalId = 1 },
+                TicketId = Guid.NewGuid(),
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            }), CancellationToken.None);
+
+            //Assert
+            ticketing.Verify(x =>
+                x.Error(
+                    It.IsAny<Guid>(),
+                    new TicketError(
+                        "Deze actie is niet toegestaan op een busnummer wegens een inconsistent huisnummer.",
+                        "AdresBusnummerHuisnummerInconsistent"),
+                    CancellationToken.None));
+        }
+
+        [Fact]
         public async Task WhenIdempotencyException_ThenTicketingCompleteIsExpected()
         {
             // Arrange

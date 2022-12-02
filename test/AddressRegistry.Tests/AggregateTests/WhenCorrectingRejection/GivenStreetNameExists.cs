@@ -116,7 +116,6 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRejection
                     addressWasRemovedV2)
                 .When(command)
                 .Throws(new AddressIsRemovedException(Fixture.Create<AddressPersistentLocalId>())));
-               
         }
 
         [Fact]
@@ -145,6 +144,50 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRejection
                     addressWasProposedV2)
                 .When(command)
                 .ThenNone());
+        }
+
+        [Fact]
+        public void WhenParentHouseNumberIsDifferent()
+        {
+            var command = new CorrectAddressRejection(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                new AddressPersistentLocalId(456),
+                Fixture.Create<Provenance>());
+
+            var addressWasProposedV2 = new AddressWasProposedV2(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                new AddressPersistentLocalId(123),
+                parentPersistentLocalId: null,
+                Fixture.Create<PostalCode>(),
+                new HouseNumber("403"),
+                boxNumber: null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Lot,
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
+            ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
+
+            var addressWasMigratedToStreetName = new AddressWasMigratedToStreetName(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<AddressId>(),
+                Fixture.Create<AddressStreetNameId>(),
+                command.AddressPersistentLocalId,
+                AddressStatus.Rejected,
+                new HouseNumber("404"),
+                new BoxNumber("1XYZ"),
+                Fixture.Create<AddressGeometry>(),
+                officiallyAssigned: true,
+                postalCode: null,
+                isCompleted: false,
+                isRemoved: false,
+                parentPersistentLocalId: new AddressPersistentLocalId(123));
+            ((ISetProvenance)addressWasMigratedToStreetName).SetProvenance(Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    addressWasProposedV2,
+                    addressWasMigratedToStreetName)
+                .When(command)
+                .Throws(new AddressBoxNumberHasInconsistentHouseNumberException()));
         }
 
         [Theory]

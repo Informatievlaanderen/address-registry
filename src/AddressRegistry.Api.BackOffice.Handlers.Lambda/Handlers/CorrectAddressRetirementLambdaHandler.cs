@@ -68,6 +68,9 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                     ValidationErrors.Common.AddressAlreadyExists.Message,
                     ValidationErrors.Common.AddressAlreadyExists.Code),
 
+                AddressBoxNumberHasInconsistentHouseNumberException =>
+                    ValidationErrors.CorrectRetirement.InconsistentHouseNumber.ToTicketError(),
+
                 ParentAddressHasInvalidStatusException => new TicketError(
                     ValidationErrors.CorrectRetirement.ParentInvalidStatus.Message,
                     ValidationErrors.CorrectRetirement.ParentInvalidStatus.Code),

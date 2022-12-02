@@ -1,3 +1,19 @@
+# [3.67.0](https://github.com/informatievlaanderen/address-registry/compare/v3.66.3...v3.67.0) (2022-12-02)
+
+
+### Bug Fixes
+
+* add k6 script ([ce96663](https://github.com/informatievlaanderen/address-registry/commit/ce96663567f3b041a3ebc2182e3dd08a54c49e95))
+* change url's to production ([391e1aa](https://github.com/informatievlaanderen/address-registry/commit/391e1aa5c76f85036b2bf96fb823a82c47a12a90))
+* deduplicate LoggingModule.cs ([0a65aee](https://github.com/informatievlaanderen/address-registry/commit/0a65aee240bb1b8cf5b11e15b3bd4f36f877d48d))
+* update adresmatch performance baseline ([a732e39](https://github.com/informatievlaanderen/address-registry/commit/a732e39e95853335b3f023bcf7ec479922c69363))
+
+
+### Features
+
+* correct boxnumber inconsistent housenumber ([af4c856](https://github.com/informatievlaanderen/address-registry/commit/af4c856c56f010547489c93494fd0e72fd4489d9))
+* correct boxnumber inconsistent postalcode ([4159e30](https://github.com/informatievlaanderen/address-registry/commit/4159e30dd769512c47aae087f5f09a3fcdfd5904))
+
 ## [3.66.3](https://github.com/informatievlaanderen/address-registry/compare/v3.66.2...v3.66.3) (2022-11-03)
 
 

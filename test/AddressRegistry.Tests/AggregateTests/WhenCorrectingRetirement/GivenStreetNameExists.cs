@@ -110,6 +110,54 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRetirement
                 .Throws(new AddressIsRemovedException(addressPersistentLocalId)));
         }
 
+        [Fact]
+        public void WhenParentHouseNumberIsDifferent()
+        {
+            var command = new CorrectAddressRetirement(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                new AddressPersistentLocalId(456),
+                Fixture.Create<Provenance>());
+
+            var parentAddressWasMigratedToStreetName = new AddressWasMigratedToStreetName(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<AddressId>(),
+                Fixture.Create<AddressStreetNameId>(),
+                new AddressPersistentLocalId(123),
+                AddressStatus.Current,
+                new HouseNumber("403"),
+                new BoxNumber("1XYZ"),
+                Fixture.Create<AddressGeometry>(),
+                officiallyAssigned: true,
+                postalCode: null,
+                isCompleted: false,
+                isRemoved: false,
+                parentPersistentLocalId: null);
+            ((ISetProvenance)parentAddressWasMigratedToStreetName).SetProvenance(Fixture.Create<Provenance>());
+
+            var addressWasMigratedToStreetName = new AddressWasMigratedToStreetName(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<AddressId>(),
+                Fixture.Create<AddressStreetNameId>(),
+                command.AddressPersistentLocalId,
+                AddressStatus.Retired,
+                new HouseNumber("404"),
+                new BoxNumber("1XYZ"),
+                Fixture.Create<AddressGeometry>(),
+                officiallyAssigned: true,
+                postalCode: null,
+                isCompleted: false,
+                isRemoved: false,
+                parentPersistentLocalId: new AddressPersistentLocalId(123));
+            ((ISetProvenance)addressWasMigratedToStreetName).SetProvenance(Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    parentAddressWasMigratedToStreetName,
+                    addressWasMigratedToStreetName)
+                .When(command)
+                .Throws(new AddressBoxNumberHasInconsistentHouseNumberException()));
+        }
+
         [Theory]
         [InlineData(StreetNameStatus.Rejected)]
         [InlineData(StreetNameStatus.Retired)]

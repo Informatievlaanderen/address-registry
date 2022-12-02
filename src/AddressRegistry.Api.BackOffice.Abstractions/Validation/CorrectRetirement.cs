@@ -1,5 +1,7 @@
 namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
 {
+    using TicketingService.Abstractions;
+
     public static partial class ValidationErrors
     {
         public static class CorrectRetirement
@@ -14,6 +16,14 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
             {
                 public const string Code = "AdresVoorgesteldOfAfgekeurd";
                 public const string Message = "Deze actie is enkel toegestaan op adressen met status 'gehistoreerd'.";
+            }
+
+            public static class InconsistentHouseNumber
+            {
+                public const string Code = "AdresBusnummerHuisnummerInconsistent";
+                public const string Message = "Deze actie is niet toegestaan op een busnummer wegens een inconsistent huisnummer.";
+
+                public static TicketError ToTicketError() => new(Message, Code);
             }
         }
     }

@@ -459,6 +459,11 @@ namespace AddressRegistry.StreetName
         {
             GuardNotRemovedAddress();
 
+            if (Parent is not null && Parent.HouseNumber != HouseNumber)
+            {
+                throw new AddressBoxNumberHasInconsistentHouseNumberException();
+            }
+
             if (Status == AddressStatus.Proposed)
             {
                 return;
@@ -477,6 +482,11 @@ namespace AddressRegistry.StreetName
         public void CorrectRetirement(Action guardAddressIsUnique)
         {
             GuardNotRemovedAddress();
+
+            if (Parent is not null && Parent.HouseNumber != HouseNumber)
+            {
+                throw new AddressBoxNumberHasInconsistentHouseNumberException();
+            }
 
             switch (Status)
             {

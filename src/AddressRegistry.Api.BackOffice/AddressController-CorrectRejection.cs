@@ -135,6 +135,11 @@ namespace AddressRegistry.Api.BackOffice
                         string.Empty,
                         ValidationErrors.Common.AddressAlreadyExists.Message),
 
+                    AddressBoxNumberHasInconsistentHouseNumberException => CreateValidationException(
+                        ValidationErrors.CorrectRejection.InconsistentHouseNumber.Code,
+                        string.Empty,
+                        ValidationErrors.CorrectRejection.InconsistentHouseNumber.Message),
+
                     ParentAddressHasInvalidStatusException => CreateValidationException(
                         ValidationErrors.CorrectRejection.ParentInvalidStatus.Code,
                         string.Empty,

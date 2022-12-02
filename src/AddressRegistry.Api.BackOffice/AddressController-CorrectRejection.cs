@@ -140,6 +140,11 @@ namespace AddressRegistry.Api.BackOffice
                         string.Empty,
                         ValidationErrors.CorrectRejection.InconsistentHouseNumber.Message),
 
+                    AddressBoxNumberHasInconsistentPostalCodeException => CreateValidationException(
+                        ValidationErrors.CorrectRejection.InconsistentPostalCode.Code,
+                        string.Empty,
+                        ValidationErrors.CorrectRejection.InconsistentPostalCode.Message),
+
                     ParentAddressHasInvalidStatusException => CreateValidationException(
                         ValidationErrors.CorrectRejection.ParentInvalidStatus.Code,
                         string.Empty,

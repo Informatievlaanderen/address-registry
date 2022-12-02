@@ -3,7 +3,6 @@ namespace AddressRegistry.Tests
     using System.Collections.Generic;
     using Autofac;
     using AutoFixture;
-    using BackOffice.Infrastructure;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore.Autofac;
     using Be.Vlaanderen.Basisregisters.EventHandling;
@@ -51,12 +50,6 @@ namespace AddressRegistry.Tests
             builder
                 .Register(c => new StreetNameFactory(Fixture.Create<ISnapshotStrategy>()))
                 .As<IStreetNameFactory>();
-
-            builder
-                .Register(c => new FakeMunicipalityConsumerContextFactory().CreateDbContext())
-                .InstancePerLifetimeScope()
-                .As<IMunicipalities>()
-                .AsSelf();
         }
 
         protected override void ConfigureEventHandling(ContainerBuilder builder)

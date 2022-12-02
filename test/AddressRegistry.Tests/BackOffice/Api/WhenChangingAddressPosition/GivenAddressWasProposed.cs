@@ -53,7 +53,9 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
                 new AddressChangePositionRequest
                 {
                     PersistentLocalId = addressPersistentLocalId,
-                    PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
+                    PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
+                    PositieSpecificatie = PositieSpecificatie.Gemeente,
+                    Positie = GeometryHelpers.GmlPointGeometry
                 },
                 ifMatchHeaderValue: null);
 
@@ -122,42 +124,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
                 .Where(x => x.Errors.Any(e =>
                     e.ErrorCode == "AdresPositieGeometriemethodeValidatie"
                     && e.ErrorMessage == "Ongeldige positieGeometrieMethode."));
-        }
-
-        [Fact]
-        public void WithAddressHasMissingGeometrySpecification_ThenValidationExceptionIsThrown()
-        {
-            var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = new AddressPersistentLocalId(123);
-
-            MockMediator
-                .Setup(x => x.Send(It.IsAny<AddressChangePositionRequest>(), CancellationToken.None))
-                .Throws(new AddressHasMissingGeometrySpecificationException());
-
-            _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.Add(
-                new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));
-            _backOfficeContext.SaveChanges();
-
-            var act = async () => await _controller.ChangePosition(
-                _backOfficeContext,
-                MockValidRequestValidator<AddressChangePositionRequest>(),
-                MockIfMatchValidator(true),
-                ResponseOptions,
-                addressPersistentLocalId,
-                new AddressChangePositionRequest
-                {
-                    PersistentLocalId = addressPersistentLocalId
-                },
-                ifMatchHeaderValue: null);
-
-            //Assert
-            act
-                .Should()
-                .ThrowAsync<ValidationException>()
-                .Result
-                .Where(x => x.Errors.Any(e =>
-                    e.ErrorCode == "AdresPositieSpecificatieVerplichtBijManueleAanduiding"
-                    && e.ErrorMessage == "PositieSpecificatie is verplicht bij een manuele aanduiding van de positie."));
         }
 
         [Fact]

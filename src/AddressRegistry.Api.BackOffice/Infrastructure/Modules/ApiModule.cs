@@ -74,10 +74,6 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
             builder.RegisterModule(new MunicipalityConsumerModule(_configuration,_services, _loggerFactory));
             builder.RegisterSnapshotModule(_configuration);
 
-            builder.RegisterType<MunicipalityConsumerContext>()
-                .As<IMunicipalities>()
-                .AsSelf();
-
             builder.Populate(_services);
         }
     }

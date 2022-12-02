@@ -48,9 +48,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenChangingAddressPosition
                 {
                     Request = new ChangeAddressPositionBackOfficeRequest
                     {
-                        Positie = "",
                         PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                        PositieSpecificatie = PositieSpecificatie.Gemeente
+                        PositieSpecificatie = PositieSpecificatie.Perceel,
+                        Positie = GeometryHelpers.GmlPointGeometry
                     },
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),

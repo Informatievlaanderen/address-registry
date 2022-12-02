@@ -121,6 +121,12 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException => new TicketError(
                     ValidationErrors.Common.PostalCode.PostalCodeNotInMunicipality.Message,
                     ValidationErrors.Common.PostalCode.PostalCodeNotInMunicipality.Code),
+                AddressHasInvalidGeometryMethodException => new TicketError(
+                    ValidationErrors.Common.PositionGeometryMethod.Invalid.Message,
+                    ValidationErrors.Common.PositionGeometryMethod.Invalid.Code),
+                AddressHasInvalidGeometrySpecificationException => new TicketError(
+                    ValidationErrors.Common.PositionSpecification.Invalid.Message,
+                    ValidationErrors.Common.PositionSpecification.Invalid.Code),
                 _ => null
             };
         }

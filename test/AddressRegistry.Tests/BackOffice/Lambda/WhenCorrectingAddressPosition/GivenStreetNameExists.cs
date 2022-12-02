@@ -48,12 +48,8 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
         [Fact]
         public async Task GivenRequest_ThenPersistentLocalIdETagResponse()
         {
-            var municipalityId = Fixture.Create<MunicipalityId>();
             var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
             var addressPersistentLocalId = new AddressPersistentLocalId(456);
-
-            var municipalities = Container.Resolve<TestMunicipalityConsumerContext>();
-            municipalities.AddMunicipality(municipalityId, GeometryHelpers.ValidGmlPolygon);
 
             ImportMigratedStreetName(
                 new StreetNameId(Guid.NewGuid()),
@@ -81,7 +77,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
                 {
                     Request = new CorrectAddressPositionBackOfficeRequest
                     {
-                        PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
+                        PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
+                        PositieSpecificatie = PositieSpecificatie.Gemeente,
+                        Positie = GeometryHelpers.GmlPointGeometry
                     },
                     PersistentLocalId = addressPersistentLocalId,
                     TicketId = Guid.NewGuid(),
@@ -113,7 +111,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
             {
                 Request = new CorrectAddressPositionBackOfficeRequest
                 {
-                    PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
+                    PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
+                    PositieSpecificatie = PositieSpecificatie.Gemeente,
+                    Positie = GeometryHelpers.GmlPointGeometry
                 },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
@@ -148,7 +148,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
             {
                 Request = new CorrectAddressPositionBackOfficeRequest
                 {
-                    PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
+                    PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
+                    PositieSpecificatie = PositieSpecificatie.Gemeente,
+                    Positie = GeometryHelpers.GmlPointGeometry
                 },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
@@ -162,41 +164,6 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
                     new TicketError(
                         "Ongeldige positieGeometrieMethode.",
                         "AdresPositieGeometriemethodeValidatie"),
-                    CancellationToken.None));
-        }
-
-        [Fact]
-        public async Task WhenAddressHasMissingGeometrySpecification_ThenTicketingErrorIsExpected()
-        {
-            // Arrange
-            var ticketing = new Mock<ITicketing>();
-
-            var sut = new CorrectAddressPositionLambdaHandler(
-                Container.Resolve<IConfiguration>(),
-                new FakeRetryPolicy(),
-                ticketing.Object,
-                Mock.Of<IStreetNames>(),
-                MockExceptionIdempotentCommandHandler<AddressHasMissingGeometrySpecificationException>().Object);
-
-            // Act
-            await sut.Handle(new CorrectAddressPositionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressPositionSqsRequest
-            {
-                Request = new CorrectAddressPositionBackOfficeRequest
-                {
-                    PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
-                },
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object?>(),
-                ProvenanceData = Fixture.Create<ProvenanceData>()
-            }), CancellationToken.None);
-
-            //Assert
-            ticketing.Verify(x =>
-                x.Error(
-                    It.IsAny<Guid>(),
-                    new TicketError(
-                        "PositieSpecificatie is verplicht bij een manuele aanduiding van de positie.",
-                        "AdresPositieSpecificatieVerplichtBijManueleAanduiding"),
                     CancellationToken.None));
         }
 
@@ -218,7 +185,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
             {
                 Request = new CorrectAddressPositionBackOfficeRequest
                 {
-                    PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
+                    PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
+                    PositieSpecificatie = PositieSpecificatie.Perceel,
+                    Positie = GeometryHelpers.GmlPointGeometry
                 },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
@@ -275,7 +244,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
                 {
                     Request = new CorrectAddressPositionBackOfficeRequest
                     {
-                        PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject
+                        PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
+                        PositieSpecificatie = PositieSpecificatie.Gemeente,
+                        Positie = GeometryHelpers.GmlPointGeometry
                     },
                     PersistentLocalId = addressPersistentLocalId,
                     TicketId = Guid.NewGuid(),

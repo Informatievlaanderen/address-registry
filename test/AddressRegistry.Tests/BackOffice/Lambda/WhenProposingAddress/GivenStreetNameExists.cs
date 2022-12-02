@@ -595,5 +595,141 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                         "AdresPostinfoNietInGemeente"),
                     CancellationToken.None));
         }
+
+        [Fact]
+        public async Task WhenInvalidGeometryMethod_ThenTicketingErrorIsExpected()
+        {
+            // Arrange
+            var ticketing = new Mock<ITicketing>();
+
+            var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
+            var nisCode = new NisCode("12345");
+            var postInfoId = "2018";
+
+            var mockPersistentLocalIdGenerator = new Mock<IPersistentLocalIdGenerator>();
+            mockPersistentLocalIdGenerator
+                .Setup(x => x.GenerateNextPersistentLocalId())
+                .Returns(new PersistentLocalId(123));
+
+            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
+            {
+                PostalCode = postInfoId,
+                NisCode = nisCode,
+            });
+            _municipalityContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem
+            {
+                MunicipalityId = Fixture.Create<MunicipalityId>(),
+                NisCode = nisCode
+            });
+            await _municipalityContext.SaveChangesAsync();
+            await _syndicationContext.SaveChangesAsync();
+
+            var sut = new ProposeAddressLambdaHandler(
+                Container.Resolve<IConfiguration>(),
+                new FakeRetryPolicy(),
+                ticketing.Object,
+                Mock.Of<IStreetNames>(),
+                MockExceptionIdempotentCommandHandler<AddressHasInvalidGeometryMethodException>().Object,
+                _backOfficeContext,
+                _syndicationContext,
+                _municipalityContext,
+                mockPersistentLocalIdGenerator.Object);
+
+            // Act
+            var request = new ProposeAddressLambdaRequest(Fixture.Create<int>().ToString(), new ProposeAddressSqsRequest()
+            {
+                Request = new ProposeAddressBackOfficeRequest
+                {
+                    StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
+                    PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
+                    Huisnummer = "11",
+                    Busnummer = null,
+                    PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
+                    PositieSpecificatie = PositieSpecificatie.Ingang,
+                    Positie = GeometryHelpers.GmlPointGeometry
+                },
+                TicketId = Guid.NewGuid(),
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            });
+            await sut.Handle(request, CancellationToken.None);
+
+            //Assert
+            ticketing.Verify(x =>
+                x.Error(
+                    It.IsAny<Guid>(),
+                    new TicketError(
+                        "Ongeldige positieGeometrieMethode.",
+                        "AdresPositieGeometriemethodeValidatie"),
+                    CancellationToken.None));
+        }
+
+        [Fact]
+        public async Task WhenInvalidGeometrySpecification_ThenTicketingErrorIsExpected()
+        {
+            // Arrange
+            var ticketing = new Mock<ITicketing>();
+
+            var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
+            var nisCode = new NisCode("12345");
+            var postInfoId = "2018";
+
+            var mockPersistentLocalIdGenerator = new Mock<IPersistentLocalIdGenerator>();
+            mockPersistentLocalIdGenerator
+                .Setup(x => x.GenerateNextPersistentLocalId())
+                .Returns(new PersistentLocalId(123));
+
+            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
+            {
+                PostalCode = postInfoId,
+                NisCode = nisCode,
+            });
+            _municipalityContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem
+            {
+                MunicipalityId = Fixture.Create<MunicipalityId>(),
+                NisCode = nisCode
+            });
+            await _municipalityContext.SaveChangesAsync();
+            await _syndicationContext.SaveChangesAsync();
+
+            var sut = new ProposeAddressLambdaHandler(
+                Container.Resolve<IConfiguration>(),
+                new FakeRetryPolicy(),
+                ticketing.Object,
+                Mock.Of<IStreetNames>(),
+                MockExceptionIdempotentCommandHandler<AddressHasInvalidGeometrySpecificationException>().Object,
+                _backOfficeContext,
+                _syndicationContext,
+                _municipalityContext,
+                mockPersistentLocalIdGenerator.Object);
+
+            // Act
+            var request = new ProposeAddressLambdaRequest(Fixture.Create<int>().ToString(), new ProposeAddressSqsRequest()
+            {
+                Request = new ProposeAddressBackOfficeRequest
+                {
+                    StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
+                    PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
+                    Huisnummer = "11",
+                    Busnummer = null,
+                    PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
+                    PositieSpecificatie = PositieSpecificatie.Ingang,
+                    Positie = GeometryHelpers.GmlPointGeometry
+                },
+                TicketId = Guid.NewGuid(),
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            });
+            await sut.Handle(request, CancellationToken.None);
+
+            //Assert
+            ticketing.Verify(x =>
+                x.Error(
+                    It.IsAny<Guid>(),
+                    new TicketError(
+                        "Ongeldige positieSpecificatie.",
+                        "AdresPositieSpecificatieValidatie"),
+                    CancellationToken.None));
+        }
     }
 }

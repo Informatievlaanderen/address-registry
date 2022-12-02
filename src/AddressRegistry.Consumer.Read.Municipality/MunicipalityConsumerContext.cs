@@ -8,10 +8,8 @@ namespace AddressRegistry.Consumer.Read.Municipality
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
     using Microsoft.EntityFrameworkCore;
     using Projections;
-    using StreetName;
-    using StreetName.DataStructures;
 
-    public class MunicipalityConsumerContext : RunnerDbContext<MunicipalityConsumerContext>, IMunicipalities
+    public class MunicipalityConsumerContext : RunnerDbContext<MunicipalityConsumerContext>
     {
         public DbSet<MunicipalityLatestItem> MunicipalityLatestItems { get; set; }
         public DbSet<MunicipalityBosaItem> MunicipalityBosaItems { get; set; }
@@ -26,13 +24,6 @@ namespace AddressRegistry.Consumer.Read.Municipality
         { }
 
         public override string ProjectionStateSchema => Schema.ConsumerReadMunicipality;
-
-        public MunicipalityData Get(MunicipalityId municipalityId)
-        {
-            var municipality = MunicipalityLatestItems.Find((Guid)municipalityId);
-
-            return new MunicipalityData(municipalityId, municipality!.ExtendedWkbGeometry);
-        }
     }
 
     //Classed used when running dotnet ef migrations

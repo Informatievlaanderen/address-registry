@@ -66,9 +66,6 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 AddressHasInvalidGeometryMethodException => new TicketError(
                     ValidationErrors.Common.PositionGeometryMethod.Invalid.Message,
                     ValidationErrors.Common.PositionGeometryMethod.Invalid.Code),
-                AddressHasMissingGeometrySpecificationException => new TicketError(
-                    ValidationErrors.Common.PositionSpecification.Required.Message,
-                    ValidationErrors.Common.PositionSpecification.Required.Code),
                 AddressHasInvalidGeometrySpecificationException => new TicketError(
                     ValidationErrors.Common.PositionSpecification.Invalid.Message,
                     ValidationErrors.Common.PositionSpecification.Invalid.Code),

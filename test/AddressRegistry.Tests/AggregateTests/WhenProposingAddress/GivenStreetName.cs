@@ -4,9 +4,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
     using System.Collections.Generic;
     using System.Linq;
     using Api.BackOffice.Abstractions;
-    using Autofac;
     using AutoFixture;
-    using BackOffice.Infrastructure;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
@@ -23,7 +21,6 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
     public class GivenStreetName : AddressRegistryTest
     {
         private readonly StreetNameStreamId _streamId;
-        private readonly IMunicipalities _municipalities;
 
         public GivenStreetName(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
@@ -32,7 +29,6 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
             Fixture.Customize(new WithFixedMunicipalityId());
             Fixture.Customize(new WithFixedValidHouseNumber());
             _streamId = Fixture.Create<StreetNameStreamId>();
-            _municipalities = Container.Resolve<IMunicipalities>();
         }
 
         [Fact]
@@ -163,8 +159,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 childBoxNumber,
                 geometryMethod,
                 geometrySpecification,
-                geometryPosition,
-                _municipalities);
+                geometryPosition);
 
             // Assert
             var result = aggregate.StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(parentAddressWasProposed.AddressPersistentLocalId));
@@ -244,7 +239,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 Fixture.Create<BoxNumber>(),
                 GeometryMethod.DerivedFromObject,
                 GeometrySpecification.Municipality,
-                null,
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -269,7 +264,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 Fixture.Create<BoxNumber>(),
                 GeometryMethod.DerivedFromObject,
                 GeometrySpecification.Municipality,
-                null,
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -348,91 +343,6 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
         }
 
         [Fact]
-        public void WithGeometryMethodDerivedFromObject_ThenSpecificationIsMunicipalityAndPositionIsMunicipalityCentroid()
-        {
-            var municipalityId = Fixture.Create<MunicipalityId>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-
-            var command = new ProposeAddress(
-                Fixture.Create<StreetNamePersistentLocalId>(),
-                Fixture.Create<PostalCode>(),
-                municipalityId,
-                addressPersistentLocalId,
-                new HouseNumber("1"),
-                null,
-                GeometryMethod.DerivedFromObject,
-                null,
-                null,
-                Fixture.Create<Provenance>());
-
-            var municipalities = Container.Resolve<TestMunicipalityConsumerContext>();
-            var municipalityLatestItem = municipalities.AddMunicipality(municipalityId, GeometryHelpers.ValidGmlPolygon);
-            var municipalityCentroid =
-                ExtendedWkbGeometry.CreateEWkb(
-                    WKBReaderFactory.Create().Read(municipalityLatestItem.ExtendedWkbGeometry).Centroid.Centroid.AsBinary());
-
-            Assert(new Scenario()
-                .Given(_streamId,
-                    Fixture.Create<StreetNameWasImported>())
-                .When(command)
-                .Then(new Fact(_streamId,
-                    new AddressWasProposedV2(
-                        Fixture.Create<StreetNamePersistentLocalId>(),
-                        addressPersistentLocalId,
-                        null,
-                        command.PostalCode,
-                        command.HouseNumber,
-                        null,
-                        GeometryMethod.DerivedFromObject,
-                        GeometrySpecification.Municipality,
-                        municipalityCentroid))));
-        }
-
-        [Fact]
-        public void WithGeometryMethodAppointedByAdministratorAndNoSpecification_ThenThrowsAddressHasMissingGeometrySpecificationException()
-        {
-            var command = new ProposeAddress(
-                Fixture.Create<StreetNamePersistentLocalId>(),
-                Fixture.Create<PostalCode>(),
-                Fixture.Create<MunicipalityId>(),
-                Fixture.Create<AddressPersistentLocalId>(),
-                new HouseNumber("1"),
-                null,
-                GeometryMethod.AppointedByAdministrator,
-                null,
-                Fixture.Create<ExtendedWkbGeometry>(),
-                Fixture.Create<Provenance>());
-
-            Assert(new Scenario()
-                .Given(_streamId,
-                    Fixture.Create<StreetNameWasImported>())
-                .When(command)
-                .Throws(new AddressHasMissingGeometrySpecificationException()));
-        }
-
-        [Fact]
-        public void WithAppointedByAdministratorAndNoPosition_ThenThrowsAddressHasMissingPositionException()
-        {
-            var command = new ProposeAddress(
-                Fixture.Create<StreetNamePersistentLocalId>(),
-                Fixture.Create<PostalCode>(),
-                Fixture.Create<MunicipalityId>(),
-                Fixture.Create<AddressPersistentLocalId>(),
-                new HouseNumber("1"),
-                null,
-                GeometryMethod.AppointedByAdministrator,
-                GeometrySpecification.Entry,
-                null,
-                Fixture.Create<Provenance>());
-
-            Assert(new Scenario()
-                .Given(_streamId,
-                    Fixture.Create<StreetNameWasImported>())
-                .When(command)
-                .Throws(new AddressHasMissingPositionException()));
-        }
-
-        [Fact]
         public void WithInvalidMethod_ThenThrowsAddressHasInvalidGeometryMethodException()
         {
             var command = new ProposeAddress(
@@ -444,7 +354,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 null,
                 GeometryMethod.Interpolated,
                 GeometrySpecification.Entry,
-                null,
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -458,7 +368,6 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
         [InlineData(GeometrySpecification.RoadSegment)]
         [InlineData(GeometrySpecification.Municipality)]
         [InlineData(GeometrySpecification.Building)]
-        [InlineData(GeometrySpecification.BuildingUnit)]
         [InlineData(GeometrySpecification.Street)]
         public void WithAppointedByAdministratorAndInvalidSpecification_ThenThrowsAddressHasInvalidGeometrySpecificationException(GeometrySpecification invalidSpecification)
         {

@@ -96,10 +96,6 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
                 .AsSelf()
                 .InstancePerLifetimeScope();
 
-            builder.RegisterType<MunicipalityConsumerContext>()
-                .As<IMunicipalities>()
-                .AsSelf();
-
             builder.RegisterModule(new IdempotencyModule(
                 services,
                 configuration.GetSection(IdempotencyConfiguration.Section).Get<IdempotencyConfiguration>()

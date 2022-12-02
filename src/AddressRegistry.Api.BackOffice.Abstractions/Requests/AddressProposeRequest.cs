@@ -38,7 +38,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
                 string.IsNullOrWhiteSpace(Busnummer) ? null : new BoxNumber(Busnummer),
                 PositieGeometrieMethode.Map(),
                 PositieSpecificatie.Map(),
-                string.IsNullOrWhiteSpace(Positie) ? null : Positie.ToExtendedWkbGeometry(),
+                Positie.ToExtendedWkbGeometry(),
                 provenance);
         }
     }

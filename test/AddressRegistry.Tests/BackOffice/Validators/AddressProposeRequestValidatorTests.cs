@@ -32,7 +32,7 @@ namespace AddressRegistry.Tests.BackOffice.Validators
         }
 
         [Fact]
-        public void GivenNoPositionSpecificationAndPositionGeometryMethodIsAppointedByAdministrator_ThenReturnsExpectedFailure()
+        public void GivenNoSpecificationPosition_ThenReturnsExpectedFailure()
         {
             WithStreamExists();
 
@@ -47,8 +47,8 @@ namespace AddressRegistry.Tests.BackOffice.Validators
 
             result.ShouldHaveValidationErrorFor(nameof(AddressProposeRequest.PositieSpecificatie))
                 .WithoutErrorCode("AdresPositieSpecificatieValidatie")
-                .WithErrorCode("AdresPositieSpecificatieVerplichtBijManueleAanduiding")
-                .WithErrorMessage("PositieSpecificatie is verplicht bij een manuele aanduiding van de positie.");
+                .WithErrorCode("AdresPositieSpecificatieVerplicht")
+                .WithErrorMessage("PositieSpecificatie is verplicht.");
         }
 
         [Theory]
@@ -77,6 +77,7 @@ namespace AddressRegistry.Tests.BackOffice.Validators
         [InlineData(PositieSpecificatie.Lot)]
         [InlineData(PositieSpecificatie.Standplaats)]
         [InlineData(PositieSpecificatie.Ligplaats)]
+        [InlineData(PositieSpecificatie.Gebouweenheid)]
         public void GivenInvalidPositionSpecificationForPositionGeometryMethodDerivedFromObject_ThenReturnsExpectedFailure(PositieSpecificatie specificatie)
         {
             WithStreamExists();
@@ -96,7 +97,7 @@ namespace AddressRegistry.Tests.BackOffice.Validators
         }
 
         [Fact]
-        public void GivenNoPositionAndPositionGeometryMethodIsAppointedByAdministrator_ThenReturnsExpectedFailure()
+        public void GivenNoPosition_ThenReturnsExpectedFailure()
         {
             WithStreamExists();
 
@@ -110,8 +111,8 @@ namespace AddressRegistry.Tests.BackOffice.Validators
             });
 
             result.ShouldHaveValidationErrorFor(nameof(AddressProposeRequest.Positie))
-                .WithErrorCode("AdresPositieGeometriemethodeValidatie")
-                .WithErrorMessage("De parameter 'positie' is verplicht indien positieGeometrieMethode aangeduidDoorBeheerder is.");
+                .WithErrorCode("AdresPositieVerplicht")
+                .WithErrorMessage("De positie is verplicht.");
         }
 
         [Theory]

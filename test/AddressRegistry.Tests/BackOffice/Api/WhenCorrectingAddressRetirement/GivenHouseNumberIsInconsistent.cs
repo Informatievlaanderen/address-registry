@@ -7,7 +7,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRetirement
     using AddressRegistry.Api.BackOffice;
     using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
-    using AddressRegistry.Api.BackOffice.Validators;
     using FluentAssertions;
     using FluentValidation;
     using FluentValidation.Results;

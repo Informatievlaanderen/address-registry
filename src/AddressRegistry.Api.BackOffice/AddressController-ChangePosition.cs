@@ -138,10 +138,6 @@ namespace AddressRegistry.Api.BackOffice
                         ValidationErrors.Common.PositionGeometryMethod.Invalid.Code,
                         string.Empty,
                         ValidationErrors.Common.PositionGeometryMethod.Invalid.Message),
-                    AddressHasMissingGeometrySpecificationException => CreateValidationException(
-                        ValidationErrors.Common.PositionSpecification.Required.Code,
-                        string.Empty,
-                        ValidationErrors.Common.PositionSpecification.Required.Message),
                     AddressHasInvalidGeometrySpecificationException => CreateValidationException(
                         ValidationErrors.Common.PositionSpecification.Invalid.Code,
                         string.Empty,

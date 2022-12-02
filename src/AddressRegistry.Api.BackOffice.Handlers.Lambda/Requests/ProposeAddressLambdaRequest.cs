@@ -43,7 +43,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
                 string.IsNullOrWhiteSpace(Request.Busnummer) ? null : new BoxNumber(Request.Busnummer),
                 Request.PositieGeometrieMethode.Map(),
                 Request.PositieSpecificatie.Map(),
-                string.IsNullOrWhiteSpace(Request.Positie) ? null : Request.Positie.ToExtendedWkbGeometry(),
+                Request.Positie.ToExtendedWkbGeometry(),
                 Provenance);
         }
     }

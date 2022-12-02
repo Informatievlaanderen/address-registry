@@ -56,7 +56,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
                 request: new AddressCorrectPositionRequest
                 {
                     PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
-                    PositieSpecificatie = PositieSpecificatie.Gemeente
+                    PositieSpecificatie = PositieSpecificatie.Gemeente,
+                    Positie = GeometryHelpers.GmlPointGeometry
                 },
                 ifMatchHeaderValue: null);
 
@@ -82,7 +83,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
                 request: new AddressCorrectPositionRequest
                 {
                     PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
-                    PositieSpecificatie = PositieSpecificatie.Gemeente
+                    PositieSpecificatie = PositieSpecificatie.Gemeente,
+                    Positie = GeometryHelpers.GmlPointGeometry
                 },
                 ifMatchHeaderValue: null);
 
@@ -102,7 +104,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
                 request: new AddressCorrectPositionRequest
                 {
                     PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
-                    PositieSpecificatie = PositieSpecificatie.Gemeente
+                    PositieSpecificatie = PositieSpecificatie.Gemeente,
+                    Positie = GeometryHelpers.GmlPointGeometry
                 },
                 ifMatchHeaderValue: null);
 

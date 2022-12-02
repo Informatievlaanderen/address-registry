@@ -37,7 +37,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
                 new AddressPersistentLocalId(PersistentLocalId),
                 PositieGeometrieMethode.Map(),
                 PositieSpecificatie.Map(),
-                string.IsNullOrWhiteSpace(Positie) ? null : Positie.ToExtendedWkbGeometry(),
+                Positie.ToExtendedWkbGeometry(),
                 provenance);
         }
     }

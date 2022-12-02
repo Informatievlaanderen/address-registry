@@ -6,13 +6,8 @@
 
     public static class GeometrySpecificationConverter
     {
-        public static GeometrySpecification? Map(this PositieSpecificatie? specificatie)
+        public static GeometrySpecification Map(this PositieSpecificatie specificatie)
         {
-            if (specificatie is null)
-            {
-                return null;
-            }
-
             return specificatie switch
             {
                 PositieSpecificatie.Gemeente => GeometrySpecification.Municipality,
@@ -21,6 +16,7 @@
                 PositieSpecificatie.Standplaats => GeometrySpecification.Stand,
                 PositieSpecificatie.Ligplaats => GeometrySpecification.Berth,
                 PositieSpecificatie.Ingang => GeometrySpecification.Entry,
+                PositieSpecificatie.Gebouweenheid => GeometrySpecification.BuildingUnit,
                 _ => throw new ArgumentOutOfRangeException(nameof(specificatie), specificatie, null)
             };
         }

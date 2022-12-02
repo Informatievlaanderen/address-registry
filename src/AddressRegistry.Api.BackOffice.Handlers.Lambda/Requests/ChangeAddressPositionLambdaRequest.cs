@@ -42,7 +42,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
                 new AddressPersistentLocalId(AddressPersistentLocalId),
                 Request.PositieGeometrieMethode.Map(),
                 Request.PositieSpecificatie.Map(),
-                string.IsNullOrWhiteSpace(Request.Positie) ? null : Request.Positie.ToExtendedWkbGeometry(),
+                Request.Positie.ToExtendedWkbGeometry(),
                 Provenance);
         }
     }

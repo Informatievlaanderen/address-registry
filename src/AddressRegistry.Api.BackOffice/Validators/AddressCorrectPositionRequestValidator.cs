@@ -18,7 +18,6 @@ namespace AddressRegistry.Api.BackOffice.Validators
 
             RuleFor(x => x.PositieSpecificatie)
                 .NotEmpty()
-                .When(x => x.PositieGeometrieMethode == PositieGeometrieMethode.AangeduidDoorBeheerder)
                 .DependentRules(() =>
                 {
                     RuleFor(x => x.PositieSpecificatie)
@@ -26,27 +25,27 @@ namespace AddressRegistry.Api.BackOffice.Validators
                         .When(x => x.PositieGeometrieMethode == PositieGeometrieMethode.AangeduidDoorBeheerder)
                         .WithMessage(ValidationErrors.Common.PositionSpecification.Invalid.Message)
                         .WithErrorCode(ValidationErrors.Common.PositionSpecification.Invalid.Code);
+
+                    RuleFor(x => x.PositieSpecificatie)
+                        .Must(PositionSpecificationValidator.IsValidWhenDerivedFromObject)
+                        .When(x => x.PositieGeometrieMethode == PositieGeometrieMethode.AfgeleidVanObject)
+                        .WithMessage(ValidationErrors.Common.PositionSpecification.Invalid.Message)
+                        .WithErrorCode(ValidationErrors.Common.PositionSpecification.Invalid.Code);
                 })
                 .WithMessage(ValidationErrors.Common.PositionSpecification.Required.Message)
                 .WithErrorCode(ValidationErrors.Common.PositionSpecification.Required.Code);
 
-            RuleFor(x => x.PositieSpecificatie)
-                .Must(PositionSpecificationValidator.IsValidWhenDerivedFromObject)
-                .When(x => x.PositieGeometrieMethode == PositieGeometrieMethode.AfgeleidVanObject)
-                .WithMessage(ValidationErrors.Common.PositionSpecification.Invalid.Message)
-                .WithErrorCode(ValidationErrors.Common.PositionSpecification.Invalid.Code);
-
             RuleFor(x => x.Positie)
                 .NotEmpty()
-                .When(x => x.PositieGeometrieMethode == PositieGeometrieMethode.AangeduidDoorBeheerder)
+                .DependentRules(() =>
+                {
+                    RuleFor(x => x.Positie)
+                        .Must(gml => GmlPointValidator.IsValid(gml, GmlHelpers.CreateGmlReader()))
+                        .WithErrorCode(ValidationErrors.Common.Position.InvalidFormat.Code)
+                        .WithMessage(ValidationErrors.Common.Position.InvalidFormat.Message);
+                })
                 .WithErrorCode(ValidationErrors.Common.Position.Required.Code)
                 .WithMessage(ValidationErrors.Common.Position.Required.Message);
-
-            RuleFor(x => x.Positie)
-                .Must(gml => GmlPointValidator.IsValid(gml, GmlHelpers.CreateGmlReader()))
-                .When(x => !string.IsNullOrEmpty(x.Positie))
-                .WithErrorCode(ValidationErrors.Common.Position.InvalidFormat.Code)
-                .WithMessage(ValidationErrors.Common.Position.InvalidFormat.Message);
         }
     }
 }

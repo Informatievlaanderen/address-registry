@@ -58,8 +58,8 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
             {
                 public static class Required
                 {
-                    public const string Code = "AdresPositieGeometriemethodeValidatie";
-                    public const string Message = "De parameter 'positie' is verplicht indien positieGeometrieMethode aangeduidDoorBeheerder is.";
+                    public const string Code = "AdresPositieVerplicht";
+                    public const string Message = "De positie is verplicht.";
                 }
 
                 public static class InvalidFormat
@@ -79,8 +79,8 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
             {
                 public static class Required
                 {
-                    public const string Code = "AdresPositieSpecificatieVerplichtBijManueleAanduiding";
-                    public const string Message = "PositieSpecificatie is verplicht bij een manuele aanduiding van de positie.";
+                    public const string Code = "AdresPositieSpecificatieVerplicht";
+                    public const string Message = "PositieSpecificatie is verplicht.";
                 }
 
                 public static class Invalid

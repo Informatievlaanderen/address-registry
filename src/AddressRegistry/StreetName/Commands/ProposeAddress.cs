@@ -16,9 +16,9 @@ namespace AddressRegistry.StreetName.Commands
         public AddressPersistentLocalId AddressPersistentLocalId { get; set; }
         public HouseNumber HouseNumber { get; set; }
         public BoxNumber? BoxNumber { get; set; }
-        public GeometryMethod? GeometryMethod { get; set; }
-        public GeometrySpecification? GeometrySpecification { get; set; }
-        public ExtendedWkbGeometry? Position { get; set; }
+        public GeometryMethod GeometryMethod { get; set; }
+        public GeometrySpecification GeometrySpecification { get; set; }
+        public ExtendedWkbGeometry Position { get; set; }
         public Provenance Provenance { get; }
 
         public ProposeAddress(
@@ -28,9 +28,9 @@ namespace AddressRegistry.StreetName.Commands
             AddressPersistentLocalId addressPersistentLocalId,
             HouseNumber houseNumber,
             BoxNumber? boxNumber,
-            GeometryMethod? geometryMethod,
-            GeometrySpecification? geometrySpecification,
-            ExtendedWkbGeometry? position,
+            GeometryMethod geometryMethod,
+            GeometrySpecification geometrySpecification,
+            ExtendedWkbGeometry position,
             Provenance provenance)
         {
             StreetNamePersistentLocalId = streetNamePersistentLocalId;
@@ -59,9 +59,9 @@ namespace AddressRegistry.StreetName.Commands
             yield return AddressPersistentLocalId;
             yield return HouseNumber;
             yield return BoxNumber ?? string.Empty;
-            yield return GeometryMethod?.ToString() ?? string.Empty;
-            yield return GeometrySpecification?.ToString() ?? string.Empty;
-            yield return Position ?? string.Empty;
+            yield return GeometryMethod.ToString();
+            yield return GeometrySpecification.ToString();
+            yield return Position;
 
             foreach (var field in Provenance.GetIdentityFields())
             {

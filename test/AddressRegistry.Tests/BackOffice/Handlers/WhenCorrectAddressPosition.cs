@@ -24,7 +24,6 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
     {
         private readonly TestBackOfficeContext _backOfficeContext;
         private readonly IdempotencyContext _idempotencyContext;
-        private readonly TestMunicipalityConsumerContext _municipalityConsumerContext;
         private readonly IStreetNames _streetNames;
 
         public WhenCorrectAddressPosition(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
@@ -33,28 +32,24 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
 
             _idempotencyContext = new FakeIdempotencyContextFactory().CreateDbContext();
             _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
-            _municipalityConsumerContext = Container.Resolve<TestMunicipalityConsumerContext>();
             _streetNames = Container.Resolve<IStreetNames>();
         }
 
         [Fact]
         public async Task GivenRequest_ThenPersistentLocalIdETagResponse()
         {
-            var municipalityId = Fixture.Create<MunicipalityId>();
             var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
             var addressPersistentLocalId = new AddressPersistentLocalId(456);
-            var niscode = new NisCode("12345");
+            var nisCode = new NisCode("12345");
             var postalCode = new PostalCode("2018");
             var houseNumber = new HouseNumber("11");
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentLocalId);
 
-            _municipalityConsumerContext.AddMunicipality(municipalityId, GeometryHelpers.ValidGmlPolygon);
-
             ImportMigratedStreetName(
                 new StreetNameId(Guid.NewGuid()),
                 streetNamePersistentLocalId,
-                niscode);
+                nisCode);
 
             ProposeAddress(
                 streetNamePersistentLocalId,
@@ -62,8 +57,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
                 postalCode,
                 Fixture.Create<MunicipalityId>(),
                 houseNumber,
-                null
-                );
+                null);
 
             var sut = new CorrectAddressPositionHandler(
                 Container.Resolve<ICommandHandlerResolver>(),
@@ -76,7 +70,8 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
             {
                 PersistentLocalId = addressPersistentLocalId,
                 PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
-                PositieSpecificatie = PositieSpecificatie.Gemeente
+                PositieSpecificatie = PositieSpecificatie.Gemeente,
+                Positie = GeometryHelpers.GmlPointGeometry
             },
             CancellationToken.None);
 

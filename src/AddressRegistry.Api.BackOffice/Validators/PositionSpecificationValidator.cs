@@ -4,19 +4,19 @@
 
     public static class PositionSpecificationValidator
     {
-        public static bool IsValidWhenAppointedByAdministrator(PositieSpecificatie? specificatie)
+        public static bool IsValidWhenAppointedByAdministrator(PositieSpecificatie specificatie)
         {
             return specificatie == PositieSpecificatie.Ingang ||
                    specificatie == PositieSpecificatie.Perceel ||
                    specificatie == PositieSpecificatie.Lot ||
                    specificatie == PositieSpecificatie.Standplaats ||
-                   specificatie == PositieSpecificatie.Ligplaats;
+                   specificatie == PositieSpecificatie.Ligplaats ||
+                   specificatie == PositieSpecificatie.Gebouweenheid;
         }
 
-        public static bool IsValidWhenDerivedFromObject(PositieSpecificatie? specificatie)
+        public static bool IsValidWhenDerivedFromObject(PositieSpecificatie specificatie)
         {
-            return specificatie is null ||
-                   specificatie == PositieSpecificatie.Gemeente;
+            return specificatie == PositieSpecificatie.Gemeente;
         }
     }
 }

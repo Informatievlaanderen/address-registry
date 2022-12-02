@@ -3,7 +3,6 @@ namespace AddressRegistry.StreetName
     using System;
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
-    using DataStructures;
     using Events;
     using Exceptions;
 
@@ -226,9 +225,8 @@ namespace AddressRegistry.StreetName
 
         public void ChangePosition(
             GeometryMethod geometryMethod,
-            GeometrySpecification? geometrySpecification,
-            ExtendedWkbGeometry? position,
-            Func<MunicipalityData> getMunicipalityData)
+            GeometrySpecification geometrySpecification,
+            ExtendedWkbGeometry position)
         {
             GuardNotRemovedAddress();
 
@@ -239,22 +237,16 @@ namespace AddressRegistry.StreetName
                 throw new AddressHasInvalidStatusException();
             }
 
-            GuardGeometry(geometryMethod, geometrySpecification, position);
+            GuardGeometry(geometryMethod, geometrySpecification);
 
-            var newGeometry = GetFinalGeometry(
-                geometryMethod,
-                geometrySpecification,
-                position,
-                getMunicipalityData);
-
-            if (Geometry != newGeometry)
+            if (Geometry != new AddressGeometry(geometryMethod, geometrySpecification, position))
             {
                 Apply(new AddressPositionWasChanged(
                     _streetNamePersistentLocalId,
                     AddressPersistentLocalId,
-                    newGeometry.GeometryMethod,
-                    newGeometry.GeometrySpecification,
-                    newGeometry.Geometry));
+                    geometryMethod,
+                    geometrySpecification,
+                    position));
             }
         }
 
@@ -287,9 +279,8 @@ namespace AddressRegistry.StreetName
 
         public void CorrectPosition(
             GeometryMethod geometryMethod,
-            GeometrySpecification? geometrySpecification,
-            ExtendedWkbGeometry? position,
-            Func<MunicipalityData> getMunicipalityData)
+            GeometrySpecification geometrySpecification,
+            ExtendedWkbGeometry position)
         {
             GuardNotRemovedAddress();
 
@@ -300,22 +291,16 @@ namespace AddressRegistry.StreetName
                 throw new AddressHasInvalidStatusException();
             }
 
-            GuardGeometry(geometryMethod, geometrySpecification, position);
+            GuardGeometry(geometryMethod, geometrySpecification);
 
-            var newGeometry = GetFinalGeometry(
-                geometryMethod,
-                geometrySpecification,
-                position,
-                getMunicipalityData);
-
-            if (Geometry != newGeometry)
+            if (Geometry != new AddressGeometry(geometryMethod, geometrySpecification, position))
             {
                 Apply(new AddressPositionWasCorrectedV2(
                     _streetNamePersistentLocalId,
                     AddressPersistentLocalId,
-                    newGeometry.GeometryMethod,
-                    newGeometry.GeometrySpecification,
-                    newGeometry.Geometry));
+                    geometryMethod,
+                    geometrySpecification,
+                    position));
             }
         }
 
@@ -545,22 +530,6 @@ namespace AddressRegistry.StreetName
         {
             Parent = parentStreetNameAddress;
             return this;
-        }
-
-        public static AddressGeometry GetFinalGeometry(
-            GeometryMethod geometryMethod,
-            GeometrySpecification? geometrySpecification,
-            ExtendedWkbGeometry? position,
-            Func<MunicipalityData> getMunicipalityData)
-        {
-            var finalSpecification = geometryMethod == GeometryMethod.DerivedFromObject
-                ? GeometrySpecification.Municipality
-                : geometrySpecification!.Value;
-            var finalPosition = geometryMethod == GeometryMethod.DerivedFromObject
-                ? getMunicipalityData.Invoke().Centroid()
-                : position!;
-
-            return new AddressGeometry(geometryMethod, finalSpecification, finalPosition);
         }
     }
 }

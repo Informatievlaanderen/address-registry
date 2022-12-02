@@ -52,10 +52,6 @@ namespace AddressRegistry.Consumer.Infrastructure.Modules
                     context => new StreetNameConsumerProjection(context.Resolve<ILoggerFactory>().CreateLogger<StreetNameConsumerProjection>()),
                     ConnectedProjectionSettings.Default);
 
-            builder.RegisterType<MunicipalityConsumerContext>()
-                .As<IMunicipalities>()
-                .AsSelf();
-
             builder.Populate(_services);
         }
     }

@@ -71,6 +71,9 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 AddressBoxNumberHasInconsistentHouseNumberException =>
                     ValidationErrors.CorrectRejection.InconsistentHouseNumber.ToTicketError(),
 
+                AddressBoxNumberHasInconsistentPostalCodeException =>
+                    ValidationErrors.CorrectRejection.InconsistentPostalCode.ToTicketError(),
+
                 ParentAddressHasInvalidStatusException => new TicketError(
                     ValidationErrors.CorrectRejection.ParentInvalidStatus.Message,
                     ValidationErrors.CorrectRejection.ParentInvalidStatus.Code),

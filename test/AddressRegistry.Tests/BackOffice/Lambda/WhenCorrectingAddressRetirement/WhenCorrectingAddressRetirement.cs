@@ -228,6 +228,38 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRetiremen
         }
 
         [Fact]
+        public async Task WhenAddressBoxNumberHasInconsistentPostalCodeException_ThenTicketingErrorIsExpected()
+        {
+            // Arrange
+            var ticketing = new Mock<ITicketing>();
+
+            var sut = new CorrectAddressRetirementLambdaHandler(
+                Container.Resolve<IConfiguration>(),
+                new FakeRetryPolicy(),
+                ticketing.Object,
+                Mock.Of<IStreetNames>(),
+                MockExceptionIdempotentCommandHandler<AddressBoxNumberHasInconsistentPostalCodeException>().Object);
+
+            // Act
+            await sut.Handle(new CorrectAddressRetirementLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressRetirementSqsRequest()
+            {
+                Request = new CorrectAddressRetirementBackOfficeRequest { PersistentLocalId = Fixture.Create<int>() },
+                TicketId = Guid.NewGuid(),
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            }), CancellationToken.None);
+
+            //Assert
+            ticketing.Verify(x =>
+                x.Error(
+                    It.IsAny<Guid>(),
+                    new TicketError(
+                        "Deze actie is niet toegestaan op busnummers wegens een inconsistente postcode.",
+                        "AdresBusnummerPostcodeInconsistent"),
+                    CancellationToken.None));
+        }
+
+        [Fact]
         public async Task WhenIdempotencyException_ThenTicketingCompleteIsExpected()
         {
             // Arrange

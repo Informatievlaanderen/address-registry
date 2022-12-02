@@ -464,6 +464,11 @@ namespace AddressRegistry.StreetName
                 throw new AddressBoxNumberHasInconsistentHouseNumberException();
             }
 
+            if (Parent is not null && Parent.PostalCode != PostalCode)
+            {
+                throw new AddressBoxNumberHasInconsistentPostalCodeException();
+            }
+
             if (Status == AddressStatus.Proposed)
             {
                 return;
@@ -486,6 +491,11 @@ namespace AddressRegistry.StreetName
             if (Parent is not null && Parent.HouseNumber != HouseNumber)
             {
                 throw new AddressBoxNumberHasInconsistentHouseNumberException();
+            }
+
+            if (Parent is not null && Parent.PostalCode != PostalCode)
+            {
+                throw new AddressBoxNumberHasInconsistentPostalCodeException();
             }
 
             switch (Status)

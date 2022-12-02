@@ -111,7 +111,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRetirement
         }
 
         [Fact]
-        public void WhenParentHouseNumberIsDifferent()
+        public void WhenParentHouseNumberIsInConsistent_ThenThrowsAddressBoxNumberHasInconsistentHouseNumberException()
         {
             var command = new CorrectAddressRetirement(
                 Fixture.Create<StreetNamePersistentLocalId>(),
@@ -156,6 +156,54 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRetirement
                     addressWasMigratedToStreetName)
                 .When(command)
                 .Throws(new AddressBoxNumberHasInconsistentHouseNumberException()));
+        }
+
+        [Fact]
+        public void WhenParentPostalCodeIsInconsistent_ThenThrowsAddressBoxNumberHasInconsistentPostalCodeException()
+        {
+            var command = new CorrectAddressRetirement(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                new AddressPersistentLocalId(456),
+                Fixture.Create<Provenance>());
+
+            var parentAddressWasMigratedToStreetName = new AddressWasMigratedToStreetName(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<AddressId>(),
+                Fixture.Create<AddressStreetNameId>(),
+                new AddressPersistentLocalId(123),
+                AddressStatus.Current,
+                new HouseNumber("404"),
+                new BoxNumber("1XYZ"),
+                Fixture.Create<AddressGeometry>(),
+                officiallyAssigned: true,
+                postalCode: new PostalCode("9000"),
+                isCompleted: false,
+                isRemoved: false,
+                parentPersistentLocalId: null);
+            ((ISetProvenance)parentAddressWasMigratedToStreetName).SetProvenance(Fixture.Create<Provenance>());
+
+            var addressWasMigratedToStreetName = new AddressWasMigratedToStreetName(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<AddressId>(),
+                Fixture.Create<AddressStreetNameId>(),
+                command.AddressPersistentLocalId,
+                AddressStatus.Retired,
+                new HouseNumber("404"),
+                new BoxNumber("1XYZ"),
+                Fixture.Create<AddressGeometry>(),
+                officiallyAssigned: true,
+                postalCode: new PostalCode("1500"),
+                isCompleted: false,
+                isRemoved: false,
+                parentPersistentLocalId: new AddressPersistentLocalId(123));
+            ((ISetProvenance)addressWasMigratedToStreetName).SetProvenance(Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    parentAddressWasMigratedToStreetName,
+                    addressWasMigratedToStreetName)
+                .When(command)
+                .Throws(new AddressBoxNumberHasInconsistentPostalCodeException()));
         }
 
         [Theory]

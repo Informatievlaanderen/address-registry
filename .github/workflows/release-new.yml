@@ -268,7 +268,7 @@ jobs:
       shell: bash
       run: |
         echo Zip lambda functions
-        pushd C:/Program Files/Git/home/runner/work/address-registry/address-registry/dist/AddressRegistry.Api.BackOffice.Handlers.Lambda/linux
+        pushd /home/runner/work/address-registry/address-registry/dist/AddressRegistry.Api.BackOffice.Handlers.Lambda/linux
         echo zip -r lambda.zip .
         zip -r lambda.zip .
         popd
@@ -290,7 +290,7 @@ jobs:
       shell: bash
       run: |
         echo Push Lambda functions to S3 Test
-        pushd C:/Program Files/Git/home/runner/work/address-registry/address-registry/dist/AddressRegistry.Api.BackOffice.Handlers.Lambda/linux
+        pushd /home/runner/work/address-registry/address-registry/dist/AddressRegistry.Api.BackOffice.Handlers.Lambda/linux
         echo aws s3 cp lambda.zip s3://s3-vbr-test-basisregisters-lam-ar-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
         aws s3 cp lambda.zip s3://s3-vbr-test-basisregisters-lam-ar-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
         popd
@@ -314,7 +314,7 @@ jobs:
       shell: bash
       run: |
         echo Push Lambda functions to S3 Staging
-        pushd C:/Program Files/Git/home/runner/work/address-registry/address-registry/dist/AddressRegistry.Api.BackOffice.Handlers.Lambda/linux
+        pushd /home/runner/work/address-registry/address-registry/dist/AddressRegistry.Api.BackOffice.Handlers.Lambda/linux
         echo aws s3 cp lambda.zip s3://s3-vbr-stg-basisregisters-lam-ar-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
         aws s3 cp lambda.zip s3://s3-vbr-stg-basisregisters-lam-ar-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
         popd
@@ -338,7 +338,7 @@ jobs:
       shell: bash
       run: |
         echo Push Lambda functions to S3 Production
-        pushd C:/Program Files/Git/home/runner/work/address-registry/address-registry/dist/AddressRegistry.Api.BackOffice.Handlers.Lambda/linux
+        pushd /home/runner/work/address-registry/address-registry/dist/AddressRegistry.Api.BackOffice.Handlers.Lambda/linux
         echo aws s3 cp lambda.zip s3://s3-vbr-prd-basisregisters-lam-ar-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
         aws s3 cp lambda.zip s3://s3-vbr-prd-basisregisters-lam-ar-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
         popd

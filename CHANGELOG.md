@@ -1,3 +1,11 @@
+## [3.67.1](https://github.com/informatievlaanderen/address-registry/compare/v3.67.0...v3.67.1) (2022-12-04)
+
+
+### Bug Fixes
+
+* change workflow ([d5f8030](https://github.com/informatievlaanderen/address-registry/commit/d5f8030ab02ed69c722745e5230b173cbbe90cd4))
+* small inconsistencies ([76f6d83](https://github.com/informatievlaanderen/address-registry/commit/76f6d83348d6f4337c2be7f0d863a5d7db932c0d))
+
 # [3.67.0](https://github.com/informatievlaanderen/address-registry/compare/v3.66.3...v3.67.0) (2022-12-02)
 
 

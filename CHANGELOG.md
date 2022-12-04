@@ -1,3 +1,10 @@
+## [3.67.2](https://github.com/informatievlaanderen/address-registry/compare/v3.67.1...v3.67.2) (2022-12-04)
+
+
+### Bug Fixes
+
+* fix lambda source folder ([5fcc901](https://github.com/informatievlaanderen/address-registry/commit/5fcc90119578bce465ca28695b80dcf5e43bce66))
+
 ## [3.67.1](https://github.com/informatievlaanderen/address-registry/compare/v3.67.0...v3.67.1) (2022-12-04)
 
 

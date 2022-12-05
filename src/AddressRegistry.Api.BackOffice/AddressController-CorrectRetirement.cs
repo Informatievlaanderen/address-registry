@@ -143,9 +143,9 @@ namespace AddressRegistry.Api.BackOffice
                         ValidationErrors.CorrectRetirement.InconsistentHouseNumber.Message),
 
                     AddressBoxNumberHasInconsistentPostalCodeException => CreateValidationException(
-                        ValidationErrors.CorrectRejection.InconsistentPostalCode.Code,
+                        ValidationErrors.CorrectRetirement.InconsistentPostalCode.Code,
                         string.Empty,
-                        ValidationErrors.CorrectRejection.InconsistentPostalCode.Message),
+                        ValidationErrors.CorrectRetirement.InconsistentPostalCode.Message),
 
                     ParentAddressHasInvalidStatusException => CreateValidationException(
                         ValidationErrors.CorrectRetirement.ParentInvalidStatus.Code,

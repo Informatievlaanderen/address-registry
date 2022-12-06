@@ -145,6 +145,15 @@ jobs:
       env:
         SEMVER: ${{ env.RELEASE_VERSION }}
 
+    - name: Upload NuGet package be-.-vlaanderen-.-basisregisters-.-address-registry-.-api-.-legacy
+      if: env.RELEASE_VERSION != 'none'
+      uses: actions/upload-artifact@v3
+      with:
+        name: nuget-be-.-vlaanderen-.-basisregisters-.-address-registry-.-api-.-legacy
+        path: /home/runner/work/address-registry/address-registry/dist/nuget/Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Legacy.*.nupkg
+      env:
+        SEMVER: ${{ env.RELEASE_VERSION }}
+
     - name: Upload NuGet package be-.-vlaanderen-.-basisregisters-.-address-registry-.-api-.-crab-import
       if: env.RELEASE_VERSION != 'none'
       uses: actions/upload-artifact@v3
@@ -436,6 +445,13 @@ jobs:
         name: nuget-be-.-vlaanderen-.-basisregisters-.-address-registry-.-api-.-oslo
         path: ~/
 
+    - name: Download NuGet package be-.-vlaanderen-.-basisregisters-.-address-registry-.-api-.-legacy
+      if: env.RELEASE_VERSION != 'none'
+      uses: actions/download-artifact@v3
+      with:
+        name: nuget-be-.-vlaanderen-.-basisregisters-.-address-registry-.-api-.-legacy
+        path: ~/
+
     - name: Download NuGet package be-.-vlaanderen-.-basisregisters-.-address-registry-.-api-.-crab-import
       if: env.RELEASE_VERSION != 'none'
       uses: actions/download-artifact@v3
@@ -455,6 +471,7 @@ jobs:
       shell: bash
       run: |
         dotnet nuget push ~/Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Oslo.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
+        dotnet nuget push ~/Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Legacy.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
         dotnet nuget push ~/Be.Vlaanderen.Basisregisters.AddressRegistry.Api.CrabImport.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
         dotnet nuget push ~/Be.Vlaanderen.Basisregisters.AddressRegistry.Api.BackOffice.Abstractions.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
       env:

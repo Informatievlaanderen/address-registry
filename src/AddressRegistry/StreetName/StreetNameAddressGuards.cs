@@ -37,7 +37,8 @@ namespace AddressRegistry.StreetName
         {
             var validSpecifications = new[]
             {
-                GeometrySpecification.Municipality
+                GeometrySpecification.Parcel,
+                GeometrySpecification.BuildingUnit
             };
 
             if (!validSpecifications.Contains(geometrySpecification))

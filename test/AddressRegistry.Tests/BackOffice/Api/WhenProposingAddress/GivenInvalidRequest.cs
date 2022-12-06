@@ -179,40 +179,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                                       && e.ErrorMessage == "Ongeldige positieGeometrieMethode."));
         }
 
-        [Fact]
-        public void WithInvalidSpecificationAndMethodAppointedByAdmin_ThenThrowsValidationException()
-        {
-            WithStreamExists();
-
-            var act = SetupController(new AddressProposeRequest
-            {
-                StraatNaamId = StraatNaamPuri + "123",
-                Huisnummer = "11",
-                Busnummer = "AA",
-                PostInfoId = PostInfoPuri + "101",
-
-                PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                PositieSpecificatie = PositieSpecificatie.Gemeente,
-                Positie = GeometryHelpers.GmlPointGeometry
-            });
-
-            // Assert
-            act
-                .Should()
-                .ThrowAsync<ValidationException>()
-                .Result
-                .Where(x =>
-                    x.Errors.Any(e => e.ErrorCode == "AdresPositieSpecificatieValidatie"
-                                      && e.ErrorMessage == "Ongeldige positieSpecificatie."));
-        }
-
         [Theory]
-        [InlineData(PositieSpecificatie.Perceel)]
         [InlineData(PositieSpecificatie.Lot)]
         [InlineData(PositieSpecificatie.Standplaats)]
         [InlineData(PositieSpecificatie.Ligplaats)]
         [InlineData(PositieSpecificatie.Ingang)]
-        [InlineData(PositieSpecificatie.Gebouweenheid)]
         public void WithInvalidSpecificationAndDerivedFromObject_ThenThrowsValidationException(PositieSpecificatie specificatie)
         {
             WithStreamExists();

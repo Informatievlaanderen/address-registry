@@ -16,7 +16,8 @@
 
         public static bool IsValidWhenDerivedFromObject(PositieSpecificatie specificatie)
         {
-            return specificatie == PositieSpecificatie.Gemeente;
+            return specificatie == PositieSpecificatie.Perceel ||
+                   specificatie == PositieSpecificatie.Gebouweenheid;
         }
     }
 }

@@ -54,7 +54,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
                 {
                     PersistentLocalId = addressPersistentLocalId,
                     PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
-                    PositieSpecificatie = PositieSpecificatie.Gemeente,
+                    PositieSpecificatie = PositieSpecificatie.Gebouweenheid,
                     Positie = GeometryHelpers.GmlPointGeometry
                 },
                 ifMatchHeaderValue: null);

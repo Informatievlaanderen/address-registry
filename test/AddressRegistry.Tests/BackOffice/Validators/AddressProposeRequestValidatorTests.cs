@@ -52,32 +52,10 @@ namespace AddressRegistry.Tests.BackOffice.Validators
         }
 
         [Theory]
-        [InlineData(PositieSpecificatie.Gemeente)]
-        public void GivenInvalidPositionSpecificationForPositionGeometryMethodAppointedByAdministrator_ThenReturnsExpectedFailure(PositieSpecificatie specificatie)
-        {
-            WithStreamExists();
-
-            var result = _sut.TestValidate(new AddressProposeRequest
-            {
-                PostInfoId = "12",
-                StraatNaamId = "34",
-                Huisnummer = "56",
-                PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                PositieSpecificatie = specificatie
-            });
-
-            result.ShouldHaveValidationErrorFor(nameof(AddressProposeRequest.PositieSpecificatie))
-                .WithErrorCode("AdresPositieSpecificatieValidatie")
-                .WithErrorMessage("Ongeldige positieSpecificatie.");
-        }
-
-        [Theory]
         [InlineData(PositieSpecificatie.Ingang)]
-        [InlineData(PositieSpecificatie.Perceel)]
         [InlineData(PositieSpecificatie.Lot)]
         [InlineData(PositieSpecificatie.Standplaats)]
         [InlineData(PositieSpecificatie.Ligplaats)]
-        [InlineData(PositieSpecificatie.Gebouweenheid)]
         public void GivenInvalidPositionSpecificationForPositionGeometryMethodDerivedFromObject_ThenReturnsExpectedFailure(PositieSpecificatie specificatie)
         {
             WithStreamExists();
@@ -132,7 +110,7 @@ namespace AddressRegistry.Tests.BackOffice.Validators
                 StraatNaamId = "34",
                 Huisnummer = "56",
                 PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
-                PositieSpecificatie = PositieSpecificatie.Gemeente,
+                PositieSpecificatie = PositieSpecificatie.Gebouweenheid,
                 Positie = position
             });
 

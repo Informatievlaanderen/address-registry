@@ -271,12 +271,11 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressPosition
         }
 
         [Theory]
+        [InlineData(GeometrySpecification.Municipality)]
         [InlineData(GeometrySpecification.Entry)]
-        [InlineData(GeometrySpecification.Parcel)]
         [InlineData(GeometrySpecification.Lot)]
         [InlineData(GeometrySpecification.Stand)]
         [InlineData(GeometrySpecification.Berth)]
-        [InlineData(GeometrySpecification.BuildingUnit)]
         public void WithGeometryMethodDerivedFromObjectAndInvalidSpecification_ThenThrowsAddressHasInvalidGeometrySpecificationException(GeometrySpecification specification)
         {
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();

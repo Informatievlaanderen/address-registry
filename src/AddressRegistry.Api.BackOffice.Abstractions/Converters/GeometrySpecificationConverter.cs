@@ -10,7 +10,6 @@
         {
             return specificatie switch
             {
-                PositieSpecificatie.Gemeente => GeometrySpecification.Municipality,
                 PositieSpecificatie.Perceel => GeometrySpecification.Parcel,
                 PositieSpecificatie.Lot => GeometrySpecification.Lot,
                 PositieSpecificatie.Standplaats => GeometrySpecification.Stand,

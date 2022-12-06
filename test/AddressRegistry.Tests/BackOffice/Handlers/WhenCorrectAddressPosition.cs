@@ -70,7 +70,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
             {
                 PersistentLocalId = addressPersistentLocalId,
                 PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
-                PositieSpecificatie = PositieSpecificatie.Gemeente,
+                PositieSpecificatie = PositieSpecificatie.Gebouweenheid,
                 Positie = GeometryHelpers.GmlPointGeometry
             },
             CancellationToken.None);

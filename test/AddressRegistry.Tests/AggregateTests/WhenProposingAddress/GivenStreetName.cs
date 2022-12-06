@@ -343,7 +343,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
         }
 
         [Fact]
-        public void WithInvalidMethod_ThenThrowsAddressHasInvalidGeometryMethodException()
+        public void WithInvalidGeometryMethod_ThenThrowsAddressHasInvalidGeometryMethodException()
         {
             var command = new ProposeAddress(
                 Fixture.Create<StreetNamePersistentLocalId>(),
@@ -379,6 +379,33 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 new HouseNumber("1"),
                 null,
                 GeometryMethod.AppointedByAdministrator,
+                invalidSpecification,
+                Fixture.Create<ExtendedWkbGeometry>(),
+                Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    Fixture.Create<StreetNameWasImported>())
+                .When(command)
+                .Throws(new AddressHasInvalidGeometrySpecificationException()));
+        }
+
+        [Theory]
+        [InlineData(GeometrySpecification.Municipality)]
+        [InlineData(GeometrySpecification.Entry)]
+        [InlineData(GeometrySpecification.Lot)]
+        [InlineData(GeometrySpecification.Stand)]
+        [InlineData(GeometrySpecification.Berth)]
+        public void WithGeometryMethodDerivedFromObjectAndInvalidSpecification_ThenThrowsAddressHasInvalidGeometrySpecificationException(GeometrySpecification invalidSpecification)
+        {
+            var command = new ProposeAddress(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<PostalCode>(),
+                Fixture.Create<MunicipalityId>(),
+                Fixture.Create<AddressPersistentLocalId>(),
+                new HouseNumber("1"),
+                null,
+                GeometryMethod.DerivedFromObject,
                 invalidSpecification,
                 Fixture.Create<ExtendedWkbGeometry>(),
                 Fixture.Create<Provenance>());

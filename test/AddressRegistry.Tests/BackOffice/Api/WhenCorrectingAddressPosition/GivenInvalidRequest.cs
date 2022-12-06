@@ -45,33 +45,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
                                       && e.ErrorMessage == "Ongeldige positieGeometrieMethode."));
         }
 
-        [Fact]
-        public void WithInvalidSpecificationAndMethodAppointedByAdmin_ThenThrowsValidationException()
-        {
-            var act = SetupController(new AddressCorrectPositionRequest
-            {
-                PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                PositieSpecificatie = PositieSpecificatie.Gemeente,
-                Positie = GeometryHelpers.GmlPointGeometry
-            });
-
-            // Assert
-            act
-                .Should()
-                .ThrowAsync<ValidationException>()
-                .Result
-                .Where(x =>
-                    x.Errors.Any(e => e.ErrorCode == "AdresPositieSpecificatieValidatie"
-                                      && e.ErrorMessage == "Ongeldige positieSpecificatie."));
-        }
-
         [Theory]
-        [InlineData(PositieSpecificatie.Perceel)]
         [InlineData(PositieSpecificatie.Lot)]
         [InlineData(PositieSpecificatie.Standplaats)]
         [InlineData(PositieSpecificatie.Ligplaats)]
         [InlineData(PositieSpecificatie.Ingang)]
-        [InlineData(PositieSpecificatie.Gebouweenheid)]
         public void WithInvalidSpecificationAndDerivedFromObject_ThenThrowsValidationException(PositieSpecificatie specificatie)
         {
             var act = SetupController(new AddressCorrectPositionRequest
@@ -97,8 +75,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
             var act = SetupController(new AddressCorrectPositionRequest
             {
                 PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                PositieSpecificatie = PositieSpecificatie.Ingang,
-                Positie = null
+                PositieSpecificatie = PositieSpecificatie.Ingang
             });
 
             // Assert

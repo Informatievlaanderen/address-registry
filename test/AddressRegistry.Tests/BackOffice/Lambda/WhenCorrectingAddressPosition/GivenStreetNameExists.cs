@@ -78,7 +78,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
                     Request = new CorrectAddressPositionBackOfficeRequest
                     {
                         PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
-                        PositieSpecificatie = PositieSpecificatie.Gemeente,
+                        PositieSpecificatie = PositieSpecificatie.Gebouweenheid,
                         Positie = GeometryHelpers.GmlPointGeometry
                     },
                     PersistentLocalId = addressPersistentLocalId,
@@ -112,7 +112,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
                 Request = new CorrectAddressPositionBackOfficeRequest
                 {
                     PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
-                    PositieSpecificatie = PositieSpecificatie.Gemeente,
+                    PositieSpecificatie = PositieSpecificatie.Gebouweenheid,
                     Positie = GeometryHelpers.GmlPointGeometry
                 },
                 TicketId = Guid.NewGuid(),
@@ -149,7 +149,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
                 Request = new CorrectAddressPositionBackOfficeRequest
                 {
                     PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
-                    PositieSpecificatie = PositieSpecificatie.Gemeente,
+                    PositieSpecificatie = PositieSpecificatie.Gebouweenheid,
                     Positie = GeometryHelpers.GmlPointGeometry
                 },
                 TicketId = Guid.NewGuid(),
@@ -245,7 +245,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
                     Request = new CorrectAddressPositionBackOfficeRequest
                     {
                         PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
-                        PositieSpecificatie = PositieSpecificatie.Gemeente,
+                        PositieSpecificatie = PositieSpecificatie.Gebouweenheid,
                         Positie = GeometryHelpers.GmlPointGeometry
                     },
                     PersistentLocalId = addressPersistentLocalId,

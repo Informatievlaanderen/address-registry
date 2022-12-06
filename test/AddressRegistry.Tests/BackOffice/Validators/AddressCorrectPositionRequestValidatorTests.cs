@@ -33,29 +33,10 @@ namespace AddressRegistry.Tests.BackOffice.Validators
         }
 
         [Theory]
-        [InlineData(PositieSpecificatie.Gemeente)]
-        public void GivenInvalidPositionSpecificationForPositionGeometryMethodAppointedByAdministrator_ThenReturnsExpectedFailure(PositieSpecificatie specificatie)
-        {
-            var result = _sut.TestValidate(new AddressCorrectPositionRequest
-            {
-                PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                PositieSpecificatie = specificatie,
-                Positie = GeometryHelpers.GmlPointGeometry
-            });
-
-            result.Errors.Count.Should().Be(1);
-            result.ShouldHaveValidationErrorFor(nameof(AddressCorrectPositionRequest.PositieSpecificatie))
-                .WithErrorCode("AdresPositieSpecificatieValidatie")
-                .WithErrorMessage("Ongeldige positieSpecificatie.");
-        }
-
-        [Theory]
         [InlineData(PositieSpecificatie.Ingang)]
-        [InlineData(PositieSpecificatie.Perceel)]
         [InlineData(PositieSpecificatie.Lot)]
         [InlineData(PositieSpecificatie.Standplaats)]
         [InlineData(PositieSpecificatie.Ligplaats)]
-        [InlineData(PositieSpecificatie.Gebouweenheid)]
         public void GivenInvalidPositionSpecificationForPositionGeometryMethodDerivedFromObject_ThenReturnsExpectedFailure(PositieSpecificatie specificatie)
         {
             var result = _sut.TestValidate(new AddressCorrectPositionRequest
@@ -96,7 +77,7 @@ namespace AddressRegistry.Tests.BackOffice.Validators
             var result = _sut.TestValidate(new AddressCorrectPositionRequest
             {
                 PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
-                PositieSpecificatie = PositieSpecificatie.Gemeente,
+                PositieSpecificatie = PositieSpecificatie.Gebouweenheid,
                 Positie = position
             });
 

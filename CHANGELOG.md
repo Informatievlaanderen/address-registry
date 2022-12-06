@@ -1,3 +1,10 @@
+## [3.68.1](https://github.com/informatievlaanderen/address-registry/compare/v3.68.0...v3.68.1) (2022-12-06)
+
+
+### Bug Fixes
+
+* publish api.legacy to nuget ([98df2de](https://github.com/informatievlaanderen/address-registry/commit/98df2ded54f175a06361a164ef339094cd9ffdda))
+
 # [3.68.0](https://github.com/informatievlaanderen/address-registry/compare/v3.67.2...v3.68.0) (2022-12-06)
 
 

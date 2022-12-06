@@ -1,3 +1,17 @@
+# [3.68.0](https://github.com/informatievlaanderen/address-registry/compare/v3.67.2...v3.68.0) (2022-12-06)
+
+
+### Bug Fixes
+
+* remove old workflows ([66863ba](https://github.com/informatievlaanderen/address-registry/commit/66863ba06f5750c79770a7377893e778935b97e5))
+* remove release-new.yml ([29d9095](https://github.com/informatievlaanderen/address-registry/commit/29d9095199339f60a67d23ac02fcdf0a418dddcb))
+* use correct token in release pipeline ([b3da85f](https://github.com/informatievlaanderen/address-registry/commit/b3da85fdbe8b9ee58763253a9bcc818abac1d3e0))
+
+
+### Features
+
+* require address position ([8203b1e](https://github.com/informatievlaanderen/address-registry/commit/8203b1ea8f0f0eb5585026928c6bedae54726671))
+
 ## [3.67.2](https://github.com/informatievlaanderen/address-registry/compare/v3.67.1...v3.67.2) (2022-12-04)
 
 

@@ -17,7 +17,7 @@ namespace AddressRegistry.Tests.BackOffice.Validators
         }
 
         [Fact]
-        public void GivenNoPositionSpecificationAndPositionGeometryMethodIsAppointedByAdministrator_ThenReturnsExpectedFailure()
+        public void GivenNoPositionSpecification_ThenReturnsExpectedFailure()
         {
             var result = _sut.TestValidate(new AddressChangePositionRequest
             {
@@ -26,31 +26,14 @@ namespace AddressRegistry.Tests.BackOffice.Validators
             });
 
             result.Errors.Count.Should().Be(1);
-            result.ShouldHaveValidationErrorFor(nameof(AddressProposeRequest.PositieSpecificatie))
-                .WithErrorCode("AdresPositieSpecificatieVerplichtBijManueleAanduiding")
-                .WithErrorMessage("PositieSpecificatie is verplicht bij een manuele aanduiding van de positie.");
-        }
-
-        [Theory]
-        [InlineData(PositieSpecificatie.Gemeente)]
-        public void GivenInvalidPositionSpecificationForPositionGeometryMethodAppointedByAdministrator_ThenReturnsExpectedFailure(PositieSpecificatie specificatie)
-        {
-            var result = _sut.TestValidate(new AddressChangePositionRequest
-            {
-                PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                PositieSpecificatie = specificatie,
-                Positie = GeometryHelpers.GmlPointGeometry
-            });
-
-            result.Errors.Count.Should().Be(1);
-            result.ShouldHaveValidationErrorFor(nameof(AddressProposeRequest.PositieSpecificatie))
-                .WithErrorCode("AdresPositieSpecificatieValidatie")
-                .WithErrorMessage("Ongeldige positieSpecificatie.");
+            result.ShouldHaveValidationErrorFor(nameof(AddressChangePositionRequest.PositieSpecificatie))
+                .WithoutErrorCode("AdresPositieSpecificatieValidatie")
+                .WithErrorCode("AdresPositieSpecificatieVerplicht")
+                .WithErrorMessage("PositieSpecificatie is verplicht.");
         }
 
         [Theory]
         [InlineData(PositieSpecificatie.Ingang)]
-        [InlineData(PositieSpecificatie.Perceel)]
         [InlineData(PositieSpecificatie.Lot)]
         [InlineData(PositieSpecificatie.Standplaats)]
         [InlineData(PositieSpecificatie.Ligplaats)]
@@ -59,17 +42,18 @@ namespace AddressRegistry.Tests.BackOffice.Validators
             var result = _sut.TestValidate(new AddressChangePositionRequest
             {
                 PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
-                PositieSpecificatie = specificatie
+                PositieSpecificatie = specificatie,
+                Positie = GeometryHelpers.GmlPointGeometry
             });
 
             result.Errors.Count.Should().Be(1);
-            result.ShouldHaveValidationErrorFor(nameof(AddressProposeRequest.PositieSpecificatie))
+            result.ShouldHaveValidationErrorFor(nameof(AddressChangePositionRequest.PositieSpecificatie))
                 .WithErrorCode("AdresPositieSpecificatieValidatie")
                 .WithErrorMessage("Ongeldige positieSpecificatie.");
         }
 
         [Fact]
-        public void GivenNoPositionAndPositionGeometryMethodIsAppointedByAdministrator_ThenReturnsExpectedFailure()
+        public void GivenNoPosition_ThenReturnsExpectedFailure()
         {
             var result = _sut.TestValidate(new AddressChangePositionRequest
             {
@@ -78,9 +62,9 @@ namespace AddressRegistry.Tests.BackOffice.Validators
             });
 
             result.Errors.Count.Should().Be(1);
-            result.ShouldHaveValidationErrorFor(nameof(AddressProposeRequest.Positie))
-                .WithErrorCode("AdresPositieGeometriemethodeValidatie")
-                .WithErrorMessage("De parameter 'positie' is verplicht indien positieGeometrieMethode aangeduidDoorBeheerder is.");
+            result.ShouldHaveValidationErrorFor(nameof(AddressChangePositionRequest.Positie))
+                .WithErrorCode("AdresPositieVerplicht")
+                .WithErrorMessage("De positie is verplicht.");
         }
 
         [Theory]
@@ -95,12 +79,12 @@ namespace AddressRegistry.Tests.BackOffice.Validators
             var result = _sut.TestValidate(new AddressChangePositionRequest
             {
                 PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
-                PositieSpecificatie = PositieSpecificatie.Gemeente,
+                PositieSpecificatie = PositieSpecificatie.Gebouweenheid,
                 Positie = position
             });
 
             result.Errors.Count.Should().Be(1);
-            result.ShouldHaveValidationErrorFor(nameof(AddressProposeRequest.Positie))
+            result.ShouldHaveValidationErrorFor(nameof(AddressChangePositionRequest.Positie))
                 .WithErrorCode("AdresPositieformaatValidatie")
                 .WithErrorMessage("De positie is geen geldige gml-puntgeometrie.");
         }

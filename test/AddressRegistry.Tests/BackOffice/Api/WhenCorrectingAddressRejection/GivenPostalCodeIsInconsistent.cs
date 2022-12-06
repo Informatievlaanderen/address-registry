@@ -67,7 +67,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
                 .Result
                 .Where(x =>
                      x.Errors.Any(e => e.ErrorCode == "AdresBusnummerPostcodeInconsistent"
-                     && e.ErrorMessage == "Deze actie is niet toegestaan op busnummers wegens een inconsistente postcode."));
+                     && e.ErrorMessage == "Deze actie is niet toegestaan op een busnummer wegens een inconsistente postcode."));
         }
     }
 }

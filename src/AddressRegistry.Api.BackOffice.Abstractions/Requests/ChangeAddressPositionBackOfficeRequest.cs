@@ -18,14 +18,14 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
         /// De specificatie van de adrespositie (optioneel).
         /// </summary>
         [DataMember(Name = "PositieSpecificatie", Order = 2)]
-        [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public PositieSpecificatie? PositieSpecificatie { get; set; }
+        [JsonProperty(Required = Required.Always)]
+        public PositieSpecificatie PositieSpecificatie { get; set; }
 
         /// <summary>
         /// Puntgeometrie van het adres in GML-3 formaat met Lambert 72 referentie systeem.
         /// </summary>
         [DataMember(Name = "Positie", Order = 3)]
-        [JsonProperty(Required = Required.Default)]
-        public string? Positie { get; set; }
+        [JsonProperty(Required = Required.Always)]
+        public string Positie { get; set; }
     }
 }

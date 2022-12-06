@@ -39,21 +39,21 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Requests
         /// De geometriemethode van het adres.
         /// </summary>
         [DataMember(Name= "PositieGeometriemethode", Order = 4)]
-        [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public PositieGeometrieMethode? PositieGeometrieMethode { get; set; }
+        [JsonProperty(Required = Required.Always)]
+        public PositieGeometrieMethode PositieGeometrieMethode { get; set; }
 
         /// <summary>
         /// De specificatie van de adrespositie (optioneel).
         /// </summary>
         [DataMember(Name = "PositieSpecificatie", Order = 5)]
-        [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public PositieSpecificatie? PositieSpecificatie { get; set; }
+        [JsonProperty(Required = Required.Always)]
+        public PositieSpecificatie PositieSpecificatie { get; set; }
 
         /// <summary>
         /// Puntgeometrie van het adres in GML-3 formaat met Lambert 72 referentie systeem.
         /// </summary>
         [DataMember(Name = "Positie", Order = 6)]
-        [JsonProperty(Required = Required.Default)]
-        public string? Positie { get; set; }
+        [JsonProperty(Required = Required.Always)]
+        public string Positie { get; set; }
     }
 }

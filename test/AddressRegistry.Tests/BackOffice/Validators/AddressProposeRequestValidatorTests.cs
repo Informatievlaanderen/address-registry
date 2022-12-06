@@ -32,7 +32,7 @@ namespace AddressRegistry.Tests.BackOffice.Validators
         }
 
         [Fact]
-        public void GivenNoPositionSpecificationAndPositionGeometryMethodIsAppointedByAdministrator_ThenReturnsExpectedFailure()
+        public void GivenNoSpecificationPosition_ThenReturnsExpectedFailure()
         {
             WithStreamExists();
 
@@ -47,33 +47,12 @@ namespace AddressRegistry.Tests.BackOffice.Validators
 
             result.ShouldHaveValidationErrorFor(nameof(AddressProposeRequest.PositieSpecificatie))
                 .WithoutErrorCode("AdresPositieSpecificatieValidatie")
-                .WithErrorCode("AdresPositieSpecificatieVerplichtBijManueleAanduiding")
-                .WithErrorMessage("PositieSpecificatie is verplicht bij een manuele aanduiding van de positie.");
-        }
-
-        [Theory]
-        [InlineData(PositieSpecificatie.Gemeente)]
-        public void GivenInvalidPositionSpecificationForPositionGeometryMethodAppointedByAdministrator_ThenReturnsExpectedFailure(PositieSpecificatie specificatie)
-        {
-            WithStreamExists();
-
-            var result = _sut.TestValidate(new AddressProposeRequest
-            {
-                PostInfoId = "12",
-                StraatNaamId = "34",
-                Huisnummer = "56",
-                PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                PositieSpecificatie = specificatie
-            });
-
-            result.ShouldHaveValidationErrorFor(nameof(AddressProposeRequest.PositieSpecificatie))
-                .WithErrorCode("AdresPositieSpecificatieValidatie")
-                .WithErrorMessage("Ongeldige positieSpecificatie.");
+                .WithErrorCode("AdresPositieSpecificatieVerplicht")
+                .WithErrorMessage("PositieSpecificatie is verplicht.");
         }
 
         [Theory]
         [InlineData(PositieSpecificatie.Ingang)]
-        [InlineData(PositieSpecificatie.Perceel)]
         [InlineData(PositieSpecificatie.Lot)]
         [InlineData(PositieSpecificatie.Standplaats)]
         [InlineData(PositieSpecificatie.Ligplaats)]
@@ -96,7 +75,7 @@ namespace AddressRegistry.Tests.BackOffice.Validators
         }
 
         [Fact]
-        public void GivenNoPositionAndPositionGeometryMethodIsAppointedByAdministrator_ThenReturnsExpectedFailure()
+        public void GivenNoPosition_ThenReturnsExpectedFailure()
         {
             WithStreamExists();
 
@@ -110,8 +89,8 @@ namespace AddressRegistry.Tests.BackOffice.Validators
             });
 
             result.ShouldHaveValidationErrorFor(nameof(AddressProposeRequest.Positie))
-                .WithErrorCode("AdresPositieGeometriemethodeValidatie")
-                .WithErrorMessage("De parameter 'positie' is verplicht indien positieGeometrieMethode aangeduidDoorBeheerder is.");
+                .WithErrorCode("AdresPositieVerplicht")
+                .WithErrorMessage("De positie is verplicht.");
         }
 
         [Theory]
@@ -131,7 +110,7 @@ namespace AddressRegistry.Tests.BackOffice.Validators
                 StraatNaamId = "34",
                 Huisnummer = "56",
                 PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
-                PositieSpecificatie = PositieSpecificatie.Gemeente,
+                PositieSpecificatie = PositieSpecificatie.Gebouweenheid,
                 Positie = position
             });
 

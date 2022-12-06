@@ -9,21 +9,9 @@ namespace AddressRegistry.Tests.BackOffice.Converters
     public class PositionGeometryMethodConverterTests
     {
         [Fact]
-        public void WhenNoPositionGeometryMethodProvided_ThenReturnNull()
-        {
-            PositieGeometrieMethode? methode = null;
-
-            var result = methode.Map();
-
-            result.Should().BeNull();
-        }
-
-        [Fact]
         public void IsMappedToDerivedFromObject()
         {
-            PositieGeometrieMethode? methode = PositieGeometrieMethode.AfgeleidVanObject;
-
-            var result = methode.Map();
+            var result = PositieGeometrieMethode.AfgeleidVanObject.Map();
 
             result.Should().Be(GeometryMethod.DerivedFromObject);
         }
@@ -31,9 +19,7 @@ namespace AddressRegistry.Tests.BackOffice.Converters
         [Fact]
         public void IsMappedToAppointedByAdministrator()
         {
-            PositieGeometrieMethode? methode = PositieGeometrieMethode.AangeduidDoorBeheerder;
-
-            var result = methode.Map();
+            var result = PositieGeometrieMethode.AangeduidDoorBeheerder.Map();
 
             result.Should().Be(GeometryMethod.AppointedByAdministrator);
         }

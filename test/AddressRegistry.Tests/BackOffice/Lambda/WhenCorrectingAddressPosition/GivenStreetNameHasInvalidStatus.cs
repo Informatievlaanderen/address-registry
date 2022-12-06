@@ -1,4 +1,4 @@
-namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostion
+namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
 {
     using System;
     using System.Collections.Generic;
@@ -48,9 +48,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostion
                 {
                     Request = new CorrectAddressPositionBackOfficeRequest
                     {
-                        Positie = "",
                         PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                        PositieSpecificatie = PositieSpecificatie.Gemeente
+                        PositieSpecificatie = PositieSpecificatie.Perceel,
+                        Positie = GeometryHelpers.GmlPointGeometry
                     },
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),

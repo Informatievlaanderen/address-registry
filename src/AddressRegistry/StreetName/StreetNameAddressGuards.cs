@@ -15,44 +15,51 @@ namespace AddressRegistry.StreetName
 
         public static void GuardGeometry(
             GeometryMethod geometryMethod,
-            GeometrySpecification? geometrySpecification,
-            ExtendedWkbGeometry? position)
+            GeometrySpecification geometrySpecification)
         {
             if (geometryMethod == GeometryMethod.Interpolated)
             {
                 throw new AddressHasInvalidGeometryMethodException();
             }
 
+            if (geometryMethod == GeometryMethod.DerivedFromObject)
+            {
+                GuardsWhenDerivedFromObject(geometrySpecification);
+            }
+
             if (geometryMethod == GeometryMethod.AppointedByAdministrator)
             {
-                GuardsWhenAppointedByAdministrator(geometrySpecification, position);
+                GuardsWhenAppointedByAdministrator(geometrySpecification);
             }
         }
 
-        private static void GuardsWhenAppointedByAdministrator(
-            GeometrySpecification? geometrySpecification,
-            ExtendedWkbGeometry? position)
+        private static void GuardsWhenDerivedFromObject(GeometrySpecification geometrySpecification)
         {
-            if (position is null)
+            var validSpecifications = new[]
             {
-                throw new AddressHasMissingPositionException();
-            }
+                GeometrySpecification.Parcel,
+                GeometrySpecification.BuildingUnit
+            };
 
-            if (geometrySpecification is null)
+            if (!validSpecifications.Contains(geometrySpecification))
             {
-                throw new AddressHasMissingGeometrySpecificationException();
+                throw new AddressHasInvalidGeometrySpecificationException();
             }
+        }
 
+        private static void GuardsWhenAppointedByAdministrator(GeometrySpecification geometrySpecification)
+        {
             var validSpecifications = new[]
             {
                 GeometrySpecification.Entry,
                 GeometrySpecification.Parcel,
                 GeometrySpecification.Lot,
                 GeometrySpecification.Stand,
-                GeometrySpecification.Berth
+                GeometrySpecification.Berth,
+                GeometrySpecification.BuildingUnit
             };
 
-            if (!validSpecifications.Contains(geometrySpecification.Value))
+            if (!validSpecifications.Contains(geometrySpecification))
             {
                 throw new AddressHasInvalidGeometrySpecificationException();
             }

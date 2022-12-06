@@ -20,8 +20,7 @@ namespace AddressRegistry.StreetName
             EventMapping eventMapping,
             EventSerializer eventSerializer,
             Func<ISnapshotStore> getSnapshotStore,
-            IProvenanceFactory<StreetName> provenanceFactory,
-            IMunicipalities municipalities)
+            IProvenanceFactory<StreetName> provenanceFactory)
         {
             For<MigrateAddressToStreetName>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
@@ -65,8 +64,7 @@ namespace AddressRegistry.StreetName
                         message.Command.BoxNumber,
                         message.Command.GeometryMethod,
                         message.Command.GeometrySpecification,
-                        message.Command.Position,
-                        municipalities);
+                        message.Command.Position);
                 });
 
             For<ApproveAddress>()
@@ -166,8 +164,7 @@ namespace AddressRegistry.StreetName
                         message.Command.AddressPersistentLocalId,
                         message.Command.GeometryMethod,
                         message.Command.GeometrySpecification,
-                        message.Command.Position,
-                        municipalities);
+                        message.Command.Position);
                 });
 
             For<ChangeAddressPostalCode>()
@@ -195,8 +192,7 @@ namespace AddressRegistry.StreetName
                         message.Command.AddressPersistentLocalId,
                         message.Command.GeometryMethod,
                         message.Command.GeometrySpecification,
-                        message.Command.Position,
-                        municipalities);
+                        message.Command.Position);
                 });
 
             For<CorrectAddressPostalCode>()

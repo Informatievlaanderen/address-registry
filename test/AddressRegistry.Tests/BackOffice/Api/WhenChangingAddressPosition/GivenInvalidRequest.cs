@@ -45,32 +45,18 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
                                       && e.ErrorMessage == "Ongeldige positieGeometrieMethode."));
         }
 
-        [Fact]
-        public void WithSpecificationHasNoValueAndMethodAppointedByAdmin_ThenThrowsValidationException()
+        [Theory]
+        [InlineData(PositieSpecificatie.Lot)]
+        [InlineData(PositieSpecificatie.Standplaats)]
+        [InlineData(PositieSpecificatie.Ligplaats)]
+        [InlineData(PositieSpecificatie.Ingang)]
+        public void WithInvalidSpecificationAndDerivedFromObject_ThenThrowsValidationException(PositieSpecificatie specificatie)
         {
             var act = SetupController(new AddressChangePositionRequest
             {
-                PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                PositieSpecificatie = null
-            });
-
-            // Assert
-            act
-                .Should()
-                .ThrowAsync<ValidationException>()
-                .Result
-                .Where(x =>
-                    x.Errors.Any(e => e.ErrorCode == "AdresPositieSpecificatieVerplichtBijManueleAanduiding"
-                                      && e.ErrorMessage == "PositieSpecificatie is verplicht bij een manuele aanduiding van de positie."));
-        }
-
-        [Fact]
-        public void WithInvalidSpecificationAndMethodAppointedByAdmin_ThenThrowsValidationException()
-        {
-            var act = SetupController(new AddressChangePositionRequest
-            {
-                PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                PositieSpecificatie = PositieSpecificatie.Gemeente
+                PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
+                PositieSpecificatie = specificatie,
+                Positie = GeometryHelpers.GmlPointGeometry
             });
 
             // Assert
@@ -84,13 +70,12 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
         }
 
         [Fact]
-        public void WithNoPositionAndMethodAppointedByAdmin_ThenThrowsValidationException()
+        public void WithNoPosition_ThenThrowsValidationException()
         {
             var act = SetupController(new AddressChangePositionRequest
             {
                 PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                PositieSpecificatie = PositieSpecificatie.Ingang,
-                Positie = null
+                PositieSpecificatie = PositieSpecificatie.Ingang
             });
 
             // Assert
@@ -99,8 +84,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
                 .ThrowAsync<ValidationException>()
                 .Result
                 .Where(x =>
-                    x.Errors.Any(e => e.ErrorCode == "AdresPositieGeometriemethodeValidatie"
-                                      && e.ErrorMessage == "De parameter 'positie' is verplicht indien positieGeometrieMethode aangeduidDoorBeheerder is."));
+                    x.Errors.Any(e => e.ErrorCode == "AdresPositieVerplicht"
+                                      && e.ErrorMessage == "De positie is verplicht."));
         }
 
         [Fact]
@@ -121,30 +106,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
                 .Where(x =>
                     x.Errors.Any(e => e.ErrorCode == "AdresPositieformaatValidatie"
                                       && e.ErrorMessage == "De positie is geen geldige gml-puntgeometrie."));
-        }
-
-        [Theory]
-        [InlineData(PositieSpecificatie.Perceel)]
-        [InlineData(PositieSpecificatie.Lot)]
-        [InlineData(PositieSpecificatie.Standplaats)]
-        [InlineData(PositieSpecificatie.Ligplaats)]
-        [InlineData(PositieSpecificatie.Ingang)]
-        public void WithInvalidSpecificationAndDerivedFromObject_ThenThrowsValidationException(PositieSpecificatie specificatie)
-        {
-            var act = SetupController(new AddressChangePositionRequest
-            {
-                PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
-                PositieSpecificatie = specificatie
-            });
-
-            // Assert
-            act
-                .Should()
-                .ThrowAsync<ValidationException>()
-                .Result
-                .Where(x =>
-                    x.Errors.Any(e => e.ErrorCode == "AdresPositieSpecificatieValidatie"
-                                      && e.ErrorMessage == "Ongeldige positieSpecificatie."));
         }
 
         private Func<Task<IActionResult>> SetupController(AddressChangePositionRequest request)

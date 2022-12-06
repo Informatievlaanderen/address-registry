@@ -191,10 +191,9 @@ namespace AddressRegistry.StreetName
             MunicipalityId municipalityIdByPostalCode,
             HouseNumber houseNumber,
             BoxNumber? boxNumber,
-            GeometryMethod? geometryMethod,
-            GeometrySpecification? geometrySpecification,
-            ExtendedWkbGeometry? geometryPosition,
-            IMunicipalities municipalities)
+            GeometryMethod geometryMethod,
+            GeometrySpecification geometrySpecification,
+            ExtendedWkbGeometry geometryPosition)
         {
             GuardActiveStreetName(streetNamePersistentLocalId);
 
@@ -230,15 +229,7 @@ namespace AddressRegistry.StreetName
                 throw new AddressAlreadyExistsException(houseNumber, boxNumber!);
             }
 
-            var finalGeometryMethod = geometryMethod ?? GeometryMethod.DerivedFromObject;
-
-            StreetNameAddress.GuardGeometry(finalGeometryMethod, geometrySpecification, geometryPosition);
-
-            var newGeometry = StreetNameAddress.GetFinalGeometry(
-                finalGeometryMethod,
-                geometrySpecification,
-                geometryPosition,
-                GetMunicipalityData(municipalities));
+            StreetNameAddress.GuardGeometry(geometryMethod, geometrySpecification);
 
             ApplyChange(new AddressWasProposedV2(
                 streetNamePersistentLocalId,
@@ -247,9 +238,9 @@ namespace AddressRegistry.StreetName
                 postalCode,
                 houseNumber,
                 boxNumber,
-                newGeometry.GeometryMethod,
-                newGeometry.GeometrySpecification,
-                newGeometry.Geometry));
+                geometryMethod,
+                geometrySpecification,
+                geometryPosition));
         }
 
         public void ApproveAddress(AddressPersistentLocalId addressPersistentLocalId)
@@ -290,15 +281,14 @@ namespace AddressRegistry.StreetName
         public void ChangeAddressPosition(
             AddressPersistentLocalId addressPersistentLocalId,
             GeometryMethod geometryMethod,
-            GeometrySpecification? geometrySpecification,
-            ExtendedWkbGeometry? position,
-            IMunicipalities municipalities)
+            GeometrySpecification geometrySpecification,
+            ExtendedWkbGeometry position)
         {
             GuardStreetNameStatusForChangeAndCorrection();
 
             StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
-                .ChangePosition(geometryMethod, geometrySpecification, position, GetMunicipalityData(municipalities));
+                .ChangePosition(geometryMethod, geometrySpecification, position);
         }
 
         public void ChangeAddressPostalCode(AddressPersistentLocalId addressPersistentLocalId, PostalCode postalCode)
@@ -313,15 +303,14 @@ namespace AddressRegistry.StreetName
         public void CorrectAddressPosition(
             AddressPersistentLocalId addressPersistentLocalId,
             GeometryMethod geometryMethod,
-            GeometrySpecification? geometrySpecification,
-            ExtendedWkbGeometry? position,
-            IMunicipalities municipalities)
+            GeometrySpecification geometrySpecification,
+            ExtendedWkbGeometry position)
         {
             GuardStreetNameStatusForChangeAndCorrection();
 
             StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
-                .CorrectPosition(geometryMethod, geometrySpecification, position, GetMunicipalityData(municipalities));
+                .CorrectPosition(geometryMethod, geometrySpecification, position);
         }
 
         public void CorrectAddressPostalCode(AddressPersistentLocalId addressPersistentLocalId, PostalCode postalCode, MunicipalityId municipalityIdByPostalCode)
@@ -449,9 +438,6 @@ namespace AddressRegistry.StreetName
                 throw new AddressAlreadyExistsException(houseNumber, boxNumber);
             }
         }
-
-        private Func<MunicipalityData> GetMunicipalityData(IMunicipalities municipalities) =>
-            () => municipalities.Get(MunicipalityId);
 
         private void GuardActiveStreetName(StreetNamePersistentLocalId streetNamePersistentLocalId)
         {

@@ -48,23 +48,23 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
         public async Task GivenRequest_ThenPersistentLocalIdETagResponse()
         {
             var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
-            var niscode = new NisCode("12345");
+            var nisCode = new NisCode("12345");
             var postInfoId = "2018";
 
             var mockPersistentLocalIdGenerator = new Mock<IPersistentLocalIdGenerator>();
             mockPersistentLocalIdGenerator
                 .Setup(x => x.GenerateNextPersistentLocalId())
                 .Returns(new PersistentLocalId(123));
-            
+
             _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
             {
                 PostalCode = postInfoId,
-                NisCode = niscode,
+                NisCode = nisCode,
             });
             _municipalityContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem
             {
                 MunicipalityId = Fixture.Create<MunicipalityId>(),
-                NisCode = niscode
+                NisCode = nisCode
             });
             await _syndicationContext.SaveChangesAsync();
             await _municipalityContext.SaveChangesAsync();
@@ -72,7 +72,7 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
             ImportMigratedStreetName(
                 new AddressRegistry.StreetName.StreetNameId(Guid.NewGuid()),
                 streetNamePersistentLocalId,
-                niscode);
+                nisCode);
 
             var sut = new ProposeAddressHandler(
                 Container.Resolve<ICommandHandlerResolver>(),

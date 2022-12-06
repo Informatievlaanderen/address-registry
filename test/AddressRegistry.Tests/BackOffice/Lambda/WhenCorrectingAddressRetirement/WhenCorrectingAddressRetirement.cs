@@ -254,7 +254,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRetiremen
                 x.Error(
                     It.IsAny<Guid>(),
                     new TicketError(
-                        "Deze actie is niet toegestaan op busnummers wegens een inconsistente postcode.",
+                        "Deze actie is niet toegestaan op een busnummer wegens een inconsistente postcode.",
                         "AdresBusnummerPostcodeInconsistent"),
                     CancellationToken.None));
         }

@@ -13,16 +13,16 @@ namespace AddressRegistry.StreetName.Commands
         public StreetNamePersistentLocalId StreetNamePersistentLocalId { get; }
         public AddressPersistentLocalId AddressPersistentLocalId { get; }
         public GeometryMethod GeometryMethod { get; }
-        public GeometrySpecification? GeometrySpecification { get; }
-        public ExtendedWkbGeometry? Position { get; }
+        public GeometrySpecification GeometrySpecification { get; }
+        public ExtendedWkbGeometry Position { get; }
         public Provenance Provenance { get; }
 
         public CorrectAddressPosition(
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             AddressPersistentLocalId addressPersistentLocalId,
             GeometryMethod geometryMethod,
-            GeometrySpecification? geometrySpecification,
-            ExtendedWkbGeometry? position,
+            GeometrySpecification geometrySpecification,
+            ExtendedWkbGeometry position,
             Provenance provenance)
         {
             StreetNamePersistentLocalId = streetNamePersistentLocalId;
@@ -44,8 +44,8 @@ namespace AddressRegistry.StreetName.Commands
             yield return StreetNamePersistentLocalId;
             yield return AddressPersistentLocalId;
             yield return GeometryMethod;
-            yield return GeometrySpecification?.ToString() ?? string.Empty;
-            yield return Position ?? string.Empty;
+            yield return GeometrySpecification.ToString();
+            yield return Position;
 
             foreach (var field in Provenance.GetIdentityFields())
             {

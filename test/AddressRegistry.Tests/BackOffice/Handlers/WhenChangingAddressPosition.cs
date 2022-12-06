@@ -4,7 +4,6 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers;
     using Autofac;
@@ -25,7 +24,6 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
     {
         private readonly TestBackOfficeContext _backOfficeContext;
         private readonly IdempotencyContext _idempotencyContext;
-        private readonly TestMunicipalityConsumerContext _municipalityConsumerContext;
         private readonly IStreetNames _streetNames;
 
         public WhenChangingAddressPosition(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
@@ -34,25 +32,19 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
 
             _idempotencyContext = new FakeIdempotencyContextFactory().CreateDbContext();
             _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
-            _municipalityConsumerContext = Container.Resolve<TestMunicipalityConsumerContext>();
             _streetNames = Container.Resolve<IStreetNames>();
         }
 
         [Fact]
         public async Task GivenRequest_ThenPersistentLocalIdETagResponse()
         {
-            var municipalityId = Fixture.Create<MunicipalityId>();
             var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
             var addressPersistentLocalId = new AddressPersistentLocalId(456);
             var nisCode = new NisCode("12345");
             var postalCode = new PostalCode("2018");
             var houseNumber = new HouseNumber("11");
 
-            _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.Add(
-                new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentLocalId));
-            _backOfficeContext.SaveChanges();
-
-            _municipalityConsumerContext.AddMunicipality(municipalityId, GeometryHelpers.ValidGmlPolygon);
+            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentLocalId);
 
             ImportMigratedStreetName(
                 new StreetNameId(Guid.NewGuid()),
@@ -78,7 +70,8 @@ namespace AddressRegistry.Tests.BackOffice.Handlers
             {
                 PersistentLocalId = addressPersistentLocalId,
                 PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
-                PositieSpecificatie = PositieSpecificatie.Gemeente
+                PositieSpecificatie = PositieSpecificatie.Gebouweenheid,
+                Positie = GeometryHelpers.GmlPointGeometry
             },
             CancellationToken.None);
 

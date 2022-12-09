@@ -1,4 +1,4 @@
-namespace AddressRegistry.Api.Oslo.Address.Responses
+namespace AddressRegistry.Api.Oslo.Address.List
 {
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
@@ -8,6 +8,8 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
     using System;
     using System.Collections.Generic;
     using System.Runtime.Serialization;
+    using Be.Vlaanderen.Basisregisters.Api.Search.Pagination;
+    using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Newtonsoft.Json;
 
@@ -34,6 +36,14 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
         [DataMember(Name = "Volgende", Order = 2, EmitDefaultValue = false)]
         [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Ignore)]
         public Uri Volgende { get; set; }
+
+        [JsonIgnore]
+        [IgnoreDataMember]
+        public SortingHeader Sorting { get; set; }
+
+        [JsonIgnore]
+        [IgnoreDataMember]
+        public PaginationInfo Pagination { get; set; }
     }
 
     [DataContract(Name = "Adres", Namespace = "")]
@@ -72,7 +82,7 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
         /// </summary>
         [DataMember(Name = "Busnummer", Order = 4, EmitDefaultValue = false)]
         [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string Busnummer { get; set; }
+        public string? Busnummer { get; set; }
 
         /// <summary>
         /// Adresvoorstelling in de eerste officiële taal van de gemeente.
@@ -93,7 +103,7 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
             string naamruimte,
             string detail,
             string huisnummer,
-            string busnummer,
+            string? busnummer,
             VolledigAdres volledigAdres,
             AdresStatus status,
             DateTimeOffset version)

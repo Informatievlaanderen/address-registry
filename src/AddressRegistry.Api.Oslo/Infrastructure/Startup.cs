@@ -91,21 +91,24 @@ namespace AddressRegistry.Api.Oslo.Infrastructure
                                 .GetChildren();
 
                             foreach (var connectionString in connectionStrings)
+                            {
                                 health.AddSqlServer(
                                     connectionString.Value,
                                     name: $"sqlserver-{connectionString.Key.ToLowerInvariant()}",
                                     tags: new[] { DatabaseTag, "sql", "sqlserver" });
+                            }
                         }
                     }
                 })
                 .Configure<ResponseOptions>(_configuration)
                 .Configure<FeatureToggleOptions>(_configuration.GetSection(FeatureToggleOptions.ConfigurationKey))
                 .AddSingleton(c =>
-                    new UseProjectionsV2Toggle(c.GetService<IOptions<FeatureToggleOptions>>()!.Value.UseProjectionsV2))
+                    new UseProjectionsV2Toggle(c.GetRequiredService<IOptions<FeatureToggleOptions>>().Value.UseProjectionsV2))
                 .AddMemoryCache();
 
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterModule(new ApiModule(_configuration, services, _loggerFactory));
+            containerBuilder.RegisterModule(new MediatRModule());
             _applicationContainer = containerBuilder.Build();
 
             return new AutofacServiceProvider(_applicationContainer);

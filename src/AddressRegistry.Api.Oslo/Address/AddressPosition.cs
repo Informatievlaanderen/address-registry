@@ -1,9 +1,9 @@
-namespace AddressRegistry.Api.Oslo.Address.Responses
+namespace AddressRegistry.Api.Oslo.Address
 {
     using System.Runtime.Serialization;
     using System.Xml.Serialization;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
     using Newtonsoft.Json;
 
     /// <summary>

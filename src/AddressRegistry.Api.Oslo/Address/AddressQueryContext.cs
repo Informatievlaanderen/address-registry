@@ -1,4 +1,4 @@
-namespace AddressRegistry.Api.Oslo.Address.Query
+namespace AddressRegistry.Api.Oslo.Address
 {
     using System.Reflection;
     using Be.Vlaanderen.Basisregisters.EntityFrameworkCore.EntityTypeConfiguration;

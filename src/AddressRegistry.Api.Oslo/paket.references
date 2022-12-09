@@ -5,5 +5,8 @@ Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore
 Be.Vlaanderen.Basisregisters.Api
 Be.Vlaanderen.Basisregisters.EventHandling.Autofac
 
+MediatR
+MediatR.Contracts
+
 SourceLink.Embed.AllSourceFiles
 SourceLink.Copy.PdbFiles

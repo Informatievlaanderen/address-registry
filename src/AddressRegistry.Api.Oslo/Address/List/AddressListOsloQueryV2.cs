@@ -1,80 +1,80 @@
-namespace AddressRegistry.Api.Oslo.Address.Query
+namespace AddressRegistry.Api.Oslo.Address.List
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using Be.Vlaanderen.Basisregisters.Api.Search;
     using Be.Vlaanderen.Basisregisters.Api.Search.Filtering;
     using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
-    using Projections.Legacy.AddressList;
-    using System.Collections.Generic;
-    using System.Linq;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Convertors;
     using Microsoft.EntityFrameworkCore;
+    using Projections.Legacy.AddressListV2;
 
-    public class AddressListOsloQuery : Query<AddressListItem, AddressFilter>
+    public class AddressListOsloQueryV2 : Query<AddressListItemV2, AddressFilter>
     {
         private readonly AddressQueryContext _context;
 
-        protected override ISorting Sorting => new AddressSorting();
+        protected override ISorting Sorting => new AddressSortingV2();
 
-        public AddressListOsloQuery(AddressQueryContext context)
+        public AddressListOsloQueryV2(AddressQueryContext context)
         {
             _context = context;
         }
 
-        protected override IQueryable<AddressListItem> Filter(FilteringHeader<AddressFilter> filtering)
+        protected override IQueryable<AddressListItemV2> Filter(FilteringHeader<AddressFilter> filtering)
         {
-            var addresses = _context
-                .AddressList
+            var addressesV2 = _context
+                .AddressListV2
                 .AsNoTracking()
-                .OrderBy(x => x.PersistentLocalId)
-                .Where(a => a.Complete && !a.Removed && a.PersistentLocalId != 0);
+                .OrderBy(x => x.AddressPersistentLocalId)
+                .Where(a => !a.Removed && a.AddressPersistentLocalId != 0);
 
             var municipalities = _context
-                .MunicipalityLatestItems
+                .MunicipalityConsumerLatestItems
                 .AsNoTracking();
 
             var streetNames = _context
-                .StreetNameLatestItems
+                .StreetNameConsumerLatestItems
                 .AsNoTracking()
-                .Where(x => x.IsComplete && !x.IsRemoved);
+                .Where(x => !x.IsRemoved);
 
             var filterStreet = false;
 
             if (!filtering.ShouldFilter)
             {
-                return addresses;
+                return addressesV2;
             }
 
             if (!string.IsNullOrEmpty(filtering.Filter.BoxNumber))
             {
                 var unescapedBoxNumber = Uri.UnescapeDataString(filtering.Filter.BoxNumber);
-                addresses = addresses.Where(a => a.BoxNumber == unescapedBoxNumber);
+                addressesV2 = addressesV2.Where(a => a.BoxNumber == unescapedBoxNumber);
             }
 
             if (!string.IsNullOrEmpty(filtering.Filter.HouseNumber))
             {
                 var unescapedHouseNumber = Uri.UnescapeDataString(filtering.Filter.HouseNumber);
-                addresses = addresses.Where(a => a.HouseNumber == unescapedHouseNumber);
+                addressesV2 = addressesV2.Where(a => a.HouseNumber == unescapedHouseNumber);
             }
 
             if (!string.IsNullOrEmpty(filtering.Filter.PostalCode))
             {
-                addresses = addresses.Where(a => a.PostalCode == filtering.Filter.PostalCode);
+                addressesV2 = addressesV2.Where(a => a.PostalCode == filtering.Filter.PostalCode);
             }
 
             if (!string.IsNullOrEmpty(filtering.Filter.Status))
             {
                 if (Enum.TryParse(typeof(AdresStatus), filtering.Filter.Status, true, out var status))
                 {
-                    var addressStatus = AddressStatusExtensions.ConvertFromAdresStatus((AdresStatus)status);
-                    addresses = addresses.Where(a => a.Status.HasValue && a.Status.Value == addressStatus);
+                    var addressStatus = StreetNameAddressStatusExtensions.ConvertFromAdresStatus((AdresStatus)status);
+                    addressesV2 = addressesV2.Where(a => a.Status == addressStatus);
                 }
                 else
                 {
                     //have to filter on EF cannot return new List<>().AsQueryable() cause non-EF provider does not support .CountAsync()
-                    addresses = addresses.Where(m => m.Status.HasValue && (int)m.Status.Value == -1);
+                    addressesV2 = addressesV2.Where(m => (int)m.Status == -1);
                 }
             }
 
@@ -99,20 +99,10 @@ namespace AddressRegistry.Api.Oslo.Address.Query
 
                 if (!municipalityNisCodes.Any())
                 {
-                    return new List<AddressListItem>().AsQueryable();
+                    return new List<AddressListItemV2>().AsQueryable();
                 }
 
                 streetNames = streetNames.Where(x => municipalityNisCodes.Contains(x.NisCode));
-
-                //streetnames =
-                //    from s in streetnames
-                //    join m in municipalities.Where(m =>
-                //            m.NameDutchSearch == searchName ||
-                //            m.NameFrenchSearch == searchName ||
-                //            m.NameGermanSearch == searchName ||
-                //            m.NameEnglishSearch == searchName)
-                //        on s.NisCode equals m.NisCode
-                //    select s;
 
                 filterStreet = true;
             }
@@ -143,58 +133,39 @@ namespace AddressRegistry.Api.Oslo.Address.Query
 
             if (!string.IsNullOrEmpty(filtering.Filter.StreetNameId))
             {
-                if (int.TryParse(filtering.Filter.StreetNameId, out _))
+                if (int.TryParse(filtering.Filter.StreetNameId, out var streetNameId))
                 {
-                    streetNames = streetNames.Where(x => x.PersistentLocalId == filtering.Filter.StreetNameId);
+                    streetNames = streetNames.Where(x => x.PersistentLocalId == streetNameId);
                     filterStreet = true;
                 }
                 else
                 {
                     // don't bother sending to sql, no results will be returned
-                    return new List<AddressListItem>().AsQueryable();
+                    return new List<AddressListItemV2>().AsQueryable();
                 }
             }
 
             if (filterStreet)
             {
-                addresses = addresses
+                addressesV2 = addressesV2
                     .Where(x => streetNames
-                        .Select(y => y.StreetNameId).Contains(x.StreetNameId));
-
-                //addresses =
-                //    from a in addresses
-                //    join s in streetnames
-                //        on a.StreetNameId equals s.StreetNameId
-                //    select a;
+                        .Select(y => y.PersistentLocalId)
+                        .Contains(x.StreetNamePersistentLocalId));
             }
 
-            return addresses;
+            return addressesV2;
         }
     }
-
-    internal class AddressSorting : ISorting
+    internal class AddressSortingV2 : ISorting
     {
         public IEnumerable<string> SortableFields { get; } = new[]
         {
-            nameof(AddressListItem.BoxNumber),
-            nameof(AddressListItem.HouseNumber),
-            nameof(AddressListItem.PostalCode),
-            nameof(AddressListItem.PersistentLocalId)
+            nameof(AddressListItemV2.BoxNumber),
+            nameof(AddressListItemV2.HouseNumber),
+            nameof(AddressListItemV2.PostalCode),
+            nameof(AddressListItemV2.AddressPersistentLocalId)
         };
 
-        public SortingHeader DefaultSortingHeader { get; } = new SortingHeader(nameof(AddressListItem.PersistentLocalId), SortOrder.Ascending);
-    }
-
-    public class AddressFilter
-    {
-        public string BoxNumber { get; set; }
-        public string HouseNumber { get; set; }
-        public string PostalCode { get; set; }
-        public string MunicipalityName { get; set; }
-        public string StreetName { get; set; }
-        public string HomonymAddition { get; set; }
-        public string Status { get; set; }
-        public string? NisCode { get; set; }
-        public string? StreetNameId { get; set; }
+        public SortingHeader DefaultSortingHeader { get; } = new SortingHeader(nameof(AddressListItemV2.AddressPersistentLocalId), SortOrder.Ascending);
     }
 }

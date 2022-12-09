@@ -1,21 +1,21 @@
-namespace AddressRegistry.Api.Oslo.Address.Responses
+namespace AddressRegistry.Api.Oslo.Address.Detail
 {
+    using System;
+    using System.Runtime.Serialization;
+    using Be.Vlaanderen.Basisregisters.Api.Exceptions;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
     using Infrastructure.Options;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Options;
-    using Swashbuckle.AspNetCore.Filters;
-    using System;
-    using System.Runtime.Serialization;
-    using Be.Vlaanderen.Basisregisters.Api.Exceptions;
-    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Newtonsoft.Json;
+    using Swashbuckle.AspNetCore.Filters;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
     [DataContract(Name = "AdresDetail", Namespace = "")]
-    public class AddressOsloResponse
+    public class AddressDetailOsloResponse
     {
         /// <summary>
         /// De linked-data context van het adres.
@@ -108,7 +108,11 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
         [JsonProperty(Required = Required.DisallowNull)]
         public bool OfficieelToegekend { get; set; }
 
-        public AddressOsloResponse(
+        [IgnoreDataMember]
+        [JsonIgnore]
+        public string? LastEventHash { get; }
+
+        public AddressDetailOsloResponse(
             string naamruimte,
             string contextUrlDetail,
             string objectId,
@@ -122,7 +126,8 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
             AdresStatus status,
             Taal taal,
             bool? officieelToegekend,
-            DateTimeOffset version)
+            DateTimeOffset version,
+            string? lastEventHash = null)
         {
             Context = contextUrlDetail;
             Identificator = new AdresIdentificator(naamruimte, objectId, version);
@@ -135,6 +140,7 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
             Straatnaam = straatnaam;
             HomoniemToevoeging = homoniemToevoeging;
             AdresPositie = adresPositie;
+            LastEventHash = lastEventHash;
 
             VolledigAdres = new VolledigAdres(
                 straatnaam?.Straatnaam?.GeografischeNaam?.Spelling,
@@ -146,14 +152,14 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
         }
     }
 
-    public class AddressOsloResponseExamples : IExamplesProvider<AddressOsloResponse>
+    public class AddressDetailOsloResponseExamples : IExamplesProvider<AddressDetailOsloResponse>
     {
         private readonly ResponseOptions _responseOptions;
 
-        public AddressOsloResponseExamples(IOptions<ResponseOptions> responseOptionsProvider)
+        public AddressDetailOsloResponseExamples(IOptions<ResponseOptions> responseOptionsProvider)
             => _responseOptions = responseOptionsProvider.Value;
 
-        public AddressOsloResponse GetExamples()
+        public AddressDetailOsloResponse GetExamples()
         {
             var gml = "<gml:Point srsName=\"https://www.opengis.net/def/crs/EPSG/0/31370\" xmlns:gml=\"http://www.opengis.net/gml/3.2\"><gml:pos>140252.76 198794.27</gml:pos></gml:Point>";
             var addressPosition = new AddressPosition(new GmlJsonPoint(gml),
@@ -165,7 +171,7 @@ namespace AddressRegistry.Api.Oslo.Address.Responses
             var postInfo = new AdresDetailPostinfo("9000", string.Format(_responseOptions.PostInfoDetailUrl, "9000"));
             var homoniem = new HomoniemToevoeging(new GeografischeNaam("UK", Taal.NL));
 
-            return new AddressOsloResponse(
+            return new AddressDetailOsloResponse(
                 _responseOptions.Naamruimte,
                 _responseOptions.ContextUrlDetail,
                 "60",

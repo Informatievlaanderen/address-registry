@@ -1,8 +1,8 @@
 namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
 {
     using System;
+    using Address;
     using Microsoft.Data.SqlClient;
-    using Address.Query;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;

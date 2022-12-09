@@ -1,4 +1,4 @@
-namespace AddressRegistry.Api.Oslo.Address.Responses
+namespace AddressRegistry.Api.Oslo.Address.Count
 {
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Swashbuckle.AspNetCore.Filters;

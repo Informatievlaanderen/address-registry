@@ -9,7 +9,6 @@ namespace AddressRegistry.Api.Oslo.Address
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
     using Consumer.Read.Municipality.Projections;
     using NetTopologySuite.Geometries;
-    using Responses;
     using MunicipalityLatestItem = Projections.Syndication.Municipality.MunicipalityLatestItem;
     using StreetNameLatestItem = Projections.Syndication.StreetName.StreetNameLatestItem;
 

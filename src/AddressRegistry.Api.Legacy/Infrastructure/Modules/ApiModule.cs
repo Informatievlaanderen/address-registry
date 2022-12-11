@@ -1,7 +1,8 @@
 namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
 {
     using System;
-    using Address.Query;
+    using Address;
+    using Address.Bosa;
     using AddressMatch;
     using AddressMatch.Matching;
     using Autofac;

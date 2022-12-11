@@ -1,15 +1,12 @@
 namespace AddressRegistry.Api.Legacy.AddressMatch
 {
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
-    using Infrastructure.Options;
-    using Matching;
+    using MediatR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Options;
     using Requests;
     using Responses;
     using Swashbuckle.AspNetCore.Filters;
@@ -21,6 +18,13 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
     [ApiExplorerSettings(GroupName = "AdresMatch")]
     public class AddressMatchController : ApiController
     {
+        private readonly IMediator _mediator;
+
+        public AddressMatchController(IMediator mediator)
+        {
+            _mediator = mediator;
+        }
+
         [HttpGet]
         [ProducesResponseType(typeof(AddressMatchCollection), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -29,57 +33,15 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ValidationErrorResponseExamples))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
         public async Task<IActionResult> Get(
-            [FromServices] IKadRrService kadRrService,
-            [FromServices] ILatestQueries latestQueries,
-            [FromServices] IOptions<ResponseOptions> responseOptions,
-            [FromServices] AddressMatchContext context,
-            [FromServices] BuildingContext buildingContext,
             [FromQuery] AddressMatchRequest addressMatchRequest,
             CancellationToken cancellationToken = default)
         {
             await new AddressMatchRequestValidator()
                 .ValidateAndThrowAsync(addressMatchRequest, cancellationToken: cancellationToken);
 
-            const int maxNumberOfResults = 10;
+            var result = await _mediator.Send(addressMatchRequest, cancellationToken);
 
-            var warningLogger = new ValidationMessageWarningLogger();
-            var addressMatch = new AddressMatchMatchingAlgorithm<AdresMatchScorableItem>(
-                kadRrService,
-                new ManualAddressMatchConfig(responseOptions.Value.SimilarityThreshold, responseOptions.Value.MaxStreetNamesThreshold),
-                latestQueries,
-                new GemeenteMapper(responseOptions.Value),
-                new StreetNameMapper(responseOptions.Value, latestQueries),
-                new AdresMapper(responseOptions.Value, latestQueries),
-                maxNumberOfResults,
-                warningLogger);
-
-            var result = addressMatch
-                .Process(new AddressMatchBuilder(Map(addressMatchRequest)))
-                .OrderByDescending(x => x.Score)
-                .ThenBy(x => x.ScoreableProperty)
-                .Take(maxNumberOfResults)
-                .Select(x => AdresMatchItem.Create(x, buildingContext, context, responseOptions.Value))
-                .ToList();
-
-            return Ok(new AddressMatchCollection
-            {
-                AdresMatches = result,
-                Warnings = warningLogger.Warnings
-            });
+            return Ok(result);
         }
-
-        private AddressMatchQueryComponents Map(AddressMatchRequest request) =>
-            new AddressMatchQueryComponents
-            {
-                MunicipalityName = request.Gemeentenaam,
-                HouseNumber = request.Huisnummer,
-                BoxNumber = request.Busnummer,
-                Index = request.Index,
-                KadStreetNameCode = request.KadStraatcode,
-                NisCode = request.Niscode,
-                PostalCode = request.Postcode,
-                RrStreetCode = request.RrStraatcode,
-                StreetName = request.Straatnaam
-            };
     }
 }

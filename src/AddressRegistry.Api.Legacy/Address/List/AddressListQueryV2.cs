@@ -1,8 +1,9 @@
-namespace AddressRegistry.Api.Legacy.Address.Query
+namespace AddressRegistry.Api.Legacy.Address.List
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using AddressRegistry.Projections.Legacy.AddressListV2;
     using Be.Vlaanderen.Basisregisters.Api.Search;
     using Be.Vlaanderen.Basisregisters.Api.Search.Filtering;
     using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
@@ -10,7 +11,6 @@ namespace AddressRegistry.Api.Legacy.Address.Query
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Convertors;
     using Microsoft.EntityFrameworkCore;
-    using Projections.Legacy.AddressListV2;
 
     public class AddressListQueryV2 : Query<AddressListItemV2, AddressFilter>
     {

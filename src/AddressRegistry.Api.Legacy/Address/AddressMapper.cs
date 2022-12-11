@@ -1,19 +1,18 @@
 namespace AddressRegistry.Api.Legacy.Address
 {
     using System.Collections.Generic;
-    using AddressRegistry.Address;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
     using Consumer.Read.Municipality.Projections;
-    using MunicipalityLatestItem = Projections.Syndication.Municipality.MunicipalityLatestItem;
+    using Projections.Syndication.StreetName;
+    using StreetName;
+    using AddressStatus = AddressRegistry.Address.AddressStatus;
     using MunicipalityBosaItem = Projections.Syndication.Municipality.MunicipalityBosaItem;
-    using StreetNameLatestItem = Projections.Syndication.StreetName.StreetNameLatestItem;
-    using StreetNameBosaItem = Projections.Syndication.StreetName.StreetNameBosaItem;
 
     public static class AddressMapper
     {
-        public static VolledigAdres? GetVolledigAdres(string houseNumber, string boxNumber, string postalCode, StreetNameLatestItem? streetName, Consumer.Read.Municipality.Projections.MunicipalityLatestItem? municipality)
+        public static VolledigAdres? GetVolledigAdres(string houseNumber, string boxNumber, string postalCode, StreetNameLatestItem? streetName, MunicipalityLatestItem? municipality)
         {
             if (streetName == null || municipality == null)
             {
@@ -30,7 +29,7 @@ namespace AddressRegistry.Api.Legacy.Address
                 defaultMunicipalityName.Key);
         }
 
-        public static VolledigAdres? GetVolledigAdres(string houseNumber, string boxNumber, string postalCode, StreetNameLatestItem? streetName, MunicipalityLatestItem? municipality)
+        public static VolledigAdres? GetVolledigAdres(string houseNumber, string boxNumber, string postalCode, StreetNameLatestItem? streetName, Projections.Syndication.Municipality.MunicipalityLatestItem? municipality)
         {
             if (streetName == null || municipality == null)
             {
@@ -65,7 +64,7 @@ namespace AddressRegistry.Api.Legacy.Address
             string? boxNumber,
             string? postalCode,
             Consumer.Read.StreetName.Projections.StreetNameBosaItem streetName,
-            Consumer.Read.Municipality.Projections.MunicipalityLatestItem municipality)
+            MunicipalityLatestItem municipality)
         {
             var defaultMunicipalityName = GetDefaultMunicipalityName(municipality);
 
@@ -86,33 +85,6 @@ namespace AddressRegistry.Api.Legacy.Address
             {
                 XmlPoint = new GmlPoint { Pos = $"{geometry.Coordinate.X.ToPointGeometryCoordinateValueFormat()} {geometry.Coordinate.Y.ToPointGeometryCoordinateValueFormat()}" },
                 JsonPoint = new GeoJSONPoint { Coordinates = new[] { geometry.Coordinate.X, geometry.Coordinate.Y } }
-            };
-        }
-
-        public static PositieGeometrieMethode ConvertFromGeometryMethod(AddressRegistry.StreetName.GeometryMethod? method)
-        {
-            return method switch
-            {
-                AddressRegistry.StreetName.GeometryMethod.DerivedFromObject => PositieGeometrieMethode.AfgeleidVanObject,
-                AddressRegistry.StreetName.GeometryMethod.Interpolated => PositieGeometrieMethode.Geinterpoleerd,
-                _ => PositieGeometrieMethode.AangeduidDoorBeheerder
-            };
-        }
-
-        public static PositieSpecificatie ConvertFromGeometrySpecification(AddressRegistry.StreetName.GeometrySpecification? specification)
-        {
-            return specification switch
-            {
-                AddressRegistry.StreetName.GeometrySpecification.Street => PositieSpecificatie.Straat,
-                AddressRegistry.StreetName.GeometrySpecification.Parcel => PositieSpecificatie.Perceel,
-                AddressRegistry.StreetName.GeometrySpecification.Lot => PositieSpecificatie.Lot,
-                AddressRegistry.StreetName.GeometrySpecification.Stand => PositieSpecificatie.Standplaats,
-                AddressRegistry.StreetName.GeometrySpecification.Berth => PositieSpecificatie.Ligplaats,
-                AddressRegistry.StreetName.GeometrySpecification.Building => PositieSpecificatie.Gebouw,
-                AddressRegistry.StreetName.GeometrySpecification.BuildingUnit => PositieSpecificatie.Gebouweenheid,
-                AddressRegistry.StreetName.GeometrySpecification.Entry => PositieSpecificatie.Ingang,
-                AddressRegistry.StreetName.GeometrySpecification.RoadSegment => PositieSpecificatie.Wegsegment,
-                _ => PositieSpecificatie.Gemeente
             };
         }
 
@@ -139,6 +111,33 @@ namespace AddressRegistry.Api.Legacy.Address
                 GeometrySpecification.BuildingUnit => PositieSpecificatie.Gebouweenheid,
                 GeometrySpecification.Entry => PositieSpecificatie.Ingang,
                 GeometrySpecification.RoadSegment => PositieSpecificatie.Wegsegment,
+                _ => PositieSpecificatie.Gemeente
+            };
+        }
+
+        public static PositieGeometrieMethode ConvertFromGeometryMethod(AddressRegistry.Address.GeometryMethod? method)
+        {
+            return method switch
+            {
+                AddressRegistry.Address.GeometryMethod.DerivedFromObject => PositieGeometrieMethode.AfgeleidVanObject,
+                AddressRegistry.Address.GeometryMethod.Interpolated => PositieGeometrieMethode.Geinterpoleerd,
+                _ => PositieGeometrieMethode.AangeduidDoorBeheerder
+            };
+        }
+
+        public static PositieSpecificatie ConvertFromGeometrySpecification(AddressRegistry.Address.GeometrySpecification? specification)
+        {
+            return specification switch
+            {
+                AddressRegistry.Address.GeometrySpecification.Street => PositieSpecificatie.Straat,
+                AddressRegistry.Address.GeometrySpecification.Parcel => PositieSpecificatie.Perceel,
+                AddressRegistry.Address.GeometrySpecification.Lot => PositieSpecificatie.Lot,
+                AddressRegistry.Address.GeometrySpecification.Stand => PositieSpecificatie.Standplaats,
+                AddressRegistry.Address.GeometrySpecification.Berth => PositieSpecificatie.Ligplaats,
+                AddressRegistry.Address.GeometrySpecification.Building => PositieSpecificatie.Gebouw,
+                AddressRegistry.Address.GeometrySpecification.BuildingUnit => PositieSpecificatie.Gebouweenheid,
+                AddressRegistry.Address.GeometrySpecification.Entry => PositieSpecificatie.Ingang,
+                AddressRegistry.Address.GeometrySpecification.RoadSegment => PositieSpecificatie.Wegsegment,
                 _ => PositieSpecificatie.Gemeente
             };
         }
@@ -178,7 +177,7 @@ namespace AddressRegistry.Api.Legacy.Address
             };
         }
         
-        public static KeyValuePair<Taal, string?> GetDefaultMunicipalityName(Consumer.Read.Municipality.Projections.MunicipalityLatestItem municipality)
+        public static KeyValuePair<Taal, string?> GetDefaultMunicipalityName(MunicipalityLatestItem municipality)
         {
             return municipality.PrimaryLanguage switch
             {
@@ -189,7 +188,7 @@ namespace AddressRegistry.Api.Legacy.Address
             };
         }
 
-        public static KeyValuePair<Taal, string?> GetDefaultMunicipalityName(MunicipalityLatestItem municipality)
+        public static KeyValuePair<Taal, string?> GetDefaultMunicipalityName(Projections.Syndication.Municipality.MunicipalityLatestItem municipality)
         {
             return municipality.PrimaryLanguage switch
             {

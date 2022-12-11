@@ -1,9 +1,10 @@
-namespace AddressRegistry.Api.Legacy.Address.Query
+namespace AddressRegistry.Api.Legacy.Address.Bosa
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using AddressRegistry.Projections.Legacy.AddressDetailV2;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
@@ -12,9 +13,6 @@ namespace AddressRegistry.Api.Legacy.Address.Query
     using Convertors;
     using Infrastructure.Options;
     using Microsoft.EntityFrameworkCore;
-    using Projections.Legacy.AddressDetailV2;
-    using Requests;
-    using Responses;
     using MunicipalityBosaItem = Consumer.Read.Municipality.Projections.MunicipalityBosaItem;
 
     public class AddressBosaQueryV2
@@ -30,7 +28,7 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             _responseOptions = responseOptions;
         }
 
-        public async Task<AddressBosaResponse> Filter(BosaAddressRequest filter)
+        public async Task<AddressBosaResponse> Filter(AddressBosaRequest filter)
         {
             var addressesQuery = _context.AddressDetailV2.AsNoTracking()
                 .OrderBy(x => x.AddressPersistentLocalId)

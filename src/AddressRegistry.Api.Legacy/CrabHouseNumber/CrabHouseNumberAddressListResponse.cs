@@ -6,6 +6,8 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
     using System.Collections.Generic;
     using System.Globalization;
     using System.Runtime.Serialization;
+    using Be.Vlaanderen.Basisregisters.Api.Search.Pagination;
+    using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Infrastructure.Options;
     using Microsoft.Extensions.Options;
@@ -35,6 +37,14 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
         [DataMember(Name = "Volgende", Order = 3, EmitDefaultValue = false)]
         [JsonProperty(Required = Required.Default)]
         public Uri Volgende { get; set; }
+
+        [JsonIgnore]
+        [IgnoreDataMember]
+        public SortingHeader Sorting { get; set; }
+
+        [JsonIgnore]
+        [IgnoreDataMember]
+        public PaginationInfo Pagination { get; set; }
     }
 
     [DataContract(Name = "CrabHuisnummer", Namespace = "")]

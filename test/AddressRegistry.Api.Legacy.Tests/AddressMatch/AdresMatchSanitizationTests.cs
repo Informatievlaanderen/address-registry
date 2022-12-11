@@ -655,7 +655,7 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
 
                                 }), x));
 
-                    var _ = (OkObjectResult)Send(request).GetAwaiter().GetResult();
+                    var _ = Send(request).GetAwaiter().GetResult();
 
                     if (filters.Any())
                     {

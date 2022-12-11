@@ -1,14 +1,14 @@
-namespace AddressRegistry.Api.Legacy.Address.Responses
+namespace AddressRegistry.Api.Legacy.Address.BosaRepresentation
 {
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
-    using Infrastructure.Options;
-    using Microsoft.Extensions.Options;
-    using Swashbuckle.AspNetCore.Filters;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.Runtime.Serialization;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
+    using Infrastructure.Options;
+    using Microsoft.Extensions.Options;
+    using Swashbuckle.AspNetCore.Filters;
 
     [DataContract]
     public class AddressRepresentationBosaResponse
@@ -23,11 +23,11 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         /// address representations
         /// </summary>
         [Required]
-        public List<BosaAddressRepresentation> AdresVoorstellingen { get; set; }
+        public List<AddressRepresentationBosa> AdresVoorstellingen { get; set; }
     }
 
     [DataContract]
-    public class BosaAddressRepresentation
+    public class AddressRepresentationBosa
     {
         [Required]
         public Taal Taal { get; set; }
@@ -49,7 +49,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         [Required]
         public string Postcode { get; set; }
 
-        public BosaAddressRepresentation(Taal taal, string huisnummer, string busnummer, string volledigAdres, string gemeentenaam, string straatnaam, string postcode)
+        public AddressRepresentationBosa(Taal taal, string huisnummer, string busnummer, string volledigAdres, string gemeentenaam, string straatnaam, string postcode)
         {
             Taal = taal;
             Huisnummer = huisnummer;
@@ -72,10 +72,10 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             => new AddressRepresentationBosaResponse
             {
                 Identificator = new AdresIdentificator(_responseOptions.Naamruimte, "12345", DateTimeOffset.Now.ToExampleOffset()),
-                AdresVoorstellingen = new List<BosaAddressRepresentation>
+                AdresVoorstellingen = new List<AddressRepresentationBosa>
                 {
-                    new BosaAddressRepresentation(Taal.NL, "5", "1", "Teststraat 5 bus 1, 9000 Gent", "Gent", "Teststraat", "9000"),
-                    new BosaAddressRepresentation(Taal.FR, "5", "1", "Rue de test 5 bte 1, 9000 Gand", "Gand", "Rue de test", "9000")
+                    new AddressRepresentationBosa(Taal.NL, "5", "1", "Teststraat 5 bus 1, 9000 Gent", "Gent", "Teststraat", "9000"),
+                    new AddressRepresentationBosa(Taal.FR, "5", "1", "Rue de test 5 bte 1, 9000 Gand", "Gand", "Rue de test", "9000")
                 }
             };
     }

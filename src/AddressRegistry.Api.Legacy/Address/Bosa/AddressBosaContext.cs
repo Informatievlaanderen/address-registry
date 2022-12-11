@@ -1,17 +1,17 @@
-namespace AddressRegistry.Api.Legacy.Address.Query
+namespace AddressRegistry.Api.Legacy.Address.Bosa
 {
     using System.Reflection;
+    using AddressRegistry.Consumer.Read.Municipality;
+    using AddressRegistry.Consumer.Read.StreetName;
+    using AddressRegistry.Projections.Legacy;
+    using AddressRegistry.Projections.Legacy.AddressDetail;
+    using AddressRegistry.Projections.Legacy.AddressDetailV2;
+    using AddressRegistry.Projections.Syndication;
+    using AddressRegistry.Projections.Syndication.Municipality;
+    using AddressRegistry.Projections.Syndication.PostalInfo;
+    using AddressRegistry.Projections.Syndication.StreetName;
     using Be.Vlaanderen.Basisregisters.EntityFrameworkCore.EntityTypeConfiguration;
-    using Consumer.Read.Municipality;
-    using Consumer.Read.StreetName;
     using Microsoft.EntityFrameworkCore;
-    using Projections.Legacy;
-    using Projections.Legacy.AddressDetail;
-    using Projections.Legacy.AddressDetailV2;
-    using Projections.Syndication;
-    using Projections.Syndication.Municipality;
-    using Projections.Syndication.PostalInfo;
-    using Projections.Syndication.StreetName;
 
     public class AddressBosaContext : DbContext
     {

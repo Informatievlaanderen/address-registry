@@ -1,21 +1,22 @@
-namespace AddressRegistry.Api.Legacy.Address.Requests
+namespace AddressRegistry.Api.Legacy.Address.BosaRepresentation
 {
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Bosa;
-    using Swashbuckle.AspNetCore.Filters;
     using System;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Bosa;
+    using MediatR;
+    using Swashbuckle.AspNetCore.Filters;
 
-    public class BosaAddressRepresentationRequest
+    public class AddressRepresentationBosaRequest : IRequest<AddressRepresentationBosaResponse>
     {
         public ZoekIdentifier AdresCode { get; set; }
         public Taal? Taal { get; set; }
     }
 
-    public class BosaAddressRepresentationRequestExamples : IExamplesProvider<BosaAddressRepresentationRequest>
+    public class AddressRepresentationBosaRequestExamples : IExamplesProvider<AddressRepresentationBosaRequest>
     {
-        public BosaAddressRepresentationRequest GetExamples()
-            => new BosaAddressRepresentationRequest
+        public AddressRepresentationBosaRequest GetExamples()
+            => new AddressRepresentationBosaRequest
             {
                 AdresCode = new ZoekIdentifier
                 {

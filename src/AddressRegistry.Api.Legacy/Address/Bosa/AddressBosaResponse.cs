@@ -1,16 +1,16 @@
-namespace AddressRegistry.Api.Legacy.Address.Responses
+namespace AddressRegistry.Api.Legacy.Address.Bosa
 {
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
-    using Infrastructure.Options;
-    using Microsoft.Extensions.Options;
-    using Swashbuckle.AspNetCore.Filters;
     using System;
     using System.Collections.Generic;
     using System.Runtime.Serialization;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
     using Be.Vlaanderen.Basisregisters.Utilities;
+    using Infrastructure.Options;
+    using Microsoft.Extensions.Options;
+    using Swashbuckle.AspNetCore.Filters;
 
     [DataContract]
     public class AddressBosaResponse

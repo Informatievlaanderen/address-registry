@@ -1,13 +1,14 @@
-namespace AddressRegistry.Api.Legacy.Address.Requests
+namespace AddressRegistry.Api.Legacy.Address.Bosa
 {
+    using System;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Bosa;
+    using MediatR;
     using Swashbuckle.AspNetCore.Filters;
-    using System;
-    using Be.Vlaanderen.Basisregisters.GrAr.Common;
 
-    public class BosaAddressRequest
+    public class AddressBosaRequest : IRequest<AddressBosaResponse>
     {
         public ZoekIdentifier AdresCode { get; set; }
         public string Huisnummer { get; set; }
@@ -29,10 +30,10 @@ namespace AddressRegistry.Api.Legacy.Address.Requests
                && (GemeenteCode == null || (!GemeenteCode.VersieId.HasValue && string.IsNullOrEmpty(GemeenteCode.ObjectId)));
     }
 
-    public class BosaAddressRequestExamples : IExamplesProvider<BosaAddressRequest>
+    public class BosaAddressRequestExamples : IExamplesProvider<AddressBosaRequest>
     {
-        public BosaAddressRequest GetExamples()
-            => new BosaAddressRequest
+        public AddressBosaRequest GetExamples()
+            => new AddressBosaRequest
             {
                 AdresCode = new ZoekIdentifier
                 {

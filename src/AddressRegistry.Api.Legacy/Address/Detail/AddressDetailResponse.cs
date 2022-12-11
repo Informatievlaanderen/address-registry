@@ -1,21 +1,21 @@
-namespace AddressRegistry.Api.Legacy.Address.Responses
+namespace AddressRegistry.Api.Legacy.Address.Detail
 {
+    using System;
+    using System.Runtime.Serialization;
+    using AddressRegistry.Api.Legacy.Infrastructure.Options;
+    using Be.Vlaanderen.Basisregisters.Api.Exceptions;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
-    using Infrastructure.Options;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Options;
-    using Swashbuckle.AspNetCore.Filters;
-    using System;
-    using System.Runtime.Serialization;
-    using Be.Vlaanderen.Basisregisters.Api.Exceptions;
-    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Newtonsoft.Json;
+    using Swashbuckle.AspNetCore.Filters;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
     [DataContract(Name = "AdresDetail", Namespace = "")]
-    public class AddressResponse
+    public class AddressDetailResponse
     {
         /// <summary>
         /// De identificator van het adres.
@@ -108,7 +108,11 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         [JsonProperty(Required = Required.DisallowNull)]
         public bool OfficieelToegekend { get; set; }
 
-        public AddressResponse(
+        [IgnoreDataMember]
+        [JsonIgnore]
+        public string? LastEventHash { get; }
+
+        public AddressDetailResponse(
             string naamruimte,
             string objectId,
             string huisnummer,
@@ -123,7 +127,8 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             AdresStatus status,
             Taal taal,
             bool? officieelToegekend,
-            DateTimeOffset version)
+            DateTimeOffset version,
+            string? lastEventHash = "")
         {
             Identificator = new AdresIdentificator(naamruimte, objectId, version);
             Huisnummer = huisnummer;
@@ -137,6 +142,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             Straatnaam = straatnaam;
             HomoniemToevoeging = homoniemToevoeging;
             AdresPositie = adresPositie;
+            LastEventHash = lastEventHash;
 
             VolledigAdres = new VolledigAdres(
                 straatnaam?.Straatnaam?.GeografischeNaam?.Spelling,
@@ -148,14 +154,14 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
         }
     }
 
-    public class AddressResponseExamples : IExamplesProvider<AddressResponse>
+    public class AddressResponseExamples : IExamplesProvider<AddressDetailResponse>
     {
         private readonly ResponseOptions _responseOptions;
 
         public AddressResponseExamples(IOptions<ResponseOptions> responseOptionsProvider)
          => _responseOptions = responseOptionsProvider.Value;
 
-        public AddressResponse GetExamples()
+        public AddressDetailResponse GetExamples()
         {
             var point = new Point
             {
@@ -168,7 +174,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
             var postInfo = new AdresDetailPostinfo("9000", string.Format(_responseOptions.PostInfoDetailUrl, "9000"));
             var homoniem = new HomoniemToevoeging(new GeografischeNaam("UK", Taal.NL));
 
-            return new AddressResponse(
+            return new AddressDetailResponse(
                 _responseOptions.Naamruimte,
                 "60",
                 "42",

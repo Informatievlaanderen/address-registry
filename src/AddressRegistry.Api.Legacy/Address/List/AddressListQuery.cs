@@ -1,12 +1,12 @@
-namespace AddressRegistry.Api.Legacy.Address.Query
+namespace AddressRegistry.Api.Legacy.Address.List
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using AddressRegistry.Projections.Legacy.AddressList;
     using Be.Vlaanderen.Basisregisters.Api.Search;
     using Be.Vlaanderen.Basisregisters.Api.Search.Filtering;
     using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
-    using Projections.Legacy.AddressList;
-    using System.Collections.Generic;
-    using System.Linq;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Convertors;

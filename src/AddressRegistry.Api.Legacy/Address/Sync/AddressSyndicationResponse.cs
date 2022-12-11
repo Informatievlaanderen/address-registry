@@ -1,5 +1,10 @@
-namespace AddressRegistry.Api.Legacy.Address.Responses
+namespace AddressRegistry.Api.Legacy.Address.Sync
 {
+    using System;
+    using System.Globalization;
+    using System.Runtime.Serialization;
+    using System.Threading.Tasks;
+    using System.Xml;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Syndication;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
@@ -11,13 +16,7 @@ namespace AddressRegistry.Api.Legacy.Address.Responses
     using Microsoft.Extensions.Options;
     using Microsoft.SyndicationFeed;
     using Microsoft.SyndicationFeed.Atom;
-    using Query;
     using Swashbuckle.AspNetCore.Filters;
-    using System;
-    using System.Globalization;
-    using System.Runtime.Serialization;
-    using System.Threading.Tasks;
-    using System.Xml;
     using Provenance = Be.Vlaanderen.Basisregisters.GrAr.Provenance.Syndication.Provenance;
 
     public static class AddressSyndicationResponse

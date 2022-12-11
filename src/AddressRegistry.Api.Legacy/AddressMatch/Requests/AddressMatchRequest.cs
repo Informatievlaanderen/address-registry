@@ -1,6 +1,9 @@
 namespace AddressRegistry.Api.Legacy.AddressMatch.Requests
 {
-    public class AddressMatchRequest
+    using MediatR;
+    using Responses;
+
+    public class AddressMatchRequest : IRequest<AddressMatchCollection>
     {
         /// <summary>
         /// municipality name

@@ -1,4 +1,4 @@
-namespace AddressRegistry.Api.Legacy.Address.Query
+namespace AddressRegistry.Api.Legacy.Address
 {
     using System.Reflection;
     using Be.Vlaanderen.Basisregisters.EntityFrameworkCore.EntityTypeConfiguration;

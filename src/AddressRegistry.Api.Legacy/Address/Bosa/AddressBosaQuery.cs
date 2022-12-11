@@ -1,21 +1,19 @@
-namespace AddressRegistry.Api.Legacy.Address.Query
+namespace AddressRegistry.Api.Legacy.Address.Bosa
 {
-    using Be.Vlaanderen.Basisregisters.GrAr.Common;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Bosa;
-    using Infrastructure.Options;
-    using Microsoft.EntityFrameworkCore;
-    using Projections.Legacy.AddressDetail;
-    using Projections.Syndication.Municipality;
-    using Projections.Syndication.StreetName;
-    using Requests;
-    using Responses;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using AddressRegistry.Projections.Legacy.AddressDetail;
+    using AddressRegistry.Projections.Syndication.StreetName;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Bosa;
     using Be.Vlaanderen.Basisregisters.Utilities;
+    using Infrastructure.Options;
+    using Microsoft.EntityFrameworkCore;
+    using Projections.Syndication.Municipality;
 
     public class AddressBosaQuery
     {
@@ -30,13 +28,13 @@ namespace AddressRegistry.Api.Legacy.Address.Query
             _responseOptions = responseOptions;
         }
 
-        public async Task<AddressBosaResponse> Filter(BosaAddressRequest filter)
+        public async Task<AddressBosaResponse> Filter(AddressBosaRequest filter)
         {
             var addressesQuery = _context.AddressDetail.AsNoTracking().OrderBy(x => x.PersistentLocalId).Where(x => x.Complete && !x.Removed);
             var streetNamesQuery = _context.StreetNameBosaItems.AsNoTracking().Where(x => x.IsComplete);
             var municipalitiesQuery = _context.MunicipalityBosaItems.AsNoTracking();
 
-            if (filter?.IsOnlyAdresIdRequested == true && int.TryParse(filter.AdresCode?.ObjectId, out var adresId))
+            if (filter.IsOnlyAdresIdRequested && int.TryParse(filter.AdresCode?.ObjectId, out var adresId))
             {
                 addressesQuery = addressesQuery
                     .Where(a => a.PersistentLocalId == adresId)

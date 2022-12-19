@@ -1,36 +1,26 @@
 namespace AddressRegistry.Producer.Snapshot.Oslo
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using AddressRegistry.StreetName.Events;
-    using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Oslo.SnapshotProducer;
-    using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple;
+    using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka;
+    using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Producer;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
-    using Microsoft.Extensions.Configuration;
+    using StreetName.Events;
 
     [ConnectedProjectionName("Kafka producer")]
     [ConnectedProjectionDescription("Projectie die berichten naar de kafka broker stuurt.")]
     public sealed class ProducerProjections : ConnectedProjection<ProducerContext>
     {
-        private readonly KafkaProducerOptions _kafkaOptions;
-        private readonly string _TopicKey = "AddressTopic";
+        public const string TopicKey = "AddressTopic";
 
-        public ProducerProjections(IConfiguration configuration, ISnapshotManager snapshotManager)
+        private readonly IProducer _producer;
+
+        public ProducerProjections(IProducer producer, ISnapshotManager snapshotManager, string osloNamespace)
         {
-            var bootstrapServers = configuration["Kafka:BootstrapServers"];
-            var osloNamespace = configuration["OsloNamespace"];
-            osloNamespace = osloNamespace.TrimEnd('/');
-
-            var topic = $"{configuration[_TopicKey]}" ?? throw new ArgumentException($"Configuration has no value for {_TopicKey}");
-            _kafkaOptions = new KafkaProducerOptions(
-                bootstrapServers,
-                configuration["Kafka:SaslUserName"],
-                configuration["Kafka:SaslPassword"],
-                topic,
-                false,
-                EventsJsonSerializerSettingsProvider.CreateSerializerSettings());
+            _producer = producer;
 
             When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasMigratedToStreetName>>(async (_, message, ct) =>
             {
@@ -40,6 +30,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             message.Message.Provenance.Timestamp,
                             throwStaleWhenGone: false,
                             ct),
+                        message.Position,
                         ct);
             });
 
@@ -51,6 +42,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             message.Message.Provenance.Timestamp,
                             throwStaleWhenGone: false,
                             ct),
+                        message.Position,
                         ct);
             });
 
@@ -62,6 +54,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             message.Message.Provenance.Timestamp,
                             throwStaleWhenGone: false,
                             ct),
+                        message.Position,
                         ct);
             });
 
@@ -73,6 +66,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             message.Message.Provenance.Timestamp,
                             throwStaleWhenGone: false,
                             ct),
+                        message.Position,
                         ct);
             });
 
@@ -84,6 +78,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             message.Message.Provenance.Timestamp,
                             throwStaleWhenGone: false,
                             ct),
+                        message.Position,
                         ct);
             });
 
@@ -95,6 +90,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             message.Message.Provenance.Timestamp,
                             throwStaleWhenGone: false,
                             ct),
+                        message.Position,
                         ct);
             });
 
@@ -106,6 +102,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             message.Message.Provenance.Timestamp,
                             throwStaleWhenGone: false,
                             ct),
+                        message.Position,
                         ct);
             });
 
@@ -117,6 +114,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             message.Message.Provenance.Timestamp,
                             throwStaleWhenGone: false,
                             ct),
+                        message.Position,
                         ct);
             });
 
@@ -129,6 +127,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             message.Message.Provenance.Timestamp,
                             throwStaleWhenGone: false,
                             ct),
+                        message.Position,
                         ct);
             });
 
@@ -140,6 +139,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             message.Message.Provenance.Timestamp,
                             throwStaleWhenGone: false,
                             ct),
+                        message.Position,
                         ct);
             });
 
@@ -151,6 +151,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             message.Message.Provenance.Timestamp,
                             throwStaleWhenGone: false,
                             ct),
+                        message.Position,
                         ct);
             });
 
@@ -162,6 +163,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             message.Message.Provenance.Timestamp,
                             throwStaleWhenGone: false,
                             ct),
+                        message.Position,
                         ct);
             });
 
@@ -173,6 +175,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             message.Message.Provenance.Timestamp,
                             throwStaleWhenGone: false,
                             ct),
+                        message.Position,
                         ct);
             });
 
@@ -184,6 +187,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             message.Message.Provenance.Timestamp,
                             throwStaleWhenGone: false,
                             ct),
+                        message.Position,
                         ct);
             });
 
@@ -195,6 +199,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             message.Message.Provenance.Timestamp,
                             throwStaleWhenGone: false,
                             ct),
+                        message.Position,
                         ct);
             });
 
@@ -206,6 +211,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             message.Message.Provenance.Timestamp,
                             throwStaleWhenGone: false,
                             ct),
+                        message.Position,
                         ct);
             });
 
@@ -217,6 +223,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             message.Message.Provenance.Timestamp,
                             throwStaleWhenGone: false,
                             ct),
+                        message.Position,
                         ct);
             });
 
@@ -228,6 +235,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             message.Message.Provenance.Timestamp,
                             throwStaleWhenGone: false,
                             ct),
+                        message.Position,
                         ct);
             });
 
@@ -239,6 +247,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             message.Message.Provenance.Timestamp,
                             throwStaleWhenGone: false,
                             ct),
+                        message.Position,
                         ct);
             });
 
@@ -250,6 +259,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             message.Message.Provenance.Timestamp,
                             throwStaleWhenGone: false,
                             ct),
+                        message.Position,
                         ct);
             });
 
@@ -261,6 +271,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             message.Message.Provenance.Timestamp,
                             throwStaleWhenGone: false,
                             ct),
+                        message.Position,
                         ct);
             });
 
@@ -272,6 +283,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             message.Message.Provenance.Timestamp,
                             throwStaleWhenGone: false,
                             ct),
+                        message.Position,
                         ct);
             });
 
@@ -288,28 +300,33 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
 
             When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasRemovedBecauseHouseNumberWasRemoved>>(async (_, message, ct) =>
             {
-                await Produce($"{osloNamespace}/{message.Message.AddressPersistentLocalId}", "{}", ct);
+                await Produce($"{osloNamespace}/{message.Message.AddressPersistentLocalId}", "{}", message.Position, ct);
             });
 
             When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasRemovedV2>>(async (_, message, ct) =>
             {
-                await Produce($"{osloNamespace}/{message.Message.AddressPersistentLocalId}", "{}", ct);
+                await Produce($"{osloNamespace}/{message.Message.AddressPersistentLocalId}", "{}", message.Position, ct);
             });
         }
 
-        private async Task FindAndProduce(Func<Task<OsloResult?>> findMatchingSnapshot, CancellationToken ct)
+        private async Task FindAndProduce(Func<Task<OsloResult?>> findMatchingSnapshot, long storePosition, CancellationToken ct)
         {
             var result = await findMatchingSnapshot.Invoke();
 
             if (result != null)
             {
-                await Produce(result.Identificator.Id, result.JsonContent, ct);
+                await Produce(result.Identificator.Id, result.JsonContent, storePosition, ct);
             }
         }
 
-        private async Task Produce(string objectId, string jsonContent, CancellationToken cancellationToken = default)
+        private async Task Produce(string objectId, string jsonContent, long storePosition, CancellationToken cancellationToken = default)
         {
-            var result = await KafkaProducer.Produce(_kafkaOptions, objectId, jsonContent, cancellationToken);
+            var result = await _producer.Produce(
+                new MessageKey(objectId),
+                jsonContent,
+                new List<MessageHeader> { new MessageHeader(MessageHeader.IdempotenceKey, storePosition.ToString()) },
+                cancellationToken);
+
             if (!result.IsSuccess)
             {
                 throw new InvalidOperationException(result.Error + Environment.NewLine + result.ErrorReason); //TODO: create custom exception

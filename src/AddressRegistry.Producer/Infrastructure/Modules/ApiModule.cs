@@ -15,6 +15,8 @@ namespace AddressRegistry.Producer.Infrastructure.Modules
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using AddressRegistry.Infrastructure;
+    using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka;
+    using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Producer;
 
     public class ApiModule : Module
     {
@@ -52,11 +54,8 @@ namespace AddressRegistry.Producer.Infrastructure.Modules
                     new EventHandlingModule(
                         typeof(DomainAssemblyMarker).Assembly,
                         EventsJsonSerializerSettingsProvider.CreateSerializerSettings()))
-
                 .RegisterModule<EnvelopeModule>()
-
                 .RegisterEventstreamModule(_configuration)
-
                 .RegisterModule(new ProjectorModule(_configuration));
 
             RegisterProjections(builder);
@@ -82,9 +81,46 @@ namespace AddressRegistry.Producer.Infrastructure.Modules
                     _configuration,
                     _loggerFactory)
                 .RegisterProjections<ProducerProjections, ProducerContext>(() =>
-                    new ProducerProjections(_configuration), connectedProjectionSettings)
+                {
+                    var bootstrapServers = _configuration["Kafka:BootstrapServers"];
+                    var topic = $"{_configuration[ProducerProjections.AddressTopicKey]}" ?? throw new ArgumentException($"Configuration has no value for {ProducerProjections.AddressTopicKey}");
+                    var producerOptions = new ProducerOptions(
+                        new BootstrapServers(bootstrapServers),
+                        new Topic(topic),
+                        true,
+                        EventsJsonSerializerSettingsProvider.CreateSerializerSettings())
+                        .ConfigureEnableIdempotence();
+                    if (!string.IsNullOrEmpty(_configuration["Kafka:SaslUserName"])
+                        && !string.IsNullOrEmpty(_configuration["Kafka:SaslPassword"]))
+                    {
+                        producerOptions.ConfigureSaslAuthentication(new SaslAuthentication(
+                            _configuration["Kafka:SaslUserName"],
+                            _configuration["Kafka:SaslPassword"]));
+                    }
+
+                    return new ProducerProjections(new Producer(producerOptions));
+                }, connectedProjectionSettings)
                 .RegisterProjections<ProducerMigrateProjections, ProducerContext>(() =>
-                    new ProducerMigrateProjections(_configuration), connectedProjectionSettings);
+                {
+                    var bootstrapServers = _configuration["Kafka:BootstrapServers"];
+                    var topic = $"{_configuration[ProducerMigrateProjections.AddressTopicKey]}" ?? throw new ArgumentException($"Configuration has no value for {ProducerMigrateProjections.AddressTopicKey}");
+                    var producerOptions = new ProducerOptions(
+                            new BootstrapServers(bootstrapServers),
+                            new Topic(topic),
+                            true,
+                            EventsJsonSerializerSettingsProvider.CreateSerializerSettings())
+                        .ConfigureEnableIdempotence();
+
+                    if (!string.IsNullOrEmpty(_configuration["Kafka:SaslUserName"])
+                        && !string.IsNullOrEmpty(_configuration["Kafka:SaslPassword"]))
+                    {
+                        producerOptions.ConfigureSaslAuthentication(new SaslAuthentication(
+                            _configuration["Kafka:SaslUserName"],
+                            _configuration["Kafka:SaslPassword"]));
+                    }
+
+                    return new ProducerMigrateProjections(new Producer(producerOptions));
+                }, connectedProjectionSettings);
         }
     }
 }

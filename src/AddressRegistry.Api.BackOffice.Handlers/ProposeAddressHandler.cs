@@ -81,11 +81,9 @@ namespace AddressRegistry.Api.BackOffice.Handlers
 
             // Insert PersistentLocalId with MunicipalityId
             await _backOfficeContext
-                .AddressPersistentIdStreetNamePersistentIds
-                .AddAsync(
-                    new AddressPersistentIdStreetNamePersistentId(
-                        addressPersistentLocalId,
-                        streetNamePersistentLocalId),
+                .AddIdempotentAddressStreetNameIdRelation(
+                    addressPersistentLocalId,
+                    streetNamePersistentLocalId,
                     cancellationToken);
             await _backOfficeContext.SaveChangesAsync(cancellationToken);
 

@@ -8,13 +8,10 @@
     <ProjectReference Include="..\..\src\AddressRegistry.Consumer.Read.Municipality\AddressRegistry.Consumer.Read.Municipality.csproj" />
     <ProjectReference Include="..\..\src\AddressRegistry.Consumer.Read.StreetName\AddressRegistry.Consumer.Read.StreetName.csproj" />
     <ProjectReference Include="..\..\src\AddressRegistry.Consumer\AddressRegistry.Consumer.csproj" />
+    <ProjectReference Include="..\..\src\AddressRegistry.Projections.BackOffice\AddressRegistry.Projections.BackOffice.csproj" />
     <ProjectReference Include="..\..\src\AddressRegistry.Projections.Wfs\AddressRegistry.Projections.Wfs.csproj" />
     <ProjectReference Include="..\..\src\AddressRegistry.Projections.Wms\AddressRegistry.Projections.Wms.csproj" />
     <ProjectReference Include="..\..\src\AddressRegistry\AddressRegistry.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="AggregateTests\WhenApprovingStreetName\" />
   </ItemGroup>
 
   <Import Project="..\..\.paket\Paket.Restore.targets" />

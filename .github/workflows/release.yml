@@ -127,6 +127,7 @@ jobs:
         docker image save $BUILD_DOCKER_REGISTRY/address-registry/producer:$SEMVER -o ~/ar-producer-image.tar
         docker image save $BUILD_DOCKER_REGISTRY/address-registry/producer-snapshot-oslo:$SEMVER -o ~/ar-producer-snapshot-oslo-image.tar
         docker image save $BUILD_DOCKER_REGISTRY/address-registry/projections-syndication:$SEMVER -o ~/ar-projections-syndication-image.tar
+        docker image save $BUILD_DOCKER_REGISTRY/address-registry/projections-backoffice:$SEMVER -o ~/ar-projections-backoffice-image.tar
         docker image save $BUILD_DOCKER_REGISTRY/address-registry/cache-warmer:$SEMVER -o ~/ar-cache-warmer-image.tar
       env:
         BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
@@ -266,6 +267,13 @@ jobs:
       with:
         name: projections-syndication
         path: ~/ar-projections-syndication-image.tar
+
+    - name: Upload projections-backoffice artifact
+      if: env.RELEASE_VERSION != 'none'
+      uses: actions/upload-artifact@v3
+      with:
+        name: projections-backoffice
+        path: ~/ar-projections-backoffice-image.tar
 
     - name: Upload cache-warmer artifact
       if: env.RELEASE_VERSION != 'none'
@@ -579,6 +587,12 @@ jobs:
           name: projections-syndication
           path: ~/
 
+      - name: Download projections-backoffice
+        uses: actions/download-artifact@v3
+        with:
+          name: projections-backoffice
+          path: ~/
+
       - name: Download cache-warmer
         uses: actions/download-artifact@v3
         with:
@@ -605,6 +619,7 @@ jobs:
           docker image load -i ~/ar-producer-image.tar
           docker image load -i ~/ar-producer-snapshot-oslo-image.tar
           docker image load -i ~/ar-projections-syndication-image.tar
+          docker image load -i ~/ar-projections-backoffice-image.tar
           docker image load -i ~/ar-cache-warmer-image.tar
 
       - name: Push artifacts to ECR Test
@@ -625,6 +640,7 @@ jobs:
           docker push $BUILD_DOCKER_REGISTRY/address-registry/producer:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY/address-registry/producer-snapshot-oslo:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY/address-registry/projections-syndication:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY/address-registry/projections-backoffice:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY/address-registry/cache-warmer:$SEMVER
         env:
           BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
@@ -731,6 +747,12 @@ jobs:
           name: projections-syndication
           path: ~/
 
+      - name: Download projections-backoffice
+        uses: actions/download-artifact@v3
+        with:
+          name: projections-backoffice
+          path: ~/
+
       - name: Download cache-warmer
         uses: actions/download-artifact@v3
         with:
@@ -757,6 +779,7 @@ jobs:
           docker image load -i ~/ar-producer-image.tar
           docker image load -i ~/ar-producer-snapshot-oslo-image.tar
           docker image load -i ~/ar-projections-syndication-image.tar
+          docker image load -i ~/ar-projections-backoffice-image.tar
           docker image load -i ~/ar-cache-warmer-image.tar
 
       - name: Push artifacts to ECR Staging
@@ -801,6 +824,9 @@ jobs:
 
           docker tag $BUILD_DOCKER_REGISTRY_TST/address-registry/projections-syndication:$SEMVER $BUILD_DOCKER_REGISTRY/address-registry/projections-syndication:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY/address-registry/projections-syndication:$SEMVER
+
+          docker tag $BUILD_DOCKER_REGISTRY_TST/address-registry/projections-backoffice:$SEMVER $BUILD_DOCKER_REGISTRY/address-registry/projections-backoffice:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY/address-registry/projections-backoffice:$SEMVER
 
           docker tag $BUILD_DOCKER_REGISTRY_TST/address-registry/cache-warmer:$SEMVER $BUILD_DOCKER_REGISTRY/address-registry/cache-warmer:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY/address-registry/cache-warmer:$SEMVER
@@ -911,6 +937,12 @@ jobs:
           name: projections-syndication
           path: ~/
 
+      - name: Download projections-backoffice
+        uses: actions/download-artifact@v3
+        with:
+          name: projections-backoffice
+          path: ~/
+
       - name: Download cache-warmer
         uses: actions/download-artifact@v3
         with:
@@ -937,6 +969,7 @@ jobs:
           docker image load -i ~/ar-producer-image.tar
           docker image load -i ~/ar-producer-snapshot-oslo-image.tar
           docker image load -i ~/ar-projections-syndication-image.tar
+          docker image load -i ~/ar-projections-backoffice-image.tar
           docker image load -i ~/ar-cache-warmer-image.tar
 
       - name: Push artifacts to ECR Production
@@ -981,6 +1014,9 @@ jobs:
 
           docker tag $BUILD_DOCKER_REGISTRY_TST/address-registry/projections-syndication:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/projections-syndication:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/projections-syndication:$SEMVER
+
+          docker tag $BUILD_DOCKER_REGISTRY_TST/address-registry/projections-backoffice:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/projections-backoffice:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/projections-backoffice:$SEMVER
 
           docker tag $BUILD_DOCKER_REGISTRY_TST/address-registry/cache-warmer:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/cache-warmer:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/cache-warmer:$SEMVER

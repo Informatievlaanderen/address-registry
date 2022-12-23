@@ -10,12 +10,17 @@ namespace AddressRegistry.Tests.BackOffice.Infrastructure
 
     public class TestBackOfficeContext : BackOfficeContext
     {
+        private readonly bool _dispose;
+
         // This needs to be here to please EF
         public TestBackOfficeContext() { }
 
         // This needs to be DbContextOptions<T> for Autofac!
-        public TestBackOfficeContext(DbContextOptions<BackOfficeContext> options)
-            : base(options) { }
+        public TestBackOfficeContext(DbContextOptions<BackOfficeContext> options, bool dispose = true)
+            : base(options)
+        {
+            _dispose = dispose;
+        }
 
         public AddressPersistentIdStreetNamePersistentId AddStreetNamePersistentIdByAddressPersistentLocalIdToFixture(
             int persistentLocalId, int streetNamePersistentLocalId)
@@ -41,14 +46,31 @@ namespace AddressRegistry.Tests.BackOffice.Infrastructure
 
             return addressPersistentIdStreetNamePersistentId;
         }
+
+        public override ValueTask DisposeAsync()
+        {
+            if (_dispose)
+            {
+                return base.DisposeAsync();
+            }
+
+            return new ValueTask(Task.CompletedTask);
+        }
     }
 
     public class FakeBackOfficeContextFactory : IDesignTimeDbContextFactory<TestBackOfficeContext>
     {
+        private readonly bool _dispose;
+
+        public FakeBackOfficeContextFactory(bool dispose = true)
+        {
+            _dispose = dispose;
+        }
+
         public TestBackOfficeContext CreateDbContext(params string[] args)
         {
             var builder = new DbContextOptionsBuilder<BackOfficeContext>().UseInMemoryDatabase(Guid.NewGuid().ToString());
-            return new TestBackOfficeContext(builder.Options);
+            return new TestBackOfficeContext(builder.Options, _dispose);
         }
     }
 }

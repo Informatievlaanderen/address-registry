@@ -13,6 +13,7 @@ namespace AddressRegistry.Infrastructure
         public const string ConsumerReadStreetName = "AddressRegistryConsumerReadStreetName";
         public const string MigrateAddress = "AddressRegistryMigration";
         public const string BackOffice = "AddressRegistryBackOffice";
+        public const string BackOfficeProjections = "AddressRegistryBackOfficeProjections";
         public const string Wfs = "wfs.address";
         public const string Wms = "wms.address";
         public const string Producer = "AddressRegistryProducer";
@@ -30,6 +31,7 @@ namespace AddressRegistry.Infrastructure
         public const string ConsumerReadMunicipality = "__EFMigrationsHistoryConsumerReadMunicipality";
         public const string ConsumerReadStreetName = "__EFMigrationsHistoryConsumerReadStreetName";
         public const string BackOffice = "__EFMigrationsHistoryBackOffice";
+        public const string BackOfficeProjections = "__EFMigrationsHistoryBackOfficeProjections";
         public const string Wfs = "__EFMigrationsHistoryWfsAddress";
         public const string Wms = "__EFMigrationsHistoryWmsAddress";
         public const string Producer = "__EFMigrationsHistoryProducer";

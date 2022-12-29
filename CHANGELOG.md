@@ -1,3 +1,10 @@
+# [3.69.0](https://github.com/informatievlaanderen/address-registry/compare/v3.68.2...v3.69.0) (2022-12-29)
+
+
+### Features
+
+* add backoffice projections ([e9bf0b3](https://github.com/informatievlaanderen/address-registry/commit/e9bf0b342005050fd5d9259b20ef896fe9fe2f4c))
+
 ## [3.68.2](https://github.com/informatievlaanderen/address-registry/compare/v3.68.1...v3.68.2) (2022-12-12)
 
 ## [3.68.1](https://github.com/informatievlaanderen/address-registry/compare/v3.68.0...v3.68.1) (2022-12-06)

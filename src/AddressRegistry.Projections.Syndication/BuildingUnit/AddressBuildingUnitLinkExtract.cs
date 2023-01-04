@@ -43,8 +43,10 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
             builder.HasIndex(p => p.AddressId);
             builder.HasIndex(p => p.BuildingUnitId);
             builder.HasIndex(p => p.BuildingId);
+
             builder.HasIndex(p => new { p.IsAddressLinkRemoved, p.IsBuildingUnitComplete, p.IsBuildingUnitRemoved, p.IsBuildingComplete })
-                .IncludeProperties(x => new { x.AddressId, x.BuildingUnitId });
+                .IncludeProperties(x => new { x.AddressId, x.BuildingUnitId, x.BuildingUnitPersistentLocalId });
+
             builder.HasIndex(p => p.AddressPersistentLocalId).IsClustered();
         }
     }

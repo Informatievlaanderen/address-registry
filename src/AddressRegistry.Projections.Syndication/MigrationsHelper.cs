@@ -47,6 +47,7 @@ namespace AddressRegistry.Projections.Syndication
                     connectionString,
                     sqlServerOptions =>
                     {
+                        sqlServerOptions.CommandTimeout(60 * 60);
                         sqlServerOptions.EnableRetryOnFailure();
                         sqlServerOptions.MigrationsHistoryTable(MigrationTables.Syndication, Schema.Syndication);
                     })

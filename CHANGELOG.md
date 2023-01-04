@@ -1,3 +1,10 @@
+# [3.70.0](https://github.com/informatievlaanderen/address-registry/compare/v3.69.0...v3.70.0) (2023-01-04)
+
+
+### Features
+
+* expand index on syndication item AddressBuildingUnitLinksExtract ([375a58b](https://github.com/informatievlaanderen/address-registry/commit/375a58ba7175a7426586590ebc6118e3b083bed5))
+
 # [3.69.0](https://github.com/informatievlaanderen/address-registry/compare/v3.68.2...v3.69.0) (2022-12-29)
 
 

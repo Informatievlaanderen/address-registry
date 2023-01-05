@@ -19,7 +19,7 @@ namespace AddressRegistry.Projections.Syndication.Migrations
                 schema: "AddressRegistrySyndication",
                 table: "AddressBuildingUnitLinksExtract",
                 columns: new[] { "IsAddressLinkRemoved", "IsBuildingUnitComplete", "IsBuildingUnitRemoved", "IsBuildingComplete" })
-                .Annotation("SqlServer:Include", new[] { "AddressId", "BuildingUnitId", "BuildingUnitPergit sistentLocalId" });
+                .Annotation("SqlServer:Include", new[] { "AddressId", "BuildingUnitId", "BuildingUnitPersistentLocalId" });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

@@ -30,7 +30,12 @@ namespace AddressRegistry.Api.Extract.Extracts
             var extractItems =
                 from extractItem in _syndicationContext.AddressBuildingUnitLinkExtract
                 join address in _syndicationContext.AddressLinkAddresses on extractItem.AddressId equals address.AddressId
-                where address.IsComplete && !address.IsRemoved && !extractItem.IsBuildingUnitRemoved && extractItem.IsBuildingUnitComplete && extractItem.IsBuildingComplete && !extractItem.IsAddressLinkRemoved && extractItem.BuildingUnitPersistentLocalId != null
+                where address.IsComplete && !address.IsRemoved
+                                         && !extractItem.IsBuildingUnitRemoved
+                                         && extractItem.IsBuildingUnitComplete
+                                         && extractItem.IsBuildingComplete
+                                         && !extractItem.IsAddressLinkRemoved
+                                         && extractItem.BuildingUnitPersistentLocalId != null
                 select extractItem.DbaseRecord;
 
             return ExtractBuilder.CreateDbfFile<AddressLinkDbaseRecord>(

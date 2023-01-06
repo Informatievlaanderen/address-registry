@@ -1,3 +1,10 @@
+## [3.70.2](https://github.com/informatievlaanderen/address-registry/compare/v3.70.1...v3.70.2) (2023-01-06)
+
+
+### Bug Fixes
+
+* add index to projections syndication AddressParcelLinksExtract ([652a798](https://github.com/informatievlaanderen/address-registry/commit/652a798af9c961145983efe0220b95b467bbf05b))
+
 ## [3.70.1](https://github.com/informatievlaanderen/address-registry/compare/v3.70.0...v3.70.1) (2023-01-05)
 
 

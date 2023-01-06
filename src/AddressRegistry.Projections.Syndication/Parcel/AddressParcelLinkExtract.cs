@@ -38,7 +38,7 @@ namespace AddressRegistry.Projections.Syndication.Parcel
             builder.HasIndex(p => p.ParcelId);
             builder.HasIndex(p => p.AddressPersistentLocalId).IsClustered();
             builder.HasIndex(p => new { p.IsParcelRemoved, p.IsAddressLinkRemoved })
-                .IncludeProperties(p => new { p.AddressId, p.ParcelId });
+                .IncludeProperties(p => new { p.AddressId, p.ParcelId, p.ParcelPersistentLocalId });
         }
     }
 }

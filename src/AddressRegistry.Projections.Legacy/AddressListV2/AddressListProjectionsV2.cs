@@ -8,6 +8,7 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using NodaTime;
     using StreetName;
+    using StreetName.Commands;
     using StreetName.Events;
 
     [ConnectedProjectionName("API endpoint lijst adressen")]
@@ -394,6 +395,20 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
                     item =>
                     {
                         item.Status = AddressStatus.Proposed;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+
+                UpdateHash(item, message);
+            });
+
+            When<Envelope<AddressRegularizationWasCorrected>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressListItemV2(
+                    message.Message.AddressPersistentLocalId,
+                    item =>
+                    {
+                        item.Status = AddressStatus.Current;
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);

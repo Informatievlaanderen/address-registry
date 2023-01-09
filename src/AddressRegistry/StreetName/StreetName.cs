@@ -454,6 +454,13 @@ namespace AddressRegistry.StreetName
             }
         }
 
+        public void CorrectRegularizedAddress(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            StreetNameAddresses
+                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
+                .CorrectRegularizedAddress();
+        }
+
         #region Metadata
 
         protected override void BeforeApplyChange(object @event)

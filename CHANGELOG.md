@@ -1,3 +1,10 @@
+## [3.70.3](https://github.com/informatievlaanderen/address-registry/compare/v3.70.2...v3.70.3) (2023-01-09)
+
+
+### Bug Fixes
+
+* add backoffice projections to cd ([3aa62d2](https://github.com/informatievlaanderen/address-registry/commit/3aa62d2646482e4bc3bb339df5b4694496c1bda7))
+
 ## [3.70.2](https://github.com/informatievlaanderen/address-registry/compare/v3.70.1...v3.70.2) (2023-01-06)
 
 

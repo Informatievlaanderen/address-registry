@@ -1056,7 +1056,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        services: ['address-registry-api', 'address-registry-import-api', 'address-registry-projections', 'address-registry-cache-warmer', 'address-registry-producer', 'address-registry-producer-snapshot-oslo']
+        services: ['address-registry-api', 'address-registry-import-api', 'address-registry-projections', 'address-registry-cache-warmer', 'address-registry-producer', 'address-registry-producer-snapshot-oslo', 'address-registry-projections-backoffice']
 
     steps:
     - name: Deploy services
@@ -1166,7 +1166,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        services: ['address-registry-api', 'address-registry-projections', 'address-registry-cache-warmer', 'address-registry-consumer', 'address-registry-migrator-address', 'address-registry-backoffice-api', 'address-registry-producer', 'address-registry-consumer-municipality', 'address-registry-consumer-streetname', 'address-registry-producer-snapshot-oslo']
+        services: ['address-registry-api', 'address-registry-projections', 'address-registry-cache-warmer', 'address-registry-consumer', 'address-registry-migrator-address', 'address-registry-backoffice-api', 'address-registry-producer', 'address-registry-consumer-municipality', 'address-registry-consumer-streetname', 'address-registry-producer-snapshot-oslo', 'address-registry-projections-backoffice']
 
     steps:
     - name: CD services

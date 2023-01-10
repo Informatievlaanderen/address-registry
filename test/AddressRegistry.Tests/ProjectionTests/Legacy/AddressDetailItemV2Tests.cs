@@ -827,6 +827,43 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                 });
         }
 
+        [Fact]
+        public async Task WhenAddressWasCorrectedFromRegularized()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasRegularized = _fixture.Create<AddressWasRegularized>();
+            var regularizedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasRegularized.GetHash() }
+            };
+
+            var addressWasCorrectedFromRegularized = _fixture.Create<AddressRegularizationWasCorrected>();
+            var correctedFromRegularizedMetaData = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasCorrectedFromRegularized.GetHash() }
+            };
+            
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasRegularized>(new Envelope(addressWasRegularized, regularizedMetadata)),
+                    new Envelope<AddressRegularizationWasCorrected>(new Envelope(addressWasCorrectedFromRegularized, correctedFromRegularizedMetaData)))
+                .Then(async ct =>
+                {
+                    var addressDetailItemV2 = (await ct.AddressDetailV2.FindAsync(addressWasCorrectedFromRegularized.AddressPersistentLocalId));
+                    addressDetailItemV2.Should().NotBeNull();
+                    addressDetailItemV2.Status.Should().Be(AddressStatus.Current);
+                    addressDetailItemV2.OfficiallyAssigned.Should().BeFalse();
+                    addressDetailItemV2.VersionTimestamp.Should().Be(addressWasCorrectedFromRegularized.Provenance.Timestamp);
+                    addressDetailItemV2.LastEventHash.Should().Be(addressWasCorrectedFromRegularized.GetHash());
+                });
+        }
+
         protected override AddressDetailProjectionsV2 CreateProjection()
             => new AddressDetailProjectionsV2();
     }

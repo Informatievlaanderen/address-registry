@@ -39,14 +39,6 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure.Modules
                 .RegisterModule(new LegacyModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new EnvelopeModule())
                 .RegisterModule(new EditModule(_configuration, _services, _loggerFactory))
-
-                .RegisterModule(
-                    new CrabImportModule(
-                        _services,
-                        _configuration.GetConnectionString("CrabImport"),
-                        Schema.Import,
-                        _loggerFactory))
-
                 .RegisterModule(new IdempotencyModule(
                     _services,
                     _configuration.GetSection(IdempotencyConfiguration.Section).Get<IdempotencyConfiguration>().ConnectionString,
@@ -73,6 +65,11 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure.Modules
             builder
                 .RegisterType<ProblemDetailsHelper>()
                 .AsSelf();
+
+            _services.ConfigureCrabImport(
+                _configuration.GetConnectionString("CrabImport"),
+                Schema.Import,
+                _loggerFactory);
 
             builder.Populate(_services);
         }

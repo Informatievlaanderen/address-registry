@@ -842,6 +842,42 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                 });
         }
 
+        [Fact]
+        public async Task WhenAddressWasCorrectedFromDeregulated()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasDeregulated = _fixture.Create<AddressWasDeregulated>();
+            var deregulatedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasDeregulated.GetHash() }
+            };
+
+            var addressWasCorrectedFromRegularized = _fixture.Create<AddressRegularizationWasCorrected>();
+            var correctedFromRegularizedMetaData = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasCorrectedFromRegularized.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasDeregulated>(new Envelope(addressWasDeregulated, deregulatedMetadata)),
+                    new Envelope<AddressRegularizationWasCorrected>(new Envelope(addressWasCorrectedFromRegularized, correctedFromRegularizedMetaData)))
+                .Then(async ct =>
+                {
+                    var item = (await ct.AddressWfsItems.FindAsync(addressWasCorrectedFromRegularized.AddressPersistentLocalId));
+                    item.Should().NotBeNull();
+                    item!.OfficiallyAssigned.Should().BeFalse();
+                    item.Status.Should().Be(AddressWfsProjections.MapStatus(AddressStatus.Current));
+                    item.VersionTimestamp.Should().Be(addressWasCorrectedFromRegularized.Provenance.Timestamp);
+                });
+        }
+
         protected override AddressWfsProjections CreateProjection()
             =>  new AddressWfsProjections(_wkbReader);
     }

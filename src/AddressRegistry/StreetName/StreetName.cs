@@ -6,7 +6,6 @@ namespace AddressRegistry.StreetName
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
-    using DataStructures;
     using Events;
     using Exceptions;
 
@@ -452,6 +451,13 @@ namespace AddressRegistry.StreetName
             {
                 throw new StreetNameHasInvalidStatusException();
             }
+        }
+
+        public void CorrectRegularizedAddress(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            StreetNameAddresses
+                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
+                .CorrectRegularizedAddress();
         }
 
         #region Metadata

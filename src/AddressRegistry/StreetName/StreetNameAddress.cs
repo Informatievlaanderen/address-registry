@@ -521,6 +521,25 @@ namespace AddressRegistry.StreetName
             Apply(new AddressWasRemovedBecauseHouseNumberWasRemoved(_streetNamePersistentLocalId, AddressPersistentLocalId));
         }
 
+        public void CorrectRegularizedAddress()
+        {
+            GuardNotRemovedAddress();
+
+            var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
+
+            if (!validStatuses.Contains(Status))
+            {
+                throw new AddressHasInvalidStatusException();
+            }
+
+            if (!IsOfficiallyAssigned)
+            {
+                return;
+            }
+
+            Apply(new AddressRegularizationWasCorrected(_streetNamePersistentLocalId, AddressPersistentLocalId));
+        }
+
         /// <summary>
         /// Set the parent of the instance.
         /// </summary>

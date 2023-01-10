@@ -259,6 +259,9 @@ namespace AddressRegistry.Producer.Extensions
         public static Contracts.StreetNameWasRemoved ToContract(this StreetNameAggregate.StreetNameWasRemoved message) =>
             new Contracts.StreetNameWasRemoved(message.StreetNamePersistentLocalId, message.Provenance.ToContract());
 
+        public static Contracts.AddressRegularizationWasCorrected ToContract(this StreetNameAggregate.AddressRegularizationWasCorrected message) =>
+            new Contracts.AddressRegularizationWasCorrected(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
+
         private static Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common.Provenance ToContract(this ProvenanceData provenance)
             => new Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common.Provenance(
                 provenance.Timestamp.ToString(),

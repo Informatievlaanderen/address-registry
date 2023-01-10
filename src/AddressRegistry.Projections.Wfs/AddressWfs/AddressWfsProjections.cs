@@ -332,6 +332,20 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
 
                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
             });
+
+            When<Envelope<AddressRegularizationWasCorrected>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    item =>
+                    {
+                        item.OfficiallyAssigned = false;
+                        item.Status = AdresStatusInGebruik;
+                    },
+                    ct);
+
+                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+            });
         }
 
         public static string MapStatus(AddressStatus status)

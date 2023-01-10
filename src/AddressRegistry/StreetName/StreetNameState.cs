@@ -58,6 +58,7 @@ namespace AddressRegistry.StreetName
             Register<AddressWasRemovedV2>(When);
             Register<AddressWasCorrectedFromRejectedToProposed>(When);
             Register<AddressWasRemovedBecauseHouseNumberWasRemoved>(When);
+            Register<AddressRegularizationWasCorrected>(When);
         }
 
         private void When(MigratedStreetNameWasImported @event)
@@ -138,136 +139,58 @@ namespace AddressRegistry.StreetName
             StreetNameAddresses.Add(address);
         }
 
-        private void When(AddressWasApproved @event)
-        {
-            var addressToApprove = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
-            addressToApprove.Route(@event);
-        }
+        private void When(AddressWasApproved @event) => RouteToAddress(@event);
 
-        private void When(AddressWasCorrectedFromApprovedToProposed @event)
-        {
-            var addressToCorrect = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
-            addressToCorrect.Route(@event);
-        }
+        private void When(AddressWasCorrectedFromApprovedToProposed @event) => RouteToAddress(@event);
 
-        private void When(AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected @event)
-        {
-            var addressToCorrect = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
-            addressToCorrect.Route(@event);
-        }
+        private void When(AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected @event) => RouteToAddress(@event);
 
-        private void When(AddressWasRejected @event)
-        {
-            var addressToReject = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
-            addressToReject.Route(@event);
-        }
+        private void When(AddressWasRejected @event) => RouteToAddress(@event);
 
-        private void When(AddressWasRejectedBecauseHouseNumberWasRejected @event)
-        {
-            var addressToReject = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
-            addressToReject.Route(@event);
-        }
+        private void When(AddressWasRejectedBecauseHouseNumberWasRejected @event) => RouteToAddress(@event);
 
-        private void When(AddressWasRejectedBecauseHouseNumberWasRetired @event)
-        {
-            var addressToReject = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
-            addressToReject.Route(@event);
-        }
+        private void When(AddressWasRejectedBecauseHouseNumberWasRetired @event) => RouteToAddress(@event);
 
-        private void When(AddressWasRejectedBecauseStreetNameWasRetired @event)
-        {
-            var addressToReject = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
-            addressToReject.Route(@event);
-        }
+        private void When(AddressWasRejectedBecauseStreetNameWasRetired @event) => RouteToAddress(@event);
 
-        private void When(AddressWasDeregulated @event)
-        {
-            var addressToDeRegulate = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
-            addressToDeRegulate.Route(@event);
-        }
+        private void When(AddressWasDeregulated @event) => RouteToAddress(@event);
 
-        private void When(AddressWasRegularized @event)
-        {
-            var addressToRegularize = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
-            addressToRegularize.Route(@event);
-        }
+        private void When(AddressWasRegularized @event) => RouteToAddress(@event);
 
-        private void When(AddressWasRetiredV2 @event)
-        {
-            var addressToRetire = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
-            addressToRetire.Route(@event);
-        }
+        private void When(AddressWasRetiredV2 @event) => RouteToAddress(@event);
 
-        private void When(AddressWasRetiredBecauseHouseNumberWasRetired @event)
-        {
-            var addressToRetire = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
-            addressToRetire.Route(@event);
-        }
+        private void When(AddressWasRetiredBecauseHouseNumberWasRetired @event) => RouteToAddress(@event);
 
-        private void When(AddressWasRetiredBecauseStreetNameWasRetired @event)
-        {
-            var addressToRetire = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
-            addressToRetire.Route(@event);
-        }
+        private void When(AddressWasRetiredBecauseStreetNameWasRetired @event) => RouteToAddress(@event);
 
-        private void When(AddressWasCorrectedFromRetiredToCurrent @event)
-        {
-            var addressToCorrect = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
-            addressToCorrect.Route(@event);
-        }
+        private void When(AddressWasCorrectedFromRetiredToCurrent @event) => RouteToAddress(@event);
 
-        private void When(AddressPositionWasChanged @event)
-        {
-            var addressToChange = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
-            addressToChange.Route(@event);
-        }
+        private void When(AddressPositionWasChanged @event) => RouteToAddress(@event);
 
-        private void When(AddressPostalCodeWasChangedV2 @event)
-        {
-            var addressToChange = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
-            addressToChange.Route(@event);
-        }
+        private void When(AddressPostalCodeWasChangedV2 @event) => RouteToAddress(@event);
 
-        private void When(AddressPositionWasCorrectedV2 @event)
-        {
-            var addressToCorrect = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
-            addressToCorrect.Route(@event);
-        }
+        private void When(AddressPositionWasCorrectedV2 @event) => RouteToAddress(@event);
 
-        private void When(AddressPostalCodeWasCorrectedV2 @event)
-        {
-            var addressToCorrect = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
-            addressToCorrect.Route(@event);
-        }
+        private void When(AddressPostalCodeWasCorrectedV2 @event) => RouteToAddress(@event);
 
-        private void When(AddressHouseNumberWasCorrectedV2 @event)
-        {
-            var addressToCorrect = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
-            addressToCorrect.Route(@event);
-        }
+        private void When(AddressHouseNumberWasCorrectedV2 @event) => RouteToAddress(@event);
 
-        private void When(AddressBoxNumberWasCorrectedV2 @event)
-        {
-            var addressToCorrect = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
-            addressToCorrect.Route(@event);
-        }
+        private void When(AddressBoxNumberWasCorrectedV2 @event) => RouteToAddress(@event);
 
-        private void When(AddressWasRemovedV2 @event)
-        {
-            var addressToRemove = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
-            addressToRemove.Route(@event);
-        }
+        private void When(AddressWasRemovedV2 @event) => RouteToAddress(@event);
 
-        private void When(AddressWasCorrectedFromRejectedToProposed @event)
-        {
-            var addressToCorrect = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
-            addressToCorrect.Route(@event);
-        }
+        private void When(AddressWasCorrectedFromRejectedToProposed @event) => RouteToAddress(@event);
 
-        private void When(AddressWasRemovedBecauseHouseNumberWasRemoved @event)
+        private void When(AddressWasRemovedBecauseHouseNumberWasRemoved @event) => RouteToAddress(@event);
+
+        private void When(AddressRegularizationWasCorrected @event) => RouteToAddress(@event);
+
+        private void RouteToAddress<TEvent>(TEvent @event)
+            where TEvent : IHasAddressPersistentLocalId, IStreetNameEvent
         {
-            var addressToRemove = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
-            addressToRemove.Route(@event);
+            StreetNameAddresses
+                .GetByPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId))
+                .Route(@event);
         }
 
         private void When(StreetNameSnapshot @event)

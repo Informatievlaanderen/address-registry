@@ -14,9 +14,9 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
     using StreetName.Exceptions;
     using TicketingService.Abstractions;
 
-    public sealed class CorrectRegularizedAddressLambdaHandler : SqsLambdaHandler<CorrectRegularizedAddressLambdaRequest>
+    public sealed class CorrectAddressRegularizationLambdaHandler : SqsLambdaHandler<CorrectAddressRegularizationLambdaRequest>
     {
-        public CorrectRegularizedAddressLambdaHandler(
+        public CorrectAddressRegularizationLambdaHandler(
             IConfiguration configuration,
             ICustomRetryPolicy retryPolicy,
             ITicketing ticketing,
@@ -30,7 +30,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 idempotentCommandHandler)
         { }
 
-        protected override async Task<ETagResponse> InnerHandle(CorrectRegularizedAddressLambdaRequest request, CancellationToken cancellationToken)
+        protected override async Task<ETagResponse> InnerHandle(CorrectAddressRegularizationLambdaRequest request, CancellationToken cancellationToken)
         {
             var addressPersistentLocalId = new AddressPersistentLocalId(request.AddressPersistentLocalId);
             var cmd = request.ToCommand();
@@ -52,13 +52,11 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             return new ETagResponse(string.Format(DetailUrlFormat, addressPersistentLocalId), lastHash);
         }
 
-        protected override TicketError? InnerMapDomainException(DomainException exception, CorrectRegularizedAddressLambdaRequest request)
+        protected override TicketError? InnerMapDomainException(DomainException exception, CorrectAddressRegularizationLambdaRequest request)
         {
             return exception switch
             {
-                AddressHasInvalidStatusException => new TicketError(
-                    ValidationErrors.RegularizeAddress.AddressInvalidStatus.Message,
-                    ValidationErrors.RegularizeAddress.AddressInvalidStatus.Code),
+                AddressHasInvalidStatusException => ValidationErrors.RegularizeAddress.AddressInvalidStatus.ToTicketError(),
                 _ => null
             };
         }

@@ -1,3 +1,5 @@
+using TicketingService.Abstractions;
+
 namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
 {
     public static partial class ValidationErrors
@@ -96,6 +98,8 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
                 {
                     public const string Code = "AdresPositieGeometriemethodeValidatie";
                     public const string Message = "Ongeldige positieGeometrieMethode.";
+
+                    public static TicketError ToTicketError() => new(Message, Code);
                 }
             }
 
@@ -112,12 +116,16 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
                 {
                     public const string Code = "AdresGehistoreerdOfAfgekeurd";
                     public const string Message = "Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik'.";
+
+                    public static TicketError ToTicketError() => new(Message, Code);
                 }
 
                 public static class PostalCodeNotInMunicipality
                 {
                     public const string Code = "AdresPostinfoNietInGemeente";
                     public const string Message = "De ingevoerde postcode wordt niet gebruikt binnen deze gemeente.";
+
+                    public static TicketError ToTicketError() => new(Message, Code);
                 }
             }
         }

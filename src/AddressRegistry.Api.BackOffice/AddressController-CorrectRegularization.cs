@@ -26,8 +26,8 @@ namespace AddressRegistry.Api.BackOffice
         /// </summary>
         /// <param name="backOfficeContext"></param>
         /// <param name="ifMatchHeaderValidator"></param>
-        /// <param name="request"></param>
         /// <param name="ifMatchHeaderValue"></param>
+        /// <param name="persistentLocalId"></param>
         /// <param name="cancellationToken"></param>
         /// <response code="202">Aanvraag tot corrigeren regularisatie wordt reeds verwerkt.</response>
         [HttpPost("{persistentLocalId}/acties/corrigeren/regularisatie")]
@@ -40,12 +40,12 @@ namespace AddressRegistry.Api.BackOffice
         public async Task<IActionResult> CorrectRegularization(
             [FromServices] BackOfficeContext backOfficeContext,
             [FromServices] IIfMatchHeaderValidator ifMatchHeaderValidator,
-            [FromRoute] CorrectRegularizedAddressRequest request,
             [FromHeader(Name = "If-Match")] string? ifMatchHeaderValue,
+            [FromRoute] int persistentLocalId,
             CancellationToken cancellationToken = default)
         {
             var addressPersistentLocalId =
-                new AddressPersistentLocalId(new PersistentLocalId(request.PersistentLocalId));
+                new AddressPersistentLocalId(new PersistentLocalId(persistentLocalId));
 
             var relation = backOfficeContext.AddressPersistentIdStreetNamePersistentIds
                 .FirstOrDefault(x => x.AddressPersistentLocalId == addressPersistentLocalId);
@@ -65,9 +65,9 @@ namespace AddressRegistry.Api.BackOffice
                     return new PreconditionFailedResult();
                 }
 
-                var sqsRequest = new CorrectRegularizedAddressSqsRequest
+                var sqsRequest = new CorrectAddressRegularizationSqsRequest
                 {
-                    Request = request,
+                    Request = new CorrectAddressRegularizationBackOfficeRequest {PersistentLocalId = addressPersistentLocalId},
                     IfMatchHeaderValue = ifMatchHeaderValue,
                     Metadata = GetMetadata(),
                     ProvenanceData = new ProvenanceData(CreateFakeProvenance())

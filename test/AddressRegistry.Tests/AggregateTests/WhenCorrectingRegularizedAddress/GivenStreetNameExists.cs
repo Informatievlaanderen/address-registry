@@ -34,7 +34,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRegularizedAddress
         {
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
 
-            var command = new CorrectRegularizedAddress(
+            var command = new CorrectAddressRegularization(
                 Fixture.Create<StreetNamePersistentLocalId>(),
                 addressPersistentLocalId,
                 Fixture.Create<Provenance>());
@@ -72,7 +72,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRegularizedAddress
         public void WithoutProposedAddress_ThenThrowsAddressNotFoundException()
         {
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-            var command = new CorrectRegularizedAddress(
+            var command = new CorrectAddressRegularization(
                 Fixture.Create<StreetNamePersistentLocalId>(),
                 addressPersistentLocalId,
                 Fixture.Create<Provenance>());
@@ -112,7 +112,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRegularizedAddress
                 parentPersistentLocalId: null);
             ((ISetProvenance)migrateRemovedAddressToStreetName).SetProvenance(Fixture.Create<Provenance>());
 
-            var command = new CorrectRegularizedAddress(
+            var command = new CorrectAddressRegularization(
                 streetNamePersistentLocalId,
                 addressPersistentLocalId,
                 Fixture.Create<Provenance>());
@@ -155,7 +155,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRegularizedAddress
                 parentPersistentLocalId: null);
             ((ISetProvenance)addressWasMigratedToStreetName).SetProvenance(Fixture.Create<Provenance>());
 
-            var command = new CorrectRegularizedAddress(
+            var command = new CorrectAddressRegularization(
                 streetNamePersistentLocalId,
                 addressPersistentLocalId,
                 Fixture.Create<Provenance>());
@@ -174,7 +174,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRegularizedAddress
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
 
-            var command = new CorrectRegularizedAddress(
+            var command = new CorrectAddressRegularization(
                 streetNamePersistentLocalId,
                 addressPersistentLocalId,
                 Fixture.Create<Provenance>());

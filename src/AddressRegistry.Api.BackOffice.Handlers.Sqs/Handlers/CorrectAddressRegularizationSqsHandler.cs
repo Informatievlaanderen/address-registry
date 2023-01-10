@@ -7,13 +7,13 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Handlers
     using Be.Vlaanderen.Basisregisters.Sqs.Handlers;
     using TicketingService.Abstractions;
 
-    public sealed class CorrectRegularizedAddressSqsHandler : SqsHandler<CorrectRegularizedAddressSqsRequest>
+    public sealed class CorrectAddressRegularizationSqsHandler : SqsHandler<CorrectAddressRegularizationSqsRequest>
     {
-        public const string Action = "CorrectRegularizedAddress";
+        public const string Action = "CorrectAddressRegularization";
 
         private readonly BackOfficeContext _backOfficeContext;
 
-        public CorrectRegularizedAddressSqsHandler(
+        public CorrectAddressRegularizationSqsHandler(
             ISqsQueue sqsQueue,
             ITicketing ticketing,
             ITicketingUrl ticketingUrl,
@@ -23,7 +23,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Handlers
             _backOfficeContext = backOfficeContext;
         }
 
-        protected override string? WithAggregateId(CorrectRegularizedAddressSqsRequest request)
+        protected override string? WithAggregateId(CorrectAddressRegularizationSqsRequest request)
         {
             var relation = _backOfficeContext
                 .AddressPersistentIdStreetNamePersistentIds
@@ -32,14 +32,14 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Handlers
             return relation?.StreetNamePersistentLocalId.ToString();
         }
 
-        protected override IDictionary<string, string> WithTicketMetadata(string aggregateId, CorrectRegularizedAddressSqsRequest sqsRequest)
+        protected override IDictionary<string, string> WithTicketMetadata(string aggregateId, CorrectAddressRegularizationSqsRequest regularizationSqsRequest)
         {
             return new Dictionary<string, string>
             {
                 { RegistryKey, nameof(AddressRegistry) },
                 { ActionKey, Action },
                 { AggregateIdKey, aggregateId },
-                { ObjectIdKey, sqsRequest.Request.PersistentLocalId.ToString() }
+                { ObjectIdKey, regularizationSqsRequest.Request.PersistentLocalId.ToString() }
             };
         }
     }

@@ -10,6 +10,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingRegularizedAddress
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
+    using Castle.Core.Logging;
     using FluentAssertions;
     using Infrastructure;
     using Microsoft.AspNetCore.Http;
@@ -30,7 +31,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingRegularizedAddress
         }
 
         [Fact]
-        public void ThenApiException()
+        public void WhenAggregateIdIsNotFoundException_ThenApiException()
         {
             //Arrange
             var streetNamePersistentId = new StreetNamePersistentLocalId(123);
@@ -40,17 +41,17 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingRegularizedAddress
                 new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));
             _backOfficeContext.SaveChanges();
 
-            MockMediator.Setup(x => x.Send(It.IsAny<CorrectRegularizedAddressSqsRequest>(), CancellationToken.None))
+            MockMediator.Setup(x => x.Send(It.IsAny<CorrectAddressRegularizationSqsRequest>(), CancellationToken.None))
                 .Throws(new AggregateIdIsNotFoundException());
 
             //Act
             Func<Task> act = async () => await _controller.CorrectRegularization(
                 _backOfficeContext,
                 MockIfMatchValidator(true),
-                new CorrectRegularizedAddressRequest { PersistentLocalId = addressPersistentLocalId },
-                null);
+                null,
+                new AddressPersistentLocalId(456),
+                CancellationToken.None);
 
-            //Assert
             // Assert
             act
                 .Should()
@@ -62,7 +63,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingRegularizedAddress
         }
 
         [Fact]
-        public void ThenApiException2()
+        public void WhenAggregateNotFoundException_ThenApiException()
         {
             //Arrange
             var streetNamePersistentId = new StreetNamePersistentLocalId(123);
@@ -72,15 +73,16 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingRegularizedAddress
                 new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));
             _backOfficeContext.SaveChanges();
 
-            MockMediator.Setup(x => x.Send(It.IsAny<CorrectRegularizedAddressSqsRequest>(), CancellationToken.None))
+            MockMediator.Setup(x => x.Send(It.IsAny<CorrectAddressRegularizationSqsRequest>(), CancellationToken.None))
                 .Throws(new AggregateNotFoundException(streetNamePersistentId, typeof(string)));
 
             //Act
             Func<Task> act = async () => await _controller.CorrectRegularization(
                 _backOfficeContext,
                 MockIfMatchValidator(true),
-                new CorrectRegularizedAddressRequest { PersistentLocalId = addressPersistentLocalId },
-                null);
+                null,
+                new AddressPersistentLocalId(456),
+                CancellationToken.None);
 
             //Assert
             // Assert

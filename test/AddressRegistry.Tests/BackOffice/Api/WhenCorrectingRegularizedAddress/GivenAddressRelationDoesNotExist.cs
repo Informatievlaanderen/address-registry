@@ -1,5 +1,6 @@
 namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingRegularizedAddress
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
@@ -28,8 +29,9 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingRegularizedAddress
             var result = await _controller.CorrectRegularization(
                 _backOfficeContext,
                 MockIfMatchValidator(true),
-                new CorrectRegularizedAddressRequest(){PersistentLocalId = new AddressPersistentLocalId(123) },
-                null);
+                null,
+                new AddressPersistentLocalId(123),
+                CancellationToken.None);
 
             //Assert
             result.Should().BeOfType<NotFoundResult>();

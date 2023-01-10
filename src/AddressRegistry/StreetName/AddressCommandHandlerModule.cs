@@ -255,9 +255,9 @@ namespace AddressRegistry.StreetName
                     streetName.CorrectAddressRejection(message.Command.AddressPersistentLocalId);
                 });
 
-            For<CorrectRegularizedAddress>()
+            For<CorrectAddressRegularization>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
-                .AddEventHash<CorrectRegularizedAddress, StreetName>(getUnitOfWork)
+                .AddEventHash<CorrectAddressRegularization, StreetName>(getUnitOfWork)
                 .AddProvenance(getUnitOfWork, provenanceFactory)
                 .Handle(async (message, ct) =>
                 {

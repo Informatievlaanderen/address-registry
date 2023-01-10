@@ -1,9 +1,8 @@
-namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingRegularizedAddress
+namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressDeregularization
 {
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice;
-    using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using FluentAssertions;
     using Infrastructure;
     using Microsoft.AspNetCore.Mvc;
@@ -26,7 +25,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingRegularizedAddress
         public async Task ThenReturnsNotFoundResult()
         {
             //Act
-            var result = await _controller.CorrectRegularization(
+            var result = await _controller.CorrectDeregularization(
                 _backOfficeContext,
                 MockIfMatchValidator(true),
                 null,

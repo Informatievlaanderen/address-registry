@@ -809,5 +809,76 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRemoved.Provenance.Timestamp);
                 });
         }
+
+        [Fact]
+        public async Task WhenAddressRegularizationWasCorrected()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasRegularized = _fixture.Create<AddressWasRegularized>();
+            var addressWasRegularizedMetData = new Dictionary<string, object>()
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasRegularized.GetHash() }
+            };
+
+            var addressRegularizationWasCorrected = _fixture.Create<AddressRegularizationWasCorrected>();
+            var addressRegularizationWasCorrectedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressRegularizationWasCorrected.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasRegularized>(new Envelope(addressWasRegularized, addressWasRegularizedMetData)),
+                    new Envelope<AddressRegularizationWasCorrected>(new Envelope(addressRegularizationWasCorrected, addressRegularizationWasCorrectedMetadata)))
+                .Then(async ct =>
+                {
+                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressRegularizationWasCorrected.AddressPersistentLocalId);
+                    addressWmsItem.Should().NotBeNull();
+                    addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Current));
+                    addressWmsItem.OfficiallyAssigned.Should().BeFalse();
+                    addressWmsItem.VersionTimestamp.Should().Be(addressRegularizationWasCorrected.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressDeregularizationWasCorrected()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasDeregulated = _fixture.Create<AddressWasDeregulated>();
+            var addressWasDeregulatedMetData = new Dictionary<string, object>()
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasDeregulated.GetHash() }
+            };
+
+            var addressDeregularizationWasCorrected = _fixture.Create<AddressDeregularizationWasCorrected>();
+            var addressDeregularizationWasCorrectedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressDeregularizationWasCorrected.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasDeregulated>(new Envelope(addressWasDeregulated, addressWasDeregulatedMetData)),
+                    new Envelope<AddressDeregularizationWasCorrected>(new Envelope(addressDeregularizationWasCorrected, addressDeregularizationWasCorrectedMetadata)))
+                .Then(async ct =>
+                {
+                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressDeregularizationWasCorrected.AddressPersistentLocalId);
+                    addressWmsItem.Should().NotBeNull();
+                    addressWmsItem.OfficiallyAssigned.Should().BeTrue();
+                    addressWmsItem.VersionTimestamp.Should().Be(addressDeregularizationWasCorrected.Provenance.Timestamp);
+                });
+        }
     }
 }

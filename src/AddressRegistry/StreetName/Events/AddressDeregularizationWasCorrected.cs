@@ -10,10 +10,10 @@ namespace AddressRegistry.StreetName.Events
 
     [EventTags(EventTag.For.Edit, EventTag.For.Sync)]
     [EventName(EventName)]
-    [EventDescription("Het adres werd gecorrigeerd naar 'niet officieel toegekend'. Wanneer de status van het adres voorgesteld is, zal de status wijzigen naar 'inGebruik'.")]
-    public class AddressRegularizationWasCorrected : IStreetNameEvent, IHasAddressPersistentLocalId
+    [EventDescription("Het adres werd gecorrigeerd naar ‘officieel toegekend’.")]
+    public class AddressDeregularizationWasCorrected : IStreetNameEvent, IHasAddressPersistentLocalId
     {
-        public const string EventName = "AddressRegularizationWasCorrected"; // BE CAREFUL CHANGING THIS!!
+        public const string EventName = "AddressDeregularizationWasCorrected"; // BE CAREFUL CHANGING THIS!!
 
         [EventPropertyDescription("Objectidentificator van de straatnaam aan dewelke het adres is toegewezen.")]
         public int StreetNamePersistentLocalId { get; }
@@ -24,7 +24,7 @@ namespace AddressRegistry.StreetName.Events
         [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
-        public AddressRegularizationWasCorrected(
+        public AddressDeregularizationWasCorrected(
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             AddressPersistentLocalId addressPersistentLocalId)
         {
@@ -33,7 +33,7 @@ namespace AddressRegistry.StreetName.Events
         }
 
         [JsonConstructor]
-        private AddressRegularizationWasCorrected(
+        private AddressDeregularizationWasCorrected(
             int streetNamePersistentLocalId,
             int addressPersistentLocalId,
             ProvenanceData provenance)

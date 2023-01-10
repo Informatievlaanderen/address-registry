@@ -880,6 +880,42 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                     addressListItemV2.LastEventHash.Should().Be(addressWasCorrectedFromRegularized.GetHash());
                 });
         }
+
+        [Fact]
+        public async Task WhenAddressWasCorrectedFromDeregularized()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasDeregulated = _fixture.Create<AddressWasDeregulated>();
+            var addressWasDeregulatedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasDeregulated.GetHash() }
+            };
+
+            var addressWasCorrectedFromRegularized = _fixture.Create<AddressRegularizationWasCorrected>();
+            var correctedFromRegularizedMetaData = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasCorrectedFromRegularized.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, metadata)),
+                    new Envelope<AddressWasDeregulated>(new Envelope(addressWasDeregulated, addressWasDeregulatedMetadata)),
+                    new Envelope<AddressRegularizationWasCorrected>(new Envelope(addressWasCorrectedFromRegularized, correctedFromRegularizedMetaData)))
+                .Then(async ct =>
+                {
+                    var addressListItemV2 = (await ct.AddressListV2.FindAsync(addressWasCorrectedFromRegularized.AddressPersistentLocalId));
+                    addressListItemV2.Should().NotBeNull();
+                    addressListItemV2.VersionTimestamp.Should().Be(addressWasCorrectedFromRegularized.Provenance.Timestamp);
+                    addressListItemV2.LastEventHash.Should().Be(addressWasCorrectedFromRegularized.GetHash());
+                });
+        }
+
         protected override AddressListProjectionsV2 CreateProjection()
             => new AddressListProjectionsV2();
     }

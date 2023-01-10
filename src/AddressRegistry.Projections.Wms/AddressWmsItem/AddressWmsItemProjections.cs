@@ -1,6 +1,7 @@
 namespace AddressRegistry.Projections.Wms.AddressWmsItem
 {
     using System;
+    using System.Data;
     using AddressRegistry.StreetName;
     using AddressRegistry.StreetName.Events;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
@@ -415,6 +416,35 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                     },
                     ct,
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    allowUpdateRemovedAddress: true);
+            });
+
+            When<Envelope<AddressRegularizationWasCorrected>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.OfficiallyAssigned = false;
+                        address.Status = MapStatus(AddressStatus.Current);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    ct,
+                    updateHouseNumberLabelsBeforeAddressUpdate: false, // TODO: review
+                    allowUpdateRemovedAddress: true);
+            });
+
+            When<Envelope<AddressDeregularizationWasCorrected>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.OfficiallyAssigned = true;
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    ct,
+                    updateHouseNumberLabelsBeforeAddressUpdate: false, // TODO: review
                     allowUpdateRemovedAddress: true);
             });
         }

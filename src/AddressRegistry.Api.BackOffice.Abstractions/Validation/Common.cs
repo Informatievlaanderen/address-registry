@@ -10,18 +10,24 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
             {
                 public const string Code = "AdresBestaandeHuisnummerBusnummerCombinatie";
                 public const string Message = "Deze combinatie huisnummer-busnummer bestaat reeds voor de opgegeven straatnaam.";
+
+                public static TicketError ToTicketError() => new(Message, Code);
             }
 
             public static class AddressRemoved
             {
                 public const string Code = "VerwijderdAdres";
                 public const string Message = "Verwijderd adres.";
+
+                public static TicketError ToTicketError() => new(Message, Code);
             }
 
             public static class AddressNotFound
             {
                 public const string Code = "AdresIsOnbestaand";
                 public const string Message = "Onbestaand adres.";
+
+                public static TicketError ToTicketError() => new(Message, Code);
             }
 
             public static class StreetNameInvalid
@@ -35,6 +41,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
                 public const string Code = "AdresStraatnaamVoorgesteldOfInGebruik";
                 public const string Message = "Deze actie is enkel toegestaan binnen straatnamen met status 'voorgesteld' of 'inGebruik'.";
 
+                public static TicketError ToTicketError() => new(Message, Code);
             }
 
             public static class StreetNameIsNotActive
@@ -42,18 +49,23 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
                 public const string Code = "AdresStraatnaamGehistoreerdOfAfgekeurd";
                 public const string Message = "De straatnaam is gehistoreerd of afgekeurd.";
 
+                public static TicketError ToTicketError() => new(Message, Code);
             }
 
             public static class HouseNumberInvalidFormat
             {
                 public const string Code = "AdresOngeldigHuisnummerformaat";
                 public const string Message = "Ongeldig huisnummerformaat.";
+
+                public static TicketError ToTicketError() => new(Message, Code);
             }
 
             public static class BoxNumberInvalidFormat
             {
                 public const string Code = "AdresOngeldigBusnummerformaat";
                 public const string Message = "Ongeldig busnummerformaat.";
+
+                public static TicketError ToTicketError() => new(Message, Code);
             }
 
             public static class Position
@@ -62,18 +74,24 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
                 {
                     public const string Code = "AdresPositieVerplicht";
                     public const string Message = "De positie is verplicht.";
+
+                    public static TicketError ToTicketError() => new(Message, Code);
                 }
 
                 public static class InvalidFormat
                 {
                     public const string Code = "AdresPositieformaatValidatie";
                     public const string Message = "De positie is geen geldige gml-puntgeometrie.";
+
+                    public static TicketError ToTicketError() => new(Message, Code);
                 }
 
                 public static class CannotBeChanged
                 {
                     public const string Code = "AdresGehistoreerdOfAfgekeurd";
                     public const string Message = "Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik'.";
+
+                    public static TicketError ToTicketError() => new(Message, Code);
                 }
             }
 
@@ -83,12 +101,16 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
                 {
                     public const string Code = "AdresPositieSpecificatieVerplicht";
                     public const string Message = "PositieSpecificatie is verplicht.";
+
+                    public static TicketError ToTicketError() => new(Message, Code);
                 }
 
                 public static class Invalid
                 {
                     public const string Code = "AdresPositieSpecificatieValidatie";
                     public const string Message = "Ongeldige positieSpecificatie.";
+
+                    public static TicketError ToTicketError() => new(Message, Code);
                 }
             }
 

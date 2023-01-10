@@ -1,20 +1,18 @@
-namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingRegularizedAddress
+namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRegularization
 {
     using System;
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Abstractions;
-    using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
-    using AddressRegistry.StreetName;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
-    using Castle.Core.Logging;
     using FluentAssertions;
     using Infrastructure;
     using Microsoft.AspNetCore.Http;
     using Moq;
+    using StreetName;
     using Xunit;
     using Xunit.Abstractions;
     using AddressController = AddressRegistry.Api.BackOffice.AddressController;

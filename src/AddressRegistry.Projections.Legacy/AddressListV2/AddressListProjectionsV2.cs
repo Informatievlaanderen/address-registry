@@ -415,6 +415,19 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
 
                 UpdateHash(item, message);
             });
+
+            When<Envelope<AddressDeregularizationWasCorrected>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressListItemV2(
+                    message.Message.AddressPersistentLocalId,
+                    item =>
+                    {
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+
+                UpdateHash(item, message);
+            });
         }
 
         private static void UpdateVersionTimestamp(AddressListItemV2 addressListItemV2, Instant timestamp)

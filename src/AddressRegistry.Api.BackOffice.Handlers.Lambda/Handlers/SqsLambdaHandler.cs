@@ -88,12 +88,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
 
             return exception switch
             {
-                AddressIsNotFoundException => new TicketError(
-                    ValidationErrors.Common.AddressNotFound.Message,
-                    ValidationErrors.Common.AddressNotFound.Code),
-                AddressIsRemovedException => new TicketError(
-                    ValidationErrors.Common.AddressRemoved.Message,
-                    ValidationErrors.Common.AddressRemoved.Code),
+                AddressIsNotFoundException => ValidationErrors.Common.AddressNotFound.ToTicketError(),
+                AddressIsRemovedException => ValidationErrors.Common.AddressRemoved.ToTicketError(),
                 _ => null
             };
         }

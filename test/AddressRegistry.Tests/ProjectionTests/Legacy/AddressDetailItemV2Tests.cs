@@ -864,6 +864,42 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                 });
         }
 
+        [Fact]
+        public async Task WhenAddressWasCorrectedFromDeregularized()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasDeregulated = _fixture.Create<AddressWasDeregulated>();
+            var regularizedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasDeregulated.GetHash() }
+            };
+
+            var addressDeregularizationWasCorrected = _fixture.Create<AddressDeregularizationWasCorrected>();
+            var correctedFromRegularizedMetaData = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressDeregularizationWasCorrected.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasDeregulated>(new Envelope(addressWasDeregulated, regularizedMetadata)),
+                    new Envelope<AddressDeregularizationWasCorrected>(new Envelope(addressDeregularizationWasCorrected, correctedFromRegularizedMetaData)))
+                .Then(async ct =>
+                {
+                    var addressDetailItemV2 = (await ct.AddressDetailV2.FindAsync(addressDeregularizationWasCorrected.AddressPersistentLocalId));
+                    addressDetailItemV2.Should().NotBeNull();
+                    addressDetailItemV2.OfficiallyAssigned.Should().BeTrue();
+                    addressDetailItemV2.VersionTimestamp.Should().Be(addressDeregularizationWasCorrected.Provenance.Timestamp);
+                    addressDetailItemV2.LastEventHash.Should().Be(addressDeregularizationWasCorrected.GetHash());
+                });
+        }
+
         protected override AddressDetailProjectionsV2 CreateProjection()
             => new AddressDetailProjectionsV2();
     }

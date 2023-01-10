@@ -59,6 +59,7 @@ namespace AddressRegistry.StreetName
             Register<AddressWasCorrectedFromRejectedToProposed>(When);
             Register<AddressWasRemovedBecauseHouseNumberWasRemoved>(When);
             Register<AddressRegularizationWasCorrected>(When);
+            Register<AddressDeregularizationWasCorrected>(When);
         }
 
         private void When(MigratedStreetNameWasImported @event)
@@ -184,6 +185,8 @@ namespace AddressRegistry.StreetName
         private void When(AddressWasRemovedBecauseHouseNumberWasRemoved @event) => RouteToAddress(@event);
 
         private void When(AddressRegularizationWasCorrected @event) => RouteToAddress(@event);
+
+        private void When(AddressDeregularizationWasCorrected @event) => RouteToAddress(@event);
 
         private void RouteToAddress<TEvent>(TEvent @event)
             where TEvent : IHasAddressPersistentLocalId, IStreetNameEvent

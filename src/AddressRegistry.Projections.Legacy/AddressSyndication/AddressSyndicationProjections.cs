@@ -771,6 +771,31 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     x => x.Status = AddressStatus.Proposed,
                     ct);
             });
+
+            When<Envelope<AddressRegularizationWasCorrected>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressPersistentLocalId,
+                    message,
+                    x =>
+                    {
+                        x.Status = AddressStatus.Current;
+                        x.IsOfficiallyAssigned = false;
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressDeregularizationWasCorrected>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressPersistentLocalId,
+                    message,
+                    x =>
+                    {
+                        x.IsOfficiallyAssigned = true;
+                    },
+                    ct);
+            });
         }
 
         private static async Task DoNothing()

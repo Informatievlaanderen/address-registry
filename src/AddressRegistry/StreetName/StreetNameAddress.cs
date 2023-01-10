@@ -540,6 +540,25 @@ namespace AddressRegistry.StreetName
             Apply(new AddressRegularizationWasCorrected(_streetNamePersistentLocalId, AddressPersistentLocalId));
         }
 
+        public void CorrectDeregularizedAddress()
+        {
+            GuardNotRemovedAddress();
+
+            var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
+
+            if (!validStatuses.Contains(Status))
+            {
+                throw new AddressHasInvalidStatusException();
+            }
+
+            if (IsOfficiallyAssigned)
+            {
+                return;
+            }
+
+            Apply(new AddressDeregularizationWasCorrected(_streetNamePersistentLocalId, AddressPersistentLocalId));
+        }
+
         /// <summary>
         /// Set the parent of the instance.
         /// </summary>

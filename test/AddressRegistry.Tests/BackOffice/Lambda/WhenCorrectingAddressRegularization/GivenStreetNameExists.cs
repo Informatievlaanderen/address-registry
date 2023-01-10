@@ -1,4 +1,4 @@
-namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingRegularizedAddress
+namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRegularization
 {
     using System;
     using System.Collections.Generic;
@@ -23,6 +23,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingRegularizedAddre
     using Infrastructure;
     using Microsoft.Extensions.Configuration;
     using Moq;
+    using Org.BouncyCastle.Crypto.Parameters;
     using SqlStreamStore;
     using SqlStreamStore.Streams;
     using StreetName;
@@ -45,6 +46,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingRegularizedAddre
             _streetNames = Container.Resolve<IStreetNames>();
         }
 
+        // TODO: review
         [Fact]
         public async Task GivenRequest_ThenPersistentLocalIdETagResponse()
         {
@@ -66,12 +68,6 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingRegularizedAddre
                 Fixture.Create<MunicipalityId>(),
                 houseNumber,
                 null);
-
-            var regularizeAddress = new RegularizeAddress(
-                streetNamePersistentLocalId,
-                addressPersistentLocalId,
-                Fixture.Create<Provenance>());
-            DispatchArrangeCommand(regularizeAddress);
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
             var sut = new CorrectAddressRegularizationLambdaHandler(

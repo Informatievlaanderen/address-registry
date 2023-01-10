@@ -264,7 +264,19 @@ namespace AddressRegistry.StreetName
                     var streetNameStreamId = new StreetNameStreamId(message.Command.StreetNamePersistentLocalId);
                     var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
 
-                    streetName.CorrectRegularizedAddress(message.Command.AddressPersistentLocalId);
+                    streetName.CorrectAddressRegularization(message.Command.AddressPersistentLocalId);
+                });
+
+            For<CorrectAddressDeregularization>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<CorrectAddressDeregularization, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streetNameStreamId = new StreetNameStreamId(message.Command.StreetNamePersistentLocalId);
+                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+
+                    streetName.CorrectAddressDeregularization(message.Command.AddressPersistentLocalId);
                 });
         }
     }

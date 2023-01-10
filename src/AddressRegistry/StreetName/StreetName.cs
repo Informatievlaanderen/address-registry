@@ -453,11 +453,18 @@ namespace AddressRegistry.StreetName
             }
         }
 
-        public void CorrectRegularizedAddress(AddressPersistentLocalId addressPersistentLocalId)
+        public void CorrectAddressRegularization(AddressPersistentLocalId addressPersistentLocalId)
         {
             StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
                 .CorrectRegularizedAddress();
+        }
+
+        public void CorrectAddressDeregularization(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            StreetNameAddresses
+                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
+                .CorrectDeregularizedAddress();
         }
 
         #region Metadata

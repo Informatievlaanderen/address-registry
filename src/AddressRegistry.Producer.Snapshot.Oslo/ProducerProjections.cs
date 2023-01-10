@@ -287,16 +287,29 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         ct);
             });
 
-            //When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressCorrectRemovedV2>>(async (_, message, ct) =>
-            //{
-            //    await FindAndProduce(async () =>
-            //            await snapshotManager.FindMatchingSnapshot(
-            //                message.Message.AddressPersistentLocalId.ToString(),
-            //                message.Message.Provenance.Timestamp,
-            //                throwStaleWhenGone: true, // retry getting snapshot if statuscode 410 is returned because the oslo projection hasn't received the event yet
-            //                ct),
-            //            ct);
-            //});
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressRegularizationWasCorrected>>(async (_, message, ct) =>
+            {
+                await FindAndProduce(async () =>
+                        await snapshotManager.FindMatchingSnapshot(
+                            message.Message.AddressPersistentLocalId.ToString(),
+                            message.Message.Provenance.Timestamp,
+                            throwStaleWhenGone: false,
+                            ct),
+                    message.Position,
+                    ct);
+            });
+
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressDeregularizationWasCorrected>>(async (_, message, ct) =>
+            {
+                await FindAndProduce(async () =>
+                        await snapshotManager.FindMatchingSnapshot(
+                            message.Message.AddressPersistentLocalId.ToString(),
+                            message.Message.Provenance.Timestamp,
+                            throwStaleWhenGone: false,
+                            ct),
+                    message.Position,
+                    ct);
+            });
 
             When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasRemovedBecauseHouseNumberWasRemoved>>(async (_, message, ct) =>
             {

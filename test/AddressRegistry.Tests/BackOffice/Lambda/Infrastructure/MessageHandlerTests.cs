@@ -8,6 +8,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.Aws.Lambda;
+    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Requests;
     using Be.Vlaanderen.Basisregisters.Sqs.Requests;
     using FluentAssertions;
     using global::AutoFixture;
@@ -617,6 +618,48 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
                     && request.IfMatchHeaderValue == messageData.IfMatchHeaderValue
                     && request.Provenance == messageData.ProvenanceData.ToProvenance()
                     && request.Metadata == messageData.Metadata
+                ), CancellationToken.None), Times.Once);
+        }
+
+
+        [Fact]
+        public async Task WhenCorrectAddressDeregularizationRequest_ThenSendLambdaRequest()
+        {
+            await AssertSqsRequestWithLambdaRequest<CorrectAddressDeregularizationSqsRequest, CorrectAddressDeregularizationLambdaRequest>(
+                (sqsRequest, lambdaRequest)
+                    => lambdaRequest.AddressPersistentLocalId == sqsRequest.Request.PersistentLocalId);
+        }
+
+        public async Task AssertSqsRequestWithLambdaRequest<TSqsRequest, TLambdaRequest>(Func<TSqsRequest, TLambdaRequest, bool> customAssertions)
+            where TSqsRequest : SqsRequest
+            where TLambdaRequest: SqsLambdaRequest
+        {
+            // Arrange
+            var mediator = new Mock<IMediator>();
+            var containerBuilder = new ContainerBuilder();
+            containerBuilder.Register(_ => mediator.Object);
+            var container = containerBuilder.Build();
+
+            var messageData = Fixture.Create<TSqsRequest>();
+            var messageMetadata = new MessageMetadata { MessageGroupId = Fixture.Create<string>() };
+
+            var sut = new MessageHandler(container);
+
+            // Act
+            await sut.HandleMessage(
+                messageData,
+                messageMetadata,
+                CancellationToken.None);
+
+            // Assert
+            mediator
+                .Verify(x => x.Send(It.Is<TLambdaRequest>(request =>
+                    request.TicketId == messageData.TicketId
+                    && request.MessageGroupId == messageMetadata.MessageGroupId
+                    && request.IfMatchHeaderValue == messageData.IfMatchHeaderValue
+                    && request.Provenance == messageData.ProvenanceData.ToProvenance()
+                    && request.Metadata == messageData.Metadata
+                    && customAssertions(messageData, request)
                 ), CancellationToken.None), Times.Once);
         }
     }

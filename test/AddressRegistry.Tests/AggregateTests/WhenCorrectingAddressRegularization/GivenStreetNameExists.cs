@@ -1,12 +1,8 @@
-namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRegularizedAddress
+namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressRegularization
 {
     using System.Collections.Generic;
     using System.Linq;
     using Api.BackOffice.Abstractions;
-    using StreetName;
-    using StreetName.Commands;
-    using StreetName.Events;
-    using StreetName.Exceptions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
@@ -14,6 +10,10 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRegularizedAddress
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentAssertions;
     using global::AutoFixture;
+    using StreetName;
+    using StreetName.Commands;
+    using StreetName.Events;
+    using StreetName.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -232,7 +232,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRegularizedAddress
             sut.Initialize(new List<object> { addressWasMigratedToStreetName });
 
             // Act
-            sut.CorrectRegularizedAddress(addressPersistentLocalId);
+            sut.CorrectAddressRegularization(addressPersistentLocalId);
 
             // Assert
             var address = sut.StreetNameAddresses.First(x => x.AddressPersistentLocalId == addressPersistentLocalId);

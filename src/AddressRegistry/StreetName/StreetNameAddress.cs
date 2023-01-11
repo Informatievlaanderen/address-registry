@@ -532,6 +532,11 @@ namespace AddressRegistry.StreetName
                 throw new AddressHasInvalidStatusException();
             }
 
+            if (Parent is not null && Parent.Status == AddressStatus.Proposed)
+            {
+                throw new ParentAddressHasInvalidStatusException();
+            }
+
             if (!IsOfficiallyAssigned)
             {
                 return;

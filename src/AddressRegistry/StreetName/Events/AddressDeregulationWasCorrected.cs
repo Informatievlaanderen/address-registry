@@ -8,6 +8,10 @@ namespace AddressRegistry.StreetName.Events
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// This is the opposite of <see cref="AddressRegularizationWasCorrected" />.
+    /// See <see cref="AddressWasDeregulated"/> for more detail.
+    /// </summary>
     [EventTags(EventTag.For.Edit, EventTag.For.Sync)]
     [EventName(EventName)]
     [EventDescription("Het adres werd gecorrigeerd naar ‘officieel toegekend’.")]

@@ -8,6 +8,17 @@ namespace AddressRegistry.StreetName.Events
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// This is the opposite of <see cref="AddressWasRegularized" />.
+    /// We realize that it is not the opposite in meaning. When deregulated was chosen, the translation engine(s) translated the dutch `Deregulariseren` to deregulate.
+    /// This is because the Dutch word is not known in dictionaries either. We wanted to change this to `Deregularized` since it's more consistent and less wrong.
+    /// We weren't able to push the change through.
+    ///
+    /// If you have lost time finding the opposite meaning or being confused, add your (optional) name and time lost :).
+    /// - xxx : 1 min
+    ///
+    /// If this comment helped you add a +1!
+    /// </summary>
     [EventTags(EventTag.For.Edit, EventTag.For.Sync)]
     [EventName(EventName)]
     [EventDescription("Het adres kreeg aanduiding 'niet officieel toegekend'. Wanneer de status van het adres voorgesteld is, zal de status wijzigen naar 'inGebruik'.")]

@@ -460,7 +460,7 @@ namespace AddressRegistry.StreetName
                 .CorrectRegularizedAddress();
         }
 
-        public void CorrectAddressDeregularization(AddressPersistentLocalId addressPersistentLocalId)
+        public void CorrectAddressDeregulation(AddressPersistentLocalId addressPersistentLocalId)
         {
             StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)

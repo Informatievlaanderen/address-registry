@@ -847,7 +847,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
         }
 
         [Fact]
-        public async Task WhenAddressDeregularizationWasCorrected()
+        public async Task WhenAddressDeregulationWasCorrected()
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
             var proposedMetadata = new Dictionary<string, object>
@@ -861,23 +861,23 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                 { AddEventHashPipe.HashMetadataKey, addressWasDeregulated.GetHash() }
             };
 
-            var addressDeregularizationWasCorrected = _fixture.Create<AddressDeregularizationWasCorrected>();
-            var addressDeregularizationWasCorrectedMetadata = new Dictionary<string, object>
+            var addressDeregulationWasCorrected = _fixture.Create<AddressDeregulationWasCorrected>();
+            var addressDeregulationWasCorrectedMetadata = new Dictionary<string, object>
             {
-                { AddEventHashPipe.HashMetadataKey, addressDeregularizationWasCorrected.GetHash() }
+                { AddEventHashPipe.HashMetadataKey, addressDeregulationWasCorrected.GetHash() }
             };
 
             await Sut
                 .Given(
                     new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
                     new Envelope<AddressWasDeregulated>(new Envelope(addressWasDeregulated, addressWasDeregulatedMetData)),
-                    new Envelope<AddressDeregularizationWasCorrected>(new Envelope(addressDeregularizationWasCorrected, addressDeregularizationWasCorrectedMetadata)))
+                    new Envelope<AddressDeregulationWasCorrected>(new Envelope(addressDeregulationWasCorrected, addressDeregulationWasCorrectedMetadata)))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressDeregularizationWasCorrected.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressDeregulationWasCorrected.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem.OfficiallyAssigned.Should().BeTrue();
-                    addressWmsItem.VersionTimestamp.Should().Be(addressDeregularizationWasCorrected.Provenance.Timestamp);
+                    addressWmsItem.VersionTimestamp.Should().Be(addressDeregulationWasCorrected.Provenance.Timestamp);
                 });
         }
     }

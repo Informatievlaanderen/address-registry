@@ -323,7 +323,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 UpdateVersie(item, message.Message.Provenance.Timestamp);
             });
 
-            When<Envelope<AddressDeregularizationWasCorrected>>(async (context, message, ct) =>
+            When<Envelope<AddressDeregulationWasCorrected>>(async (context, message, ct) =>
             {
                 var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);
                 UpdateDbaseRecordField(item, record =>

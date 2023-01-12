@@ -267,16 +267,16 @@ namespace AddressRegistry.StreetName
                     streetName.CorrectAddressRegularization(message.Command.AddressPersistentLocalId);
                 });
 
-            For<CorrectAddressDeregularization>()
+            For<CorrectAddressDeregulation>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
-                .AddEventHash<CorrectAddressDeregularization, StreetName>(getUnitOfWork)
+                .AddEventHash<CorrectAddressDeregulation, StreetName>(getUnitOfWork)
                 .AddProvenance(getUnitOfWork, provenanceFactory)
                 .Handle(async (message, ct) =>
                 {
                     var streetNameStreamId = new StreetNameStreamId(message.Command.StreetNamePersistentLocalId);
                     var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
 
-                    streetName.CorrectAddressDeregularization(message.Command.AddressPersistentLocalId);
+                    streetName.CorrectAddressDeregulation(message.Command.AddressPersistentLocalId);
                 });
         }
     }

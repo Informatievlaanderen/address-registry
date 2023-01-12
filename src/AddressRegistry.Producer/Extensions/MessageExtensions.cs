@@ -262,8 +262,8 @@ namespace AddressRegistry.Producer.Extensions
         public static Contracts.AddressRegularizationWasCorrected ToContract(this StreetNameAggregate.AddressRegularizationWasCorrected message) =>
             new Contracts.AddressRegularizationWasCorrected(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
 
-        public static Contracts.AddressDeregularizationWasCorrected ToContract(this StreetNameAggregate.AddressDeregularizationWasCorrected message) =>
-            new Contracts.AddressDeregularizationWasCorrected(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
+        public static Contracts.AddressDeregulationWasCorrected ToContract(this StreetNameAggregate.AddressDeregulationWasCorrected message) =>
+            new Contracts.AddressDeregulationWasCorrected(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
 
         private static Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common.Provenance ToContract(this ProvenanceData provenance)
             => new Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common.Provenance(

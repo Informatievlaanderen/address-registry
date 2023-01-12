@@ -879,24 +879,24 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                 { AddEventHashPipe.HashMetadataKey, addressWasDeregulated.GetHash() }
             };
 
-            var addressDeregularizationWasCorrected = _fixture.Create<AddressDeregularizationWasCorrected>();
+            var addressDeregulationWasCorrected = _fixture.Create<AddressDeregulationWasCorrected>();
             var correctedFromRegularizedMetaData = new Dictionary<string, object>
             {
-                { AddEventHashPipe.HashMetadataKey, addressDeregularizationWasCorrected.GetHash() }
+                { AddEventHashPipe.HashMetadataKey, addressDeregulationWasCorrected.GetHash() }
             };
 
             await Sut
                 .Given(
                     new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
                     new Envelope<AddressWasDeregulated>(new Envelope(addressWasDeregulated, regularizedMetadata)),
-                    new Envelope<AddressDeregularizationWasCorrected>(new Envelope(addressDeregularizationWasCorrected, correctedFromRegularizedMetaData)))
+                    new Envelope<AddressDeregulationWasCorrected>(new Envelope(addressDeregulationWasCorrected, correctedFromRegularizedMetaData)))
                 .Then(async ct =>
                 {
-                    var addressDetailItemV2 = (await ct.AddressDetailV2.FindAsync(addressDeregularizationWasCorrected.AddressPersistentLocalId));
+                    var addressDetailItemV2 = (await ct.AddressDetailV2.FindAsync(addressDeregulationWasCorrected.AddressPersistentLocalId));
                     addressDetailItemV2.Should().NotBeNull();
                     addressDetailItemV2.OfficiallyAssigned.Should().BeTrue();
-                    addressDetailItemV2.VersionTimestamp.Should().Be(addressDeregularizationWasCorrected.Provenance.Timestamp);
-                    addressDetailItemV2.LastEventHash.Should().Be(addressDeregularizationWasCorrected.GetHash());
+                    addressDetailItemV2.VersionTimestamp.Should().Be(addressDeregulationWasCorrected.Provenance.Timestamp);
+                    addressDetailItemV2.LastEventHash.Should().Be(addressDeregulationWasCorrected.GetHash());
                 });
         }
 

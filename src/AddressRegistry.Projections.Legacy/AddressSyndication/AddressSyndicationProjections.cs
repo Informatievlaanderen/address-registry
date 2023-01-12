@@ -785,7 +785,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     ct);
             });
 
-            When<Envelope<AddressDeregularizationWasCorrected>>(async (context, message, ct) =>
+            When<Envelope<AddressDeregulationWasCorrected>>(async (context, message, ct) =>
             {
                 await context.CreateNewAddressSyndicationItem(
                     message.Message.AddressPersistentLocalId,

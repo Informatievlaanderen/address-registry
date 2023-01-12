@@ -1,4 +1,4 @@
-namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressDeregularization
+namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressDeregulation
 {
     using System;
     using System.Collections.Generic;
@@ -74,7 +74,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressDeregular
             DispatchArrangeCommand(deregulateAddress);
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new CorrectAddressDeregularizationLambdaHandler(
+            var sut = new CorrectAddressDeregulationLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -82,9 +82,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressDeregular
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext));
 
             // Act
-            await sut.Handle(new CorrectAddressDeregularizationLambdaRequest(streetNamePersistentLocalId, new CorrectAddressDeregularizationSqsRequest
+            await sut.Handle(new CorrectAddressDeregulationLambdaRequest(streetNamePersistentLocalId, new CorrectAddressDeregulationSqsRequest
                 {
-                    Request = new CorrectAddressDeregularizationBackOfficeRequest { PersistentLocalId = addressPersistentLocalId },
+                    Request = new CorrectAddressDeregulationBackOfficeRequest { PersistentLocalId = addressPersistentLocalId },
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
                     ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -103,7 +103,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressDeregular
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new CorrectAddressDeregularizationLambdaHandler(
+            var sut = new CorrectAddressDeregulationLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -112,9 +112,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressDeregular
 
             // Act
             await sut.Handle(
-                new CorrectAddressDeregularizationLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressDeregularizationSqsRequest()
+                new CorrectAddressDeregulationLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressDeregulationSqsRequest()
                 {
-                    Request = new CorrectAddressDeregularizationBackOfficeRequest { PersistentLocalId = Fixture.Create<int>() },
+                    Request = new CorrectAddressDeregulationBackOfficeRequest { PersistentLocalId = Fixture.Create<int>() },
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
                     ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -161,7 +161,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressDeregular
                 addressPersistentLocalId,
                 Fixture.Create<Provenance>()));
 
-            var sut = new CorrectAddressDeregularizationLambdaHandler(
+            var sut = new CorrectAddressDeregulationLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -172,9 +172,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressDeregular
                 await _streetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), CancellationToken.None);
 
             // Act
-            await sut.Handle(new CorrectAddressDeregularizationLambdaRequest(streetNamePersistentLocalId, new CorrectAddressDeregularizationSqsRequest
+            await sut.Handle(new CorrectAddressDeregulationLambdaRequest(streetNamePersistentLocalId, new CorrectAddressDeregulationSqsRequest
             {
-                Request = new CorrectAddressDeregularizationBackOfficeRequest { PersistentLocalId = addressPersistentLocalId },
+                Request = new CorrectAddressDeregulationBackOfficeRequest { PersistentLocalId = addressPersistentLocalId },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()

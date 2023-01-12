@@ -84,8 +84,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
                 case CorrectAddressRegularizationSqsRequest request:
                     await mediator.Send(new CorrectAddressRegularizationLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
-                case CorrectAddressDeregularizationSqsRequest request:
-                    await mediator.Send(new CorrectAddressDeregularizationLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
+                case CorrectAddressDeregulationSqsRequest request:
+                    await mediator.Send(new CorrectAddressDeregulationLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
                 default:
                     throw new NotImplementedException(

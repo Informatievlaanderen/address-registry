@@ -1,3 +1,18 @@
+# [3.71.0](https://github.com/informatievlaanderen/address-registry/compare/v3.70.3...v3.71.0) (2023-01-12)
+
+
+### Bug Fixes
+
+* rename deregularization to deregulation ([99cc5b6](https://github.com/informatievlaanderen/address-registry/commit/99cc5b67800eee200c5879344210a637c1ed6306))
+
+
+### Features
+
+* add correct address deregularization ([add55a5](https://github.com/informatievlaanderen/address-registry/commit/add55a56cf8c9b7d700a146ef876d141bb2f7fdb))
+* add validation to correct regularization when parent is proposed ([1b89c26](https://github.com/informatievlaanderen/address-registry/commit/1b89c26a022239ef98409b43e029e3dcd58d2cfa))
+* correct regularized address ([fdfda2d](https://github.com/informatievlaanderen/address-registry/commit/fdfda2d245d5e8b8529085f016b85b375ba7ca33))
+* update Be.Vlaanderen.Basisregisters.Api to 19.0.1 ([92acdd1](https://github.com/informatievlaanderen/address-registry/commit/92acdd1bb6d22c96be1692bc185059d6cefcc957))
+
 ## [3.70.3](https://github.com/informatievlaanderen/address-registry/compare/v3.70.2...v3.70.3) (2023-01-09)
 
 

@@ -623,9 +623,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
 
 
         [Fact]
-        public async Task WhenCorrectAddressDeregularizationRequest_ThenSendLambdaRequest()
+        public async Task WhenCorrectAddressDeregulationRequest_ThenSendLambdaRequest()
         {
-            await AssertSqsRequestWithLambdaRequest<CorrectAddressDeregularizationSqsRequest, CorrectAddressDeregularizationLambdaRequest>(
+            await AssertSqsRequestWithLambdaRequest<CorrectAddressDeregulationSqsRequest, CorrectAddressDeregulationLambdaRequest>(
                 (sqsRequest, lambdaRequest)
                     => lambdaRequest.AddressPersistentLocalId == sqsRequest.Request.PersistentLocalId);
         }

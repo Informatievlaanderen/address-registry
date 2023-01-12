@@ -6,7 +6,7 @@ namespace AddressRegistry.StreetName.Commands
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Utilities;
 
-    public class CorrectAddressDeregularization : IHasCommandProvenance
+    public class CorrectAddressDeregulation : IHasCommandProvenance
     {
         private static readonly Guid Namespace = new Guid("9cbdc79f-3013-4d8c-83e3-5caeb65937ff");
 
@@ -14,7 +14,7 @@ namespace AddressRegistry.StreetName.Commands
         public AddressPersistentLocalId AddressPersistentLocalId { get; }
         public Provenance Provenance { get; }
 
-        public CorrectAddressDeregularization(
+        public CorrectAddressDeregulation(
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             AddressPersistentLocalId addressPersistentLocalId,
             Provenance provenance)
@@ -25,7 +25,7 @@ namespace AddressRegistry.StreetName.Commands
         }
 
         public Guid CreateCommandId()
-            => Deterministic.Create(Namespace, $"CorrectAddressDeregularization-{ToString()}");
+            => Deterministic.Create(Namespace, $"CorrectAddressDeregulation-{ToString()}");
 
         public override string? ToString()
             => ToStringBuilder.ToString(IdentityFields());

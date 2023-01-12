@@ -14,9 +14,9 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
     using StreetName.Exceptions;
     using TicketingService.Abstractions;
 
-    public sealed class CorrectAddressDeregularizationLambdaHandler : SqsLambdaHandler<CorrectAddressDeregularizationLambdaRequest>
+    public sealed class CorrectAddressDeregulationLambdaHandler : SqsLambdaHandler<CorrectAddressDeregulationLambdaRequest>
     {
-        public CorrectAddressDeregularizationLambdaHandler(
+        public CorrectAddressDeregulationLambdaHandler(
             IConfiguration configuration,
             ICustomRetryPolicy retryPolicy,
             ITicketing ticketing,
@@ -30,7 +30,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 idempotentCommandHandler)
         { }
 
-        protected override async Task<ETagResponse> InnerHandle(CorrectAddressDeregularizationLambdaRequest request, CancellationToken cancellationToken)
+        protected override async Task<ETagResponse> InnerHandle(CorrectAddressDeregulationLambdaRequest request, CancellationToken cancellationToken)
         {
             var addressPersistentLocalId = new AddressPersistentLocalId(request.AddressPersistentLocalId);
             var cmd = request.ToCommand();
@@ -52,11 +52,11 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             return new ETagResponse(string.Format(DetailUrlFormat, addressPersistentLocalId), lastHash);
         }
 
-        protected override TicketError? InnerMapDomainException(DomainException exception, CorrectAddressDeregularizationLambdaRequest request)
+        protected override TicketError? InnerMapDomainException(DomainException exception, CorrectAddressDeregulationLambdaRequest request)
         {
             return exception switch
             {
-                AddressHasInvalidStatusException => ValidationErrors.CorrectAddressDeregularization.AddressInvalidStatus.ToTicketError(),
+                AddressHasInvalidStatusException => ValidationErrors.CorrectAddressDeregulation.AddressInvalidStatus.ToTicketError(),
                 _ => null
             };
         }

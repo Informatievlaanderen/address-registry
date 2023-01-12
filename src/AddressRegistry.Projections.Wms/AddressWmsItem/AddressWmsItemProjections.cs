@@ -434,7 +434,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                     allowUpdateRemovedAddress: true);
             });
 
-            When<Envelope<AddressDeregularizationWasCorrected>>(async (context, message, ct) =>
+            When<Envelope<AddressDeregulationWasCorrected>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressDetail(
                     message.Message.AddressPersistentLocalId,

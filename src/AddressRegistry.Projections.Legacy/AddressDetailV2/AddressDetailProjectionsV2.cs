@@ -435,7 +435,7 @@ namespace AddressRegistry.Projections.Legacy.AddressDetailV2
                 UpdateHash(item, message);
             });
 
-            When<Envelope<AddressDeregularizationWasCorrected>>(async (context, message, ct) =>
+            When<Envelope<AddressDeregulationWasCorrected>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressDetailV2(
                     message.Message.AddressPersistentLocalId,

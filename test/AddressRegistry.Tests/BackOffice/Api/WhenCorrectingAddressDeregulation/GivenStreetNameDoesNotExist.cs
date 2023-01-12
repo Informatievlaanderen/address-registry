@@ -1,4 +1,4 @@
-namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressDeregularization
+namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressDeregulation
 {
     using System;
     using System.Threading;
@@ -39,11 +39,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressDeregulariza
                 new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));
             _backOfficeContext.SaveChanges();
 
-            MockMediator.Setup(x => x.Send(It.IsAny<CorrectAddressDeregularizationSqsRequest>(), CancellationToken.None))
+            MockMediator.Setup(x => x.Send(It.IsAny<CorrectAddressDeregulationSqsRequest>(), CancellationToken.None))
                 .Throws(new AggregateIdIsNotFoundException());
 
             //Act
-            Func<Task> act = async () => await _controller.CorrectDeregularization(
+            Func<Task> act = async () => await _controller.CorrectDeregulation(
                 _backOfficeContext,
                 MockIfMatchValidator(true),
                 null,
@@ -71,11 +71,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressDeregulariza
                 new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId));
             _backOfficeContext.SaveChanges();
 
-            MockMediator.Setup(x => x.Send(It.IsAny<CorrectAddressDeregularizationSqsRequest>(), CancellationToken.None))
+            MockMediator.Setup(x => x.Send(It.IsAny<CorrectAddressDeregulationSqsRequest>(), CancellationToken.None))
                 .Throws(new AggregateNotFoundException(streetNamePersistentId, typeof(string)));
 
             //Act
-            Func<Task> act = async () => await _controller.CorrectDeregularization(
+            Func<Task> act = async () => await _controller.CorrectDeregulation(
                 _backOfficeContext,
                 MockIfMatchValidator(true),
                 null,

@@ -347,7 +347,7 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
             });
 
-            When<Envelope<AddressDeregularizationWasCorrected>>(async (context, message, ct) =>
+            When<Envelope<AddressDeregulationWasCorrected>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressDetail(
                     message.Message.AddressPersistentLocalId,

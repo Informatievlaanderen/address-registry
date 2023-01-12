@@ -1,4 +1,4 @@
-namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressDeregularization
+namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressDeregulation
 {
     using System.Threading;
     using System.Threading.Tasks;
@@ -25,7 +25,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressDeregulariza
         public async Task ThenReturnsNotFoundResult()
         {
             //Act
-            var result = await _controller.CorrectDeregularization(
+            var result = await _controller.CorrectDeregulation(
                 _backOfficeContext,
                 MockIfMatchValidator(true),
                 null,

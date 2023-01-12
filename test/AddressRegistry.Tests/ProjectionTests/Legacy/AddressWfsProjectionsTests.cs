@@ -879,7 +879,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
         }
 
         [Fact]
-        public async Task WhenAddressWasCorrectedFromDeregularization()
+        public async Task WhenAddressWasCorrectedFromDeregulation()
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
             var proposedMetadata = new Dictionary<string, object>
@@ -893,23 +893,23 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                 { AddEventHashPipe.HashMetadataKey, addressWasRegularized.GetHash() }
             };
 
-            var addressDeregularizationWasCorrected = _fixture.Create<AddressDeregularizationWasCorrected>();
-            var addressDeregularizationWasCorrectedMetaData = new Dictionary<string, object>
+            var addressDeregulationWasCorrected = _fixture.Create<AddressDeregulationWasCorrected>();
+            var addressDeregulationWasCorrectedMetaData = new Dictionary<string, object>
             {
-                { AddEventHashPipe.HashMetadataKey, addressDeregularizationWasCorrected.GetHash() }
+                { AddEventHashPipe.HashMetadataKey, addressDeregulationWasCorrected.GetHash() }
             };
 
             await Sut
                 .Given(
                     new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
                     new Envelope<AddressWasRegularized>(new Envelope(addressWasRegularized, addressWasRegularizedMetadata)),
-                    new Envelope<AddressDeregularizationWasCorrected>(new Envelope(addressDeregularizationWasCorrected, addressDeregularizationWasCorrectedMetaData)))
+                    new Envelope<AddressDeregulationWasCorrected>(new Envelope(addressDeregulationWasCorrected, addressDeregulationWasCorrectedMetaData)))
                 .Then(async ct =>
                 {
-                    var item = (await ct.AddressWfsItems.FindAsync(addressDeregularizationWasCorrected.AddressPersistentLocalId));
+                    var item = (await ct.AddressWfsItems.FindAsync(addressDeregulationWasCorrected.AddressPersistentLocalId));
                     item.Should().NotBeNull();
                     item!.OfficiallyAssigned.Should().BeTrue();
-                    item.VersionTimestamp.Should().Be(addressDeregularizationWasCorrected.Provenance.Timestamp);
+                    item.VersionTimestamp.Should().Be(addressDeregulationWasCorrected.Provenance.Timestamp);
                 });
         }
 

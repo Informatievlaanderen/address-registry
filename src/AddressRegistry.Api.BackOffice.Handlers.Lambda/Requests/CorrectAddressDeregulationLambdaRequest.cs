@@ -6,12 +6,12 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
     using StreetName;
     using StreetName.Commands;
 
-    public sealed record CorrectAddressDeregularizationLambdaRequest :
+    public sealed record CorrectAddressDeregulationLambdaRequest :
         SqsLambdaRequest,
-        IHasBackOfficeRequest<CorrectAddressDeregularizationBackOfficeRequest>,
+        IHasBackOfficeRequest<CorrectAddressDeregulationBackOfficeRequest>,
         Abstractions.IHasAddressPersistentLocalId
     {
-        public CorrectAddressDeregularizationLambdaRequest(string groupId, CorrectAddressDeregularizationSqsRequest regularizationSqsRequest)
+        public CorrectAddressDeregulationLambdaRequest(string groupId, CorrectAddressDeregulationSqsRequest regularizationSqsRequest)
             : base(
                 groupId,
                 regularizationSqsRequest.TicketId,
@@ -22,17 +22,17 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
             Request = regularizationSqsRequest.Request;
         }
 
-        public CorrectAddressDeregularizationBackOfficeRequest Request { get; init; }
+        public CorrectAddressDeregulationBackOfficeRequest Request { get; init; }
 
         public int AddressPersistentLocalId => Request.PersistentLocalId;
 
         /// <summary>
         /// Map to command
         /// </summary>
-        /// <returns>CorrectAddressDeregularization.</returns>
-        public CorrectAddressDeregularization ToCommand()
+        /// <returns>CorrectAddressDeregulation.</returns>
+        public CorrectAddressDeregulation ToCommand()
         {
-            return new CorrectAddressDeregularization(
+            return new CorrectAddressDeregulation(
                 this.StreetNamePersistentLocalId(),
                 new AddressPersistentLocalId(AddressPersistentLocalId),
                 Provenance);

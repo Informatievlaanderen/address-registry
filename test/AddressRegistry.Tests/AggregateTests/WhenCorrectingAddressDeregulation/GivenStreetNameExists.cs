@@ -1,4 +1,4 @@
-namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressDeregularization
+namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressDeregulation
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -34,7 +34,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressDeregulariza
         {
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
 
-            var command = new CorrectAddressDeregularization(
+            var command = new CorrectAddressDeregulation(
                 Fixture.Create<StreetNamePersistentLocalId>(),
                 addressPersistentLocalId,
                 Fixture.Create<Provenance>());
@@ -63,7 +63,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressDeregulariza
                     addressWasDeregulated)
                 .When(command)
                 .Then(new Fact(_streamId,
-                    new AddressDeregularizationWasCorrected(
+                    new AddressDeregulationWasCorrected(
                         Fixture.Create<StreetNamePersistentLocalId>(),
                         addressPersistentLocalId))));
         }
@@ -72,7 +72,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressDeregulariza
         public void WithoutProposedAddress_ThenThrowsAddressNotFoundException()
         {
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-            var command = new CorrectAddressDeregularization(
+            var command = new CorrectAddressDeregulation(
                 Fixture.Create<StreetNamePersistentLocalId>(),
                 addressPersistentLocalId,
                 Fixture.Create<Provenance>());
@@ -112,7 +112,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressDeregulariza
                 parentPersistentLocalId: null);
             ((ISetProvenance)migrateRemovedAddressToStreetName).SetProvenance(Fixture.Create<Provenance>());
 
-            var command = new CorrectAddressDeregularization(
+            var command = new CorrectAddressDeregulation(
                 streetNamePersistentLocalId,
                 addressPersistentLocalId,
                 Fixture.Create<Provenance>());
@@ -155,7 +155,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressDeregulariza
                 parentPersistentLocalId: null);
             ((ISetProvenance)addressWasMigratedToStreetName).SetProvenance(Fixture.Create<Provenance>());
 
-            var command = new CorrectAddressDeregularization(
+            var command = new CorrectAddressDeregulation(
                 streetNamePersistentLocalId,
                 addressPersistentLocalId,
                 Fixture.Create<Provenance>());
@@ -174,7 +174,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressDeregulariza
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
 
-            var command = new CorrectAddressDeregularization(
+            var command = new CorrectAddressDeregulation(
                 streetNamePersistentLocalId,
                 addressPersistentLocalId,
                 Fixture.Create<Provenance>());
@@ -232,7 +232,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressDeregulariza
             sut.Initialize(new List<object> { addressWasMigratedToStreetName });
 
             // Act
-            sut.CorrectAddressDeregularization(addressPersistentLocalId);
+            sut.CorrectAddressDeregulation(addressPersistentLocalId);
 
             // Assert
             var address = sut.StreetNameAddresses.First(x => x.AddressPersistentLocalId == addressPersistentLocalId);

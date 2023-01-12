@@ -561,7 +561,7 @@ namespace AddressRegistry.StreetName
                 return;
             }
 
-            Apply(new AddressDeregularizationWasCorrected(_streetNamePersistentLocalId, AddressPersistentLocalId));
+            Apply(new AddressDeregulationWasCorrected(_streetNamePersistentLocalId, AddressPersistentLocalId));
         }
 
         /// <summary>

@@ -70,14 +70,14 @@ nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.SqlStreamStore 5.0.3
 nuget Be.Vlaanderen.Basisregisters.Crab 3.0.0
 nuget Be.Vlaanderen.Basisregisters.Crab.Autofac 3.0.0
 
-nuget Be.Vlaanderen.Basisregisters.GrAr.Common 17.44.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Contracts 17.44.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Edit 17.44.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Import 17.44.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Legacy 17.44.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Oslo 17.44.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance 17.44.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Extracts 17.44.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Common 17.45.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Contracts 17.45.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Edit 17.45.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Import 17.45.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Legacy 17.45.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Oslo 17.45.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance 17.45.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Extracts 17.45.1
 
 nuget Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple 4.6.1
 nuget Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Producer 4.6.1

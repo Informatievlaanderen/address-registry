@@ -4,7 +4,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
 {
     public static partial class ValidationErrors
     {
-        public static class CorrectAddressDeregularization
+        public static class CorrectAddressDeregulation
         {
             public static class AddressInvalidStatus
             {

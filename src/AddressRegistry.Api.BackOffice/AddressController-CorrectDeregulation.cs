@@ -37,7 +37,7 @@ namespace AddressRegistry.Api.BackOffice
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(BadRequestResponseExamples))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
-        public async Task<IActionResult> CorrectDeregularization(
+        public async Task<IActionResult> CorrectDeregulation(
             [FromServices] BackOfficeContext backOfficeContext,
             [FromServices] IIfMatchHeaderValidator ifMatchHeaderValidator,
             [FromHeader(Name = "If-Match")] string? ifMatchHeaderValue,
@@ -65,9 +65,9 @@ namespace AddressRegistry.Api.BackOffice
                     return new PreconditionFailedResult();
                 }
 
-                var sqsRequest = new CorrectAddressDeregularizationSqsRequest
+                var sqsRequest = new CorrectAddressDeregulationSqsRequest
                 {
-                    Request = new CorrectAddressDeregularizationBackOfficeRequest {PersistentLocalId = addressPersistentLocalId},
+                    Request = new CorrectAddressDeregulationBackOfficeRequest {PersistentLocalId = addressPersistentLocalId},
                     IfMatchHeaderValue = ifMatchHeaderValue,
                     Metadata = GetMetadata(),
                     ProvenanceData = new ProvenanceData(CreateFakeProvenance())

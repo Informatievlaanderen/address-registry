@@ -6,7 +6,8 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure.Modules
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
+    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Microsoft;
+    using Be.Vlaanderen.Basisregisters.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Api;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing.CrabImport;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac;
@@ -34,8 +35,9 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure.Modules
 
         protected override void Load(ContainerBuilder builder)
         {
+            _services.RegisterModule(new DataDogModule(_configuration));
+
             builder
-                .RegisterModule(new DataDogModule(_configuration))
                 .RegisterModule(new LegacyModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new EnvelopeModule())
                 .RegisterModule(new EditModule(_configuration, _services, _loggerFactory))
@@ -53,7 +55,7 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure.Modules
             builder
                 .RegisterType<IdempotentCommandHandlerModuleProcessor>()
                 .As<IIdempotentCommandHandlerModuleProcessor>();
-            
+
             builder
                 .RegisterType<IdempotentCommandHandlerModule>()
                 .AsSelf();

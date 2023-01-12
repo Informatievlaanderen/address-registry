@@ -6,17 +6,16 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
+    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Microsoft;
+    using Be.Vlaanderen.Basisregisters.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac;
     using Consumer;
-    using Consumer.Read.Municipality;
     using Consumer.Read.Municipality.Infrastructure.Modules;
     using Handlers.Sqs;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Projections.Syndication;
-    using StreetName;
     using Validators;
 
     public class ApiModule : Module
@@ -38,8 +37,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
 
         protected override void Load(ContainerBuilder builder)
         {
-            builder
-                .RegisterModule(new DataDogModule(_configuration));
+            _services.RegisterModule(new DataDogModule(_configuration));
 
             builder
                 .RegisterType<ProblemDetailsHelper>()

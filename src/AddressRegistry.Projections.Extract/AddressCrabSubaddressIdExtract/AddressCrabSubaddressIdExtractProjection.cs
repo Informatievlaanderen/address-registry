@@ -25,7 +25,10 @@ namespace AddressRegistry.Projections.Extract.AddressCrabSubaddressIdExtract
                 await context.AddressCrabSubaddressIdExtract.AddAsync(new AddressCrabSubaddressIdExtractItem
                 {
                     AddressId = message.Message.AddressId,
-                    DbaseRecord = new AddressCrabSubaddressIdDbaseRecord().ToBytes(_encoding),
+                    DbaseRecord = new AddressCrabSubaddressIdDbaseRecord
+                    {
+                        isvolledig = { Value = false }
+                    }.ToBytes(_encoding),
                 }, cancellationToken: ct);
             });
 
@@ -55,6 +58,12 @@ namespace AddressRegistry.Projections.Extract.AddressCrabSubaddressIdExtract
                 item.CrabSubaddressId = message.Message.SubaddressId;
 
                 UpdateDbaseRecordField(item, record => { record.crabsubid.Value = message.Message.SubaddressId; });
+            });
+
+            When<Envelope<AddressWasRemoved>>(async (context, message, ct) =>
+            {
+                var item = await context.AddressCrabSubaddressIdExtract.FindAsync(message.Message.AddressId, cancellationToken: ct);
+                UpdateDbaseRecordField(item, record => { record.isvolledig.Value = false; });
             });
         }
 

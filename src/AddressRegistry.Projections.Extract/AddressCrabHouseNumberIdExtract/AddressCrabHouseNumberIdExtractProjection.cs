@@ -9,6 +9,7 @@ namespace AddressRegistry.Projections.Extract.AddressCrabHouseNumberIdExtract
     using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
+    using Polly;
 
     [ConnectedProjectionName("Extract CRAB-huisnummers")]
     [ConnectedProjectionDescription("Projectie die de CRAB-huisnummers data voor het CRAB-huisnummers extract voorziet.")]
@@ -25,7 +26,10 @@ namespace AddressRegistry.Projections.Extract.AddressCrabHouseNumberIdExtract
                 await context.AddressCrabHouseNumberIdExtract.AddAsync(new AddressCrabHouseNumberIdExtractItem
                 {
                     AddressId = message.Message.AddressId,
-                    DbaseRecord = new AddressCrabHouseNumberIdDbaseRecord().ToBytes(_encoding),
+                    DbaseRecord = new AddressCrabHouseNumberIdDbaseRecord
+                    {
+                        isvolledig = { Value = false }
+                    }.ToBytes(_encoding),
                 }, cancellationToken: ct);
             });
 
@@ -58,6 +62,12 @@ namespace AddressRegistry.Projections.Extract.AddressCrabHouseNumberIdExtract
                     item.CrabHouseNumberId = message.Message.HouseNumberId;
                     UpdateDbaseRecordField(item, record => { record.crabhnrid.Value = message.Message.HouseNumberId; });
                 }
+            });
+
+            When<Envelope<AddressWasRemoved>>(async (context, message, ct) =>
+            {
+                var item = await context.AddressCrabHouseNumberIdExtract.FindAsync(message.Message.AddressId, cancellationToken: ct);
+                UpdateDbaseRecordField(item, record => { record.isvolledig.Value = false; });
             });
         }
 

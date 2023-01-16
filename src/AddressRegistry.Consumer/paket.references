@@ -1,4 +1,6 @@
-Be.Vlaanderen.Basisregisters.AggregateSource
+Polly
+Destructurama.JsonNet
+
 Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore
 Be.Vlaanderen.Basisregisters.Api
 Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
@@ -6,11 +8,10 @@ Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac
 Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql
 Be.Vlaanderen.Basisregisters.DataDog.Tracing.SqlStreamStore
 Be.Vlaanderen.Basisregisters.EntityFrameworkCore.EntityTypeConfiguration
-Be.Vlaanderen.Basisregisters.EventHandling
 Be.Vlaanderen.Basisregisters.EventHandling.Autofac
 Be.Vlaanderen.Basisregisters.GrAr.Contracts
 Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple
-Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector 
+Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector
 Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner
 Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac
 Be.Vlaanderen.Basisregisters.Projector
@@ -24,8 +25,6 @@ Serilog.Enrichers.Thread
 Serilog.Enrichers.Environment
 Serilog.Formatting.Compact
 
-Microsoft.EntityFrameworkCore.SqlServer
-Microsoft.EntityFrameworkCore.InMemory
 Microsoft.Extensions.Configuration
 Microsoft.Extensions.Configuration.CommandLine
 Microsoft.Extensions.Configuration.FileExtensions
@@ -34,6 +33,3 @@ Microsoft.Extensions.Configuration.Json
 
 SourceLink.Embed.AllSourceFiles
 SourceLink.Copy.PdbFiles
-
-Polly
-Destructurama.JsonNet

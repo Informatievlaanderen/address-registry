@@ -29,6 +29,7 @@ Microsoft.Extensions.Configuration.CommandLine
 Microsoft.Extensions.Configuration.FileExtensions
 Microsoft.Extensions.Configuration.EnvironmentVariables
 Microsoft.Extensions.Configuration.Json
+Microsoft.Extensions.Logging.Abstractions
 
 SourceLink.Embed.AllSourceFiles
 SourceLink.Copy.PdbFiles

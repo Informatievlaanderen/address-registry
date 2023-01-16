@@ -43,6 +43,8 @@ nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit 7.1.4
 
 nuget Be.Vlaanderen.Basisregisters.Api 19.0.1
 
+nuget Be.Vlaanderen.Basisregisters.AcmIdm 1.3.5
+
 nuget Be.Vlaanderen.Basisregisters.Aws.DistributedMutex 3.0.0
 nuget Be.Vlaanderen.Basisregisters.Aws.Lambda 1.2.4
 

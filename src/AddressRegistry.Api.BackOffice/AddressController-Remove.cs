@@ -9,6 +9,7 @@ namespace AddressRegistry.Api.BackOffice
     using Abstractions.Requests;
     using Abstractions.Validation;
     using Address;
+    using Be.Vlaanderen.Basisregisters.AcmIdm;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
@@ -19,6 +20,8 @@ namespace AddressRegistry.Api.BackOffice
     using Handlers.Sqs.Requests;
     using Infrastructure;
     using Infrastructure.Options;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Options;
@@ -47,6 +50,8 @@ namespace AddressRegistry.Api.BackOffice
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.Adres.DecentraleBijwerker)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.Adres.InterneBijwerker)]
         public async Task<IActionResult> Remove(
             [FromServices] BackOfficeContext backOfficeContext,
             [FromServices] IValidator<AddressRemoveRequest> validator,

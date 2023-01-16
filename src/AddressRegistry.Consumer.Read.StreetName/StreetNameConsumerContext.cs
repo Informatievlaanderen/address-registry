@@ -1,15 +1,22 @@
 namespace AddressRegistry.Consumer.Read.StreetName
 {
     using System;
+    using System.IO;
+    using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Infrastructure;
+    using Be.Vlaanderen.Basisregisters.EntityFrameworkCore.EntityTypeConfiguration;
+    using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Design;
+    using Microsoft.Extensions.Configuration;
     using Projections;
 
-    public class StreetNameConsumerContext : RunnerDbContext<StreetNameConsumerContext>
+    public class StreetNameConsumerContext : SqlServerConsumerDbContext<StreetNameConsumerContext>
     {
         public DbSet<StreetNameLatestItem> StreetNameLatestItems { get; set; }
         public DbSet<StreetNameBosaItem> StreetNameBosaItems { get; set; }
@@ -23,27 +30,46 @@ namespace AddressRegistry.Consumer.Read.StreetName
             : base(options)
         { }
 
-        public override string ProjectionStateSchema => Schema.ConsumerReadStreetName;
+        public override string ProcessedMessagesSchema => Schema.ConsumerReadStreetName;
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.AddEntityConfigurationsFromAssembly(typeof(StreetNameConsumerContext).GetTypeInfo().Assembly);
+        }
     }
 
     //Classed used when running dotnet ef migrations
-    public class ConsumerContextFactory : RunnerDbContextMigrationFactory<StreetNameConsumerContext>
+    public class ConsumerContextFactory : IDesignTimeDbContextFactory<StreetNameConsumerContext>
     {
-        public ConsumerContextFactory()
-            : this("ConsumerAdmin")
-        { }
+        public StreetNameConsumerContext CreateDbContext(string[] args)
+        {
+            const string migrationConnectionStringName = "ConsumerAdmin";
 
-        public ConsumerContextFactory(string connectionStringName)
-            : base(connectionStringName, new MigrationHistoryConfiguration
-            {
-                Schema = Schema.ConsumerReadStreetName,
-                Table = MigrationTables.ConsumerReadStreetName
-            })
-        { }
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+                .AddJsonFile($"appsettings.{Environment.MachineName.ToLowerInvariant()}.json", optional: true, reloadOnChange: false)
+                .AddEnvironmentVariables()
+                .Build();
 
-        protected override StreetNameConsumerContext CreateContext(DbContextOptions<StreetNameConsumerContext> migrationContextOptions) => new StreetNameConsumerContext(migrationContextOptions);
+            var builder = new DbContextOptionsBuilder<StreetNameConsumerContext>();
 
-        public StreetNameConsumerContext Create(DbContextOptions<StreetNameConsumerContext> options) => CreateContext(options);
+            var connectionString = configuration.GetConnectionString(migrationConnectionStringName);
+            if (string.IsNullOrEmpty(connectionString))
+                throw new InvalidOperationException($"Could not find a connection string with name '{migrationConnectionStringName}'");
+
+            builder
+                .UseSqlServer(connectionString, sqlServerOptions =>
+                {
+                    sqlServerOptions.EnableRetryOnFailure();
+                    sqlServerOptions.MigrationsHistoryTable(MigrationTables.ConsumerReadStreetName, Schema.ConsumerReadStreetName);
+                })
+                .UseExtendedSqlServerMigrations();
+
+            return new StreetNameConsumerContext(builder.Options);
+        }
     }
 
     public static class ContextExtensions

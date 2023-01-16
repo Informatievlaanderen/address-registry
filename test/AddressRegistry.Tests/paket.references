@@ -1,6 +1,7 @@
 xunit
 xunit.runner.visualstudio
 Microsoft.NET.Test.Sdk
+Microsoft.Extensions.Logging.Abstractions
 FluentAssertions
 AutoFixture.Xunit2
 NetTopologySuite

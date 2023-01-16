@@ -4,6 +4,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
     using AddressRegistry.Infrastructure.Modules;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
+    using Be.Vlaanderen.Basisregisters.AcmIdm;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Microsoft;
@@ -71,6 +72,8 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
             builder.RegisterModule(new TicketingModule(_configuration, _services));
             builder.RegisterModule(new MunicipalityConsumerModule(_configuration,_services, _loggerFactory));
             builder.RegisterSnapshotModule(_configuration);
+
+            _services.AddAcmIdmAuthorizationHandlers();
 
             builder.Populate(_services);
         }

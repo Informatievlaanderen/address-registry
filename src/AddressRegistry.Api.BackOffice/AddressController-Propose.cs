@@ -6,6 +6,7 @@ namespace AddressRegistry.Api.BackOffice
     using System.Threading.Tasks;
     using Abstractions.Requests;
     using Abstractions.Validation;
+    using Be.Vlaanderen.Basisregisters.AcmIdm;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
@@ -15,6 +16,8 @@ namespace AddressRegistry.Api.BackOffice
     using FluentValidation.Results;
     using Handlers.Sqs.Requests;
     using Infrastructure.Options;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Options;
@@ -41,6 +44,7 @@ namespace AddressRegistry.Api.BackOffice
         [SwaggerRequestExample(typeof(AddressProposeRequest), typeof(AddressProposeRequestExamples))]
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(BadRequestResponseExamples))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.Adres.DecentraleBijwerker)]
         public async Task<IActionResult> Propose(
             [FromServices] IOptions<ResponseOptions> options,
             [FromServices] IValidator<AddressProposeRequest> validator,

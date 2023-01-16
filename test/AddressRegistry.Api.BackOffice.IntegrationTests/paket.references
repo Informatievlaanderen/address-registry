@@ -1,5 +1,6 @@
 Microsoft.AspNetCore.Mvc.Testing
 Microsoft.NET.Test.Sdk
+Microsoft.Extensions.Logging.Abstractions
 xunit
 xunit.runner.visualstudio
 xunit.categories

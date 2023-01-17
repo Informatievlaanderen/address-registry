@@ -22,6 +22,23 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
         {
             _producer = producer;
 
+            // StreetName
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetNameNamesWereCorrected>>(async (_, message, ct) =>
+            {
+                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
+                {
+                    await FindAndProduce(async () =>
+                            await snapshotManager.FindMatchingSnapshot(
+                                addressPersistentLocalId.ToString(),
+                                message.Message.Provenance.Timestamp,
+                                throwStaleWhenGone: false,
+                                ct),
+                        message.Position,
+                        ct);
+                }
+            });
+
+            // Address
             When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasMigratedToStreetName>>(async (_, message, ct) =>
             {
                 await FindAndProduce(async () =>

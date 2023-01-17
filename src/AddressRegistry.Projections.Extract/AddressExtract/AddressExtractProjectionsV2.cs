@@ -43,6 +43,17 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
         {
             _encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
 
+            // StreetName
+            When<Envelope<StreetNameNamesWereCorrected>>(async (context, message, ct) =>
+            {
+                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
+                {
+                    var item = await context.AddressExtractV2.FindAsync(addressPersistentLocalId, cancellationToken: ct);
+                    UpdateVersieIfNewer(item, message.Message.Provenance.Timestamp);
+                }
+            });
+
+            // Address
             When<Envelope<AddressWasMigratedToStreetName>>(async (context, message, ct) =>
             {
                 var coordinate = wkbReader.Read(message.Message.ExtendedWkbGeometry.ToByteArray()).Coordinate;
@@ -354,6 +365,15 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
             update(record);
             item.DbaseRecord = record.ToBytes(_encoding);
         }
+
+        private void UpdateVersieIfNewer(AddressExtractItemV2 address, Instant timestamp)
+            => UpdateDbaseRecordField(address, record =>
+            {
+                if (Instant.FromDateTimeOffset(record.versieid.ValueAsDateTimeOffset) < timestamp)
+                {
+                    record.versieid.SetValue(timestamp.ToBelgianDateTimeOffset());
+                }
+            });
 
         private void UpdateVersie(AddressExtractItemV2 address, Instant timestamp)
             => UpdateDbaseRecordField(address, record => record.versieid.SetValue(timestamp.ToBelgianDateTimeOffset()));

@@ -39,12 +39,32 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingStreetNameNames
                 StreetNameStatus.Retired);
             ((ISetProvenance)streetNameWasImported).SetProvenance(Fixture.Create<Provenance>());
 
+            var addressWasProposedV2 = new AddressWasProposedV2(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<AddressPersistentLocalId>(),
+                parentPersistentLocalId: null,
+                Fixture.Create<PostalCode>(),
+                Fixture.Create<HouseNumber>(),
+                boxNumber: null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Lot,
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
+            ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
+
             Assert(new Scenario()
-                .Given(_streamId, streetNameWasImported)
+                .Given(_streamId, streetNameWasImported, addressWasProposedV2)
                 .When(command)
                 .Then(
                     new Fact(new StreetNameStreamId(command.PersistentLocalId),
-                        new StreetNameNamesWereCorrected(streetNamePersistentLocalId, command.StreetNameNames, new List<AddressPersistentLocalId>()))));
+                        new StreetNameNamesWereCorrected(
+                            streetNamePersistentLocalId,
+                            command.StreetNameNames,
+                            new List<AddressPersistentLocalId>
+                            {
+                                new AddressPersistentLocalId(addressWasProposedV2.AddressPersistentLocalId)
+                            })
+                        )
+                    ));
         }
 
         [Fact]

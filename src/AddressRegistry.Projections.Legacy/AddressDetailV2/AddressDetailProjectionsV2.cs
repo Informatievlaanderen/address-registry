@@ -17,6 +17,24 @@ namespace AddressRegistry.Projections.Legacy.AddressDetailV2
     {
         public AddressDetailProjectionsV2()
         {
+            // StreetName
+            When<Envelope<StreetNameNamesWereCorrected>>(async (context, message, ct) =>
+            {
+                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
+                {
+                    var item = await context.FindAndUpdateAddressDetailV2(
+                        addressPersistentLocalId,
+                        item =>
+                        {
+                            UpdateVersionTimestampIfNewer(item, message.Message.Provenance.Timestamp);
+                        },
+                        ct);
+
+                    UpdateHash(item, message);
+                }
+            });
+
+            // Address
             When<Envelope<AddressWasMigratedToStreetName>>(async (context, message, ct) =>
             {
                 var addressDetailItemV2 = new AddressDetailItemV2(
@@ -462,5 +480,14 @@ namespace AddressRegistry.Projections.Legacy.AddressDetailV2
 
         private static void UpdateVersionTimestamp(AddressDetailItemV2 addressDetailItem, Instant versionTimestamp)
             => addressDetailItem.VersionTimestamp = versionTimestamp;
+
+
+        private static void UpdateVersionTimestampIfNewer(AddressDetailItemV2 addressDetailItem, Instant versionTimestamp)
+        {
+            if(versionTimestamp > addressDetailItem.VersionTimestamp)
+            {
+                addressDetailItem.VersionTimestamp = versionTimestamp;
+            }
+        }
     }
 }

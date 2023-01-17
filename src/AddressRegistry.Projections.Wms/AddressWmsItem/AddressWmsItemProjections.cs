@@ -27,7 +27,24 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
         public AddressWmsItemProjections(WKBReader wkbReader)
         {
             _wkbReader = wkbReader;
+            // StreetName
+            When<Envelope<StreetNameNamesWereCorrected>>(async (context, message, ct) =>
+            {
+                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
+                {
+                    await context.FindAndUpdateAddressDetail(
+                        addressPersistentLocalId,
+                        address =>
+                        {
+                            UpdateVersionTimestampIfNewer(address, message.Message.Provenance.Timestamp);
+                        },
+                        ct,
+                        updateHouseNumberLabelsBeforeAddressUpdate: false,
+                        updateHouseNumberLabelsAfterAddressUpdate: false);
+                }
+            });
 
+            // Address
             When<Envelope<AddressWasMigratedToStreetName>>(async (context, message, ct) =>
             {
                 var addressWmsItem = new AddressWmsItem(
@@ -451,6 +468,14 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
 
         private static void UpdateVersionTimestamp(AddressWmsItem addressWmsItem, Instant versionTimestamp)
             => addressWmsItem.VersionTimestamp = versionTimestamp;
+
+        private static void UpdateVersionTimestampIfNewer(AddressWmsItem addressWmsItem, Instant versionTimestamp)
+        {
+            if(versionTimestamp > addressWmsItem.VersionTimestamp)
+            {
+                addressWmsItem.VersionTimestamp = versionTimestamp;
+            }
+        }
 
         public static string MapStatus(AddressStatus status)
         {

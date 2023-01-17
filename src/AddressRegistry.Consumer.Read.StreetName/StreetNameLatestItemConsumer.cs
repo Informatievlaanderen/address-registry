@@ -15,6 +15,7 @@ namespace AddressRegistry.Consumer.Read.StreetName
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly IIdempotentConsumer<StreetNameConsumerContext> _kafkaIdemIdempotencyConsumer;
         private readonly ILogger<StreetNameLatestItemConsumer> _logger;
+        private readonly StreetNameCommandHandler _commandHandler;
 
         public StreetNameLatestItemConsumer(
             ILifetimeScope lifetimeScope,
@@ -26,6 +27,7 @@ namespace AddressRegistry.Consumer.Read.StreetName
             _kafkaIdemIdempotencyConsumer = kafkaIdemIdempotencyConsumer;
 
             _logger = loggerFactory.CreateLogger<StreetNameLatestItemConsumer>();
+            _commandHandler = new StreetNameCommandHandler(lifetimeScope, loggerFactory);
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -33,23 +35,28 @@ namespace AddressRegistry.Consumer.Read.StreetName
             var latestItemProjector = new ConnectedProjector<StreetNameConsumerContext>(
                 Resolve.WhenEqualToHandlerMessageType(new StreetNameLatestItemProjections().Handlers));
 
+            var commandHandlingProjector = new ConnectedProjector<StreetNameCommandHandler>(
+                Resolve.WhenEqualToHandlerMessageType(new StreetNameCommandHandlingProjections().Handlers));
+
             try
             {
                 await _kafkaIdemIdempotencyConsumer.ConsumeContinuously(async (message, context) =>
                 {
                     _logger.LogInformation("Handling next message");
 
-                    // await commandHandlingProjector.ProjectAsync(commandHandler, message, stoppingToken)
-                    //     .ConfigureAwait(false);
+                    await commandHandlingProjector
+                        .ProjectAsync(_commandHandler, message, stoppingToken)
+                        .ConfigureAwait(false);
+
                     await latestItemProjector.ProjectAsync(context, message, stoppingToken).ConfigureAwait(false);
 
                     //CancellationToken.None to prevent halfway consumption
                     await context.SaveChangesAsync(CancellationToken.None);
-
                 }, stoppingToken);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogCritical(ex, $"Critical error occurred in {nameof(StreetNameLatestItemConsumer)}");
                 _hostApplicationLifetime.StopApplication();
                 throw;
             }

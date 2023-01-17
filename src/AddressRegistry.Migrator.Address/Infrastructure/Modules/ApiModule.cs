@@ -51,9 +51,6 @@ namespace AddressRegistry.Migrator.Address.Infrastructure.Modules
                 .RegisterModule(new ConsumerModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new EditModule(_configuration, _services, _loggerFactory));
 
-            builder.RegisterEventstreamModule(_configuration);
-            builder.RegisterSnapshotModule(_configuration);
-
             builder.Populate(_services);
         }
     }

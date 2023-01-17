@@ -41,8 +41,6 @@ namespace AddressRegistry.Consumer.Infrastructure.Modules
                 .RegisterModule(new EditModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new MunicipalityConsumerModule(_configuration, _services, _loggerFactory));
 
-            builder.RegisterSnapshotModule(_configuration);
-
             builder
                 .RegisterProjectionMigrator<ConsumerContextFactory>(
                     _configuration,

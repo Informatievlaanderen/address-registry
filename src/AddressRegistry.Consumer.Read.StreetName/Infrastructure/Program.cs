@@ -5,8 +5,10 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Infrastructure;
+    using AddressRegistry.Infrastructure.Modules;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
+    using Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
@@ -20,9 +22,11 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using Polly;
     using Serilog;
     using Serilog.Debugging;
     using Serilog.Extensions.Logging;
+    using SqlStreamStore;
 
     public sealed class Program
     {
@@ -42,7 +46,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
             Log.Information("Starting AddressRegistry.Consumer.Read.StreetName");
 
             var host = new HostBuilder()
-                .ConfigureAppConfiguration((hostContext, builder) =>
+                .ConfigureAppConfiguration((_, builder) =>
                 {
                     builder
                         .SetBasePath(Directory.GetCurrentDirectory())
@@ -90,6 +94,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
                 .ConfigureContainer<ContainerBuilder>((hostContext, builder) =>
                 {
                     var services = new ServiceCollection();
+                    var loggerFactory = new SerilogLoggerFactory(Log.Logger);
 
                     builder.Register(c =>
                     {
@@ -161,7 +166,8 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
                         .SingleInstance();
 
                     builder
-                        .RegisterModule(new DataDogModule(hostContext.Configuration));
+                        .RegisterModule(new DataDogModule(hostContext.Configuration))
+                        .RegisterModule(new EditModule(hostContext.Configuration, services, loggerFactory));
 
                     builder
                         .RegisterType<StreetNameBosaItemConsumer>()
@@ -187,6 +193,10 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
                 await DistributedLock<Program>.RunAsync(
                         async () =>
                         {
+                            AddressRegistry.Infrastructure.MigrationsHelper.EnsureSqlStreamStoreSchema<Program>(host.Services.GetRequiredService<MsSqlStreamStore>(), loggerFactory);
+                            AddressRegistry.Infrastructure.MigrationsHelper.EnsureSqlSnapshotStoreSchema<Program>(host.Services.GetRequiredService<MsSqlSnapshotStore>(), loggerFactory);
+                            AddressRegistry.Infrastructure.MigrationsHelper.Run(configuration.GetConnectionString("Sequences"), loggerFactory);
+
                             await MigrationsHelper.RunAsync(
                                 configuration.GetConnectionString("ConsumerStreetNameAdmin"),
                                 loggerFactory,

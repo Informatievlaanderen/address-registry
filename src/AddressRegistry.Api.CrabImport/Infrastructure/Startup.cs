@@ -182,7 +182,7 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure
             app.UseIdempotencyDatabaseMigrations()
                 .UseCrabImportMigrations();
 
-            MigrationsHelper.Run(
+            AddressRegistry.Infrastructure.MigrationsHelper.Run(
                 _configuration.GetConnectionString("Sequences"),
                 serviceProvider.GetService<ILoggerFactory>());
 

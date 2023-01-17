@@ -39,7 +39,7 @@
             : this(
                 new StreetNamePersistentLocalId(streetNamePersistentLocalId),
                 streetNameNames,
-                addressPersistentLocalIds.Select(addressPersistentLocalId => new AddressPersistentLocalId(addressPersistentLocalId)))
+                addressPersistentLocalIds.Select(addressPersistentLocalId => new AddressPersistentLocalId(addressPersistentLocalId)).ToList())
             => ((ISetProvenance)this).SetProvenance(provenance.ToProvenance());
 
         void ISetProvenance.SetProvenance(Provenance provenance) => Provenance = new ProvenanceData(provenance);

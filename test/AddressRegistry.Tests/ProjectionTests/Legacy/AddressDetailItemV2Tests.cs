@@ -6,11 +6,13 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
     using AddressRegistry.StreetName.Events;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Pipes;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using Extensions;
     using FluentAssertions;
     using global::AutoFixture;
+    using NodaTime;
     using Projections.Legacy.AddressDetailV2;
     using Xunit;
 
@@ -847,7 +849,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasCorrectedFromRegularized.GetHash() }
             };
-            
+
             await Sut
                 .Given(
                     new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
@@ -897,6 +899,71 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                     addressDetailItemV2.OfficiallyAssigned.Should().BeTrue();
                     addressDetailItemV2.VersionTimestamp.Should().Be(addressDeregulationWasCorrected.Provenance.Timestamp);
                     addressDetailItemV2.LastEventHash.Should().Be(addressDeregulationWasCorrected.GetHash());
+                });
+        }
+
+        [Fact]
+        public async Task WhenStreetNameNamesWereCorrected()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var streetNameNamesWereCorrected = _fixture.Create<StreetNameNamesWereCorrected>();
+            var namesCorrectedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, streetNameNamesWereCorrected.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<StreetNameNamesWereCorrected>(new Envelope(streetNameNamesWereCorrected, namesCorrectedMetadata)))
+                .Then(async ct =>
+                {
+                    var addressDetailItemV2 = (await ct.AddressDetailV2.FindAsync(addressWasProposedV2.AddressPersistentLocalId));
+                    addressDetailItemV2.Should().NotBeNull();
+                    addressDetailItemV2.VersionTimestamp.Should().Be(streetNameNamesWereCorrected.Provenance.Timestamp);
+                    addressDetailItemV2.LastEventHash.Should().Be(streetNameNamesWereCorrected.GetHash());
+                });
+        }
+
+        [Fact]
+        public async Task WhenStreetNameNamesWereCorrectedWithOlderTimestamp()
+        {
+            var provenance = _fixture.Create<Provenance>();
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var streetNameNamesWereCorrected = _fixture.Create<StreetNameNamesWereCorrected>();
+            ((ISetProvenance) streetNameNamesWereCorrected).SetProvenance(new Provenance(
+                provenance.Timestamp.Minus(Duration.FromDays(1)),
+                provenance.Application,
+                provenance.Reason,
+                provenance.Operator,
+                provenance.Modification,
+                provenance.Organisation
+            ));
+            var namesCorrectedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, streetNameNamesWereCorrected.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<StreetNameNamesWereCorrected>(new Envelope(streetNameNamesWereCorrected, namesCorrectedMetadata)))
+                .Then(async ct =>
+                {
+                    var addressDetailItemV2 = (await ct.AddressDetailV2.FindAsync(addressWasProposedV2.AddressPersistentLocalId));
+                    addressDetailItemV2.Should().NotBeNull();
+                    addressDetailItemV2.VersionTimestamp.Should().Be(addressWasProposedV2.Provenance.Timestamp);
+                    addressDetailItemV2.LastEventHash.Should().Be(streetNameNamesWereCorrected.GetHash());
                 });
         }
 

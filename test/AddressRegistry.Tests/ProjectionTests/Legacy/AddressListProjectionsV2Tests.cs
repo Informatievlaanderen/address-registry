@@ -11,6 +11,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
     using Extensions;
     using FluentAssertions;
     using global::AutoFixture;
+    using NodaTime;
     using Projections.Legacy.AddressListV2;
     using Xunit;
 
@@ -808,7 +809,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                     addressListItemV2.LastEventHash.Should().Be(addressWasRemoved.GetHash());
                 });
         }
-        
+
         [Fact]
         public async Task WhenAddressWasCorrectedFromRejectedToProposed()
         {
@@ -913,6 +914,71 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                     addressListItemV2.Should().NotBeNull();
                     addressListItemV2.VersionTimestamp.Should().Be(addressWasCorrectedFromRegularized.Provenance.Timestamp);
                     addressListItemV2.LastEventHash.Should().Be(addressWasCorrectedFromRegularized.GetHash());
+                });
+        }
+
+        [Fact]
+        public async Task WhenStreetNameNamesWereCorrected()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var streetNameNamesWereCorrected = _fixture.Create<StreetNameNamesWereCorrected>();
+            var streetNameNamesWereCorrectedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, streetNameNamesWereCorrected.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, metadata)),
+                    new Envelope<StreetNameNamesWereCorrected>(new Envelope(streetNameNamesWereCorrected, streetNameNamesWereCorrectedMetadata)))
+                .Then(async ct =>
+                {
+                    var addressListItemV2 = (await ct.AddressListV2.FindAsync(addressWasProposedV2.AddressPersistentLocalId));
+                    addressListItemV2.Should().NotBeNull();
+                    addressListItemV2.VersionTimestamp.Should().Be(streetNameNamesWereCorrected.Provenance.Timestamp);
+                    addressListItemV2.LastEventHash.Should().Be(streetNameNamesWereCorrected.GetHash());
+                });
+        }
+
+        [Fact]
+        public async Task WhenStreetNameNamesWereCorrectedWithOlderTimestamp()
+        {
+            var provenance = _fixture.Create<Provenance>();
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var streetNameNamesWereCorrected = _fixture.Create<StreetNameNamesWereCorrected>();
+            ((ISetProvenance) streetNameNamesWereCorrected).SetProvenance(new Provenance(
+                provenance.Timestamp.Minus(Duration.FromDays(1)),
+                provenance.Application,
+                provenance.Reason,
+                provenance.Operator,
+                provenance.Modification,
+                provenance.Organisation
+            ));
+            var streetNameNamesWereCorrectedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, streetNameNamesWereCorrected.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, metadata)),
+                    new Envelope<StreetNameNamesWereCorrected>(new Envelope(streetNameNamesWereCorrected, streetNameNamesWereCorrectedMetadata)))
+                .Then(async ct =>
+                {
+                    var addressListItemV2 = (await ct.AddressListV2.FindAsync(addressWasProposedV2.AddressPersistentLocalId));
+                    addressListItemV2.Should().NotBeNull();
+                    addressListItemV2.VersionTimestamp.Should().Be(addressWasProposedV2.Provenance.Timestamp);
+                    addressListItemV2.LastEventHash.Should().Be(streetNameNamesWereCorrected.GetHash());
                 });
         }
 

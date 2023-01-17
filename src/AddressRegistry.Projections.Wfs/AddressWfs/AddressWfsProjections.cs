@@ -26,7 +26,21 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
         public AddressWfsProjections(WKBReader wkbReader)
         {
             _wkbReader = wkbReader;
+            // StreetName
+            When<Envelope<StreetNameNamesWereCorrected>>(async (context, message, ct) =>
+            {
+                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
+                {
+                    var item = await context.FindAndUpdateAddressDetail(
+                        addressPersistentLocalId,
+                        x =>  { },
+                        ct);
 
+                    UpdateVersionTimestampIfNewer(item, message.Message.Provenance.Timestamp);
+                }
+            });
+
+            // Address
             When<Envelope<AddressWasMigratedToStreetName>>(async (context, message, ct) =>
             {
                 var addressWfsItem = new AddressWfsItem(
@@ -378,8 +392,16 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
             => (Point) _wkbReader.Read(extendedWkbGeometry.ToByteArray());
 
 
-        private static void UpdateVersionTimestamp(AddressWfsItem addressDetailItem, Instant versionTimestamp)
-            => addressDetailItem.VersionTimestamp = versionTimestamp;
+        private static void UpdateVersionTimestamp(AddressWfsItem addressWfsItem, Instant versionTimestamp)
+            => addressWfsItem.VersionTimestamp = versionTimestamp;
+
+        private static void UpdateVersionTimestampIfNewer(AddressWfsItem addressWfsItem, Instant versionTimestamp)
+        {
+            if(versionTimestamp > addressWfsItem.VersionTimestamp)
+            {
+                addressWfsItem.VersionTimestamp = versionTimestamp;
+            }
+        }
 
         private static PositieGeometrieMethode? MapGeometryMethodToPositieGeometrieMethode(
             GeometryMethod? geometryMethod)

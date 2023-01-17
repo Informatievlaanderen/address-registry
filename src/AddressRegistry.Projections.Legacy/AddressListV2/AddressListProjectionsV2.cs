@@ -17,6 +17,24 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
     {
         public AddressListProjectionsV2()
         {
+            // StreetName
+            When<Envelope<StreetNameNamesWereCorrected>>(async (context, message, ct) =>
+            {
+                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
+                {
+                    var item = await context.FindAndUpdateAddressListItemV2(
+                        addressPersistentLocalId,
+                        item =>
+                        {
+                            UpdateVersionTimestampIfNewer(item, message.Message.Provenance.Timestamp);
+                        },
+                        ct);
+
+                    UpdateHash(item, message);
+                }
+            });
+
+            // Address
             When<Envelope<AddressWasMigratedToStreetName>>(async (context, message, ct) =>
             {
                 var addressListItemV2 = new AddressListItemV2(
@@ -432,6 +450,14 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
 
         private static void UpdateVersionTimestamp(AddressListItemV2 addressListItemV2, Instant timestamp)
             => addressListItemV2.VersionTimestamp = timestamp;
+
+        private static void UpdateVersionTimestampIfNewer(AddressListItemV2 addressListItemV2, Instant versionTimestamp)
+        {
+            if(versionTimestamp > addressListItemV2.VersionTimestamp)
+            {
+                addressListItemV2.VersionTimestamp = versionTimestamp;
+            }
+        }
 
         private static void UpdateHash<T>(AddressListItemV2 entity, Envelope<T> wrappedEvent) where T : IHaveHash, IMessage
         {

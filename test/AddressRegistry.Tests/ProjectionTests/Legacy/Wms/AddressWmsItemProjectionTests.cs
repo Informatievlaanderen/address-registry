@@ -14,6 +14,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
     using global::AutoFixture;
     using NetTopologySuite.Geometries;
     using NetTopologySuite.IO;
+    using NodaTime;
     using Projections.Wms.AddressWmsItem;
     using Xunit;
     using Envelope = Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope;
@@ -878,6 +879,69 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem.OfficiallyAssigned.Should().BeTrue();
                     addressWmsItem.VersionTimestamp.Should().Be(addressDeregulationWasCorrected.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
+        public async Task WhenStreetNameNamesWereCorrected()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var streetNameNamesWereCorrected = _fixture.Create<StreetNameNamesWereCorrected>();
+            var streetNameNamesWereCorrectedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, streetNameNamesWereCorrected.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<StreetNameNamesWereCorrected>(new Envelope(streetNameNamesWereCorrected, streetNameNamesWereCorrectedMetadata)))
+                .Then(async ct =>
+                {
+                    var item = (await ct.AddressWmsItems.FindAsync(addressWasProposedV2.AddressPersistentLocalId));
+                    item.Should().NotBeNull();
+                    item.VersionTimestamp.Should().Be(streetNameNamesWereCorrected.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
+        public async Task WhenStreetNameNamesWereCorrectedWithOlderTimestamp()
+        {
+            var provenance = _fixture.Create<Provenance>();
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var streetNameNamesWereCorrected = _fixture.Create<StreetNameNamesWereCorrected>();
+            var streetNameNamesWereCorrectedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, streetNameNamesWereCorrected.GetHash() }
+            };
+            ((ISetProvenance) streetNameNamesWereCorrected).SetProvenance(new Provenance(
+                provenance.Timestamp.Minus(Duration.FromDays(1)),
+                provenance.Application,
+                provenance.Reason,
+                provenance.Operator,
+                provenance.Modification,
+                provenance.Organisation
+            ));
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<StreetNameNamesWereCorrected>(new Envelope(streetNameNamesWereCorrected, streetNameNamesWereCorrectedMetadata)))
+                .Then(async ct =>
+                {
+                    var item = (await ct.AddressWmsItems.FindAsync(addressWasProposedV2.AddressPersistentLocalId));
+                    item.Should().NotBeNull();
+                    item.VersionTimestamp.Should().Be(addressWasProposedV2.Provenance.Timestamp);
                 });
         }
     }

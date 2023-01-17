@@ -105,6 +105,14 @@ namespace AddressRegistry.StreetName
             }
         }
 
+        public void CorrectStreetNameNames(IDictionary<string,string> streetNameNames)
+        {
+            ApplyChange(new StreetNameNamesWereCorrected(
+                PersistentLocalId,
+                streetNameNames,
+                StreetNameAddresses.Select(x => new AddressPersistentLocalId(x.AddressPersistentLocalId))));
+        }
+
         private static void RejectAddressesBecauseStreetNameWasRetired(IEnumerable<StreetNameAddress> addresses)
         {
             foreach (var address in addresses)

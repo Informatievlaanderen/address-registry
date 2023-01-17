@@ -33,6 +33,7 @@ namespace AddressRegistry.StreetName
             Register<StreetNameWasRetired>(When);
             Register<StreetNameWasCorrectedFromRetiredToCurrent>(When);
             Register<StreetNameWasRemoved>(When);
+            Register<StreetNameNamesWereCorrected>(When);
 
             Register<AddressWasMigratedToStreetName>(When);
             Register<AddressWasProposedV2>(When);
@@ -112,6 +113,16 @@ namespace AddressRegistry.StreetName
             MunicipalityId = new MunicipalityId(@event.MunicipalityId);
         }
 
+        private void When(StreetNameNamesWereCorrected @event)
+        {
+            foreach (var addressPersistentLocalId in @event.AddressPersistentLocalIds)
+            {
+                StreetNameAddresses
+                    .GetByPersistentLocalId(new AddressPersistentLocalId(addressPersistentLocalId))
+                    .Route(@event);
+            }
+        }
+
         private void When(AddressWasMigratedToStreetName @event)
         {
             var address = new StreetNameAddress(applier: ApplyChange);
@@ -119,7 +130,9 @@ namespace AddressRegistry.StreetName
 
             if (@event.ParentPersistentLocalId.HasValue)
             {
-                var parent = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value));
+                var parent =
+                    StreetNameAddresses.GetByPersistentLocalId(
+                        new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value));
                 parent.AddChild(address);
             }
 
@@ -133,7 +146,9 @@ namespace AddressRegistry.StreetName
 
             if (@event.ParentPersistentLocalId.HasValue)
             {
-                var parent = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value));
+                var parent =
+                    StreetNameAddresses.GetByPersistentLocalId(
+                        new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value));
                 parent.AddChild(address);
             }
 
@@ -144,7 +159,8 @@ namespace AddressRegistry.StreetName
 
         private void When(AddressWasCorrectedFromApprovedToProposed @event) => RouteToAddress(@event);
 
-        private void When(AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected @event) => RouteToAddress(@event);
+        private void When(AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected @event) =>
+            RouteToAddress(@event);
 
         private void When(AddressWasRejected @event) => RouteToAddress(@event);
 
@@ -214,7 +230,8 @@ namespace AddressRegistry.StreetName
 
             foreach (var address in @event.Addresses.Where(x => x.ParentId.HasValue))
             {
-                var parent = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(address.ParentId!.Value));
+                var parent =
+                    StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(address.ParentId!.Value));
 
                 var streetNameAddress = new StreetNameAddress(applier: ApplyChange);
                 streetNameAddress.RestoreSnapshot(PersistentLocalId, address);

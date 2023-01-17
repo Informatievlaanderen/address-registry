@@ -144,6 +144,18 @@ namespace AddressRegistry.StreetName
                     streetName.CorrectStreetNameRetirement();
                 });
 
+            For<CorrectStreetNameNames>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<CorrectStreetNameNames, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streetNameStreamId = new StreetNameStreamId(message.Command.PersistentLocalId);
+                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+
+                    streetName.CorrectStreetNameNames(message.Command.StreetNameNames);
+                });
+
             For<RemoveStreetName>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
                 .AddEventHash<RemoveStreetName, StreetName>(getUnitOfWork)

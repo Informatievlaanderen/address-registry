@@ -57,6 +57,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             return exception switch
             {
                 AddressHasInvalidStatusException => ValidationErrors.CorrectAddressRegularization.AddressInvalidStatus.ToTicketError(),
+                ParentAddressHasInvalidStatusException => ValidationErrors.CorrectAddressRegularization.ParentInvalidStatus.ToTicketError(),
                 _ => null
             };
         }

@@ -128,6 +128,40 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRegulariz
         }
 
         [Fact]
+        public async Task WhenParentAddressHasInvalidStatusException_ThenTicketingErrorIsExpected()
+        {
+            // Arrange
+            var ticketing = new Mock<ITicketing>();
+
+            var sut = new CorrectAddressRegularizationLambdaHandler(
+                Container.Resolve<IConfiguration>(),
+                new FakeRetryPolicy(),
+                ticketing.Object,
+                Mock.Of<IStreetNames>(),
+                MockExceptionIdempotentCommandHandler<ParentAddressHasInvalidStatusException>().Object);
+
+            // Act
+            await sut.Handle(
+                new CorrectAddressRegularizationLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressRegularizationSqsRequest()
+                {
+                    Request = new CorrectAddressRegularizationBackOfficeRequest { PersistentLocalId = Fixture.Create<int>() },
+                    TicketId = Guid.NewGuid(),
+                    Metadata = new Dictionary<string, object?>(),
+                    ProvenanceData = Fixture.Create<ProvenanceData>()
+                })
+                , CancellationToken.None);
+
+            //Assert
+            ticketing.Verify(x =>
+                x.Error(
+                    It.IsAny<Guid>(),
+                    new TicketError(
+                        "Deze actie is enkel toegestaan op adressen waarbij het huisnummer de status 'inGebruik' heeft.",
+                        "AdresHuisnummerVoorgesteldGehistoreerdOfAfgekeurd"),
+                    CancellationToken.None));
+        }
+
+        [Fact]
         public async Task WhenIdempotencyException_ThenTicketingCompleteIsExpected()
         {
             // Arrange

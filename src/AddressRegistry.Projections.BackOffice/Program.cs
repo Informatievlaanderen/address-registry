@@ -118,7 +118,7 @@ namespace AddressRegistry.Projections.BackOffice
                 await DistributedLock<ProgramLogger>.RunAsync(
                         async () =>
                         {
-                            await MigrationsHelper.RunAsync(
+                            await Infrastructure.MigrationsHelper.RunAsync(
                                 configuration.GetConnectionString("BackOfficeProjectionsAdmin"),
                                 loggerFactory,
                                 CancellationToken.None);

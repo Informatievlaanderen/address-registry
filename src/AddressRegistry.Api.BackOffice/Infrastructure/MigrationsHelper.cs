@@ -33,29 +33,9 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure
                 .Execute(() =>
                 {
                     logger?.LogInformation("Running EF Migrations.");
-                    RunInternalSequence(sequenceConnectionString, loggerFactory);
+                    AddressRegistry.Infrastructure.MigrationsHelper.Run(sequenceConnectionString, loggerFactory);
                     RunInternalBackOffice(backOfficeConnectionString, loggerFactory);
                 });
-        }
-
-        private static void RunInternalSequence(string connectionString, ILoggerFactory? loggerFactory)
-        {
-            var migratorOptions = new DbContextOptionsBuilder<SequenceContext>()
-                .UseSqlServer(
-                    connectionString,
-                    sqlServerOptions =>
-                    {
-                        sqlServerOptions.EnableRetryOnFailure();
-                        sqlServerOptions.MigrationsHistoryTable(MigrationTables.Sequence, Schema.Sequence);
-                    });
-
-            if (loggerFactory != null)
-            {
-                migratorOptions = migratorOptions.UseLoggerFactory(loggerFactory);
-            }
-
-            using var migrator = new SequenceContext(migratorOptions.Options);
-            migrator.Database.Migrate();
         }
 
         private static void RunInternalBackOffice(string connectionString, ILoggerFactory? loggerFactory)

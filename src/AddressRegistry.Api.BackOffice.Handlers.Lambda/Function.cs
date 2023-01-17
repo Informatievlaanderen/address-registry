@@ -33,7 +33,11 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
     public class Function : FunctionBase
     {
         public Function() : base(new List<Assembly> { typeof(ApproveAddressSqsRequest).Assembly })
-        { }
+        {
+            //TODO: run infrastructure migrations helper
+            //TODO: EnsureSnapshot
+            //TODO: EnsureSqlStreamStore
+        }
 
         protected override IServiceProvider ConfigureServices(IServiceCollection services)
         {
@@ -103,9 +107,6 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
                 new IdempotencyMigrationsTableInfo(Schema.Import),
                 new IdempotencyTableInfo(Schema.Import),
                 loggerFactory));
-
-            builder.RegisterEventstreamModule(configuration);
-            builder.RegisterSnapshotModule(configuration);
 
             builder.Populate(services);
 

@@ -1,4 +1,5 @@
 Autofac
+Polly
 
 Be.Vlaanderen.Basisregisters.AggregateSource
 Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore

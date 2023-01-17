@@ -31,8 +31,8 @@ namespace AddressRegistry.Infrastructure.Modules
                 .RegisterType<ConcurrentUnitOfWork>()
                 .InstancePerLifetimeScope();
 
-            builder
-                .RegisterEventstreamModule(_configuration);
+            builder.RegisterEventstreamModule(_configuration);
+            builder.RegisterSnapshotModule(_configuration);
 
             CommandHandlerModules.Register(builder);
 

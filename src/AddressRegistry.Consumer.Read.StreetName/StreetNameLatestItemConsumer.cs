@@ -1,51 +1,58 @@
 namespace AddressRegistry.Consumer.Read.StreetName
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using Autofac;
-    using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple;
+    using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
+    using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
     using Projections;
 
-    public class StreetNameLatestItemConsumer
+    public class StreetNameLatestItemConsumer : BackgroundService
     {
-        private readonly ILifetimeScope _container;
-        private readonly KafkaOptions _options;
-        private readonly StreetNameConsumerOptions _streetNameConsumerOptions;
+        private readonly IHostApplicationLifetime _hostApplicationLifetime;
+        private readonly IIdempotentConsumer<StreetNameConsumerContext> _kafkaIdemIdempotencyConsumer;
+        private readonly ILogger<StreetNameLatestItemConsumer> _logger;
 
         public StreetNameLatestItemConsumer(
-            ILifetimeScope container,
-            KafkaOptions options,
-            StreetNameConsumerOptions streetNameConsumerOptions)
+            ILifetimeScope lifetimeScope,
+            IHostApplicationLifetime hostApplicationLifetime,
+            ILoggerFactory loggerFactory,
+            IIdempotentConsumer<StreetNameConsumerContext> kafkaIdemIdempotencyConsumer)
         {
-            _container = container;
-            _options = options;
-            _streetNameConsumerOptions = streetNameConsumerOptions;
+            _hostApplicationLifetime = hostApplicationLifetime;
+            _kafkaIdemIdempotencyConsumer = kafkaIdemIdempotencyConsumer;
+
+            _logger = loggerFactory.CreateLogger<StreetNameLatestItemConsumer>();
         }
 
-        public Task Start(CancellationToken cancellationToken = default)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var latestItemProjector = new ConnectedProjector<StreetNameConsumerContext>(Resolve.WhenEqualToHandlerMessageType(new StreetNameLatestItemProjections().Handlers));
+            var latestItemProjector = new ConnectedProjector<StreetNameConsumerContext>(
+                Resolve.WhenEqualToHandlerMessageType(new StreetNameLatestItemProjections().Handlers));
 
-            var consumerGroupId = $"{nameof(AddressRegistry)}.{nameof(StreetNameLatestItemConsumer)}.{_streetNameConsumerOptions.Topic}{_streetNameConsumerOptions.ConsumerGroupSuffix}";
-            return KafkaConsumer.Consume(
-                new KafkaConsumerOptions(
-                    _options.BootstrapServers,
-                    _options.SaslUserName,
-                    _options.SaslPassword,
-                    consumerGroupId,
-                    _streetNameConsumerOptions.Topic,
-                    async message =>
-                    {
-                        //Cannot cancel in between
-                        var streetnameConsumerContext = _container.Resolve<StreetNameConsumerContext>();
-                        await latestItemProjector.ProjectAsync(streetnameConsumerContext, message, CancellationToken.None);
-                        await streetnameConsumerContext.SaveChangesAsync(CancellationToken.None);
-                    },
-                    noMessageFoundDelay: 300,
-                    offset: null,
-                    _options.JsonSerializerSettings),
-                cancellationToken);
+            try
+            {
+                await _kafkaIdemIdempotencyConsumer.ConsumeContinuously(async (message, context) =>
+                {
+                    _logger.LogInformation("Handling next message");
+
+                    // await commandHandlingProjector.ProjectAsync(commandHandler, message, stoppingToken)
+                    //     .ConfigureAwait(false);
+                    await latestItemProjector.ProjectAsync(context, message, stoppingToken).ConfigureAwait(false);
+
+                    //CancellationToken.None to prevent halfway consumption
+                    await context.SaveChangesAsync(CancellationToken.None);
+
+                }, stoppingToken);
+            }
+            catch (Exception)
+            {
+                _hostApplicationLifetime.StopApplication();
+                throw;
+            }
         }
     }
 }

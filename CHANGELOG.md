@@ -1,3 +1,19 @@
+# [3.72.0](https://github.com/informatievlaanderen/address-registry/compare/v3.71.0...v3.72.0) (2023-01-18)
+
+
+### Bug Fixes
+
+* catch parentInvalidStatusException in correctRegularization lambda ([28d506f](https://github.com/informatievlaanderen/address-registry/commit/28d506fb3d10dd77b707e86797f0b5588cc86112))
+* default iscomplete in extract GAWR-4251 ([948583b](https://github.com/informatievlaanderen/address-registry/commit/948583bdd7855d65d53652e3501cb80912620b30))
+* temporarily disable acm/idm ([55bfcc5](https://github.com/informatievlaanderen/address-registry/commit/55bfcc5c6cc2de611130562f548d1cbdbb8756f0))
+
+
+### Features
+
+* add acm/idm ([b2a932d](https://github.com/informatievlaanderen/address-registry/commit/b2a932dd53babc3ee3e6337403ed4bda2944af89))
+* add projections for StreetNameNamesWereCorrected ([154ea12](https://github.com/informatievlaanderen/address-registry/commit/154ea12a46f1079d2c9bbdaa0a5107264cd2ebac))
+* add StreetNameNamesWereCorrected to domain ([feff03d](https://github.com/informatievlaanderen/address-registry/commit/feff03d5b1ee2b571630133c31cc09901684319c))
+
 # [3.71.0](https://github.com/informatievlaanderen/address-registry/compare/v3.70.3...v3.71.0) (2023-01-12)
 
 

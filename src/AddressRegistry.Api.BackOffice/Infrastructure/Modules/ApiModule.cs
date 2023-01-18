@@ -73,7 +73,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
             builder.RegisterModule(new MunicipalityConsumerModule(_configuration,_services, _loggerFactory));
             builder.RegisterSnapshotModule(_configuration);
 
-            _services.AddAcmIdmAuthorizationHandlers();
+            //_services.AddAcmIdmAuthorizationHandlers();
 
             builder.Populate(_services);
         }

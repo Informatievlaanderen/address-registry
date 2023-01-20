@@ -89,18 +89,12 @@ Target.create "Publish_Solution" (fun _ ->
 
 Target.create "Pack_Solution" (fun _ ->
   [
-    "AddressRegistry.Projector"
     "AddressRegistry.Api.Legacy"
     "AddressRegistry.Api.Oslo"
     "AddressRegistry.Api.Extract"
     "AddressRegistry.Api.CrabImport"
     "AddressRegistry.Api.BackOffice"
     "AddressRegistry.Api.BackOffice.Abstractions"
-    "AddressRegistry.Consumer"
-    "AddressRegistry.Consumer.Read.Municipality"
-    "AddressRegistry.Consumer.Read.StreetName"
-    "AddressRegistry.Migrator.Address"
-    "AddressRegistry.Producer"
   ] |> List.iter pack)
 
 Target.create "Containerize_Projector" (fun _ -> containerize "AddressRegistry.Projector" "projector")

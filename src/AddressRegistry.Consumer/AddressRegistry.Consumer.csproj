@@ -13,9 +13,6 @@
     <Content Include="Dockerfile" CopyToOutputDirectory="Always" />
     <Content Include="appsettings.json" CopyToOutputDirectory="Always" />
     <Content Include="appsettings.*.json" CopyToOutputDirectory="Always" />
-    <None Remove="appsettings - Copy.json" />
-    <None Remove="appsettings.LAPTOP-G7FAHQCF.json" />
-    <Content Include="paket.template" CopyToOutputDirectory="Always" />
     <Content Include="init.sh" CopyToOutputDirectory="Always" />
   </ItemGroup>
 

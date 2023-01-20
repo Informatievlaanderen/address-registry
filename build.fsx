@@ -48,7 +48,12 @@ Target.create "Build_Solution" (fun _ ->
   buildSolution "AddressRegistry"
 )
 
-Target.create "Test_Solution" (fun _ -> test "AddressRegistry")
+Target.create "Test_Solution" (fun _ ->
+    [
+        "test" @@ "AddressRegistry.Tests"
+        "test" @@ "AddressRegistry.Api.Legacy.Tests"
+    ] |> List.iter testWithDotNet
+)
 
 Target.create "Publish_Solution" (fun _ ->
   [

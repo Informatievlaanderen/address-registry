@@ -48,16 +48,16 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure
         /// <param name="services">The collection of services to configure the application with.</param>
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            // var oAuth2IntrospectionOptions = _configuration
-            //     .GetSection(nameof(OAuth2IntrospectionOptions))
-            //     .Get<OAuth2IntrospectionOptions>();
+            var oAuth2IntrospectionOptions = _configuration
+                .GetSection(nameof(OAuth2IntrospectionOptions))
+                .Get<OAuth2IntrospectionOptions>();
 
             var baseUrl = _configuration.GetValue<string>("BaseUrl");
             var baseUrlForExceptions = baseUrl.EndsWith("/")
                 ? baseUrl.Substring(0, baseUrl.Length - 1)
                 : baseUrl;
 
-            //services.AddAcmIdmAuthentication(oAuth2IntrospectionOptions);
+            services.AddAcmIdmAuthentication(oAuth2IntrospectionOptions);
             services
                 .ConfigureDefaultForApi<Startup>(new StartupConfigureOptions
                 {
@@ -107,7 +107,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure
                         },
                         Authorization = options =>
                         {
-                            //options.AddAcmIdmAuthorization();
+                            options.AddAcmIdmAuthorization();
                         }
                     }
                 }

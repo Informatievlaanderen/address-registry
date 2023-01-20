@@ -270,6 +270,8 @@ NUGET
       System.Data.Common (>= 4.3) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
     Be.Vlaanderen.Basisregisters.DependencyInjection (1.0.3) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
       Microsoft.Extensions.DependencyInjection.Abstractions (>= 6.0) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
+    Be.Vlaanderen.Basisregisters.DockerUtilities (1.0.1)
+      Ductus.FluentDocker (>= 2.10.57) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
     Be.Vlaanderen.Basisregisters.EntityFrameworkCore.EntityTypeConfiguration (3.0) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
       Microsoft.EntityFrameworkCore (>= 6.0.3) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
     Be.Vlaanderen.Basisregisters.EventHandling (4.2.3)
@@ -447,6 +449,9 @@ NUGET
     Destructurama.JsonNet (2.0)
       Newtonsoft.Json (>= 10.0.3)
       Serilog (>= 2.5)
+    Ductus.FluentDocker (2.10.59) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
+      Newtonsoft.Json (>= 13.0.1)
+      SharpCompress (>= 0.29)
     EntityFramework (6.4.4)
       Microsoft.CSharp (>= 4.7) - restriction: || (&& (== net472) (>= netstandard2.1)) (== net6.0)
       System.CodeDom (>= 4.7) - restriction: || (&& (== net472) (>= netstandard2.1)) (== net6.0)
@@ -1073,6 +1078,7 @@ NUGET
       Serilog (>= 2.10)
       xunit.abstractions (>= 2.0.3)
       xunit.core (>= 2.4.1)
+    SharpCompress (0.32.2) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
     SourceLink.Copy.PdbFiles (2.8.3) - copy_local: true
     SourceLink.Embed.AllSourceFiles (2.8.3) - copy_local: true
     SqlStreamStore (1.2) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)

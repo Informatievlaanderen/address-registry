@@ -154,6 +154,15 @@ jobs:
         path: /home/runner/work/address-registry/address-registry/dist/nuget/Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Legacy.*.nupkg
       env:
         SEMVER: ${{ env.RELEASE_VERSION }}
+        
+    - name: Upload NuGet package be-.-vlaanderen-.-basisregisters-.-address-registry-.-api-.-extract
+      if: env.RELEASE_VERSION != 'none'
+      uses: actions/upload-artifact@v3
+      with:
+        name: nuget-be-.-vlaanderen-.-basisregisters-.-address-registry-.-api-.-extract
+        path: /home/runner/work/address-registry/address-registry/dist/nuget/Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Extract.*.nupkg
+      env:
+        SEMVER: ${{ env.RELEASE_VERSION }}
 
     - name: Upload NuGet package be-.-vlaanderen-.-basisregisters-.-address-registry-.-api-.-crab-import
       if: env.RELEASE_VERSION != 'none'
@@ -161,6 +170,15 @@ jobs:
       with:
         name: nuget-be-.-vlaanderen-.-basisregisters-.-address-registry-.-api-.-crab-import
         path: /home/runner/work/address-registry/address-registry/dist/nuget/Be.Vlaanderen.Basisregisters.AddressRegistry.Api.CrabImport.*.nupkg
+      env:
+        SEMVER: ${{ env.RELEASE_VERSION }}
+
+    - name: Upload NuGet package be-.-vlaanderen-.-basisregisters-.-address-registry-.-api-.-back-office
+      if: env.RELEASE_VERSION != 'none'
+      uses: actions/upload-artifact@v3
+      with:
+        name: nuget-be-.-vlaanderen-.-basisregisters-.-address-registry-.-api-.-back-office
+        path: /home/runner/work/address-registry/address-registry/dist/nuget/Be.Vlaanderen.Basisregisters.AddressRegistry.Api.BackOffice.*.nupkg
       env:
         SEMVER: ${{ env.RELEASE_VERSION }}
 

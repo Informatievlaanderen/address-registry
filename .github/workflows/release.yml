@@ -478,11 +478,25 @@ jobs:
         name: nuget-be-.-vlaanderen-.-basisregisters-.-address-registry-.-api-.-legacy
         path: ~/
 
+    - name: Download NuGet package be-.-vlaanderen-.-basisregisters-.-address-registry-.-api-.-extract
+      if: env.RELEASE_VERSION != 'none'
+      uses: actions/download-artifact@v3
+      with:
+        name: nuget-be-.-vlaanderen-.-basisregisters-.-address-registry-.-api-.-extract
+        path: ~/
+
     - name: Download NuGet package be-.-vlaanderen-.-basisregisters-.-address-registry-.-api-.-crab-import
       if: env.RELEASE_VERSION != 'none'
       uses: actions/download-artifact@v3
       with:
         name: nuget-be-.-vlaanderen-.-basisregisters-.-address-registry-.-api-.-crab-import
+        path: ~/
+    
+    - name: Download NuGet package be-.-vlaanderen-.-basisregisters-.-address-registry-.-api-.-back-office
+      if: env.RELEASE_VERSION != 'none'
+      uses: actions/download-artifact@v3
+      with:
+        name: nuget-be-.-vlaanderen-.-basisregisters-.-address-registry-.-api-.-back-office
         path: ~/
 
     - name: Download NuGet package be-.-vlaanderen-.-basisregisters-.-address-registry-.-api-.-back-office-.-abstractions
@@ -492,13 +506,14 @@ jobs:
         name: nuget-be-.-vlaanderen-.-basisregisters-.-address-registry-.-api-.-back-office-.-abstractions
         path: ~/
 
-
     - name: Publish packages to NuGet
       shell: bash
       run: |
         dotnet nuget push ~/Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Oslo.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
         dotnet nuget push ~/Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Legacy.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
+        dotnet nuget push ~/Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Extract.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
         dotnet nuget push ~/Be.Vlaanderen.Basisregisters.AddressRegistry.Api.CrabImport.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
+        dotnet nuget push ~/Be.Vlaanderen.Basisregisters.AddressRegistry.Api.BackOffice.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
         dotnet nuget push ~/Be.Vlaanderen.Basisregisters.AddressRegistry.Api.BackOffice.Abstractions.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
       env:
         SEMVER: ${{ needs.build.outputs.version }}

@@ -1,3 +1,10 @@
+# [3.73.0](https://github.com/informatievlaanderen/address-registry/compare/v3.72.0...v3.73.0) (2023-01-25)
+
+
+### Features
+
+* add commandhandling streetname consumer ([61ce0e7](https://github.com/informatievlaanderen/address-registry/commit/61ce0e711c31e6dbf2e9c90b3762aa44bac01009))
+
 # [3.72.0](https://github.com/informatievlaanderen/address-registry/compare/v3.71.0...v3.72.0) (2023-01-18)
 
 

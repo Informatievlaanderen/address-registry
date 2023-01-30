@@ -111,7 +111,6 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure
                         }
                     }
                     .EnableJsonErrorActionFilterOption())
-                .Configure<ResponseOptions>(_configuration)
                 .Configure<TicketingOptions>(_configuration.GetSection(TicketingModule.TicketingServiceConfigKey));
 
             var containerBuilder = new ContainerBuilder();

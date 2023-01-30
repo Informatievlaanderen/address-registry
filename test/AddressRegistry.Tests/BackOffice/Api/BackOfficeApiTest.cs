@@ -30,16 +30,12 @@ namespace AddressRegistry.Tests.BackOffice.Api
         protected const string PublicTicketUrl = "https://www.ticketing.com";
         protected const string InternalTicketUrl = "https://www.internalticketing.com";
 
-        protected IOptions<ResponseOptions> ResponseOptions { get; }
         protected IOptions<TicketingOptions> TicketingOptions { get; }
         protected Mock<IMediator> MockMediator { get; }
 
         protected BackOfficeApiTest(ITestOutputHelper testOutputHelper)
             : base(testOutputHelper)
         {
-            ResponseOptions = Options.Create(Fixture.Create<ResponseOptions>());
-            ResponseOptions.Value.DetailUrl = DetailUrl;
-
             TicketingOptions = Options.Create(Fixture.Create<TicketingOptions>());
             TicketingOptions.Value.PublicBaseUrl = PublicTicketUrl;
             TicketingOptions.Value.InternalBaseUrl = InternalTicketUrl;

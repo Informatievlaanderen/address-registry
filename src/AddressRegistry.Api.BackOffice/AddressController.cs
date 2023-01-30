@@ -7,7 +7,6 @@ namespace AddressRegistry.Api.BackOffice
     using Be.Vlaanderen.Basisregisters.Sqs.Requests;
     using FluentValidation;
     using FluentValidation.Results;
-    using Infrastructure;
     using Infrastructure.Options;
     using MediatR;
     using Microsoft.AspNetCore.Mvc;
@@ -20,13 +19,11 @@ namespace AddressRegistry.Api.BackOffice
     public partial class AddressController : ApiController
     {
         private readonly IMediator _mediator;
-        private readonly UseSqsToggle _useSqsToggle;
         private readonly TicketingOptions _ticketingOptions;
 
-        public AddressController(IMediator mediator, UseSqsToggle useSqsToggle, IOptions<TicketingOptions> ticketingOptions)
+        public AddressController(IMediator mediator, IOptions<TicketingOptions> ticketingOptions)
         {
             _mediator = mediator;
-            _useSqsToggle = useSqsToggle;
             _ticketingOptions = ticketingOptions.Value;
         }
 

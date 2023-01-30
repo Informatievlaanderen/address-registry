@@ -28,7 +28,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
 
         public GivenSqsToggleEnabled(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            _controller = CreateApiBusControllerWithUser<AddressController>(useSqs: true);
+            _controller = CreateApiBusControllerWithUser<AddressController>();
             _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
         }
 

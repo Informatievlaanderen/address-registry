@@ -51,9 +51,9 @@ namespace AddressRegistry.Tests.BackOffice.Api
             return new Uri($"{InternalTicketUrl}/tickets/{ticketId:D}");
         }
 
-        protected T CreateApiBusControllerWithUser<T>(bool useSqs = false) where T : ApiController
+        protected T CreateApiBusControllerWithUser<T>() where T : ApiController
         {
-            var controller = Activator.CreateInstance(typeof(T), MockMediator.Object, new UseSqsToggle(useSqs), TicketingOptions) as T;
+            var controller = Activator.CreateInstance(typeof(T), MockMediator.Object, TicketingOptions) as T;
 
             var claims = new List<Claim>
             {

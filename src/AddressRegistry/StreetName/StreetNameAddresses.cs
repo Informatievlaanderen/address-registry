@@ -7,22 +7,14 @@ namespace AddressRegistry.StreetName
 
     public class StreetNameAddresses : List<StreetNameAddress>
     {
-        public IEnumerable<StreetNameAddress> CurrentStreetNameAddresses =>
-            this.Where(x => !x.IsRemoved && x.Status == AddressStatus.Current);
-
         public IEnumerable<StreetNameAddress> ProposedStreetNameAddresses =>
             this.Where(x => !x.IsRemoved && x.Status == AddressStatus.Proposed);
 
+        public IEnumerable<StreetNameAddress> CurrentStreetNameAddresses =>
+            this.Where(x => !x.IsRemoved && x.Status == AddressStatus.Current);
+
         public bool HasPersistentLocalId(AddressPersistentLocalId addressPersistentLocalId)
             => this.Any(x => x.AddressPersistentLocalId == addressPersistentLocalId);
-
-        public bool HasPersistentLocalId(AddressPersistentLocalId addressPersistentLocalId,
-            out StreetNameAddress? streetNameAddress)
-        {
-            streetNameAddress = this.SingleOrDefault(x => x.AddressPersistentLocalId == addressPersistentLocalId);
-
-            return streetNameAddress is not null;
-        }
 
         public StreetNameAddress? FindByPersistentLocalId(AddressPersistentLocalId addressPersistentLocalId)
             => this.SingleOrDefault(x => x.AddressPersistentLocalId == addressPersistentLocalId);

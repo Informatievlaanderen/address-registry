@@ -44,29 +44,29 @@ namespace AddressRegistry.StreetName
             Register<AddressWasMigratedToStreetName>(When);
             Register<AddressWasProposedV2>(When);
             Register<AddressWasApproved>(When);
-            Register<AddressWasCorrectedFromApprovedToProposed>(When);
-            Register<AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected>(When);
             Register<AddressWasRejected>(When);
             Register<AddressWasRejectedBecauseHouseNumberWasRejected>(When);
             Register<AddressWasRejectedBecauseHouseNumberWasRetired>(When);
             Register<AddressWasRejectedBecauseStreetNameWasRetired>(When);
-            Register<AddressWasCorrectedFromRejectedToProposed>(When);
-            Register<AddressWasDeregulated>(When);
-            Register<AddressWasRegularized>(When);
             Register<AddressWasRetiredV2>(When);
             Register<AddressWasRetiredBecauseHouseNumberWasRetired>(When);
             Register<AddressWasRetiredBecauseStreetNameWasRetired>(When);
+            Register<AddressWasRemovedV2>(When);
+            Register<AddressWasRemovedBecauseHouseNumberWasRemoved>(When);
+            Register<AddressWasDeregulated>(When);
+            Register<AddressWasRegularized>(When);
+            Register<AddressWasCorrectedFromApprovedToProposed>(When);
+            Register<AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected>(When);
+            Register<AddressWasCorrectedFromRejectedToProposed>(When);
             Register<AddressWasCorrectedFromRetiredToCurrent>(When);
-            Register<AddressPositionWasChanged>(When);
-            Register<AddressPostalCodeWasChangedV2>(When);
             Register<AddressPositionWasCorrectedV2>(When);
             Register<AddressPostalCodeWasCorrectedV2>(When);
             Register<AddressHouseNumberWasCorrectedV2>(When);
             Register<AddressBoxNumberWasCorrectedV2>(When);
-            Register<AddressWasRemovedV2>(When);
-            Register<AddressWasRemovedBecauseHouseNumberWasRemoved>(When);
             Register<AddressRegularizationWasCorrected>(When);
             Register<AddressDeregulationWasCorrected>(When);
+            Register<AddressPositionWasChanged>(When);
+            Register<AddressPostalCodeWasChangedV2>(When);
 
             Register<StreetNameNamesWereCorrected>(When);
         }
@@ -115,20 +115,6 @@ namespace AddressRegistry.StreetName
             _lastEvent = @event;
         }
 
-        private void When(AddressWasCorrectedFromApprovedToProposed @event)
-        {
-            Status = AddressStatus.Proposed;
-
-            _lastEvent = @event;
-        }
-
-        private void When(AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected @event)
-        {
-            Status = AddressStatus.Proposed;
-
-            _lastEvent = @event;
-        }
-
         private void When(AddressWasRejected @event)
         {
             Status = AddressStatus.Rejected;
@@ -156,26 +142,6 @@ namespace AddressRegistry.StreetName
 
             _lastEvent = @event;
         }
-        private void When(AddressWasCorrectedFromRejectedToProposed @event)
-        {
-            Status = AddressStatus.Proposed;
-            _lastEvent = @event;
-        }
-
-        private void When(AddressWasDeregulated @event)
-        {
-            IsOfficiallyAssigned = false;
-            Status = AddressStatus.Current;
-
-            _lastEvent = @event;
-        }
-
-        private void When(AddressWasRegularized @event)
-        {
-            IsOfficiallyAssigned = true;
-
-            _lastEvent = @event;
-        }
 
         private void When(AddressWasRetiredV2 @event)
         {
@@ -198,32 +164,31 @@ namespace AddressRegistry.StreetName
             _lastEvent = @event;
         }
 
-        private void When(AddressWasCorrectedFromRetiredToCurrent @event)
+        private void When(AddressWasRemovedV2 @event)
         {
+            IsRemoved = true;
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressWasRemovedBecauseHouseNumberWasRemoved @event)
+        {
+            IsRemoved = true;
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressWasRegularized @event)
+        {
+            IsOfficiallyAssigned = true;
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressWasDeregulated @event)
+        {
+            IsOfficiallyAssigned = false;
             Status = AddressStatus.Current;
-
-            _lastEvent = @event;
-        }
-
-        private void When(AddressPositionWasChanged @event)
-        {
-            Geometry = new AddressGeometry(
-                @event.GeometryMethod,
-                @event.GeometrySpecification,
-                new ExtendedWkbGeometry(@event.ExtendedWkbGeometry));
-
-            _lastEvent = @event;
-        }
-
-        private void When(AddressPostalCodeWasChangedV2 @event)
-        {
-            PostalCode = new PostalCode(@event.PostalCode);
-
-            foreach (var boxNumberPersistentLocalId in @event.BoxNumberPersistentLocalIds)
-            {
-                var boxNumberAddress = _children.Single(x => x.AddressPersistentLocalId == boxNumberPersistentLocalId);
-                boxNumberAddress.PostalCode = new PostalCode(@event.PostalCode);
-            }
 
             _lastEvent = @event;
         }
@@ -270,20 +235,6 @@ namespace AddressRegistry.StreetName
             _lastEvent = @event;
         }
 
-        private void When(AddressWasRemovedV2 @event)
-        {
-            IsRemoved = true;
-
-            _lastEvent = @event;
-        }
-
-        private void When(AddressWasRemovedBecauseHouseNumberWasRemoved @event)
-        {
-            IsRemoved = true;
-
-            _lastEvent = @event;
-        }
-
         private void When(AddressRegularizationWasCorrected @event)
         {
             IsOfficiallyAssigned = false;
@@ -296,11 +247,6 @@ namespace AddressRegistry.StreetName
         {
             IsOfficiallyAssigned = true;
 
-            _lastEvent = @event;
-        }
-
-        private void When(StreetNameNamesWereCorrected @event)
-        {
             _lastEvent = @event;
         }
 
@@ -331,6 +277,61 @@ namespace AddressRegistry.StreetName
             LegacyAddressId = addressData.LegacyAddressId.HasValue ? new AddressId(addressData.LegacyAddressId.Value) : null;
             _lastSnapshottedEventHash = addressData.LastEventHash;
             _lastSnapshottedProvenance = addressData.LastProvenanceData;
+        }
+
+        private void When(AddressWasCorrectedFromApprovedToProposed @event)
+        {
+            Status = AddressStatus.Proposed;
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected @event)
+        {
+            Status = AddressStatus.Proposed;
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressWasCorrectedFromRejectedToProposed @event)
+        {
+            Status = AddressStatus.Proposed;
+            _lastEvent = @event;
+        }
+
+        private void When(AddressWasCorrectedFromRetiredToCurrent @event)
+        {
+            Status = AddressStatus.Current;
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressPositionWasChanged @event)
+        {
+            Geometry = new AddressGeometry(
+                @event.GeometryMethod,
+                @event.GeometrySpecification,
+                new ExtendedWkbGeometry(@event.ExtendedWkbGeometry));
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressPostalCodeWasChangedV2 @event)
+        {
+            PostalCode = new PostalCode(@event.PostalCode);
+
+            foreach (var boxNumberPersistentLocalId in @event.BoxNumberPersistentLocalIds)
+            {
+                var boxNumberAddress = _children.Single(x => x.AddressPersistentLocalId == boxNumberPersistentLocalId);
+                boxNumberAddress.PostalCode = new PostalCode(@event.PostalCode);
+            }
+
+            _lastEvent = @event;
+        }
+
+        private void When(StreetNameNamesWereCorrected @event)
+        {
+            _lastEvent = @event;
         }
     }
 }

@@ -21,12 +21,15 @@ namespace AddressRegistry.StreetName
             return streetNameAddress;
         }
 
-        public StreetNameAddress RemoveChild(StreetNameAddress streetNameAddress)
+        /// <summary>
+        /// Set the parent of the instance.
+        /// </summary>
+        /// <param name="parentStreetNameAddress">The parent instance.</param>
+        /// <returns>The instance of which you have set the parent.</returns>
+        public StreetNameAddress SetParent(StreetNameAddress? parentStreetNameAddress)
         {
-            _children.Remove(streetNameAddress);
-            streetNameAddress.SetParent(null);
-
-            return streetNameAddress;
+            Parent = parentStreetNameAddress;
+            return this;
         }
 
         public bool BoxNumberIsUnique(BoxNumber boxNumber)
@@ -110,49 +113,6 @@ namespace AddressRegistry.StreetName
             }
         }
 
-        public void Deregulate()
-        {
-            GuardNotRemovedAddress();
-
-            var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
-
-            if (!validStatuses.Contains(Status))
-            {
-                throw new AddressHasInvalidStatusException();
-            }
-
-            if (Parent is not null && Parent.Status == AddressStatus.Proposed)
-            {
-                throw new ParentAddressHasInvalidStatusException();
-            }
-
-            if (!IsOfficiallyAssigned)
-            {
-                return;
-            }
-
-            Apply(new AddressWasDeregulated(_streetNamePersistentLocalId, AddressPersistentLocalId));
-        }
-
-        public void Regularize()
-        {
-            GuardNotRemovedAddress();
-
-            var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
-
-            if (!validStatuses.Contains(Status))
-            {
-                throw new AddressHasInvalidStatusException();
-            }
-
-            if (IsOfficiallyAssigned)
-            {
-                return;
-            }
-
-            Apply(new AddressWasRegularized(_streetNamePersistentLocalId, AddressPersistentLocalId));
-        }
-
         public void Retire()
         {
             GuardNotRemovedAddress();
@@ -223,58 +183,72 @@ namespace AddressRegistry.StreetName
             }
         }
 
-        public void ChangePosition(
-            GeometryMethod geometryMethod,
-            GeometrySpecification geometrySpecification,
-            ExtendedWkbGeometry position)
+        public void Remove()
         {
-            GuardNotRemovedAddress();
-
-            var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
-
-            if (!validStatuses.Contains(Status))
-            {
-                throw new AddressHasInvalidStatusException();
-            }
-
-            GuardGeometry(geometryMethod, geometrySpecification);
-
-            if (Geometry != new AddressGeometry(geometryMethod, geometrySpecification, position))
-            {
-                Apply(new AddressPositionWasChanged(
-                    _streetNamePersistentLocalId,
-                    AddressPersistentLocalId,
-                    geometryMethod,
-                    geometrySpecification,
-                    position));
-            }
-        }
-
-        public void ChangePostalCode(PostalCode postalCode)
-        {
-            GuardNotRemovedAddress();
-
-            var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
-
-            if (!validStatuses.Contains(Status))
-            {
-                throw new AddressHasInvalidStatusException();
-            }
-
-            if (PostalCode == postalCode)
+            if (IsRemoved)
             {
                 return;
             }
 
-            var boxNumbers = _children
-                .Where(x => !x.IsRemoved && validStatuses.Contains(x.Status))
-                .Select(x => x.AddressPersistentLocalId);
+            foreach (var child in _children)
+            {
+                child.RemoveBecauseParentWasRemoved();
+            }
 
-            Apply(new AddressPostalCodeWasChangedV2(
-                _streetNamePersistentLocalId,
-                AddressPersistentLocalId,
-                boxNumbers,
-                postalCode));
+            Apply(new AddressWasRemovedV2(_streetNamePersistentLocalId, AddressPersistentLocalId));
+        }
+
+        public void RemoveBecauseParentWasRemoved()
+        {
+            if (IsRemoved)
+            {
+                return;
+            }
+
+            Apply(new AddressWasRemovedBecauseHouseNumberWasRemoved(_streetNamePersistentLocalId, AddressPersistentLocalId));
+        }
+
+        public void Regularize()
+        {
+            GuardNotRemovedAddress();
+
+            var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
+
+            if (!validStatuses.Contains(Status))
+            {
+                throw new AddressHasInvalidStatusException();
+            }
+
+            if (IsOfficiallyAssigned)
+            {
+                return;
+            }
+
+            Apply(new AddressWasRegularized(_streetNamePersistentLocalId, AddressPersistentLocalId));
+        }
+
+        public void Deregulate()
+        {
+            GuardNotRemovedAddress();
+
+            var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
+
+            if (!validStatuses.Contains(Status))
+            {
+                throw new AddressHasInvalidStatusException();
+            }
+
+            if (Parent is not null && Parent.Status == AddressStatus.Proposed)
+            {
+                throw new ParentAddressHasInvalidStatusException();
+            }
+
+            if (!IsOfficiallyAssigned)
+            {
+                return;
+            }
+
+            Apply(new AddressWasDeregulated(_streetNamePersistentLocalId, AddressPersistentLocalId));
         }
 
         public void CorrectPosition(
@@ -440,7 +414,7 @@ namespace AddressRegistry.StreetName
             }
         }
 
-        public void CorrectAddressRejection(Action guardAddressIsUnique)
+        public void CorrectRejection(Action guardAddressIsUnique)
         {
             GuardNotRemovedAddress();
 
@@ -496,32 +470,7 @@ namespace AddressRegistry.StreetName
             }
         }
 
-        public void Remove()
-        {
-            if (IsRemoved)
-            {
-                return;
-            }
-
-            foreach (var child in _children)
-            {
-                child.RemovedBecauseParentWasRemoved();
-            }
-
-            Apply(new AddressWasRemovedV2(_streetNamePersistentLocalId, AddressPersistentLocalId));
-        }
-
-        public void RemovedBecauseParentWasRemoved()
-        {
-            if (IsRemoved)
-            {
-                return;
-            }
-
-            Apply(new AddressWasRemovedBecauseHouseNumberWasRemoved(_streetNamePersistentLocalId, AddressPersistentLocalId));
-        }
-
-        public void CorrectRegularizedAddress()
+        public void CorrectRegularization()
         {
             GuardNotRemovedAddress();
 
@@ -545,7 +494,7 @@ namespace AddressRegistry.StreetName
             Apply(new AddressRegularizationWasCorrected(_streetNamePersistentLocalId, AddressPersistentLocalId));
         }
 
-        public void CorrectDeregularizedAddress()
+        public void CorrectDeregulation()
         {
             GuardNotRemovedAddress();
 
@@ -564,15 +513,58 @@ namespace AddressRegistry.StreetName
             Apply(new AddressDeregulationWasCorrected(_streetNamePersistentLocalId, AddressPersistentLocalId));
         }
 
-        /// <summary>
-        /// Set the parent of the instance.
-        /// </summary>
-        /// <param name="parentStreetNameAddress">The parent instance.</param>
-        /// <returns>The instance of which you have set the parent.</returns>
-        public StreetNameAddress SetParent(StreetNameAddress? parentStreetNameAddress)
+        public void ChangePosition(
+            GeometryMethod geometryMethod,
+            GeometrySpecification geometrySpecification,
+            ExtendedWkbGeometry position)
         {
-            Parent = parentStreetNameAddress;
-            return this;
+            GuardNotRemovedAddress();
+
+            var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
+
+            if (!validStatuses.Contains(Status))
+            {
+                throw new AddressHasInvalidStatusException();
+            }
+
+            GuardGeometry(geometryMethod, geometrySpecification);
+
+            if (Geometry != new AddressGeometry(geometryMethod, geometrySpecification, position))
+            {
+                Apply(new AddressPositionWasChanged(
+                    _streetNamePersistentLocalId,
+                    AddressPersistentLocalId,
+                    geometryMethod,
+                    geometrySpecification,
+                    position));
+            }
+        }
+
+        public void ChangePostalCode(PostalCode postalCode)
+        {
+            GuardNotRemovedAddress();
+
+            var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
+
+            if (!validStatuses.Contains(Status))
+            {
+                throw new AddressHasInvalidStatusException();
+            }
+
+            if (PostalCode == postalCode)
+            {
+                return;
+            }
+
+            var boxNumbers = _children
+                .Where(x => !x.IsRemoved && validStatuses.Contains(x.Status))
+                .Select(x => x.AddressPersistentLocalId);
+
+            Apply(new AddressPostalCodeWasChangedV2(
+                _streetNamePersistentLocalId,
+                AddressPersistentLocalId,
+                boxNumbers,
+                postalCode));
         }
     }
 }

@@ -53,27 +53,11 @@ namespace AddressRegistry.StreetName
             }
         }
 
-        public void CorrectStreetNameApproval()
-        {
-            if (Status != StreetNameStatus.Proposed)
-            {
-                ApplyChange(new StreetNameWasCorrectedFromApprovedToProposed(PersistentLocalId));
-            }
-        }
-
         public void RejectStreetName()
         {
             if (Status != StreetNameStatus.Rejected)
             {
                 ApplyChange(new StreetNameWasRejected(PersistentLocalId));
-            }
-        }
-
-        public void CorrectStreetNameRejection()
-        {
-            if (Status != StreetNameStatus.Proposed)
-            {
-                ApplyChange(new StreetNameWasCorrectedFromRejectedToProposed(PersistentLocalId));
             }
         }
 
@@ -97,11 +81,11 @@ namespace AddressRegistry.StreetName
             ApplyChange(new StreetNameWasRetired(PersistentLocalId));
         }
 
-        public void CorrectStreetNameRetirement()
+        public void RemoveStreetName()
         {
-            if (Status != StreetNameStatus.Current)
+            if (!IsRemoved)
             {
-                ApplyChange(new StreetNameWasCorrectedFromRetiredToCurrent(PersistentLocalId));
+                ApplyChange(new StreetNameWasRemoved(PersistentLocalId));
             }
         }
 
@@ -111,6 +95,30 @@ namespace AddressRegistry.StreetName
                 PersistentLocalId,
                 streetNameNames,
                 StreetNameAddresses.Select(x => new AddressPersistentLocalId(x.AddressPersistentLocalId))));
+        }
+
+        public void CorrectStreetNameApproval()
+        {
+            if (Status != StreetNameStatus.Proposed)
+            {
+                ApplyChange(new StreetNameWasCorrectedFromApprovedToProposed(PersistentLocalId));
+            }
+        }
+
+        public void CorrectStreetNameRejection()
+        {
+            if (Status != StreetNameStatus.Proposed)
+            {
+                ApplyChange(new StreetNameWasCorrectedFromRejectedToProposed(PersistentLocalId));
+            }
+        }
+
+        public void CorrectStreetNameRetirement()
+        {
+            if (Status != StreetNameStatus.Current)
+            {
+                ApplyChange(new StreetNameWasCorrectedFromRetiredToCurrent(PersistentLocalId));
+            }
         }
 
         private static void RejectAddressesBecauseStreetNameWasRetired(IEnumerable<StreetNameAddress> addresses)
@@ -126,14 +134,6 @@ namespace AddressRegistry.StreetName
             foreach (var address in addresses)
             {
                 address.RetireBecauseStreetNameWasRetired();
-            }
-        }
-
-        public void RemoveStreetName()
-        {
-            if (!IsRemoved)
-            {
-                ApplyChange(new StreetNameWasRemoved(PersistentLocalId));
             }
         }
 
@@ -264,11 +264,18 @@ namespace AddressRegistry.StreetName
                 .Reject();
         }
 
-        public void DeregulateAddress(AddressPersistentLocalId addressPersistentLocalId)
+        public void RetireAddress(AddressPersistentLocalId addressPersistentLocalId)
         {
             StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
-                .Deregulate();
+                .Retire();
+        }
+
+        public void RemoveAddress(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            StreetNameAddresses
+                .GetByPersistentLocalId(addressPersistentLocalId)
+                .Remove();
         }
 
         public void RegularizeAddress(AddressPersistentLocalId addressPersistentLocalId)
@@ -278,33 +285,11 @@ namespace AddressRegistry.StreetName
                 .Regularize();
         }
 
-        public void RetireAddress(AddressPersistentLocalId addressPersistentLocalId)
+        public void DeregulateAddress(AddressPersistentLocalId addressPersistentLocalId)
         {
             StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
-                .Retire();
-        }
-
-        public void ChangeAddressPosition(
-            AddressPersistentLocalId addressPersistentLocalId,
-            GeometryMethod geometryMethod,
-            GeometrySpecification geometrySpecification,
-            ExtendedWkbGeometry position)
-        {
-            GuardStreetNameStatusForChangeAndCorrection();
-
-            StreetNameAddresses
-                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
-                .ChangePosition(geometryMethod, geometrySpecification, position);
-        }
-
-        public void ChangeAddressPostalCode(AddressPersistentLocalId addressPersistentLocalId, PostalCode postalCode)
-        {
-            GuardStreetNameStatusForChangeAndCorrection();
-
-            StreetNameAddresses
-                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
-                .ChangePostalCode(postalCode);
+                .Deregulate();
         }
 
         public void CorrectAddressPosition(
@@ -360,6 +345,34 @@ namespace AddressRegistry.StreetName
                 .CorrectApproval();
         }
 
+        public void CorrectAddressRejection(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            GuardStreetNameStatusForChangeAndCorrection();
+
+            var addressToCorrect = StreetNameAddresses
+                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId);
+
+            if (addressToCorrect.IsBoxNumberAddress)
+            {
+                var parent = addressToCorrect.Parent;
+
+                if (parent == null || parent.IsRemoved)
+                {
+                    throw new ParentAddressNotFoundException(PersistentLocalId, addressToCorrect.HouseNumber);
+                }
+
+                if (parent.Status is AddressStatus.Rejected or AddressStatus.Retired)
+                {
+                    throw new ParentAddressHasInvalidStatusException();
+                }
+            }
+
+            addressToCorrect.CorrectRejection(() => GuardAddressIsUnique(
+                addressToCorrect.AddressPersistentLocalId,
+                addressToCorrect.HouseNumber,
+                addressToCorrect.BoxNumber));
+        }
+
         public void CorrectAddressRetirement(AddressPersistentLocalId addressPersistentLocalId)
         {
             GuardStreetNameStatusForChangeAndCorrection();
@@ -388,39 +401,40 @@ namespace AddressRegistry.StreetName
                 addressToCorrect.BoxNumber));
         }
 
-        public void CorrectAddressRejection(AddressPersistentLocalId addressPersistentLocalId)
+        public void CorrectAddressRegularization(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            StreetNameAddresses
+                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
+                .CorrectRegularization();
+        }
+
+        public void CorrectAddressDeregulation(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            StreetNameAddresses
+                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
+                .CorrectDeregulation();
+        }
+
+        public void ChangeAddressPosition(
+            AddressPersistentLocalId addressPersistentLocalId,
+            GeometryMethod geometryMethod,
+            GeometrySpecification geometrySpecification,
+            ExtendedWkbGeometry position)
         {
             GuardStreetNameStatusForChangeAndCorrection();
 
-            var addressToCorrect = StreetNameAddresses
-                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId);
-
-            if (addressToCorrect.IsBoxNumberAddress)
-            {
-                var parent = addressToCorrect.Parent;
-
-                if (parent == null || parent.IsRemoved)
-                {
-                    throw new ParentAddressNotFoundException(PersistentLocalId, addressToCorrect.HouseNumber);
-                }
-
-                if (parent.Status is AddressStatus.Rejected or AddressStatus.Retired)
-                {
-                    throw new ParentAddressHasInvalidStatusException();
-                }
-            }
-
-            addressToCorrect.CorrectAddressRejection(() => GuardAddressIsUnique(
-                addressToCorrect.AddressPersistentLocalId,
-                addressToCorrect.HouseNumber,
-                addressToCorrect.BoxNumber));
+            StreetNameAddresses
+                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
+                .ChangePosition(geometryMethod, geometrySpecification, position);
         }
 
-        public void RemoveAddress(AddressPersistentLocalId addressPersistentLocalId)
+        public void ChangeAddressPostalCode(AddressPersistentLocalId addressPersistentLocalId, PostalCode postalCode)
         {
+            GuardStreetNameStatusForChangeAndCorrection();
+
             StreetNameAddresses
-                .GetByPersistentLocalId(addressPersistentLocalId)
-                .Remove();
+                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
+                .ChangePostalCode(postalCode);
         }
 
         private void GuardPostalCodeMunicipalityMatchesStreetNameMunicipality(MunicipalityId municipalityIdByPostalCode)
@@ -459,20 +473,6 @@ namespace AddressRegistry.StreetName
             {
                 throw new StreetNameHasInvalidStatusException();
             }
-        }
-
-        public void CorrectAddressRegularization(AddressPersistentLocalId addressPersistentLocalId)
-        {
-            StreetNameAddresses
-                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
-                .CorrectRegularizedAddress();
-        }
-
-        public void CorrectAddressDeregulation(AddressPersistentLocalId addressPersistentLocalId)
-        {
-            StreetNameAddresses
-                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
-                .CorrectDeregularizedAddress();
         }
 
         #region Metadata

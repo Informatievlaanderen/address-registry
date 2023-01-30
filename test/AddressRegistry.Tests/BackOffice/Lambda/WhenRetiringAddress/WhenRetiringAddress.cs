@@ -83,7 +83,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRetiringAddress
             // Act
             await sut.Handle(new RetireAddressLambdaRequest(streetNamePersistentLocalId, new RetireAddressSqsRequest()
                 {
-                    Request = new RetireAddressBackOfficeRequest() { PersistentLocalId = addressPersistentLocalId },
+                    Request = new RetireAddressRequest() { PersistentLocalId = addressPersistentLocalId },
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
                     ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -112,7 +112,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRetiringAddress
             // Act
             await sut.Handle(new RetireAddressLambdaRequest(Fixture.Create<int>().ToString(), new RetireAddressSqsRequest()
             {
-                Request = new RetireAddressBackOfficeRequest(),
+                Request = new RetireAddressRequest(),
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -144,7 +144,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRetiringAddress
             // Act
             await sut.Handle(new RetireAddressLambdaRequest(Fixture.Create<int>().ToString(), new RetireAddressSqsRequest()
             {
-                Request = new RetireAddressBackOfficeRequest(),
+                Request = new RetireAddressRequest(),
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -204,7 +204,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRetiringAddress
             // Act
             await sut.Handle(new RetireAddressLambdaRequest(streetNamePersistentLocalId, new RetireAddressSqsRequest()
                 {
-                    Request = new RetireAddressBackOfficeRequest() { PersistentLocalId = addressPersistentLocalId },
+                    Request = new RetireAddressRequest() { PersistentLocalId = addressPersistentLocalId },
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
                     ProvenanceData = Fixture.Create<ProvenanceData>()

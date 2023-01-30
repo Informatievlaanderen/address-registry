@@ -48,10 +48,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRegularizingAddress
 
             var result = (AcceptedResult)await _controller.Regularize(
                 _backOfficeContext,
-                MockValidRequestValidator<AddressRegularizeRequest>(),
+                MockValidRequestValidator<RegularizeAddressRequest>(),
                 MockIfMatchValidator(true),
                 ResponseOptions,
-                request: new AddressRegularizeRequest
+                request: new RegularizeAddressRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
                 },
@@ -72,10 +72,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRegularizingAddress
             //Act
             var result = await _controller.Regularize(
                 _backOfficeContext,
-                MockValidRequestValidator<AddressRegularizeRequest>(),
+                MockValidRequestValidator<RegularizeAddressRequest>(),
                 MockIfMatchValidator(false),
                 ResponseOptions,
-                request: new AddressRegularizeRequest
+                request: new RegularizeAddressRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
                 },
@@ -86,20 +86,27 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRegularizingAddress
         }
 
         [Fact]
-        public async Task ForUnknownAddress_ThenNotFoundResponse()
+        public async Task ForUnknownAddress_ThenThrowsApiException()
         {
-            var result = await _controller.Regularize(
+            Func<Task> act = async () => await _controller.Regularize(
                 _backOfficeContext,
-                MockValidRequestValidator<AddressRegularizeRequest>(),
+                MockValidRequestValidator<RegularizeAddressRequest>(),
                 MockIfMatchValidator(true),
                 ResponseOptions,
-                new AddressRegularizeRequest
+                new RegularizeAddressRequest
                 {
                     PersistentLocalId = Fixture.Create<AddressPersistentLocalId>()
                 },
                 ifMatchHeaderValue: null);
 
-            result.Should().BeOfType<NotFoundResult>();
+            //Assert
+            act
+                .Should()
+                .ThrowAsync<ApiException>()
+                .Result
+                .Where(x =>
+                    x.Message.Contains("Onbestaand adres.")
+                    && x.StatusCode == StatusCodes.Status404NotFound);
         }
 
         [Fact]
@@ -116,10 +123,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRegularizingAddress
 
             Func<Task> act = async () => await _controller.Regularize(
                 _backOfficeContext,
-                MockValidRequestValidator<AddressRegularizeRequest>(),
+                MockValidRequestValidator<RegularizeAddressRequest>(),
                 MockIfMatchValidator(true),
                 ResponseOptions,
-                new AddressRegularizeRequest
+                new RegularizeAddressRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
                 },

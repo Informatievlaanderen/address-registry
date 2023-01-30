@@ -78,7 +78,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRejectingAddress
             // Act
             await sut.Handle(new RejectAddressLambdaRequest(streetNamePersistentLocalId, new RejectAddressSqsRequest
             {
-                Request = new RejectAddressBackOfficeRequest() { PersistentLocalId = addressPersistentLocalId },
+                Request = new RejectAddressRequest() { PersistentLocalId = addressPersistentLocalId },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -107,7 +107,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRejectingAddress
             // Act
             await sut.Handle(new RejectAddressLambdaRequest(Fixture.Create<int>().ToString(), new RejectAddressSqsRequest
                 {
-                    Request = new RejectAddressBackOfficeRequest(),
+                    Request = new RejectAddressRequest(),
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
                     ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -167,7 +167,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRejectingAddress
             // Act
             await sut.Handle(new RejectAddressLambdaRequest(streetNamePersistentLocalId, new RejectAddressSqsRequest
                 {
-                    Request = new RejectAddressBackOfficeRequest() { PersistentLocalId = addressPersistentLocalId },
+                    Request = new RejectAddressRequest() { PersistentLocalId = addressPersistentLocalId },
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
                     ProvenanceData = Fixture.Create<ProvenanceData>()

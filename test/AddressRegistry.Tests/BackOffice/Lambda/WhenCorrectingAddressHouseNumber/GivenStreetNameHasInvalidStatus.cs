@@ -44,7 +44,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
             // Act
             var request = new CorrectAddressHouseNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressHouseNumberSqsRequest()
             {
-                Request = new CorrectAddressHouseNumberBackOfficeRequest { Huisnummer = "20" },
+                Request = new CorrectAddressHouseNumberRequest { Huisnummer = "20" },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()

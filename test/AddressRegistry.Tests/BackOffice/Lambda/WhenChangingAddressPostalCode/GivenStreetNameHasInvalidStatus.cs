@@ -81,7 +81,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenChangingAddressPostalCode
             var request = new ChangeAddressPostalCodeLambdaRequest(Fixture.Create<int>().ToString(),
                 new ChangeAddressPostalCodeSqsRequest
                 {
-                    Request = new ChangeAddressPostalCodeBackOfficeRequest
+                    Request = new ChangeAddressPostalCodeRequest
                     {
                         PostInfoId = PostInfoPuri + correctPostInfoId
                     },

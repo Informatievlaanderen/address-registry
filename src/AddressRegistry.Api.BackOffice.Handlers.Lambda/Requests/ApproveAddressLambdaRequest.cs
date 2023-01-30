@@ -8,7 +8,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
 
     public sealed record ApproveAddressLambdaRequest :
         SqsLambdaRequest,
-        IHasBackOfficeRequest<ApproveAddressBackOfficeRequest>,
+        IHasBackOfficeRequest<ApproveAddressRequest>,
         Abstractions.IHasAddressPersistentLocalId
     {
         public ApproveAddressLambdaRequest(string groupId, ApproveAddressSqsRequest sqsRequest)
@@ -22,7 +22,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
             Request = sqsRequest.Request;
         }
 
-        public ApproveAddressBackOfficeRequest Request { get; init; }
+        public ApproveAddressRequest Request { get; init; }
 
         public int AddressPersistentLocalId => Request.PersistentLocalId;
 

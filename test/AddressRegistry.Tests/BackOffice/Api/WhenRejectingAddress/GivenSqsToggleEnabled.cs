@@ -48,10 +48,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRejectingAddress
 
             var result = (AcceptedResult)await _controller.Reject(
                 _backOfficeContext,
-                MockValidRequestValidator<AddressRejectRequest>(),
+                MockValidRequestValidator<RejectAddressRequest>(),
                 MockIfMatchValidator(true),
                 ResponseOptions,
-                request: new AddressRejectRequest
+                request: new RejectAddressRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
                 },
@@ -72,10 +72,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRejectingAddress
             //Act
             var result = await _controller.Reject(
                 _backOfficeContext,
-                MockValidRequestValidator<AddressRejectRequest>(),
+                MockValidRequestValidator<RejectAddressRequest>(),
                 MockIfMatchValidator(false),
                 ResponseOptions,
-                request: new AddressRejectRequest
+                request: new RejectAddressRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
                 },
@@ -86,20 +86,27 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRejectingAddress
         }
 
         [Fact]
-        public async Task ForUnknownAddress_ThenNotFoundResponse()
+        public async Task ForUnknownAddress_ThenThrowsApiException()
         {
-            var result = await _controller.Reject(
+            Func<Task> act = async () => await _controller.Reject(
                 _backOfficeContext,
-                MockValidRequestValidator<AddressRejectRequest>(),
+                MockValidRequestValidator<RejectAddressRequest>(),
                 MockIfMatchValidator(true),
                 ResponseOptions,
-                new AddressRejectRequest
+                new RejectAddressRequest
                 {
                     PersistentLocalId = Fixture.Create<AddressPersistentLocalId>()
                 },
                 ifMatchHeaderValue: null);
 
-            result.Should().BeOfType<NotFoundResult>();
+            //Assert
+            act
+                .Should()
+                .ThrowAsync<ApiException>()
+                .Result
+                .Where(x =>
+                    x.Message.Contains("Onbestaand adres.")
+                    && x.StatusCode == StatusCodes.Status404NotFound);
         }
 
         [Fact]
@@ -116,10 +123,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRejectingAddress
 
             Func<Task> act = async () => await _controller.Reject(
                 _backOfficeContext,
-                MockValidRequestValidator<AddressRejectRequest>(),
+                MockValidRequestValidator<RejectAddressRequest>(),
                 MockIfMatchValidator(true),
                 ResponseOptions,
-                new AddressRejectRequest
+                new RejectAddressRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
                 },

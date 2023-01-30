@@ -48,10 +48,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
 
             var result = (AcceptedResult)await _controller.CorrectRejection(
                 _backOfficeContext,
-                MockValidRequestValidator<AddressCorrectRejectionRequest>(),
+                MockValidRequestValidator<CorrectAddressRejectionRequest>(),
                 MockIfMatchValidator(true),
                 ResponseOptions,
-                request: new AddressCorrectRejectionRequest
+                request: new CorrectAddressRejectionRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
                 },
@@ -72,10 +72,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
             //Act
             var result = await _controller.CorrectRejection(
                 _backOfficeContext,
-                MockValidRequestValidator<AddressCorrectRejectionRequest>(),
+                MockValidRequestValidator<CorrectAddressRejectionRequest>(),
                 MockIfMatchValidator(false),
                 ResponseOptions,
-                request: new AddressCorrectRejectionRequest
+                request: new CorrectAddressRejectionRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
                 },
@@ -86,20 +86,27 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
         }
 
         [Fact]
-        public async Task ForUnknownAddress_ThenNotFoundResponse()
+        public async Task ForUnknownAddress_ThenThrowsApiException()
         {
-            var result = await _controller.CorrectRejection(
+            Func<Task> act = async () => await _controller.CorrectRejection(
                 _backOfficeContext,
-                MockValidRequestValidator<AddressCorrectRejectionRequest>(),
+                MockValidRequestValidator<CorrectAddressRejectionRequest>(),
                 MockIfMatchValidator(true),
                 ResponseOptions,
-                new AddressCorrectRejectionRequest
+                new CorrectAddressRejectionRequest
                 {
                     PersistentLocalId = Fixture.Create<AddressPersistentLocalId>()
                 },
                 ifMatchHeaderValue: null);
 
-            result.Should().BeOfType<NotFoundResult>();
+            //Assert
+            act
+                .Should()
+                .ThrowAsync<ApiException>()
+                .Result
+                .Where(x =>
+                    x.Message.Contains("Onbestaand adres.")
+                    && x.StatusCode == StatusCodes.Status404NotFound);
         }
 
         [Fact]
@@ -116,10 +123,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
 
             Func<Task> act = async () => await _controller.CorrectRejection(
                 _backOfficeContext,
-                MockValidRequestValidator<AddressCorrectRejectionRequest>(),
+                MockValidRequestValidator<CorrectAddressRejectionRequest>(),
                 MockIfMatchValidator(true),
                 ResponseOptions,
-                new AddressCorrectRejectionRequest
+                new CorrectAddressRejectionRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
                 },
@@ -133,30 +140,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
                 .Where(x =>
                     x.Message.Contains("Onbestaand adres.")
                     && x.StatusCode == StatusCodes.Status404NotFound);
-        }
-
-        [Fact]
-        public async Task ThenNotFoundResult()
-        {
-            //Arrange
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-
-            var request = new AddressCorrectRejectionRequest
-            {
-                PersistentLocalId = addressPersistentLocalId
-            };
-
-            //Act
-            var result = await _controller.CorrectRejection(
-                _backOfficeContext,
-                MockValidRequestValidator<AddressCorrectRejectionRequest>(),
-                MockIfMatchValidator(true),
-                ResponseOptions,
-                request,
-                null);
-
-            //Assert
-            result.Should().BeOfType<NotFoundResult>();
         }
     }
 }

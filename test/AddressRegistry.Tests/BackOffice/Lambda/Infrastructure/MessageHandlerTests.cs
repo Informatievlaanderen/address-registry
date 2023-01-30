@@ -71,7 +71,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
         }
 
         [Fact]
-        public async Task WhenSqsAddressApproveRequest_ThenApproveRequestIsSent()
+        public async Task WhenSqsApproveAddressRequest_ThenApproveRequestIsSent()
         {
             // Arrange
             var mediator = new Mock<IMediator>();

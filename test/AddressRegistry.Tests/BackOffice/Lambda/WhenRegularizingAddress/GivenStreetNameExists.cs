@@ -84,7 +84,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRegularizingAddress
             // Act
             await sut.Handle(new RegularizeAddressLambdaRequest(streetNamePersistentLocalId, new RegularizeAddressSqsRequest()
                 {
-                    Request = new RegularizeAddressBackOfficeRequest { PersistentLocalId = addressPersistentLocalId },
+                    Request = new RegularizeAddressRequest { PersistentLocalId = addressPersistentLocalId },
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
                     ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -114,7 +114,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRegularizingAddress
             await sut.Handle(
                 new RegularizeAddressLambdaRequest(Fixture.Create<int>().ToString(), new RegularizeAddressSqsRequest()
                 {
-                    Request = new RegularizeAddressBackOfficeRequest { PersistentLocalId = Fixture.Create<int>() },
+                    Request = new RegularizeAddressRequest { PersistentLocalId = Fixture.Create<int>() },
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
                     ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -175,7 +175,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRegularizingAddress
             // Act
             await sut.Handle(new RegularizeAddressLambdaRequest(streetNamePersistentLocalId, new RegularizeAddressSqsRequest()
             {
-                Request = new RegularizeAddressBackOfficeRequest { PersistentLocalId = addressPersistentLocalId },
+                Request = new RegularizeAddressRequest { PersistentLocalId = addressPersistentLocalId },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()

@@ -48,11 +48,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRemovingAddress
 
             var result = (AcceptedResult)await _controller.Remove(
                 _backOfficeContext,
-                MockValidRequestValidator<AddressRemoveRequest>(),
+                MockValidRequestValidator<RemoveAddressRequest>(),
                 MockIfMatchValidator(true),
                 ifMatchHeaderValue: null,
                 ResponseOptions,
-                new AddressRemoveRequest
+                new RemoveAddressRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
                 });
@@ -72,11 +72,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRemovingAddress
             //Act
             var result = await _controller.Remove(
                 _backOfficeContext,
-                MockValidRequestValidator<AddressRemoveRequest>(),
+                MockValidRequestValidator<RemoveAddressRequest>(),
                 MockIfMatchValidator(false),
                 ifMatchHeaderValue: null,
                 ResponseOptions,
-                new AddressRemoveRequest
+                new RemoveAddressRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
                 });
@@ -86,20 +86,27 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRemovingAddress
         }
 
         [Fact]
-        public async Task ForUnknownAddress_ThenNotFoundResponse()
+        public async Task ForUnknownAddress_ThenThrowsApiException()
         {
-            var result = await _controller.Remove(
+            Func<Task> act = async () => await _controller.Remove(
                 _backOfficeContext,
-                MockValidRequestValidator<AddressRemoveRequest>(),
+                MockValidRequestValidator<RemoveAddressRequest>(),
                 MockIfMatchValidator(true),
                 ifMatchHeaderValue: null,
                 ResponseOptions,
-                new AddressRemoveRequest
+                new RemoveAddressRequest
                 {
                     PersistentLocalId = Fixture.Create<AddressPersistentLocalId>()
                 });
 
-            result.Should().BeOfType<NotFoundResult>();
+            //Assert
+            act
+                .Should()
+                .ThrowAsync<ApiException>()
+                .Result
+                .Where(x =>
+                    x.Message.Contains("Onbestaand adres.")
+                    && x.StatusCode == StatusCodes.Status404NotFound);
         }
 
         [Fact]
@@ -116,11 +123,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRemovingAddress
 
             Func<Task> act = async () => await _controller.Remove(
                 _backOfficeContext,
-                MockValidRequestValidator<AddressRemoveRequest>(),
+                MockValidRequestValidator<RemoveAddressRequest>(),
                 MockIfMatchValidator(true),
                 ifMatchHeaderValue: null,
                 ResponseOptions,
-                new AddressRemoveRequest
+                new RemoveAddressRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
                 });

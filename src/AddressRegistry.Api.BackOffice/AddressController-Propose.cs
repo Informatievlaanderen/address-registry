@@ -41,38 +41,29 @@ namespace AddressRegistry.Api.BackOffice
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         [SwaggerResponseHeader(StatusCodes.Status201Created, "location", "string", "De url van het voorgestelde adres.")]
-        [SwaggerRequestExample(typeof(AddressProposeRequest), typeof(AddressProposeRequestExamples))]
+        [SwaggerRequestExample(typeof(ProposeAddressRequest), typeof(ProposeAddressRequestExamples))]
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(BadRequestResponseExamples))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.Adres.DecentraleBijwerker)]
         public async Task<IActionResult> Propose(
             [FromServices] IOptions<ResponseOptions> options,
-            [FromServices] IValidator<AddressProposeRequest> validator,
-            [FromBody] AddressProposeRequest request,
+            [FromServices] IValidator<ProposeAddressRequest> validator,
+            [FromBody] ProposeAddressRequest request,
             CancellationToken cancellationToken = default)
         {
             await validator.ValidateAndThrowAsync(request, cancellationToken);
 
             try
             {
-                if (_useSqsToggle.FeatureEnabled)
+                var sqsRequest = new ProposeAddressSqsRequest
                 {
-                    var sqsRequest = new ProposeAddressSqsRequest
-                    {
-                        Request = request,
-                        Metadata = GetMetadata(),
-                        ProvenanceData = new ProvenanceData(CreateFakeProvenance())
-                    };
-                    var sqsResult = await _mediator.Send(sqsRequest, cancellationToken);
+                    Request = request,
+                    Metadata = GetMetadata(),
+                    ProvenanceData = new ProvenanceData(CreateFakeProvenance())
+                };
+                var sqsResult = await _mediator.Send(sqsRequest, cancellationToken);
 
-                    return Accepted(sqsResult);
-                }
-
-                request.Metadata = GetMetadata();
-                var response = await _mediator.Send(request, cancellationToken);
-
-                return new CreatedWithLastObservedPositionAsETagResult(
-                    new Uri(string.Format(options.Value.DetailUrl, response.PersistentLocalId)), response.LastEventHash);
+                return Accepted(sqsResult);
             }
             catch (IdempotencyException)
             {

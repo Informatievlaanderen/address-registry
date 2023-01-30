@@ -8,7 +8,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
 
     public sealed record RemoveAddressLambdaRequest :
         SqsLambdaRequest,
-        IHasBackOfficeRequest<RemoveAddressBackOfficeRequest>,
+        IHasBackOfficeRequest<RemoveAddressRequest>,
         Abstractions.IHasAddressPersistentLocalId
     {
         public RemoveAddressLambdaRequest(string groupId, RemoveAddressSqsRequest sqsRequest)
@@ -22,7 +22,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
             Request = sqsRequest.Request;
         }
 
-        public RemoveAddressBackOfficeRequest Request { get; init; }
+        public RemoveAddressRequest Request { get; init; }
 
         public int AddressPersistentLocalId => Request.PersistentLocalId;
 

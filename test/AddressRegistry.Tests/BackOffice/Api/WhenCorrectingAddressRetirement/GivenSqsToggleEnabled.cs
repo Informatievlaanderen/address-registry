@@ -48,10 +48,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRetirement
 
             var result = (AcceptedResult)await _controller.CorrectRetirement(
                 _backOfficeContext,
-                MockValidRequestValidator<AddressCorrectRetirementRequest>(),
+                MockValidRequestValidator<CorrectAddressRetirementRequest>(),
                 MockIfMatchValidator(true),
                 ResponseOptions,
-                request: new AddressCorrectRetirementRequest
+                request: new CorrectAddressRetirementRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
                 },
@@ -72,10 +72,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRetirement
             //Act
             var result = await _controller.CorrectRetirement(
                 _backOfficeContext,
-                MockValidRequestValidator<AddressCorrectRetirementRequest>(),
+                MockValidRequestValidator<CorrectAddressRetirementRequest>(),
                 MockIfMatchValidator(false),
                 ResponseOptions,
-                request: new AddressCorrectRetirementRequest
+                request: new CorrectAddressRetirementRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
                 },
@@ -86,20 +86,27 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRetirement
         }
 
         [Fact]
-        public async Task ForUnknownAddress_ThenNotFoundResponse()
+        public async Task ForUnknownAddress_ThenThrowsApiException()
         {
-            var result = await _controller.CorrectRetirement(
+            Func<Task> act = async () => await _controller.CorrectRetirement(
                 _backOfficeContext,
-                MockValidRequestValidator<AddressCorrectRetirementRequest>(),
+                MockValidRequestValidator<CorrectAddressRetirementRequest>(),
                 MockIfMatchValidator(true),
                 ResponseOptions,
-                new AddressCorrectRetirementRequest
+                new CorrectAddressRetirementRequest
                 {
                     PersistentLocalId = Fixture.Create<AddressPersistentLocalId>()
                 },
                 ifMatchHeaderValue: null);
 
-            result.Should().BeOfType<NotFoundResult>();
+            //Assert
+            act
+                .Should()
+                .ThrowAsync<ApiException>()
+                .Result
+                .Where(x =>
+                    x.Message.Contains("Onbestaand adres.")
+                    && x.StatusCode == StatusCodes.Status404NotFound);
         }
 
         [Fact]
@@ -116,10 +123,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRetirement
 
             Func<Task> act = async () => await _controller.CorrectRetirement(
                 _backOfficeContext,
-                MockValidRequestValidator<AddressCorrectRetirementRequest>(),
+                MockValidRequestValidator<CorrectAddressRetirementRequest>(),
                 MockIfMatchValidator(true),
                 ResponseOptions,
-                new AddressCorrectRetirementRequest
+                new CorrectAddressRetirementRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
                 },

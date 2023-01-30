@@ -33,11 +33,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPostalCode
 
             Func<Task> act = async () => await _controller.CorrectPostalCode(
                 _backOfficeContext,
-                new AddressCorrectPostalCodeRequestValidator(syndicationContext),
+                new CorrectAddressPostalCodeRequestValidator(syndicationContext),
                 MockIfMatchValidator(true),
                 ResponseOptions,
                 Fixture.Create<AddressPersistentLocalId>(),
-                new AddressCorrectPostalCodeRequest { PostInfoId = nonExistentPostInfo },
+                new CorrectAddressPostalCodeRequest { PostInfoId = nonExistentPostInfo },
                 null);
 
             // Assert

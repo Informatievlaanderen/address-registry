@@ -83,7 +83,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
             var request = new CorrectAddressPostalCodeLambdaRequest(Fixture.Create<int>().ToString(),
                 new CorrectAddressPostalCodeSqsRequest()
                 {
-                    Request = new CorrectAddressPostalCodeBackOfficeRequest()
+                    Request = new CorrectAddressPostalCodeRequest()
                     {
                         PostInfoId = PostInfoPuri + correctPostInfoId
                     },

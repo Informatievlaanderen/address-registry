@@ -84,7 +84,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
             // Act
             await sut.Handle(new CorrectAddressRejectionLambdaRequest(streetNamePersistentLocalId, new CorrectAddressRejectionSqsRequest
                 {
-                    Request = new CorrectAddressRejectionBackOfficeRequest { PersistentLocalId = addressPersistentLocalId },
+                    Request = new CorrectAddressRejectionRequest { PersistentLocalId = addressPersistentLocalId },
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
                     ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -112,7 +112,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
             // Act
             await sut.Handle(new CorrectAddressRejectionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressRejectionSqsRequest
             {
-                Request = new CorrectAddressRejectionBackOfficeRequest { PersistentLocalId = 1 },
+                Request = new CorrectAddressRejectionRequest { PersistentLocalId = 1 },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -144,7 +144,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
             // Act
             await sut.Handle(new CorrectAddressRejectionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressRejectionSqsRequest
             {
-                Request = new CorrectAddressRejectionBackOfficeRequest { PersistentLocalId = 1 },
+                Request = new CorrectAddressRejectionRequest { PersistentLocalId = 1 },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -176,7 +176,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
             // Act
             await sut.Handle(new CorrectAddressRejectionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressRejectionSqsRequest
             {
-                Request = new CorrectAddressRejectionBackOfficeRequest { PersistentLocalId = 1 },
+                Request = new CorrectAddressRejectionRequest { PersistentLocalId = 1 },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -208,7 +208,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
             // Act
             await sut.Handle(new CorrectAddressRejectionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressRejectionSqsRequest
             {
-                Request = new CorrectAddressRejectionBackOfficeRequest { PersistentLocalId = 1 },
+                Request = new CorrectAddressRejectionRequest { PersistentLocalId = 1 },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -240,7 +240,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
             // Act
             await sut.Handle(new CorrectAddressRejectionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressRejectionSqsRequest
             {
-                Request = new CorrectAddressRejectionBackOfficeRequest { PersistentLocalId = 1 },
+                Request = new CorrectAddressRejectionRequest { PersistentLocalId = 1 },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -300,7 +300,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
             // Act
             await sut.Handle(new CorrectAddressRejectionLambdaRequest(streetNamePersistentLocalId, new CorrectAddressRejectionSqsRequest
                 {
-                    Request = new CorrectAddressRejectionBackOfficeRequest { PersistentLocalId = addressPersistentLocalId },
+                    Request = new CorrectAddressRejectionRequest { PersistentLocalId = addressPersistentLocalId },
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
                     ProvenanceData = Fixture.Create<ProvenanceData>()

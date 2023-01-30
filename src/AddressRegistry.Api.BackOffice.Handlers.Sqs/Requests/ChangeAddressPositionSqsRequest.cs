@@ -3,10 +3,10 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests
     using Abstractions.Requests;
     using Be.Vlaanderen.Basisregisters.Sqs.Requests;
 
-    public sealed class ChangeAddressPositionSqsRequest : SqsRequest, IHasBackOfficeRequest<ChangeAddressPositionBackOfficeRequest>
+    public sealed class ChangeAddressPositionSqsRequest : SqsRequest, IHasBackOfficeRequest<ChangeAddressPositionRequest>
     {
         public int PersistentLocalId { get; set; }
 
-        public ChangeAddressPositionBackOfficeRequest Request { get; init; }
+        public ChangeAddressPositionRequest Request { get; init; }
     }
 }

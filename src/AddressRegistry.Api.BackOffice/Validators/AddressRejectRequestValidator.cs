@@ -3,7 +3,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
     using Abstractions.Requests;
     using FluentValidation;
 
-    public class AddressRejectRequestValidator : AbstractValidator<AddressRejectRequest>
+    public class AddressRejectRequestValidator : AbstractValidator<RejectAddressRequest>
     {
     }
 }

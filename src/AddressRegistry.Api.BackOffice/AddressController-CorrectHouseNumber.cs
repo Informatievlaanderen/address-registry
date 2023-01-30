@@ -56,27 +56,24 @@ namespace AddressRegistry.Api.BackOffice
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.Adres.DecentraleBijwerker)]
         public async Task<IActionResult> CorrectHouseNumber(
             [FromServices] BackOfficeContext backOfficeContext,
-            [FromServices] IValidator<AddressCorrectHouseNumberRequest> validator,
+            [FromServices] IValidator<CorrectAddressHouseNumberRequest> validator,
             [FromServices] IIfMatchHeaderValidator ifMatchHeaderValidator,
             [FromServices] IOptions<ResponseOptions> options,
             [FromRoute] int persistentLocalId,
-            [FromBody] AddressCorrectHouseNumberRequest request,
+            [FromBody] CorrectAddressHouseNumberRequest request,
             [FromHeader(Name = "If-Match")] string? ifMatchHeaderValue,
             CancellationToken cancellationToken = default)
         {
-            request.PersistentLocalId = persistentLocalId;
-
             await validator.ValidateAndThrowAsync(request, cancellationToken);
 
-            var addressPersistentLocalId =
-                new AddressPersistentLocalId(new PersistentLocalId(request.PersistentLocalId));
+            var addressPersistentLocalId = new AddressPersistentLocalId(new PersistentLocalId(persistentLocalId));
 
             var relation = backOfficeContext.AddressPersistentIdStreetNamePersistentIds
                 .FirstOrDefault(x => x.AddressPersistentLocalId == addressPersistentLocalId);
 
             if (relation is null)
             {
-                return NotFound();
+                throw new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound);
             }
 
             var streetNamePersistentLocalId = new StreetNamePersistentLocalId(relation.StreetNamePersistentLocalId);
@@ -89,27 +86,17 @@ namespace AddressRegistry.Api.BackOffice
                     return new PreconditionFailedResult();
                 }
 
-                if (_useSqsToggle.FeatureEnabled)
+                var sqsRequest = new CorrectAddressHouseNumberSqsRequest
                 {
-                    var sqsRequest = new CorrectAddressHouseNumberSqsRequest
-                    {
-                        PersistentLocalId = request.PersistentLocalId,
-                        Request = request,
-                        IfMatchHeaderValue = ifMatchHeaderValue,
-                        Metadata = GetMetadata(),
-                        ProvenanceData = new ProvenanceData(CreateFakeProvenance())
-                    };
-                    var sqsResult = await _mediator.Send(sqsRequest, cancellationToken);
+                    PersistentLocalId = persistentLocalId,
+                    Request = request,
+                    IfMatchHeaderValue = ifMatchHeaderValue,
+                    Metadata = GetMetadata(),
+                    ProvenanceData = new ProvenanceData(CreateFakeProvenance())
+                };
+                var sqsResult = await _mediator.Send(sqsRequest, cancellationToken);
 
-                    return Accepted(sqsResult);
-                }
-
-                request.Metadata = GetMetadata();
-                var response = await _mediator.Send(request, cancellationToken);
-
-                return new AcceptedWithETagResult(
-                    new Uri(string.Format(options.Value.DetailUrl, request.PersistentLocalId)),
-                    response.ETag);
+                return Accepted(sqsResult);
             }
             catch (AggregateIdIsNotFoundException)
             {

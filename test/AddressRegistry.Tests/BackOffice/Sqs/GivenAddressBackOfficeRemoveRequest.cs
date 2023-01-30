@@ -49,7 +49,7 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
 
             var sqsQueue = new Mock<ISqsQueue>();
 
-            var sut = new RemoveAddressSqsHandler(
+            var sut = new RemoveAddressHandler(
                 sqsQueue.Object,
                 ticketingMock.Object,
                 ticketingUrl,
@@ -79,7 +79,7 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
         public void WithNoStreetNameFoundByAddressPersistentLocalId_ThrowsAggregateIdNotFound()
         {
             // Arrange
-            var sut = new RemoveAddressSqsHandler(
+            var sut = new RemoveAddressHandler(
                 Mock.Of<ISqsQueue>(),
                 Mock.Of<ITicketing>(),
                 Mock.Of<ITicketingUrl>(),

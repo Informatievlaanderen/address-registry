@@ -1,19 +1,19 @@
 namespace AddressRegistry.Api.BackOffice.Handlers
 {
     using System.Collections.Generic;
-    using AddressRegistry.Api.BackOffice.Abstractions;
-    using AddressRegistry.Api.BackOffice.Abstractions.SqsRequests;
+    using Abstractions;
+    using Abstractions.SqsRequests;
     using Be.Vlaanderen.Basisregisters.Sqs;
     using Be.Vlaanderen.Basisregisters.Sqs.Handlers;
     using TicketingService.Abstractions;
 
-    public sealed class ChangeAddressPositionSqsHandler : SqsHandler<ChangeAddressPositionSqsRequest>
+    public sealed class CorrectAddressBoxNumberHandler : SqsHandler<CorrectAddressBoxNumberSqsRequest>
     {
-        public const string Action = "ChangeAddressPosition";
+        public const string Action = "CorrectAddressBoxNumber";
 
         private readonly BackOfficeContext _backOfficeContext;
 
-        public ChangeAddressPositionSqsHandler(
+        public CorrectAddressBoxNumberHandler(
             ISqsQueue sqsQueue,
             ITicketing ticketing,
             ITicketingUrl ticketingUrl,
@@ -23,7 +23,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers
             _backOfficeContext = backOfficeContext;
         }
 
-        protected override string? WithAggregateId(ChangeAddressPositionSqsRequest request)
+        protected override string? WithAggregateId(CorrectAddressBoxNumberSqsRequest request)
         {
             var relation = _backOfficeContext
                 .AddressPersistentIdStreetNamePersistentIds
@@ -32,7 +32,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers
             return relation?.StreetNamePersistentLocalId.ToString();
         }
 
-        protected override IDictionary<string, string> WithTicketMetadata(string aggregateId, ChangeAddressPositionSqsRequest sqsRequest)
+        protected override IDictionary<string, string> WithTicketMetadata(string aggregateId, CorrectAddressBoxNumberSqsRequest sqsRequest)
         {
             return new Dictionary<string, string>
             {

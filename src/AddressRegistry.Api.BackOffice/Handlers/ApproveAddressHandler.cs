@@ -1,19 +1,18 @@
 namespace AddressRegistry.Api.BackOffice.Handlers
 {
     using System.Collections.Generic;
-    using AddressRegistry.Api.BackOffice.Abstractions;
-    using AddressRegistry.Api.BackOffice.Abstractions.SqsRequests;
+    using Abstractions;
+    using Abstractions.SqsRequests;
     using Be.Vlaanderen.Basisregisters.Sqs;
     using Be.Vlaanderen.Basisregisters.Sqs.Handlers;
     using TicketingService.Abstractions;
 
-    public sealed class DeregulateAddressSqsHandler : SqsHandler<DeregulateAddressSqsRequest>
+    public sealed class ApproveAddressHandler : SqsHandler<ApproveAddressSqsRequest>
     {
-        public const string Action = "DeregulateAddress";
-
+        public const string Action = "ApproveAddress";
         private readonly BackOfficeContext _backOfficeContext;
 
-        public DeregulateAddressSqsHandler(
+        public ApproveAddressHandler(
             ISqsQueue sqsQueue,
             ITicketing ticketing,
             ITicketingUrl ticketingUrl,
@@ -23,7 +22,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers
             _backOfficeContext = backOfficeContext;
         }
 
-        protected override string? WithAggregateId(DeregulateAddressSqsRequest request)
+        protected override string? WithAggregateId(ApproveAddressSqsRequest request)
         {
             var relation = _backOfficeContext
                 .AddressPersistentIdStreetNamePersistentIds
@@ -32,7 +31,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers
             return relation?.StreetNamePersistentLocalId.ToString();
         }
 
-        protected override IDictionary<string, string> WithTicketMetadata(string aggregateId, DeregulateAddressSqsRequest sqsRequest)
+        protected override IDictionary<string, string> WithTicketMetadata(string aggregateId, ApproveAddressSqsRequest sqsRequest)
         {
             return new Dictionary<string, string>
             {

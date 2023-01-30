@@ -1,19 +1,19 @@
 namespace AddressRegistry.Api.BackOffice.Handlers
 {
     using System.Collections.Generic;
-    using AddressRegistry.Api.BackOffice.Abstractions;
-    using AddressRegistry.Api.BackOffice.Abstractions.SqsRequests;
+    using Abstractions;
+    using Abstractions.SqsRequests;
     using Be.Vlaanderen.Basisregisters.Sqs;
     using Be.Vlaanderen.Basisregisters.Sqs.Handlers;
     using TicketingService.Abstractions;
 
-    public sealed class RejectAddressSqsHandler : SqsHandler<RejectAddressSqsRequest>
+    public sealed class RejectAddressHandler : SqsHandler<RejectAddressSqsRequest>
     {
         public const string Action = "RejectAddress";
 
         private readonly BackOfficeContext _backOfficeContext;
 
-        public RejectAddressSqsHandler(
+        public RejectAddressHandler(
             ISqsQueue sqsQueue,
             ITicketing ticketing,
             ITicketingUrl ticketingUrl,

@@ -1,17 +1,17 @@
 namespace AddressRegistry.Api.BackOffice.Handlers
 {
     using System.Collections.Generic;
-    using AddressRegistry.Api.BackOffice.Abstractions.SqsRequests;
+    using Abstractions.SqsRequests;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo.Extensions;
     using Be.Vlaanderen.Basisregisters.Sqs;
     using Be.Vlaanderen.Basisregisters.Sqs.Handlers;
     using TicketingService.Abstractions;
 
-    public sealed class ProposeAddressSqsHandler : SqsHandler<ProposeAddressSqsRequest>
+    public sealed class ProposeAddressHandler : SqsHandler<ProposeAddressSqsRequest>
     {
         public const string Action = "ProposeAddress";
 
-        public ProposeAddressSqsHandler(
+        public ProposeAddressHandler(
             ISqsQueue sqsQueue,
             ITicketing ticketing,
             ITicketingUrl ticketingUrl)

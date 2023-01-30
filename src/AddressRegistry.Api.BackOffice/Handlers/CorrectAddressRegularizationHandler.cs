@@ -1,18 +1,19 @@
 namespace AddressRegistry.Api.BackOffice.Handlers
 {
     using System.Collections.Generic;
-    using AddressRegistry.Api.BackOffice.Abstractions;
-    using AddressRegistry.Api.BackOffice.Abstractions.SqsRequests;
+    using Abstractions;
+    using Abstractions.SqsRequests;
     using Be.Vlaanderen.Basisregisters.Sqs;
     using Be.Vlaanderen.Basisregisters.Sqs.Handlers;
     using TicketingService.Abstractions;
 
-    public sealed class CorrectAddressApprovalSqsHandler : SqsHandler<CorrectAddressApprovalSqsRequest>
+    public sealed class CorrectAddressRegularizationHandler : SqsHandler<CorrectAddressRegularizationSqsRequest>
     {
-        public const string Action = "CorrectAddressApproval";
+        public const string Action = "CorrectAddressRegularization";
+
         private readonly BackOfficeContext _backOfficeContext;
 
-        public CorrectAddressApprovalSqsHandler(
+        public CorrectAddressRegularizationHandler(
             ISqsQueue sqsQueue,
             ITicketing ticketing,
             ITicketingUrl ticketingUrl,
@@ -22,7 +23,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers
             _backOfficeContext = backOfficeContext;
         }
 
-        protected override string? WithAggregateId(CorrectAddressApprovalSqsRequest request)
+        protected override string? WithAggregateId(CorrectAddressRegularizationSqsRequest request)
         {
             var relation = _backOfficeContext
                 .AddressPersistentIdStreetNamePersistentIds
@@ -31,14 +32,14 @@ namespace AddressRegistry.Api.BackOffice.Handlers
             return relation?.StreetNamePersistentLocalId.ToString();
         }
 
-        protected override IDictionary<string, string> WithTicketMetadata(string aggregateId, CorrectAddressApprovalSqsRequest sqsRequest)
+        protected override IDictionary<string, string> WithTicketMetadata(string aggregateId, CorrectAddressRegularizationSqsRequest regularizationSqsRequest)
         {
             return new Dictionary<string, string>
             {
                 { RegistryKey, nameof(AddressRegistry) },
                 { ActionKey, Action },
                 { AggregateIdKey, aggregateId },
-                { ObjectIdKey, sqsRequest.Request.PersistentLocalId.ToString() }
+                { ObjectIdKey, regularizationSqsRequest.Request.PersistentLocalId.ToString() }
             };
         }
     }

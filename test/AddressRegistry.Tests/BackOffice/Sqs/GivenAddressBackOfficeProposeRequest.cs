@@ -44,7 +44,7 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
 
             var sqsQueue = new Mock<ISqsQueue>();
 
-            var sut = new ProposeAddressSqsHandler(
+            var sut = new ProposeAddressHandler(
                 sqsQueue.Object,
                 ticketingMock.Object,
                 ticketingUrl);

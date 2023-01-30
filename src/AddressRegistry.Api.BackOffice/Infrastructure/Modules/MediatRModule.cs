@@ -22,7 +22,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
                 return type => ctx.Resolve(type);
             });
 
-            builder.RegisterAssemblyTypes(typeof(ProposeAddressSqsHandler).GetTypeInfo().Assembly).AsImplementedInterfaces();
+            builder.RegisterAssemblyTypes(typeof(ProposeAddressHandler).GetTypeInfo().Assembly).AsImplementedInterfaces();
         }
     }
 }

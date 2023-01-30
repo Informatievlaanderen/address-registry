@@ -5,8 +5,8 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
-    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Handlers;
-    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
+    using AddressRegistry.Api.BackOffice.Abstractions.SqsRequests;
+    using AddressRegistry.Api.BackOffice.Handlers;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple;
     using Be.Vlaanderen.Basisregisters.Sqs;
@@ -49,7 +49,7 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
 
             var sqsQueue = new Mock<ISqsQueue>();
 
-            var sut = new CorrectAddressHouseNumberSqsHandler(
+            var sut = new CorrectAddressHouseNumberHandler(
                 sqsQueue.Object,
                 ticketingMock.Object,
                 ticketingUrl,
@@ -77,7 +77,7 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
         public void WithNoStreetNameFoundByAddressPersistentLocalId_ThrowsAggregateIdNotFound()
         {
             // Arrange
-            var sut = new CorrectAddressHouseNumberSqsHandler(
+            var sut = new CorrectAddressHouseNumberHandler(
                 Mock.Of<ISqsQueue>(),
                 Mock.Of<ITicketing>(),
                 Mock.Of<ITicketingUrl>(),

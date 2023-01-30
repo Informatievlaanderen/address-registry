@@ -1,8 +1,6 @@
 namespace AddressRegistry.Tests.BackOffice.Sqs
 {
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
-    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Handlers;
-    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple;
     using FluentAssertions;
@@ -14,6 +12,8 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using AddressRegistry.Api.BackOffice.Abstractions.SqsRequests;
+    using AddressRegistry.Api.BackOffice.Handlers;
     using Be.Vlaanderen.Basisregisters.Sqs;
     using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
     using TicketingService.Abstractions;
@@ -49,7 +49,7 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
 
             var sqsQueue = new Mock<ISqsQueue>();
 
-            var sut = new ApproveAddressSqsHandler(
+            var sut = new ApproveAddressHandler(
                 sqsQueue.Object,
                 ticketingMock.Object,
                 ticketingUrl,
@@ -79,7 +79,7 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
         public void WithNoStreetNameFoundByAddressPersistentLocalId_ThrowsAggregateIdNotFound()
         {
             // Arrange
-            var sut = new ApproveAddressSqsHandler(
+            var sut = new ApproveAddressHandler(
                 Mock.Of<ISqsQueue>(),
                 Mock.Of<ITicketing>(),
                 Mock.Of<ITicketingUrl>(),

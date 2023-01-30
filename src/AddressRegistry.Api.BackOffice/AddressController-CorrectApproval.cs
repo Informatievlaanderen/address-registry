@@ -3,6 +3,7 @@ namespace AddressRegistry.Api.BackOffice
     using System.Threading;
     using System.Threading.Tasks;
     using Abstractions.Requests;
+    using Abstractions.SqsRequests;
     using Abstractions.Validation;
     using Be.Vlaanderen.Basisregisters.AcmIdm;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
@@ -10,7 +11,6 @@ namespace AddressRegistry.Api.BackOffice
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
-    using Handlers.Sqs.Requests;
     using Infrastructure;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;

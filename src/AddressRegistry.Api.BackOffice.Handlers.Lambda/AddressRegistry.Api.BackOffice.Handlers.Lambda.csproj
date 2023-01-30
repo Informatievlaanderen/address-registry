@@ -18,8 +18,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AddressRegistry.Api.BackOffice.Abstractions\AddressRegistry.Api.BackOffice.Abstractions.csproj" />
-    <ProjectReference Include="..\AddressRegistry.Api.BackOffice.Handlers.Sqs\AddressRegistry.Api.BackOffice.Handlers.Sqs.csproj" />
     <ProjectReference Include="..\AddressRegistry.Consumer.Read.Municipality\AddressRegistry.Consumer.Read.Municipality.csproj" />
+    <ProjectReference Include="..\AddressRegistry.Consumer\AddressRegistry.Consumer.csproj" />
     <ProjectReference Include="..\AddressRegistry.Projections.Syndication\AddressRegistry.Projections.Syndication.csproj" />
   </ItemGroup>
 

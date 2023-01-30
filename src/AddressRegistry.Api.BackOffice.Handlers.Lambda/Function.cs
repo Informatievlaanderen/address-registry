@@ -6,6 +6,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
 {
     using System.Reflection;
     using Abstractions;
+    using Abstractions.SqsRequests;
     using AddressRegistry.Infrastructure;
     using AddressRegistry.Infrastructure.Modules;
     using Autofac;
@@ -26,7 +27,6 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
     using Projections.Syndication;
-    using Sqs.Requests;
     using StreetName;
     using TicketingService.Proxy.HttpProxy;
 

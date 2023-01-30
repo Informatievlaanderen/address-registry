@@ -3,7 +3,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRegularizati
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
+    using AddressRegistry.Api.BackOffice.Abstractions.SqsRequests;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;

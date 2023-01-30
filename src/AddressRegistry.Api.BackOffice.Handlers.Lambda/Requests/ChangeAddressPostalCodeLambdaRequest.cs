@@ -1,9 +1,9 @@
 namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
 {
     using Abstractions.Requests;
+    using Abstractions.SqsRequests;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo.Extensions;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Requests;
-    using Sqs.Requests;
     using StreetName;
     using StreetName.Commands;
 

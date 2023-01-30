@@ -17,12 +17,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPostalCode
     public class GivenInvalidRequest : BackOfficeApiTest
     {
         private readonly AddressController _controller;
-        private readonly TestBackOfficeContext _backOfficeContext;
 
         public GivenInvalidRequest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             _controller = CreateApiBusControllerWithUser<AddressController>();
-            _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
+            new FakeBackOfficeContextFactory().CreateDbContext();
         }
 
         [Fact]
@@ -45,9 +44,9 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPostalCode
                 .Should()
                 .ThrowAsync<ValidationException>()
                 .Result
-                .Where(x =>
-                    x.Errors.Any(e => e.ErrorCode == "AdresPostinfoNietGekendValidatie"
-                                      && e.ErrorMessage == $"De postinfo '{nonExistentPostInfo}' is niet gekend in het postinforegister."));
+                .Where(x => x.Errors.Any(e =>
+                    e.ErrorCode == "AdresPostinfoNietGekendValidatie"
+                    && e.ErrorMessage == $"De postinfo '{nonExistentPostInfo}' is niet gekend in het postinforegister."));
         }
     }
 }

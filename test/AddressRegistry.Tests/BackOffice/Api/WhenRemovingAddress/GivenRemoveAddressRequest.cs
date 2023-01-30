@@ -6,8 +6,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRemovingAddress
     using AddressRegistry.Api.BackOffice;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
-    using StreetName;
-    using Infrastructure;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
@@ -20,15 +18,13 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRemovingAddress
     using Xunit;
     using Xunit.Abstractions;
 
-    public class GivenSqsToggleEnabled  : BackOfficeApiTest
+    public class GivenRemoveAddressRequest  : BackOfficeApiTest
     {
         private readonly AddressController _controller;
-        private readonly TestBackOfficeContext _backOfficeContext;
 
-        public GivenSqsToggleEnabled(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public GivenRemoveAddressRequest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             _controller = CreateApiBusControllerWithUser<AddressController>();
-            _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
         }
 
         [Fact]
@@ -37,21 +33,14 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRemovingAddress
             var ticketId = Fixture.Create<Guid>();
             var expectedLocationResult = new LocationResult(CreateTicketUri(ticketId));
 
-            var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = new AddressPersistentLocalId(123);
-
             MockMediator
                 .Setup(x => x.Send(It.IsAny<RemoveAddressSqsRequest>(), CancellationToken.None))
                 .Returns(Task.FromResult(expectedLocationResult));
 
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
-
-            var result = (AcceptedResult)await _controller.Remove(MockIfMatchValidator(true),
+            var result = (AcceptedResult)await _controller.Remove(
+                MockIfMatchValidator(true),
                 ifMatchHeaderValue: null,
-                new RemoveAddressRequest
-                {
-                    PersistentLocalId = addressPersistentLocalId
-                });
+                Fixture.Create<RemoveAddressRequest>());
 
             result.Should().NotBeNull();
             AssertLocation(result.Location, ticketId);
@@ -60,18 +49,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRemovingAddress
         [Fact]
         public async Task WithInvalidIfMatchHeader_ThenPreconditionFailedResponse()
         {
-            var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = new AddressPersistentLocalId(123);
-
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
-
             //Act
-            var result = await _controller.Remove(MockIfMatchValidator(false),
+            var result = await _controller.Remove(
+                MockIfMatchValidator(false),
                 ifMatchHeaderValue: null,
-                new RemoveAddressRequest
-                {
-                    PersistentLocalId = addressPersistentLocalId
-                });
+                Fixture.Create<RemoveAddressRequest>());
 
             //Assert
             result.Should().BeOfType<PreconditionFailedResult>();
@@ -80,9 +62,28 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRemovingAddress
         [Fact]
         public async Task WithAddressIsNotFoundException_ThenThrowsApiException()
         {
-            Func<Task> act = async () => await _controller.Remove(MockIfMatchValidatorThrowsAddressIsNotFoundException(),
+            Func<Task> act = async () => await _controller.Remove(
+                MockIfMatchValidatorThrowsAddressIsNotFoundException(),
                 ifMatchHeaderValue: null,
-                new RemoveAddressRequest { PersistentLocalId = Fixture.Create<AddressPersistentLocalId>() });
+                Fixture.Create<RemoveAddressRequest>());
+
+            //Assert
+            act
+                .Should()
+                .ThrowAsync<ApiException>()
+                .Result
+                .Where(x =>
+                    x.Message.Contains("Onbestaand adres.")
+                    && x.StatusCode == StatusCodes.Status404NotFound);
+        }
+
+        [Fact]
+        public async Task WithAggregateNotFoundException_ThenThrowsApiException()
+        {
+            Func<Task> act = async () => await _controller.Remove(
+                MockIfMatchValidatorThrowsAggregateNotFoundException(),
+                ifMatchHeaderValue: null,
+                Fixture.Create<RemoveAddressRequest>());
 
             //Assert
             act
@@ -97,21 +98,14 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRemovingAddress
         [Fact]
         public async Task WithAggregateIdIsNotFound_ThenThrowsApiException()
         {
-            var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
-
             MockMediator
                 .Setup(x => x.Send(It.IsAny<RemoveAddressSqsRequest>(), CancellationToken.None))
                 .Throws(new AggregateIdIsNotFoundException());
 
-            Func<Task> act = async () => await _controller.Remove(MockIfMatchValidator(true),
+            Func<Task> act = async () => await _controller.Remove(
+                MockIfMatchValidator(true),
                 ifMatchHeaderValue: null,
-                new RemoveAddressRequest
-                {
-                    PersistentLocalId = addressPersistentLocalId
-                });
+                Fixture.Create<RemoveAddressRequest>());
 
             //Assert
             act

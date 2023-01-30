@@ -6,30 +6,25 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
     using AddressRegistry.Api.BackOffice;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
-    using AddressRegistry.Api.BackOffice.Validators;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
     using Be.Vlaanderen.Basisregisters.Sqs.Requests;
     using FluentAssertions;
     using global::AutoFixture;
-    using Infrastructure;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Moq;
-    using StreetName;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class GivenSqsToggleEnabled  : BackOfficeApiTest
+    public class GivenApproveAddressRequest  : BackOfficeApiTest
     {
         private readonly AddressController _controller;
-        private readonly TestBackOfficeContext _backOfficeContext;
 
-        public GivenSqsToggleEnabled(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public GivenApproveAddressRequest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             _controller = CreateApiBusControllerWithUser<AddressController>();
-            _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
         }
 
         [Fact]
@@ -38,17 +33,13 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
             var ticketId = Fixture.Create<Guid>();
             var expectedLocationResult = new LocationResult(CreateTicketUri(ticketId));
 
-            var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-
             MockMediator
                 .Setup(x => x.Send(It.IsAny<ApproveAddressSqsRequest>(), CancellationToken.None))
                 .Returns(Task.FromResult(expectedLocationResult));
 
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
-
-            var result = (AcceptedResult)await _controller.Approve(MockIfMatchValidator(true),
-                request: new ApproveAddressRequest { PersistentLocalId = addressPersistentLocalId },
+            var result = (AcceptedResult)await _controller.Approve(
+                MockIfMatchValidator(true),
+                Fixture.Create<ApproveAddressRequest>(),
                 ifMatchHeaderValue: null);
 
             result.Should().NotBeNull();
@@ -58,14 +49,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
         [Fact]
         public async Task WithInvalidIfMatchHeader_ThenPreconditionFailedResponse()
         {
-            var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
-
             //Act
-            var result = await _controller.Approve(MockIfMatchValidator(false),
-                request: new ApproveAddressRequest { PersistentLocalId = addressPersistentLocalId },
+            var result = await _controller.Approve(
+                MockIfMatchValidator(false),
+                Fixture.Create<ApproveAddressRequest>(),
                 "IncorrectIfMatchHeader");
 
             //Assert
@@ -75,8 +62,26 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
         [Fact]
         public async Task WithAddressIsNotFoundException_ThenThrowsApiException()
         {
-            Func<Task> act = async () => await _controller.Approve(MockIfMatchValidatorThrowsAddressIsNotFoundException(),
-                request: new ApproveAddressRequest { PersistentLocalId = Fixture.Create<AddressPersistentLocalId>() },
+            Func<Task> act = async () => await _controller.Approve(
+                MockIfMatchValidatorThrowsAddressIsNotFoundException(),
+                Fixture.Create<ApproveAddressRequest>(),
+                ifMatchHeaderValue: null);
+
+            act
+                .Should()
+                .ThrowAsync<ApiException>()
+                .Result
+                .Where(x =>
+                    x.Message.Contains("Onbestaand adres.")
+                    && x.StatusCode == StatusCodes.Status404NotFound);
+        }
+
+        [Fact]
+        public async Task WithAggregateNotFoundException_ThenThrowsApiException()
+        {
+            Func<Task> act = async () => await _controller.Approve(
+                MockIfMatchValidatorThrowsAggregateNotFoundException(),
+                Fixture.Create<ApproveAddressRequest>(),
                 ifMatchHeaderValue: null);
 
             act
@@ -91,18 +96,14 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
         [Fact]
         public async Task WithAggregateIdIsNotFound_ThenThrowsApiException()
         {
-            var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
-
             MockMediator
                 .Setup(x => x.Send(It.IsAny<ApproveAddressSqsRequest>(), CancellationToken.None))
                 .Throws(new AggregateIdIsNotFoundException());
 
-            Func<Task> act = async () => await _controller.Approve(MockIfMatchValidator(true),
-                new ApproveAddressRequest { PersistentLocalId = addressPersistentLocalId },
-                string.Empty);
+            Func<Task> act = async () => await _controller.Approve(
+                MockIfMatchValidator(true),
+                Fixture.Create<ApproveAddressRequest>(),
+                ifMatchHeaderValue: null);
 
             //Assert
             act

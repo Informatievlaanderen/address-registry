@@ -12,23 +12,19 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
     using Be.Vlaanderen.Basisregisters.Sqs.Requests;
     using FluentAssertions;
     using global::AutoFixture;
-    using Infrastructure;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Moq;
-    using StreetName;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class GivenSqsToggleEnabled  : BackOfficeApiTest
+    public class GivenCorrectAddressRejectionRequest  : BackOfficeApiTest
     {
         private readonly AddressController _controller;
-        private readonly TestBackOfficeContext _backOfficeContext;
 
-        public GivenSqsToggleEnabled(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public GivenCorrectAddressRejectionRequest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             _controller = CreateApiBusControllerWithUser<AddressController>();
-            _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
         }
 
         [Fact]
@@ -37,20 +33,13 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
             var ticketId = Fixture.Create<Guid>();
             var expectedLocationResult = new LocationResult(CreateTicketUri(ticketId));
 
-            var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = new AddressPersistentLocalId(123);
-
             MockMediator
                 .Setup(x => x.Send(It.IsAny<CorrectAddressRejectionSqsRequest>(), CancellationToken.None))
                 .Returns(Task.FromResult(expectedLocationResult));
 
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
-
-            var result = (AcceptedResult)await _controller.CorrectRejection(MockIfMatchValidator(true),
-                request: new CorrectAddressRejectionRequest
-                {
-                    PersistentLocalId = addressPersistentLocalId
-                },
+            var result = (AcceptedResult)await _controller.CorrectRejection(
+                MockIfMatchValidator(true),
+                Fixture.Create<CorrectAddressRejectionRequest>(),
                 ifMatchHeaderValue: null);
 
             result.Should().NotBeNull();
@@ -60,17 +49,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
         [Fact]
         public async Task WithInvalidIfMatchHeader_ThenPreconditionFailedResponse()
         {
-            var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = new AddressPersistentLocalId(123);
-
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
-
             //Act
-            var result = await _controller.CorrectRejection(MockIfMatchValidator(false),
-                request: new CorrectAddressRejectionRequest
-                {
-                    PersistentLocalId = addressPersistentLocalId
-                },
+            var result = await _controller.CorrectRejection(
+                MockIfMatchValidator(false),
+                Fixture.Create<CorrectAddressRejectionRequest>(),
                 ifMatchHeaderValue: null);
 
             //Assert
@@ -80,8 +62,27 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
         [Fact]
         public async Task WithAddressIsNotFoundException_ThenThrowsApiException()
         {
-            Func<Task> act = async () => await _controller.CorrectRejection(MockIfMatchValidatorThrowsAddressIsNotFoundException(),
-                new CorrectAddressRejectionRequest { PersistentLocalId = Fixture.Create<AddressPersistentLocalId>() },
+            Func<Task> act = async () => await _controller.CorrectRejection(
+                MockIfMatchValidatorThrowsAddressIsNotFoundException(),
+                Fixture.Create<CorrectAddressRejectionRequest>(),
+                ifMatchHeaderValue: null);
+
+            //Assert
+            act
+                .Should()
+                .ThrowAsync<ApiException>()
+                .Result
+                .Where(x =>
+                    x.Message.Contains("Onbestaand adres.")
+                    && x.StatusCode == StatusCodes.Status404NotFound);
+        }
+
+        [Fact]
+        public async Task WithAggregateNotFoundException_ThenThrowsApiException()
+        {
+            Func<Task> act = async () => await _controller.CorrectRejection(
+                MockIfMatchValidatorThrowsAggregateNotFoundException(),
+                Fixture.Create<CorrectAddressRejectionRequest>(),
                 ifMatchHeaderValue: null);
 
             //Assert
@@ -97,21 +98,14 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
         [Fact]
         public async Task WithAggregateIdIsNotFound_ThenThrowsApiException()
         {
-            var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
-
             MockMediator
                 .Setup(x => x.Send(It.IsAny<CorrectAddressRejectionSqsRequest>(), CancellationToken.None))
                 .Throws(new AggregateIdIsNotFoundException());
 
-            Func<Task> act = async () => await _controller.CorrectRejection(MockIfMatchValidator(true),
-                new CorrectAddressRejectionRequest
-                {
-                    PersistentLocalId = addressPersistentLocalId
-                },
-                string.Empty);
+            Func<Task> act = async () => await _controller.CorrectRejection(
+                MockIfMatchValidator(true),
+                Fixture.Create<CorrectAddressRejectionRequest>(),
+                ifMatchHeaderValue: null);
 
             //Assert
             act

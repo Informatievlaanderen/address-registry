@@ -49,7 +49,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
         [InlineData(PositieSpecificatie.Standplaats)]
         [InlineData(PositieSpecificatie.Ligplaats)]
         [InlineData(PositieSpecificatie.Ingang)]
-        public void WithInvalidSpecificationAndDerivedFromObject_ThenThrowsValidationException(PositieSpecificatie specificatie)
+        public void WithDerivedFromObjectAndInvalidSpecification_ThenThrowsValidationException(PositieSpecificatie specificatie)
         {
             var act = SetupController(new CorrectAddressPositionRequest
             {

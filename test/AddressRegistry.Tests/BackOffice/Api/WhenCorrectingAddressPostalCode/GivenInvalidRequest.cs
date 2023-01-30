@@ -17,12 +17,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPostalCode
     public class GivenInvalidRequest : BackOfficeApiTest
     {
         private readonly AddressController _controller;
-        private readonly TestBackOfficeContext _backOfficeContext;
 
         public GivenInvalidRequest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             _controller = CreateApiBusControllerWithUser<AddressController>();
-            _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
         }
 
         [Fact]
@@ -31,11 +29,12 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPostalCode
             var nonExistentPostInfo = PostInfoPuri + "123456";
             var syndicationContext = new FakeSyndicationContextFactory().CreateDbContext();
 
-            Func<Task> act = async () => await _controller.CorrectPostalCode(new CorrectAddressPostalCodeRequestValidator(syndicationContext),
+            Func<Task> act = async () => await _controller.CorrectPostalCode(
+                new CorrectAddressPostalCodeRequestValidator(syndicationContext),
                 MockIfMatchValidator(true),
                 Fixture.Create<AddressPersistentLocalId>(),
                 new CorrectAddressPostalCodeRequest { PostInfoId = nonExistentPostInfo },
-                null);
+                ifMatchHeaderValue: null);
 
             // Assert
             act

@@ -7,6 +7,7 @@ namespace AddressRegistry.Tests.BackOffice.Api
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Infrastructure;
     using AddressRegistry.Api.BackOffice.Infrastructure.Options;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
     using StreetName;
     using Tests;
     using Be.Vlaanderen.Basisregisters.Api;
@@ -23,7 +24,6 @@ namespace AddressRegistry.Tests.BackOffice.Api
 
     public class BackOfficeApiTest : AddressRegistryTest
     {
-        private const string DetailUrl = "https://www.registry.com/address/voorgesteld/{0}";
         protected const string StraatNaamPuri = $"https://data.vlaanderen.be/id/straatnaam/";
         protected const string PostInfoPuri = $"https://data.vlaanderen.be/id/postinfo/";
 
@@ -89,6 +89,17 @@ namespace AddressRegistry.Tests.BackOffice.Api
             mockIfMatchHeaderValidator
                 .Setup(x => x.IsValid(It.IsAny<string>(), It.IsAny<AddressPersistentLocalId>(), CancellationToken.None))
                 .Throws<AddressIsNotFoundException>();
+
+            return mockIfMatchHeaderValidator.Object;
+        }
+
+        protected IIfMatchHeaderValidator MockIfMatchValidatorThrowsAggregateNotFoundException()
+        {
+            var mockIfMatchHeaderValidator = new Mock<IIfMatchHeaderValidator>();
+
+            mockIfMatchHeaderValidator
+                .Setup(x => x.IsValid(It.IsAny<string>(), It.IsAny<AddressPersistentLocalId>(), CancellationToken.None))
+                .Throws(() => new AggregateNotFoundException("test", typeof(StreetName)));
 
             return mockIfMatchHeaderValidator.Object;
         }

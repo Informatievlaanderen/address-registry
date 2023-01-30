@@ -1,4 +1,4 @@
-namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressHouseNumber
+namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPostalCode
 {
     using System;
     using System.Threading;
@@ -12,7 +12,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressHouseNumber
     using Be.Vlaanderen.Basisregisters.Sqs.Requests;
     using FluentAssertions;
     using global::AutoFixture;
-    using Infrastructure;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Moq;
@@ -20,15 +19,13 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressHouseNumber
     using Xunit;
     using Xunit.Abstractions;
 
-    public class GivenSqsToggleEnabled  : BackOfficeApiTest
+    public class GivenChangeAddressPostalCodeRequest  : BackOfficeApiTest
     {
         private readonly AddressController _controller;
-        private readonly TestBackOfficeContext _backOfficeContext;
 
-        public GivenSqsToggleEnabled(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public GivenChangeAddressPostalCodeRequest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             _controller = CreateApiBusControllerWithUser<AddressController>();
-            _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
         }
 
         [Fact]
@@ -37,19 +34,15 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressHouseNumber
             var ticketId = Fixture.Create<Guid>();
             var expectedLocationResult = new LocationResult(CreateTicketUri(ticketId));
 
-            var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-
             MockMediator
-                .Setup(x => x.Send(It.IsAny<CorrectAddressHouseNumberSqsRequest>(), CancellationToken.None))
+                .Setup(x => x.Send(It.IsAny<ChangeAddressPostalCodeSqsRequest>(), CancellationToken.None))
                 .Returns(Task.FromResult(expectedLocationResult));
 
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
-
-            var result = (AcceptedResult)await _controller.CorrectHouseNumber(MockValidRequestValidator<CorrectAddressHouseNumberRequest>(),
+            var result = (AcceptedResult)await _controller.ChangePostalCode(
+                MockValidRequestValidator<ChangeAddressPostalCodeRequest>(),
                 MockIfMatchValidator(true),
-                addressPersistentLocalId,
-                request: new CorrectAddressHouseNumberRequest { Huisnummer = "11" },
+                Fixture.Create<AddressPersistentLocalId>(),
+                Fixture.Create<ChangeAddressPostalCodeRequest>(),
                 ifMatchHeaderValue: null);
 
             result.Should().NotBeNull();
@@ -59,16 +52,12 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressHouseNumber
         [Fact]
         public async Task WithInvalidIfMatchHeader_ThenPreconditionFailedResponse()
         {
-            var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
-
             //Act
-            var result = await _controller.CorrectHouseNumber(MockValidRequestValidator<CorrectAddressHouseNumberRequest>(),
+            var result = await _controller.ChangePostalCode(
+                MockValidRequestValidator<ChangeAddressPostalCodeRequest>(),
                 MockIfMatchValidator(false),
-                addressPersistentLocalId,
-                request: new CorrectAddressHouseNumberRequest { Huisnummer = "11" },
+                Fixture.Create<AddressPersistentLocalId>(),
+                Fixture.Create<ChangeAddressPostalCodeRequest>(),
                 ifMatchHeaderValue: null);
 
             //Assert
@@ -78,10 +67,31 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressHouseNumber
         [Fact]
         public async Task WithAddressIsNotFoundException_ThenThrowsApiException()
         {
-            Func<Task> act = async () => await _controller.CorrectHouseNumber(MockValidRequestValidator<CorrectAddressHouseNumberRequest>(),
+            Func<Task> act = async () => await  _controller.ChangePostalCode(
+                MockValidRequestValidator<ChangeAddressPostalCodeRequest>(),
                 MockIfMatchValidatorThrowsAddressIsNotFoundException(),
                 Fixture.Create<AddressPersistentLocalId>(),
-                request: new CorrectAddressHouseNumberRequest { Huisnummer = "11" },
+                Fixture.Create<ChangeAddressPostalCodeRequest>(),
+                ifMatchHeaderValue: null);
+
+            //Assert
+            act
+                .Should()
+                .ThrowAsync<ApiException>()
+                .Result
+                .Where(x =>
+                    x.Message.Contains("Onbestaand adres.")
+                    && x.StatusCode == StatusCodes.Status404NotFound);
+        }
+
+        [Fact]
+        public async Task WithAggregateNotFoundException_ThenThrowsApiException()
+        {
+            Func<Task> act = async () => await  _controller.ChangePostalCode(
+                MockValidRequestValidator<ChangeAddressPostalCodeRequest>(),
+                MockIfMatchValidatorThrowsAggregateNotFoundException(),
+                Fixture.Create<AddressPersistentLocalId>(),
+                Fixture.Create<ChangeAddressPostalCodeRequest>(),
                 ifMatchHeaderValue: null);
 
             //Assert
@@ -97,20 +107,15 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressHouseNumber
         [Fact]
         public async Task WithAggregateIdIsNotFound_ThenThrowsApiException()
         {
-            var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
-
             MockMediator
-                .Setup(x => x.Send(It.IsAny<CorrectAddressHouseNumberSqsRequest>(), CancellationToken.None))
+                .Setup(x => x.Send(It.IsAny<ChangeAddressPostalCodeSqsRequest>(), CancellationToken.None))
                 .Throws(new AggregateIdIsNotFoundException());
 
-            Func<Task> act = async () => await _controller.CorrectHouseNumber(MockValidRequestValidator<CorrectAddressHouseNumberRequest>(),
+            Func<Task> act = async () => await _controller.ChangePostalCode(MockValidRequestValidator<ChangeAddressPostalCodeRequest>(),
                 MockIfMatchValidator(true),
-                addressPersistentLocalId,
-                new CorrectAddressHouseNumberRequest(),
-                string.Empty);
+                Fixture.Create<AddressPersistentLocalId>(),
+                Fixture.Create<ChangeAddressPostalCodeRequest>(),
+                ifMatchHeaderValue: null);
 
             //Assert
             act

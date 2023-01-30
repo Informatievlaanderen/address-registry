@@ -46,11 +46,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPostalCode
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
-            var result = (AcceptedResult)await _controller.ChangePostalCode(
-                _backOfficeContext,
-                MockValidRequestValidator<ChangeAddressPostalCodeRequest>(),
+            var result = (AcceptedResult)await _controller.ChangePostalCode(MockValidRequestValidator<ChangeAddressPostalCodeRequest>(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
                 addressPersistentLocalId,
                 request: new ChangeAddressPostalCodeRequest { PostInfoId = PostInfoPuri },
                 ifMatchHeaderValue: null);
@@ -68,11 +65,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPostalCode
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             //Act
-            var result = await _controller.ChangePostalCode(
-                _backOfficeContext,
-                MockValidRequestValidator<ChangeAddressPostalCodeRequest>(),
+            var result = await _controller.ChangePostalCode(MockValidRequestValidator<ChangeAddressPostalCodeRequest>(),
                 MockIfMatchValidator(false),
-                ResponseOptions,
                 addressPersistentLocalId,
                 request: new ChangeAddressPostalCodeRequest { PostInfoId = PostInfoPuri },
                 ifMatchHeaderValue: null);
@@ -82,13 +76,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPostalCode
         }
 
         [Fact]
-        public async Task ForUnknownAddress_ThenThrowsApiException()
+        public async Task WithAddressIsNotFoundException_ThenThrowsApiException()
         {
-            Func<Task> act = async () => await  _controller.ChangePostalCode(
-                _backOfficeContext,
-                MockValidRequestValidator<ChangeAddressPostalCodeRequest>(),
-                MockIfMatchValidator(true),
-                ResponseOptions,
+            Func<Task> act = async () => await  _controller.ChangePostalCode(MockValidRequestValidator<ChangeAddressPostalCodeRequest>(),
+                MockIfMatchValidatorThrowsAddressIsNotFoundException(),
                 Fixture.Create<AddressPersistentLocalId>(),
                 request: new ChangeAddressPostalCodeRequest { PostInfoId = PostInfoPuri },
                 ifMatchHeaderValue: null);
@@ -115,11 +106,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPostalCode
                 .Setup(x => x.Send(It.IsAny<ChangeAddressPostalCodeSqsRequest>(), CancellationToken.None))
                 .Throws(new AggregateIdIsNotFoundException());
 
-            Func<Task> act = async () => await _controller.ChangePostalCode(
-                _backOfficeContext,
-                MockValidRequestValidator<ChangeAddressPostalCodeRequest>(),
+            Func<Task> act = async () => await _controller.ChangePostalCode(MockValidRequestValidator<ChangeAddressPostalCodeRequest>(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
                 addressPersistentLocalId,
                 new ChangeAddressPostalCodeRequest(),
                 string.Empty);

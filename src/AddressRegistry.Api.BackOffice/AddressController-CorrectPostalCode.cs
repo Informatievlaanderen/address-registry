@@ -1,14 +1,9 @@
 namespace AddressRegistry.Api.BackOffice
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Abstractions;
     using Abstractions.Requests;
     using Abstractions.Validation;
-    using Address;
     using Be.Vlaanderen.Basisregisters.AcmIdm;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
@@ -16,7 +11,6 @@ namespace AddressRegistry.Api.BackOffice
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
     using FluentValidation;
-    using FluentValidation.Results;
     using Handlers.Sqs.Requests;
     using Infrastructure;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -32,7 +26,6 @@ namespace AddressRegistry.Api.BackOffice
         /// <summary>
         /// Corrigeer postcode van adres.
         /// </summary>
-        /// <param name="backOfficeContext"></param>
         /// <param name="ifMatchHeaderValidator"></param>
         /// <param name="persistentLocalId"></param>
         /// <param name="request"></param>
@@ -52,7 +45,6 @@ namespace AddressRegistry.Api.BackOffice
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.Adres.DecentraleBijwerker)]
         public async Task<IActionResult> CorrectPostalCode(
-            [FromServices] BackOfficeContext backOfficeContext,
             [FromServices] IValidator<CorrectAddressPostalCodeRequest> validator,
             [FromServices] IIfMatchHeaderValidator ifMatchHeaderValidator,
             [FromRoute] int persistentLocalId,
@@ -62,22 +54,10 @@ namespace AddressRegistry.Api.BackOffice
         {
             await validator.ValidateAndThrowAsync(request, cancellationToken);
 
-            var addressPersistentLocalId = new AddressPersistentLocalId(new PersistentLocalId(persistentLocalId));
-
-            var relation = backOfficeContext.AddressPersistentIdStreetNamePersistentIds
-                .FirstOrDefault(x => x.AddressPersistentLocalId == addressPersistentLocalId);
-
-            if (relation is null)
-            {
-                throw new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound);
-            }
-
-            var streetNamePersistentLocalId = new StreetNamePersistentLocalId(relation.StreetNamePersistentLocalId);
-
             try
             {
                 // Check if user provided ETag is equal to the current Entity Tag
-                if (!await ifMatchHeaderValidator.IsValid(ifMatchHeaderValue, streetNamePersistentLocalId, addressPersistentLocalId, cancellationToken))
+                if (!await ifMatchHeaderValidator.IsValid(ifMatchHeaderValue, new AddressPersistentLocalId(persistentLocalId), cancellationToken))
                 {
                     return new PreconditionFailedResult();
                 }
@@ -98,39 +78,13 @@ namespace AddressRegistry.Api.BackOffice
             {
                 throw new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound);
             }
-            catch (IdempotencyException)
-            {
-                return Accepted();
-            }
             catch (AggregateNotFoundException)
             {
                 throw new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound);
             }
-            catch (DomainException exception)
+            catch (AddressIsNotFoundException)
             {
-                throw exception switch
-                {
-                    StreetNameHasInvalidStatusException => CreateValidationException(
-                        ValidationErrors.Common.StreetNameStatusInvalidForCorrection.Code,
-                        string.Empty,
-                        ValidationErrors.Common.StreetNameStatusInvalidForCorrection.Message),
-
-                    AddressIsNotFoundException => new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound),
-                    AddressIsRemovedException => new ApiException(ValidationErrors.Common.AddressRemoved.Message, StatusCodes.Status410Gone),
-
-                    AddressHasInvalidStatusException => CreateValidationException(
-                        ValidationErrors.Common.PostalCode.CannotBeChanged.Code,
-                        string.Empty,
-                        ValidationErrors.Common.PostalCode.CannotBeChanged.Message),
-
-                    PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException => CreateValidationException(
-                        ValidationErrors.Common.PostalCode.PostalCodeNotInMunicipality.Code,
-                        nameof(request.PostInfoId),
-                        ValidationErrors.Common.PostalCode.PostalCodeNotInMunicipality.Message),
-
-                    _ => new ValidationException(new List<ValidationFailure>
-                        { new(string.Empty, exception.Message) })
-                };
+                throw new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound);
             }
         }
     }

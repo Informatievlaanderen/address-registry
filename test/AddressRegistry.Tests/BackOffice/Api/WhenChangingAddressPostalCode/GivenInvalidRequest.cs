@@ -31,11 +31,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPostalCode
             var nonExistentPostInfo = PostInfoPuri + "123456";
             var syndicationContext = new FakeSyndicationContextFactory().CreateDbContext();
 
-            Func<Task> act = async () => await _controller.ChangePostalCode(
-                _backOfficeContext,
-                new ChangeAddressPostalCodeRequestValidator(syndicationContext),
+            Func<Task> act = async () => await _controller.ChangePostalCode(new ChangeAddressPostalCodeRequestValidator(syndicationContext),
                 MockIfMatchValidator(true),
-                ResponseOptions,
                 Fixture.Create<AddressPersistentLocalId>(),
                 new ChangeAddressPostalCodeRequest()
                 {

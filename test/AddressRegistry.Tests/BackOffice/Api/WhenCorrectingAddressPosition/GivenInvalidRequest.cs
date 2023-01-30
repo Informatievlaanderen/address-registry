@@ -5,7 +5,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice;
-    using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Infrastructure;
     using AddressRegistry.Api.BackOffice.Validators;
@@ -112,11 +111,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
         {
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
-            return async () => await _controller.CorrectPosition(
-                Mock.Of<BackOfficeContext>(),
-                new CorrectAddressPositionRequestValidator(),
+            return async () => await _controller.CorrectPosition(new CorrectAddressPositionRequestValidator(),
                 Mock.Of<IIfMatchHeaderValidator>(),
-                ResponseOptions,
                 addressPersistentLocalId,
                 request,
                 null,

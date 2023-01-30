@@ -46,9 +46,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRetirement
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
-            var result = (AcceptedResult)await _controller.CorrectRetirement(
-                _backOfficeContext,
-                MockIfMatchValidator(true),
+            var result = (AcceptedResult)await _controller.CorrectRetirement(MockIfMatchValidator(true),
                 request: new CorrectAddressRetirementRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
@@ -68,9 +66,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRetirement
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             //Act
-            var result = await _controller.CorrectRetirement(
-                _backOfficeContext,
-                MockIfMatchValidator(false),
+            var result = await _controller.CorrectRetirement(MockIfMatchValidator(false),
                 request: new CorrectAddressRetirementRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
@@ -82,11 +78,9 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRetirement
         }
 
         [Fact]
-        public async Task ForUnknownAddress_ThenThrowsApiException()
+        public async Task WithAddressIsNotFoundException_ThenThrowsApiException()
         {
-            Func<Task> act = async () => await _controller.CorrectRetirement(
-                _backOfficeContext,
-                MockIfMatchValidator(true),
+            Func<Task> act = async () => await _controller.CorrectRetirement(MockIfMatchValidatorThrowsAddressIsNotFoundException(),
                 new CorrectAddressRetirementRequest
                 {
                     PersistentLocalId = Fixture.Create<AddressPersistentLocalId>()
@@ -115,9 +109,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRetirement
                 .Setup(x => x.Send(It.IsAny<CorrectAddressRetirementSqsRequest>(), CancellationToken.None))
                 .Throws(new AggregateIdIsNotFoundException());
 
-            Func<Task> act = async () => await _controller.CorrectRetirement(
-                _backOfficeContext,
-                MockIfMatchValidator(true),
+            Func<Task> act = async () => await _controller.CorrectRetirement(MockIfMatchValidator(true),
                 new CorrectAddressRetirementRequest
                 {
                     PersistentLocalId = addressPersistentLocalId

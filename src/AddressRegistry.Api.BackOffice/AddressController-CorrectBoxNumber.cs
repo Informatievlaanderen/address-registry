@@ -1,14 +1,9 @@
 namespace AddressRegistry.Api.BackOffice
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Abstractions;
     using Abstractions.Requests;
     using Abstractions.Validation;
-    using Address;
     using Be.Vlaanderen.Basisregisters.AcmIdm;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
@@ -16,15 +11,12 @@ namespace AddressRegistry.Api.BackOffice
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
     using FluentValidation;
-    using FluentValidation.Results;
     using Handlers.Sqs.Requests;
     using Infrastructure;
-    using Infrastructure.Options;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Options;
     using StreetName;
     using StreetName.Exceptions;
     using Swashbuckle.AspNetCore.Filters;
@@ -34,9 +26,7 @@ namespace AddressRegistry.Api.BackOffice
         /// <summary>
         /// Corrigeer busnummer van een adres.
         /// </summary>
-        /// <param name="backOfficeContext"></param>
         /// <param name="ifMatchHeaderValidator"></param>
-        /// <param name="options"></param>
         /// <param name="persistentLocalId"></param>
         /// <param name="request"></param>
         /// <param name="validator"></param>
@@ -55,10 +45,8 @@ namespace AddressRegistry.Api.BackOffice
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.Adres.DecentraleBijwerker)]
         public async Task<IActionResult> CorrectBoxNumber(
-            [FromServices] BackOfficeContext backOfficeContext,
             [FromServices] IValidator<CorrectAddressBoxNumberRequest> validator,
             [FromServices] IIfMatchHeaderValidator ifMatchHeaderValidator,
-            [FromServices] IOptions<ResponseOptions> options,
             [FromRoute] int persistentLocalId,
             [FromBody] CorrectAddressBoxNumberRequest request,
             [FromHeader(Name = "If-Match")] string? ifMatchHeaderValue,
@@ -66,22 +54,10 @@ namespace AddressRegistry.Api.BackOffice
         {
             await validator.ValidateAndThrowAsync(request, cancellationToken);
 
-            var addressPersistentLocalId = new AddressPersistentLocalId(new PersistentLocalId(persistentLocalId));
-
-            var relation = backOfficeContext.AddressPersistentIdStreetNamePersistentIds
-                .FirstOrDefault(x => x.AddressPersistentLocalId == addressPersistentLocalId);
-
-            if (relation is null)
-            {
-                throw new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound);
-            }
-
-            var streetNamePersistentLocalId = new StreetNamePersistentLocalId(relation.StreetNamePersistentLocalId);
-
             try
             {
                 // Check if user provided ETag is equal to the current Entity Tag
-                if (!await ifMatchHeaderValidator.IsValid(ifMatchHeaderValue, streetNamePersistentLocalId, addressPersistentLocalId, cancellationToken))
+                if (!await ifMatchHeaderValidator.IsValid(ifMatchHeaderValue, new AddressPersistentLocalId(persistentLocalId), cancellationToken))
                 {
                     return new PreconditionFailedResult();
                 }
@@ -102,51 +78,13 @@ namespace AddressRegistry.Api.BackOffice
             {
                 throw new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound);
             }
-            catch (IdempotencyException)
-            {
-                return Accepted();
-            }
             catch (AggregateNotFoundException)
             {
                 throw new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound);
             }
-            catch (DomainException exception)
+            catch (AddressIsNotFoundException)
             {
-                throw exception switch
-                {
-                    StreetNameHasInvalidStatusException => CreateValidationException(
-                        ValidationErrors.Common.StreetNameStatusInvalidForCorrection.Code,
-                        string.Empty,
-                        ValidationErrors.Common.StreetNameStatusInvalidForCorrection.Message),
-
-                    AddressIsNotFoundException => new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound),
-                    AddressIsRemovedException => new ApiException(ValidationErrors.Common.AddressRemoved.Message, StatusCodes.Status410Gone),
-                    AddressHasInvalidStatusException => CreateValidationException(
-                        ValidationErrors.Common.PostalCode.CannotBeChanged.Code,
-                        string.Empty,
-                        ValidationErrors.Common.PostalCode.CannotBeChanged.Message),
-
-                    BoxNumberHasInvalidFormatException _ =>
-                        CreateValidationException(
-                            ValidationErrors.Common.BoxNumberInvalidFormat.Code,
-                            nameof(request.Busnummer),
-                            ValidationErrors.Common.BoxNumberInvalidFormat.Message),
-
-                    AddressHasNoBoxNumberException _ =>
-                        CreateValidationException(
-                            ValidationErrors.CorrectBoxNumber.HasNoBoxNumber.Code,
-                            nameof(request.Busnummer),
-                            ValidationErrors.CorrectBoxNumber.HasNoBoxNumber.Message),
-
-                    AddressAlreadyExistsException _ =>
-                        CreateValidationException(
-                            ValidationErrors.Common.AddressAlreadyExists.Code,
-                            nameof(request.Busnummer),
-                            ValidationErrors.Common.AddressAlreadyExists.Message),
-
-                    _ => new ValidationException(new List<ValidationFailure>
-                        { new(string.Empty, exception.Message) })
-                };
+                throw new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound);
             }
         }
     }

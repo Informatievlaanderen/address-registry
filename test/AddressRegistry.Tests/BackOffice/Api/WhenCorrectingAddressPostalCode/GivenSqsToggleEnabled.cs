@@ -46,9 +46,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPostalCode
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
-            var result = (AcceptedResult)await _controller.CorrectPostalCode(
-                _backOfficeContext,
-                MockValidRequestValidator<CorrectAddressPostalCodeRequest>(),
+            var result = (AcceptedResult)await _controller.CorrectPostalCode(MockValidRequestValidator<CorrectAddressPostalCodeRequest>(),
                 MockIfMatchValidator(true),
                 addressPersistentLocalId,
                 request: new CorrectAddressPostalCodeRequest { PostInfoId = PostInfoPuri },
@@ -67,9 +65,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPostalCode
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             //Act
-            var result = await _controller.CorrectPostalCode(
-                _backOfficeContext,
-                MockValidRequestValidator<CorrectAddressPostalCodeRequest>(),
+            var result = await _controller.CorrectPostalCode(MockValidRequestValidator<CorrectAddressPostalCodeRequest>(),
                 MockIfMatchValidator(false),
                 addressPersistentLocalId,
                 request: new CorrectAddressPostalCodeRequest { PostInfoId = PostInfoPuri },
@@ -80,12 +76,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPostalCode
         }
 
         [Fact]
-        public async Task ForUnknownAddress_ThenThrowsApiException()
+        public async Task WithAddressIsNotFoundException_ThenThrowsApiException()
         {
-            Func<Task> act = async () => await _controller.CorrectPostalCode(
-                _backOfficeContext,
-                MockValidRequestValidator<CorrectAddressPostalCodeRequest>(),
-                MockIfMatchValidator(true),
+            Func<Task> act = async () => await _controller.CorrectPostalCode(MockValidRequestValidator<CorrectAddressPostalCodeRequest>(),
+                MockIfMatchValidatorThrowsAddressIsNotFoundException(),
                 Fixture.Create<AddressPersistentLocalId>(),
                 request: new CorrectAddressPostalCodeRequest
                 {
@@ -115,9 +109,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPostalCode
                 .Setup(x => x.Send(It.IsAny<CorrectAddressPostalCodeSqsRequest>(), CancellationToken.None))
                 .Throws(new AggregateIdIsNotFoundException());
 
-            Func<Task> act = async () => await _controller.CorrectPostalCode(
-                _backOfficeContext,
-                MockValidRequestValidator<CorrectAddressPostalCodeRequest>(),
+            Func<Task> act = async () => await _controller.CorrectPostalCode(MockValidRequestValidator<CorrectAddressPostalCodeRequest>(),
                 MockIfMatchValidator(true),
                 addressPersistentLocalId,
                 request: new CorrectAddressPostalCodeRequest { PostInfoId = PostInfoPuri },

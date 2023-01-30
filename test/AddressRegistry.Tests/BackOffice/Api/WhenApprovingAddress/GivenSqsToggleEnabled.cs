@@ -47,9 +47,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
-            var result = (AcceptedResult)await _controller.Approve(
-                _backOfficeContext,
-                MockIfMatchValidator(true),
+            var result = (AcceptedResult)await _controller.Approve(MockIfMatchValidator(true),
                 request: new ApproveAddressRequest { PersistentLocalId = addressPersistentLocalId },
                 ifMatchHeaderValue: null);
 
@@ -66,9 +64,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             //Act
-            var result = await _controller.Approve(
-                _backOfficeContext,
-                MockIfMatchValidator(false),
+            var result = await _controller.Approve(MockIfMatchValidator(false),
                 request: new ApproveAddressRequest { PersistentLocalId = addressPersistentLocalId },
                 "IncorrectIfMatchHeader");
 
@@ -77,11 +73,9 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
         }
 
         [Fact]
-        public async Task ForUnknownAddress_ThenThrowsApiException()
+        public async Task WithAddressIsNotFoundException_ThenThrowsApiException()
         {
-            Func<Task> act = async () => await _controller.Approve(
-                _backOfficeContext,
-                MockIfMatchValidator(true),
+            Func<Task> act = async () => await _controller.Approve(MockIfMatchValidatorThrowsAddressIsNotFoundException(),
                 request: new ApproveAddressRequest { PersistentLocalId = Fixture.Create<AddressPersistentLocalId>() },
                 ifMatchHeaderValue: null);
 
@@ -106,9 +100,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
                 .Setup(x => x.Send(It.IsAny<ApproveAddressSqsRequest>(), CancellationToken.None))
                 .Throws(new AggregateIdIsNotFoundException());
 
-            Func<Task> act = async () => await _controller.Approve(
-                _backOfficeContext,
-                MockIfMatchValidator(true),
+            Func<Task> act = async () => await _controller.Approve(MockIfMatchValidator(true),
                 new ApproveAddressRequest { PersistentLocalId = addressPersistentLocalId },
                 string.Empty);
 

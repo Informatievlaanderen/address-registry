@@ -43,9 +43,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRegularizati
                 .Throws(new AggregateIdIsNotFoundException());
 
             //Act
-            Func<Task> act = async () => await _controller.CorrectRegularization(
-                _backOfficeContext,
-                MockIfMatchValidator(true),
+            Func<Task> act = async () => await _controller.CorrectRegularization(MockIfMatchValidator(true),
                 null,
                 new AddressPersistentLocalId(456),
                 CancellationToken.None);
@@ -56,8 +54,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRegularizati
                 .ThrowAsync<ApiException>()
                 .Result
                 .Where(x =>
-                    x.StatusCode == StatusCodes.Status404NotFound
-                    && x.Message == $"De straatnaam '{streetNamePersistentId}' is niet gekend in het straatnaamregister.");
+                    x.Message.Contains("Onbestaand adres.")
+                    && x.StatusCode == StatusCodes.Status404NotFound);
         }
 
         [Fact]
@@ -75,22 +73,19 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRegularizati
                 .Throws(new AggregateNotFoundException(streetNamePersistentId, typeof(string)));
 
             //Act
-            Func<Task> act = async () => await _controller.CorrectRegularization(
-                _backOfficeContext,
-                MockIfMatchValidator(true),
+            Func<Task> act = async () => await _controller.CorrectRegularization(MockIfMatchValidator(true),
                 null,
                 new AddressPersistentLocalId(456),
                 CancellationToken.None);
 
-            //Assert
             // Assert
             act
                 .Should()
                 .ThrowAsync<ApiException>()
                 .Result
                 .Where(x =>
-                    x.StatusCode == StatusCodes.Status404NotFound
-                    && x.Message == $"De straatnaam '{streetNamePersistentId}' is niet gekend in het straatnaamregister.");
+                    x.Message.Contains("Onbestaand adres.")
+                    && x.StatusCode == StatusCodes.Status404NotFound);
         }
     }
 }

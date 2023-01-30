@@ -46,9 +46,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenDeregulatingAddress
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
-            var result = (AcceptedResult)await _controller.Deregulate(
-                _backOfficeContext,
-                MockIfMatchValidator(true),
+            var result = (AcceptedResult)await _controller.Deregulate(MockIfMatchValidator(true),
                 request: new DeregulateAddressRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
@@ -68,9 +66,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenDeregulatingAddress
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             //Act
-            var result = await _controller.Deregulate(
-                _backOfficeContext,
-                MockIfMatchValidator(false),
+            var result = await _controller.Deregulate(MockIfMatchValidator(false),
                 request: new DeregulateAddressRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
@@ -82,15 +78,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenDeregulatingAddress
         }
 
         [Fact]
-        public async Task ForUnknownAddress_ThenThrowsApiException()
+        public async Task WithAddressIsNotFoundException_ThenThrowsApiException()
         {
-            Func<Task> act = async () => await _controller.Deregulate(
-                _backOfficeContext,
-                MockIfMatchValidator(true),
-                new DeregulateAddressRequest
-                {
-                    PersistentLocalId = Fixture.Create<AddressPersistentLocalId>()
-                },
+            Func<Task> act = async () => await _controller.Deregulate(MockIfMatchValidatorThrowsAddressIsNotFoundException(),
+                new DeregulateAddressRequest { PersistentLocalId = Fixture.Create<AddressPersistentLocalId>() },
                 ifMatchHeaderValue: null);
 
             //Assert
@@ -115,9 +106,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenDeregulatingAddress
                 .Setup(x => x.Send(It.IsAny<DeregulateAddressSqsRequest>(), CancellationToken.None))
                 .Throws(new AggregateIdIsNotFoundException());
 
-            Func<Task> act = async () => await _controller.Deregulate(
-                _backOfficeContext,
-                MockIfMatchValidator(true),
+            Func<Task> act = async () => await _controller.Deregulate(MockIfMatchValidator(true),
                 new DeregulateAddressRequest
                 {
                     PersistentLocalId = addressPersistentLocalId

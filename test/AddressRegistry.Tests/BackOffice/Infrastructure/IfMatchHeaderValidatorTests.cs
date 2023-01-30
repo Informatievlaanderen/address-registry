@@ -1,5 +1,6 @@
 ﻿namespace AddressRegistry.Tests.BackOffice.Infrastructure
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
@@ -17,14 +18,19 @@
     using global::AutoFixture;
     using Moq;
     using StreetName.Events;
+    using StreetName.Exceptions;
 
     public class IfMatchHeaderValidatorTests : AddressRegistryTest
     {
+        private readonly TestBackOfficeContext _backOfficeContext;
+
         public IfMatchHeaderValidatorTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             Fixture.Customize(new WithFixedStreetNamePersistentLocalId());
             Fixture.Customize(new WithFixedAddressPersistentLocalId());
             Fixture.Customize(new WithFixedMunicipalityId());
+
+            _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
         }
 
         [Fact]
@@ -33,6 +39,8 @@
             // Arrange
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
+
+            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentLocalId);
 
             var streetNames = new Mock<IStreetNames>();
             var addressWasProposedV2 = new AddressWasProposedV2(
@@ -67,12 +75,11 @@
 
             var expectedEtag = new ETag(ETagType.Strong, addressWasProposedV2.GetHash());
 
-            var sut = new IfMatchHeaderValidator(streetNames.Object);
+            var sut = new IfMatchHeaderValidator(_backOfficeContext, streetNames.Object);
 
             // Act
             var result = await sut.IsValid(
                 expectedEtag.ToString(),
-                streetNamePersistentLocalId,
                 addressPersistentLocalId,
                 CancellationToken.None);
 
@@ -85,6 +92,8 @@
         {
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
+
+            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentLocalId);
 
             var streetNames = new Mock<IStreetNames>();
             streetNames
@@ -119,17 +128,33 @@
                     return municipality;
                 });
 
-            var sut = new IfMatchHeaderValidator(streetNames.Object);
+            var sut = new IfMatchHeaderValidator(_backOfficeContext, streetNames.Object);
 
             // Act
             var result = await sut.IsValid(
                 "NON MATCHING ETAG",
-                streetNamePersistentLocalId,
                 addressPersistentLocalId,
                 CancellationToken.None);
 
             // Assert
             result.Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task WhenStreetNameAddressRelationCannotBeFound_ThenThrowsAddressIsNotFoundException()
+        {
+            var sut = new IfMatchHeaderValidator(_backOfficeContext, Mock.Of<IStreetNames>());
+
+            // Act
+            Func<Task> act = async () => await sut.IsValid(
+                "A tag",
+                Fixture.Create<AddressPersistentLocalId>(),
+                CancellationToken.None);
+
+            // Assert
+            act
+                .Should()
+                .ThrowAsync<AddressIsNotFoundException>();
         }
 
         [Theory]
@@ -139,14 +164,12 @@
         public async Task WhenNoIfMatchHeader(string? etag)
         {
             // Arrange
-            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-            var sut = new IfMatchHeaderValidator(Container.Resolve<IStreetNames>());
+            var sut = new IfMatchHeaderValidator(_backOfficeContext, Container.Resolve<IStreetNames>());
 
             // Act
             var result = await sut.IsValid(
                 etag,
-                streetNamePersistentLocalId,
                 addressPersistentLocalId,
                 CancellationToken.None);
 

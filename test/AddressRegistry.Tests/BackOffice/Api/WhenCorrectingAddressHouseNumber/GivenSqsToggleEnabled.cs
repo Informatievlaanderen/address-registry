@@ -46,11 +46,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressHouseNumber
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
-            var result = (AcceptedResult)await _controller.CorrectHouseNumber(
-                _backOfficeContext,
-                MockValidRequestValidator<CorrectAddressHouseNumberRequest>(),
+            var result = (AcceptedResult)await _controller.CorrectHouseNumber(MockValidRequestValidator<CorrectAddressHouseNumberRequest>(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
                 addressPersistentLocalId,
                 request: new CorrectAddressHouseNumberRequest { Huisnummer = "11" },
                 ifMatchHeaderValue: null);
@@ -68,11 +65,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressHouseNumber
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             //Act
-            var result = await _controller.CorrectHouseNumber(
-                _backOfficeContext,
-                MockValidRequestValidator<CorrectAddressHouseNumberRequest>(),
+            var result = await _controller.CorrectHouseNumber(MockValidRequestValidator<CorrectAddressHouseNumberRequest>(),
                 MockIfMatchValidator(false),
-                ResponseOptions,
                 addressPersistentLocalId,
                 request: new CorrectAddressHouseNumberRequest { Huisnummer = "11" },
                 ifMatchHeaderValue: null);
@@ -82,13 +76,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressHouseNumber
         }
 
         [Fact]
-        public async Task ForUnknownAddress_ThenThrowsApiException()
+        public async Task WithAddressIsNotFoundException_ThenThrowsApiException()
         {
-            Func<Task> act = async () => await _controller.CorrectHouseNumber(
-                _backOfficeContext,
-                MockValidRequestValidator<CorrectAddressHouseNumberRequest>(),
-                MockIfMatchValidator(true),
-                ResponseOptions,
+            Func<Task> act = async () => await _controller.CorrectHouseNumber(MockValidRequestValidator<CorrectAddressHouseNumberRequest>(),
+                MockIfMatchValidatorThrowsAddressIsNotFoundException(),
                 Fixture.Create<AddressPersistentLocalId>(),
                 request: new CorrectAddressHouseNumberRequest { Huisnummer = "11" },
                 ifMatchHeaderValue: null);
@@ -115,11 +106,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressHouseNumber
                 .Setup(x => x.Send(It.IsAny<CorrectAddressHouseNumberSqsRequest>(), CancellationToken.None))
                 .Throws(new AggregateIdIsNotFoundException());
 
-            Func<Task> act = async () => await _controller.CorrectHouseNumber(
-                _backOfficeContext,
-                MockValidRequestValidator<CorrectAddressHouseNumberRequest>(),
+            Func<Task> act = async () => await _controller.CorrectHouseNumber(MockValidRequestValidator<CorrectAddressHouseNumberRequest>(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
                 addressPersistentLocalId,
                 new CorrectAddressHouseNumberRequest(),
                 string.Empty);

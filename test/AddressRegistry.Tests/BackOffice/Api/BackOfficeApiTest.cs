@@ -18,6 +18,7 @@ namespace AddressRegistry.Tests.BackOffice.Api
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Options;
     using Moq;
+    using StreetName.Exceptions;
     using Xunit.Abstractions;
 
     public class BackOfficeApiTest : AddressRegistryTest
@@ -79,9 +80,19 @@ namespace AddressRegistry.Tests.BackOffice.Api
             var mockIfMatchHeaderValidator = new Mock<IIfMatchHeaderValidator>();
 
             mockIfMatchHeaderValidator
-                .Setup(x => x.IsValid(
-                    It.IsAny<string>(), It.IsAny<StreetNamePersistentLocalId>(), It.IsAny<AddressPersistentLocalId>(), CancellationToken.None))
+                .Setup(x => x.IsValid(It.IsAny<string>(), It.IsAny<AddressPersistentLocalId>(), CancellationToken.None))
                 .Returns(Task.FromResult(expectedResult));
+
+            return mockIfMatchHeaderValidator.Object;
+        }
+
+        protected IIfMatchHeaderValidator MockIfMatchValidatorThrowsAddressIsNotFoundException()
+        {
+            var mockIfMatchHeaderValidator = new Mock<IIfMatchHeaderValidator>();
+
+            mockIfMatchHeaderValidator
+                .Setup(x => x.IsValid(It.IsAny<string>(), It.IsAny<AddressPersistentLocalId>(), CancellationToken.None))
+                .Throws<AddressIsNotFoundException>();
 
             return mockIfMatchHeaderValidator.Object;
         }

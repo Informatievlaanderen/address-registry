@@ -1,27 +1,19 @@
 namespace AddressRegistry.Api.BackOffice
 {
-    using System;
-    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using Abstractions.Requests;
     using Abstractions.Validation;
     using Be.Vlaanderen.Basisregisters.AcmIdm;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
-    using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
     using FluentValidation;
-    using FluentValidation.Results;
     using Handlers.Sqs.Requests;
-    using Infrastructure.Options;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Options;
-    using StreetName.Exceptions;
     using Swashbuckle.AspNetCore.Filters;
 
     public partial class AddressController
@@ -29,24 +21,20 @@ namespace AddressRegistry.Api.BackOffice
         /// <summary>
         /// Stel een adres voor.
         /// </summary>
-        /// <param name="options"></param>
         /// <param name="validator"></param>
         /// <param name="request"></param>
         /// <param name="cancellationToken"></param>
         /// <response code="202">Als het adres reeds voorgesteld is.</response>
         /// <returns></returns>
         [HttpPost("acties/voorstellen")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-        [SwaggerResponseHeader(StatusCodes.Status201Created, "location", "string", "De url van het voorgestelde adres.")]
         [SwaggerRequestExample(typeof(ProposeAddressRequest), typeof(ProposeAddressRequestExamples))]
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(BadRequestResponseExamples))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.Adres.DecentraleBijwerker)]
         public async Task<IActionResult> Propose(
-            [FromServices] IOptions<ResponseOptions> options,
             [FromServices] IValidator<ProposeAddressRequest> validator,
             [FromBody] ProposeAddressRequest request,
             CancellationToken cancellationToken = default)
@@ -65,68 +53,12 @@ namespace AddressRegistry.Api.BackOffice
 
                 return Accepted(sqsResult);
             }
-            catch (IdempotencyException)
-            {
-                return Accepted();
-            }
             catch (AggregateNotFoundException)
             {
                 throw CreateValidationException(
                     ValidationErrors.Common.StreetNameInvalid.Code,
                     nameof(request.StraatNaamId),
                     ValidationErrors.Common.StreetNameInvalid.Message(request.StraatNaamId));
-            }
-            catch (DomainException exception)
-            {
-                throw exception switch
-                {
-                    ParentAddressAlreadyExistsException _ =>
-                        CreateValidationException(
-                            ValidationErrors.Common.AddressAlreadyExists.Code,
-                            nameof(request.Huisnummer),
-                            ValidationErrors.Common.AddressAlreadyExists.Message),
-
-                    HouseNumberHasInvalidFormatException _ =>
-                        CreateValidationException(
-                            ValidationErrors.Common.HouseNumberInvalidFormat.Code,
-                            nameof(request.Huisnummer),
-                            ValidationErrors.Common.HouseNumberInvalidFormat.Message),
-
-                    AddressAlreadyExistsException _ =>
-                        CreateValidationException(
-                            ValidationErrors.Common.AddressAlreadyExists.Code,
-                            nameof(request.Busnummer),
-                            ValidationErrors.Common.AddressAlreadyExists.Message),
-
-                    ParentAddressNotFoundException e =>
-                        CreateValidationException(
-                            ValidationErrors.Propose.AddressHouseNumberUnknown.Code,
-                            nameof(request.Huisnummer),
-                            ValidationErrors.Propose.AddressHouseNumberUnknown.Message(
-                                request.StraatNaamId,
-                                e.HouseNumber)),
-
-                    StreetNameHasInvalidStatusException _ =>
-                        CreateValidationException(
-                                ValidationErrors.Common.StreetNameIsNotActive.Code,
-                                nameof(request.StraatNaamId),
-                                ValidationErrors.Common.StreetNameIsNotActive.Message),
-
-                    StreetNameIsRemovedException _ =>
-                        CreateValidationException(
-                            ValidationErrors.Common.StreetNameInvalid.Code,
-                            nameof(request.StraatNaamId),
-                            ValidationErrors.Common.StreetNameInvalid.Message(request.StraatNaamId)),
-
-                    PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException _ =>
-                        CreateValidationException(
-                            ValidationErrors.Common.PostalCode.PostalCodeNotInMunicipality.Code,
-                            nameof(request.PostInfoId),
-                            ValidationErrors.Common.PostalCode.PostalCodeNotInMunicipality.Message),
-
-                    _ => new ValidationException(new List<ValidationFailure>
-                        { new ValidationFailure(string.Empty, exception.Message) })
-                };
             }
         }
     }

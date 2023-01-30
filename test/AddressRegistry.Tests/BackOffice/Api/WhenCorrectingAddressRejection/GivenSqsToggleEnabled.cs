@@ -46,9 +46,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
-            var result = (AcceptedResult)await _controller.CorrectRejection(
-                _backOfficeContext,
-                MockIfMatchValidator(true),
+            var result = (AcceptedResult)await _controller.CorrectRejection(MockIfMatchValidator(true),
                 request: new CorrectAddressRejectionRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
@@ -68,9 +66,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             //Act
-            var result = await _controller.CorrectRejection(
-                _backOfficeContext,
-                MockIfMatchValidator(false),
+            var result = await _controller.CorrectRejection(MockIfMatchValidator(false),
                 request: new CorrectAddressRejectionRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
@@ -82,15 +78,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
         }
 
         [Fact]
-        public async Task ForUnknownAddress_ThenThrowsApiException()
+        public async Task WithAddressIsNotFoundException_ThenThrowsApiException()
         {
-            Func<Task> act = async () => await _controller.CorrectRejection(
-                _backOfficeContext,
-                MockIfMatchValidator(true),
-                new CorrectAddressRejectionRequest
-                {
-                    PersistentLocalId = Fixture.Create<AddressPersistentLocalId>()
-                },
+            Func<Task> act = async () => await _controller.CorrectRejection(MockIfMatchValidatorThrowsAddressIsNotFoundException(),
+                new CorrectAddressRejectionRequest { PersistentLocalId = Fixture.Create<AddressPersistentLocalId>() },
                 ifMatchHeaderValue: null);
 
             //Assert
@@ -115,9 +106,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
                 .Setup(x => x.Send(It.IsAny<CorrectAddressRejectionSqsRequest>(), CancellationToken.None))
                 .Throws(new AggregateIdIsNotFoundException());
 
-            Func<Task> act = async () => await _controller.CorrectRejection(
-                _backOfficeContext,
-                MockIfMatchValidator(true),
+            Func<Task> act = async () => await _controller.CorrectRejection(MockIfMatchValidator(true),
                 new CorrectAddressRejectionRequest
                 {
                     PersistentLocalId = addressPersistentLocalId

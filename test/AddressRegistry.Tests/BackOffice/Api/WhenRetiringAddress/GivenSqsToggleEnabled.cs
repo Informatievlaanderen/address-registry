@@ -46,9 +46,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRetiringAddress
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
-            var result = (AcceptedResult)await _controller.Retire(
-                _backOfficeContext,
-                MockIfMatchValidator(true),
+            var result = (AcceptedResult)await _controller.Retire(MockIfMatchValidator(true),
                 request: new RetireAddressRequest { PersistentLocalId = addressPersistentLocalId },
                 ifMatchHeaderValue: null);
 
@@ -65,9 +63,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRetiringAddress
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             //Act
-            var result = await _controller.Retire(
-                _backOfficeContext,
-                MockIfMatchValidator(false),
+            var result = await _controller.Retire(MockIfMatchValidator(false),
                 request: new RetireAddressRequest { PersistentLocalId = addressPersistentLocalId },
                 ifMatchHeaderValue: null);
 
@@ -76,11 +72,9 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRetiringAddress
         }
 
         [Fact]
-        public async Task ForUnknownAddress_ThenThrowsApiException()
+        public async Task WithAddressIsNotFoundException_ThenThrowsApiException()
         {
-            Func<Task> act = async () => await _controller.Retire(
-                _backOfficeContext,
-                MockIfMatchValidator(true),
+            Func<Task> act = async () => await _controller.Retire(MockIfMatchValidatorThrowsAddressIsNotFoundException(),
                 new RetireAddressRequest { PersistentLocalId = Fixture.Create<AddressPersistentLocalId>() },
                 ifMatchHeaderValue: null);
 
@@ -106,9 +100,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRetiringAddress
                 .Setup(x => x.Send(It.IsAny<RetireAddressSqsRequest>(), CancellationToken.None))
                 .Throws(new AggregateIdIsNotFoundException());
 
-            Func<Task> act = async () => await _controller.Retire(
-                _backOfficeContext,
-                MockIfMatchValidator(true),
+            Func<Task> act = async () => await _controller.Retire(MockIfMatchValidator(true),
                 new RetireAddressRequest { PersistentLocalId = addressPersistentLocalId },
                 string.Empty);
 

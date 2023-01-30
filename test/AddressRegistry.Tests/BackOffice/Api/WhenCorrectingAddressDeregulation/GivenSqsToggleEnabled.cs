@@ -45,9 +45,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressDeregulation
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
-            var result = (AcceptedResult)await _controller.CorrectDeregulation(
-                _backOfficeContext,
-                MockIfMatchValidator(true),
+            var result = (AcceptedResult)await _controller.CorrectDeregulation(MockIfMatchValidator(true),
                 ifMatchHeaderValue: null,
                 addressPersistentLocalId);
 
@@ -64,9 +62,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressDeregulation
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             //Act
-            var result = await _controller.CorrectDeregulation(
-                _backOfficeContext,
-                MockIfMatchValidator(false),
+            var result = await _controller.CorrectDeregulation(MockIfMatchValidator(false),
                 "IncorrectIfMatchHeader",
                 addressPersistentLocalId);
 
@@ -75,11 +71,9 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressDeregulation
         }
 
         [Fact]
-        public async Task ForUnknownAddress_ThenThrowsApiException()
+        public async Task WithAddressIsNotFoundException_ThenThrowsApiException()
         {
-            Func<Task> act = async () => await  _controller.CorrectDeregulation(
-                _backOfficeContext,
-                MockIfMatchValidator(true),
+            Func<Task> act = async () => await  _controller.CorrectDeregulation(MockIfMatchValidatorThrowsAddressIsNotFoundException(),
                 ifMatchHeaderValue: null,
                 Fixture.Create<AddressPersistentLocalId>());
 
@@ -104,9 +98,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressDeregulation
                 .Setup(x => x.Send(It.IsAny<CorrectAddressDeregulationSqsRequest>(), CancellationToken.None))
                 .Throws(new AggregateIdIsNotFoundException());
 
-            Func<Task> act = async () => await _controller.CorrectDeregulation(
-                _backOfficeContext,
-                MockIfMatchValidator(true),
+            Func<Task> act = async () => await _controller.CorrectDeregulation(MockIfMatchValidator(true),
                 string.Empty,
                 addressPersistentLocalId);
 

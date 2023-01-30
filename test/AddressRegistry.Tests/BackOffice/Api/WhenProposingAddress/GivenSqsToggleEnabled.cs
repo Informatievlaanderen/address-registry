@@ -42,9 +42,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
-            var result = (AcceptedResult)await _controller.Propose(
-                ResponseOptions,
-                MockValidRequestValidator<ProposeAddressRequest>(),
+            var result = (AcceptedResult)await _controller.Propose(MockValidRequestValidator<ProposeAddressRequest>(),
                 new ProposeAddressRequest());
 
             result.Should().NotBeNull();

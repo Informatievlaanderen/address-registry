@@ -46,9 +46,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRemovingAddress
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
-            var result = (AcceptedResult)await _controller.Remove(
-                _backOfficeContext,
-                MockIfMatchValidator(true),
+            var result = (AcceptedResult)await _controller.Remove(MockIfMatchValidator(true),
                 ifMatchHeaderValue: null,
                 new RemoveAddressRequest
                 {
@@ -68,9 +66,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRemovingAddress
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             //Act
-            var result = await _controller.Remove(
-                _backOfficeContext,
-                MockIfMatchValidator(false),
+            var result = await _controller.Remove(MockIfMatchValidator(false),
                 ifMatchHeaderValue: null,
                 new RemoveAddressRequest
                 {
@@ -82,16 +78,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRemovingAddress
         }
 
         [Fact]
-        public async Task ForUnknownAddress_ThenThrowsApiException()
+        public async Task WithAddressIsNotFoundException_ThenThrowsApiException()
         {
-            Func<Task> act = async () => await _controller.Remove(
-                _backOfficeContext,
-                MockIfMatchValidator(true),
+            Func<Task> act = async () => await _controller.Remove(MockIfMatchValidatorThrowsAddressIsNotFoundException(),
                 ifMatchHeaderValue: null,
-                new RemoveAddressRequest
-                {
-                    PersistentLocalId = Fixture.Create<AddressPersistentLocalId>()
-                });
+                new RemoveAddressRequest { PersistentLocalId = Fixture.Create<AddressPersistentLocalId>() });
 
             //Assert
             act
@@ -115,9 +106,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRemovingAddress
                 .Setup(x => x.Send(It.IsAny<RemoveAddressSqsRequest>(), CancellationToken.None))
                 .Throws(new AggregateIdIsNotFoundException());
 
-            Func<Task> act = async () => await _controller.Remove(
-                _backOfficeContext,
-                MockIfMatchValidator(true),
+            Func<Task> act = async () => await _controller.Remove(MockIfMatchValidator(true),
                 ifMatchHeaderValue: null,
                 new RemoveAddressRequest
                 {

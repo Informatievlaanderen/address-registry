@@ -48,11 +48,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
-            var result = (AcceptedResult)await _controller.ChangePosition(
-                _backOfficeContext,
-                new ChangeAddressPositionRequestValidator(),
+            var result = (AcceptedResult)await _controller.ChangePosition(new ChangeAddressPositionRequestValidator(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
                 addressPersistentLocalId,
                 request: new ChangeAddressPositionRequest
                 {
@@ -75,11 +72,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             //Act
-            var result = await _controller.ChangePosition(
-                _backOfficeContext,
-                new ChangeAddressPositionRequestValidator(),
+            var result = await _controller.ChangePosition(new ChangeAddressPositionRequestValidator(),
                 MockIfMatchValidator(false),
-                ResponseOptions,
                 addressPersistentLocalId,
                 request: new ChangeAddressPositionRequest
                 {
@@ -94,13 +88,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
         }
 
         [Fact]
-        public async Task ForUnknownAddress_ThenThrowsApiException()
+        public async Task WithAddressIsNotFoundException_ThenThrowsApiException()
         {
-            Func<Task> act = async () => await  _controller.ChangePosition(
-                _backOfficeContext,
-                new ChangeAddressPositionRequestValidator(),
-                MockIfMatchValidator(true),
-                ResponseOptions,
+            Func<Task> act = async () => await  _controller.ChangePosition(new ChangeAddressPositionRequestValidator(),
+                MockIfMatchValidatorThrowsAddressIsNotFoundException(),
                 Fixture.Create<AddressPersistentLocalId>(),
                 request: new ChangeAddressPositionRequest
                 {
@@ -132,11 +123,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
                 .Setup(x => x.Send(It.IsAny<ChangeAddressPositionSqsRequest>(), CancellationToken.None))
                 .Throws(new AggregateIdIsNotFoundException());
 
-            Func<Task> act = async () => await _controller.ChangePosition(
-                _backOfficeContext,
-                MockValidRequestValidator<ChangeAddressPositionRequest>(),
+            Func<Task> act = async () => await _controller.ChangePosition(MockValidRequestValidator<ChangeAddressPositionRequest>(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
                 addressPersistentLocalId,
                 new ChangeAddressPositionRequest(),
                 string.Empty);

@@ -31,9 +31,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPostalCode
             var nonExistentPostInfo = PostInfoPuri + "123456";
             var syndicationContext = new FakeSyndicationContextFactory().CreateDbContext();
 
-            Func<Task> act = async () => await _controller.CorrectPostalCode(
-                _backOfficeContext,
-                new CorrectAddressPostalCodeRequestValidator(syndicationContext),
+            Func<Task> act = async () => await _controller.CorrectPostalCode(new CorrectAddressPostalCodeRequestValidator(syndicationContext),
                 MockIfMatchValidator(true),
                 Fixture.Create<AddressPersistentLocalId>(),
                 new CorrectAddressPostalCodeRequest { PostInfoId = nonExistentPostInfo },

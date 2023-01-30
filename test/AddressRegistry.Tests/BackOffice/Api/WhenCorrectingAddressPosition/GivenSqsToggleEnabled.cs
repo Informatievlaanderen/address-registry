@@ -47,11 +47,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
-            var result = (AcceptedResult)await _controller.CorrectPosition(
-                _backOfficeContext,
-                MockValidRequestValidator<CorrectAddressPositionRequest>(),
+            var result = (AcceptedResult)await _controller.CorrectPosition(MockValidRequestValidator<CorrectAddressPositionRequest>(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
                 addressPersistentLocalId,
                 request: new CorrectAddressPositionRequest
                 {
@@ -74,11 +71,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
             //Act
-            var result = await _controller.CorrectPosition(
-                _backOfficeContext,
-                MockValidRequestValidator<CorrectAddressPositionRequest>(),
+            var result = await _controller.CorrectPosition(MockValidRequestValidator<CorrectAddressPositionRequest>(),
                 MockIfMatchValidator(false),
-                ResponseOptions,
                 addressPersistentLocalId,
                 request: new CorrectAddressPositionRequest
                 {
@@ -93,13 +87,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
         }
 
         [Fact]
-        public async Task ForUnknownAddress_ThenThrowsApiException()
+        public async Task WithAddressIsNotFoundException_ThenThrowsApiException()
         {
-            Func<Task> act = async () => await _controller.CorrectPosition(
-                _backOfficeContext,
-                MockValidRequestValidator<CorrectAddressPositionRequest>(),
-                MockIfMatchValidator(true),
-                ResponseOptions,
+            Func<Task> act = async () => await _controller.CorrectPosition(MockValidRequestValidator<CorrectAddressPositionRequest>(),
+                MockIfMatchValidatorThrowsAddressIsNotFoundException(),
                 Fixture.Create<AddressPersistentLocalId>(),
                 request: new CorrectAddressPositionRequest
                 {
@@ -131,11 +122,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
                 .Setup(x => x.Send(It.IsAny<CorrectAddressPositionSqsRequest>(), CancellationToken.None))
                 .Throws(new AggregateIdIsNotFoundException());
 
-            Func<Task> act = async () => await _controller.CorrectPosition(
-                _backOfficeContext,
-                MockValidRequestValidator<CorrectAddressPositionRequest>(),
+            Func<Task> act = async () => await _controller.CorrectPosition(MockValidRequestValidator<CorrectAddressPositionRequest>(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
                 addressPersistentLocalId,
                 new CorrectAddressPositionRequest(),
                 string.Empty);

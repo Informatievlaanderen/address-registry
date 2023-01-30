@@ -75,7 +75,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
             // Act
             await sut.Handle(new CorrectAddressPositionLambdaRequest(streetNamePersistentLocalId, new CorrectAddressPositionSqsRequest
                 {
-                    Request = new CorrectAddressPositionBackOfficeRequest
+                    Request = new CorrectAddressPositionRequest
                     {
                         PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
                         PositieSpecificatie = PositieSpecificatie.Gebouweenheid,
@@ -109,7 +109,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
             // Act
             await sut.Handle(new CorrectAddressPositionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressPositionSqsRequest
             {
-                Request = new CorrectAddressPositionBackOfficeRequest
+                Request = new CorrectAddressPositionRequest
                 {
                     PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
                     PositieSpecificatie = PositieSpecificatie.Gebouweenheid,
@@ -146,7 +146,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
             // Act
             await sut.Handle(new CorrectAddressPositionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressPositionSqsRequest
             {
-                Request = new CorrectAddressPositionBackOfficeRequest
+                Request = new CorrectAddressPositionRequest
                 {
                     PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
                     PositieSpecificatie = PositieSpecificatie.Gebouweenheid,
@@ -183,7 +183,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
             // Act
             await sut.Handle(new CorrectAddressPositionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressPositionSqsRequest
             {
-                Request = new CorrectAddressPositionBackOfficeRequest
+                Request = new CorrectAddressPositionRequest
                 {
                     PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
                     PositieSpecificatie = PositieSpecificatie.Perceel,
@@ -242,7 +242,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPosition
             // Act
             await sut.Handle(new CorrectAddressPositionLambdaRequest(streetNamePersistentLocalId, new CorrectAddressPositionSqsRequest
                 {
-                    Request = new CorrectAddressPositionBackOfficeRequest
+                    Request = new CorrectAddressPositionRequest
                     {
                         PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
                         PositieSpecificatie = PositieSpecificatie.Gebouweenheid,

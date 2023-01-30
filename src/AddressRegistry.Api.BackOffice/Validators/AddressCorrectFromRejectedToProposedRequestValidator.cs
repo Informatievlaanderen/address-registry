@@ -3,7 +3,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
     using Abstractions.Requests;
     using FluentValidation;
 
-    public class AddressCorrectFromRejectedToProposedRequestValidator : AbstractValidator<AddressCorrectRejectionRequest>
+    public class AddressCorrectFromRejectedToProposedRequestValidator : AbstractValidator<CorrectAddressRejectionRequest>
     {
     }
 }

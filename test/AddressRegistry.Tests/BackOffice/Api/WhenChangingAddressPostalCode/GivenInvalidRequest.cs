@@ -33,11 +33,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPostalCode
 
             Func<Task> act = async () => await _controller.ChangePostalCode(
                 _backOfficeContext,
-                new AddressChangePostalCodeRequestValidator(syndicationContext),
+                new ChangeAddressPostalCodeRequestValidator(syndicationContext),
                 MockIfMatchValidator(true),
                 ResponseOptions,
                 Fixture.Create<AddressPersistentLocalId>(),
-                new AddressChangePostalCodeRequest()
+                new ChangeAddressPostalCodeRequest()
                 {
                     PostInfoId = nonExistentPostInfo
                 },

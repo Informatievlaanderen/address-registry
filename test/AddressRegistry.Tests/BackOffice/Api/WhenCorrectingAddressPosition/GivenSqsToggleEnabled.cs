@@ -49,11 +49,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
 
             var result = (AcceptedResult)await _controller.CorrectPosition(
                 _backOfficeContext,
-                MockValidRequestValidator<AddressCorrectPositionRequest>(),
+                MockValidRequestValidator<CorrectAddressPositionRequest>(),
                 MockIfMatchValidator(true),
                 ResponseOptions,
                 addressPersistentLocalId,
-                request: new AddressCorrectPositionRequest
+                request: new CorrectAddressPositionRequest
                 {
                     PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
                     PositieSpecificatie = PositieSpecificatie.Gebouweenheid,
@@ -76,11 +76,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
             //Act
             var result = await _controller.CorrectPosition(
                 _backOfficeContext,
-                MockValidRequestValidator<AddressCorrectPositionRequest>(),
+                MockValidRequestValidator<CorrectAddressPositionRequest>(),
                 MockIfMatchValidator(false),
                 ResponseOptions,
                 addressPersistentLocalId,
-                request: new AddressCorrectPositionRequest
+                request: new CorrectAddressPositionRequest
                 {
                     PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
                     PositieSpecificatie = PositieSpecificatie.Gebouweenheid,
@@ -93,15 +93,15 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
         }
 
         [Fact]
-        public async Task ForUnknownAddress_ThenNotFoundResponse()
+        public async Task ForUnknownAddress_ThenThrowsApiException()
         {
-            var result = await _controller.CorrectPosition(
+            Func<Task> act = async () => await _controller.CorrectPosition(
                 _backOfficeContext,
-                MockValidRequestValidator<AddressCorrectPositionRequest>(),
+                MockValidRequestValidator<CorrectAddressPositionRequest>(),
                 MockIfMatchValidator(true),
                 ResponseOptions,
                 Fixture.Create<AddressPersistentLocalId>(),
-                request: new AddressCorrectPositionRequest
+                request: new CorrectAddressPositionRequest
                 {
                     PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
                     PositieSpecificatie = PositieSpecificatie.Gebouweenheid,
@@ -109,7 +109,14 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
                 },
                 ifMatchHeaderValue: null);
 
-            result.Should().BeOfType<NotFoundResult>();
+            //Assert
+            act
+                .Should()
+                .ThrowAsync<ApiException>()
+                .Result
+                .Where(x =>
+                    x.Message.Contains("Onbestaand adres.")
+                    && x.StatusCode == StatusCodes.Status404NotFound);
         }
 
         [Fact]
@@ -126,11 +133,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
 
             Func<Task> act = async () => await _controller.CorrectPosition(
                 _backOfficeContext,
-                MockValidRequestValidator<AddressCorrectPositionRequest>(),
+                MockValidRequestValidator<CorrectAddressPositionRequest>(),
                 MockIfMatchValidator(true),
                 ResponseOptions,
                 addressPersistentLocalId,
-                new AddressCorrectPositionRequest(),
+                new CorrectAddressPositionRequest(),
                 string.Empty);
 
             //Assert

@@ -10,7 +10,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
 
     public sealed record ProposeAddressLambdaRequest :
         SqsLambdaRequest,
-        IHasBackOfficeRequest<ProposeAddressBackOfficeRequest>
+        IHasBackOfficeRequest<ProposeAddressRequest>
     {
         public ProposeAddressLambdaRequest(string groupId, ProposeAddressSqsRequest sqsRequest)
             : base(
@@ -23,7 +23,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
             Request = sqsRequest.Request;
         }
 
-        public ProposeAddressBackOfficeRequest Request { get; init; }
+        public ProposeAddressRequest Request { get; init; }
 
         /// <summary>
         /// Map to ProposeAddress command

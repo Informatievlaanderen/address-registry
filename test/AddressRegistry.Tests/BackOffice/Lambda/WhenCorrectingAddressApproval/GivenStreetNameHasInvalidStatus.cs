@@ -46,7 +46,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressApproval
                 Fixture.Create<int>().ToString(),
                 new CorrectAddressApprovalSqsRequest()
                 {
-                    Request = new CorrectAddressApprovalBackOfficeRequest(),
+                    Request = new CorrectAddressApprovalRequest(),
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
                     ProvenanceData = Fixture.Create<ProvenanceData>()

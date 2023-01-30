@@ -48,10 +48,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRetiringAddress
 
             var result = (AcceptedResult)await _controller.Retire(
                 _backOfficeContext,
-                MockValidRequestValidator<AddressRetireRequest>(),
+                MockValidRequestValidator<RetireAddressRequest>(),
                 MockIfMatchValidator(true),
                 ResponseOptions,
-                request: new AddressRetireRequest
+                request: new RetireAddressRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
                 },
@@ -72,10 +72,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRetiringAddress
             //Act
             var result = await _controller.Retire(
                 _backOfficeContext,
-                MockValidRequestValidator<AddressRetireRequest>(),
+                MockValidRequestValidator<RetireAddressRequest>(),
                 MockIfMatchValidator(false),
                 ResponseOptions,
-                request: new AddressRetireRequest
+                request: new RetireAddressRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
                 },
@@ -86,20 +86,27 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRetiringAddress
         }
 
         [Fact]
-        public async Task ForUnknownAddress_ThenNotFoundResponse()
+        public async Task ForUnknownAddress_ThenThrowsApiException()
         {
-            var result = await _controller.Retire(
+            Func<Task> act = async () => await _controller.Retire(
                 _backOfficeContext,
-                MockValidRequestValidator<AddressRetireRequest>(),
+                MockValidRequestValidator<RetireAddressRequest>(),
                 MockIfMatchValidator(true),
                 ResponseOptions,
-                new AddressRetireRequest
+                new RetireAddressRequest
                 {
                     PersistentLocalId = Fixture.Create<AddressPersistentLocalId>()
                 },
                 ifMatchHeaderValue: null);
 
-            result.Should().BeOfType<NotFoundResult>();
+            //Assert
+            act
+                .Should()
+                .ThrowAsync<ApiException>()
+                .Result
+                .Where(x =>
+                    x.Message.Contains("Onbestaand adres.")
+                    && x.StatusCode == StatusCodes.Status404NotFound);
         }
 
         [Fact]
@@ -116,10 +123,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRetiringAddress
 
             Func<Task> act = async () => await _controller.Retire(
                 _backOfficeContext,
-                MockValidRequestValidator<AddressRetireRequest>(),
+                MockValidRequestValidator<RetireAddressRequest>(),
                 MockIfMatchValidator(true),
                 ResponseOptions,
-                new AddressRetireRequest
+                new RetireAddressRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
                 },

@@ -8,7 +8,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
 
     public sealed record CorrectAddressHouseNumberLambdaRequest :
         SqsLambdaRequest,
-        IHasBackOfficeRequest<CorrectAddressHouseNumberBackOfficeRequest>,
+        IHasBackOfficeRequest<CorrectAddressHouseNumberRequest>,
         Abstractions.IHasAddressPersistentLocalId
     {
         public CorrectAddressHouseNumberLambdaRequest(string groupId, CorrectAddressHouseNumberSqsRequest sqsRequest)
@@ -23,7 +23,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
             AddressPersistentLocalId = sqsRequest.PersistentLocalId;
         }
 
-        public CorrectAddressHouseNumberBackOfficeRequest Request { get; init; }
+        public CorrectAddressHouseNumberRequest Request { get; init; }
 
         public int AddressPersistentLocalId { get; }
 

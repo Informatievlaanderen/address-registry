@@ -84,7 +84,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressDeregulat
             // Act
             await sut.Handle(new CorrectAddressDeregulationLambdaRequest(streetNamePersistentLocalId, new CorrectAddressDeregulationSqsRequest
                 {
-                    Request = new CorrectAddressDeregulationBackOfficeRequest { PersistentLocalId = addressPersistentLocalId },
+                    Request = new CorrectAddressDeregulationRequest { PersistentLocalId = addressPersistentLocalId },
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
                     ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -114,7 +114,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressDeregulat
             await sut.Handle(
                 new CorrectAddressDeregulationLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressDeregulationSqsRequest()
                 {
-                    Request = new CorrectAddressDeregulationBackOfficeRequest { PersistentLocalId = Fixture.Create<int>() },
+                    Request = new CorrectAddressDeregulationRequest { PersistentLocalId = Fixture.Create<int>() },
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
                     ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -174,7 +174,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressDeregulat
             // Act
             await sut.Handle(new CorrectAddressDeregulationLambdaRequest(streetNamePersistentLocalId, new CorrectAddressDeregulationSqsRequest
             {
-                Request = new CorrectAddressDeregulationBackOfficeRequest { PersistentLocalId = addressPersistentLocalId },
+                Request = new CorrectAddressDeregulationRequest { PersistentLocalId = addressPersistentLocalId },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()

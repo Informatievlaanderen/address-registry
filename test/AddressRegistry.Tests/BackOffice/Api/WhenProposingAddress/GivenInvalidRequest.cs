@@ -32,10 +32,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
         {
             _streamStore = new Mock<IStreamStore>();
 
-            MockMediator
-                .Setup(x => x.Send(It.IsAny<AddressProposeRequest>(), CancellationToken.None))
-                .Returns(Task.FromResult(new PersistentLocalIdETagResponse(123, "lasteventhash")));
-
             _controller = CreateApiBusControllerWithUser<AddressController>();
         }
 
@@ -46,7 +42,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
 
             var invalidStraatNaamId = "invalid";
 
-            var act = SetupController(new AddressProposeRequest
+            var act = SetupController(new ProposeAddressRequest
             {
                 StraatNaamId = invalidStraatNaamId,
                 Huisnummer = "11"
@@ -69,7 +65,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
 
             var straatNaamId = StraatNaamPuri + "123";
 
-            var act = SetupController(new AddressProposeRequest
+            var act = SetupController(new ProposeAddressRequest
             {
                 StraatNaamId = straatNaamId,
                 Huisnummer = "11"
@@ -93,7 +89,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
 
             var nonExistentPostInfo = PostInfoPuri + "123456";
 
-            var act = SetupController(new AddressProposeRequest
+            var act = SetupController(new ProposeAddressRequest
             {
                 StraatNaamId = StraatNaamPuri + "123",
                 Huisnummer = "11",
@@ -115,7 +111,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
         {
             WithStreamExists();
 
-            var act = SetupController(new AddressProposeRequest
+            var act = SetupController(new ProposeAddressRequest
             {
                 StraatNaamId = StraatNaamPuri + "123",
                 Huisnummer = "AA",
@@ -137,7 +133,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
         {
             WithStreamExists();
 
-            var act = SetupController(new AddressProposeRequest
+            var act = SetupController(new ProposeAddressRequest
             {
                 StraatNaamId = StraatNaamPuri + "123",
                 Huisnummer = "11",
@@ -160,7 +156,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
         {
             WithStreamExists();
 
-            var act = SetupController(new AddressProposeRequest
+            var act = SetupController(new ProposeAddressRequest
             {
                 StraatNaamId = StraatNaamPuri + "123",
                 Huisnummer = "11",
@@ -188,7 +184,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
         {
             WithStreamExists();
 
-            var act = SetupController(new AddressProposeRequest
+            var act = SetupController(new ProposeAddressRequest
             {
                 StraatNaamId = StraatNaamPuri + "123",
                 Huisnummer = "11",
@@ -215,7 +211,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
         {
             WithStreamExists();
 
-            var act = SetupController(new AddressProposeRequest
+            var act = SetupController(new ProposeAddressRequest
             {
                 StraatNaamId = StraatNaamPuri + "123",
                 Huisnummer = "11",
@@ -242,7 +238,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
         {
             WithStreamExists();
 
-            var act = SetupController(new AddressProposeRequest
+            var act = SetupController(new ProposeAddressRequest
             {
                 StraatNaamId = StraatNaamPuri + "123",
                 Huisnummer = "11",
@@ -264,7 +260,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                                       && e.ErrorMessage == "De positie is geen geldige gml-puntgeometrie."));
         }
 
-        private Func<Task<IActionResult>> SetupController(AddressProposeRequest request)
+        private Func<Task<IActionResult>> SetupController(ProposeAddressRequest request)
         {
             var syndicationContext = new FakeSyndicationContextFactory().CreateDbContext();
 
@@ -287,7 +283,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
 
             return async () => await _controller.Propose(
                 ResponseOptions,
-                new AddressProposeRequestValidator(
+                new ProposeAddressRequestValidator(
                     new StreetNameExistsValidator(_streamStore.Object),
                     syndicationContext),
                 request,

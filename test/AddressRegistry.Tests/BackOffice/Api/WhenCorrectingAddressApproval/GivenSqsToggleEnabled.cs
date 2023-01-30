@@ -39,7 +39,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressApproval
             var expectedLocationResult = new LocationResult(CreateTicketUri(ticketId));
 
             var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = new AddressPersistentLocalId(123);
+            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
 
             MockMediator
                 .Setup(x => x.Send(It.IsAny<CorrectAddressApprovalSqsRequest>(), CancellationToken.None))
@@ -51,10 +51,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressApproval
                 _backOfficeContext,
                 new AddressCorrectApprovalRequestValidator(),
                 MockIfMatchValidator(true),
-                request: new AddressCorrectApprovalRequest()
-                {
-                    PersistentLocalId = addressPersistentLocalId
-                },
+                request: new CorrectAddressApprovalRequest { PersistentLocalId = addressPersistentLocalId },
                 ifMatchHeaderValue: null);
 
             result.Should().NotBeNull();
@@ -65,7 +62,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressApproval
         public async Task WithInvalidIfMatchHeader_ThenPreconditionFailedResponse()
         {
             var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = new AddressPersistentLocalId(123);
+            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
 
             await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
 
@@ -74,10 +71,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressApproval
                 _backOfficeContext,
                 new AddressCorrectApprovalRequestValidator(),
                 MockIfMatchValidator(false),
-                request: new AddressCorrectApprovalRequest()
-                {
-                    PersistentLocalId = addressPersistentLocalId
-                },
+                request: new CorrectAddressApprovalRequest { PersistentLocalId = addressPersistentLocalId },
                 "IncorrectIfMatchHeader");
 
             //Assert
@@ -85,19 +79,22 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressApproval
         }
 
         [Fact]
-        public async Task ForUnknownAddress_ThenNotFoundResponse()
+        public async Task ForUnknownAddress_ThenThrowsApiException()
         {
-            var result = await _controller.CorrectApproval(
+            Func<Task> act = async () => await  _controller.CorrectApproval(
                 _backOfficeContext,
                 new AddressCorrectApprovalRequestValidator(),
                 MockIfMatchValidator(true),
-                request: new AddressCorrectApprovalRequest()
-                {
-                    PersistentLocalId = new AddressPersistentLocalId(123)
-                },
+                request: new CorrectAddressApprovalRequest { PersistentLocalId = new AddressPersistentLocalId(123) },
                 ifMatchHeaderValue: null);
 
-            result.Should().BeOfType<NotFoundResult>();
+            act
+                .Should()
+                .ThrowAsync<ApiException>()
+                .Result
+                .Where(x =>
+                    x.Message.Contains("Onbestaand adres.")
+                    && x.StatusCode == StatusCodes.Status404NotFound);
         }
 
         [Fact]
@@ -116,10 +113,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressApproval
                 _backOfficeContext,
                 new AddressCorrectApprovalRequestValidator(),
                 MockIfMatchValidator(true),
-                new AddressCorrectApprovalRequest()
-                {
-                    PersistentLocalId = addressPersistentLocalId
-                },
+                new CorrectAddressApprovalRequest { PersistentLocalId = addressPersistentLocalId },
                 string.Empty);
 
             //Assert

@@ -50,11 +50,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
 
             var result = (AcceptedResult)await _controller.ChangePosition(
                 _backOfficeContext,
-                new AddressChangePositionRequestValidator(),
+                new ChangeAddressPositionRequestValidator(),
                 MockIfMatchValidator(true),
                 ResponseOptions,
                 addressPersistentLocalId,
-                request: new AddressChangePositionRequest
+                request: new ChangeAddressPositionRequest
                 {
                     PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
                     PositieSpecificatie = PositieSpecificatie.Gebouweenheid,
@@ -77,11 +77,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
             //Act
             var result = await _controller.ChangePosition(
                 _backOfficeContext,
-                new AddressChangePositionRequestValidator(),
+                new ChangeAddressPositionRequestValidator(),
                 MockIfMatchValidator(false),
                 ResponseOptions,
                 addressPersistentLocalId,
-                request: new AddressChangePositionRequest
+                request: new ChangeAddressPositionRequest
                 {
                     PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
                     PositieSpecificatie = PositieSpecificatie.Gebouweenheid,
@@ -94,15 +94,15 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
         }
 
         [Fact]
-        public async Task ForUnknownAddress_ThenNotFoundResponse()
+        public async Task ForUnknownAddress_ThenThrowsApiException()
         {
-            var result = await _controller.ChangePosition(
+            Func<Task> act = async () => await  _controller.ChangePosition(
                 _backOfficeContext,
-                new AddressChangePositionRequestValidator(),
+                new ChangeAddressPositionRequestValidator(),
                 MockIfMatchValidator(true),
                 ResponseOptions,
                 Fixture.Create<AddressPersistentLocalId>(),
-                request: new AddressChangePositionRequest
+                request: new ChangeAddressPositionRequest
                 {
                     PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
                     PositieSpecificatie = PositieSpecificatie.Gebouweenheid,
@@ -110,7 +110,14 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
                 },
                 ifMatchHeaderValue: null);
 
-            result.Should().BeOfType<NotFoundResult>();
+            //Assert
+            act
+                .Should()
+                .ThrowAsync<ApiException>()
+                .Result
+                .Where(x =>
+                    x.Message.Contains("Onbestaand adres.")
+                    && x.StatusCode == StatusCodes.Status404NotFound);
         }
 
         [Fact]
@@ -127,11 +134,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
 
             Func<Task> act = async () => await _controller.ChangePosition(
                 _backOfficeContext,
-                MockValidRequestValidator<AddressChangePositionRequest>(),
+                MockValidRequestValidator<ChangeAddressPositionRequest>(),
                 MockIfMatchValidator(true),
                 ResponseOptions,
                 addressPersistentLocalId,
-                new AddressChangePositionRequest(),
+                new ChangeAddressPositionRequest(),
                 string.Empty);
 
             //Assert

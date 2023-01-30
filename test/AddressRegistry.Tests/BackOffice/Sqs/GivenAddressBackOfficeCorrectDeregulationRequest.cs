@@ -57,7 +57,7 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
 
             var sqsRequest = new CorrectAddressDeregulationSqsRequest()
             {
-                Request = new CorrectAddressDeregulationBackOfficeRequest()
+                Request = new CorrectAddressDeregulationRequest()
                 {
                     PersistentLocalId = Fixture.Create<AddressPersistentLocalId>()
                 }
@@ -89,7 +89,7 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
             var act = async () => await sut.Handle(
                 new CorrectAddressDeregulationSqsRequest()
                 {
-                    Request = Fixture.Create<CorrectAddressDeregulationBackOfficeRequest>()
+                    Request = Fixture.Create<CorrectAddressDeregulationRequest>()
                 }, CancellationToken.None);
 
             // Assert

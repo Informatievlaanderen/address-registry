@@ -40,7 +40,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
 
             var sqsLambdaRequest = new ApproveAddressLambdaRequest(Guid.NewGuid().ToString(), new ApproveAddressSqsRequest
             {
-                Request = new ApproveAddressBackOfficeRequest { PersistentLocalId = 1 },
+                Request = new ApproveAddressRequest { PersistentLocalId = 1 },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -68,7 +68,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
 
             var sqsLambdaRequest = new ApproveAddressLambdaRequest(Guid.NewGuid().ToString(), new ApproveAddressSqsRequest
             {
-                Request = new ApproveAddressBackOfficeRequest { PersistentLocalId = 1 },
+                Request = new ApproveAddressRequest { PersistentLocalId = 1 },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -98,7 +98,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
 
             var sqsLambdaRequest = new ApproveAddressLambdaRequest(Guid.NewGuid().ToString(), new ApproveAddressSqsRequest
             {
-                Request = new ApproveAddressBackOfficeRequest { PersistentLocalId = 1 },
+                Request = new ApproveAddressRequest { PersistentLocalId = 1 },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -155,7 +155,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
 
             var sqsLambdaRequest = new ApproveAddressLambdaRequest(streetNamePersistentLocalId, new ApproveAddressSqsRequest
             {
-                Request = new ApproveAddressBackOfficeRequest { PersistentLocalId = addressPersistentLocalId },
+                Request = new ApproveAddressRequest { PersistentLocalId = addressPersistentLocalId },
                 IfMatchHeaderValue = "Outdated",
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
@@ -180,7 +180,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
 
             var sqsLambdaRequest = new ApproveAddressLambdaRequest(Guid.NewGuid().ToString(), new ApproveAddressSqsRequest
             {
-                Request = new ApproveAddressBackOfficeRequest { PersistentLocalId = 1 },
+                Request = new ApproveAddressRequest { PersistentLocalId = 1 },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()

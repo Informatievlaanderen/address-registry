@@ -30,7 +30,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
         [Fact]
         public void WithGeometryMethodIsInvalid_ThenThrowsValidationException()
         {
-            var act = SetupController(new AddressCorrectPositionRequest
+            var act = SetupController(new CorrectAddressPositionRequest
             {
                 PositieGeometrieMethode = 0
             });
@@ -52,7 +52,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
         [InlineData(PositieSpecificatie.Ingang)]
         public void WithInvalidSpecificationAndDerivedFromObject_ThenThrowsValidationException(PositieSpecificatie specificatie)
         {
-            var act = SetupController(new AddressCorrectPositionRequest
+            var act = SetupController(new CorrectAddressPositionRequest
             {
                 PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
                 PositieSpecificatie = specificatie,
@@ -72,7 +72,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
         [Fact]
         public void WithNoPosition_ThenThrowsValidationException()
         {
-            var act = SetupController(new AddressCorrectPositionRequest
+            var act = SetupController(new CorrectAddressPositionRequest
             {
                 PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
                 PositieSpecificatie = PositieSpecificatie.Ingang
@@ -91,7 +91,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
         [Fact]
         public void WithInvalidGml_ThenThrowsValidationException()
         {
-            var act = SetupController(new AddressCorrectPositionRequest
+            var act = SetupController(new CorrectAddressPositionRequest
             {
                 PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
                 PositieSpecificatie = PositieSpecificatie.Ingang,
@@ -108,13 +108,13 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
                                       && e.ErrorMessage == "De positie is geen geldige gml-puntgeometrie."));
         }
 
-        private Func<Task<IActionResult>> SetupController(AddressCorrectPositionRequest request)
+        private Func<Task<IActionResult>> SetupController(CorrectAddressPositionRequest request)
         {
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
             return async () => await _controller.CorrectPosition(
                 Mock.Of<BackOfficeContext>(),
-                new AddressCorrectPositionRequestValidator(),
+                new CorrectAddressPositionRequestValidator(),
                 Mock.Of<IIfMatchHeaderValidator>(),
                 ResponseOptions,
                 addressPersistentLocalId,

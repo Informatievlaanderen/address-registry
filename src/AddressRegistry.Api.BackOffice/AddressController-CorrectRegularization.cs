@@ -48,15 +48,14 @@ namespace AddressRegistry.Api.BackOffice
             [FromRoute] int persistentLocalId,
             CancellationToken cancellationToken = default)
         {
-            var addressPersistentLocalId =
-                new AddressPersistentLocalId(new PersistentLocalId(persistentLocalId));
+            var addressPersistentLocalId = new AddressPersistentLocalId(new PersistentLocalId(persistentLocalId));
 
             var relation = backOfficeContext.AddressPersistentIdStreetNamePersistentIds
                 .FirstOrDefault(x => x.AddressPersistentLocalId == addressPersistentLocalId);
 
             if (relation is null)
             {
-                return NotFound();
+                throw new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound);
             }
 
             var streetNamePersistentLocalId = new StreetNamePersistentLocalId(relation.StreetNamePersistentLocalId);
@@ -71,7 +70,7 @@ namespace AddressRegistry.Api.BackOffice
 
                 var sqsRequest = new CorrectAddressRegularizationSqsRequest
                 {
-                    Request = new CorrectAddressRegularizationBackOfficeRequest {PersistentLocalId = addressPersistentLocalId},
+                    Request = new CorrectAddressRegularizationRequest {PersistentLocalId = addressPersistentLocalId},
                     IfMatchHeaderValue = ifMatchHeaderValue,
                     Metadata = GetMetadata(),
                     ProvenanceData = new ProvenanceData(CreateFakeProvenance())

@@ -82,7 +82,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressApproval
             await sut.Handle(
                 new CorrectAddressApprovalLambdaRequest(streetNamePersistentLocalId, new CorrectAddressApprovalSqsRequest()
                 {
-                    Request = new CorrectAddressApprovalBackOfficeRequest
+                    Request = new CorrectAddressApprovalRequest
                     {
                         PersistentLocalId = addressPersistentLocalId
                     },
@@ -114,7 +114,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressApproval
             // Act
             await sut.Handle(new CorrectAddressApprovalLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressApprovalSqsRequest()
             {
-                Request = new CorrectAddressApprovalBackOfficeRequest(),
+                Request = new CorrectAddressApprovalRequest(),
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -146,7 +146,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressApproval
             // Act
             await sut.Handle(new CorrectAddressApprovalLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressApprovalSqsRequest()
             {
-                Request = new CorrectAddressApprovalBackOfficeRequest(),
+                Request = new CorrectAddressApprovalRequest(),
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -200,7 +200,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressApproval
             // Act
             await sut.Handle(new CorrectAddressApprovalLambdaRequest(streetNamePersistentLocalId, new CorrectAddressApprovalSqsRequest()
                 {
-                    Request = new CorrectAddressApprovalBackOfficeRequest
+                    Request = new CorrectAddressApprovalRequest
                     {
                         PersistentLocalId = addressPersistentLocalId
                     },

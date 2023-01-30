@@ -77,7 +77,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenDeregulatingAddress
             // Act
             await sut.Handle(new DeregulateAddressLambdaRequest(streetNamePersistentLocalId, new DeregulateAddressSqsRequest()
                 {
-                    Request = new DeregulateAddressBackOfficeRequest { PersistentLocalId = addressPersistentLocalId },
+                    Request = new DeregulateAddressRequest { PersistentLocalId = addressPersistentLocalId },
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
                     ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -106,7 +106,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenDeregulatingAddress
             // Act
             await sut.Handle(new DeregulateAddressLambdaRequest(Fixture.Create<int>().ToString(), new DeregulateAddressSqsRequest()
             {
-                Request = new DeregulateAddressBackOfficeRequest(),
+                Request = new DeregulateAddressRequest(),
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -138,7 +138,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenDeregulatingAddress
             // Act
             await sut.Handle(new DeregulateAddressLambdaRequest(Fixture.Create<int>().ToString(), new DeregulateAddressSqsRequest()
             {
-                Request = new DeregulateAddressBackOfficeRequest(),
+                Request = new DeregulateAddressRequest(),
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -193,7 +193,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenDeregulatingAddress
             await sut.Handle(
                 new DeregulateAddressLambdaRequest(streetNamePersistentLocalId, new DeregulateAddressSqsRequest()
                 {
-                    Request = new DeregulateAddressBackOfficeRequest { PersistentLocalId = addressPersistentLocalId },
+                    Request = new DeregulateAddressRequest { PersistentLocalId = addressPersistentLocalId },
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
                     ProvenanceData = Fixture.Create<ProvenanceData>()

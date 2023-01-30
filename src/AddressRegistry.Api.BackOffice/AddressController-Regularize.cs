@@ -55,24 +55,23 @@ namespace AddressRegistry.Api.BackOffice
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.Adres.DecentraleBijwerker)]
         public async Task<IActionResult> Regularize(
             [FromServices] BackOfficeContext backOfficeContext,
-            [FromServices] IValidator<AddressRegularizeRequest> validator,
+            [FromServices] IValidator<RegularizeAddressRequest> validator,
             [FromServices] IIfMatchHeaderValidator ifMatchHeaderValidator,
             [FromServices] IOptions<ResponseOptions> options,
-            [FromRoute] AddressRegularizeRequest request,
+            [FromRoute] RegularizeAddressRequest request,
             [FromHeader(Name = "If-Match")] string? ifMatchHeaderValue,
             CancellationToken cancellationToken = default)
         {
             await validator.ValidateAndThrowAsync(request, cancellationToken);
 
-            var addressPersistentLocalId =
-                new AddressPersistentLocalId(new PersistentLocalId(request.PersistentLocalId));
+            var addressPersistentLocalId = new AddressPersistentLocalId(new PersistentLocalId(request.PersistentLocalId));
 
             var relation = backOfficeContext.AddressPersistentIdStreetNamePersistentIds
                 .FirstOrDefault(x => x.AddressPersistentLocalId == addressPersistentLocalId);
 
             if (relation is null)
             {
-                return NotFound();
+                throw new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound);
             }
 
             var streetNamePersistentLocalId = new StreetNamePersistentLocalId(relation.StreetNamePersistentLocalId);
@@ -85,26 +84,16 @@ namespace AddressRegistry.Api.BackOffice
                     return new PreconditionFailedResult();
                 }
 
-                if (_useSqsToggle.FeatureEnabled)
+                var sqsRequest = new RegularizeAddressSqsRequest
                 {
-                    var sqsRequest = new RegularizeAddressSqsRequest
-                    {
-                        Request = request,
-                        IfMatchHeaderValue = ifMatchHeaderValue,
-                        Metadata = GetMetadata(),
-                        ProvenanceData = new ProvenanceData(CreateFakeProvenance())
-                    };
-                    var sqsResult = await _mediator.Send(sqsRequest, cancellationToken);
+                    Request = request,
+                    IfMatchHeaderValue = ifMatchHeaderValue,
+                    Metadata = GetMetadata(),
+                    ProvenanceData = new ProvenanceData(CreateFakeProvenance())
+                };
+                var sqsResult = await _mediator.Send(sqsRequest, cancellationToken);
 
-                    return Accepted(sqsResult);
-                }
-
-                request.Metadata = GetMetadata();
-                var response = await _mediator.Send(request, cancellationToken);
-
-                return new AcceptedWithETagResult(
-                    new Uri(string.Format(options.Value.DetailUrl, request.PersistentLocalId)),
-                    response.ETag);
+                return Accepted(sqsResult);
             }
             catch (AggregateIdIsNotFoundException)
             {

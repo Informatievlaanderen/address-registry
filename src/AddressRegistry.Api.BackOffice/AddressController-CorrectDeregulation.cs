@@ -56,7 +56,7 @@ namespace AddressRegistry.Api.BackOffice
 
             if (relation is null)
             {
-                return NotFound();
+                throw new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound);
             }
 
             var streetNamePersistentLocalId = new StreetNamePersistentLocalId(relation.StreetNamePersistentLocalId);
@@ -71,7 +71,7 @@ namespace AddressRegistry.Api.BackOffice
 
                 var sqsRequest = new CorrectAddressDeregulationSqsRequest
                 {
-                    Request = new CorrectAddressDeregulationBackOfficeRequest {PersistentLocalId = addressPersistentLocalId},
+                    Request = new CorrectAddressDeregulationRequest {PersistentLocalId = addressPersistentLocalId},
                     IfMatchHeaderValue = ifMatchHeaderValue,
                     Metadata = GetMetadata(),
                     ProvenanceData = new ProvenanceData(CreateFakeProvenance())
@@ -83,11 +83,11 @@ namespace AddressRegistry.Api.BackOffice
             }
             catch (AggregateIdIsNotFoundException)
             {
-                throw new ApiException(ValidationErrors.Common.StreetNameInvalid.Message(streetNamePersistentLocalId), StatusCodes.Status404NotFound);
+                throw new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound);
             }
             catch (AggregateNotFoundException)
             {
-                throw new ApiException(ValidationErrors.Common.StreetNameInvalid.Message(streetNamePersistentLocalId), StatusCodes.Status404NotFound);
+                throw new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound);
             }
         }
     }

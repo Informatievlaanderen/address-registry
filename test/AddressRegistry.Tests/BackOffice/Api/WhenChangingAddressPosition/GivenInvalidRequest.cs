@@ -12,6 +12,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
     using FluentAssertions;
     using FluentValidation;
+    using global::AutoFixture;
     using Microsoft.AspNetCore.Mvc;
     using Moq;
     using StreetName;
@@ -30,7 +31,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
         [Fact]
         public void WithGeometryMethodIsInvalid_ThenThrowsValidationException()
         {
-            var act = SetupController(new AddressChangePositionRequest
+            var act = SetupController(new ChangeAddressPositionRequest
             {
                 PositieGeometrieMethode = 0
             });
@@ -52,7 +53,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
         [InlineData(PositieSpecificatie.Ingang)]
         public void WithInvalidSpecificationAndDerivedFromObject_ThenThrowsValidationException(PositieSpecificatie specificatie)
         {
-            var act = SetupController(new AddressChangePositionRequest
+            var act = SetupController(new ChangeAddressPositionRequest
             {
                 PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
                 PositieSpecificatie = specificatie,
@@ -72,7 +73,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
         [Fact]
         public void WithNoPosition_ThenThrowsValidationException()
         {
-            var act = SetupController(new AddressChangePositionRequest
+            var act = SetupController(new ChangeAddressPositionRequest
             {
                 PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
                 PositieSpecificatie = PositieSpecificatie.Ingang
@@ -91,7 +92,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
         [Fact]
         public void WithInvalidGml_ThenThrowsValidationException()
         {
-            var act = SetupController(new AddressChangePositionRequest
+            var act = SetupController(new ChangeAddressPositionRequest
             {
                 PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
                 PositieSpecificatie = PositieSpecificatie.Ingang,
@@ -108,13 +109,13 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
                                       && e.ErrorMessage == "De positie is geen geldige gml-puntgeometrie."));
         }
 
-        private Func<Task<IActionResult>> SetupController(AddressChangePositionRequest request)
+        private Func<Task<IActionResult>> SetupController(ChangeAddressPositionRequest request)
         {
-            var addressPersistentLocalId = new AddressPersistentLocalId(123);
+            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
 
             return async () => await _controller.ChangePosition(
                 Mock.Of<BackOfficeContext>(),
-                new AddressChangePositionRequestValidator(),
+                new ChangeAddressPositionRequestValidator(),
                 Mock.Of<IIfMatchHeaderValidator>(),
                 ResponseOptions,
                 addressPersistentLocalId,

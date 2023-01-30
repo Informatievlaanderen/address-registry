@@ -44,8 +44,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
 
             var result = (AcceptedResult)await _controller.Propose(
                 ResponseOptions,
-                MockValidRequestValidator<AddressProposeRequest>(),
-                new AddressProposeRequest());
+                MockValidRequestValidator<ProposeAddressRequest>(),
+                new ProposeAddressRequest());
 
             result.Should().NotBeNull();
             AssertLocation(result.Location, ticketId);

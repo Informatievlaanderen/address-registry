@@ -30,7 +30,7 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
             // Arrange
             var streetNameId = 45041;
 
-            var request = Fixture.Create<ProposeAddressBackOfficeRequest>();
+            var request = Fixture.Create<ProposeAddressRequest>();
             request.StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNameId}";
             var sqsRequest = new ProposeAddressSqsRequest { Request = request };
 

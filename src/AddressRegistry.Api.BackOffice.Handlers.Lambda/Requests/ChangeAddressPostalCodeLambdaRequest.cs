@@ -9,7 +9,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
 
     public sealed record ChangeAddressPostalCodeLambdaRequest :
         SqsLambdaRequest,
-        IHasBackOfficeRequest<ChangeAddressPostalCodeBackOfficeRequest>,
+        IHasBackOfficeRequest<ChangeAddressPostalCodeRequest>,
         Abstractions.IHasAddressPersistentLocalId
     {
         public ChangeAddressPostalCodeLambdaRequest(string groupId, ChangeAddressPostalCodeSqsRequest sqsRequest)
@@ -24,7 +24,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
             AddressPersistentLocalId = sqsRequest.PersistentLocalId;
         }
 
-        public ChangeAddressPostalCodeBackOfficeRequest Request { get; init; }
+        public ChangeAddressPostalCodeRequest Request { get; init; }
 
         public int AddressPersistentLocalId { get; }
 

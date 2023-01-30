@@ -37,7 +37,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AddressRegistry.Api.BackOffice.Handlers.Sqs\AddressRegistry.Api.BackOffice.Handlers.Sqs.csproj" />
-    <ProjectReference Include="..\AddressRegistry.Api.BackOffice.Handlers\AddressRegistry.Api.BackOffice.Handlers.csproj" />
+    <ProjectReference Include="..\AddressRegistry.Projections.Syndication\AddressRegistry.Projections.Syndication.csproj" />
     <ProjectReference Include="..\AddressRegistry\AddressRegistry.csproj" />
   </ItemGroup>
 

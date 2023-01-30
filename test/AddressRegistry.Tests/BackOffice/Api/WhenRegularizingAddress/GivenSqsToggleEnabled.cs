@@ -48,9 +48,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRegularizingAddress
 
             var result = (AcceptedResult)await _controller.Regularize(
                 _backOfficeContext,
-                MockValidRequestValidator<RegularizeAddressRequest>(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
                 request: new RegularizeAddressRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
@@ -72,9 +70,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRegularizingAddress
             //Act
             var result = await _controller.Regularize(
                 _backOfficeContext,
-                MockValidRequestValidator<RegularizeAddressRequest>(),
                 MockIfMatchValidator(false),
-                ResponseOptions,
                 request: new RegularizeAddressRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
@@ -90,9 +86,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRegularizingAddress
         {
             Func<Task> act = async () => await _controller.Regularize(
                 _backOfficeContext,
-                MockValidRequestValidator<RegularizeAddressRequest>(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
                 new RegularizeAddressRequest
                 {
                     PersistentLocalId = Fixture.Create<AddressPersistentLocalId>()
@@ -123,9 +117,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRegularizingAddress
 
             Func<Task> act = async () => await _controller.Regularize(
                 _backOfficeContext,
-                MockValidRequestValidator<RegularizeAddressRequest>(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
                 new RegularizeAddressRequest
                 {
                     PersistentLocalId = addressPersistentLocalId

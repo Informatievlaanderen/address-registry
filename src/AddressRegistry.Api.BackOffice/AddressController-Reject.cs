@@ -36,9 +36,7 @@ namespace AddressRegistry.Api.BackOffice
         /// </summary>
         /// <param name="backOfficeContext"></param>
         /// <param name="ifMatchHeaderValidator"></param>
-        /// <param name="options"></param>
         /// <param name="request"></param>
-        /// <param name="validator"></param>
         /// <param name="ifMatchHeaderValue"></param>
         /// <param name="cancellationToken"></param>
         /// <response code="202">Aanvraag tot afkeuring wordt reeds verwerkt.</response>
@@ -55,15 +53,11 @@ namespace AddressRegistry.Api.BackOffice
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.Adres.DecentraleBijwerker)]
         public async Task<IActionResult> Reject(
             [FromServices] BackOfficeContext backOfficeContext,
-            [FromServices] IValidator<RejectAddressRequest> validator,
             [FromServices] IIfMatchHeaderValidator ifMatchHeaderValidator,
-            [FromServices] IOptions<ResponseOptions> options,
             [FromRoute] RejectAddressRequest request,
             [FromHeader(Name = "If-Match")] string? ifMatchHeaderValue,
             CancellationToken cancellationToken = default)
         {
-            await validator.ValidateAndThrowAsync(request, cancellationToken);
-
             var addressPersistentLocalId = new AddressPersistentLocalId(new PersistentLocalId(request.PersistentLocalId));
 
             var relation = backOfficeContext.AddressPersistentIdStreetNamePersistentIds

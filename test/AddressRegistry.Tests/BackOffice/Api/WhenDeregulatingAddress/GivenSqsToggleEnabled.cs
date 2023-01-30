@@ -48,9 +48,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenDeregulatingAddress
 
             var result = (AcceptedResult)await _controller.Deregulate(
                 _backOfficeContext,
-                MockValidRequestValidator<DeregulateAddressRequest>(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
                 request: new DeregulateAddressRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
@@ -72,9 +70,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenDeregulatingAddress
             //Act
             var result = await _controller.Deregulate(
                 _backOfficeContext,
-                MockValidRequestValidator<DeregulateAddressRequest>(),
                 MockIfMatchValidator(false),
-                ResponseOptions,
                 request: new DeregulateAddressRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
@@ -90,9 +86,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenDeregulatingAddress
         {
             Func<Task> act = async () => await _controller.Deregulate(
                 _backOfficeContext,
-                MockValidRequestValidator<DeregulateAddressRequest>(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
                 new DeregulateAddressRequest
                 {
                     PersistentLocalId = Fixture.Create<AddressPersistentLocalId>()
@@ -123,9 +117,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenDeregulatingAddress
 
             Func<Task> act = async () => await _controller.Deregulate(
                 _backOfficeContext,
-                MockValidRequestValidator<DeregulateAddressRequest>(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
                 new DeregulateAddressRequest
                 {
                     PersistentLocalId = addressPersistentLocalId

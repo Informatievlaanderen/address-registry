@@ -19,12 +19,10 @@ namespace AddressRegistry.Api.BackOffice
     using FluentValidation.Results;
     using Handlers.Sqs.Requests;
     using Infrastructure;
-    using Infrastructure.Options;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Options;
     using StreetName;
     using StreetName.Exceptions;
     using Swashbuckle.AspNetCore.Filters;
@@ -35,10 +33,8 @@ namespace AddressRegistry.Api.BackOffice
         /// Verwijder een adres.
         /// </summary>
         /// <param name="backOfficeContext"></param>
-        /// <param name="validator"></param>
         /// <param name="ifMatchHeaderValidator"></param>
         /// <param name="ifMatchHeaderValue"></param>
-        /// <param name="options"></param>
         /// <param name="request"></param>
         /// <param name="cancellationToken"></param>
         /// <response code="202">Aanvraag tot verwijdering wordt reeds verwerkt.</response>
@@ -54,15 +50,11 @@ namespace AddressRegistry.Api.BackOffice
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.Adres.InterneBijwerker)]
         public async Task<IActionResult> Remove(
             [FromServices] BackOfficeContext backOfficeContext,
-            [FromServices] IValidator<RemoveAddressRequest> validator,
             [FromServices] IIfMatchHeaderValidator ifMatchHeaderValidator,
             [FromHeader(Name = "If-Match")] string? ifMatchHeaderValue,
-            [FromServices] IOptions<ResponseOptions> options,
             [FromRoute] RemoveAddressRequest request,
             CancellationToken cancellationToken = default)
         {
-            await validator.ValidateAndThrowAsync(request, cancellationToken);
-
             var addressPersistentLocalId = new AddressPersistentLocalId(new PersistentLocalId(request.PersistentLocalId));
 
             var relation = backOfficeContext.AddressPersistentIdStreetNamePersistentIds

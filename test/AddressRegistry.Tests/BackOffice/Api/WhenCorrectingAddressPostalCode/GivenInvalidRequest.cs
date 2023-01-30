@@ -35,7 +35,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPostalCode
                 _backOfficeContext,
                 new CorrectAddressPostalCodeRequestValidator(syndicationContext),
                 MockIfMatchValidator(true),
-                ResponseOptions,
                 Fixture.Create<AddressPersistentLocalId>(),
                 new CorrectAddressPostalCodeRequest { PostInfoId = nonExistentPostInfo },
                 null);

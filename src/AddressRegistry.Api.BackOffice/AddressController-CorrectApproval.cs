@@ -33,7 +33,6 @@ namespace AddressRegistry.Api.BackOffice
         /// </summary>
         /// <param name="backOfficeContext"></param>
         /// <param name="request"></param>
-        /// <param name="validator"></param>
         /// <param name="ifMatchHeaderValidator"></param>
         /// <param name="ifMatchHeaderValue"></param>
         /// <param name="cancellationToken"></param>
@@ -51,14 +50,11 @@ namespace AddressRegistry.Api.BackOffice
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.Adres.DecentraleBijwerker)]
         public async Task<IActionResult> CorrectApproval(
             [FromServices] BackOfficeContext backOfficeContext,
-            [FromServices] IValidator<CorrectAddressApprovalRequest> validator,
             [FromServices] IIfMatchHeaderValidator ifMatchHeaderValidator,
             [FromRoute] CorrectAddressApprovalRequest request,
             [FromHeader(Name = "If-Match")] string? ifMatchHeaderValue,
             CancellationToken cancellationToken = default)
         {
-            await validator.ValidateAndThrowAsync(request, cancellationToken);
-
             var addressPersistentLocalId = new AddressPersistentLocalId(new PersistentLocalId(request.PersistentLocalId));
 
             var relation = backOfficeContext.AddressPersistentIdStreetNamePersistentIds

@@ -48,9 +48,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRejectingAddress
 
             var result = (AcceptedResult)await _controller.Reject(
                 _backOfficeContext,
-                MockValidRequestValidator<RejectAddressRequest>(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
                 request: new RejectAddressRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
@@ -72,9 +70,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRejectingAddress
             //Act
             var result = await _controller.Reject(
                 _backOfficeContext,
-                MockValidRequestValidator<RejectAddressRequest>(),
                 MockIfMatchValidator(false),
-                ResponseOptions,
                 request: new RejectAddressRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
@@ -90,13 +86,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRejectingAddress
         {
             Func<Task> act = async () => await _controller.Reject(
                 _backOfficeContext,
-                MockValidRequestValidator<RejectAddressRequest>(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
-                new RejectAddressRequest
-                {
-                    PersistentLocalId = Fixture.Create<AddressPersistentLocalId>()
-                },
+                new RejectAddressRequest { PersistentLocalId = Fixture.Create<AddressPersistentLocalId>() },
                 ifMatchHeaderValue: null);
 
             //Assert
@@ -123,13 +114,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRejectingAddress
 
             Func<Task> act = async () => await _controller.Reject(
                 _backOfficeContext,
-                MockValidRequestValidator<RejectAddressRequest>(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
-                new RejectAddressRequest
-                {
-                    PersistentLocalId = addressPersistentLocalId
-                },
+                new RejectAddressRequest { PersistentLocalId = addressPersistentLocalId },
                 string.Empty);
 
             //Assert

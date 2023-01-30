@@ -48,9 +48,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
 
             var result = (AcceptedResult)await _controller.CorrectRejection(
                 _backOfficeContext,
-                MockValidRequestValidator<CorrectAddressRejectionRequest>(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
                 request: new CorrectAddressRejectionRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
@@ -72,9 +70,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
             //Act
             var result = await _controller.CorrectRejection(
                 _backOfficeContext,
-                MockValidRequestValidator<CorrectAddressRejectionRequest>(),
                 MockIfMatchValidator(false),
-                ResponseOptions,
                 request: new CorrectAddressRejectionRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
@@ -90,9 +86,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
         {
             Func<Task> act = async () => await _controller.CorrectRejection(
                 _backOfficeContext,
-                MockValidRequestValidator<CorrectAddressRejectionRequest>(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
                 new CorrectAddressRejectionRequest
                 {
                     PersistentLocalId = Fixture.Create<AddressPersistentLocalId>()
@@ -123,9 +117,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRejection
 
             Func<Task> act = async () => await _controller.CorrectRejection(
                 _backOfficeContext,
-                MockValidRequestValidator<CorrectAddressRejectionRequest>(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
                 new CorrectAddressRejectionRequest
                 {
                     PersistentLocalId = addressPersistentLocalId

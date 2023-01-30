@@ -48,10 +48,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRemovingAddress
 
             var result = (AcceptedResult)await _controller.Remove(
                 _backOfficeContext,
-                MockValidRequestValidator<RemoveAddressRequest>(),
                 MockIfMatchValidator(true),
                 ifMatchHeaderValue: null,
-                ResponseOptions,
                 new RemoveAddressRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
@@ -72,10 +70,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRemovingAddress
             //Act
             var result = await _controller.Remove(
                 _backOfficeContext,
-                MockValidRequestValidator<RemoveAddressRequest>(),
                 MockIfMatchValidator(false),
                 ifMatchHeaderValue: null,
-                ResponseOptions,
                 new RemoveAddressRequest
                 {
                     PersistentLocalId = addressPersistentLocalId
@@ -90,10 +86,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRemovingAddress
         {
             Func<Task> act = async () => await _controller.Remove(
                 _backOfficeContext,
-                MockValidRequestValidator<RemoveAddressRequest>(),
                 MockIfMatchValidator(true),
                 ifMatchHeaderValue: null,
-                ResponseOptions,
                 new RemoveAddressRequest
                 {
                     PersistentLocalId = Fixture.Create<AddressPersistentLocalId>()
@@ -123,10 +117,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRemovingAddress
 
             Func<Task> act = async () => await _controller.Remove(
                 _backOfficeContext,
-                MockValidRequestValidator<RemoveAddressRequest>(),
                 MockIfMatchValidator(true),
                 ifMatchHeaderValue: null,
-                ResponseOptions,
                 new RemoveAddressRequest
                 {
                     PersistentLocalId = addressPersistentLocalId

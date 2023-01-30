@@ -19,12 +19,10 @@ namespace AddressRegistry.Api.BackOffice
     using FluentValidation.Results;
     using Handlers.Sqs.Requests;
     using Infrastructure;
-    using Infrastructure.Options;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Options;
     using StreetName;
     using StreetName.Exceptions;
     using Swashbuckle.AspNetCore.Filters;
@@ -35,9 +33,7 @@ namespace AddressRegistry.Api.BackOffice
         /// Corrigeer de opheffing van een adres.
         /// </summary>
         /// <param name="backOfficeContext"></param>
-        /// <param name="validator"></param>
         /// <param name="ifMatchHeaderValidator"></param>
-        /// <param name="options"></param>
         /// <param name="request"></param>
         /// <param name="ifMatchHeaderValue"></param>
         /// <param name="cancellationToken"></param>
@@ -56,15 +52,11 @@ namespace AddressRegistry.Api.BackOffice
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.Adres.DecentraleBijwerker)]
         public async Task<IActionResult> CorrectRetirement(
             [FromServices] BackOfficeContext backOfficeContext,
-            [FromServices] IValidator<CorrectAddressRetirementRequest> validator,
             [FromServices] IIfMatchHeaderValidator ifMatchHeaderValidator,
-            [FromServices] IOptions<ResponseOptions> options,
             [FromRoute] CorrectAddressRetirementRequest request,
             [FromHeader(Name = "If-Match")] string? ifMatchHeaderValue,
             CancellationToken cancellationToken = default)
         {
-            await validator.ValidateAndThrowAsync(request, cancellationToken);
-
             var addressPersistentLocalId = new AddressPersistentLocalId(new PersistentLocalId(request.PersistentLocalId));
 
             var relation = backOfficeContext.AddressPersistentIdStreetNamePersistentIds

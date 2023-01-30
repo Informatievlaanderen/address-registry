@@ -50,12 +50,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPostalCode
                 _backOfficeContext,
                 MockValidRequestValidator<CorrectAddressPostalCodeRequest>(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
                 addressPersistentLocalId,
-                request: new CorrectAddressPostalCodeRequest
-                {
-                    PostInfoId = PostInfoPuri
-                },
+                request: new CorrectAddressPostalCodeRequest { PostInfoId = PostInfoPuri },
                 ifMatchHeaderValue: null);
 
             result.Should().NotBeNull();
@@ -75,12 +71,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPostalCode
                 _backOfficeContext,
                 MockValidRequestValidator<CorrectAddressPostalCodeRequest>(),
                 MockIfMatchValidator(false),
-                ResponseOptions,
                 addressPersistentLocalId,
-                request: new CorrectAddressPostalCodeRequest
-                {
-                    PostInfoId = PostInfoPuri
-                },
+                request: new CorrectAddressPostalCodeRequest { PostInfoId = PostInfoPuri },
                 ifMatchHeaderValue: null);
 
             //Assert
@@ -94,7 +86,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPostalCode
                 _backOfficeContext,
                 MockValidRequestValidator<CorrectAddressPostalCodeRequest>(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
                 Fixture.Create<AddressPersistentLocalId>(),
                 request: new CorrectAddressPostalCodeRequest
                 {
@@ -128,9 +119,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPostalCode
                 _backOfficeContext,
                 MockValidRequestValidator<CorrectAddressPostalCodeRequest>(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
                 addressPersistentLocalId,
-                new CorrectAddressPostalCodeRequest(),
+                request: new CorrectAddressPostalCodeRequest { PostInfoId = PostInfoPuri },
                 string.Empty);
 
             //Assert

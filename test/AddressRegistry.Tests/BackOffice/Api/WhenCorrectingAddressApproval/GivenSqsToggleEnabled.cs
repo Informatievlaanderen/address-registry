@@ -49,7 +49,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressApproval
 
             var result = (AcceptedResult)await _controller.CorrectApproval(
                 _backOfficeContext,
-                new AddressCorrectApprovalRequestValidator(),
                 MockIfMatchValidator(true),
                 request: new CorrectAddressApprovalRequest { PersistentLocalId = addressPersistentLocalId },
                 ifMatchHeaderValue: null);
@@ -69,7 +68,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressApproval
             //Act
             var result = await _controller.CorrectApproval(
                 _backOfficeContext,
-                new AddressCorrectApprovalRequestValidator(),
                 MockIfMatchValidator(false),
                 request: new CorrectAddressApprovalRequest { PersistentLocalId = addressPersistentLocalId },
                 "IncorrectIfMatchHeader");
@@ -83,7 +81,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressApproval
         {
             Func<Task> act = async () => await  _controller.CorrectApproval(
                 _backOfficeContext,
-                new AddressCorrectApprovalRequestValidator(),
                 MockIfMatchValidator(true),
                 request: new CorrectAddressApprovalRequest { PersistentLocalId = new AddressPersistentLocalId(123) },
                 ifMatchHeaderValue: null);
@@ -111,7 +108,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressApproval
 
             Func<Task> act = async () => await _controller.CorrectApproval(
                 _backOfficeContext,
-                new AddressCorrectApprovalRequestValidator(),
                 MockIfMatchValidator(true),
                 new CorrectAddressApprovalRequest { PersistentLocalId = addressPersistentLocalId },
                 string.Empty);

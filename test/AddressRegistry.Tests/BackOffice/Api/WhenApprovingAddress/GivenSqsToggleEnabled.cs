@@ -49,7 +49,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
 
             var result = (AcceptedResult)await _controller.Approve(
                 _backOfficeContext,
-                new AddressApproveRequestValidator(),
                 MockIfMatchValidator(true),
                 request: new ApproveAddressRequest { PersistentLocalId = addressPersistentLocalId },
                 ifMatchHeaderValue: null);
@@ -69,7 +68,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
             //Act
             var result = await _controller.Approve(
                 _backOfficeContext,
-                new AddressApproveRequestValidator(),
                 MockIfMatchValidator(false),
                 request: new ApproveAddressRequest { PersistentLocalId = addressPersistentLocalId },
                 "IncorrectIfMatchHeader");
@@ -83,7 +81,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
         {
             Func<Task> act = async () => await _controller.Approve(
                 _backOfficeContext,
-                new AddressApproveRequestValidator(),
                 MockIfMatchValidator(true),
                 request: new ApproveAddressRequest { PersistentLocalId = Fixture.Create<AddressPersistentLocalId>() },
                 ifMatchHeaderValue: null);
@@ -111,7 +108,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
 
             Func<Task> act = async () => await _controller.Approve(
                 _backOfficeContext,
-                new AddressApproveRequestValidator(),
                 MockIfMatchValidator(true),
                 new ApproveAddressRequest { PersistentLocalId = addressPersistentLocalId },
                 string.Empty);

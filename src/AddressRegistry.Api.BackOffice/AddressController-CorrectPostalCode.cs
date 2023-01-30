@@ -19,12 +19,10 @@ namespace AddressRegistry.Api.BackOffice
     using FluentValidation.Results;
     using Handlers.Sqs.Requests;
     using Infrastructure;
-    using Infrastructure.Options;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Options;
     using StreetName;
     using StreetName.Exceptions;
     using Swashbuckle.AspNetCore.Filters;
@@ -36,7 +34,6 @@ namespace AddressRegistry.Api.BackOffice
         /// </summary>
         /// <param name="backOfficeContext"></param>
         /// <param name="ifMatchHeaderValidator"></param>
-        /// <param name="options"></param>
         /// <param name="persistentLocalId"></param>
         /// <param name="request"></param>
         /// <param name="validator"></param>
@@ -58,7 +55,6 @@ namespace AddressRegistry.Api.BackOffice
             [FromServices] BackOfficeContext backOfficeContext,
             [FromServices] IValidator<CorrectAddressPostalCodeRequest> validator,
             [FromServices] IIfMatchHeaderValidator ifMatchHeaderValidator,
-            [FromServices] IOptions<ResponseOptions> options,
             [FromRoute] int persistentLocalId,
             [FromBody] CorrectAddressPostalCodeRequest request,
             [FromHeader(Name = "If-Match")] string? ifMatchHeaderValue,

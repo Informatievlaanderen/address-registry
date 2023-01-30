@@ -48,13 +48,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRetiringAddress
 
             var result = (AcceptedResult)await _controller.Retire(
                 _backOfficeContext,
-                MockValidRequestValidator<RetireAddressRequest>(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
-                request: new RetireAddressRequest
-                {
-                    PersistentLocalId = addressPersistentLocalId
-                },
+                request: new RetireAddressRequest { PersistentLocalId = addressPersistentLocalId },
                 ifMatchHeaderValue: null);
 
             result.Should().NotBeNull();
@@ -72,13 +67,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRetiringAddress
             //Act
             var result = await _controller.Retire(
                 _backOfficeContext,
-                MockValidRequestValidator<RetireAddressRequest>(),
                 MockIfMatchValidator(false),
-                ResponseOptions,
-                request: new RetireAddressRequest
-                {
-                    PersistentLocalId = addressPersistentLocalId
-                },
+                request: new RetireAddressRequest { PersistentLocalId = addressPersistentLocalId },
                 ifMatchHeaderValue: null);
 
             //Assert
@@ -90,13 +80,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRetiringAddress
         {
             Func<Task> act = async () => await _controller.Retire(
                 _backOfficeContext,
-                MockValidRequestValidator<RetireAddressRequest>(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
-                new RetireAddressRequest
-                {
-                    PersistentLocalId = Fixture.Create<AddressPersistentLocalId>()
-                },
+                new RetireAddressRequest { PersistentLocalId = Fixture.Create<AddressPersistentLocalId>() },
                 ifMatchHeaderValue: null);
 
             //Assert
@@ -123,13 +108,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRetiringAddress
 
             Func<Task> act = async () => await _controller.Retire(
                 _backOfficeContext,
-                MockValidRequestValidator<RetireAddressRequest>(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
-                new RetireAddressRequest
-                {
-                    PersistentLocalId = addressPersistentLocalId
-                },
+                new RetireAddressRequest { PersistentLocalId = addressPersistentLocalId },
                 string.Empty);
 
             //Assert

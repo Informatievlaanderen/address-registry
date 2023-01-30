@@ -83,18 +83,6 @@ namespace AddressRegistry.StreetName
                     streetName.ApproveStreetName();
                 });
 
-            For<CorrectStreetNameApproval>()
-                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
-                .AddEventHash<CorrectStreetNameApproval, StreetName>(getUnitOfWork)
-                .AddProvenance(getUnitOfWork, provenanceFactory)
-                .Handle(async (message, ct) =>
-                {
-                    var streetNameStreamId = new StreetNameStreamId(message.Command.PersistentLocalId);
-                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
-
-                    streetName.CorrectStreetNameApproval();
-                });
-
             For<RejectStreetName>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
                 .AddEventHash<RejectStreetName, StreetName>(getUnitOfWork)
@@ -106,19 +94,6 @@ namespace AddressRegistry.StreetName
 
                     streetName.RejectStreetName();
                 });
-
-            For<CorrectStreetNameRejection>()
-                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
-                .AddEventHash<CorrectStreetNameRejection, StreetName>(getUnitOfWork)
-                .AddProvenance(getUnitOfWork, provenanceFactory)
-                .Handle(async (message, ct) =>
-                {
-                    var streetNameStreamId = new StreetNameStreamId(message.Command.PersistentLocalId);
-                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
-
-                    streetName.CorrectStreetNameRejection();
-                });
-
 
             For<RetireStreetName>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
@@ -132,16 +107,16 @@ namespace AddressRegistry.StreetName
                     streetName.RetireStreetName();
                 });
 
-            For<CorrectStreetNameRetirement>()
+            For<RemoveStreetName>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
-                .AddEventHash<CorrectStreetNameRetirement, StreetName>(getUnitOfWork)
+                .AddEventHash<RemoveStreetName, StreetName>(getUnitOfWork)
                 .AddProvenance(getUnitOfWork, provenanceFactory)
                 .Handle(async (message, ct) =>
                 {
                     var streetNameStreamId = new StreetNameStreamId(message.Command.PersistentLocalId);
                     var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
 
-                    streetName.CorrectStreetNameRetirement();
+                    streetName.RemoveStreetName();
                 });
 
             For<CorrectStreetNameNames>()
@@ -156,16 +131,40 @@ namespace AddressRegistry.StreetName
                     streetName.CorrectStreetNameNames(message.Command.StreetNameNames);
                 });
 
-            For<RemoveStreetName>()
+            For<CorrectStreetNameApproval>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
-                .AddEventHash<RemoveStreetName, StreetName>(getUnitOfWork)
+                .AddEventHash<CorrectStreetNameApproval, StreetName>(getUnitOfWork)
                 .AddProvenance(getUnitOfWork, provenanceFactory)
                 .Handle(async (message, ct) =>
                 {
                     var streetNameStreamId = new StreetNameStreamId(message.Command.PersistentLocalId);
                     var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
 
-                    streetName.RemoveStreetName();
+                    streetName.CorrectStreetNameApproval();
+                });
+
+            For<CorrectStreetNameRejection>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<CorrectStreetNameRejection, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streetNameStreamId = new StreetNameStreamId(message.Command.PersistentLocalId);
+                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+
+                    streetName.CorrectStreetNameRejection();
+                });
+
+            For<CorrectStreetNameRetirement>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<CorrectStreetNameRetirement, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streetNameStreamId = new StreetNameStreamId(message.Command.PersistentLocalId);
+                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+
+                    streetName.CorrectStreetNameRetirement();
                 });
         }
     }

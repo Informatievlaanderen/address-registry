@@ -49,37 +49,33 @@ namespace AddressRegistry.StreetName
                 throw new ParentAddressHasInvalidStatusException();
             }
 
-            switch (Status)
+            if (Status == AddressStatus.Current)
             {
-                case AddressStatus.Current:
-                    return;
-                case AddressStatus.Retired or AddressStatus.Rejected:
-                    throw new AddressHasInvalidStatusException();
-                case AddressStatus.Proposed:
-                    Apply(new AddressWasApproved(_streetNamePersistentLocalId, AddressPersistentLocalId));
-                    break;
+                return;
             }
+
+            GuardAddressStatus(AddressStatus.Proposed);
+
+            Apply(new AddressWasApproved(_streetNamePersistentLocalId, AddressPersistentLocalId));
         }
 
         public void Reject()
         {
             GuardNotRemovedAddress();
 
-            switch (Status)
+            if (Status == AddressStatus.Rejected)
             {
-                case AddressStatus.Rejected:
-                    return;
-                case AddressStatus.Current or AddressStatus.Retired:
-                    throw new AddressHasInvalidStatusException();
-                case AddressStatus.Proposed:
-                    foreach (var child in _children)
-                    {
-                        child.RejectBecauseParentWasRejected();
-                    }
-
-                    Apply(new AddressWasRejected(_streetNamePersistentLocalId, AddressPersistentLocalId));
-                    break;
+                return;
             }
+
+            GuardAddressStatus(AddressStatus.Proposed);
+
+            foreach (var child in _children)
+            {
+                child.RejectBecauseParentWasRejected();
+            }
+
+            Apply(new AddressWasRejected(_streetNamePersistentLocalId, AddressPersistentLocalId));
         }
 
         private void RejectBecauseParentWasRejected()
@@ -117,26 +113,24 @@ namespace AddressRegistry.StreetName
         {
             GuardNotRemovedAddress();
 
-            switch (Status)
+            if (Status == AddressStatus.Retired)
             {
-                case AddressStatus.Retired:
-                    return;
-                case AddressStatus.Proposed or AddressStatus.Rejected:
-                    throw new AddressHasInvalidStatusException();
-                case AddressStatus.Current:
-                    foreach (var child in _children.Where(address => address.Status == AddressStatus.Current))
-                    {
-                        child.RetireBecauseParentWasRetired();
-                    }
-
-                    foreach (var child in _children.Where(address => address.Status == AddressStatus.Proposed))
-                    {
-                        child.RejectBecauseParentWasRetired();
-                    }
-
-                    Apply(new AddressWasRetiredV2(_streetNamePersistentLocalId, AddressPersistentLocalId));
-                    break;
+                return;
             }
+
+            GuardAddressStatus(AddressStatus.Current);
+
+            foreach (var child in _children.Where(address => address.Status == AddressStatus.Current))
+            {
+                child.RetireBecauseParentWasRetired();
+            }
+
+            foreach (var child in _children.Where(address => address.Status == AddressStatus.Proposed))
+            {
+                child.RejectBecauseParentWasRetired();
+            }
+
+            Apply(new AddressWasRetiredV2(_streetNamePersistentLocalId, AddressPersistentLocalId));
         }
 
         private void RetireBecauseParentWasRetired()
@@ -198,7 +192,7 @@ namespace AddressRegistry.StreetName
             Apply(new AddressWasRemovedV2(_streetNamePersistentLocalId, AddressPersistentLocalId));
         }
 
-        public void RemoveBecauseParentWasRemoved()
+        private void RemoveBecauseParentWasRemoved()
         {
             if (IsRemoved)
             {
@@ -211,13 +205,7 @@ namespace AddressRegistry.StreetName
         public void Regularize()
         {
             GuardNotRemovedAddress();
-
-            var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
-
-            if (!validStatuses.Contains(Status))
-            {
-                throw new AddressHasInvalidStatusException();
-            }
+            GuardAddressStatus(AddressStatus.Proposed, AddressStatus.Current);
 
             if (IsOfficiallyAssigned)
             {
@@ -230,13 +218,7 @@ namespace AddressRegistry.StreetName
         public void Deregulate()
         {
             GuardNotRemovedAddress();
-
-            var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
-
-            if (!validStatuses.Contains(Status))
-            {
-                throw new AddressHasInvalidStatusException();
-            }
+            GuardAddressStatus(AddressStatus.Proposed, AddressStatus.Current);
 
             if (Parent is not null && Parent.Status == AddressStatus.Proposed)
             {
@@ -257,13 +239,7 @@ namespace AddressRegistry.StreetName
             ExtendedWkbGeometry position)
         {
             GuardNotRemovedAddress();
-
-            var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
-
-            if (!validStatuses.Contains(Status))
-            {
-                throw new AddressHasInvalidStatusException();
-            }
+            GuardAddressStatus(AddressStatus.Proposed, AddressStatus.Current);
 
             GuardGeometry(geometryMethod, geometrySpecification);
 
@@ -283,11 +259,7 @@ namespace AddressRegistry.StreetName
             GuardNotRemovedAddress();
 
             var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
-
-            if (!validStatuses.Contains(Status))
-            {
-                throw new AddressHasInvalidStatusException();
-            }
+            GuardAddressStatus(validStatuses);
 
             guardPostalCodeMunicipalityMatchesStreetNameMunicipality();
 
@@ -312,11 +284,7 @@ namespace AddressRegistry.StreetName
             GuardNotRemovedAddress();
 
             var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
-
-            if (!validStatuses.Contains(Status))
-            {
-                throw new AddressHasInvalidStatusException();
-            }
+            GuardAddressStatus(validStatuses);
 
             guardHouseNumberAddressIsUnique();
 
@@ -355,12 +323,7 @@ namespace AddressRegistry.StreetName
                 return;
             }
 
-            var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
-
-            if (!validStatuses.Contains(Status))
-            {
-                throw new AddressHasInvalidStatusException();
-            }
+            GuardAddressStatus(AddressStatus.Proposed, AddressStatus.Current);
 
             guardBoxNumberAddressIsUnique();
 
@@ -379,21 +342,19 @@ namespace AddressRegistry.StreetName
                 throw new AddressIsNotOfficiallyAssignedException();
             }
 
-            switch (Status)
+            if (Status == AddressStatus.Proposed)
             {
-                case AddressStatus.Proposed:
-                    return;
-                case AddressStatus.Retired or AddressStatus.Rejected:
-                    throw new AddressHasInvalidStatusException();
-                case AddressStatus.Current:
-                    foreach (var child in _children)
-                    {
-                        child.CorrectApprovalBecauseParentWasCorrected();
-                    }
-
-                    Apply(new AddressWasCorrectedFromApprovedToProposed(_streetNamePersistentLocalId, AddressPersistentLocalId));
-                    break;
+                return;
             }
+
+            GuardAddressStatus(AddressStatus.Current);
+
+            foreach (var child in _children)
+            {
+                child.CorrectApprovalBecauseParentWasCorrected();
+            }
+
+            Apply(new AddressWasCorrectedFromApprovedToProposed(_streetNamePersistentLocalId, AddressPersistentLocalId));
         }
 
         private void CorrectApprovalBecauseParentWasCorrected()
@@ -433,10 +394,7 @@ namespace AddressRegistry.StreetName
                 return;
             }
 
-            if (Status != AddressStatus.Rejected)
-            {
-                throw new AddressHasInvalidStatusException();
-            }
+            GuardAddressStatus(AddressStatus.Rejected);
 
             guardAddressIsUnique();
 
@@ -457,29 +415,22 @@ namespace AddressRegistry.StreetName
                 throw new AddressBoxNumberHasInconsistentPostalCodeException();
             }
 
-            switch (Status)
+            if (Status == AddressStatus.Current)
             {
-                case AddressStatus.Current:
-                    return;
-                case AddressStatus.Proposed or AddressStatus.Rejected:
-                    throw new AddressHasInvalidStatusException();
-                case AddressStatus.Retired:
-                    guardAddressIsUnique();
-                    Apply(new AddressWasCorrectedFromRetiredToCurrent(_streetNamePersistentLocalId, AddressPersistentLocalId));
-                    break;
+                return;
             }
+
+            GuardAddressStatus(AddressStatus.Retired);
+
+            guardAddressIsUnique();
+
+            Apply(new AddressWasCorrectedFromRetiredToCurrent(_streetNamePersistentLocalId, AddressPersistentLocalId));
         }
 
         public void CorrectRegularization()
         {
             GuardNotRemovedAddress();
-
-            var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
-
-            if (!validStatuses.Contains(Status))
-            {
-                throw new AddressHasInvalidStatusException();
-            }
+            GuardAddressStatus(AddressStatus.Proposed, AddressStatus.Current);
 
             if (Parent is not null && Parent.Status == AddressStatus.Proposed)
             {
@@ -497,13 +448,7 @@ namespace AddressRegistry.StreetName
         public void CorrectDeregulation()
         {
             GuardNotRemovedAddress();
-
-            var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
-
-            if (!validStatuses.Contains(Status))
-            {
-                throw new AddressHasInvalidStatusException();
-            }
+            GuardAddressStatus(AddressStatus.Proposed, AddressStatus.Current);
 
             if (IsOfficiallyAssigned)
             {
@@ -519,14 +464,7 @@ namespace AddressRegistry.StreetName
             ExtendedWkbGeometry position)
         {
             GuardNotRemovedAddress();
-
-            var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
-
-            if (!validStatuses.Contains(Status))
-            {
-                throw new AddressHasInvalidStatusException();
-            }
-
+            GuardAddressStatus(AddressStatus.Proposed, AddressStatus.Current);
             GuardGeometry(geometryMethod, geometrySpecification);
 
             if (Geometry != new AddressGeometry(geometryMethod, geometrySpecification, position))
@@ -545,11 +483,7 @@ namespace AddressRegistry.StreetName
             GuardNotRemovedAddress();
 
             var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
-
-            if (!validStatuses.Contains(Status))
-            {
-                throw new AddressHasInvalidStatusException();
-            }
+            GuardAddressStatus(validStatuses);
 
             if (PostalCode == postalCode)
             {
@@ -565,6 +499,14 @@ namespace AddressRegistry.StreetName
                 AddressPersistentLocalId,
                 boxNumbers,
                 postalCode));
+        }
+
+        private void GuardAddressStatus(params AddressStatus[] validStatuses)
+        {
+            if (!validStatuses.Contains(Status))
+            {
+                throw new AddressHasInvalidStatusException();
+            }
         }
     }
 }

@@ -9,8 +9,8 @@ namespace AddressRegistry.Tests.BackOffice.Sqs
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
-    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Handlers;
-    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
+    using AddressRegistry.Api.BackOffice.Abstractions.SqsRequests;
+    using AddressRegistry.Api.BackOffice.Handlers;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.Sqs;
     using TicketingService.Abstractions;

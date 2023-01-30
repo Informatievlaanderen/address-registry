@@ -3,9 +3,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using AddressRegistry.Api.BackOffice.Abstractions.SqsRequests;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
-    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.Aws.Lambda;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Requests;

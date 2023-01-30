@@ -4,7 +4,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressDeregulation
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice;
-    using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
+    using AddressRegistry.Api.BackOffice.Abstractions.SqsRequests;
     using StreetName;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;

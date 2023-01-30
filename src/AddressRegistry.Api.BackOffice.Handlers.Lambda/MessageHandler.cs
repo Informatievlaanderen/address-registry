@@ -2,12 +2,12 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using Abstractions.SqsRequests;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.Aws.Lambda;
     using Be.Vlaanderen.Basisregisters.Sqs.Requests;
     using MediatR;
     using Requests;
-    using Sqs.Requests;
 
     public sealed class MessageHandler : IMessageHandler
     {

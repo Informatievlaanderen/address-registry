@@ -2,7 +2,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
 {
     using System.Reflection;
     using Autofac;
-    using Handlers.Sqs.Handlers;
+    using Handlers;
     using MediatR;
     using Module = Autofac.Module;
 

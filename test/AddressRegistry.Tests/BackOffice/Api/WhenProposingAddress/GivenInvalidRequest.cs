@@ -7,7 +7,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
-    using AddressRegistry.Api.BackOffice.Abstractions.Responses;
     using AddressRegistry.Api.BackOffice.Validators;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using FluentAssertions;
@@ -281,9 +280,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
 
             syndicationContext.SaveChanges();
 
-            return async () => await _controller.Propose(
-                ResponseOptions,
-                new ProposeAddressRequestValidator(
+            return async () => await _controller.Propose(new ProposeAddressRequestValidator(
                     new StreetNameExistsValidator(_streamStore.Object),
                     syndicationContext),
                 request,

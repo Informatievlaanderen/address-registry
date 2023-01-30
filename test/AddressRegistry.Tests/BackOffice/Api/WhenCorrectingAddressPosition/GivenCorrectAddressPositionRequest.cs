@@ -7,10 +7,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
     using StreetName;
-    using Infrastructure;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
-    using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
     using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
     using Be.Vlaanderen.Basisregisters.Sqs.Requests;
     using FluentAssertions;
@@ -21,15 +19,13 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
     using Xunit;
     using Xunit.Abstractions;
 
-    public class GivenSqsToggleEnabled  : BackOfficeApiTest
+    public class GivenCorrectAddressPositionRequest  : BackOfficeApiTest
     {
         private readonly AddressController _controller;
-        private readonly TestBackOfficeContext _backOfficeContext;
 
-        public GivenSqsToggleEnabled(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public GivenCorrectAddressPositionRequest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            _controller = CreateApiBusControllerWithUser<AddressController>(useSqs: true);
-            _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
+            _controller = CreateApiBusControllerWithUser<AddressController>();
         }
 
         [Fact]
@@ -38,27 +34,15 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
             var ticketId = Fixture.Create<Guid>();
             var expectedLocationResult = new LocationResult(CreateTicketUri(ticketId));
 
-            var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = new AddressPersistentLocalId(123);
-
             MockMediator
                 .Setup(x => x.Send(It.IsAny<CorrectAddressPositionSqsRequest>(), CancellationToken.None))
                 .Returns(Task.FromResult(expectedLocationResult));
 
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
-
             var result = (AcceptedResult)await _controller.CorrectPosition(
-                _backOfficeContext,
                 MockValidRequestValidator<CorrectAddressPositionRequest>(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
-                addressPersistentLocalId,
-                request: new CorrectAddressPositionRequest
-                {
-                    PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
-                    PositieSpecificatie = PositieSpecificatie.Gebouweenheid,
-                    Positie = GeometryHelpers.GmlPointGeometry
-                },
+                Fixture.Create<AddressPersistentLocalId>(),
+                Fixture.Create<CorrectAddressPositionRequest>(),
                 ifMatchHeaderValue: null);
 
             result.Should().NotBeNull();
@@ -68,24 +52,12 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
         [Fact]
         public async Task WithInvalidIfMatchHeader_ThenPreconditionFailedResponse()
         {
-            var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = new AddressPersistentLocalId(123);
-
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
-
             //Act
             var result = await _controller.CorrectPosition(
-                _backOfficeContext,
                 MockValidRequestValidator<CorrectAddressPositionRequest>(),
                 MockIfMatchValidator(false),
-                ResponseOptions,
-                addressPersistentLocalId,
-                request: new CorrectAddressPositionRequest
-                {
-                    PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
-                    PositieSpecificatie = PositieSpecificatie.Gebouweenheid,
-                    Positie = GeometryHelpers.GmlPointGeometry
-                },
+                Fixture.Create<AddressPersistentLocalId>(),
+                Fixture.Create<CorrectAddressPositionRequest>(),
                 ifMatchHeaderValue: null);
 
             //Assert
@@ -93,20 +65,33 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
         }
 
         [Fact]
-        public async Task ForUnknownAddress_ThenThrowsApiException()
+        public async Task WithAddressIsNotFoundException_ThenThrowsApiException()
         {
             Func<Task> act = async () => await _controller.CorrectPosition(
-                _backOfficeContext,
                 MockValidRequestValidator<CorrectAddressPositionRequest>(),
-                MockIfMatchValidator(true),
-                ResponseOptions,
+                MockIfMatchValidatorThrowsAddressIsNotFoundException(),
                 Fixture.Create<AddressPersistentLocalId>(),
-                request: new CorrectAddressPositionRequest
-                {
-                    PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
-                    PositieSpecificatie = PositieSpecificatie.Gebouweenheid,
-                    Positie = GeometryHelpers.GmlPointGeometry
-                },
+                Fixture.Create<CorrectAddressPositionRequest>(),
+                ifMatchHeaderValue: null);
+
+            //Assert
+            act
+                .Should()
+                .ThrowAsync<ApiException>()
+                .Result
+                .Where(x =>
+                    x.Message.Contains("Onbestaand adres.")
+                    && x.StatusCode == StatusCodes.Status404NotFound);
+        }
+
+        [Fact]
+        public async Task WithAggregateNotFoundException_ThenThrowsApiException()
+        {
+            Func<Task> act = async () => await _controller.CorrectPosition(
+                MockValidRequestValidator<CorrectAddressPositionRequest>(),
+                MockIfMatchValidatorThrowsAggregateNotFoundException(),
+                Fixture.Create<AddressPersistentLocalId>(),
+                Fixture.Create<CorrectAddressPositionRequest>(),
                 ifMatchHeaderValue: null);
 
             //Assert
@@ -122,23 +107,15 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPosition
         [Fact]
         public async Task WithAggregateIdIsNotFound_ThenThrowsApiException()
         {
-            var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
-
             MockMediator
                 .Setup(x => x.Send(It.IsAny<CorrectAddressPositionSqsRequest>(), CancellationToken.None))
                 .Throws(new AggregateIdIsNotFoundException());
 
-            Func<Task> act = async () => await _controller.CorrectPosition(
-                _backOfficeContext,
-                MockValidRequestValidator<CorrectAddressPositionRequest>(),
+            Func<Task> act = async () => await _controller.CorrectPosition(MockValidRequestValidator<CorrectAddressPositionRequest>(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
-                addressPersistentLocalId,
-                new CorrectAddressPositionRequest(),
-                string.Empty);
+                Fixture.Create<AddressPersistentLocalId>(),
+                Fixture.Create<CorrectAddressPositionRequest>(),
+                ifMatchHeaderValue: null);
 
             //Assert
             act

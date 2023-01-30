@@ -5,7 +5,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice;
-    using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Infrastructure;
     using AddressRegistry.Api.BackOffice.Validators;
@@ -51,7 +50,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
         [InlineData(PositieSpecificatie.Standplaats)]
         [InlineData(PositieSpecificatie.Ligplaats)]
         [InlineData(PositieSpecificatie.Ingang)]
-        public void WithInvalidSpecificationAndDerivedFromObject_ThenThrowsValidationException(PositieSpecificatie specificatie)
+        public void WithDerivedFromObjectAndInvalidSpecification_ThenThrowsValidationException(PositieSpecificatie specificatie)
         {
             var act = SetupController(new ChangeAddressPositionRequest
             {
@@ -113,11 +112,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPosition
         {
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
 
-            return async () => await _controller.ChangePosition(
-                Mock.Of<BackOfficeContext>(),
-                new ChangeAddressPositionRequestValidator(),
+            return async () => await _controller.ChangePosition(new ChangeAddressPositionRequestValidator(),
                 Mock.Of<IIfMatchHeaderValidator>(),
-                ResponseOptions,
                 addressPersistentLocalId,
                 request,
                 null,

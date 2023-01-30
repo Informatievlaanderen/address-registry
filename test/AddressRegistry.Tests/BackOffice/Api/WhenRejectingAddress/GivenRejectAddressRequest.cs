@@ -6,8 +6,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRejectingAddress
     using AddressRegistry.Api.BackOffice;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Handlers.Sqs.Requests;
-    using StreetName;
-    using Infrastructure;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
@@ -20,15 +18,13 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRejectingAddress
     using Xunit;
     using Xunit.Abstractions;
 
-    public class GivenSqsToggleEnabled  : BackOfficeApiTest
+    public class GivenRejectAddressRequest  : BackOfficeApiTest
     {
         private readonly AddressController _controller;
-        private readonly TestBackOfficeContext _backOfficeContext;
 
-        public GivenSqsToggleEnabled(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public GivenRejectAddressRequest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            _controller = CreateApiBusControllerWithUser<AddressController>(useSqs: true);
-            _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
+            _controller = CreateApiBusControllerWithUser<AddressController>();
         }
 
         [Fact]
@@ -37,24 +33,13 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRejectingAddress
             var ticketId = Fixture.Create<Guid>();
             var expectedLocationResult = new LocationResult(CreateTicketUri(ticketId));
 
-            var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = new AddressPersistentLocalId(123);
-
             MockMediator
                 .Setup(x => x.Send(It.IsAny<RejectAddressSqsRequest>(), CancellationToken.None))
                 .Returns(Task.FromResult(expectedLocationResult));
 
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
-
             var result = (AcceptedResult)await _controller.Reject(
-                _backOfficeContext,
-                MockValidRequestValidator<RejectAddressRequest>(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
-                request: new RejectAddressRequest
-                {
-                    PersistentLocalId = addressPersistentLocalId
-                },
+                Fixture.Create<RejectAddressRequest>(),
                 ifMatchHeaderValue: null);
 
             result.Should().NotBeNull();
@@ -64,21 +49,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRejectingAddress
         [Fact]
         public async Task WithInvalidIfMatchHeader_ThenPreconditionFailedResponse()
         {
-            var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = new AddressPersistentLocalId(123);
-
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
-
             //Act
             var result = await _controller.Reject(
-                _backOfficeContext,
-                MockValidRequestValidator<RejectAddressRequest>(),
                 MockIfMatchValidator(false),
-                ResponseOptions,
-                request: new RejectAddressRequest
-                {
-                    PersistentLocalId = addressPersistentLocalId
-                },
+                Fixture.Create<RejectAddressRequest>(),
                 ifMatchHeaderValue: null);
 
             //Assert
@@ -86,17 +60,29 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRejectingAddress
         }
 
         [Fact]
-        public async Task ForUnknownAddress_ThenThrowsApiException()
+        public async Task WithAddressIsNotFoundException_ThenThrowsApiException()
         {
             Func<Task> act = async () => await _controller.Reject(
-                _backOfficeContext,
-                MockValidRequestValidator<RejectAddressRequest>(),
-                MockIfMatchValidator(true),
-                ResponseOptions,
-                new RejectAddressRequest
-                {
-                    PersistentLocalId = Fixture.Create<AddressPersistentLocalId>()
-                },
+                MockIfMatchValidatorThrowsAddressIsNotFoundException(),
+                Fixture.Create<RejectAddressRequest>(),
+                ifMatchHeaderValue: null);
+
+            //Assert
+            act
+                .Should()
+                .ThrowAsync<ApiException>()
+                .Result
+                .Where(x =>
+                    x.Message.Contains("Onbestaand adres.")
+                    && x.StatusCode == StatusCodes.Status404NotFound);
+        }
+
+        [Fact]
+        public async Task WithAggregateNotFoundException_ThenThrowsApiException()
+        {
+            Func<Task> act = async () => await _controller.Reject(
+                MockIfMatchValidatorThrowsAggregateNotFoundException(),
+                Fixture.Create<RejectAddressRequest>(),
                 ifMatchHeaderValue: null);
 
             //Assert
@@ -112,25 +98,14 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenRejectingAddress
         [Fact]
         public async Task WithAggregateIdIsNotFound_ThenThrowsApiException()
         {
-            var streetNamePersistentId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-
-            await _backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentId);
-
             MockMediator
                 .Setup(x => x.Send(It.IsAny<RejectAddressSqsRequest>(), CancellationToken.None))
                 .Throws(new AggregateIdIsNotFoundException());
 
             Func<Task> act = async () => await _controller.Reject(
-                _backOfficeContext,
-                MockValidRequestValidator<RejectAddressRequest>(),
                 MockIfMatchValidator(true),
-                ResponseOptions,
-                new RejectAddressRequest
-                {
-                    PersistentLocalId = addressPersistentLocalId
-                },
-                string.Empty);
+                Fixture.Create<RejectAddressRequest>(),
+                ifMatchHeaderValue: null);
 
             //Assert
             act

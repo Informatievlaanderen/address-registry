@@ -1,31 +1,36 @@
 ﻿namespace AddressRegistry.Api.BackOffice.Infrastructure
 {
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Abstractions;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using StreetName;
+    using StreetName.Exceptions;
 
     public interface IIfMatchHeaderValidator
     {
         public Task<bool> IsValid(
             string? ifMatchHeaderValue,
-            StreetNamePersistentLocalId streetNamePersistentLocalId,
             AddressPersistentLocalId addressPersistentLocalId,
             CancellationToken cancellationToken);
     }
 
     public class IfMatchHeaderValidator : IIfMatchHeaderValidator
     {
+        private readonly BackOfficeContext _backOfficeContext;
         private readonly IStreetNames _streetNames;
 
-        public IfMatchHeaderValidator(IStreetNames streetNames)
+        public IfMatchHeaderValidator(
+            BackOfficeContext backOfficeContext,
+            IStreetNames streetNames)
         {
+            _backOfficeContext = backOfficeContext;
             _streetNames = streetNames;
         }
 
         public async Task<bool> IsValid(
             string? ifMatchHeaderValue,
-            StreetNamePersistentLocalId streetNamePersistentLocalId,
             AddressPersistentLocalId addressPersistentLocalId,
             CancellationToken cancellationToken)
         {
@@ -33,6 +38,8 @@
             {
                 return true;
             }
+
+            var streetNamePersistentLocalId = GetStreetNamePersistentLocalId(addressPersistentLocalId);
 
             var ifMatchTag = ifMatchHeaderValue.Trim();
             var lastHash = await GetHash(
@@ -45,15 +52,27 @@
             return ifMatchTag == lastHashTag.ToString();
         }
 
+
+        private StreetNamePersistentLocalId GetStreetNamePersistentLocalId(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            var relation = _backOfficeContext.AddressPersistentIdStreetNamePersistentIds
+                .FirstOrDefault(x => x.AddressPersistentLocalId == addressPersistentLocalId);
+
+            if (relation is null)
+            {
+                throw new AddressIsNotFoundException();
+            }
+
+            return new StreetNamePersistentLocalId(relation.StreetNamePersistentLocalId);
+        }
+
         private async Task<string> GetHash(
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             AddressPersistentLocalId addressPersistentLocalId,
             CancellationToken cancellationToken)
         {
-            var aggregate =
-                await _streetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), cancellationToken);
-            var streetNameHash = aggregate.GetAddressHash(addressPersistentLocalId);
-            return streetNameHash;
+            var aggregate = await _streetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), cancellationToken);
+            return aggregate.GetAddressHash(addressPersistentLocalId);
         }
     }
 }

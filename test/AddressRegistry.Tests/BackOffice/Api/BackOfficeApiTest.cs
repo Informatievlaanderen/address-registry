@@ -7,6 +7,7 @@ namespace AddressRegistry.Tests.BackOffice.Api
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Infrastructure;
     using AddressRegistry.Api.BackOffice.Infrastructure.Options;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
     using StreetName;
     using Tests;
     using Be.Vlaanderen.Basisregisters.Api;
@@ -18,27 +19,23 @@ namespace AddressRegistry.Tests.BackOffice.Api
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Options;
     using Moq;
+    using StreetName.Exceptions;
     using Xunit.Abstractions;
 
     public class BackOfficeApiTest : AddressRegistryTest
     {
-        private const string DetailUrl = "https://www.registry.com/address/voorgesteld/{0}";
         protected const string StraatNaamPuri = $"https://data.vlaanderen.be/id/straatnaam/";
         protected const string PostInfoPuri = $"https://data.vlaanderen.be/id/postinfo/";
 
         protected const string PublicTicketUrl = "https://www.ticketing.com";
         protected const string InternalTicketUrl = "https://www.internalticketing.com";
 
-        protected IOptions<ResponseOptions> ResponseOptions { get; }
         protected IOptions<TicketingOptions> TicketingOptions { get; }
         protected Mock<IMediator> MockMediator { get; }
 
         protected BackOfficeApiTest(ITestOutputHelper testOutputHelper)
             : base(testOutputHelper)
         {
-            ResponseOptions = Options.Create(Fixture.Create<ResponseOptions>());
-            ResponseOptions.Value.DetailUrl = DetailUrl;
-
             TicketingOptions = Options.Create(Fixture.Create<TicketingOptions>());
             TicketingOptions.Value.PublicBaseUrl = PublicTicketUrl;
             TicketingOptions.Value.InternalBaseUrl = InternalTicketUrl;
@@ -51,9 +48,9 @@ namespace AddressRegistry.Tests.BackOffice.Api
             return new Uri($"{InternalTicketUrl}/tickets/{ticketId:D}");
         }
 
-        protected T CreateApiBusControllerWithUser<T>(bool useSqs = false) where T : ApiController
+        protected T CreateApiBusControllerWithUser<T>() where T : ApiController
         {
-            var controller = Activator.CreateInstance(typeof(T), MockMediator.Object, new UseSqsToggle(useSqs), TicketingOptions) as T;
+            var controller = Activator.CreateInstance(typeof(T), MockMediator.Object, TicketingOptions) as T;
 
             var claims = new List<Claim>
             {
@@ -79,9 +76,30 @@ namespace AddressRegistry.Tests.BackOffice.Api
             var mockIfMatchHeaderValidator = new Mock<IIfMatchHeaderValidator>();
 
             mockIfMatchHeaderValidator
-                .Setup(x => x.IsValid(
-                    It.IsAny<string>(), It.IsAny<StreetNamePersistentLocalId>(), It.IsAny<AddressPersistentLocalId>(), CancellationToken.None))
+                .Setup(x => x.IsValid(It.IsAny<string>(), It.IsAny<AddressPersistentLocalId>(), CancellationToken.None))
                 .Returns(Task.FromResult(expectedResult));
+
+            return mockIfMatchHeaderValidator.Object;
+        }
+
+        protected IIfMatchHeaderValidator MockIfMatchValidatorThrowsAddressIsNotFoundException()
+        {
+            var mockIfMatchHeaderValidator = new Mock<IIfMatchHeaderValidator>();
+
+            mockIfMatchHeaderValidator
+                .Setup(x => x.IsValid(It.IsAny<string>(), It.IsAny<AddressPersistentLocalId>(), CancellationToken.None))
+                .Throws<AddressIsNotFoundException>();
+
+            return mockIfMatchHeaderValidator.Object;
+        }
+
+        protected IIfMatchHeaderValidator MockIfMatchValidatorThrowsAggregateNotFoundException()
+        {
+            var mockIfMatchHeaderValidator = new Mock<IIfMatchHeaderValidator>();
+
+            mockIfMatchHeaderValidator
+                .Setup(x => x.IsValid(It.IsAny<string>(), It.IsAny<AddressPersistentLocalId>(), CancellationToken.None))
+                .Throws(() => new AggregateNotFoundException("test", typeof(StreetName)));
 
             return mockIfMatchHeaderValidator.Object;
         }

@@ -1,6 +1,7 @@
-namespace AddressRegistry.Consumer
+namespace AddressRegistry.Consumer.Infrastructure.Modules
 {
     using System;
+    using AddressRegistry.Infrastructure;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
     using Microsoft.Data.SqlClient;
@@ -8,7 +9,6 @@ namespace AddressRegistry.Consumer
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using AddressRegistry.Infrastructure;
 
     public class ConsumerModule : Module
     {
@@ -46,7 +46,7 @@ namespace AddressRegistry.Consumer
                     .UseSqlServer(provider.GetRequiredService<TraceDbConnection<ConsumerContext>>(), sqlServerOptions =>
                     {
                         sqlServerOptions.EnableRetryOnFailure();
-                        sqlServerOptions.MigrationsHistoryTable(MigrationTables.Consumer, Schema.Consumer);
+                        sqlServerOptions.MigrationsHistoryTable(MigrationTables.ConsumerProjections, Schema.ConsumerProjections);
                     }));
         }
 

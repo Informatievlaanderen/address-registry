@@ -19,6 +19,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Infrastructure;
     using Consumer;
+    using Consumer.Infrastructure.Modules;
     using Consumer.Read.Municipality;
     using Consumer.Read.Municipality.Infrastructure.Modules;
     using MediatR;

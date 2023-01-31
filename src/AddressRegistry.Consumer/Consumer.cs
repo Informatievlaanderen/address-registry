@@ -1,70 +1,63 @@
 namespace AddressRegistry.Consumer
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using Autofac;
-    using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple;
+    using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
-    using Confluent.Kafka;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Projections;
 
-    public class Consumer
+    public class Consumer : BackgroundService
     {
-        private readonly ILifetimeScope _container;
+        private readonly ILifetimeScope _lifetimeScope;
+        private readonly IHostApplicationLifetime _hostApplicationLifetime;
+        private readonly IIdempotentConsumer<IdempotentConsumerContext> _idempotentConsumer;
         private readonly ILoggerFactory _loggerFactory;
-        private readonly KafkaOptions _options;
-        private readonly string _topic;
-        private readonly string _consumerGroupSuffix;
-        private readonly Offset? _offset;
         private readonly ILogger<Consumer> _logger;
 
         public Consumer(
-            ILifetimeScope container,
-            ILoggerFactory loggerFactory,
-            KafkaOptions options,
-            string topic,
-            string consumerGroupSuffix,
-            Offset? offset)
+            ILifetimeScope lifetimeScope,
+            IHostApplicationLifetime hostApplicationLifetime,
+            IIdempotentConsumer<IdempotentConsumerContext> idempotentConsumer,
+            ILoggerFactory loggerFactory)
         {
-            _container = container;
-            _loggerFactory = loggerFactory;
-            _options = options;
-            _topic = topic;
-            _consumerGroupSuffix = consumerGroupSuffix;
-            _offset = offset;
+            _lifetimeScope = lifetimeScope;
+            _hostApplicationLifetime = hostApplicationLifetime;
+            _idempotentConsumer = idempotentConsumer;
 
-            _logger = _loggerFactory.CreateLogger<Consumer>();
+            _loggerFactory = loggerFactory;
+            _logger = loggerFactory.CreateLogger<Consumer>();
         }
 
-        public Task<Result<KafkaJsonMessage>> Start(CancellationToken cancellationToken = default)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var commandHandler = new CommandHandler(_container, _loggerFactory);
-            var projector = new ConnectedProjector<CommandHandler>(Resolve.WhenEqualToHandlerMessageType(new StreetNameKafkaProjection().Handlers));
+            var commandHandler = new CommandHandler(_lifetimeScope, _loggerFactory);
+            var commandHandlingProjector = new ConnectedProjector<CommandHandler>(
+                Resolve.WhenEqualToHandlerMessageType(new StreetNameKafkaProjection().Handlers));
 
-            var consumerGroupId = $"{nameof(AddressRegistry)}.{nameof(Consumer)}.{_topic}{_consumerGroupSuffix}";
-            return KafkaConsumer.Consume(
-                new KafkaConsumerOptions(
-                    _options.BootstrapServers,
-                    _options.SaslUserName,
-                    _options.SaslPassword,
-                    consumerGroupId,
-                    _topic,
-                    async message =>
-                    {
-                        _logger.LogInformation("Handling next message");
-                        await projector.ProjectAsync(commandHandler, message, cancellationToken);
-                    },
-                    noMessageFoundDelay: 300,
-                    _offset,
-                    _options.JsonSerializerSettings),
-                cancellationToken);
+            try
+            {
+                await _idempotentConsumer.ConsumeContinuously(async (message, context) =>
+                {
+                    _logger.LogInformation("Handling next message");
 
-            //if (!result.IsSuccess)
-            //{
-            //    var logger = _loggerFactory.CreateLogger<Consumer>();
-            //    logger.LogCritical($"Consumer group {consumerGroupId} could not consume from topic {_consumerOptions.Topic}");
-            //}
+                    await commandHandlingProjector
+                        .ProjectAsync(commandHandler, message, stoppingToken)
+                        .ConfigureAwait(false);
+
+                    //CancellationToken.None to prevent halfway consumption
+                    await context.SaveChangesAsync(CancellationToken.None);
+                }, stoppingToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical(ex, $"Critical error occurred in {nameof(Consumer)}");
+                _hostApplicationLifetime.StopApplication();
+                throw;
+            }
         }
     }
 }

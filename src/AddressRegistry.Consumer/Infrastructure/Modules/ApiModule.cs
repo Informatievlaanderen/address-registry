@@ -1,21 +1,18 @@
 namespace AddressRegistry.Consumer.Infrastructure.Modules
 {
-    using AddressRegistry.Infrastructure;
+    using Projections;
     using AddressRegistry.Infrastructure.Modules;
-    using AddressRegistry.StreetName;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac;
-    using Be.Vlaanderen.Basisregisters.Projector;
     using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
+    using Be.Vlaanderen.Basisregisters.Projector;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using Projections;
-    using Read.Municipality;
-    using Read.Municipality.Infrastructure.Modules;
-    using ConsumerContextFactory = AddressRegistry.Consumer.ConsumerContextFactory;
+    using Be.Vlaanderen.Basisregisters.Projector.Modules;
+    using AddressRegistry.Infrastructure;
 
     public class ApiModule : Module
     {
@@ -39,13 +36,10 @@ namespace AddressRegistry.Consumer.Infrastructure.Modules
                 .RegisterModule(new DataDogModule(_configuration))
                 .RegisterModule<EnvelopeModule>()
                 .RegisterModule(new EditModule(_configuration, _services, _loggerFactory))
-                .RegisterModule(new MunicipalityConsumerModule(_configuration, _services, _loggerFactory));
+                .RegisterModule(new ProjectorModule(_configuration));
 
             builder
-                .RegisterProjectionMigrator<ConsumerContextFactory>(
-                    _configuration,
-                    _loggerFactory)
-
+                .RegisterProjectionMigrator<ConsumerContextFactory>(_configuration, _loggerFactory)
                 .RegisterProjections<StreetNameConsumerProjection, ConsumerContext>(
                     context => new StreetNameConsumerProjection(context.Resolve<ILoggerFactory>().CreateLogger<StreetNameConsumerProjection>()),
                     ConnectedProjectionSettings.Default);

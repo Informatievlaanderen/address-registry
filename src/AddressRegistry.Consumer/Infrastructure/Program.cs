@@ -1,44 +1,40 @@
 namespace AddressRegistry.Consumer.Infrastructure
 {
-    using System;
-    using System.IO;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using AddressRegistry.Infrastructure.Modules;
+    using AddressRegistry.Infrastructure;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
+    using Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
+    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
     using Be.Vlaanderen.Basisregisters.EventHandling;
-    using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple;
-    using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
+    using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka;
+    using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer;
     using Be.Vlaanderen.Basisregisters.Projector.Modules;
-    using Confluent.Kafka;
+    using Destructurama;
+    using Microsoft.Data.SqlClient;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Modules;
     using Serilog;
+    using Serilog.Debugging;
+    using Serilog.Extensions.Logging;
     using SqlStreamStore;
-    using SqlStreamStore.Streams;
-    using ILogger = Microsoft.Extensions.Logging.ILogger;
+    using System;
+    using System.IO;
+    using System.Threading;
+    using System.Threading.Tasks;
 
-    public class Program
+    public sealed class Program
     {
-        private static readonly AutoResetEvent Closing = new AutoResetEvent(false);
-        private static readonly CancellationTokenSource CancellationTokenSource = new CancellationTokenSource();
-
-        protected Program()
+        private Program()
         { }
 
         public static async Task Main(string[] args)
         {
-            var cancellationToken = CancellationTokenSource.Token;
-
-            cancellationToken.Register(() => Closing.Set());
-            Console.CancelKeyPress += (sender, eventArgs) => CancellationTokenSource.Cancel();
-
-            AppDomain.CurrentDomain.FirstChanceException += (sender, eventArgs) =>
+            AppDomain.CurrentDomain.FirstChanceException += (_, eventArgs) =>
                 Log.Debug(
                     eventArgs.Exception,
                     "FirstChanceException event raised in {AppDomain}.",
@@ -47,115 +43,162 @@ namespace AddressRegistry.Consumer.Infrastructure
             AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) =>
                 Log.Fatal((Exception)eventArgs.ExceptionObject, "Encountered a fatal exception, exiting program.");
 
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
-                .AddJsonFile($"appsettings.{Environment.MachineName.ToLowerInvariant()}.json", optional: true, reloadOnChange: false)
-                .AddEnvironmentVariables()
-                .AddCommandLine(args)
+            Log.Information("Initializing AddressRegistry.Consumer");
+
+            var host = new HostBuilder()
+                .ConfigureAppConfiguration((_, builder) =>
+                {
+                    builder
+                        .SetBasePath(Directory.GetCurrentDirectory())
+                        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+                        .AddJsonFile($"appsettings.{Environment.MachineName.ToLowerInvariant()}.json", optional: true,
+                            reloadOnChange: false)
+                        .AddEnvironmentVariables()
+                        .AddCommandLine(args);
+                })
+                .ConfigureLogging((hostContext, builder) =>
+                {
+                    SelfLog.Enable(Console.WriteLine);
+
+                    Log.Logger = new LoggerConfiguration()
+                        .ReadFrom.Configuration(hostContext.Configuration)
+                        .Enrich.FromLogContext()
+                        .Enrich.WithMachineName()
+                        .Enrich.WithThreadId()
+                        .Enrich.WithEnvironmentUserName()
+                        .Destructure.JsonNetTypes()
+                        .CreateLogger();
+
+                    builder.ClearProviders();
+                    builder.AddSerilog(Log.Logger);
+                })
+                .ConfigureServices((hostContext, services) =>
+                {
+                    var loggerFactory = new SerilogLoggerFactory(Log.Logger);
+
+                    services
+                        .AddScoped(s => new TraceDbConnection<IdempotentConsumerContext>(
+                            new SqlConnection(hostContext.Configuration.GetConnectionString("Consumer")),
+                            hostContext.Configuration["DataDog:ServiceName"]))
+                        .AddDbContextFactory<IdempotentConsumerContext>((provider, options) => options
+                            .UseLoggerFactory(loggerFactory)
+                            .UseSqlServer(provider.GetRequiredService<TraceDbConnection<IdempotentConsumerContext>>(),
+                                sqlServerOptions =>
+                                {
+                                    sqlServerOptions.EnableRetryOnFailure();
+                                    sqlServerOptions.MigrationsHistoryTable(MigrationTables.Consumer, Schema.Consumer);
+                                }));
+                    services
+                        .AddScoped(s => new TraceDbConnection<ConsumerContext>(
+                            new SqlConnection(hostContext.Configuration.GetConnectionString("Consumer")),
+                            hostContext.Configuration["DataDog:ServiceName"]))
+                        .AddDbContext<ConsumerContext>((provider, options) => options
+                            .UseLoggerFactory(loggerFactory)
+                            .UseSqlServer(provider.GetRequiredService<TraceDbConnection<ConsumerContext>>(), sqlServerOptions =>
+                            {
+                                sqlServerOptions.EnableRetryOnFailure();
+                                sqlServerOptions.MigrationsHistoryTable(MigrationTables.ConsumerProjections, Schema.ConsumerProjections);
+                            }));
+                })
+                .UseServiceProviderFactory(new AutofacServiceProviderFactory())
+                .ConfigureContainer<ContainerBuilder>((hostContext, containerBuilder) =>
+                {
+                    var services = new ServiceCollection();
+                    var loggerFactory = new SerilogLoggerFactory(Log.Logger);
+
+                    containerBuilder.Register(_ =>
+                    {
+                        var bootstrapServers = hostContext.Configuration["Kafka:BootstrapServers"];
+                        var topic = $"{hostContext.Configuration["StreetNameTopic"]}" ?? throw new ArgumentException("Configuration has no StreetNameTopic.");
+                        var suffix = hostContext.Configuration["StreetNameConsumerGroupSuffix"];
+                        var consumerGroupId = $"{nameof(AddressRegistry)}.Consumer.{topic}{suffix}";
+
+                        var consumerOptions = new ConsumerOptions(
+                            new BootstrapServers(bootstrapServers),
+                            new Topic(topic),
+                            new ConsumerGroupId(consumerGroupId),
+                            EventsJsonSerializerSettingsProvider.CreateSerializerSettings());
+
+                        consumerOptions.ConfigureSaslAuthentication(new SaslAuthentication(
+                            hostContext.Configuration["Kafka:SaslUserName"],
+                            hostContext.Configuration["Kafka:SaslPassword"]));
+
+                        return consumerOptions;
+                    });
+
+                    containerBuilder
+                        .RegisterType<IdempotentConsumer<IdempotentConsumerContext>>()
+                        .As<IIdempotentConsumer<IdempotentConsumerContext>>()
+                        .SingleInstance();
+
+                    containerBuilder
+                        .RegisterType<AddressRegistry.Consumer.Consumer>()
+                        .As<IHostedService>()
+                        .SingleInstance();
+
+                    containerBuilder.RegisterModule(new ApiModule(hostContext.Configuration, services, loggerFactory));
+
+                    containerBuilder
+                        .RegisterType<ConsumerProjections>()
+                        .As<IHostedService>()
+                        .SingleInstance();
+
+                    containerBuilder.Populate(services);
+                })
+                .UseConsoleLifetime()
                 .Build();
 
-            var container = ConfigureServices(configuration);
-
             Log.Information("Starting AddressRegistry.Consumer");
+
+            var logger = host.Services.GetRequiredService<ILogger<Program>>();
+            var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
+            var configuration = host.Services.GetRequiredService<IConfiguration>();
 
             try
             {
                 await DistributedLock<Program>.RunAsync(
-                    async () =>
-                    {
-                        try
+                        async () =>
                         {
-                            async Task<Offset?> GetOffset(IServiceProvider serviceProvider, ILogger logger, string topic)
-                            {
-                                if (long.TryParse(configuration["StreetNameTopicOffset"], out var offset))
-                                {
-                                    var streamStore = serviceProvider.GetRequiredService<IStreamStore>();
-                                    var lastMessagePage = await streamStore.ReadAllBackwards(StreamVersion.End, 1,
-                                        false, cancellationToken);
+                            AddressRegistry.Infrastructure.MigrationsHelper.EnsureSqlStreamStoreSchema<Program>(host.Services.GetRequiredService<MsSqlStreamStore>(), loggerFactory);
+                            AddressRegistry.Infrastructure.MigrationsHelper.EnsureSqlSnapshotStoreSchema<Program>(host.Services.GetRequiredService<MsSqlSnapshotStore>(), loggerFactory);
 
-                                    var lastMessage = lastMessagePage.Messages.FirstOrDefault();
-                                    if (lastMessagePage.Messages.Any() && lastMessage.StreamId.StartsWith("streetname-",
-                                            StringComparison.InvariantCultureIgnoreCase))
-                                    {
-                                        throw new InvalidOperationException(
-                                            "Cannot start migration from offset, because migration is already running. Remove offset to continue.");
-                                    }
+                            await MigrationsHelper.RunAsync(
+                                configuration.GetConnectionString("ConsumerAdmin"),
+                                loggerFactory,
+                                CancellationToken.None);
 
-                                    logger.LogInformation($"Starting {topic} from offset {offset}.");
-                                    return new Offset(offset);
-                                }
-
-                                logger.LogInformation($"Continuing {topic} from last offset.");
-                                return null;
-                            }
-
-                            var loggerFactory = container.GetRequiredService<ILoggerFactory>();
-
-                            await MigrationsHelper.RunAsync(configuration.GetConnectionString("ConsumerAdmin"),
-                                loggerFactory, cancellationToken);
-
-                            var bootstrapServers = configuration["Kafka:BootstrapServers"];
-                            var kafkaOptions = new KafkaOptions(bootstrapServers, configuration["Kafka:SaslUserName"],
-                                configuration["Kafka:SaslPassword"],
-                                EventsJsonSerializerSettingsProvider.CreateSerializerSettings());
-
-                            var topic = $"{configuration["StreetNameTopic"]}" ??
-                                        throw new ArgumentException("Configuration has no MunicipalityTopic.");
-                            var consumerGroupSuffix = configuration["StreetNameConsumerGroupSuffix"];
-
-                            var actualContainer = container.GetRequiredService<ILifetimeScope>();
-
-                            var kafkaOffset = await GetOffset(container, loggerFactory.CreateLogger<Program>(), topic);
-
-                            var consumer = new Consumer(actualContainer, loggerFactory, kafkaOptions, topic, consumerGroupSuffix, kafkaOffset);
-                            var consumerTask = consumer.Start(cancellationToken);
-
-                            Log.Information("The kafka consumer was started");
-                            
-                            var projectorRunner = new ProjectorRunner(actualContainer.Resolve<IConnectedProjectionsManager>(), actualContainer.Resolve<ILoggerFactory>());
-                            var projectorTask = projectorRunner.Start(cancellationToken);
-
-                            Log.Information("The projection consumer was started");
-
-                            await Task.WhenAny(consumerTask, projectorTask);
-
-                            CancellationTokenSource.Cancel();
-
-                            Log.Error($"Consumer task stopped with status: {consumerTask.Status}");
-                            Log.Error($"Projector task stopped with status: {projectorTask.Status}");
-
-                            Log.Error("The consumer was terminated");
-                        }
-                        catch (Exception e)
-                        {
-                            Log.Fatal(e, "Encountered a fatal exception, exiting program.");
-                            throw;
-                        }
-                    },
-                    DistributedLockOptions.LoadFromConfiguration(configuration),
-                    container.GetService<ILogger<Program>>()!);
+                            await host.RunAsync().ConfigureAwait(false);
+                        },
+                        DistributedLockOptions.LoadFromConfiguration(configuration),
+                        logger)
+                    .ConfigureAwait(false);
+            }
+            catch (AggregateException aggregateException)
+            {
+                foreach (var innerException in aggregateException.InnerExceptions)
+                {
+                    logger.LogCritical(innerException, "Encountered a fatal exception, exiting program.");
+                }
             }
             catch (Exception e)
             {
-                Log.Fatal(e, "Encountered a fatal exception, exiting program.");
+                logger.LogCritical(e, "Encountered a fatal exception, exiting program.");
                 Log.CloseAndFlush();
 
                 // Allow some time for flushing before shutdown.
-                await Task.Delay(1000, default);
+                await Task.Delay(500, default);
                 throw;
             }
-
-            Log.Information("Stopping...");
-            Closing.Close();
+            finally
+            {
+                logger.LogInformation("Stopping...");
+            }
         }
 
         private static IServiceProvider ConfigureServices(IConfiguration configuration)
         {
             var services = new ServiceCollection();
             var builder = new ContainerBuilder();
-
-            builder.RegisterModule(new LoggingModule(configuration, services));
 
             var tempProvider = services.BuildServiceProvider();
             var loggerFactory = tempProvider.GetRequiredService<ILoggerFactory>();

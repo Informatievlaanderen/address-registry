@@ -2,8 +2,6 @@ namespace AddressRegistry.Infrastructure.Modules
 {
     using Address;
     using Autofac;
-    using Be.Vlaanderen.Basisregisters.EventHandling;
-    using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -33,11 +31,9 @@ namespace AddressRegistry.Infrastructure.Modules
 
         protected override void Load(ContainerBuilder builder)
         {
-            var eventSerializerSettings = EventsJsonSerializerSettingsProvider.CreateSerializerSettings();
+            builder.RegisterModule(new CommandHandlingModule(_configuration));
 
-            builder
-                .RegisterModule(new EventHandlingModule(typeof(DomainAssemblyMarker).Assembly, eventSerializerSettings))
-                .RegisterModule(new CommandHandlingModule(_configuration));
+            builder.RegisterSnapshotModule(_configuration);
 
             builder
                 .RegisterType<SqlPersistentLocalIdGenerator>()

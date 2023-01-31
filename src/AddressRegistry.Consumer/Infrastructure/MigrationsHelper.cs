@@ -35,14 +35,32 @@ namespace AddressRegistry.Consumer.Infrastructure
                 .ExecuteAsync(async ct =>
                     {
                         logger?.LogInformation("Running EF Migrations.");
-                        await RunInternal(connectionString, loggerFactory, ct);
+                        await RunInternalConsumerContext(connectionString, loggerFactory, ct);
+                        await RunInternalIdempotencyConsumerContext(connectionString, loggerFactory, ct);
                     },
                     cancellationToken);
         }
 
-        private static async Task RunInternal(string connectionString, ILoggerFactory loggerFactory, CancellationToken cancellationToken)
+        private static async Task RunInternalConsumerContext(string connectionString, ILoggerFactory loggerFactory, CancellationToken cancellationToken)
         {
             var migratorOptions = new DbContextOptionsBuilder<ConsumerContext>()
+                .UseSqlServer(
+                    connectionString,
+                    sqlServerOptions =>
+                    {
+                        sqlServerOptions.EnableRetryOnFailure();
+                        sqlServerOptions.MigrationsHistoryTable(MigrationTables.ConsumerProjections, Schema.ConsumerProjections);
+                    });
+
+            migratorOptions = migratorOptions.UseLoggerFactory(loggerFactory);
+
+            await using var migrator = new ConsumerContext(migratorOptions.Options);
+            await migrator.Database.MigrateAsync(cancellationToken);
+        }
+
+        private static async Task RunInternalIdempotencyConsumerContext(string connectionString, ILoggerFactory loggerFactory, CancellationToken cancellationToken)
+        {
+            var migratorOptions = new DbContextOptionsBuilder<IdempotentConsumerContext>()
                 .UseSqlServer(
                     connectionString,
                     sqlServerOptions =>
@@ -53,7 +71,7 @@ namespace AddressRegistry.Consumer.Infrastructure
 
             migratorOptions = migratorOptions.UseLoggerFactory(loggerFactory);
 
-            await using var migrator = new ConsumerContext(migratorOptions.Options);
+            await using var migrator = new IdempotentConsumerContext(migratorOptions.Options);
             await migrator.Database.MigrateAsync(cancellationToken);
         }
     }

@@ -16,6 +16,8 @@ Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner
 Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac
 Be.Vlaanderen.Basisregisters.Projector
 
+Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer
+
 Serilog
 Serilog.Settings.Configuration
 Serilog.Extensions.Logging

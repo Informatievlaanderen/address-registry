@@ -8,7 +8,8 @@ namespace AddressRegistry.Infrastructure
         public const string Extract = "AddressRegistryExtract";
         public const string Syndication = "AddressRegistrySyndication";
         public const string Sequence = "AddressRegistrySequence";
-        public const string Consumer = "AddressRegistryConsumer";
+        public const string Consumer = "AddressRegistryConsumerStreetName";
+        public const string ConsumerProjections = "AddressRegistryConsumer";
         public const string ConsumerReadMunicipality = "AddressRegistryConsumerReadMunicipality";
         public const string ConsumerReadStreetName = "AddressRegistryConsumerReadStreetName";
         public const string MigrateAddress = "AddressRegistryMigration";
@@ -27,7 +28,8 @@ namespace AddressRegistry.Infrastructure
         public const string Syndication = "__EFMigrationsHistorySyndication";
         public const string RedisDataMigration = "__EFMigrationsHistoryDataMigration";
         public const string Sequence = "__EFMigrationsHistorySequence";
-        public const string Consumer = "__EFMigrationsHistoryConsumer";
+        public const string Consumer = "__EFMigrationsHistoryConsumerStreetName";
+        public const string ConsumerProjections = "__EFMigrationsHistoryConsumer";
         public const string ConsumerReadMunicipality = "__EFMigrationsHistoryConsumerReadMunicipality";
         public const string ConsumerReadStreetName = "__EFMigrationsHistoryConsumerReadStreetName";
         public const string BackOffice = "__EFMigrationsHistoryBackOffice";

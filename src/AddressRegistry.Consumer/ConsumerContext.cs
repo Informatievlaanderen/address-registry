@@ -18,7 +18,7 @@ namespace AddressRegistry.Consumer
             : base(options)
         { }
 
-        public override string ProjectionStateSchema => Schema.Consumer;
+        public override string ProjectionStateSchema => Schema.ConsumerProjections;
     }
 
     public class ConsumerContextFactory : RunnerDbContextMigrationFactory<ConsumerContext>
@@ -30,8 +30,8 @@ namespace AddressRegistry.Consumer
         public ConsumerContextFactory(string connectionStringName)
             : base(connectionStringName, new MigrationHistoryConfiguration
             {
-                Schema = Schema.Consumer,
-                Table = MigrationTables.Consumer
+                Schema = Schema.ConsumerProjections,
+                Table = MigrationTables.ConsumerProjections
             })
         { }
 

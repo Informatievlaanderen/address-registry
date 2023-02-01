@@ -43,14 +43,13 @@ namespace AddressRegistry.Migrator.Address.Infrastructure.Modules
                             .MigrationsHistoryTable(MigrationTables.BackOffice, Schema.BackOffice))
                     , ServiceLifetime.Transient);
 
-            var eventSerializerSettings = EventsJsonSerializerSettingsProvider.CreateSerializerSettings();
-
             builder
                 .RegisterModule(new DataDogModule(_configuration))
                 .RegisterModule<EnvelopeModule>()
-                .RegisterModule(new EventHandlingModule(typeof(DomainAssemblyMarker).Assembly, eventSerializerSettings))
                 .RegisterModule(new ConsumerModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new EditModule(_configuration, _services, _loggerFactory));
+
+            builder.RegisterSnapshotModule(_configuration);
 
             builder.Populate(_services);
         }

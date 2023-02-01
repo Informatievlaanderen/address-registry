@@ -38,6 +38,8 @@ namespace AddressRegistry.Consumer.Infrastructure.Modules
                 .RegisterModule(new EditModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new ProjectorModule(_configuration));
 
+            builder.RegisterSnapshotModule(_configuration);
+
             builder
                 .RegisterProjectionMigrator<ConsumerContextFactory>(_configuration, _loggerFactory)
                 .RegisterProjections<StreetNameConsumerProjection, ConsumerContext>(

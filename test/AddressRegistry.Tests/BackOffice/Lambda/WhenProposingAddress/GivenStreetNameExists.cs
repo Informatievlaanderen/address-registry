@@ -32,8 +32,10 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
     using TicketingService.Abstractions;
     using Xunit;
     using Xunit.Abstractions;
+    using BoxNumber = StreetName.BoxNumber;
     using MunicipalityLatestItem = Consumer.Read.Municipality.Projections.MunicipalityLatestItem;
     using HouseNumber = StreetName.HouseNumber;
+    using PostalCode = StreetName.PostalCode;
 
     public class GivenStreetNameExists : BackOfficeLambdaTest
     {
@@ -57,68 +59,70 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
         [Fact]
         public async Task GivenRequest_ThenPersistentLocalIdETagResponse()
         {
-            var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
-            var nisCode = new NisCode("12345");
-            var postInfoId = "2018";
+            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
+            var nisCode = Fixture.Create<NisCode>();
+            var postInfoId = Fixture.Create<PostalCode>();
+            var municipalityId = Fixture.Create<MunicipalityId>();
 
-            var mockPersistentLocalIdGenerator = new Mock<IPersistentLocalIdGenerator>();
-            mockPersistentLocalIdGenerator
+            var persistentLocalIdGenerator = new Mock<IPersistentLocalIdGenerator>();
+            persistentLocalIdGenerator
                 .Setup(x => x.GenerateNextPersistentLocalId())
-                .Returns(new PersistentLocalId(123));
-
-            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
-            {
-                PostalCode = postInfoId,
-                NisCode = nisCode,
-            });
-            _municipalityContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem
-            {
-                MunicipalityId = Fixture.Create<MunicipalityId>(),
-                NisCode = nisCode
-            });
-            await _municipalityContext.SaveChangesAsync();
-            await _syndicationContext.SaveChangesAsync();
-
-            ImportMigratedStreetName(
-                new AddressRegistry.StreetName.StreetNameId(Guid.NewGuid()),
-                streetNamePersistentLocalId,
-                nisCode);
+                .Returns(Fixture.Create<PersistentLocalId>());
 
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new ProposeAddressLambdaHandler(
-                Container.Resolve<IConfiguration>(),
-                new FakeRetryPolicy(),
-                MockTicketing(result => { eTagResponse = result; }).Object,
-                _streetNames,
+            var proposeAddressLambdaHandler = CreateProposeAddressLambdaHandler(
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext),
-                _backOfficeContext,
-                _syndicationContext,
-                _municipalityContext,
-                mockPersistentLocalIdGenerator.Object);
+                persistentLocalIdGenerator.Object,
+                MockTicketing(result => { eTagResponse = result; }).Object);
+
+            await SetupMunicipalityAndStreetName(postInfoId, nisCode, municipalityId, streetNamePersistentLocalId);
 
             // Act
-            await sut.Handle(new ProposeAddressLambdaRequest(streetNamePersistentLocalId, new ProposeAddressSqsRequest()
-                {
-                    Request = new ProposeAddressRequest
-                    {
-                        StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
-                        PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
-                        Huisnummer = "11",
-                        Busnummer = null,
-                        PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                        PositieSpecificatie = PositieSpecificatie.Ingang,
-                        Positie = GeometryHelpers.GmlPointGeometry
-                    },
-                    TicketId = Guid.NewGuid(),
-                    Metadata = new Dictionary<string, object?>(),
-                    ProvenanceData = Fixture.Create<ProvenanceData>()
-                }),
-                CancellationToken.None);
+            await proposeAddressLambdaHandler.Handle(CreateProposeAddressLambdaRequest(streetNamePersistentLocalId, postInfoId), CancellationToken.None);
 
             // Assert
             var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(
                 new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))), 1, 1);
             stream.Messages.First().JsonMetadata.Should().Contain(eTagResponse.ETag);
+        }
+
+        [Fact]
+        public async Task GivenDuplicateRequest_ThenPersistentLocalIdETagResponse()
+        {
+            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
+            var nisCode = Fixture.Create<NisCode>();
+            var postInfoId = Fixture.Create<PostalCode>();
+            var houseNumber = Fixture.Create<HouseNumber>();
+            var provenanceData = Fixture.Create<ProvenanceData>();
+
+            var persistentLocalId = Fixture.Create<PersistentLocalId>();
+            var persistentLocalIdGenerator = new Mock<IPersistentLocalIdGenerator>();
+            persistentLocalIdGenerator
+                .Setup(x => x.GenerateNextPersistentLocalId())
+                .Returns(persistentLocalId);
+
+            var eTagResponse = new ETagResponse(string.Empty, string.Empty);
+            var proposeAddressLambdaHandler = CreateProposeAddressLambdaHandler(
+                new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext),
+                persistentLocalIdGenerator.Object,
+                MockTicketing(result => { eTagResponse = result; }).Object);
+
+            await SetupMunicipalityAndStreetName(postInfoId, nisCode, Fixture.Create<MunicipalityId>(), streetNamePersistentLocalId);
+
+            // Act
+            await proposeAddressLambdaHandler.Handle(
+                CreateProposeAddressLambdaRequest(streetNamePersistentLocalId, postInfoId, houseNumber, boxNumber: null, provenanceData), CancellationToken.None);
+            await proposeAddressLambdaHandler.Handle(
+                CreateProposeAddressLambdaRequest(streetNamePersistentLocalId, postInfoId, houseNumber, boxNumber: null, provenanceData), CancellationToken.None);
+
+            // Assert
+            var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(
+                new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))), 1, 1);
+            stream.Messages.First().JsonMetadata.Should().Contain(eTagResponse.ETag);
+
+            var streetNameAddressRelation = await _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.FindAsync((int)persistentLocalId);
+            streetNameAddressRelation.Should().NotBeNull();
+            streetNameAddressRelation.StreetNamePersistentLocalId.Should().Be(streetNamePersistentLocalId);
         }
 
         [Fact]
@@ -128,55 +132,23 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             var ticketing = new Mock<ITicketing>();
 
             var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
-            var nisCode = new NisCode("12345");
-            var postInfoId = "2018";
+            var nisCode = Fixture.Create<NisCode>();
+            var postInfoId = Fixture.Create<PostalCode>();
 
-            var mockPersistentLocalIdGenerator = new Mock<IPersistentLocalIdGenerator>();
-            mockPersistentLocalIdGenerator
+            var persistentLocalIdGenerator = new Mock<IPersistentLocalIdGenerator>();
+            persistentLocalIdGenerator
                 .Setup(x => x.GenerateNextPersistentLocalId())
-                .Returns(new PersistentLocalId(123));
+                .Returns(Fixture.Create<PersistentLocalId>());
 
-            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
-            {
-                PostalCode = postInfoId,
-                NisCode = nisCode,
-            });
-            _municipalityContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem
-            {
-                MunicipalityId = Fixture.Create<MunicipalityId>(),
-                NisCode = nisCode
-            });
-            await _municipalityContext.SaveChangesAsync();
-            await _syndicationContext.SaveChangesAsync();
-
-            var sut = new ProposeAddressLambdaHandler(
-                Container.Resolve<IConfiguration>(),
-                new FakeRetryPolicy(),
-                ticketing.Object,
-                Mock.Of<IStreetNames>(),
+            var proposeAddressLambdaHandler = CreateProposeAddressLambdaHandler(
                 MockExceptionIdempotentCommandHandler<ParentAddressAlreadyExistsException>().Object,
-                _backOfficeContext,
-                _syndicationContext,
-                _municipalityContext,
-                mockPersistentLocalIdGenerator.Object);
+                persistentLocalIdGenerator.Object,
+                ticketing.Object);
+
+            await SetupMunicipalityAndStreetName(postInfoId, nisCode, Fixture.Create<MunicipalityId>(), streetNamePersistentLocalId);
 
             // Act
-            await sut.Handle(new ProposeAddressLambdaRequest(Fixture.Create<int>().ToString(), new ProposeAddressSqsRequest()
-            {
-                Request = new ProposeAddressRequest
-                {
-                    StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
-                    PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
-                    Huisnummer = "11",
-                    Busnummer = null,
-                    PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                    PositieSpecificatie = PositieSpecificatie.Ingang,
-                    Positie = GeometryHelpers.GmlPointGeometry
-                },
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object?>(),
-                ProvenanceData = Fixture.Create<ProvenanceData>()
-            }), CancellationToken.None);
+            await proposeAddressLambdaHandler.Handle(CreateProposeAddressLambdaRequest(streetNamePersistentLocalId, postInfoId), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -195,63 +167,29 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             var ticketing = new Mock<ITicketing>();
 
             var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
-            var nisCode = new NisCode("12345");
-            var postInfoId = "2018";
+            var nisCode = Fixture.Create<NisCode>();
+            var postInfoId = Fixture.Create<PostalCode>();
 
-            var mockPersistentLocalIdGenerator = new Mock<IPersistentLocalIdGenerator>();
-            mockPersistentLocalIdGenerator
+            var persistentLocalIdGenerator = new Mock<IPersistentLocalIdGenerator>();
+            persistentLocalIdGenerator
                 .Setup(x => x.GenerateNextPersistentLocalId())
-                .Returns(new PersistentLocalId(123));
+                .Returns(Fixture.Create<PersistentLocalId>());
 
-            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
-            {
-                PostalCode = postInfoId,
-                NisCode = nisCode,
-            });
-            _municipalityContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem
-            {
-                MunicipalityId = Fixture.Create<MunicipalityId>(),
-                NisCode = nisCode
-            });
-            await _municipalityContext.SaveChangesAsync();
-            await _syndicationContext.SaveChangesAsync();
-
-            var sut = new ProposeAddressLambdaHandler(
-                Container.Resolve<IConfiguration>(),
-                new FakeRetryPolicy(),
-                ticketing.Object,
-                Mock.Of<IStreetNames>(),
+            var proposeAddressLambdaHandler = CreateProposeAddressLambdaHandler(
                 MockExceptionIdempotentCommandHandler<HouseNumberHasInvalidFormatException>().Object,
-                _backOfficeContext,
-                _syndicationContext,
-                _municipalityContext,
-                mockPersistentLocalIdGenerator.Object);
+                persistentLocalIdGenerator.Object,
+                ticketing.Object);
+
+            await SetupMunicipalityAndStreetName(postInfoId, nisCode, Fixture.Create<MunicipalityId>(), streetNamePersistentLocalId);
 
             // Act
-            await sut.Handle(new ProposeAddressLambdaRequest(Fixture.Create<int>().ToString(), new ProposeAddressSqsRequest
-            {
-                Request = new ProposeAddressRequest
-                {
-                    StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
-                    PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
-                    Huisnummer = "11",
-                    Busnummer = null,
-                    PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                    PositieSpecificatie = PositieSpecificatie.Ingang,
-                    Positie = GeometryHelpers.GmlPointGeometry
-                },
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                ProvenanceData = Fixture.Create<ProvenanceData>()
-            }), CancellationToken.None);
+            await proposeAddressLambdaHandler.Handle(CreateProposeAddressLambdaRequest(streetNamePersistentLocalId, postInfoId), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
                 x.Error(
                     It.IsAny<Guid>(),
-                    new TicketError(
-                        "Ongeldig huisnummerformaat.",
-                        "AdresOngeldigHuisnummerformaat"),
+                    new TicketError("Ongeldig huisnummerformaat.", "AdresOngeldigHuisnummerformaat"),
                     CancellationToken.None));
         }
 
@@ -262,55 +200,23 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             var ticketing = new Mock<ITicketing>();
 
             var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
-            var nisCode = new NisCode("12345");
-            var postInfoId = "2018";
+            var nisCode = Fixture.Create<NisCode>();
+            var postInfoId = Fixture.Create<PostalCode>();
 
-            var mockPersistentLocalIdGenerator = new Mock<IPersistentLocalIdGenerator>();
-            mockPersistentLocalIdGenerator
+            var persistentLocalIdGenerator = new Mock<IPersistentLocalIdGenerator>();
+            persistentLocalIdGenerator
                 .Setup(x => x.GenerateNextPersistentLocalId())
-                .Returns(new PersistentLocalId(123));
+                .Returns(Fixture.Create<PersistentLocalId>());
 
-            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
-            {
-                PostalCode = postInfoId,
-                NisCode = nisCode,
-            });
-            _municipalityContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem
-            {
-                MunicipalityId = Fixture.Create<MunicipalityId>(),
-                NisCode = nisCode
-            });
-            await _municipalityContext.SaveChangesAsync();
-            await _syndicationContext.SaveChangesAsync();
-
-            var sut = new ProposeAddressLambdaHandler(
-                Container.Resolve<IConfiguration>(),
-                new FakeRetryPolicy(),
-                ticketing.Object,
-                Mock.Of<IStreetNames>(),
+            var proposeAddressLambdaHandler = CreateProposeAddressLambdaHandler(
                 MockExceptionIdempotentCommandHandler<AddressAlreadyExistsException>().Object,
-                _backOfficeContext,
-                _syndicationContext,
-                _municipalityContext,
-                mockPersistentLocalIdGenerator.Object);
+                persistentLocalIdGenerator.Object,
+                ticketing.Object);
+
+            await SetupMunicipalityAndStreetName(postInfoId, nisCode, Fixture.Create<MunicipalityId>(), streetNamePersistentLocalId);
 
             // Act
-            await sut.Handle(new ProposeAddressLambdaRequest(Fixture.Create<int>().ToString(), new ProposeAddressSqsRequest
-            {
-                Request = new ProposeAddressRequest
-                {
-                    StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
-                    PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
-                    Huisnummer = "11",
-                    Busnummer = null,
-                    PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                    PositieSpecificatie = PositieSpecificatie.Ingang,
-                    Positie = GeometryHelpers.GmlPointGeometry
-                },
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object>(),
-                ProvenanceData = Fixture.Create<ProvenanceData>()
-            }), CancellationToken.None);
+            await proposeAddressLambdaHandler.Handle(CreateProposeAddressLambdaRequest(streetNamePersistentLocalId, postInfoId), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -329,58 +235,24 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             var ticketing = new Mock<ITicketing>();
 
             var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
-            var nisCode = new NisCode("12345");
-            var postInfoId = "2018";
-            var houseNumber = "11";
+            var nisCode = Fixture.Create<NisCode>();
+            var postInfoId = Fixture.Create<PostalCode>();
+            var houseNumber = Fixture.Create<HouseNumber>();
 
-            var mockPersistentLocalIdGenerator = new Mock<IPersistentLocalIdGenerator>();
-            mockPersistentLocalIdGenerator
+            var persistentLocalIdGenerator = new Mock<IPersistentLocalIdGenerator>();
+            persistentLocalIdGenerator
                 .Setup(x => x.GenerateNextPersistentLocalId())
-                .Returns(new PersistentLocalId(123));
+                .Returns(Fixture.Create<PersistentLocalId>());
 
-            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
-            {
-                PostalCode = postInfoId,
-                NisCode = nisCode,
-            });
-            _municipalityContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem
-            {
-                MunicipalityId = Fixture.Create<MunicipalityId>(),
-                NisCode = nisCode
-            });
-            await _municipalityContext.SaveChangesAsync();
-            await _syndicationContext.SaveChangesAsync();
+            var proposeAddressLambdaHandler = CreateProposeAddressLambdaHandler(
+                MockExceptionIdempotentCommandHandler(() => new ParentAddressNotFoundException(streetNamePersistentLocalId, HouseNumber.Create(houseNumber))).Object,
+                persistentLocalIdGenerator.Object,
+                ticketing.Object);
 
-            var sut = new ProposeAddressLambdaHandler(
-                Container.Resolve<IConfiguration>(),
-                new FakeRetryPolicy(),
-                ticketing.Object,
-                Mock.Of<IStreetNames>(),
-                MockExceptionIdempotentCommandHandler(() =>
-                    new ParentAddressNotFoundException(streetNamePersistentLocalId, HouseNumber.Create(houseNumber))).Object,
-                _backOfficeContext,
-                _syndicationContext,
-                _municipalityContext,
-                mockPersistentLocalIdGenerator.Object);
+            await SetupMunicipalityAndStreetName(postInfoId, nisCode, Fixture.Create<MunicipalityId>(), streetNamePersistentLocalId);
 
             // Act
-            await sut.Handle(new ProposeAddressLambdaRequest(Fixture.Create<int>().ToString(), new ProposeAddressSqsRequest()
-            {
-                Request = new ProposeAddressRequest
-                {
-                    StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
-                    PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
-                    Huisnummer = houseNumber,
-                    Busnummer = null,
-                    PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                    PositieSpecificatie = PositieSpecificatie.Ingang,
-                    Positie = GeometryHelpers.GmlPointGeometry
-                },
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object?>(),
-                ProvenanceData = Fixture.Create<ProvenanceData>()
-            }),
-                CancellationToken.None);
+            await proposeAddressLambdaHandler.Handle(CreateProposeAddressLambdaRequest(streetNamePersistentLocalId, postInfoId, houseNumber), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -399,56 +271,23 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             var ticketing = new Mock<ITicketing>();
 
             var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
-            var nisCode = new NisCode("12345");
-            var postInfoId = "2018";
+            var nisCode = Fixture.Create<NisCode>();
+            var postInfoId = Fixture.Create<PostalCode>();
 
-            var mockPersistentLocalIdGenerator = new Mock<IPersistentLocalIdGenerator>();
-            mockPersistentLocalIdGenerator
+            var persistentLocalIdGenerator = new Mock<IPersistentLocalIdGenerator>();
+            persistentLocalIdGenerator
                 .Setup(x => x.GenerateNextPersistentLocalId())
-                .Returns(new PersistentLocalId(123));
+                .Returns(Fixture.Create<PersistentLocalId>());
 
-            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
-            {
-                PostalCode = postInfoId,
-                NisCode = nisCode,
-            });
-            _municipalityContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem
-            {
-                MunicipalityId = Fixture.Create<MunicipalityId>(),
-                NisCode = nisCode
-            });
-            await _municipalityContext.SaveChangesAsync();
-            await _syndicationContext.SaveChangesAsync();
-
-            var sut = new ProposeAddressLambdaHandler(
-                Container.Resolve<IConfiguration>(),
-                new FakeRetryPolicy(),
-                ticketing.Object,
-                Mock.Of<IStreetNames>(),
+            var proposeAddressLambdaHandler = CreateProposeAddressLambdaHandler(
                 MockExceptionIdempotentCommandHandler<StreetNameHasInvalidStatusException>().Object,
-                _backOfficeContext,
-                _syndicationContext,
-                _municipalityContext,
-                mockPersistentLocalIdGenerator.Object);
+                persistentLocalIdGenerator.Object,
+                ticketing.Object);
+
+            await SetupMunicipalityAndStreetName(postInfoId, nisCode, Fixture.Create<MunicipalityId>(), streetNamePersistentLocalId);
 
             // Act
-            await sut.Handle(new ProposeAddressLambdaRequest(Fixture.Create<int>().ToString(), new ProposeAddressSqsRequest()
-                {
-                    Request = new ProposeAddressRequest
-                    {
-                        StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
-                        PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
-                        Huisnummer = "11",
-                        Busnummer = null,
-                        PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                        PositieSpecificatie = PositieSpecificatie.Ingang,
-                        Positie = GeometryHelpers.GmlPointGeometry
-                    },
-                    TicketId = Guid.NewGuid(),
-                    Metadata = new Dictionary<string, object?>(),
-                    ProvenanceData = Fixture.Create<ProvenanceData>()
-                }),
-                CancellationToken.None);
+            await proposeAddressLambdaHandler.Handle(CreateProposeAddressLambdaRequest(streetNamePersistentLocalId, postInfoId), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -467,56 +306,24 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             var ticketing = new Mock<ITicketing>();
 
             var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
-            var nisCode = new NisCode("12345");
-            var postInfoId = "2018";
+            var nisCode = Fixture.Create<NisCode>();
+            var postInfoId = Fixture.Create<PostalCode>();
 
-            var mockPersistentLocalIdGenerator = new Mock<IPersistentLocalIdGenerator>();
-            mockPersistentLocalIdGenerator
+            var persistentLocalIdGenerator = new Mock<IPersistentLocalIdGenerator>();
+            persistentLocalIdGenerator
                 .Setup(x => x.GenerateNextPersistentLocalId())
-                .Returns(new PersistentLocalId(123));
+                .Returns(Fixture.Create<PersistentLocalId>());
 
-            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
-            {
-                PostalCode = postInfoId,
-                NisCode = nisCode,
-            });
-            _municipalityContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem
-            {
-                MunicipalityId = Fixture.Create<MunicipalityId>(),
-                NisCode = nisCode
-            });
-            await _municipalityContext.SaveChangesAsync();
-            await _syndicationContext.SaveChangesAsync();
-
-            var sut = new ProposeAddressLambdaHandler(
-                Container.Resolve<IConfiguration>(),
-                new FakeRetryPolicy(),
-                ticketing.Object,
-                Mock.Of<IStreetNames>(),
+            var proposeAddressLambdaHandler = CreateProposeAddressLambdaHandler(
                 MockExceptionIdempotentCommandHandler<StreetNameIsRemovedException>().Object,
-                _backOfficeContext,
-                _syndicationContext,
-                _municipalityContext,
-                mockPersistentLocalIdGenerator.Object);
+                persistentLocalIdGenerator.Object,
+                ticketing.Object);
+
+            await SetupMunicipalityAndStreetName(postInfoId, nisCode, Fixture.Create<MunicipalityId>(), streetNamePersistentLocalId);
 
             // Act
-            var request = new ProposeAddressLambdaRequest(streetNamePersistentLocalId, new ProposeAddressSqsRequest()
-            {
-                Request = new ProposeAddressRequest
-                {
-                    StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
-                    PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
-                    Huisnummer = "11",
-                    Busnummer = null,
-                    PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                    PositieSpecificatie = PositieSpecificatie.Ingang,
-                    Positie = GeometryHelpers.GmlPointGeometry
-                },
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object?>(),
-                ProvenanceData = Fixture.Create<ProvenanceData>()
-            });
-            await sut.Handle(request, CancellationToken.None);
+            var request = CreateProposeAddressLambdaRequest(streetNamePersistentLocalId, postInfoId);
+            await proposeAddressLambdaHandler.Handle(request, CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -535,56 +342,23 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             var ticketing = new Mock<ITicketing>();
 
             var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
-            var nisCode = new NisCode("12345");
-            var postInfoId = "2018";
+            var nisCode = Fixture.Create<NisCode>();
+            var postInfoId = Fixture.Create<PostalCode>();
 
-            var mockPersistentLocalIdGenerator = new Mock<IPersistentLocalIdGenerator>();
-            mockPersistentLocalIdGenerator
+            var persistentLocalIdGenerator = new Mock<IPersistentLocalIdGenerator>();
+            persistentLocalIdGenerator
                 .Setup(x => x.GenerateNextPersistentLocalId())
-                .Returns(new PersistentLocalId(123));
+                .Returns(Fixture.Create<PersistentLocalId>());
 
-            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
-            {
-                PostalCode = postInfoId,
-                NisCode = nisCode,
-            });
-            _municipalityContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem
-            {
-                MunicipalityId = Fixture.Create<MunicipalityId>(),
-                NisCode = nisCode
-            });
-            await _municipalityContext.SaveChangesAsync();
-            await _syndicationContext.SaveChangesAsync();
-
-            var sut = new ProposeAddressLambdaHandler(
-                Container.Resolve<IConfiguration>(),
-                new FakeRetryPolicy(),
-                ticketing.Object,
-                Mock.Of<IStreetNames>(),
+            var proposeAddressLambdaHandler = CreateProposeAddressLambdaHandler(
                 MockExceptionIdempotentCommandHandler<PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException>().Object,
-                _backOfficeContext,
-                _syndicationContext,
-                _municipalityContext,
-                mockPersistentLocalIdGenerator.Object);
+                persistentLocalIdGenerator.Object,
+                ticketing.Object);
+
+            await SetupMunicipalityAndStreetName(postInfoId, nisCode, Fixture.Create<MunicipalityId>(), streetNamePersistentLocalId);
 
             // Act
-            var request = new ProposeAddressLambdaRequest(Fixture.Create<int>().ToString(), new ProposeAddressSqsRequest()
-            {
-                Request = new ProposeAddressRequest
-                {
-                    StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
-                    PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
-                    Huisnummer = "11",
-                    Busnummer = null,
-                    PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                    PositieSpecificatie = PositieSpecificatie.Ingang,
-                    Positie = GeometryHelpers.GmlPointGeometry
-                },
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object?>(),
-                ProvenanceData = Fixture.Create<ProvenanceData>()
-            });
-            await sut.Handle(request, CancellationToken.None);
+            await proposeAddressLambdaHandler.Handle(CreateProposeAddressLambdaRequest(streetNamePersistentLocalId, postInfoId), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -603,56 +377,23 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             var ticketing = new Mock<ITicketing>();
 
             var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
-            var nisCode = new NisCode("12345");
-            var postInfoId = "2018";
+            var nisCode = Fixture.Create<NisCode>();
+            var postInfoId = Fixture.Create<PostalCode>();
 
-            var mockPersistentLocalIdGenerator = new Mock<IPersistentLocalIdGenerator>();
-            mockPersistentLocalIdGenerator
+            var persistentLocalIdGenerator = new Mock<IPersistentLocalIdGenerator>();
+            persistentLocalIdGenerator
                 .Setup(x => x.GenerateNextPersistentLocalId())
-                .Returns(new PersistentLocalId(123));
+                .Returns(Fixture.Create<PersistentLocalId>());
 
-            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
-            {
-                PostalCode = postInfoId,
-                NisCode = nisCode,
-            });
-            _municipalityContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem
-            {
-                MunicipalityId = Fixture.Create<MunicipalityId>(),
-                NisCode = nisCode
-            });
-            await _municipalityContext.SaveChangesAsync();
-            await _syndicationContext.SaveChangesAsync();
-
-            var sut = new ProposeAddressLambdaHandler(
-                Container.Resolve<IConfiguration>(),
-                new FakeRetryPolicy(),
-                ticketing.Object,
-                Mock.Of<IStreetNames>(),
+            var proposeAddressLambdaHandler = CreateProposeAddressLambdaHandler(
                 MockExceptionIdempotentCommandHandler<AddressHasInvalidGeometryMethodException>().Object,
-                _backOfficeContext,
-                _syndicationContext,
-                _municipalityContext,
-                mockPersistentLocalIdGenerator.Object);
+                persistentLocalIdGenerator.Object,
+                ticketing.Object);
+
+            await SetupMunicipalityAndStreetName(postInfoId, nisCode, Fixture.Create<MunicipalityId>(), streetNamePersistentLocalId);
 
             // Act
-            var request = new ProposeAddressLambdaRequest(Fixture.Create<int>().ToString(), new ProposeAddressSqsRequest()
-            {
-                Request = new ProposeAddressRequest
-                {
-                    StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
-                    PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
-                    Huisnummer = "11",
-                    Busnummer = null,
-                    PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                    PositieSpecificatie = PositieSpecificatie.Ingang,
-                    Positie = GeometryHelpers.GmlPointGeometry
-                },
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object?>(),
-                ProvenanceData = Fixture.Create<ProvenanceData>()
-            });
-            await sut.Handle(request, CancellationToken.None);
+            await proposeAddressLambdaHandler.Handle(CreateProposeAddressLambdaRequest(streetNamePersistentLocalId, postInfoId), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -671,56 +412,23 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             var ticketing = new Mock<ITicketing>();
 
             var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
-            var nisCode = new NisCode("12345");
-            var postInfoId = "2018";
+            var nisCode = Fixture.Create<NisCode>();
+            var postInfoId = Fixture.Create<PostalCode>();
 
-            var mockPersistentLocalIdGenerator = new Mock<IPersistentLocalIdGenerator>();
-            mockPersistentLocalIdGenerator
+            var persistentLocalIdGenerator = new Mock<IPersistentLocalIdGenerator>();
+            persistentLocalIdGenerator
                 .Setup(x => x.GenerateNextPersistentLocalId())
-                .Returns(new PersistentLocalId(123));
+                .Returns(Fixture.Create<PersistentLocalId>());
 
-            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
-            {
-                PostalCode = postInfoId,
-                NisCode = nisCode,
-            });
-            _municipalityContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem
-            {
-                MunicipalityId = Fixture.Create<MunicipalityId>(),
-                NisCode = nisCode
-            });
-            await _municipalityContext.SaveChangesAsync();
-            await _syndicationContext.SaveChangesAsync();
-
-            var sut = new ProposeAddressLambdaHandler(
-                Container.Resolve<IConfiguration>(),
-                new FakeRetryPolicy(),
-                ticketing.Object,
-                Mock.Of<IStreetNames>(),
+            var proposeAddressLambdaHandler = CreateProposeAddressLambdaHandler(
                 MockExceptionIdempotentCommandHandler<AddressHasInvalidGeometrySpecificationException>().Object,
-                _backOfficeContext,
-                _syndicationContext,
-                _municipalityContext,
-                mockPersistentLocalIdGenerator.Object);
+                persistentLocalIdGenerator.Object,
+                ticketing.Object);
+
+            await SetupMunicipalityAndStreetName(postInfoId, nisCode, Fixture.Create<MunicipalityId>(), streetNamePersistentLocalId);
 
             // Act
-            var request = new ProposeAddressLambdaRequest(Fixture.Create<int>().ToString(), new ProposeAddressSqsRequest()
-            {
-                Request = new ProposeAddressRequest
-                {
-                    StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
-                    PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
-                    Huisnummer = "11",
-                    Busnummer = null,
-                    PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                    PositieSpecificatie = PositieSpecificatie.Ingang,
-                    Positie = GeometryHelpers.GmlPointGeometry
-                },
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object?>(),
-                ProvenanceData = Fixture.Create<ProvenanceData>()
-            });
-            await sut.Handle(request, CancellationToken.None);
+            await proposeAddressLambdaHandler.Handle(CreateProposeAddressLambdaRequest(streetNamePersistentLocalId, postInfoId), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -730,6 +438,61 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                         "Ongeldige positieSpecificatie.",
                         "AdresPositieSpecificatieValidatie"),
                     CancellationToken.None));
+        }
+
+        private async Task SetupMunicipalityAndStreetName(PostalCode postInfoId, NisCode nisCode, MunicipalityId municipalityId, StreetNamePersistentLocalId streetNamePersistentLocalId)
+        {
+            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem { PostalCode = postInfoId, NisCode = nisCode, });
+            _municipalityContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem { MunicipalityId = municipalityId, NisCode = nisCode });
+            await _municipalityContext.SaveChangesAsync();
+            await _syndicationContext.SaveChangesAsync();
+
+            ImportMigratedStreetName(new AddressRegistry.StreetName.StreetNameId(Guid.NewGuid()), streetNamePersistentLocalId, nisCode);
+        }
+
+        private ProposeAddressLambdaHandler CreateProposeAddressLambdaHandler(
+            IIdempotentCommandHandler idempotentCommandHandler,
+            IPersistentLocalIdGenerator persistentLocalIdGenerator,
+            ITicketing ticketing)
+        {
+            var proposeAddressLambdaHandler = new ProposeAddressLambdaHandler(
+                Container.Resolve<IConfiguration>(),
+                new FakeRetryPolicy(),
+                ticketing,
+                _streetNames,
+                idempotentCommandHandler,
+                _backOfficeContext,
+                _syndicationContext,
+                _municipalityContext,
+                persistentLocalIdGenerator);
+            return proposeAddressLambdaHandler;
+        }
+
+        private ProposeAddressLambdaRequest CreateProposeAddressLambdaRequest(
+            StreetNamePersistentLocalId streetNamePersistentLocalId,
+            PostalCode postInfoId,
+            HouseNumber? houseNumber = null,
+            BoxNumber? boxNumber = null,
+            ProvenanceData? provenanceData = null)
+        {
+            return new ProposeAddressLambdaRequest(
+                streetNamePersistentLocalId,
+                new ProposeAddressSqsRequest
+                {
+                    Request = new ProposeAddressRequest
+                    {
+                        StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
+                        PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
+                        Huisnummer = houseNumber ?? Fixture.Create<HouseNumber>(),
+                        Busnummer = boxNumber,
+                        PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
+                        PositieSpecificatie = PositieSpecificatie.Ingang,
+                        Positie = GeometryHelpers.GmlPointGeometry
+                    },
+                    TicketId = Guid.NewGuid(),
+                    Metadata = new Dictionary<string, object?>(),
+                    ProvenanceData = provenanceData ?? Fixture.Create<ProvenanceData>()
+                });
         }
     }
 }

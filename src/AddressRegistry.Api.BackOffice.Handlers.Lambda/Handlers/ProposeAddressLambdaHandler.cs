@@ -7,6 +7,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
     using Address;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo.Extensions;
+    using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Infrastructure;
     using Be.Vlaanderen.Basisregisters.Sqs.Responses;
@@ -52,17 +53,11 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
 
         protected override async Task<ETagResponse> InnerHandle(ProposeAddressLambdaRequest request, CancellationToken cancellationToken)
         {
-            var postInfoIdentifier = request.Request.PostInfoId
-                .AsIdentifier()
-                .Map(x => x);
-
+            var postInfoIdentifier = request.Request.PostInfoId.AsIdentifier().Map(x => x);
             var postalCode = new PostalCode(postInfoIdentifier.Value);
-            var addressPersistentLocalId =
-                new AddressPersistentLocalId(_persistentLocalIdGenerator.GenerateNextPersistentLocalId());
+            var addressPersistentLocalId = new AddressPersistentLocalId(_persistentLocalIdGenerator.GenerateNextPersistentLocalId());
 
-            var postalMunicipality =
-                await _syndicationContext.PostalInfoLatestItems.FindAsync(new object[] { postalCode.ToString() },
-                    cancellationToken);
+            var postalMunicipality = await _syndicationContext.PostalInfoLatestItems.FindAsync(new object[] { postalCode.ToString() }, cancellationToken);
             if (postalMunicipality is null)
             {
                 throw new PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException();
@@ -72,23 +67,23 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 .MunicipalityLatestItems
                 .SingleAsync(x => x.NisCode == postalMunicipality.NisCode, cancellationToken);
 
-            var cmd = request.ToCommand(addressPersistentLocalId, postalCode,
-                new MunicipalityId(municipality.MunicipalityId));
+            var cmd = request.ToCommand(addressPersistentLocalId, postalCode, new MunicipalityId(municipality.MunicipalityId));
 
-            await IdempotentCommandHandler.Dispatch(
-                cmd.CreateCommandId(),
-                cmd,
-                request.Metadata,
-                cancellationToken);
-
-            // Insert PersistentLocalId with MunicipalityId
-            await _backOfficeContext
-                .AddIdempotentAddressStreetNameIdRelation(
-                    addressPersistentLocalId,
-                    request.StreetNamePersistentLocalId(),
+            try
+            {
+                await IdempotentCommandHandler.Dispatch(
+                    cmd.CreateCommandId(),
+                    cmd,
+                    request.Metadata,
                     cancellationToken);
-            await _backOfficeContext.SaveChangesAsync(cancellationToken);
+            }
+            catch (IdempotencyException)
+            {
+                // Idempotent: Do Nothing return last etag
+            }
 
+            await _backOfficeContext.AddIdempotentAddressStreetNameIdRelation(addressPersistentLocalId, request.StreetNamePersistentLocalId(), cancellationToken);
+            await _backOfficeContext.SaveChangesAsync(cancellationToken);
 
             var lastHash = await GetHash(request.StreetNamePersistentLocalId(), addressPersistentLocalId, cancellationToken);
             return new ETagResponse(string.Format(DetailUrlFormat, addressPersistentLocalId), lastHash);

@@ -23,12 +23,10 @@ namespace AddressRegistry.Api.BackOffice.Abstractions
             int streetNamePersistentLocalId,
             CancellationToken cancellationToken)
         {
-            var relation =
-                await AddressPersistentIdStreetNamePersistentIds.FindAsync(new object?[] { addressPersistentLocalId }, cancellationToken);
+            var relation = await AddressPersistentIdStreetNamePersistentIds.FindAsync(new object?[] { addressPersistentLocalId }, cancellationToken);
             if (relation is null)
             {
-                relation = new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId,
-                    streetNamePersistentLocalId);
+                relation = new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentLocalId);
                 await AddressPersistentIdStreetNamePersistentIds.AddAsync(relation, cancellationToken);
             }
 

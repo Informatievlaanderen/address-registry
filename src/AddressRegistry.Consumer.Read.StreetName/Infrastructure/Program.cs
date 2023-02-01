@@ -169,6 +169,8 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
                         .RegisterModule(new DataDogModule(hostContext.Configuration))
                         .RegisterModule(new EditModule(hostContext.Configuration, services, loggerFactory));
 
+                    builder.RegisterSnapshotModule(hostContext.Configuration);
+
                     builder
                         .RegisterType<StreetNameBosaItemConsumer>()
                         .As<IHostedService>()

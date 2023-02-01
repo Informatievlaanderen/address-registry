@@ -33,8 +33,6 @@ namespace AddressRegistry.Infrastructure.Modules
         {
             builder.RegisterModule(new CommandHandlingModule(_configuration));
 
-            builder.RegisterSnapshotModule(_configuration);
-
             builder
                 .RegisterType<SqlPersistentLocalIdGenerator>()
                 .As<IPersistentLocalIdGenerator>();

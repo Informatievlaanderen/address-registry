@@ -72,6 +72,8 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
             builder.RegisterModule(new TicketingModule(_configuration, _services));
             builder.RegisterModule(new MunicipalityConsumerModule(_configuration,_services, _loggerFactory));
 
+            builder.RegisterSnapshotModule(_configuration);
+
             _services.AddAcmIdmAuthorizationHandlers();
 
             builder.Populate(_services);

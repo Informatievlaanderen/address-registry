@@ -56,7 +56,6 @@ namespace AddressRegistry.StreetName.Commands
             yield return StreetNamePersistentLocalId;
             yield return PostalCodeMunicipalityId;
             yield return PostalCode;
-            yield return AddressPersistentLocalId;
             yield return HouseNumber;
             yield return BoxNumber ?? string.Empty;
             yield return GeometryMethod.ToString();

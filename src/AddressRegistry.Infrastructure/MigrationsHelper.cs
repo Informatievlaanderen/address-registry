@@ -25,7 +25,7 @@ namespace AddressRegistry.Infrastructure
                     retryAttempt =>
                     {
                         var value = Math.Pow(2, retryAttempt) / 4;
-                        var randomValue = new Random().Next((int)value * 3, (int)value * 5);
+                        var randomValue = new Random().Next((int)value * 3, (int)value * 5); //NOSONAR Random is safe here
                         logger?.LogInformation("Retrying after {Seconds} seconds...", randomValue);
                         return TimeSpan.FromSeconds(randomValue);
                     })
@@ -69,7 +69,7 @@ namespace AddressRegistry.Infrastructure
                     retryAttempt =>
                     {
                         var value = Math.Pow(2, retryAttempt) / 4;
-                        var randomValue = new Random().Next((int)value * 3, (int)value * 5);
+                        var randomValue = new Random().Next((int)value * 3, (int)value * 5); //NOSONAR Random is safe here
                         logger.LogInformation("Retrying after {Seconds} seconds...", randomValue);
                         return TimeSpan.FromSeconds(randomValue);
                     })

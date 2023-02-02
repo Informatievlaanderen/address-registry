@@ -60,7 +60,7 @@ namespace AddressRegistry.Consumer.Infrastructure
                 {
                     SelfLog.Enable(Console.WriteLine);
 
-                    Log.Logger = new LoggerConfiguration()
+                    Log.Logger = new LoggerConfiguration() //NOSONAR logging configuration is safe
                         .ReadFrom.Configuration(hostContext.Configuration)
                         .Enrich.FromLogContext()
                         .Enrich.WithMachineName()
@@ -74,7 +74,7 @@ namespace AddressRegistry.Consumer.Infrastructure
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
-                    var loggerFactory = new SerilogLoggerFactory(Log.Logger);
+                    var loggerFactory = new SerilogLoggerFactory(Log.Logger); //NOSONAR logging configuration is safe
 
                     services
                         .AddScoped(s => new TraceDbConnection<IdempotentConsumerContext>(
@@ -104,7 +104,7 @@ namespace AddressRegistry.Consumer.Infrastructure
                 .ConfigureContainer<ContainerBuilder>((hostContext, containerBuilder) =>
                 {
                     var services = new ServiceCollection();
-                    var loggerFactory = new SerilogLoggerFactory(Log.Logger);
+                    var loggerFactory = new SerilogLoggerFactory(Log.Logger); //NOSONAR logging configuration is safe
 
                     containerBuilder.Register(_ =>
                     {

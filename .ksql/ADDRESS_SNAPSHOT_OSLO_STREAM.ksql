@@ -1,4 +1,5 @@
 CREATE OR REPLACE STREAM address_snapshot_oslo_stream (
+  messageKey varchar KEY,
   `@context` varchar,
   `@type` varchar,
   identificator STRUCT<id varchar, naamruimte varchar, objectId varchar, versieId varchar>,

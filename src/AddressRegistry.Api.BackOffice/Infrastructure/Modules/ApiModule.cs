@@ -54,13 +54,12 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
                 .AsSelf()
                 .InstancePerLifetimeScope();
 
-            builder.RegisterModule(new IdempotencyModule(
-                _services,
+            _services.ConfigureIdempotency(
                 _configuration.GetSection(IdempotencyConfiguration.Section).Get<IdempotencyConfiguration>()
                     .ConnectionString,
                 new IdempotencyMigrationsTableInfo(Schema.Import),
                 new IdempotencyTableInfo(Schema.Import),
-                _loggerFactory));
+                _loggerFactory);
 
             builder.RegisterModule(new EnvelopeModule());
             builder.RegisterModule(new BackOfficeModule(_configuration, _services, _loggerFactory));

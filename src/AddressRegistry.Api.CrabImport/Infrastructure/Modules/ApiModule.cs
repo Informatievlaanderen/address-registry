@@ -40,13 +40,14 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure.Modules
             builder
                 .RegisterModule(new LegacyModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new EnvelopeModule())
-                .RegisterModule(new EditModule(_configuration, _services, _loggerFactory))
-                .RegisterModule(new IdempotencyModule(
-                    _services,
-                    _configuration.GetSection(IdempotencyConfiguration.Section).Get<IdempotencyConfiguration>().ConnectionString,
-                    new IdempotencyMigrationsTableInfo(Schema.Import),
-                    new IdempotencyTableInfo(Schema.Import),
-                    _loggerFactory));
+                .RegisterModule(new EditModule(_configuration, _services, _loggerFactory));
+            
+            _services.ConfigureIdempotency(
+                _configuration.GetSection(IdempotencyConfiguration.Section).Get<IdempotencyConfiguration>()
+                    .ConnectionString,
+                new IdempotencyMigrationsTableInfo(Schema.Import),
+                new IdempotencyTableInfo(Schema.Import),
+                _loggerFactory);
 
             builder
                 .RegisterType<IdempotentCommandHandlerModule>()

@@ -84,6 +84,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(
                 new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))), 1, 1);
             stream.Messages.First().JsonMetadata.Should().Contain(eTagResponse.ETag);
+            stream.Messages.First().JsonMetadata.Should().Contain(Provenance.ProvenanceMetadataKey.ToLower());
         }
 
         [Fact]

@@ -7,20 +7,20 @@ namespace AddressRegistry.Consumer.Projections
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts.StreetNameRegistry;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
-    using NodaTime.Text;
+    using NodaTime;
     using Contracts = Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common;
     using Provenance = Be.Vlaanderen.Basisregisters.GrAr.Provenance.Provenance;
     using StreetNameId = AddressRegistry.StreetName.StreetNameId;
 
     public class StreetNameKafkaProjection : ConnectedProjection<CommandHandler>
     {
-        private static Provenance FromProvenance(Contracts.Provenance provenance) =>
+        private static Provenance FromProvenance(Contracts.Provenance provenance, Modification modification = Modification.Update) =>
             new Provenance(
-                InstantPattern.General.Parse(provenance.Timestamp).GetValueOrThrow(),
-                Enum.Parse<Application>(provenance.Application),
+                SystemClock.Instance.GetCurrentInstant(),
+                Application.StreetNameRegistry,
                 new Reason(provenance.Reason),
-                new Operator(string.Empty), // TODO: municipality registry?
-                Enum.Parse<Modification>(provenance.Modification),
+                new Operator(string.Empty),
+                modification,
                 Enum.Parse<Organisation>(provenance.Organisation));
 
         public static IHasCommandProvenance GetCommand(IQueueMessage message)
@@ -36,7 +36,7 @@ namespace AddressRegistry.Consumer.Projections
                     new MunicipalityId(MunicipalityId.CreateFor(msg.MunicipalityId)),
                     new NisCode(msg.NisCode),
                     Enum.Parse<StreetNameStatus>(msg.Status),
-                    FromProvenance(msg.Provenance)
+                    FromProvenance(msg.Provenance, Modification.Insert)
                 );
             }
 
@@ -47,7 +47,7 @@ namespace AddressRegistry.Consumer.Projections
                     new StreetNamePersistentLocalId(msg.PersistentLocalId),
                     new MunicipalityId(MunicipalityId.CreateFor(msg.MunicipalityId)),
                     StreetNameStatus.Proposed,
-                    FromProvenance(msg.Provenance)
+                    FromProvenance(msg.Provenance, Modification.Insert)
                 );
             }
 

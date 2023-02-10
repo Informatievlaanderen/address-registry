@@ -9,10 +9,12 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Microsoft;
     using Be.Vlaanderen.Basisregisters.DependencyInjection;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance.AcmIdm;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac;
-    using Consumer;
     using Consumer.Infrastructure.Modules;
     using Consumer.Read.Municipality.Infrastructure.Modules;
+    using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -47,6 +49,11 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
             builder
                 .RegisterType<IfMatchHeaderValidator>()
                 .As<IIfMatchHeaderValidator>()
+                .AsSelf();
+
+            builder.Register(c => new AcmIdmProvenanceFactory(Application.AddressRegistry, c.Resolve<IActionContextAccessor>()))
+                .As<IProvenanceFactory>()
+                .InstancePerLifetimeScope()
                 .AsSelf();
 
             builder

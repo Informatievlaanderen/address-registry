@@ -8,13 +8,14 @@ namespace AddressRegistry.Api.Oslo.Address
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
     using Consumer.Read.Municipality.Projections;
+    using Consumer.Read.StreetName.Projections;
     using NetTopologySuite.Geometries;
-    using MunicipalityLatestItem = Projections.Syndication.Municipality.MunicipalityLatestItem;
-    using StreetNameLatestItem = Projections.Syndication.StreetName.StreetNameLatestItem;
+    using NetTopologySuite.Utilities;
 
     public static class AddressMapper
     {
-        public static VolledigAdres? GetVolledigAdres(string houseNumber, string boxNumber, string postalCode, StreetNameLatestItem? streetName, Consumer.Read.Municipality.Projections.MunicipalityLatestItem? municipality)
+        public static VolledigAdres? GetVolledigAdres(string houseNumber, string boxNumber, string postalCode,
+            StreetNameLatestItem streetName, MunicipalityLatestItem? municipality)
         {
             if (streetName == null || municipality == null)
             {
@@ -32,7 +33,7 @@ namespace AddressRegistry.Api.Oslo.Address
         }
 
         public static VolledigAdres? GetVolledigAdres(string houseNumber, string boxNumber, string postalCode,
-            StreetNameLatestItem? streetName, MunicipalityLatestItem? municipality)
+            Projections.Syndication.StreetName.StreetNameLatestItem? streetName, Projections.Syndication.Municipality.MunicipalityLatestItem? municipality)
         {
             if (streetName == null || municipality == null)
             {
@@ -66,7 +67,7 @@ namespace AddressRegistry.Api.Oslo.Address
         private static void Write(Coordinate coordinate, XmlWriter writer)
         {
             writer.WriteStartElement("gml", "pos", "http://www.opengis.net/gml/3.2");
-            writer.WriteValue(string.Format(NetTopologySuite.Utilities.Global.GetNfi(), "{0} {1}", coordinate.X.ToPointGeometryCoordinateValueFormat(),
+            writer.WriteValue(string.Format(Global.GetNfi(), "{0} {1}", coordinate.X.ToPointGeometryCoordinateValueFormat(),
                 coordinate.Y.ToPointGeometryCoordinateValueFormat()));
             writer.WriteEndElement();
         }
@@ -83,8 +84,8 @@ namespace AddressRegistry.Api.Oslo.Address
 
         public static AddressPosition GetAddressPoint(
             byte[] point,
-            AddressRegistry.StreetName.GeometryMethod? method,
-            AddressRegistry.StreetName.GeometrySpecification? specification)
+            StreetName.GeometryMethod? method,
+            StreetName.GeometrySpecification? specification)
         {
             var geometry = WKBReaderFactory.CreateForLegacy().Read(point);
             var gml = GetGml(geometry);
@@ -104,13 +105,13 @@ namespace AddressRegistry.Api.Oslo.Address
             };
         }
 
-        public static PositieGeometrieMethode ConvertFromGeometryMethod(AddressRegistry.StreetName.GeometryMethod? method)
+        public static PositieGeometrieMethode ConvertFromGeometryMethod(StreetName.GeometryMethod? method)
         {
             return method switch
             {
-                AddressRegistry.StreetName.GeometryMethod.DerivedFromObject => PositieGeometrieMethode.AfgeleidVanObject,
-                AddressRegistry.StreetName.GeometryMethod.Interpolated => PositieGeometrieMethode.Geinterpoleerd,
-                AddressRegistry.StreetName.GeometryMethod.AppointedByAdministrator => PositieGeometrieMethode.AangeduidDoorBeheerder,
+                StreetName.GeometryMethod.DerivedFromObject => PositieGeometrieMethode.AfgeleidVanObject,
+                StreetName.GeometryMethod.Interpolated => PositieGeometrieMethode.Geinterpoleerd,
+                StreetName.GeometryMethod.AppointedByAdministrator => PositieGeometrieMethode.AangeduidDoorBeheerder,
                 _ => PositieGeometrieMethode.AangeduidDoorBeheerder
             };
         }
@@ -133,20 +134,20 @@ namespace AddressRegistry.Api.Oslo.Address
             };
         }
 
-        public static PositieSpecificatie ConvertFromGeometrySpecification(AddressRegistry.StreetName.GeometrySpecification? specification)
+        public static PositieSpecificatie ConvertFromGeometrySpecification(StreetName.GeometrySpecification? specification)
         {
             return specification switch
             {
-                AddressRegistry.StreetName.GeometrySpecification.Street => PositieSpecificatie.Straat,
-                AddressRegistry.StreetName.GeometrySpecification.Parcel => PositieSpecificatie.Perceel,
-                AddressRegistry.StreetName.GeometrySpecification.Lot => PositieSpecificatie.Lot,
-                AddressRegistry.StreetName.GeometrySpecification.Stand => PositieSpecificatie.Standplaats,
-                AddressRegistry.StreetName.GeometrySpecification.Berth => PositieSpecificatie.Ligplaats,
-                AddressRegistry.StreetName.GeometrySpecification.Building => PositieSpecificatie.Gebouw,
-                AddressRegistry.StreetName.GeometrySpecification.BuildingUnit => PositieSpecificatie.Gebouweenheid,
-                AddressRegistry.StreetName.GeometrySpecification.Entry => PositieSpecificatie.Ingang,
-                AddressRegistry.StreetName.GeometrySpecification.RoadSegment => PositieSpecificatie.Wegsegment,
-                AddressRegistry.StreetName.GeometrySpecification.Municipality => PositieSpecificatie.Gemeente,
+                StreetName.GeometrySpecification.Street => PositieSpecificatie.Straat,
+                StreetName.GeometrySpecification.Parcel => PositieSpecificatie.Perceel,
+                StreetName.GeometrySpecification.Lot => PositieSpecificatie.Lot,
+                StreetName.GeometrySpecification.Stand => PositieSpecificatie.Standplaats,
+                StreetName.GeometrySpecification.Berth => PositieSpecificatie.Ligplaats,
+                StreetName.GeometrySpecification.Building => PositieSpecificatie.Gebouw,
+                StreetName.GeometrySpecification.BuildingUnit => PositieSpecificatie.Gebouweenheid,
+                StreetName.GeometrySpecification.Entry => PositieSpecificatie.Ingang,
+                StreetName.GeometrySpecification.RoadSegment => PositieSpecificatie.Wegsegment,
+                StreetName.GeometrySpecification.Municipality => PositieSpecificatie.Gemeente,
                 _ => PositieSpecificatie.Gemeente
             };
         }
@@ -163,19 +164,19 @@ namespace AddressRegistry.Api.Oslo.Address
             };
         }
 
-        public static AdresStatus ConvertFromAddressStatus(AddressRegistry.StreetName.AddressStatus? status)
+        public static AdresStatus ConvertFromAddressStatus(StreetName.AddressStatus? status)
         {
             return status switch
             {
-                AddressRegistry.StreetName.AddressStatus.Proposed => AdresStatus.Voorgesteld,
-                AddressRegistry.StreetName.AddressStatus.Retired => AdresStatus.Gehistoreerd,
-                AddressRegistry.StreetName.AddressStatus.Current => AdresStatus.InGebruik,
-                AddressRegistry.StreetName.AddressStatus.Rejected => AdresStatus.Afgekeurd,
+                StreetName.AddressStatus.Proposed => AdresStatus.Voorgesteld,
+                StreetName.AddressStatus.Retired => AdresStatus.Gehistoreerd,
+                StreetName.AddressStatus.Current => AdresStatus.InGebruik,
+                StreetName.AddressStatus.Rejected => AdresStatus.Afgekeurd,
                 _ => AdresStatus.InGebruik
             };
         }
 
-        public static KeyValuePair<Taal, string?> GetDefaultMunicipalityName(Consumer.Read.Municipality.Projections.MunicipalityLatestItem municipality)
+        public static KeyValuePair<Taal, string?> GetDefaultMunicipalityName(MunicipalityLatestItem municipality)
         {
             return municipality.PrimaryLanguage switch
             {
@@ -186,7 +187,7 @@ namespace AddressRegistry.Api.Oslo.Address
             };
         }
 
-        public static KeyValuePair<Taal, string?> GetDefaultMunicipalityName(MunicipalityLatestItem municipality)
+        public static KeyValuePair<Taal, string?> GetDefaultMunicipalityName(Projections.Syndication.Municipality.MunicipalityLatestItem municipality)
         {
             return municipality.PrimaryLanguage switch
             {
@@ -199,7 +200,7 @@ namespace AddressRegistry.Api.Oslo.Address
         }
 
         public static KeyValuePair<Taal, string?> GetDefaultStreetNameName(
-            StreetNameLatestItem streetName,
+            Projections.Syndication.StreetName.StreetNameLatestItem streetName,
             Taal? municipalityLanguage)
         {
             return municipalityLanguage switch
@@ -212,7 +213,7 @@ namespace AddressRegistry.Api.Oslo.Address
             };
         }
 
-        public static KeyValuePair<Taal, string?> GetDefaultStreetNameName(StreetNameLatestItem streetName, MunicipalityLanguage municipalityLanguage)
+        public static KeyValuePair<Taal, string?> GetDefaultStreetNameName(Projections.Syndication.StreetName.StreetNameLatestItem streetName, MunicipalityLanguage municipalityLanguage)
         {
             return municipalityLanguage switch
             {
@@ -224,7 +225,7 @@ namespace AddressRegistry.Api.Oslo.Address
         }
 
         public static KeyValuePair<Taal, string?> GetDefaultStreetNameName(
-            Consumer.Read.StreetName.Projections.StreetNameLatestItem streetName,
+            StreetNameLatestItem streetName,
             MunicipalityLanguage? municipalityLanguage)
         {
             return municipalityLanguage switch
@@ -237,7 +238,7 @@ namespace AddressRegistry.Api.Oslo.Address
         }
 
         public static KeyValuePair<Taal, string?>? GetDefaultHomonymAddition(
-            StreetNameLatestItem streetName,
+            Projections.Syndication.StreetName.StreetNameLatestItem streetName,
             Taal? municipalityLanguage)
         {
             if (!streetName.HasHomonymAddition)
@@ -256,7 +257,7 @@ namespace AddressRegistry.Api.Oslo.Address
         }
 
         public static KeyValuePair<Taal, string?>? GetDefaultHomonymAddition(
-            Consumer.Read.StreetName.Projections.StreetNameLatestItem streetName,
+            StreetNameLatestItem streetName,
             MunicipalityLanguage? municipalityLanguage)
         {
             if (!streetName.HasHomonymAddition)

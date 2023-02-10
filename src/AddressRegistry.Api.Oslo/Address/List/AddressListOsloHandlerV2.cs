@@ -43,12 +43,12 @@ namespace AddressRegistry.Api.Oslo.Address.List
                     .ToListAsync(cancellationToken);
 
             var streetNameIdsV2 = addressesV2
-                .Select(x => x.StreetNamePersistentLocalId.ToString())
+                .Select(x => x.StreetNamePersistentLocalId)
                 .Distinct()
                 .ToList();
 
             var streetNamesV2 = await _addressQueryContext
-                .StreetNameLatestItems
+                .StreetNameConsumerLatestItems
                 .Where(x => streetNameIdsV2.Contains(x.PersistentLocalId))
                 .ToListAsync(cancellationToken);
 
@@ -65,7 +65,7 @@ namespace AddressRegistry.Api.Oslo.Address.List
             var addressListItemResponsesV2 = addressesV2
                 .Select(a =>
                 {
-                    var streetName = streetNamesV2.SingleOrDefault(x => x.PersistentLocalId == a.StreetNamePersistentLocalId.ToString());
+                    var streetName = streetNamesV2.SingleOrDefault(x => x.PersistentLocalId == a.StreetNamePersistentLocalId);
                     MunicipalityLatestItem? municipality = null;
                     if (streetName != null)
                     {

@@ -5,14 +5,16 @@ namespace AddressRegistry.Api.Legacy.Address
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
     using Consumer.Read.Municipality.Projections;
-    using Projections.Syndication.StreetName;
+    using Consumer.Read.StreetName.Projections;
     using StreetName;
     using AddressStatus = AddressRegistry.Address.AddressStatus;
     using MunicipalityBosaItem = Projections.Syndication.Municipality.MunicipalityBosaItem;
+    using StreetNameBosaItem = Projections.Syndication.StreetName.StreetNameBosaItem;
 
     public static class AddressMapper
     {
-        public static VolledigAdres? GetVolledigAdres(string houseNumber, string boxNumber, string postalCode, StreetNameLatestItem? streetName, MunicipalityLatestItem? municipality)
+        public static VolledigAdres? GetVolledigAdres(string houseNumber, string boxNumber, string postalCode,
+            StreetNameLatestItem? streetName, MunicipalityLatestItem? municipality)
         {
             if (streetName == null || municipality == null)
             {
@@ -29,7 +31,7 @@ namespace AddressRegistry.Api.Legacy.Address
                 defaultMunicipalityName.Key);
         }
 
-        public static VolledigAdres? GetVolledigAdres(string houseNumber, string boxNumber, string postalCode, StreetNameLatestItem? streetName, Projections.Syndication.Municipality.MunicipalityLatestItem? municipality)
+        public static VolledigAdres? GetVolledigAdres(string houseNumber, string boxNumber, string postalCode, Projections.Syndication.StreetName.StreetNameLatestItem? streetName, Projections.Syndication.Municipality.MunicipalityLatestItem? municipality)
         {
             if (streetName == null || municipality == null)
             {
@@ -176,7 +178,7 @@ namespace AddressRegistry.Api.Legacy.Address
                 _ => AddressRegistry.StreetName.AddressStatus.Current
             };
         }
-        
+
         public static KeyValuePair<Taal, string?> GetDefaultMunicipalityName(MunicipalityLatestItem municipality)
         {
             return municipality.PrimaryLanguage switch
@@ -210,7 +212,7 @@ namespace AddressRegistry.Api.Legacy.Address
             };
         }
 
-        public static KeyValuePair<Taal, string?> GetDefaultStreetNameName(StreetNameLatestItem streetName, Taal? taal)
+        public static KeyValuePair<Taal, string?> GetDefaultStreetNameName(Projections.Syndication.StreetName.StreetNameLatestItem streetName, Taal? taal)
         {
             return taal switch
             {
@@ -221,7 +223,7 @@ namespace AddressRegistry.Api.Legacy.Address
             };
         }
 
-        public static KeyValuePair<Taal, string?> GetDefaultStreetNameName(StreetNameLatestItem streetName, MunicipalityLanguage municipalityLanguage)
+        public static KeyValuePair<Taal, string?> GetDefaultStreetNameName(Projections.Syndication.StreetName.StreetNameLatestItem streetName, MunicipalityLanguage municipalityLanguage)
         {
             return municipalityLanguage switch
             {
@@ -233,7 +235,7 @@ namespace AddressRegistry.Api.Legacy.Address
         }
 
         public static KeyValuePair<Taal, string?> GetDefaultStreetNameName(
-            Consumer.Read.StreetName.Projections.StreetNameLatestItem streetName,
+            StreetNameLatestItem streetName,
             MunicipalityLanguage? municipalityLanguage)
         {
             return municipalityLanguage switch
@@ -245,7 +247,7 @@ namespace AddressRegistry.Api.Legacy.Address
             };
         }
 
-        public static KeyValuePair<Taal, string?>? GetDefaultHomonymAddition(StreetNameLatestItem streetName, Taal? municipalityLanguage)
+        public static KeyValuePair<Taal, string?>? GetDefaultHomonymAddition(Projections.Syndication.StreetName.StreetNameLatestItem streetName, Taal? municipalityLanguage)
         {
             if (!streetName.HasHomonymAddition)
             {
@@ -262,7 +264,7 @@ namespace AddressRegistry.Api.Legacy.Address
         }
 
         public static KeyValuePair<Taal, string?>? GetDefaultHomonymAddition(
-            Consumer.Read.StreetName.Projections.StreetNameLatestItem streetName,
+            StreetNameLatestItem streetName,
             MunicipalityLanguage? municipalityLanguage)
         {
             if (!streetName.HasHomonymAddition)

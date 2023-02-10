@@ -8,6 +8,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressDeregulation
     using StreetName;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
     using Be.Vlaanderen.Basisregisters.Sqs.Requests;
     using FluentAssertions;
@@ -15,6 +16,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressDeregulation
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Moq;
+    using NodaTime;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -33,17 +35,29 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressDeregulation
             var ticketId = Fixture.Create<Guid>();
             var expectedLocationResult = new LocationResult(CreateTicketUri(ticketId));
 
+            var expectedIfMatchHeader = Fixture.Create<string>();
+
             MockMediator
                 .Setup(x => x.Send(It.IsAny<CorrectAddressDeregulationSqsRequest>(), CancellationToken.None))
                 .Returns(Task.FromResult(expectedLocationResult));
 
             var result = (AcceptedResult)await _controller.CorrectDeregulation(
                 MockIfMatchValidator(true),
-                ifMatchHeaderValue: null,
+                ifMatchHeaderValue: expectedIfMatchHeader,
                 Fixture.Create<AddressPersistentLocalId>());
 
             result.Should().NotBeNull();
             AssertLocation(result.Location, ticketId);
+
+            MockMediator.Verify(x =>
+                x.Send(
+                    It.Is<CorrectAddressDeregulationSqsRequest>(sqsRequest =>
+                        sqsRequest.ProvenanceData.Timestamp != Instant.MinValue
+                        && sqsRequest.ProvenanceData.Application == Application.AddressRegistry
+                        && sqsRequest.ProvenanceData.Modification == Modification.Update
+                        && sqsRequest.IfMatchHeaderValue == expectedIfMatchHeader
+                    ),
+                    CancellationToken.None));
         }
 
         [Fact]

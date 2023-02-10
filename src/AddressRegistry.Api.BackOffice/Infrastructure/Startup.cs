@@ -15,6 +15,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc.ApiExplorer;
+    using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -111,7 +112,8 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure
                         }
                     }
                     .EnableJsonErrorActionFilterOption())
-                .Configure<TicketingOptions>(_configuration.GetSection(TicketingModule.TicketingServiceConfigKey));
+                .Configure<TicketingOptions>(_configuration.GetSection(TicketingModule.TicketingServiceConfigKey))
+                .AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterModule(new ApiModule(_configuration, services, _loggerFactory));

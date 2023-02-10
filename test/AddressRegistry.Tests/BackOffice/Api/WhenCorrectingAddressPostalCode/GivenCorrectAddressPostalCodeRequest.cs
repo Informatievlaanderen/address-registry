@@ -8,6 +8,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPostalCode
     using AddressRegistry.Api.BackOffice.Abstractions.SqsRequests;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
     using Be.Vlaanderen.Basisregisters.Sqs.Requests;
     using FluentAssertions;
@@ -15,6 +16,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPostalCode
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Moq;
+    using NodaTime;
     using StreetName;
     using Xunit;
     using Xunit.Abstractions;
@@ -34,19 +36,34 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressPostalCode
             var ticketId = Fixture.Create<Guid>();
             var expectedLocationResult = new LocationResult(CreateTicketUri(ticketId));
 
+            var expectedIfMatchHeader = Fixture.Create<string>();
+
             MockMediator
                 .Setup(x => x.Send(It.IsAny<CorrectAddressPostalCodeSqsRequest>(), CancellationToken.None))
                 .Returns(Task.FromResult(expectedLocationResult));
+
+            var request = Fixture.Create<CorrectAddressPostalCodeRequest>();
 
             var result = (AcceptedResult)await _controller.CorrectPostalCode(
                 MockValidRequestValidator<CorrectAddressPostalCodeRequest>(),
                 MockIfMatchValidator(true),
                 Fixture.Create<AddressPersistentLocalId>(),
-                Fixture.Create<CorrectAddressPostalCodeRequest>(),
-                ifMatchHeaderValue: null);
+                request,
+                ifMatchHeaderValue: expectedIfMatchHeader);
 
             result.Should().NotBeNull();
             AssertLocation(result.Location, ticketId);
+
+            MockMediator.Verify(x =>
+                x.Send(
+                    It.Is<CorrectAddressPostalCodeSqsRequest>(sqsRequest =>
+                        sqsRequest.Request == request
+                        && sqsRequest.ProvenanceData.Timestamp != Instant.MinValue
+                        && sqsRequest.ProvenanceData.Application == Application.AddressRegistry
+                        && sqsRequest.ProvenanceData.Modification == Modification.Update
+                        && sqsRequest.IfMatchHeaderValue == expectedIfMatchHeader
+                    ),
+                    CancellationToken.None));
         }
 
         [Fact]

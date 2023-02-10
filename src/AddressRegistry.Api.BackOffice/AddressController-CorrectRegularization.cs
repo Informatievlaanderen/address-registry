@@ -57,7 +57,7 @@ namespace AddressRegistry.Api.BackOffice
                     Request = new CorrectAddressRegularizationRequest {PersistentLocalId = persistentLocalId},
                     IfMatchHeaderValue = ifMatchHeaderValue,
                     Metadata = GetMetadata(),
-                    ProvenanceData = new ProvenanceData(CreateFakeProvenance())
+                    ProvenanceData = new ProvenanceData(CreateProvenance(Modification.Update))
                 };
 
                 var sqsResult = await _mediator.Send(sqsRequest, cancellationToken);

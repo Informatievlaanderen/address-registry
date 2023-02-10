@@ -11,12 +11,16 @@ namespace AddressRegistry.Tests.BackOffice.Api
     using StreetName;
     using Tests;
     using Be.Vlaanderen.Basisregisters.Api;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance.AcmIdm;
     using FluentAssertions;
     using FluentValidation;
     using FluentValidation.Results;
     using global::AutoFixture;
     using MediatR;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.Extensions.Options;
     using Moq;
     using StreetName.Exceptions;
@@ -32,6 +36,7 @@ namespace AddressRegistry.Tests.BackOffice.Api
 
         protected IOptions<TicketingOptions> TicketingOptions { get; }
         protected Mock<IMediator> MockMediator { get; }
+        protected Mock<IActionContextAccessor> MockActionContext { get; set; }
 
         protected BackOfficeApiTest(ITestOutputHelper testOutputHelper)
             : base(testOutputHelper)
@@ -41,6 +46,9 @@ namespace AddressRegistry.Tests.BackOffice.Api
             TicketingOptions.Value.InternalBaseUrl = InternalTicketUrl;
 
             MockMediator = new Mock<IMediator>();
+
+            MockActionContext = new Mock<IActionContextAccessor>();
+            MockActionContext.SetupProperty(x => x.ActionContext, new ActionContext{ HttpContext = new DefaultHttpContext()});
         }
 
         protected Uri CreateTicketUri(Guid ticketId)
@@ -48,9 +56,14 @@ namespace AddressRegistry.Tests.BackOffice.Api
             return new Uri($"{InternalTicketUrl}/tickets/{ticketId:D}");
         }
 
-        protected T CreateApiBusControllerWithUser<T>() where T : ApiController
+        protected TApiController CreateApiBusControllerWithUser<TApiController>() where TApiController : ApiController
         {
-            var controller = Activator.CreateInstance(typeof(T), MockMediator.Object, TicketingOptions) as T;
+            var controller = Activator.CreateInstance(
+                typeof(TApiController),
+                MockMediator.Object,
+                TicketingOptions,
+                MockActionContext.Object,
+                new AcmIdmProvenanceFactory(Application.AddressRegistry, MockActionContext.Object)) as TApiController;
 
             var claims = new List<Claim>
             {

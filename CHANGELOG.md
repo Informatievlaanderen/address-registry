@@ -1,3 +1,18 @@
+## [3.73.2](https://github.com/informatievlaanderen/address-registry/compare/v3.73.1...v3.73.2) (2023-02-13)
+
+
+### Bug Fixes
+
+* add acmidm provenance impl ([adbb817](https://github.com/informatievlaanderen/address-registry/commit/adbb817f5f62eedb61a7c207fb7b652ad7bcbe80))
+* clean up csproj ([3970c52](https://github.com/informatievlaanderen/address-registry/commit/3970c52618d095ed54a63a6295efc8b749e3c418))
+* event jsondata should contain provenance ([30ab13d](https://github.com/informatievlaanderen/address-registry/commit/30ab13ddf81d18ed76402df47ccfb38a145fb869))
+* fix sonar security warning ([edbc64c](https://github.com/informatievlaanderen/address-registry/commit/edbc64c246cb678338bbdce56d6b9223b2d3e72f))
+* fix sonar security warnings ([16ab234](https://github.com/informatievlaanderen/address-registry/commit/16ab23404cf6c444c9cf02a0602d6973fb5bf7ad))
+* place ksql in correct file ([fb1b7e7](https://github.com/informatievlaanderen/address-registry/commit/fb1b7e7dc5ea882928ae86cb723f693dbf4aec4c))
+* remove addresspersistentlocalid from proposeaddress identityfields ([4078334](https://github.com/informatievlaanderen/address-registry/commit/40783342886239d27d4a1d3900db96eca1979d92))
+* snapshot module registration ([e3c5b25](https://github.com/informatievlaanderen/address-registry/commit/e3c5b25c26130e230e0f62822c23859bbc3b63fe))
+* volledigAdres in legacy and oslo apis ([017960c](https://github.com/informatievlaanderen/address-registry/commit/017960c53d704f457d59255efe412e6397d83e7a))
+
 ## [3.73.1](https://github.com/informatievlaanderen/address-registry/compare/v3.73.0...v3.73.1) (2023-01-31)
 
 # [3.73.0](https://github.com/informatievlaanderen/address-registry/compare/v3.72.0...v3.73.0) (2023-01-25)

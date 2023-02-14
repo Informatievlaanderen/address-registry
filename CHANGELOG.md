@@ -1,3 +1,10 @@
+## [3.73.3](https://github.com/informatievlaanderen/address-registry/compare/v3.73.2...v3.73.3) (2023-02-14)
+
+
+### Bug Fixes
+
+* snapshot registration in lambda ([1c99672](https://github.com/informatievlaanderen/address-registry/commit/1c99672fdd844de6c6fc2b952ce8340a58d0d4e4))
+
 ## [3.73.2](https://github.com/informatievlaanderen/address-registry/compare/v3.73.1...v3.73.2) (2023-02-13)
 
 

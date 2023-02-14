@@ -26,26 +26,6 @@ namespace AddressRegistry.Consumer.Read.Municipality
         public override string ProjectionStateSchema => Schema.ConsumerReadMunicipality;
     }
 
-    //Classed used when running dotnet ef migrations
-    public class ConsumerContextFactory : RunnerDbContextMigrationFactory<MunicipalityConsumerContext>
-    {
-        public ConsumerContextFactory()
-            : this("ConsumerAdmin")
-        { }
-
-        public ConsumerContextFactory(string connectionStringName)
-            : base(connectionStringName, new MigrationHistoryConfiguration
-            {
-                Schema = Schema.ConsumerReadMunicipality,
-                Table = MigrationTables.ConsumerReadMunicipality
-            })
-        { }
-
-        protected override MunicipalityConsumerContext CreateContext(DbContextOptions<MunicipalityConsumerContext> migrationContextOptions) => new MunicipalityConsumerContext(migrationContextOptions);
-
-        public MunicipalityConsumerContext Create(DbContextOptions<MunicipalityConsumerContext> options) => CreateContext(options);
-    }
-
     public static class AddressDetailExtensions
     {
         public static async Task<MunicipalityLatestItem> FindAndUpdate(
@@ -62,8 +42,6 @@ namespace AddressRegistry.Consumer.Read.Municipality
                 throw DatabaseItemNotFound(municipalityId);
 
             updateFunc(municipality);
-
-            await context.SaveChangesAsync(ct);
 
             return municipality;
         }
@@ -82,8 +60,6 @@ namespace AddressRegistry.Consumer.Read.Municipality
                 throw DatabaseItemNotFound(municipalityId);
 
             updateFunc(municipality);
-
-            await context.SaveChangesAsync(ct);
 
             return municipality;
         }

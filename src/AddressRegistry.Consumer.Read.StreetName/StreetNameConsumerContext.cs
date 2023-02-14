@@ -89,8 +89,6 @@ namespace AddressRegistry.Consumer.Read.StreetName
 
             updateFunc(latestItem);
 
-            await context.SaveChangesAsync(ct);
-
             return latestItem;
         }
 
@@ -108,8 +106,6 @@ namespace AddressRegistry.Consumer.Read.StreetName
                 throw DatabaseItemNotFound(streetNamePersistentLocalId);
 
             updateFunc(latestItem);
-
-            await context.SaveChangesAsync(ct);
 
             return latestItem;
         }

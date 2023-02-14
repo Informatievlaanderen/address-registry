@@ -88,7 +88,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
                                     sqlServerOptions.EnableRetryOnFailure();
                                     sqlServerOptions.MigrationsHistoryTable(MigrationTables.ConsumerReadStreetName,
                                         Schema.ConsumerReadStreetName);
-                                }));
+                                }), ServiceLifetime.Transient);
                 })
                 .UseServiceProviderFactory(new AutofacServiceProviderFactory())
                 .ConfigureContainer<ContainerBuilder>((hostContext, builder) =>

@@ -36,7 +36,6 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
                     timestamp);
 
                 await context.MunicipalityLatestItems.AddAsync(municipality, ct);
-                await context.SaveChangesAsync(ct);
             });
 
             When<MunicipalityBecameCurrent>(async (contextFactory, message, ct) =>

@@ -1,50 +1,60 @@
 namespace AddressRegistry.Consumer.Read.Municipality
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using Autofac;
-    using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple;
+    using Autofac.Features.AttributeFilters;
+    using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
     using Projections;
 
-    public class MunicipalityBosaItemConsumer
+    public class MunicipalityBosaItemConsumer : BackgroundService
     {
-        private readonly ILifetimeScope _container;
-        private readonly KafkaOptions _options;
-        private readonly MunicipalityConsumerOptions _municipalityConsumerOptions;
+        private readonly IHostApplicationLifetime _hostApplicationLifetime;
+        private readonly IDbContextFactory<MunicipalityConsumerContext> _municipalityConsumerContextFactory;
+        private readonly IConsumer _consumer;
+        private readonly ILogger<MunicipalityBosaItemConsumer> _logger;
 
         public MunicipalityBosaItemConsumer(
-            ILifetimeScope container,
-            KafkaOptions options,
-            MunicipalityConsumerOptions municipalityConsumerOptions)
+            IHostApplicationLifetime hostApplicationLifetime,
+            [KeyFilter(nameof(MunicipalityBosaItemConsumer))] IConsumer consumer,
+            IDbContextFactory<MunicipalityConsumerContext> municipalityConsumerContextFactory,
+            ILoggerFactory loggerFactory)
         {
-            _container = container;
-            _options = options;
-            _municipalityConsumerOptions = municipalityConsumerOptions;
+            _hostApplicationLifetime = hostApplicationLifetime;
+            _consumer = consumer;
+            _municipalityConsumerContextFactory = municipalityConsumerContextFactory;
+
+            _logger = loggerFactory.CreateLogger<MunicipalityBosaItemConsumer>();
         }
 
-        public Task Start(CancellationToken cancellationToken = default)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var projector = new ConnectedProjector<MunicipalityConsumerContext>(Resolve.WhenEqualToHandlerMessageType(new MunicipalityBosaItemProjections().Handlers));
+            var projector = new ConnectedProjector<MunicipalityConsumerContext>(
+                Resolve.WhenEqualToHandlerMessageType(new MunicipalityBosaItemProjections().Handlers));
 
-            var consumerGroupId = $"{nameof(AddressRegistry)}.{nameof(MunicipalityBosaItemConsumer)}.{_municipalityConsumerOptions.Topic}{_municipalityConsumerOptions.ConsumerGroupSuffix}";
-            return KafkaConsumer.Consume(
-                new KafkaConsumerOptions(
-                    _options.BootstrapServers,
-                    _options.SaslUserName,
-                    _options.SaslPassword,
-                    consumerGroupId,
-                    _municipalityConsumerOptions.Topic,
-                    async message =>
-                    {
-                        var municipalityConsumerContext = _container.Resolve<MunicipalityConsumerContext>();
-                        await projector.ProjectAsync(municipalityConsumerContext, message, CancellationToken.None);
-                        await municipalityConsumerContext.SaveChangesAsync(CancellationToken.None);
-                    },
-                    noMessageFoundDelay: 300,
-                    offset: null,
-                    _options.JsonSerializerSettings),
-                cancellationToken);
+            try
+            {
+                await _consumer.ConsumeContinuously(async message =>
+                {
+                    _logger.LogInformation("Handling next message");
+
+                    await using var context = await _municipalityConsumerContextFactory.CreateDbContextAsync(stoppingToken);
+
+                    await projector.ProjectAsync(context, message, stoppingToken);
+
+                    await context.SaveChangesAsync(stoppingToken);
+                }, stoppingToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical(ex, $"Critical error occurred in {nameof(MunicipalityBosaItemConsumer)}");
+                _hostApplicationLifetime.StopApplication();
+                throw;
+            }
         }
     }
 }

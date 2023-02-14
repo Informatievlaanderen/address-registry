@@ -31,7 +31,6 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
                     RegionFilter.IsFlemishRegion(message.NisCode));
 
                 await context.MunicipalityBosaItems.AddAsync(municipality, ct);
-                await context.SaveChangesAsync(ct);
             });
 
             When<MunicipalityBecameCurrent>(async (contextFactory, message, ct) =>

@@ -17,7 +17,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
     public abstract class SqsLambdaHandler<TSqsLambdaRequest> : SqsLambdaHandlerBase<TSqsLambdaRequest>
         where TSqsLambdaRequest : SqsLambdaRequest
     {
-        private readonly IStreetNames _streetNames;
+        protected readonly IStreetNames StreetNames;
 
         protected string DetailUrlFormat { get; }
 
@@ -29,7 +29,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             IIdempotentCommandHandler idempotentCommandHandler)
             : base(retryPolicy, ticketing, idempotentCommandHandler)
         {
-            _streetNames = streetNames;
+            StreetNames = streetNames;
 
             DetailUrlFormat = configuration["DetailUrl"];
             if (string.IsNullOrEmpty(DetailUrlFormat))
@@ -64,7 +64,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             CancellationToken cancellationToken)
         {
             var aggregate =
-                await _streetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), cancellationToken);
+                await StreetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), cancellationToken);
             var streetNameHash = aggregate.GetAddressHash(addressPersistentLocalId);
             return streetNameHash;
         }

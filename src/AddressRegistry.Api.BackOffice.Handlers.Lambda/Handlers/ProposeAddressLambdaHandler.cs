@@ -76,17 +76,25 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                     cmd,
                     request.Metadata,
                     cancellationToken);
+
+                await _backOfficeContext.AddIdempotentAddressStreetNameIdRelation(addressPersistentLocalId, request.StreetNamePersistentLocalId(), cancellationToken);
+                await _backOfficeContext.SaveChangesAsync(cancellationToken);
+
+                var lastHash = await GetHash(request.StreetNamePersistentLocalId(), addressPersistentLocalId, cancellationToken);
+                return new ETagResponse(string.Format(DetailUrlFormat, addressPersistentLocalId), lastHash);
             }
             catch (IdempotencyException)
             {
-                // Idempotent: Do Nothing return last etag
+                var streetName = await StreetNames.GetAsync(new StreetNameStreamId(request.StreetNamePersistentLocalId()), cancellationToken);
+                var address = streetName.StreetNameAddresses.FindActiveParentByHouseNumber(cmd.HouseNumber);
+                if (cmd.BoxNumber is not null)
+                {
+                    address = address.Children.Single(x => x.BoxNumber == cmd.BoxNumber && x.IsActive);
+                }
+
+                var lastHash = await GetHash(request.StreetNamePersistentLocalId(), address.AddressPersistentLocalId, cancellationToken);
+                return new ETagResponse(string.Format(DetailUrlFormat, addressPersistentLocalId), lastHash);
             }
-
-            await _backOfficeContext.AddIdempotentAddressStreetNameIdRelation(addressPersistentLocalId, request.StreetNamePersistentLocalId(), cancellationToken);
-            await _backOfficeContext.SaveChangesAsync(cancellationToken);
-
-            var lastHash = await GetHash(request.StreetNamePersistentLocalId(), addressPersistentLocalId, cancellationToken);
-            return new ETagResponse(string.Format(DetailUrlFormat, addressPersistentLocalId), lastHash);
         }
 
         protected override TicketError? InnerMapDomainException(DomainException exception, ProposeAddressLambdaRequest request)

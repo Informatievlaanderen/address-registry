@@ -94,36 +94,63 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             var nisCode = Fixture.Create<NisCode>();
             var postInfoId = Fixture.Create<PostalCode>();
             var houseNumber = Fixture.Create<HouseNumber>();
+            var boxNumber = Fixture.Create<BoxNumber>();
             var provenanceData = Fixture.Create<ProvenanceData>();
 
-            var persistentLocalId = Fixture.Create<PersistentLocalId>();
+            var houseNumberPersistentLocalId = new PersistentLocalId(1);
+            var boxNumberPersistentLocalId = new PersistentLocalId(2);
+            var duplicatePersistentLocalId = new PersistentLocalId(3);
             var persistentLocalIdGenerator = new Mock<IPersistentLocalIdGenerator>();
             persistentLocalIdGenerator
-                .Setup(x => x.GenerateNextPersistentLocalId())
-                .Returns(persistentLocalId);
-
-            var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var proposeAddressLambdaHandler = CreateProposeAddressLambdaHandler(
-                new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext),
-                persistentLocalIdGenerator.Object,
-                MockTicketing(result => { eTagResponse = result; }).Object);
+                .SetupSequence(x => x.GenerateNextPersistentLocalId())
+                .Returns(houseNumberPersistentLocalId)
+                .Returns(boxNumberPersistentLocalId)
+                .Returns(duplicatePersistentLocalId);
 
             await SetupMunicipalityAndStreetName(postInfoId, nisCode, Fixture.Create<MunicipalityId>(), streetNamePersistentLocalId);
 
             // Act
-            await proposeAddressLambdaHandler.Handle(
+            await using var scope1 = Container.BeginLifetimeScope();
+            await CreateProposeAddressLambdaHandler(
+                new IdempotentCommandHandler(scope1.Resolve<ICommandHandlerResolver>(), _idempotencyContext),
+                persistentLocalIdGenerator.Object,
+                MockTicketing(_ => {}).Object,
+                scope1.Resolve<IStreetNames>()).Handle(
                 CreateProposeAddressLambdaRequest(streetNamePersistentLocalId, postInfoId, houseNumber, boxNumber: null, provenanceData), CancellationToken.None);
-            await proposeAddressLambdaHandler.Handle(
-                CreateProposeAddressLambdaRequest(streetNamePersistentLocalId, postInfoId, houseNumber, boxNumber: null, provenanceData), CancellationToken.None);
+
+            await using var scope2 = Container.BeginLifetimeScope();
+            var firstTagResponse = new ETagResponse("", "");
+            await CreateProposeAddressLambdaHandler(
+                new IdempotentCommandHandler(scope2.Resolve<ICommandHandlerResolver>(), _idempotencyContext),
+                persistentLocalIdGenerator.Object,
+                MockTicketing(result => { firstTagResponse = result; }).Object,
+                scope2.Resolve<IStreetNames>()).Handle(
+                CreateProposeAddressLambdaRequest(streetNamePersistentLocalId, postInfoId, houseNumber, boxNumber: boxNumber, provenanceData), CancellationToken.None);
+
+            await using var scope3 = Container.BeginLifetimeScope();
+            var duplicateTagResponse = new ETagResponse("", "");
+            await CreateProposeAddressLambdaHandler(
+                new IdempotentCommandHandler(scope3.Resolve<ICommandHandlerResolver>(), _idempotencyContext),
+                persistentLocalIdGenerator.Object,
+                MockTicketing(result => { duplicateTagResponse = result; }).Object,
+                scope3.Resolve<IStreetNames>()).Handle(
+                CreateProposeAddressLambdaRequest(streetNamePersistentLocalId, postInfoId, houseNumber, boxNumber: boxNumber, provenanceData), CancellationToken.None);
 
             // Assert
             var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(
-                new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))), 1, 1);
-            stream.Messages.First().JsonMetadata.Should().Contain(eTagResponse.ETag);
+                new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))), 2, 1);
+            stream.Messages.First().JsonMetadata.Should().Contain(firstTagResponse.ETag);
 
-            var streetNameAddressRelation = await _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.FindAsync((int)persistentLocalId);
-            streetNameAddressRelation.Should().NotBeNull();
-            streetNameAddressRelation.StreetNamePersistentLocalId.Should().Be(streetNamePersistentLocalId);
+            firstTagResponse.ETag.Should().Be(duplicateTagResponse.ETag);
+
+            var houseNumberRelation = await _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.FindAsync((int)houseNumberPersistentLocalId);
+            houseNumberRelation.Should().NotBeNull();
+            houseNumberRelation.StreetNamePersistentLocalId.Should().Be(streetNamePersistentLocalId);
+            var boxNumberRelation = await _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.FindAsync((int)boxNumberPersistentLocalId);
+            boxNumberRelation.Should().NotBeNull();
+            boxNumberRelation.StreetNamePersistentLocalId.Should().Be(streetNamePersistentLocalId);
+
+            (await _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.FindAsync((int)duplicatePersistentLocalId)).Should().BeNull();
         }
 
         [Fact]
@@ -454,13 +481,14 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
         private ProposeAddressLambdaHandler CreateProposeAddressLambdaHandler(
             IIdempotentCommandHandler idempotentCommandHandler,
             IPersistentLocalIdGenerator persistentLocalIdGenerator,
-            ITicketing ticketing)
+            ITicketing ticketing,
+            IStreetNames? streetNames = null)
         {
             var proposeAddressLambdaHandler = new ProposeAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing,
-                _streetNames,
+                streetNames ?? _streetNames,
                 idempotentCommandHandler,
                 _backOfficeContext,
                 _syndicationContext,

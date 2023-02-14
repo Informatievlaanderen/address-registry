@@ -66,6 +66,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
                 return type => ctx.Resolve(type);
             });
 
+            builder.RegisterSnapshotModule(configuration);
+
             builder.RegisterAssemblyTypes(typeof(MessageHandler).GetTypeInfo().Assembly).AsImplementedInterfaces();
 
             builder.Register(c => configuration)

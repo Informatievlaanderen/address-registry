@@ -7,8 +7,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
     using System.Reflection;
     using Abstractions;
     using Abstractions.SqsRequests;
-    using AddressRegistry.Infrastructure;
-    using AddressRegistry.Infrastructure.Modules;
+    using Infrastructure;
+    using Infrastructure.Modules;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Aws.Lambda;
@@ -18,9 +18,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Infrastructure;
-    using Consumer;
     using Consumer.Infrastructure.Modules;
-    using Consumer.Read.Municipality;
     using Consumer.Read.Municipality.Infrastructure.Modules;
     using MediatR;
     using Microsoft.Extensions.Configuration;
@@ -28,7 +26,6 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
     using Projections.Syndication;
-    using StreetName;
     using TicketingService.Proxy.HttpProxy;
 
     public class Function : FunctionBase
@@ -92,8 +89,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
             builder
                 .RegisterModule(new DataDogModule(configuration))
                 .RegisterModule<EnvelopeModule>()
-                .RegisterModule(new EditModule(configuration, services, loggerFactory))
-                .RegisterModule(new ConsumerModule(configuration, services, loggerFactory))
+                .RegisterModule(new SequenceModule(configuration, services, loggerFactory))
+                .RegisterModule(new CommandHandlingModule(configuration))
                 .RegisterModule(new BackOfficeModule(configuration, services, loggerFactory))
                 .RegisterModule(new MunicipalityConsumerModule(configuration, services, loggerFactory))
                 .RegisterModule(new SyndicationModule(configuration, services, loggerFactory));

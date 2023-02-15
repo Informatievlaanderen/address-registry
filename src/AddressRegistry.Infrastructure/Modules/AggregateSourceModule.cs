@@ -34,12 +34,10 @@ namespace AddressRegistry.Infrastructure.Modules
                 .Register(c => new StreetNameFactory(snapshotStrategy))
                 .As<IStreetNameFactory>();
 
-            builder.RegisterModule<RepositoriesModule>();
-
             builder
-                .RegisterModule(new EventHandlingModule(typeof(DomainAssemblyMarker).Assembly, eventSerializerSettings));
-
-            builder.RegisterEventstreamModule(_configuration);
+                .RegisterModule<RepositoriesModule>()
+                .RegisterModule(new EventHandlingModule(typeof(DomainAssemblyMarker).Assembly, eventSerializerSettings))
+                .RegisterEventstreamModule(_configuration);
 
             builder
                 .RegisterType<ConcurrentUnitOfWork>()

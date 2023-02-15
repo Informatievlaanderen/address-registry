@@ -68,15 +68,13 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
                 new IdempotencyTableInfo(Schema.Import),
                 _loggerFactory);
 
-            builder.RegisterModule(new EnvelopeModule());
             builder.RegisterModule(new BackOfficeModule(_configuration, _services, _loggerFactory));
             builder.RegisterModule(new SyndicationModule(_configuration, _services, _loggerFactory));
-            builder.RegisterModule(new EditModule(_configuration, _services, _loggerFactory));
-            builder.RegisterModule(new ConsumerModule(_configuration, _services, _loggerFactory));
+            builder.RegisterModule(new AggregateSourceModule(_configuration));
+            builder.RegisterModule(new SequenceModule(_configuration, _services, _loggerFactory));
             builder.RegisterModule(new MediatRModule());
             builder.RegisterModule(new SqsHandlersModule(_configuration[SqsQueueUrlConfigKey]));
             builder.RegisterModule(new TicketingModule(_configuration, _services));
-            builder.RegisterModule(new MunicipalityConsumerModule(_configuration,_services, _loggerFactory));
 
             builder.RegisterSnapshotModule(_configuration);
 

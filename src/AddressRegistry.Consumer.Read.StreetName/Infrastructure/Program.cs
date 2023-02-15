@@ -167,7 +167,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
 
                     builder
                         .RegisterModule(new DataDogModule(hostContext.Configuration))
-                        .RegisterModule(new EditModule(hostContext.Configuration, services, loggerFactory));
+                        .RegisterModule(new CommandHandlingModule(hostContext.Configuration));
 
                     builder.RegisterSnapshotModule(hostContext.Configuration);
 

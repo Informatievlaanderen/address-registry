@@ -40,8 +40,9 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure.Modules
             builder
                 .RegisterModule(new LegacyModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new EnvelopeModule())
-                .RegisterModule(new EditModule(_configuration, _services, _loggerFactory));
-            
+                .RegisterModule(new CommandHandlingModule(_configuration))
+                .RegisterModule(new SequenceModule(_configuration, _services, _loggerFactory));
+
             _services.ConfigureIdempotency(
                 _configuration.GetSection(IdempotencyConfiguration.Section).Get<IdempotencyConfiguration>()
                     .ConnectionString,

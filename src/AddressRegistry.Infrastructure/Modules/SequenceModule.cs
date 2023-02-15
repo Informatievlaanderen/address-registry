@@ -7,18 +7,14 @@ namespace AddressRegistry.Infrastructure.Modules
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
 
-    public class EditModule : Module
+    public class SequenceModule : Module
     {
-        private readonly IConfiguration _configuration;
-
-        public EditModule(
+        public SequenceModule(
             IConfiguration configuration,
             IServiceCollection services,
             ILoggerFactory loggerFactory)
         {
-            _configuration = configuration;
-
-            var projectionsConnectionString = _configuration.GetConnectionString("Sequences");
+            var projectionsConnectionString = configuration.GetConnectionString("Sequences");
 
             services
                 .AddDbContext<SequenceContext>(options => options
@@ -31,8 +27,6 @@ namespace AddressRegistry.Infrastructure.Modules
 
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterModule(new CommandHandlingModule(_configuration));
-
             builder
                 .RegisterType<SqlPersistentLocalIdGenerator>()
                 .As<IPersistentLocalIdGenerator>();

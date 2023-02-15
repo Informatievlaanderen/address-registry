@@ -54,6 +54,7 @@ namespace AddressRegistry.StreetName.Commands
         private IEnumerable<object> IdentityFields()
         {
             yield return StreetNamePersistentLocalId;
+            yield return AddressPersistentLocalId;
             yield return PostalCodeMunicipalityId;
             yield return PostalCode;
             yield return HouseNumber;

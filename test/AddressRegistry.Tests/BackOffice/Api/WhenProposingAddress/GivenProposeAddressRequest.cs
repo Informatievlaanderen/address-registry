@@ -3,6 +3,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Address;
     using AddressRegistry.Api.BackOffice;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Abstractions.SqsRequests;
@@ -34,12 +35,18 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
             MockMediator
                 .Setup(x => x.Send(It.IsAny<ProposeAddressSqsRequest>(), CancellationToken.None))
                 .Returns(Task.FromResult(expectedLocationResult));
+            var persistentLocalId = Fixture.Create<PersistentLocalId>();
+            var persistentLocalIdGenerator = new Mock<IPersistentLocalIdGenerator>();
+            persistentLocalIdGenerator
+                .Setup(x => x.GenerateNextPersistentLocalId())
+                .Returns(persistentLocalId);
 
             var request = Fixture.Create<ProposeAddressRequest>();
 
             var result = (AcceptedResult)await _controller.Propose(
                 MockValidRequestValidator<ProposeAddressRequest>(),
-                request );
+                new ProposeAddressSqsRequestFactory(persistentLocalIdGenerator.Object),
+                request);
 
             result.Should().NotBeNull();
             AssertLocation(result.Location, ticketId);
@@ -47,7 +54,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
             MockMediator.Verify(x =>
                 x.Send(
                     It.Is<ProposeAddressSqsRequest>(sqsRequest =>
-                        sqsRequest.Request == request
+                        sqsRequest.PersistentLocalId == persistentLocalId
+                        && sqsRequest.Request == request
                         && sqsRequest.ProvenanceData.Timestamp != Instant.MinValue
                         && sqsRequest.ProvenanceData.Application == Application.AddressRegistry
                         && sqsRequest.ProvenanceData.Modification == Modification.Insert

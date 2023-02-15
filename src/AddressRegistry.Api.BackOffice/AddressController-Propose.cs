@@ -22,6 +22,7 @@ namespace AddressRegistry.Api.BackOffice
         /// Stel een adres voor.
         /// </summary>
         /// <param name="validator"></param>
+        /// <param name="proposeAddressSqsRequestFactory"></param>
         /// <param name="request"></param>
         /// <param name="cancellationToken"></param>
         /// <response code="202">Als het adres reeds voorgesteld is.</response>
@@ -36,6 +37,7 @@ namespace AddressRegistry.Api.BackOffice
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.Adres.DecentraleBijwerker)]
         public async Task<IActionResult> Propose(
             [FromServices] IValidator<ProposeAddressRequest> validator,
+            [FromServices] ProposeAddressSqsRequestFactory proposeAddressSqsRequestFactory,
             [FromBody] ProposeAddressRequest request,
             CancellationToken cancellationToken = default)
         {
@@ -43,12 +45,7 @@ namespace AddressRegistry.Api.BackOffice
 
             try
             {
-                var sqsRequest = new ProposeAddressSqsRequest
-                {
-                    Request = request,
-                    Metadata = GetMetadata(),
-                    ProvenanceData = new ProvenanceData(CreateProvenance(Modification.Insert))
-                };
+                var sqsRequest = proposeAddressSqsRequestFactory.Create(request, GetMetadata(), new ProvenanceData(CreateProvenance(Modification.Insert)));
                 var sqsResult = await _mediator.Send(sqsRequest, cancellationToken);
 
                 return Accepted(sqsResult);

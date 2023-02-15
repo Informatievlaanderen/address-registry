@@ -1,3 +1,11 @@
+## [3.73.4](https://github.com/informatievlaanderen/address-registry/compare/v3.73.3...v3.73.4) (2023-02-15)
+
+
+### Bug Fixes
+
+* propose address lambda handler idempotency ([25bc3bf](https://github.com/informatievlaanderen/address-registry/commit/25bc3bf28dfbce0dcaba0c45a401740e1f379141))
+* use merge queue ([87075c2](https://github.com/informatievlaanderen/address-registry/commit/87075c21bbd048e81e4b48b187ce632b148d7f85))
+
 ## [3.73.3](https://github.com/informatievlaanderen/address-registry/compare/v3.73.2...v3.73.3) (2023-02-14)
 
 

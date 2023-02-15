@@ -4,7 +4,6 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
     using System.Threading.Tasks;
     using Abstractions;
     using Abstractions.Validation;
-    using Address;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo.Extensions;
     using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
@@ -26,7 +25,6 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
         private readonly BackOfficeContext _backOfficeContext;
         private readonly SyndicationContext _syndicationContext;
         private readonly MunicipalityConsumerContext _municipalityConsumerContext;
-        private readonly IPersistentLocalIdGenerator _persistentLocalIdGenerator;
 
         public ProposeAddressLambdaHandler(
             IConfiguration configuration,
@@ -36,8 +34,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             IIdempotentCommandHandler idempotentCommandHandler,
             BackOfficeContext backOfficeContext,
             SyndicationContext syndicationContext,
-            MunicipalityConsumerContext municipalityConsumerContext,
-            IPersistentLocalIdGenerator persistentLocalIdGenerator)
+            MunicipalityConsumerContext municipalityConsumerContext)
             : base(
                 configuration,
                 retryPolicy,
@@ -48,14 +45,12 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             _backOfficeContext = backOfficeContext;
             _syndicationContext = syndicationContext;
             _municipalityConsumerContext = municipalityConsumerContext;
-            _persistentLocalIdGenerator = persistentLocalIdGenerator;
         }
 
         protected override async Task<ETagResponse> InnerHandle(ProposeAddressLambdaRequest request, CancellationToken cancellationToken)
         {
             var postInfoIdentifier = request.Request.PostInfoId.AsIdentifier().Map(x => x);
             var postalCode = new PostalCode(postInfoIdentifier.Value);
-            var addressPersistentLocalId = new AddressPersistentLocalId(_persistentLocalIdGenerator.GenerateNextPersistentLocalId());
 
             var postalMunicipality = await _syndicationContext.PostalInfoLatestItems.FindAsync(new object[] { postalCode.ToString() }, cancellationToken);
             if (postalMunicipality is null)
@@ -67,7 +62,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 .MunicipalityLatestItems
                 .SingleAsync(x => x.NisCode == postalMunicipality.NisCode, cancellationToken);
 
-            var cmd = request.ToCommand(addressPersistentLocalId, postalCode, new MunicipalityId(municipality.MunicipalityId));
+            var cmd = request.ToCommand(postalCode, new MunicipalityId(municipality.MunicipalityId));
 
             try
             {
@@ -76,25 +71,17 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                     cmd,
                     request.Metadata,
                     cancellationToken);
-
-                await _backOfficeContext.AddIdempotentAddressStreetNameIdRelation(addressPersistentLocalId, request.StreetNamePersistentLocalId(), cancellationToken);
-                await _backOfficeContext.SaveChangesAsync(cancellationToken);
-
-                var lastHash = await GetHash(request.StreetNamePersistentLocalId(), addressPersistentLocalId, cancellationToken);
-                return new ETagResponse(string.Format(DetailUrlFormat, addressPersistentLocalId), lastHash);
             }
             catch (IdempotencyException)
             {
-                var streetName = await StreetNames.GetAsync(new StreetNameStreamId(request.StreetNamePersistentLocalId()), cancellationToken);
-                var address = streetName.StreetNameAddresses.FindActiveParentByHouseNumber(cmd.HouseNumber);
-                if (cmd.BoxNumber is not null)
-                {
-                    address = address.Children.Single(x => x.BoxNumber == cmd.BoxNumber && x.IsActive);
-                }
-
-                var lastHash = await GetHash(request.StreetNamePersistentLocalId(), address.AddressPersistentLocalId, cancellationToken);
-                return new ETagResponse(string.Format(DetailUrlFormat, addressPersistentLocalId), lastHash);
+                // Idempotent: Do Nothing return last etag
             }
+
+            await _backOfficeContext.AddIdempotentAddressStreetNameIdRelation(request.AddressPersistentLocalId, request.StreetNamePersistentLocalId(), cancellationToken);
+            await _backOfficeContext.SaveChangesAsync(cancellationToken);
+
+            var lastHash = await GetHash(request.StreetNamePersistentLocalId(), request.AddressPersistentLocalId, cancellationToken);
+            return new ETagResponse(string.Format(DetailUrlFormat, request.AddressPersistentLocalId), lastHash);
         }
 
         protected override TicketError? InnerMapDomainException(DomainException exception, ProposeAddressLambdaRequest request)

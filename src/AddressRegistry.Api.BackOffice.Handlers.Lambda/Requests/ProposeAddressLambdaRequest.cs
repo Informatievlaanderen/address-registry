@@ -21,16 +21,18 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
                 sqsRequest.Metadata)
         {
             Request = sqsRequest.Request;
+            AddressPersistentLocalId = new AddressPersistentLocalId(sqsRequest.PersistentLocalId);
         }
 
         public ProposeAddressRequest Request { get; init; }
+
+        public AddressPersistentLocalId AddressPersistentLocalId { get; }
 
         /// <summary>
         /// Map to ProposeAddress command
         /// </summary>
         /// <returns>ProposeAddress.</returns>
         public ProposeAddress ToCommand(
-            AddressPersistentLocalId addressPersistentLocalId,
             PostalCode postalCode,
             MunicipalityId postalCodeMunicipalityId)
         {
@@ -38,7 +40,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
                 this.StreetNamePersistentLocalId(),
                 postalCode,
                 postalCodeMunicipalityId,
-                addressPersistentLocalId,
+                AddressPersistentLocalId,
                 HouseNumber.Create(Request.Huisnummer),
                 string.IsNullOrWhiteSpace(Request.Busnummer) ? null : new BoxNumber(Request.Busnummer),
                 Request.PositieGeometrieMethode.Map(),

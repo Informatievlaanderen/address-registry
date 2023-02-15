@@ -21,7 +21,8 @@
 
 To fill up the database for the first time:
 
-* Run `AddressRegistry.Api.CrabImport` (`AddressRegistry.sln`)
+* Run `AddressRegistry.Api.CrabImport` (`AddressRegistry.sln`) (schema: Import / Idempotency / EventStore)
+* Run `AddressRegistry.Api.BackOffice` (`AddressRegistry.sln`) (schema: BackOffice / EventStore / Idempotency / Sequence)
 * Run `AddressRegistry.Importer.HouseNumber` (`AddressRegistryImporter.sln`) with `init -c -l Trace` as flags.
 * Run `AddressRegistry.Importer.Subaddress` (`AddressRegistryImporter.sln`) with `init -c -l Trace` as flags.
 * Run `AddressRegistry.Importer.AddressMatch` (`AddressRegistryImporter.sln`) with `init -c -l Trace` as flags.

@@ -1,9 +1,6 @@
 AspNetCore.HealthChecks.SqlServer
 
-Be.Vlaanderen.Basisregisters.AggregateSource
-Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore
 Be.Vlaanderen.Basisregisters.Api
-Be.Vlaanderen.Basisregisters.EventHandling.Autofac
 
 MediatR
 MediatR.Contracts

@@ -1,10 +1,7 @@
 AspNetCore.HealthChecks.SqlServer
 
-Be.Vlaanderen.Basisregisters.AggregateSource
-Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore
 Be.Vlaanderen.Basisregisters.Api
 Be.Vlaanderen.Basisregisters.GrAr.Extracts
-Be.Vlaanderen.Basisregisters.EventHandling.Autofac
 
 SourceLink.Embed.AllSourceFiles
 SourceLink.Copy.PdbFiles

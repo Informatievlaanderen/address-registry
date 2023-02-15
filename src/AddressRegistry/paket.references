@@ -4,12 +4,10 @@ NodaTime
 SqlStreamStore.MsSql
 NetTopologySuite
 
-Be.Vlaanderen.Basisregisters.AggregateSource
 Be.Vlaanderen.Basisregisters.AggregateSource.ExplicitRouting
 
 Be.Vlaanderen.Basisregisters.Crab
 
-Be.Vlaanderen.Basisregisters.CommandHandling
 Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore
 
 Be.Vlaanderen.Basisregisters.EventHandling

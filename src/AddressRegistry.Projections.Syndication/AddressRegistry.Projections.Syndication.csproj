@@ -15,7 +15,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AddressRegistry.Infrastructure\AddressRegistry.Infrastructure.csproj" />
-    <ProjectReference Include="..\AddressRegistry\AddressRegistry.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -23,7 +23,6 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRegulariz
     using Infrastructure;
     using Microsoft.Extensions.Configuration;
     using Moq;
-    using Org.BouncyCastle.Crypto.Parameters;
     using SqlStreamStore;
     using SqlStreamStore.Streams;
     using StreetName;

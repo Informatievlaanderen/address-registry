@@ -1,5 +1,3 @@
-Be.Vlaanderen.Basisregisters.AggregateSource
-Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore
 Be.Vlaanderen.Basisregisters.EventHandling
 Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList
 Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore

@@ -3,10 +3,7 @@ AspNetCore.HealthChecks.SqlServer
 Be.Vlaanderen.Basisregisters.Api
 Be.Vlaanderen.Basisregisters.AcmIdm
 Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency
-Be.Vlaanderen.Basisregisters.EventHandling.Autofac
 Be.Vlaanderen.Basisregisters.GrAr.Edit
-Be.Vlaanderen.Basisregisters.GrAr.Import
-Be.Vlaanderen.Basisregisters.GrAr.Legacy
 Be.Vlaanderen.Basisregisters.GrAr.Provenance.AcmIdm
 
 Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple
@@ -15,8 +12,6 @@ Be.Vlaanderen.Basisregisters.TicketingService.Abstractions
 Be.Vlaanderen.Basisregisters.TicketingService.Proxy.HttpProxy
 
 MediatR
-
-AsyncEnumerator
 
 SourceLink.Embed.AllSourceFiles
 SourceLink.Copy.PdbFiles

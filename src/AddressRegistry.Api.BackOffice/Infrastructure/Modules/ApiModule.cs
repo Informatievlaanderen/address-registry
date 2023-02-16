@@ -1,5 +1,6 @@
 namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
 {
+    using Abstractions.SqsRequests;
     using AddressRegistry.Infrastructure;
     using AddressRegistry.Infrastructure.Modules;
     using Autofac;
@@ -60,6 +61,10 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
                 .RegisterType<StreetNameExistsValidator>()
                 .AsSelf()
                 .InstancePerLifetimeScope();
+
+            builder
+                .RegisterType<ProposeAddressSqsRequestFactory>()
+                .AsSelf();
 
             _services.ConfigureIdempotency(
                 _configuration.GetSection(IdempotencyConfiguration.Section).Get<IdempotencyConfiguration>()

@@ -1,3 +1,10 @@
+## [3.73.7](https://github.com/informatievlaanderen/address-registry/compare/v3.73.6...v3.73.7) (2023-02-16)
+
+
+### Bug Fixes
+
+* lock nodatime to 3.1.6 ([ae5855e](https://github.com/informatievlaanderen/address-registry/commit/ae5855efb3c372f7979574fda96c743a35f9e3c6))
+
 ## [3.73.6](https://github.com/informatievlaanderen/address-registry/compare/v3.73.5...v3.73.6) (2023-02-16)
 
 

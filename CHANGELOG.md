@@ -1,3 +1,10 @@
+## [3.73.6](https://github.com/informatievlaanderen/address-registry/compare/v3.73.5...v3.73.6) (2023-02-16)
+
+
+### Bug Fixes
+
+* add ProposeAddressSqsRequestFactory registration ([d22c5b5](https://github.com/informatievlaanderen/address-registry/commit/d22c5b54bc20101da9e4c6a870c14bdcf86cf119))
+
 ## [3.73.5](https://github.com/informatievlaanderen/address-registry/compare/v3.73.4...v3.73.5) (2023-02-15)
 
 ## [3.73.4](https://github.com/informatievlaanderen/address-registry/compare/v3.73.3...v3.73.4) (2023-02-15)

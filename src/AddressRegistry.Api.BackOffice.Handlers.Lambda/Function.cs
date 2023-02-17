@@ -88,8 +88,6 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
 
             builder
                 .RegisterModule(new DataDogModule(configuration))
-                .RegisterModule<EnvelopeModule>()
-                .RegisterModule(new SequenceModule(configuration, services, loggerFactory))
                 .RegisterModule(new CommandHandlingModule(configuration))
                 .RegisterModule(new BackOfficeModule(configuration, services, loggerFactory))
                 .RegisterModule(new MunicipalityConsumerModule(configuration, services, loggerFactory))

@@ -40,12 +40,11 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure.Modules
             builder
                 .RegisterModule(new LegacyModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new EnvelopeModule())
-                .RegisterModule(new CommandHandlingModule(_configuration))
+                .RegisterModule(new LegacyCommandHandlingModule(_configuration))
                 .RegisterModule(new SequenceModule(_configuration, _services, _loggerFactory));
 
             _services.ConfigureIdempotency(
-                _configuration.GetSection(IdempotencyConfiguration.Section).Get<IdempotencyConfiguration>()
-                    .ConnectionString,
+                _configuration.GetSection(IdempotencyConfiguration.Section).Get<IdempotencyConfiguration>().ConnectionString,
                 new IdempotencyMigrationsTableInfo(Schema.Import),
                 new IdempotencyTableInfo(Schema.Import),
                 _loggerFactory);
@@ -61,10 +60,6 @@ namespace AddressRegistry.Api.CrabImport.Infrastructure.Modules
             builder
                 .RegisterType<IdempotentCommandHandlerModule>()
                 .AsSelf();
-
-            builder
-                .RegisterType<IdempotentCommandHandlerModuleProcessor>()
-                .As<IIdempotentCommandHandlerModuleProcessor>();
 
             builder
                 .RegisterType<ProblemDetailsHelper>()

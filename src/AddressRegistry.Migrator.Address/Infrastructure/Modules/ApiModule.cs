@@ -44,6 +44,7 @@ namespace AddressRegistry.Migrator.Address.Infrastructure.Modules
                 .RegisterModule(new DataDogModule(_configuration))
                 .RegisterModule<EnvelopeModule>()
                 .RegisterModule(new ConsumerModule(_configuration, _services, _loggerFactory))
+                .RegisterModule(new LegacyCommandHandlingModule(_configuration))
                 .RegisterModule(new CommandHandlingModule(_configuration));
 
             builder.RegisterSnapshotModule(_configuration);

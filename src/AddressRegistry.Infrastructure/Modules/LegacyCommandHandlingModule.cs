@@ -1,14 +1,23 @@
-namespace AddressRegistry
+namespace AddressRegistry.Infrastructure.Modules
 {
     using Address;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
-    using StreetName;
+    using Microsoft.Extensions.Configuration;
 
-    public static class CommandHandlerModules
+    public class LegacyCommandHandlingModule : Module
     {
-        public static void Register(ContainerBuilder containerBuilder)
+        private readonly IConfiguration _configuration;
+
+        public LegacyCommandHandlingModule(IConfiguration configuration)
         {
+            _configuration = configuration;
+        }
+
+        protected override void Load(ContainerBuilder containerBuilder)
+        {
+            containerBuilder.RegisterModule(new AggregateSourceModule(_configuration));
+
             containerBuilder
                 .RegisterType<CrabAddressProvenanceFactory>()
                 .SingleInstance();
@@ -28,22 +37,6 @@ namespace AddressRegistry
             containerBuilder
                 .RegisterType<CrabAddressCommandHandlerModule>()
                 .Named<CommandHandlerModule>(typeof(CrabAddressCommandHandlerModule).FullName)
-                .As<CommandHandlerModule>();
-
-            containerBuilder
-                .RegisterType<StreetNameProvenanceFactory>()
-                .AsSelf()
-                .AsImplementedInterfaces()
-                .SingleInstance();
-
-            containerBuilder
-                .RegisterType<StreetNameCommandHandlerModule>()
-                .Named<CommandHandlerModule>(typeof(StreetNameCommandHandlerModule).FullName)
-                .As<CommandHandlerModule>();
-
-            containerBuilder
-                .RegisterType<AddressCommandHandlerModule>()
-                .Named<CommandHandlerModule>(typeof(AddressCommandHandlerModule).FullName)
                 .As<CommandHandlerModule>();
         }
     }

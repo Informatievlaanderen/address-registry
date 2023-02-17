@@ -1,3 +1,11 @@
+## [3.73.8](https://github.com/informatievlaanderen/address-registry/compare/v3.73.7...v3.73.8) (2023-02-17)
+
+
+### Bug Fixes
+
+* remove not required registrations ([a2abf96](https://github.com/informatievlaanderen/address-registry/commit/a2abf960b3d75f2bf07452492c0f26331635c1fe))
+* splitup legacy commandhandler registrations ([d2bdc9a](https://github.com/informatievlaanderen/address-registry/commit/d2bdc9a58bb1b9e0273d554e26e78a1235ec59c6))
+
 ## [3.73.7](https://github.com/informatievlaanderen/address-registry/compare/v3.73.6...v3.73.7) (2023-02-16)
 
 

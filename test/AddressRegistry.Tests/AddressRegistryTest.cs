@@ -42,6 +42,7 @@ namespace AddressRegistry.Tests
             builder.Register((a) => (IConfiguration)configuration);
 
             builder
+                .RegisterModule(new LegacyCommandHandlingModule(configuration))
                 .RegisterModule(new CommandHandlingModule(configuration))
                 .RegisterModule(new SqlStreamStoreModule());
 

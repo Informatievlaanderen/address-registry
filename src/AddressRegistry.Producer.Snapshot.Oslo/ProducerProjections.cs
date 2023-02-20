@@ -230,6 +230,18 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             ct),
                         message.Position,
                         ct);
+
+                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
+                {
+                    await FindAndProduce(async () =>
+                            await snapshotManager.FindMatchingSnapshot(
+                                boxNumberPersistentLocalId.ToString(),
+                                message.Message.Provenance.Timestamp,
+                                throwStaleWhenGone: false,
+                                ct),
+                        message.Position,
+                        ct);
+                }
             });
 
             When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasCorrectedFromApprovedToProposed>>(async (_, message, ct) =>
@@ -302,6 +314,18 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             ct),
                         message.Position,
                         ct);
+
+                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
+                {
+                    await FindAndProduce(async () =>
+                            await snapshotManager.FindMatchingSnapshot(
+                                boxNumberPersistentLocalId.ToString(),
+                                message.Message.Provenance.Timestamp,
+                                throwStaleWhenGone: false,
+                                ct),
+                        message.Position,
+                        ct);
+                }
             });
 
             When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressRegularizationWasCorrected>>(async (_, message, ct) =>

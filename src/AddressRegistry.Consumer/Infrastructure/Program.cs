@@ -111,7 +111,7 @@ namespace AddressRegistry.Consumer.Infrastructure
                         var bootstrapServers = hostContext.Configuration["Kafka:BootstrapServers"];
                         var topic = $"{hostContext.Configuration["StreetNameTopic"]}" ?? throw new ArgumentException("Configuration has no StreetNameTopic.");
                         var suffix = hostContext.Configuration["StreetNameConsumerGroupSuffix"];
-                        var consumerGroupId = $"{nameof(AddressRegistry)}.Consumer.{topic}{suffix}";
+                        var consumerGroupId = $"AddressRegistry.Consumer.{topic}{suffix}";
 
                         var consumerOptions = new ConsumerOptions(
                             new BootstrapServers(bootstrapServers),

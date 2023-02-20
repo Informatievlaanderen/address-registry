@@ -96,7 +96,7 @@ namespace AddressRegistry.Consumer.Read.Municipality.Infrastructure
                             var bootstrapServers = hostContext.Configuration["Kafka:BootstrapServers"];
                             var topic = $"{hostContext.Configuration["Topic"]}" ?? throw new ArgumentException("Configuration has no municipality Topic.");
                             var suffix = hostContext.Configuration["ConsumerGroupSuffix"];
-                            var consumerGroupId = $"{nameof(AddressRegistry)}.MunicipalityBosaItemConsumer.{topic}{suffix}";
+                            var consumerGroupId = $"AddressRegistry.MunicipalityBosaItemConsumer.{topic}{suffix}";
 
                             var consumerOptions = new ConsumerOptions(
                                 new BootstrapServers(bootstrapServers),
@@ -119,7 +119,7 @@ namespace AddressRegistry.Consumer.Read.Municipality.Infrastructure
                             var bootstrapServers = hostContext.Configuration["Kafka:BootstrapServers"];
                             var topic = $"{hostContext.Configuration["Topic"]}" ?? throw new ArgumentException("Configuration has no municipality Topic.");
                             var suffix = hostContext.Configuration["ConsumerGroupSuffix"];
-                            var consumerGroupId = $"{nameof(AddressRegistry)}.MunicipalityLatestItemConsumer.{topic}{suffix}";
+                            var consumerGroupId = $"AddressRegistry.MunicipalityLatestItemConsumer.{topic}{suffix}";
 
                             var consumerOptions = new ConsumerOptions(
                                 new BootstrapServers(bootstrapServers),

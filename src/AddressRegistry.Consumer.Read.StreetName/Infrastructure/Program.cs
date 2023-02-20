@@ -101,7 +101,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
                         var bootstrapServers = hostContext.Configuration["Kafka:BootstrapServers"];
                         var topic = $"{hostContext.Configuration["Topic"]}" ?? throw new ArgumentException("Configuration has no AddressTopic.");
                         var suffix = hostContext.Configuration["ConsumerGroupSuffix"];
-                        var consumerGroupId = $"{nameof(AddressRegistry)}.StreetNameBosaItemConsumer.{topic}{suffix}";
+                        var consumerGroupId = $"AddressRegistry.StreetNameBosaItemConsumer.{topic}{suffix}";
 
                         var consumerOptions = new ConsumerOptions(
                             new BootstrapServers(bootstrapServers),
@@ -122,7 +122,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
                             var bootstrapServers = hostContext.Configuration["Kafka:BootstrapServers"];
                             var topic = $"{hostContext.Configuration["Topic"]}" ?? throw new ArgumentException("Configuration has no AddressTopic.");
                             var suffix = hostContext.Configuration["ConsumerGroupSuffix"];
-                            var consumerGroupId = $"{nameof(AddressRegistry)}.StreetNameBosaItemConsumer.{topic}{suffix}";
+                            var consumerGroupId = $"AddressRegistry.StreetNameBosaItemConsumer.{topic}{suffix}";
 
                             var consumerOptions = new ConsumerOptions(
                                 new BootstrapServers(bootstrapServers),
@@ -145,7 +145,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
                             var bootstrapServers = hostContext.Configuration["Kafka:BootstrapServers"];
                             var topic = $"{hostContext.Configuration["Topic"]}" ?? throw new ArgumentException("Configuration has no AddressTopic.");
                             var suffix = hostContext.Configuration["ConsumerGroupSuffix"];
-                            var consumerGroupId = $"{nameof(AddressRegistry)}.StreetNameLatestItemConsumer.{topic}{suffix}";
+                            var consumerGroupId = $"AddressRegistry.StreetNameLatestItemConsumer.{topic}{suffix}";
 
                             var consumerOptions = new ConsumerOptions(
                                 new BootstrapServers(bootstrapServers),

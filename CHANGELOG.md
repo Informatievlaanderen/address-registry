@@ -1,3 +1,12 @@
+## [3.73.9](https://github.com/informatievlaanderen/address-registry/compare/v3.73.8...v3.73.9) (2023-02-21)
+
+
+### Bug Fixes
+
+* consumer should commit if message is already processed ([1a57808](https://github.com/informatievlaanderen/address-registry/commit/1a57808733e89e2cacdd7662040feb40c349fe18))
+* produce box numbers ([4f5d033](https://github.com/informatievlaanderen/address-registry/commit/4f5d03337b0516f84d3f251977fbe00520ff2839))
+* produce oslo snapshots for AddressHouseNumberWasCorrectedV2 boxnumbers ([6fe9d4e](https://github.com/informatievlaanderen/address-registry/commit/6fe9d4eecc199cd52a8d3f1ebebb8ee13e2cc58f))
+
 ## [3.73.8](https://github.com/informatievlaanderen/address-registry/compare/v3.73.7...v3.73.8) (2023-02-17)
 
 

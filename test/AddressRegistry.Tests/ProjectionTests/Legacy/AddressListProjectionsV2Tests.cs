@@ -370,24 +370,24 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                 { AddEventHashPipe.HashMetadataKey, addressWasApproved.GetHash() }
             };
 
-            var addressWasRejected = _fixture.Create<AddressWasRetiredBecauseStreetNameWasRejected>();
+            var addressWasRetired = _fixture.Create<AddressWasRetiredBecauseStreetNameWasRejected>();
             var metadata2 = new Dictionary<string, object>
             {
-                { AddEventHashPipe.HashMetadataKey, addressWasRejected.GetHash() }
+                { AddEventHashPipe.HashMetadataKey, addressWasRetired.GetHash() }
             };
 
             await Sut
                 .Given(
                     new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, metadata)),
                     new Envelope<AddressWasApproved>(new Envelope(addressWasApproved, approveMetadata)),
-                    new Envelope<AddressWasRetiredBecauseStreetNameWasRejected>(new Envelope(addressWasRejected, metadata2)))
+                    new Envelope<AddressWasRetiredBecauseStreetNameWasRejected>(new Envelope(addressWasRetired, metadata2)))
                 .Then(async ct =>
                 {
-                    var addressListItemV2 = (await ct.AddressListV2.FindAsync(addressWasRejected.AddressPersistentLocalId));
+                    var addressListItemV2 = (await ct.AddressListV2.FindAsync(addressWasRetired.AddressPersistentLocalId));
                     addressListItemV2.Should().NotBeNull();
                     addressListItemV2.Status.Should().Be(AddressStatus.Retired);
-                    addressListItemV2.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
-                    addressListItemV2.LastEventHash.Should().Be(addressWasRejected.GetHash());
+                    addressListItemV2.VersionTimestamp.Should().Be(addressWasRetired.Provenance.Timestamp);
+                    addressListItemV2.LastEventHash.Should().Be(addressWasRetired.GetHash());
                 });
         }
         

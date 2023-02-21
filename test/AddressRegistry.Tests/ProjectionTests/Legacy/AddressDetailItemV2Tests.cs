@@ -324,24 +324,24 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                 { AddEventHashPipe.HashMetadataKey, addressWasApproved.GetHash() }
             };
 
-            var addressWasRejected = _fixture.Create<AddressWasRetiredBecauseStreetNameWasRejected>();
+            var addressWasRetired = _fixture.Create<AddressWasRetiredBecauseStreetNameWasRejected>();
             var rejectedMetadata = new Dictionary<string, object>
             {
-                { AddEventHashPipe.HashMetadataKey, addressWasRejected.GetHash() }
+                { AddEventHashPipe.HashMetadataKey, addressWasRetired.GetHash() }
             };
 
             await Sut
                 .Given(
                     new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
                     new Envelope<AddressWasApproved>(new Envelope(addressWasApproved, approveMetadata)),
-                    new Envelope<AddressWasRetiredBecauseStreetNameWasRejected>(new Envelope(addressWasRejected, rejectedMetadata)))
+                    new Envelope<AddressWasRetiredBecauseStreetNameWasRejected>(new Envelope(addressWasRetired, rejectedMetadata)))
                 .Then(async ct =>
                 {
-                    var addressDetailItemV2 = (await ct.AddressDetailV2.FindAsync(addressWasRejected.AddressPersistentLocalId));
+                    var addressDetailItemV2 = (await ct.AddressDetailV2.FindAsync(addressWasRetired.AddressPersistentLocalId));
                     addressDetailItemV2.Should().NotBeNull();
                     addressDetailItemV2.Status.Should().Be(AddressStatus.Retired);
-                    addressDetailItemV2.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
-                    addressDetailItemV2.LastEventHash.Should().Be(addressWasRejected.GetHash());
+                    addressDetailItemV2.VersionTimestamp.Should().Be(addressWasRetired.Provenance.Timestamp);
+                    addressDetailItemV2.LastEventHash.Should().Be(addressWasRetired.GetHash());
                 });
         }
 

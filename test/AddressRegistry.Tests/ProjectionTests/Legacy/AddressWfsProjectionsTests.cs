@@ -343,22 +343,22 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
             };
 
-            var addressWasRejected = _fixture.Create<AddressWasRejectedBecauseStreetNameWasRetired>();
+            var addressWasRetired = _fixture.Create<AddressWasRejectedBecauseStreetNameWasRetired>();
             var rejectedMetadata = new Dictionary<string, object>
             {
-                { AddEventHashPipe.HashMetadataKey, addressWasRejected.GetHash() }
+                { AddEventHashPipe.HashMetadataKey, addressWasRetired.GetHash() }
             };
 
             await Sut
                 .Given(
                     new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
-                    new Envelope<AddressWasRejectedBecauseStreetNameWasRetired>(new Envelope(addressWasRejected, rejectedMetadata)))
+                    new Envelope<AddressWasRejectedBecauseStreetNameWasRetired>(new Envelope(addressWasRetired, rejectedMetadata)))
                 .Then(async ct =>
                 {
-                    var item = (await ct.AddressWfsItems.FindAsync(addressWasRejected.AddressPersistentLocalId));
+                    var item = (await ct.AddressWfsItems.FindAsync(addressWasRetired.AddressPersistentLocalId));
                     item.Should().NotBeNull();
                     item.Status.Should().Be(AddressWfsProjections.MapStatus(AddressStatus.Rejected));
-                    item.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
+                    item.VersionTimestamp.Should().Be(addressWasRetired.Provenance.Timestamp);
                 });
         }
 

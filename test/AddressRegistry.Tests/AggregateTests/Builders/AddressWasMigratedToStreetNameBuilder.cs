@@ -1,0 +1,78 @@
+namespace AddressRegistry.Tests.AggregateTests.Builders
+{
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using global::AutoFixture;
+    using StreetName;
+    using StreetName.Events;
+
+    public class AddressWasMigratedToStreetNameBuilder
+    {
+        private readonly Fixture _fixture;
+
+        private readonly AddressStatus _addressStatus;
+
+        private StreetNamePersistentLocalId? _streetNamePersistentLocalId;
+        private AddressPersistentLocalId? _addressPersistentLocalId;
+        private AddressPersistentLocalId? _parentAddressPersistentLocalId;
+        private HouseNumber? _houseNumber;
+        private BoxNumber? _boxNumber;
+
+        public AddressWasMigratedToStreetNameBuilder(Fixture fixture,
+            AddressStatus addressStatus = AddressStatus.Proposed)
+        {
+            _fixture = fixture;
+            _addressStatus = addressStatus;
+        }
+
+        public AddressWasMigratedToStreetNameBuilder WithStreetNamePersistentLocalId(
+            StreetNamePersistentLocalId persistentLocalId)
+        {
+            _streetNamePersistentLocalId = persistentLocalId;
+            return this;
+        }
+
+        public AddressWasMigratedToStreetNameBuilder WithAddressPersistentLocalId(
+            AddressPersistentLocalId persistentLocalId)
+        {
+            _addressPersistentLocalId = persistentLocalId;
+            return this;
+        }
+
+        public AddressWasMigratedToStreetNameBuilder WithHouseNumber(
+            HouseNumber houseNumber)
+        {
+            _houseNumber = houseNumber;
+            return this;
+        }
+
+        public AddressWasMigratedToStreetNameBuilder WithBoxNumber(BoxNumber boxNumber,
+            AddressPersistentLocalId parentAddressPersistentLocalId)
+        {
+            _boxNumber = boxNumber;
+            _parentAddressPersistentLocalId = parentAddressPersistentLocalId;
+            return this;
+        }
+
+        public AddressWasMigratedToStreetName Build()
+        {
+            var @event = new AddressWasMigratedToStreetName(
+                _streetNamePersistentLocalId ?? _fixture.Create<StreetNamePersistentLocalId>(),
+                _fixture.Create<AddressId>(),
+                _fixture.Create<AddressStreetNameId>(),
+                _addressPersistentLocalId ?? _fixture.Create<AddressPersistentLocalId>(),
+                _addressStatus,
+                _houseNumber ?? _fixture.Create<HouseNumber>(),
+                _boxNumber,
+                _fixture.Create<AddressGeometry>(),
+                officiallyAssigned: true,
+                _fixture.Create<PostalCode>(),
+                isCompleted: true,
+                isRemoved: false,
+                _parentAddressPersistentLocalId);
+
+            ((ISetProvenance)@event).SetProvenance(_fixture.Create<Provenance>());
+
+            return @event;
+        }
+    }
+}

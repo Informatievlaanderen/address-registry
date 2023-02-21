@@ -132,6 +132,9 @@ namespace AddressRegistry.Producer.Extensions
         public static Contracts.AddressWasRejectedBecauseStreetNameWasRetired ToContract(this StreetNameAggregate.AddressWasRejectedBecauseStreetNameWasRetired message) =>
             new Contracts.AddressWasRejectedBecauseStreetNameWasRetired(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
 
+        public static Contracts.AddressWasRejectedBecauseStreetNameWasRejected ToContract(this StreetNameAggregate.AddressWasRejectedBecauseStreetNameWasRejected message) =>
+            new Contracts.AddressWasRejectedBecauseStreetNameWasRejected(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
+
         public static Contracts.AddressWasDeregulated ToContract(this StreetNameAggregate.AddressWasDeregulated message) =>
             new Contracts.AddressWasDeregulated(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
 
@@ -146,6 +149,9 @@ namespace AddressRegistry.Producer.Extensions
 
         public static Contracts.AddressWasRetiredBecauseStreetNameWasRetired ToContract(this StreetNameAggregate.AddressWasRetiredBecauseStreetNameWasRetired message) =>
             new Contracts.AddressWasRetiredBecauseStreetNameWasRetired(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
+
+        public static Contracts.AddressWasRetiredBecauseStreetNameWasRejected ToContract(this StreetNameAggregate.AddressWasRetiredBecauseStreetNameWasRejected message) =>
+            new Contracts.AddressWasRetiredBecauseStreetNameWasRejected(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
 
         public static Contracts.AddressWasCorrectedFromRetiredToCurrent ToContract(this StreetNameAggregate.AddressWasCorrectedFromRetiredToCurrent message) =>
             new Contracts.AddressWasCorrectedFromRetiredToCurrent(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());

@@ -91,7 +91,7 @@ namespace AddressRegistry.StreetName
             }
         }
 
-        public void RejectBecauseStreetNameWasRetired()
+        public void RejectBecauseStreetNameWasRejected()
         {
             if (IsRemoved)
             {
@@ -105,7 +105,25 @@ namespace AddressRegistry.StreetName
 
             if (Status == AddressStatus.Proposed)
             {
-                Apply(new AddressWasRejectedBecauseStreetNameWasRetired(_streetNamePersistentLocalId, AddressPersistentLocalId));
+                Apply(new AddressWasRejectedBecauseStreetNameWasRejected(_streetNamePersistentLocalId, AddressPersistentLocalId));
+            }
+        }
+
+        public void RetireBecauseStreetNameWasRejected()
+        {
+            if (IsRemoved)
+            {
+                return;
+            }
+
+            if (Status == AddressStatus.Retired)
+            {
+                return;
+            }
+
+            if (Status == AddressStatus.Current)
+            {
+                Apply(new AddressWasRetiredBecauseStreetNameWasRejected(_streetNamePersistentLocalId, AddressPersistentLocalId));
             }
         }
 
@@ -145,7 +163,7 @@ namespace AddressRegistry.StreetName
                 Apply(new AddressWasRetiredBecauseHouseNumberWasRetired(_streetNamePersistentLocalId, AddressPersistentLocalId));
             }
         }
-
+        
         private void RejectBecauseParentWasRetired()
         {
             if (IsRemoved)
@@ -156,6 +174,24 @@ namespace AddressRegistry.StreetName
             if (Status == AddressStatus.Proposed)
             {
                 Apply(new AddressWasRejectedBecauseHouseNumberWasRetired(_streetNamePersistentLocalId, AddressPersistentLocalId));
+            }
+        }
+
+        public void RejectBecauseStreetNameWasRetired()
+        {
+            if (IsRemoved)
+            {
+                return;
+            }
+
+            if (Status == AddressStatus.Rejected)
+            {
+                return;
+            }
+
+            if (Status == AddressStatus.Proposed)
+            {
+                Apply(new AddressWasRejectedBecauseStreetNameWasRetired(_streetNamePersistentLocalId, AddressPersistentLocalId));
             }
         }
 

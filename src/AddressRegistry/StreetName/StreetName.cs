@@ -52,10 +52,22 @@ namespace AddressRegistry.StreetName
 
         public void RejectStreetName()
         {
-            if (Status != StreetNameStatus.Rejected)
+            if (Status == StreetNameStatus.Rejected)
             {
-                ApplyChange(new StreetNameWasRejected(PersistentLocalId));
+                return;
             }
+
+            RejectAddressesBecauseStreetNameWasRejected(
+                StreetNameAddresses.ProposedStreetNameAddresses.Where(address => address.IsBoxNumberAddress));
+            RetireAddressesBecauseStreetNameWasRejected(
+                StreetNameAddresses.CurrentStreetNameAddresses.Where(address => address.IsBoxNumberAddress));
+
+            RejectAddressesBecauseStreetNameWasRejected(
+                StreetNameAddresses.ProposedStreetNameAddresses.Where(address => address.IsHouseNumberAddress));
+            RetireAddressesBecauseStreetNameWasRejected(
+                StreetNameAddresses.CurrentStreetNameAddresses.Where(address => address.IsHouseNumberAddress));
+
+            ApplyChange(new StreetNameWasRejected(PersistentLocalId));
         }
 
         public void RetireStreetName()
@@ -115,6 +127,22 @@ namespace AddressRegistry.StreetName
             if (Status != StreetNameStatus.Current)
             {
                 ApplyChange(new StreetNameWasCorrectedFromRetiredToCurrent(PersistentLocalId));
+            }
+        }
+
+        private void RejectAddressesBecauseStreetNameWasRejected(IEnumerable<StreetNameAddress> addresses)
+        {
+            foreach (var address in addresses)
+            {
+                address.RejectBecauseStreetNameWasRejected();
+            }
+        }
+
+        private void RetireAddressesBecauseStreetNameWasRejected(IEnumerable<StreetNameAddress> addresses)
+        {
+            foreach (var address in addresses)
+            {
+                address.RetireBecauseStreetNameWasRejected();
             }
         }
 

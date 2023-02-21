@@ -143,6 +143,26 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
             });
 
+            When<Envelope<AddressWasRejectedBecauseStreetNameWasRejected>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    item => item.Status = MapStatus(AddressStatus.Rejected),
+                    ct);
+
+                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+            });
+
+            When<Envelope<AddressWasRetiredBecauseStreetNameWasRejected>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    item => item.Status = MapStatus(AddressStatus.Retired),
+                    ct);
+
+                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+            });
+            
             When<Envelope<AddressWasRejectedBecauseStreetNameWasRetired>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressDetail(

@@ -157,6 +157,34 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
                 UpdateHash(item, message);
             });
 
+            When<Envelope<AddressWasRejectedBecauseStreetNameWasRejected>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressListItemV2(
+                    message.Message.AddressPersistentLocalId,
+                    item =>
+                    {
+                        item.Status = AddressStatus.Rejected;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+
+                UpdateHash(item, message);
+            });
+            
+            When<Envelope<AddressWasRetiredBecauseStreetNameWasRejected>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressListItemV2(
+                    message.Message.AddressPersistentLocalId,
+                    item =>
+                    {
+                        item.Status = AddressStatus.Retired;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+
+                UpdateHash(item, message);
+            });
+            
             When<Envelope<AddressWasRejectedBecauseStreetNameWasRetired>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressListItemV2(

@@ -327,6 +327,71 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
         }
 
         [Fact]
+        public async Task WhenAddressWasRejectedBecauseStreetNameWasRejected()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasRejected = _fixture.Create<AddressWasRejectedBecauseStreetNameWasRejected>();
+            var metadata2 = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasRejected.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, metadata)),
+                    new Envelope<AddressWasRejectedBecauseStreetNameWasRejected>(new Envelope(addressWasRejected, metadata2)))
+                .Then(async ct =>
+                {
+                    var addressListItemV2 = (await ct.AddressListV2.FindAsync(addressWasRejected.AddressPersistentLocalId));
+                    addressListItemV2.Should().NotBeNull();
+                    addressListItemV2.Status.Should().Be(AddressStatus.Rejected);
+                    addressListItemV2.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
+                    addressListItemV2.LastEventHash.Should().Be(addressWasRejected.GetHash());
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressWasRetiredBecauseStreetNameWasRejected()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasApproved = _fixture.Create<AddressWasApproved>();
+            var approveMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasApproved.GetHash() }
+            };
+
+            var addressWasRejected = _fixture.Create<AddressWasRetiredBecauseStreetNameWasRejected>();
+            var metadata2 = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasRejected.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, metadata)),
+                    new Envelope<AddressWasApproved>(new Envelope(addressWasApproved, approveMetadata)),
+                    new Envelope<AddressWasRetiredBecauseStreetNameWasRejected>(new Envelope(addressWasRejected, metadata2)))
+                .Then(async ct =>
+                {
+                    var addressListItemV2 = (await ct.AddressListV2.FindAsync(addressWasRejected.AddressPersistentLocalId));
+                    addressListItemV2.Should().NotBeNull();
+                    addressListItemV2.Status.Should().Be(AddressStatus.Retired);
+                    addressListItemV2.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
+                    addressListItemV2.LastEventHash.Should().Be(addressWasRejected.GetHash());
+                });
+        }
+        
+        [Fact]
         public async Task WhenAddressWasRejectedBecauseStreetNameWasRetired()
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();

@@ -175,6 +175,34 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                     updateHouseNumberLabelsAfterAddressUpdate: true);
             });
 
+            When<Envelope<AddressWasRejectedBecauseStreetNameWasRejected>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.Status =  MapStatus(AddressStatus.Rejected);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    ct,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true);
+            });
+            
+            When<Envelope<AddressWasRetiredBecauseStreetNameWasRejected>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.Status =  MapStatus(AddressStatus.Retired);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    ct,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true);
+            });
+            
             When<Envelope<AddressWasRejectedBecauseStreetNameWasRetired>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressDetail(

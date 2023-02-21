@@ -160,13 +160,6 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 UpdateVersie(item, message.Message.Provenance.Timestamp);
             });
 
-            When<Envelope<AddressWasRejectedBecauseHouseNumberWasRejected>>(async (context, message, ct) =>
-            {
-                var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);
-                UpdateDbaseRecordField(item, record => record.status.Value = Map(AddressStatus.Rejected));
-                UpdateVersie(item, message.Message.Provenance.Timestamp);
-            });
-
             When<Envelope<AddressWasRejectedBecauseHouseNumberWasRetired>>(async (context, message, ct) =>
             {
                 var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);
@@ -174,6 +167,27 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 UpdateVersie(item, message.Message.Provenance.Timestamp);
             });
 
+            When<Envelope<AddressWasRejectedBecauseHouseNumberWasRejected>>(async (context, message, ct) =>
+            {
+                var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);
+                UpdateDbaseRecordField(item, record => record.status.Value = Map(AddressStatus.Rejected));
+                UpdateVersie(item, message.Message.Provenance.Timestamp);
+            });
+
+            When<Envelope<AddressWasRejectedBecauseStreetNameWasRejected>>(async (context, message, ct) =>
+            {
+                var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);
+                UpdateDbaseRecordField(item, record => record.status.Value = Map(AddressStatus.Rejected));
+                UpdateVersie(item, message.Message.Provenance.Timestamp);
+            });
+
+            When<Envelope<AddressWasRetiredBecauseStreetNameWasRejected>>(async (context, message, ct) =>
+            {
+                var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);
+                UpdateDbaseRecordField(item, record => record.status.Value = Map(AddressStatus.Retired));
+                UpdateVersie(item, message.Message.Provenance.Timestamp);
+            });
+            
             When<Envelope<AddressWasRejectedBecauseStreetNameWasRetired>>(async (context, message, ct) =>
             {
                 var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);

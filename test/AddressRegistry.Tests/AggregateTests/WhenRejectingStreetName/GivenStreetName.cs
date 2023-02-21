@@ -13,6 +13,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingStreetName
     using global::AutoFixture;
     using Xunit;
     using Xunit.Abstractions;
+    using AddressRegistry.Tests.AggregateTests.Builders;
 
     public class GivenStreetName : AddressRegistryTest
     {
@@ -62,6 +63,76 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingStreetName
                     streetNameWasImported)
                 .When(command)
                 .ThenNone());
+        }
+
+        [Fact]
+        public void WithAddresses_ThenAddressesWereRejectedOrRetired()
+        {
+            var command = Fixture.Create<RejectStreetName>();
+
+            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
+            var streetNameWasImported = new StreetNameWasImported(
+                streetNamePersistentLocalId,
+                Fixture.Create<MunicipalityId>(),
+                StreetNameStatus.Proposed);
+            ((ISetProvenance)streetNameWasImported).SetProvenance(Fixture.Create<Provenance>());
+
+            var proposedHouseNumber =
+                new AddressWasMigratedToStreetNameBuilder(Fixture, AddressStatus.Proposed)
+                    .WithAddressPersistentLocalId(new AddressPersistentLocalId(1))
+                    .Build();
+
+            var proposedBoxNumber =
+                new AddressWasMigratedToStreetNameBuilder(Fixture, AddressStatus.Proposed)
+                    .WithAddressPersistentLocalId(new AddressPersistentLocalId(2))
+                    .WithBoxNumber(
+                        boxNumber: Fixture.Create<BoxNumber>(),
+                        parentAddressPersistentLocalId: new AddressPersistentLocalId(proposedHouseNumber.AddressPersistentLocalId))
+                    .Build();
+
+            var currentHouseNumber =
+                new AddressWasMigratedToStreetNameBuilder(Fixture, AddressStatus.Current)
+                    .WithAddressPersistentLocalId(new AddressPersistentLocalId(3))
+                    .Build();
+
+            var currentBoxNumber =
+                new AddressWasMigratedToStreetNameBuilder(Fixture, AddressStatus.Current)
+                    .WithAddressPersistentLocalId(new AddressPersistentLocalId(4))
+                    .WithBoxNumber(
+                        boxNumber: Fixture.Create<BoxNumber>(),
+                        parentAddressPersistentLocalId: new AddressPersistentLocalId(currentHouseNumber.AddressPersistentLocalId))
+                    .Build();
+
+            var proposedBoxNumberForCurrentHouseNumber =
+                new AddressWasMigratedToStreetNameBuilder(Fixture, AddressStatus.Proposed)
+                    .WithAddressPersistentLocalId(new AddressPersistentLocalId(5))
+                    .WithBoxNumber(
+                        boxNumber: Fixture.Create<BoxNumber>(),
+                        parentAddressPersistentLocalId: new AddressPersistentLocalId(currentHouseNumber.AddressPersistentLocalId))
+                    .Build();
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    streetNameWasImported,
+                    proposedHouseNumber,
+                    proposedBoxNumber,
+                    currentHouseNumber,
+                    currentBoxNumber,
+                    proposedBoxNumberForCurrentHouseNumber)
+                .When(command)
+                .Then(
+                    new Fact(new StreetNameStreamId(command.PersistentLocalId),
+                        new AddressWasRejectedBecauseStreetNameWasRejected(streetNamePersistentLocalId, new AddressPersistentLocalId(proposedBoxNumber.AddressPersistentLocalId))),
+                    new Fact(new StreetNameStreamId(command.PersistentLocalId),
+                        new AddressWasRejectedBecauseStreetNameWasRejected(streetNamePersistentLocalId, new AddressPersistentLocalId(proposedBoxNumberForCurrentHouseNumber.AddressPersistentLocalId))),
+                    new Fact(new StreetNameStreamId(command.PersistentLocalId),
+                        new AddressWasRetiredBecauseStreetNameWasRejected(streetNamePersistentLocalId, new AddressPersistentLocalId(currentBoxNumber.AddressPersistentLocalId))),
+                    new Fact(new StreetNameStreamId(command.PersistentLocalId),
+                        new AddressWasRejectedBecauseStreetNameWasRejected(streetNamePersistentLocalId, new AddressPersistentLocalId(proposedHouseNumber.AddressPersistentLocalId))),
+                    new Fact(new StreetNameStreamId(command.PersistentLocalId),
+                        new AddressWasRetiredBecauseStreetNameWasRejected(streetNamePersistentLocalId, new AddressPersistentLocalId(currentHouseNumber.AddressPersistentLocalId))),
+                    new Fact(new StreetNameStreamId(command.PersistentLocalId),
+                        new StreetNameWasRejected(streetNamePersistentLocalId))));
         }
 
         [Fact]

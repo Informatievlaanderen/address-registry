@@ -522,6 +522,34 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     ct);
             });
 
+            When<Envelope<AddressWasRejectedBecauseStreetNameWasRejected>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressPersistentLocalId,
+                    message,
+                    x => x.Status = AddressStatus.Rejected,
+                    ct);
+
+                await context.UpdateAddressBoxNumberSyndicationHelper(
+                    message.Message.AddressPersistentLocalId,
+                    x => x.Status = AddressStatus.Rejected,
+                    ct);
+            });
+            
+            When<Envelope<AddressWasRetiredBecauseStreetNameWasRejected>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressPersistentLocalId,
+                    message,
+                    x => x.Status = AddressStatus.Retired,
+                    ct);
+
+                await context.UpdateAddressBoxNumberSyndicationHelper(
+                    message.Message.AddressPersistentLocalId,
+                    x => x.Status = AddressStatus.Retired,
+                    ct);
+            });
+            
             When<Envelope<AddressWasRejectedBecauseStreetNameWasRetired>>(async (context, message, ct) =>
             {
                 await context.CreateNewAddressSyndicationItem(

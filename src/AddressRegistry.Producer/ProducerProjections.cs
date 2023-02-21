@@ -242,6 +242,11 @@ namespace AddressRegistry.Producer
                 await Produce(message.Message.StreetNamePersistentLocalId, message.Message.ToContract(), message.Position, ct);
             });
 
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetName.AddressWasRetiredBecauseStreetNameWasRejected>>(async (_, message, ct) =>
+            {
+                await Produce(message.Message.StreetNamePersistentLocalId, message.Message.ToContract(), message.Position, ct);
+            });
+
             When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetName.AddressWasCorrectedFromRetiredToCurrent>>(async (_, message, ct) =>
             {
                 await Produce(message.Message.StreetNamePersistentLocalId, message.Message.ToContract(), message.Position, ct);
@@ -268,6 +273,11 @@ namespace AddressRegistry.Producer
             });
 
             When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetName.AddressWasRejectedBecauseHouseNumberWasRejected>>(async (_, message, ct) =>
+            {
+                await Produce(message.Message.StreetNamePersistentLocalId, message.Message.ToContract(), message.Position, ct);
+            });
+
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetName.AddressWasRejectedBecauseStreetNameWasRejected>>(async (_, message, ct) =>
             {
                 await Produce(message.Message.StreetNamePersistentLocalId, message.Message.ToContract(), message.Position, ct);
             });

@@ -275,6 +275,62 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
         }
 
         [Fact]
+        public async Task WhenAddressWasRejectedBecauseStreetNameWasRejected()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasRejected = _fixture.Create<AddressWasRejectedBecauseStreetNameWasRejected>();
+            var rejectedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasRejected.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasRejectedBecauseStreetNameWasRejected>(new Envelope(addressWasRejected, rejectedMetadata)))
+                .Then(async ct =>
+                {
+                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressWasRejected.AddressPersistentLocalId);
+                    addressWmsItem.Should().NotBeNull();
+                    addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Rejected));
+                    addressWmsItem.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
+                });
+        }
+        
+        [Fact]
+        public async Task WhenAddressWasRetiredBecauseStreetNameWasRejected()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasRetired = _fixture.Create<AddressWasRetiredBecauseStreetNameWasRejected>();
+            var rejectedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasRetired.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasRetiredBecauseStreetNameWasRejected>(new Envelope(addressWasRetired, rejectedMetadata)))
+                .Then(async ct =>
+                {
+                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressWasRetired.AddressPersistentLocalId);
+                    addressWmsItem.Should().NotBeNull();
+                    addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Retired));
+                    addressWmsItem.VersionTimestamp.Should().Be(addressWasRetired.Provenance.Timestamp);
+                });
+        }
+        
+        [Fact]
         public async Task WhenAddressWasRejectedBecauseStreetNameWasRetired()
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();

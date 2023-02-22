@@ -20,7 +20,7 @@ jobs:
         SONAR_TOKEN: ${{ secrets.VBR_SONAR_TOKEN }}
       shell: bash
       run: |
-        curl --location 'https://pksqlc-n65nz.eu-west-1.aws.confluent.cloud:443/ksql' \
+        curl --silent --location 'https://pksqlc-n65nz.eu-west-1.aws.confluent.cloud:443/ksql' \
           --header 'Accept: application/vnd.ksql.v1+json' \
           --header 'Content-Type: application/json' \
           --header 'Authorization: Basic Q0xUQjU0NkdBSkM0T1VPUzo4SVZUM2p5ZHU5T25pQUEwSGZvV2FyVzduS3QvUENoTHoyMHBGaUJweC9mUk4wYnFkV0g4MVBQOFN2eHBwSFg3' \

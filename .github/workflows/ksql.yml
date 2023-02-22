@@ -17,6 +17,9 @@ jobs:
     - name: Execute ksql statements
       shell: bash
       run: |
+        pushd .ksql
+        echo pwd
+        pwd
         for FILE in *.ksql; do 
           contents=$(<$FILE)
           echo "$contents"
@@ -29,3 +32,4 @@ jobs:
                 } 
               }";
         done
+        popd

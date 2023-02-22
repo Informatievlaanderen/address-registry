@@ -240,7 +240,7 @@ jobs:
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
       registry: address-registry
-      build-target: Containerize_ProducerSnapshotOslo
+      build-target: Containerize_Producer_Snapshot_Oslo
       image-file: ar-producer-snapshot-oslo-image.tar
       image-name: producer-snapshot-oslo
       test-project: AddressRegistry.Tests
@@ -255,7 +255,7 @@ jobs:
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
       registry: address-registry
-      build-target: Containerize_MigratorAddress
+      build-target: Containerize_Migrator_Address
       image-file: ar-migrator-address-image.tar
       image-name: migrator-address
       test-project: AddressRegistry.Tests

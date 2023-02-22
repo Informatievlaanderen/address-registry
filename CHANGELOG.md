@@ -1,3 +1,18 @@
+# [3.74.0](https://github.com/informatievlaanderen/address-registry/compare/v3.73.9...v3.74.0) (2023-02-22)
+
+
+### Bug Fixes
+
+* add response status code ([cdc9781](https://github.com/informatievlaanderen/address-registry/commit/cdc9781e8b6a5b3a83c295cd559c9d68dea3a52d))
+* deploy ksql statements ([28f4383](https://github.com/informatievlaanderen/address-registry/commit/28f4383766c177d4918fa45bf6a2a0c207a2be72))
+* silence curl ([822cbf0](https://github.com/informatievlaanderen/address-registry/commit/822cbf03ea0e0eb67e0c23d7ef978bf1e43f1200))
+* use new ci workflow ([69d41c4](https://github.com/informatievlaanderen/address-registry/commit/69d41c4c0211d1b22df2b20d9c65acef9c5fff02))
+
+
+### Features
+
+* reject streetname underlying addresses ([a52c291](https://github.com/informatievlaanderen/address-registry/commit/a52c29131def86a148cbbea3fa145804e3362956))
+
 ## [3.73.9](https://github.com/informatievlaanderen/address-registry/compare/v3.73.8...v3.73.9) (2023-02-21)
 
 

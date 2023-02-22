@@ -98,49 +98,22 @@ Target.create "Pack_Solution" (fun _ ->
   ] |> List.iter pack)
 
 Target.create "Containerize_Projector" (fun _ -> containerize "AddressRegistry.Projector" "projector")
-Target.create "PushContainer_Projector" (fun _ -> push "projector")
-
 Target.create "Containerize_ApiLegacy" (fun _ -> containerize "AddressRegistry.Api.Legacy" "api-legacy")
-Target.create "PushContainer_ApiLegacy" (fun _ -> push "api-legacy")
-
 Target.create "Containerize_ApiOslo" (fun _ -> containerize "AddressRegistry.Api.Oslo" "api-oslo")
-Target.create "PushContainer_ApiOslo" (fun _ -> push "api-oslo")
-
 Target.create "Containerize_ApiExtract" (fun _ -> containerize "AddressRegistry.Api.Extract" "api-extract")
-Target.create "PushContainer_ApiExtract" (fun _ -> push "api-extract")
-
 Target.create "Containerize_ApiBackOffice" (fun _ -> containerize "AddressRegistry.Api.BackOffice" "api-backoffice")
-Target.create "PushContainer_ApiBackOffice" (fun _ -> push "api-backoffice")
-
 Target.create "Containerize_ApiCrabImport" (fun _ -> containerize "AddressRegistry.Api.CrabImport" "api-crab-import")
-Target.create "PushContainer_ApiCrabImport" (fun _ -> push "api-crab-import")
-
 Target.create "Containerize_Consumer" (fun _ -> containerize "AddressRegistry.Consumer" "consumer")
-Target.create "PushContainer_Consumer" (fun _ -> push "consumer")
-
 Target.create "Containerize_ConsumerMunicipality" (fun _ -> containerize "AddressRegistry.Consumer.Read.Municipality" "consumer-read-municipality")
-Target.create "PushContainer_ConsumerMunicipality" (fun _ -> push "consumer-read-municipality")
-
 Target.create "Containerize_ConsumerStreetName" (fun _ -> containerize "AddressRegistry.Consumer.Read.StreetName" "consumer-read-streetname")
-Target.create "PushContainer_ConsumerStreetName" (fun _ -> push "consumer-read-streetname")
-
 Target.create "Containerize_Migrator_Address" (fun _ -> containerize "AddressRegistry.Migrator.Address" "migrator-address")
-Target.create "PushContainer_Migrator_Address" (fun _ -> push "migrator-address")
-
 Target.create "Containerize_Producer" (fun _ -> containerize "AddressRegistry.Producer" "producer")
-Target.create "PushContainer_Producer" (fun _ -> push "producer")
-
 Target.create "Containerize_Producer_Snapshot_Oslo" (fun _ -> containerize "AddressRegistry.Producer.Snapshot.Oslo" "producer-snapshot-oslo")
-Target.create "PushContainer_Producer_Snapshot_Oslo" (fun _ -> push "producer-snapshot-oslo")
-
 Target.create "Containerize_ProjectionsSyndication" (fun _ -> containerize "AddressRegistry.Projections.Syndication" "projections-syndication")
-Target.create "PushContainer_ProjectionsSyndication" (fun _ -> push "projections-syndication")
-
 Target.create "Containerize_ProjectionsBackOffice" (fun _ -> containerize "AddressRegistry.Projections.BackOffice" "projections-backoffice")
-Target.create "PushContainer_ProjectionsBackOffice" (fun _ -> push "projections-backoffice")
-
 Target.create "Containerize_CacheWarmer" (fun _ -> containerize "AddressRegistry.CacheWarmer" "cache-warmer")
-Target.create "PushContainer_CacheWarmer" (fun _ -> push "cache-warmer")
+
+Target.create "SetAssemblyVersions" (fun _ -> setVersions "SolutionInfo.cs")
 
 // --------------------------------------------------------------------------------
 
@@ -149,7 +122,6 @@ Target.create "Test" ignore
 Target.create "Publish" ignore
 Target.create "Pack" ignore
 Target.create "Containerize" ignore
-Target.create "Push" ignore
 
 "NpmInstall"
   ==> "DotNetCli"
@@ -188,26 +160,6 @@ Target.create "Push" ignore
   ==> "Containerize_CacheWarmer"
   ==> "Containerize"
 // Possibly add more projects to containerize here
-
-"Containerize"
-  ==> "DockerLogin"
-  ==> "PushContainer_Projector"
-  ==> "PushContainer_ApiLegacy"
-  ==> "PushContainer_ApiOslo"
-  ==> "PushContainer_ApiExtract"
-  ==> "PushContainer_ApiBackOffice"
-  ==> "PushContainer_ApiCrabImport"
-  ==> "PushContainer_Consumer"
-  ==> "PushContainer_ConsumerMunicipality"
-  ==> "PushContainer_ConsumerStreetName"
-  ==> "PushContainer_Migrator_Address"
-  ==> "PushContainer_Producer"
-  ==> "PushContainer_Producer_Snapshot_Oslo"
-  ==> "PushContainer_ProjectionsSyndication"
-  ==> "PushContainer_ProjectionsBackOffice"
-  ==> "PushContainer_CacheWarmer"
-  ==> "Push"
-// Possibly add more projects to push here
 
 // By default we build & test
 Target.runOrDefault "Test"

@@ -713,7 +713,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: ['api-backoffice', 'api-legacy', 'api-oslo', 'api-crab-import', 'api-extract', 'projector', 'projections-syndication', 'projections-backoffice', 'consumer', 'producer', 'producer-snapshot-oslo', 'migrator-address']
+        image: ['api-backoffice', 'api-legacy', 'api-oslo', 'api-crab-import', 'api-extract', 'projector', 'projections-syndication', 'projections-backoffice', 'consumer', 'consumer-read-municipality', 'consumer-read-streetname', 'producer', 'producer-snapshot-oslo', 'migrator-address', 'cache-warmer']
     steps:
       - name: Configure AWS credentials (Test)
         uses: aws-actions/configure-aws-credentials@v1-node16
@@ -760,7 +760,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: ['api-backoffice', 'api-legacy', 'api-oslo', 'api-crab-import', 'api-extract', 'projector', 'projections-syndication', 'projections-backoffice', 'consumer', 'producer', 'producer-snapshot-oslo', 'migrator-address']
+        image: ['api-backoffice', 'api-legacy', 'api-oslo', 'api-crab-import', 'api-extract', 'projector', 'projections-syndication', 'projections-backoffice', 'consumer', 'consumer-read-municipality', 'consumer-read-streetname', 'producer', 'producer-snapshot-oslo', 'migrator-address', 'cache-warmer']
     steps:
       - name: Configure AWS credentials (Staging)
         uses: aws-actions/configure-aws-credentials@v1-node16
@@ -809,7 +809,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: ['api-backoffice', 'api-legacy', 'api-oslo', 'api-crab-import', 'api-extract', 'projector', 'projections-syndication', 'projections-backoffice', 'consumer', 'producer', 'producer-snapshot-oslo', 'migrator-address']
+        image: ['api-backoffice', 'api-legacy', 'api-oslo', 'api-crab-import', 'api-extract', 'projector', 'projections-syndication', 'projections-backoffice', 'consumer', 'consumer-read-municipality', 'consumer-read-streetname', 'producer', 'producer-snapshot-oslo', 'migrator-address', 'cache-warmer']
     steps:
       - name: Configure AWS credentials (Production)
         uses: aws-actions/configure-aws-credentials@v1-node16

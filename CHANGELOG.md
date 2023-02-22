@@ -1,3 +1,10 @@
+## [3.74.2](https://github.com/informatievlaanderen/address-registry/compare/v3.74.1...v3.74.2) (2023-02-22)
+
+
+### Bug Fixes
+
+* deploy ci bump ([041a8e5](https://github.com/informatievlaanderen/address-registry/commit/041a8e5941c5b86515f66f6512d1c96038ca2d65))
+
 ## [3.74.1](https://github.com/informatievlaanderen/address-registry/compare/v3.74.0...v3.74.1) (2023-02-22)
 
 

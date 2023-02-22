@@ -15,18 +15,17 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Execute ksql statements
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-        SONAR_TOKEN: ${{ secrets.VBR_SONAR_TOKEN }}
       shell: bash
       run: |
-        curl --silent -w "\n%{http_code}\n" --location 'https://pksqlc-n65nz.eu-west-1.aws.confluent.cloud:443/ksql' \
-          --header 'Accept: application/vnd.ksql.v1+json' \
-          --header 'Content-Type: application/json' \
-          --header 'Authorization: Basic Q0xUQjU0NkdBSkM0T1VPUzo4SVZUM2p5ZHU5T25pQUEwSGZvV2FyVzduS3QvUENoTHoyMHBGaUJweC9mUk4wYnFkV0g4MVBQOFN2eHBwSFg3' \
-          --data '{
-            "ksql": "SHOW STREAMS;",
-              "streamsProperties": {
-                "ksql.streams.auto.offset.reset": "earliest"
-              }
-          }'
+        for FILE in *.ksql; do 
+          contents=$(<$FILE)
+          echo "$contents"
+          curl --silent -w "\n%{http_code}\n" --location 'https://pksqlc-n65nz.eu-west-1.aws.confluent.cloud:443/ksql' \
+            --header 'Accept: application/vnd.ksql.v1+json' \
+            --header 'Content-Type: application/json' \
+            --header 'Authorization: Basic Q0xUQjU0NkdBSkM0T1VPUzo4SVZUM2p5ZHU5T25pQUEwSGZvV2FyVzduS3QvUENoTHoyMHBGaUJweC9mUk4wYnFkV0g4MVBQOFN2eHBwSFg3' \
+            --data "{ \"ksql\": \" $contents \", \"streamsProperties\": {
+                \"ksql.streams.auto.offset.reset\": \"earliest\"
+                } 
+              }";
+        done

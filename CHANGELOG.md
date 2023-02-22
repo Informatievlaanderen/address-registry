@@ -1,3 +1,10 @@
+## [3.74.1](https://github.com/informatievlaanderen/address-registry/compare/v3.74.0...v3.74.1) (2023-02-22)
+
+
+### Bug Fixes
+
+* bump to test new release ([4818e6f](https://github.com/informatievlaanderen/address-registry/commit/4818e6f2176b4dcae876cb05a25e32dc7b695a2e))
+
 # [3.74.0](https://github.com/informatievlaanderen/address-registry/compare/v3.73.9...v3.74.0) (2023-02-22)
 
 

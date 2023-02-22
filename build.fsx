@@ -111,7 +111,13 @@ Target.create "Containerize_Producer" (fun _ -> containerize "AddressRegistry.Pr
 Target.create "Containerize_Producer_Snapshot_Oslo" (fun _ -> containerize "AddressRegistry.Producer.Snapshot.Oslo" "producer-snapshot-oslo")
 Target.create "Containerize_ProjectionsSyndication" (fun _ -> containerize "AddressRegistry.Projections.Syndication" "projections-syndication")
 Target.create "Containerize_ProjectionsBackOffice" (fun _ -> containerize "AddressRegistry.Projections.BackOffice" "projections-backoffice")
-Target.create "Containerize_CacheWarmer" (fun _ -> containerize "AddressRegistry.CacheWarmer" "cache-warmer")
+Target.create "Containerize_CacheWarmer" (fun _ ->
+  let dist = (buildDir @@ "AddressRegistry.CacheWarmer" @@ "linux")
+  let source = "src" @@ "AddressRegistry.CacheWarmer"
+
+  Directory.ensure dist
+  Shell.copyFile dist (source @@ "Dockerfile")
+  containerize "AddressRegistry.CacheWarmer" "cache-warmer")
 
 Target.create "SetAssemblyVersions" (fun _ -> setVersions "SolutionInfo.cs")
 

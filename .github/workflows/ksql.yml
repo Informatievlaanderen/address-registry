@@ -21,15 +21,18 @@ jobs:
         echo pwd
         pwd
         for FILE in *.ksql; do 
+          echo Start execution of $FILE
           contents=$(<$FILE)
-          echo "$contents"
+          contents=$(sed 's|"|\\\"|g' <<< $contents) #replace double quotes
+          contents=$(sed "s|'|\\\'|g" <<< $contents) #replace single quotes
+          contents=$(sed 's|`|\\\`|g' <<< $contents) #replace backticks
           curl --silent -w "\n%{http_code}\n" --location 'https://pksqlc-n65nz.eu-west-1.aws.confluent.cloud:443/ksql' \
             --header 'Accept: application/vnd.ksql.v1+json' \
             --header 'Content-Type: application/json' \
             --header 'Authorization: Basic Q0xUQjU0NkdBSkM0T1VPUzo4SVZUM2p5ZHU5T25pQUEwSGZvV2FyVzduS3QvUENoTHoyMHBGaUJweC9mUk4wYnFkV0g4MVBQOFN2eHBwSFg3' \
             --data "{ \"ksql\": \" $contents \", \"streamsProperties\": {
-                \"ksql.streams.auto.offset.reset\": \"earliest\"
-                } 
-              }";
+            	\"ksql.streams.auto.offset.reset\": \"earliest\"
+            	} }";
+          echo End execution of $FILE
         done
         popd

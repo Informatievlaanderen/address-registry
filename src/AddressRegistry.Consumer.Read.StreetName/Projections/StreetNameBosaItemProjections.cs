@@ -103,6 +103,40 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections
                     UpdateVersionTimestamp(item, message.Provenance.Timestamp);
                 }, ct);
             });
+
+            When<StreetNameHomonymAdditionsWereCorrected>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateBosaItem(message.PersistentLocalId, item =>
+                {
+                    UpdateHomonyms(item, message.HomonymAdditions);
+                    UpdateVersionTimestamp(item, message.Provenance.Timestamp);
+                }, ct);
+            });
+
+            When<StreetNameHomonymAdditionsWereRemoved>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateBosaItem(message.PersistentLocalId, item =>
+                {
+                    foreach (var language in message.Languages)
+                    {
+                        switch (language)
+                        {
+                            case nameof(StreetNameLanguage.Dutch):item.HomonymAdditionDutch = null;
+                                break;
+                            case nameof(StreetNameLanguage.French): item.HomonymAdditionFrench = null;
+                                 break;
+                            case nameof(StreetNameLanguage.German): item.HomonymAdditionGerman = null;
+                                break;
+                            case nameof(StreetNameLanguage.English): item.HomonymAdditionEnglish = null;
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+                    }
+
+                    UpdateVersionTimestamp(item, message.Provenance.Timestamp);
+                }, ct);
+            });
         }
 
         private void UpdateNames(StreetNameBosaItem item, IDictionary<string, string> names)

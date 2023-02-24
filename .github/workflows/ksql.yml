@@ -21,9 +21,9 @@ jobs:
         for FILE in *.ksql; do 
           echo Start execution of $FILE
           contents=$(<$FILE)
-          contents=$(sed 's|"|\\\"|g' <<< $contents) # replace double quotes
-          contents=$(sed "s|'|\\\'|g" <<< $contents) # replace single quotes
-          contents=$(sed 's|`|\\\`|g' <<< $contents) # replace backticks
+          contents=$(sed 's|"|\\\"|g' <<< $contents) # escape double quotes
+          contents=$(sed "s|'|\\\'|g" <<< $contents) # escape single quotes
+          #contents=$(sed 's|`|\\\`|g' <<< $contents) # escape backticks
           contents=$(sed ':a; N; $!ba; s/\n/; /g' <<< $contents) # single line
           #echo $contents
           curl --silent -w "\n%{http_code}\n" --location 'https://pksqlc-n65nz.eu-west-1.aws.confluent.cloud:443/ksql' \

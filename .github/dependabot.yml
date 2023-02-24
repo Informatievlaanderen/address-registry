@@ -4,40 +4,48 @@ updates:
 - package-ecosystem: nuget
   directory: "/"
   schedule:
-    interval: daily
+    interval: weekly
   open-pull-requests-limit: 25
+  rebase-strategy: "disabled"
   
 - package-ecosystem: github-actions
   directory: "/"
   schedule:
-    interval: daily
+    interval: weekly
+  rebase-strategy: "disabled"
 
 - package-ecosystem: npm
   directory: "/"
   schedule:
-    interval: daily
+    interval: weekly
+  rebase-strategy: "disabled"
 
 - package-ecosystem: docker
   directory: "/src/AddressRegistry.Api.CrabImport"
   schedule:
-    interval: daily
+    interval: weekly
+  rebase-strategy: "disabled"
 
 - package-ecosystem: docker
   directory: "/src/AddressRegistry.Api.Extract"
   schedule:
-    interval: daily
+    interval: weekly
+  rebase-strategy: "disabled"
 
 - package-ecosystem: docker
   directory: "/src/AddressRegistry.Api.Legacy"
   schedule:
-    interval: daily
+    interval: weekly
+  rebase-strategy: "disabled"
 
 - package-ecosystem: docker
   directory: "/src/AddressRegistry.Projections.Syndication"
   schedule:
-    interval: daily
+    interval: weekly
+  rebase-strategy: "disabled"
 
 - package-ecosystem: docker
   directory: "/src/AddressRegistry.Projector"
   schedule:
-    interval: daily
+    interval: weekly
+  rebase-strategy: "disabled"

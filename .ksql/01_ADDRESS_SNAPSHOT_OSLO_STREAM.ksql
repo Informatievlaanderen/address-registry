@@ -1,4 +1,4 @@
-CREATE OR REPLACE STREAM address_snapshot_oslo_stream (
+CREATE OR REPLACE STREAM IF NOT EXISTS address_snapshot_oslo_stream (
   messageKey varchar KEY,
   `@context` varchar,
   `@type` varchar,
@@ -12,4 +12,4 @@ CREATE OR REPLACE STREAM address_snapshot_oslo_stream (
   adresPositie STRUCT<geometrie STRUCT<type varchar, gml varchar>, positieGeometrieMethode varchar, positieSpecificatie varchar>,
   adresStatus varchar,
   officieelToegekend boolean)
-WITH (KAFKA_TOPIC='address.snapshot.oslo', VALUE_FORMAT='JSON');
+WITH (KAFKA_TOPIC='address.snapshot.oslo', VALUE_FORMAT='JSON')

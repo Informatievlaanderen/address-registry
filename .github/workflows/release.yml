@@ -20,7 +20,7 @@ jobs:
           persist-credentials: false
 
     - name: Setup Node.js
-      uses: actions/setup-node@v3.5.1
+      uses: actions/setup-node@v3.6.0
 
     - name: Node version
       shell: bash
@@ -412,7 +412,7 @@ jobs:
       shell: bash
 
     - name: Setup Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v3.6.0
 
     - name: Setup Python
       uses: actions/setup-python@v3

@@ -22,7 +22,7 @@ jobs:
           echo Start execution of $FILE
           contents=$(<$FILE)
           contents=$(sed 's|"|\\\"|g' <<< $contents) # escape double quotes
-          contents=$(sed "s|'|\\\'|g" <<< $contents) # escape single quotes
+          #contents=$(sed "s|'|\\\'|g" <<< $contents) # escape single quotes
           #contents=$(sed 's|`|\\\`|g' <<< $contents) # escape backticks
           contents=$(sed ':a; N; $!ba; s/\n/; /g' <<< $contents) # single line
           #echo $contents

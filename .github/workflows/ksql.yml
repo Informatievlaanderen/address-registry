@@ -25,7 +25,9 @@ jobs:
           #contents=$(sed "s|'|\\\'|g" <<< $contents) # escape single quotes
           #contents=$(sed 's|`|\\\`|g' <<< $contents) # escape backticks
           contents=$(sed ':a; N; $!ba; s/\n/; /g' <<< $contents) # single line
+          echo Contents of file:
           echo $contents
+          echo \nCurl command:
           curl --silent -w "\n%{http_code}\n" --location 'https://pksqlc-n65nz.eu-west-1.aws.confluent.cloud:443/ksql' \
             --header 'Accept: application/vnd.ksql.v1+json' \
             --header 'Content-Type: application/json' \
@@ -33,6 +35,5 @@ jobs:
             --data "{ \"ksql\": \" $contents \", \"streamsProperties\": { \"ksql.streams.auto.offset.reset\": \"earliest\" } }"
           echo End execution of $FILE
           break
-          ;
         done
         popd

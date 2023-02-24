@@ -30,7 +30,7 @@ jobs:
             --header 'Accept: application/vnd.ksql.v1+json' \
             --header 'Content-Type: application/json' \
             --header 'Authorization: Basic Q0xUQjU0NkdBSkM0T1VPUzo4SVZUM2p5ZHU5T25pQUEwSGZvV2FyVzduS3QvUENoTHoyMHBGaUJweC9mUk4wYnFkV0g4MVBQOFN2eHBwSFg3' \
-            --data "{ \"ksql\": \" $contents \", \"streamsProperties\": { "ksql.streams.auto.offset.reset\": \"earliest\" } }";
+            --data "{ \"ksql\": \" $contents \", \"streamsProperties\": { \"ksql.streams.auto.offset.reset\": \"earliest\" } }";
           echo End execution of $FILE
           break
         done

@@ -285,6 +285,91 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
             });
         }
 
+        [Fact]
+        public async Task StreetNameHomonymAdditionsWereCorrected()
+        {
+            var streetNamePersistentLocalId = _fixture.Create<StreetNamePersistentLocalId>();
+
+            var @event = new StreetNameHomonymAdditionsWereCorrected(
+                _fixture.Create<Guid>().ToString(),
+                streetNamePersistentLocalId,
+                new Dictionary<string, string> { { "Dutch", "Corrected" } },
+                _provenance);
+
+            var streetNameWasMigratedToMunicipality = new StreetNameWasMigratedToMunicipality(
+                Fixture.Create<MunicipalityId>(),
+                Fixture.Create<NisCode>(),
+                Fixture.Create<StreetNameId>(),
+                streetNamePersistentLocalId,
+                StreetNameStatus.Current.ToString(),
+                "Dutch",
+                null,
+                new Dictionary<string, string> { {"Dutch", "STRAAT"}, },
+                new Dictionary<string, string> { {"Dutch", "DEF"}, },
+                true,
+                false,
+                new Provenance(
+                    _fixture.Create<Instant>().Plus(Duration.FromMinutes(1)).ToString(),
+                    string.Empty,
+                    string.Empty,
+                    string.Empty,
+                    string.Empty));
+
+            Given(streetNameWasMigratedToMunicipality, @event);
+            await Then(async ctx =>
+            {
+                var result = await ctx.StreetNameLatestItems.FindAsync((int)streetNamePersistentLocalId);
+                result.Should().NotBeNull();
+                result!.PersistentLocalId.Should().Be(@event.PersistentLocalId);
+                result.VersionTimestamp.Should().Be(InstantPattern.General.Parse(@event.Provenance.Timestamp).Value);
+
+                result.HomonymAdditionDutch.Should().Be("Corrected");
+            });
+        }
+
+        [Fact]
+        public async Task StreetNameHomonymAdditionsWereRemoved()
+        {
+            var streetNamePersistentLocalId = _fixture.Create<StreetNamePersistentLocalId>();
+
+            var @event = new StreetNameHomonymAdditionsWereRemoved(
+                _fixture.Create<Guid>().ToString(),
+                streetNamePersistentLocalId,
+                new List<string>() { "Dutch" },
+                _provenance);
+
+            var streetNameWasMigratedToMunicipality = new StreetNameWasMigratedToMunicipality(
+                Fixture.Create<MunicipalityId>(),
+                Fixture.Create<NisCode>(),
+                Fixture.Create<StreetNameId>(),
+                streetNamePersistentLocalId,
+                StreetNameStatus.Current.ToString(),
+                "Dutch",
+                null,
+                new Dictionary<string, string> { {"Dutch", "STRAAT"}, },
+                new Dictionary<string, string> { {"Dutch", "DEF"}, {"French", "QSD"}, },
+                true,
+                false,
+                new Provenance(
+                    _fixture.Create<Instant>().Plus(Duration.FromMinutes(1)).ToString(),
+                    string.Empty,
+                    string.Empty,
+                    string.Empty,
+                    string.Empty));
+
+            Given(streetNameWasMigratedToMunicipality, @event);
+            await Then(async ctx =>
+            {
+                var result = await ctx.StreetNameLatestItems.FindAsync((int)streetNamePersistentLocalId);
+                result.Should().NotBeNull();
+                result!.PersistentLocalId.Should().Be(@event.PersistentLocalId);
+                result.VersionTimestamp.Should().Be(InstantPattern.General.Parse(@event.Provenance.Timestamp).Value);
+
+                result.HomonymAdditionDutch.Should().BeNull();
+                result.HomonymAdditionFrench.Should().Be("QSD");
+            });
+        }
+
         private static void AssertNames(StreetNameLatestItem item)
         {
             item.NameDutch.Should().Be("nl-name");

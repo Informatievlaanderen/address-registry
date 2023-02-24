@@ -33,5 +33,6 @@ jobs:
             --data "{ \"ksql\": \" $contents \", \"streamsProperties\": { \"ksql.streams.auto.offset.reset\": \"earliest\" } }"
           echo End execution of $FILE
           break
+          ;
         done
         popd

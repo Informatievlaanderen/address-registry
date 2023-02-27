@@ -31,13 +31,6 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
                 .As<IMediator>()
                 .InstancePerLifetimeScope();
 
-            // request & notification handlers
-            builder.Register<ServiceFactory>(context =>
-            {
-                var ctx = context.Resolve<IComponentContext>();
-                return type => ctx.Resolve(type);
-            });
-
             builder.RegisterType<AddressSyndicationHandler>()
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();

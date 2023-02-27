@@ -1,3 +1,36 @@
+# [3.75.0](https://github.com/informatievlaanderen/address-registry/compare/v3.74.2...v3.75.0) (2023-02-27)
+
+
+### Bug Fixes
+
+* add debug code ([c00b547](https://github.com/informatievlaanderen/address-registry/commit/c00b547fcdc390506e289cd6f0abb841f1c400d0))
+* add semicolon ([e1903f1](https://github.com/informatievlaanderen/address-registry/commit/e1903f1fc4ed019bef60adaf80fa85c1700ffcf7))
+* bump grar common to 18.1.1 ([2abb161](https://github.com/informatievlaanderen/address-registry/commit/2abb161dc9224bff3ad9b30e3718109d36a73b7b))
+* don't escape backticks ([ca55b19](https://github.com/informatievlaanderen/address-registry/commit/ca55b19a1e593abc3856ca31aac1cf47d7e68214))
+* don't escape single quotes ([a1448b4](https://github.com/informatievlaanderen/address-registry/commit/a1448b48fda2a9a19d5c6d6c9edfd184d6175ecc))
+* don't escape single quotes ([dd1ae33](https://github.com/informatievlaanderen/address-registry/commit/dd1ae332a809ada9af54be66a45c9798abe82a07))
+* don't replace backticks ([a8b5dea](https://github.com/informatievlaanderen/address-registry/commit/a8b5dea14729d5048ecfef4e90a812f567c4d89b))
+* echo contents of $FILE ([22b449b](https://github.com/informatievlaanderen/address-registry/commit/22b449b5d4bb5ee1a0a516e5395597f4908f5c63))
+* escape double quotes in curl ([cbdfa79](https://github.com/informatievlaanderen/address-registry/commit/cbdfa79628d2afc14699ee5f4596439a72b18f86))
+* exec only first file ([f0d25c8](https://github.com/informatievlaanderen/address-registry/commit/f0d25c8c0049a12559ca13550608dbed070132a0))
+* found extraneous semicolon ([370f3e6](https://github.com/informatievlaanderen/address-registry/commit/370f3e637b05821b901c3691e84a458c4fb07886))
+* ksql on single line ([be279f2](https://github.com/informatievlaanderen/address-registry/commit/be279f2be76aec1fd12b72c5ca733c0f3ba3854c))
+* loop through ksql files ([381e667](https://github.com/informatievlaanderen/address-registry/commit/381e6679528b7bb13341c78a7a177b03ec69cfc1))
+* loop thru .ksql files ([8455452](https://github.com/informatievlaanderen/address-registry/commit/845545258c8269d5083d74c33ee3ee98b9967354))
+* move semicolon at end of loop ([2db60cc](https://github.com/informatievlaanderen/address-registry/commit/2db60cc687ff43abbe914c9e0ab932741dce7842))
+* pushd/popd ([268a54f](https://github.com/informatievlaanderen/address-registry/commit/268a54fdf5f9bb8a357064664efdf6cf1f8277d1))
+* remove debug statements ([edc83f4](https://github.com/informatievlaanderen/address-registry/commit/edc83f4b907138efe776996e281ff555ae8a2a9c))
+* remove semicolon at end of loop ([3a76550](https://github.com/informatievlaanderen/address-registry/commit/3a7655044d621bd2851419756f755cf5a260b6ba))
+* remove semicolon from 01~.ksql ([9fa2e3e](https://github.com/informatievlaanderen/address-registry/commit/9fa2e3eeaf774af2e768085409319d939073fe26))
+* rename kqsl to ksql ([7fa7c1f](https://github.com/informatievlaanderen/address-registry/commit/7fa7c1f93f180142d24a5daaeabb1c377f566107))
+* replace single quotes, double quotes & backticks in ksql files ([5a2b64c](https://github.com/informatievlaanderen/address-registry/commit/5a2b64cdcf91dbb48e475b5c0056e0928e297bf3))
+* unescaped double quote ([3476a69](https://github.com/informatievlaanderen/address-registry/commit/3476a6930ed9f008fb030580297ef83351a00cd2))
+
+
+### Features
+
+* consume streetname homonym additions ([a0916e7](https://github.com/informatievlaanderen/address-registry/commit/a0916e7e26059b6e00288decdb40d43c937ed246))
+
 ## [3.74.2](https://github.com/informatievlaanderen/address-registry/compare/v3.74.1...v3.74.2) (2023-02-22)
 
 

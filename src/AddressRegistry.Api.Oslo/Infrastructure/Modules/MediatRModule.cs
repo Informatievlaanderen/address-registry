@@ -25,13 +25,6 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
                 .As<IMediator>()
                 .InstancePerLifetimeScope();
 
-            // request & notification handlers
-            builder.Register<ServiceFactory>(context =>
-            {
-                var ctx = context.Resolve<IComponentContext>();
-                return type => ctx.Resolve(type);
-            });
-
             builder.Register(c =>
             {
                 if (c.Resolve<UseProjectionsV2Toggle>().FeatureEnabled)

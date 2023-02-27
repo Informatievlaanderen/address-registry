@@ -1,7 +1,6 @@
 name: ksql
 
 on:
-  merge_group:
   workflow_dispatch: 
 
 jobs:

@@ -189,15 +189,18 @@ namespace AddressRegistry.Api.Oslo.Address.Detail
         }
     }
 
-    public class AddressNotFoundResponseExamples : IExamplesProvider<ProblemDetails>
+       public class AddressNotFoundResponseExamples : IExamplesProvider<ProblemDetails>
     {
+        protected string ApiVersion { get; }
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ProblemDetailsHelper _problemDetailsHelper;
 
         public AddressNotFoundResponseExamples(
             IHttpContextAccessor httpContextAccessor,
-            ProblemDetailsHelper problemDetailsHelper)
+            ProblemDetailsHelper problemDetailsHelper,
+            string apiVersion = "v1")
         {
+            ApiVersion = apiVersion;
             _httpContextAccessor = httpContextAccessor;
             _problemDetailsHelper = problemDetailsHelper;
         }
@@ -209,19 +212,30 @@ namespace AddressRegistry.Api.Oslo.Address.Detail
                 HttpStatus = StatusCodes.Status404NotFound,
                 Title = ProblemDetails.DefaultTitle,
                 Detail = "Onbestaand adres.",
-                ProblemInstanceUri = _problemDetailsHelper.GetInstanceUri(_httpContextAccessor.HttpContext)
+                ProblemInstanceUri = _problemDetailsHelper.GetInstanceUri(_httpContextAccessor.HttpContext, ApiVersion)
             };
+    }
+
+    public class AddressNotFoundResponseExamplesV2 : AddressNotFoundResponseExamples
+    {
+        public AddressNotFoundResponseExamplesV2(
+            IHttpContextAccessor httpContextAccessor,
+            ProblemDetailsHelper problemDetailsHelper) : base(httpContextAccessor, problemDetailsHelper, "v2")
+        { }
     }
 
     public class AddressGoneResponseExamples : IExamplesProvider<ProblemDetails>
     {
+        protected string ApiVersion { get; }
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ProblemDetailsHelper _problemDetailsHelper;
 
         public AddressGoneResponseExamples(
             IHttpContextAccessor httpContextAccessor,
-            ProblemDetailsHelper problemDetailsHelper)
+            ProblemDetailsHelper problemDetailsHelper,
+            string apiVersion = "v1")
         {
+            ApiVersion = apiVersion;
             _httpContextAccessor = httpContextAccessor;
             _problemDetailsHelper = problemDetailsHelper;
         }
@@ -233,7 +247,15 @@ namespace AddressRegistry.Api.Oslo.Address.Detail
                 HttpStatus = StatusCodes.Status410Gone,
                 Title = ProblemDetails.DefaultTitle,
                 Detail = "Verwijderd adres.",
-                ProblemInstanceUri = _problemDetailsHelper.GetInstanceUri(_httpContextAccessor.HttpContext)
+                ProblemInstanceUri = _problemDetailsHelper.GetInstanceUri(_httpContextAccessor.HttpContext, ApiVersion)
             };
+    }
+
+    public class AddressGoneResponseExamplesV2 : AddressGoneResponseExamples
+    {
+        public AddressGoneResponseExamplesV2(
+            IHttpContextAccessor httpContextAccessor,
+            ProblemDetailsHelper problemDetailsHelper) : base(httpContextAccessor, problemDetailsHelper, "v2")
+        { }
     }
 }

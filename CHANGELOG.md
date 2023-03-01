@@ -1,3 +1,10 @@
+## [3.76.1](https://github.com/informatievlaanderen/address-registry/compare/v3.76.0...v3.76.1) (2023-03-01)
+
+
+### Bug Fixes
+
+* response examples ([eae4164](https://github.com/informatievlaanderen/address-registry/commit/eae4164656226cb883b0bbd1ddb9d892de445b8d))
+
 # [3.76.0](https://github.com/informatievlaanderen/address-registry/compare/v3.75.0...v3.76.0) (2023-03-01)
 
 

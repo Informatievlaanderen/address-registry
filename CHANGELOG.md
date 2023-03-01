@@ -1,3 +1,18 @@
+# [3.76.0](https://github.com/informatievlaanderen/address-registry/compare/v3.75.0...v3.76.0) (2023-03-01)
+
+
+### Bug Fixes
+
+* bump mediatr ([#948](https://github.com/informatievlaanderen/address-registry/issues/948)) ([92f228f](https://github.com/informatievlaanderen/address-registry/commit/92f228ff8ef009bc3c827d9203287f7c4edcf27b))
+* change volledigadresnaam to volledigadres ([73f7021](https://github.com/informatievlaanderen/address-registry/commit/73f70218fa7335ab54943d267ed38ad6f01f3efd))
+* no merge group for ksql ([487d0ad](https://github.com/informatievlaanderen/address-registry/commit/487d0ada9e29ba08e784389d433cf21e26b955ca))
+* ordering ksql files ([c062711](https://github.com/informatievlaanderen/address-registry/commit/c062711d99cbbce2ee255af5e28abfbb532583b3))
+
+
+### Features
+
+* add v2 examples ([46ddcb8](https://github.com/informatievlaanderen/address-registry/commit/46ddcb8112a45e7b5dedb497a108dab619d46258))
+
 # [3.75.0](https://github.com/informatievlaanderen/address-registry/compare/v3.74.2...v3.75.0) (2023-02-27)
 
 

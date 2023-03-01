@@ -32,7 +32,7 @@ namespace AddressRegistry.Api.Legacy.Address.Detail
         public AdresDetailGemeente Gemeente { get; set; }
 
         /// <summary>
-        /// De postinfo die deel uitmaakt van het adres. 
+        /// De postinfo die deel uitmaakt van het adres.
         /// </summary>
         [DataMember(Name = "Postinfo", Order = 3)]
         [JsonProperty(Required = Required.Default)]
@@ -60,7 +60,7 @@ namespace AddressRegistry.Api.Legacy.Address.Detail
         public string Huisnummer { get; set; }
 
         /// <summary>
-        /// Het busnummer van het adres. 
+        /// Het busnummer van het adres.
         /// </summary>
         [DataMember(Name = "Busnummer", Order = 7, EmitDefaultValue = false)]
         [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Ignore)]
@@ -195,13 +195,16 @@ namespace AddressRegistry.Api.Legacy.Address.Detail
 
     public class AddressNotFoundResponseExamples : IExamplesProvider<ProblemDetails>
     {
+        protected string ApiVersion { get; }
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ProblemDetailsHelper _problemDetailsHelper;
 
         public AddressNotFoundResponseExamples(
             IHttpContextAccessor httpContextAccessor,
-            ProblemDetailsHelper problemDetailsHelper)
+            ProblemDetailsHelper problemDetailsHelper,
+            string apiVersion = "v1")
         {
+            ApiVersion = apiVersion;
             _httpContextAccessor = httpContextAccessor;
             _problemDetailsHelper = problemDetailsHelper;
         }
@@ -213,19 +216,30 @@ namespace AddressRegistry.Api.Legacy.Address.Detail
                 HttpStatus = StatusCodes.Status404NotFound,
                 Title = ProblemDetails.DefaultTitle,
                 Detail = "Onbestaand adres.",
-                ProblemInstanceUri = _problemDetailsHelper.GetInstanceUri(_httpContextAccessor.HttpContext)
+                ProblemInstanceUri = _problemDetailsHelper.GetInstanceUri(_httpContextAccessor.HttpContext, ApiVersion)
             };
+    }
+
+    public class AddressNotFoundResponseExamplesV2 : AddressNotFoundResponseExamples
+    {
+        public AddressNotFoundResponseExamplesV2(
+            IHttpContextAccessor httpContextAccessor,
+            ProblemDetailsHelper problemDetailsHelper) : base(httpContextAccessor, problemDetailsHelper, "v2")
+        { }
     }
 
     public class AddressGoneResponseExamples : IExamplesProvider<ProblemDetails>
     {
+        protected string ApiVersion { get; }
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ProblemDetailsHelper _problemDetailsHelper;
 
         public AddressGoneResponseExamples(
             IHttpContextAccessor httpContextAccessor,
-            ProblemDetailsHelper problemDetailsHelper)
+            ProblemDetailsHelper problemDetailsHelper,
+            string apiVersion = "v1")
         {
+            ApiVersion = apiVersion;
             _httpContextAccessor = httpContextAccessor;
             _problemDetailsHelper = problemDetailsHelper;
         }
@@ -237,7 +251,15 @@ namespace AddressRegistry.Api.Legacy.Address.Detail
                 HttpStatus = StatusCodes.Status410Gone,
                 Title = ProblemDetails.DefaultTitle,
                 Detail = "Verwijderd adres.",
-                ProblemInstanceUri = _problemDetailsHelper.GetInstanceUri(_httpContextAccessor.HttpContext)
+                ProblemInstanceUri = _problemDetailsHelper.GetInstanceUri(_httpContextAccessor.HttpContext, ApiVersion)
             };
+    }
+
+    public class AddressGoneResponseExamplesV2 : AddressGoneResponseExamples
+    {
+        public AddressGoneResponseExamplesV2(
+            IHttpContextAccessor httpContextAccessor,
+            ProblemDetailsHelper problemDetailsHelper) : base(httpContextAccessor, problemDetailsHelper, "v2")
+        { }
     }
 }

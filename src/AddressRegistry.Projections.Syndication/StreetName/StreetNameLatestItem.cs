@@ -98,6 +98,9 @@ namespace AddressRegistry.Projections.Syndication.StreetName
             builder.HasIndex(x => x.HomonymAdditionFrench);
             builder.HasIndex(x => x.HomonymAdditionGerman);
             builder.HasIndex(x => x.HomonymAdditionEnglish);
+
+            builder.HasIndex(x => new { x.NisCode, x.IsComplete, x.IsRemoved })
+                .IncludeProperties(x => new { x.NameDutchSearch, x.NameEnglishSearch, x.NameFrenchSearch, x.NameGermanSearch });
         }
     }
 }

@@ -448,6 +448,21 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
                     allowUpdateRemovedAddress: true);
             });
+            
+            When<Envelope<AddressWasRemovedBecauseStreetNameWasRemoved>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.Removed = true;
+                        address.SetHouseNumberLabel(null);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    ct,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    allowUpdateRemovedAddress: true);
+            });
 
             When<Envelope<AddressWasRemovedBecauseHouseNumberWasRemoved>>(async (context, message, ct) =>
             {

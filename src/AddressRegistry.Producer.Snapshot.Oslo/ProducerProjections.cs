@@ -427,6 +427,11 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
             {
                 await Produce($"{osloNamespace}/{message.Message.AddressPersistentLocalId}", "{}", message.Position, ct);
             });
+
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasRemovedBecauseStreetNameWasRemoved>>(async (_, message, ct) =>
+            {
+                await Produce($"{osloNamespace}/{message.Message.AddressPersistentLocalId}", "{}", message.Position, ct);
+            });
         }
 
         private async Task FindAndProduce(Func<Task<OsloResult?>> findMatchingSnapshot, long storePosition, CancellationToken ct)

@@ -6,7 +6,7 @@
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts.StreetNameRegistry;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
-    using NodaTime.Text;
+    using NodaTime;
     using Contracts = Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common;
 
     public class StreetNameCommandHandlingProjections : ConnectedProjection<StreetNameCommandHandler>
@@ -22,11 +22,20 @@
 
                 await commandHandler.Handle(command, ct);
             });
+
+            When<StreetNameWasRemovedV2>(async (commandHandler, message, ct) =>
+            {
+                var command = new RemoveStreetName(
+                        new StreetNamePersistentLocalId(message.PersistentLocalId),
+                        FromProvenance(message.Provenance));
+
+                await commandHandler.Handle(command, ct);
+            });
         }
 
         private static Provenance FromProvenance(Contracts.Provenance provenance) =>
             new Provenance(
-                InstantPattern.General.Parse(provenance.Timestamp).GetValueOrThrow(),
+                SystemClock.Instance.GetCurrentInstant(),
                 Application.StreetNameRegistry,
                 new Reason(provenance.Reason),
                 new Operator(string.Empty),

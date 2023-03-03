@@ -163,7 +163,7 @@ namespace AddressRegistry.StreetName
                 Apply(new AddressWasRetiredBecauseHouseNumberWasRetired(_streetNamePersistentLocalId, AddressPersistentLocalId));
             }
         }
-        
+
         private void RejectBecauseParentWasRetired()
         {
             if (IsRemoved)
@@ -236,6 +236,16 @@ namespace AddressRegistry.StreetName
             }
 
             Apply(new AddressWasRemovedBecauseHouseNumberWasRemoved(_streetNamePersistentLocalId, AddressPersistentLocalId));
+        }
+
+        public void RemoveBecauseStreetNameWasRemoved()
+        {
+            if (IsRemoved)
+            {
+                return;
+            }
+
+            Apply(new AddressWasRemovedBecauseStreetNameWasRemoved(_streetNamePersistentLocalId, AddressPersistentLocalId));
         }
 
         public void Regularize()

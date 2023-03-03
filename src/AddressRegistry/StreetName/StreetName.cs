@@ -94,6 +94,16 @@ namespace AddressRegistry.StreetName
         {
             if (!IsRemoved)
             {
+                foreach (var address in StreetNameAddresses.Where(address => address.IsBoxNumberAddress))
+                {
+                    address.RemoveBecauseStreetNameWasRemoved();
+                }
+
+                foreach (var address in StreetNameAddresses.Where(address => address.IsHouseNumberAddress))
+                {
+                    address.RemoveBecauseStreetNameWasRemoved();
+                }
+
                 ApplyChange(new StreetNameWasRemoved(PersistentLocalId));
             }
         }

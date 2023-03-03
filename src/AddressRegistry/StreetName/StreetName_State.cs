@@ -61,6 +61,7 @@ namespace AddressRegistry.StreetName
             Register<AddressDeregulationWasCorrected>(When);
             Register<AddressPositionWasChanged>(When);
             Register<AddressPostalCodeWasChangedV2>(When);
+            Register<AddressWasRemovedBecauseStreetNameWasRemoved>(When);
         }
 
         private void When(StreetNameSnapshot @event)
@@ -233,6 +234,8 @@ namespace AddressRegistry.StreetName
         private void When(AddressPositionWasChanged @event) => RouteToAddress(@event);
 
         private void When(AddressPostalCodeWasChangedV2 @event) => RouteToAddress(@event);
+
+        private void When(AddressWasRemovedBecauseStreetNameWasRemoved @event) => RouteToAddress(@event);
 
         private void RouteToAddress<TEvent>(TEvent @event)
             where TEvent : IHasAddressPersistentLocalId, IStreetNameEvent

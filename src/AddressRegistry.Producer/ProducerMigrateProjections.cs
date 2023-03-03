@@ -158,6 +158,11 @@ namespace AddressRegistry.Producer
             {
                 await Produce(message.Message.StreetNamePersistentLocalId, message.Message.ToContract(), message.Position, ct);
             });
+
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetName.AddressWasRemovedBecauseStreetNameWasRemoved>>(async (_, message, ct) =>
+            {
+                await Produce(message.Message.StreetNamePersistentLocalId, message.Message.ToContract(), message.Position, ct);
+            });
         }
 
         private async Task Produce<T>(int persistentLocalId, T message, long storePosition, CancellationToken cancellationToken = default)

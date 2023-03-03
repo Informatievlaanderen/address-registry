@@ -777,6 +777,15 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     ct);
             });
 
+             When<Envelope<AddressWasRemovedBecauseStreetNameWasRemoved>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressPersistentLocalId,
+                    message,
+                    x => { },
+                    ct);
+            });
+
             When<Envelope<AddressWasRemovedBecauseHouseNumberWasRemoved>>(async (context, message, ct) =>
             {
                 await context.CreateNewAddressSyndicationItem(

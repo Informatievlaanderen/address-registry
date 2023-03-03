@@ -829,6 +829,35 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                 });
         }
 
+         [Fact]
+        public async Task WhenAddressWasRemovedBecauseStreetNameWasRemoved()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasRemovedBecauseStreetNameWasRemoved = _fixture.Create<AddressWasRemovedBecauseStreetNameWasRemoved>();
+            var addressWasRemovedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasRemovedBecauseStreetNameWasRemoved.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasRemovedBecauseStreetNameWasRemoved>(new Envelope(addressWasRemovedBecauseStreetNameWasRemoved, addressWasRemovedMetadata)))
+                .Then(async ct =>
+                {
+                    var addressDetailItemV2 = (await ct.AddressDetailV2.FindAsync(addressWasRemovedBecauseStreetNameWasRemoved.AddressPersistentLocalId));
+                    addressDetailItemV2.Should().NotBeNull();
+                    addressDetailItemV2.Removed.Should().BeTrue();
+                    addressDetailItemV2.VersionTimestamp.Should().Be(addressWasRemovedBecauseStreetNameWasRemoved.Provenance.Timestamp);
+                    addressDetailItemV2.LastEventHash.Should().Be(addressWasRemovedBecauseStreetNameWasRemoved.GetHash());
+                });
+        }
+
         [Fact]
         public async Task WhenAddressWasRemovedBecauseHouseNumberWasRemoved()
         {

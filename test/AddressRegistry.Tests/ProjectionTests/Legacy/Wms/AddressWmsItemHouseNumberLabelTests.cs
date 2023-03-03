@@ -957,6 +957,48 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
         }
 
         [Fact]
+        public async Task WhenAddressWasRemovedBecauseStreetNameWasRemoved()
+        {
+            var houseNumberOneWasProposed = _fixture.Create<AddressWasProposedV2>()
+                .WithHouseNumber(new HouseNumber("1"));
+            var houseNumberOneWasRemoved = _fixture.Create<AddressWasRemovedBecauseStreetNameWasRemoved>();
+            var houseNumberTwo = CreateAddressWasMigratedToStreetName(
+                new AddressPersistentLocalId(2),
+                new HouseNumber("2"),
+                AddressStatus.Proposed,
+                new ExtendedWkbGeometry(houseNumberOneWasProposed.ExtendedWkbGeometry));
+            var houseNumberThree = CreateAddressWasMigratedToStreetName(
+                new AddressPersistentLocalId(3),
+                new HouseNumber("3"),
+                AddressStatus.Proposed,
+                new ExtendedWkbGeometry(houseNumberOneWasProposed.ExtendedWkbGeometry));
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(houseNumberOneWasProposed, new Dictionary<string, object>())),
+                    new Envelope<AddressWasMigratedToStreetName>(new Envelope(houseNumberThree, new Dictionary<string, object>())),
+                    new Envelope<AddressWasMigratedToStreetName>(new Envelope(houseNumberTwo, new Dictionary<string, object>())),
+                    new Envelope<AddressWasRemovedBecauseStreetNameWasRemoved>(new Envelope(houseNumberOneWasRemoved, new Dictionary<string, object>())))
+                .Then(async ct =>
+                {
+                    var one = await ct.AddressWmsItems.FindAsync(houseNumberOneWasProposed.AddressPersistentLocalId);
+                    one.Should().NotBeNull();
+                    var two = await ct.AddressWmsItems.FindAsync(houseNumberTwo.AddressPersistentLocalId);
+                    one.Should().NotBeNull();
+                    var three = await ct.AddressWmsItems.FindAsync(houseNumberThree.AddressPersistentLocalId);
+                    one.Should().NotBeNull();
+
+                    one!.HouseNumberLabel.Should().BeNull();
+                    two!.HouseNumberLabel.Should().Be("2-3");
+                    three!.HouseNumberLabel.Should().Be("2-3");
+
+                    one.HouseNumberLabelLength.Should().BeNull();
+                    two.HouseNumberLabelLength.Should().Be(3);
+                    three.HouseNumberLabelLength.Should().Be(3);
+                });
+        }
+
+        [Fact]
         public async Task WhenAddressWasRemovedBecauseHouseNumberWasRemoved()
         {
             var houseNumberOneWasProposed = _fixture.Create<AddressWasProposedV2>()

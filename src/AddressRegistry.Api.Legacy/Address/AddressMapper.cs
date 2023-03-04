@@ -6,6 +6,7 @@ namespace AddressRegistry.Api.Legacy.Address
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
     using Consumer.Read.Municipality.Projections;
     using Consumer.Read.StreetName.Projections;
+    using Projections.Legacy.AddressList;
     using StreetName;
     using AddressStatus = AddressRegistry.Address.AddressStatus;
     using MunicipalityBosaItem = Projections.Syndication.Municipality.MunicipalityBosaItem;
@@ -13,6 +14,24 @@ namespace AddressRegistry.Api.Legacy.Address
 
     public static class AddressMapper
     {
+        public static VolledigAdres? GetVolledigAdres(AddressListViewItem addressListViewItem)
+        {
+            if (string.IsNullOrEmpty(addressListViewItem.StreetNamePersistentLocalId)
+                || string.IsNullOrEmpty(addressListViewItem.NisCode))
+            {
+                return null;
+            }
+
+            var defaultMunicipalityName = addressListViewItem.DefaultMunicipalityName;
+            return new VolledigAdres(
+                addressListViewItem.DefaultStreetNameName.Value,
+                addressListViewItem.HouseNumber,
+                addressListViewItem.BoxNumber,
+                addressListViewItem.PostalCode,
+                defaultMunicipalityName.Value,
+                defaultMunicipalityName.Key);
+        }
+
         public static VolledigAdres? GetVolledigAdres(string houseNumber, string boxNumber, string postalCode,
             StreetNameLatestItem? streetName, MunicipalityLatestItem? municipality)
         {

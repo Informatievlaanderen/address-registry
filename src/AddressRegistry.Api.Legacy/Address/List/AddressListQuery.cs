@@ -12,7 +12,7 @@ namespace AddressRegistry.Api.Legacy.Address.List
     using Convertors;
     using Microsoft.EntityFrameworkCore;
 
-    public class AddressListQuery : Query<AddressListItem, AddressFilter>
+    public class AddressListQuery : Query<AddressListViewItem, AddressFilter>
     {
         private readonly AddressQueryContext _context;
 
@@ -23,24 +23,13 @@ namespace AddressRegistry.Api.Legacy.Address.List
             _context = context;
         }
 
-        protected override IQueryable<AddressListItem> Filter(FilteringHeader<AddressFilter> filtering)
+        protected override IQueryable<AddressListViewItem> Filter(FilteringHeader<AddressFilter> filtering)
         {
             var addresses = _context
-                .AddressList
+                .AddressListView
                 .AsNoTracking()
                 .OrderBy(x => x.PersistentLocalId)
-                .Where(a => a.Complete && !a.Removed && a.PersistentLocalId != 0);
-
-            var municipalities = _context
-                .MunicipalityLatestItems
-                .AsNoTracking();
-
-            var streetNames = _context
-                .StreetNameLatestItems
-                .AsNoTracking()
-                .Where(x => x.IsComplete && !x.IsRemoved);
-
-            var filterStreet = false;
+                .AsQueryable();
 
             if (!filtering.ShouldFilter)
             {
@@ -80,92 +69,51 @@ namespace AddressRegistry.Api.Legacy.Address.List
 
             if (!string.IsNullOrEmpty(filtering.Filter.NisCode))
             {
-                streetNames = streetNames.Where(x => x.NisCode == filtering.Filter.NisCode);
-                municipalities = municipalities.Where(m => m.NisCode == filtering.Filter.NisCode);
-                filterStreet = true;
+                addresses = addresses.Where(x => x.NisCode == filtering.Filter.NisCode);
             }
 
             if (!string.IsNullOrEmpty(filtering.Filter.MunicipalityName))
             {
                 var searchName = filtering.Filter.MunicipalityName.RemoveDiacritics();
 
-                var municipalityNisCodes = municipalities.Where(m =>
-                        m.NameDutchSearch == searchName ||
-                        m.NameFrenchSearch == searchName ||
-                        m.NameGermanSearch == searchName ||
-                        m.NameEnglishSearch == searchName)
-                    .Select(x => x.NisCode)
-                    .ToList();
-
-                if (!municipalityNisCodes.Any())
-                {
-                    return new List<AddressListItem>().AsQueryable();
-                }
-
-                streetNames = streetNames.Where(x => municipalityNisCodes.Contains(x.NisCode));
-
-                //streetnames =
-                //    from s in streetnames
-                //    join m in municipalities.Where(m =>
-                //            m.NameDutchSearch == searchName ||
-                //            m.NameFrenchSearch == searchName ||
-                //            m.NameGermanSearch == searchName ||
-                //            m.NameEnglishSearch == searchName)
-                //        on s.NisCode equals m.NisCode
-                //    select s;
-
-                filterStreet = true;
+                addresses = addresses.Where(m =>
+                    m.MunicipalityNameDutchSearch == searchName ||
+                    m.MunicipalityNameFrenchSearch == searchName ||
+                    m.MunicipalityNameGermanSearch == searchName ||
+                    m.MunicipalityNameEnglishSearch == searchName);
             }
 
             if (!string.IsNullOrEmpty(filtering.Filter.StreetName))
             {
                 var searchName = filtering.Filter.StreetName.RemoveDiacritics();
 
-                streetNames = streetNames.Where(s =>
-                    s.NameDutchSearch == searchName ||
-                    s.NameFrenchSearch == searchName ||
-                    s.NameGermanSearch == searchName ||
-                    s.NameEnglishSearch == searchName);
-
-                filterStreet = true;
+                addresses = addresses.Where(s =>
+                    s.StreetNameDutchSearch == searchName ||
+                    s.StreetNameFrenchSearch == searchName ||
+                    s.StreetNameGermanSearch == searchName ||
+                    s.StreetNameEnglishSearch == searchName);
             }
 
             if (!string.IsNullOrEmpty(filtering.Filter.HomonymAddition))
             {
-                streetNames = streetNames.Where(s =>
+                addresses = addresses.Where(s =>
                     s.HomonymAdditionDutch == filtering.Filter.HomonymAddition ||
                     s.HomonymAdditionFrench == filtering.Filter.HomonymAddition ||
                     s.HomonymAdditionGerman == filtering.Filter.HomonymAddition ||
                     s.HomonymAdditionEnglish == filtering.Filter.HomonymAddition);
-
-                filterStreet = true;
             }
 
             if (!string.IsNullOrEmpty(filtering.Filter.StreetNameId))
             {
                 if (int.TryParse(filtering.Filter.StreetNameId, out _))
                 {
-                    streetNames = streetNames.Where(x => x.PersistentLocalId == filtering.Filter.StreetNameId);
-                    filterStreet = true;
+                    addresses = addresses.Where(x => x.StreetNamePersistentLocalId == filtering.Filter.StreetNameId);
                 }
                 else
                 {
                     // don't bother sending to sql, no results will be returned
-                    return new List<AddressListItem>().AsQueryable();
+                    return new List<AddressListViewItem>().AsQueryable();
                 }
-            }
-
-            if (filterStreet)
-            {
-                addresses = addresses
-                    .Where(x => streetNames
-                        .Select(y => y.StreetNameId).Contains(x.StreetNameId));
-
-                //addresses =
-                //    from a in addresses
-                //    join s in streetnames
-                //        on a.StreetNameId equals s.StreetNameId
-                //    select a;
             }
 
             return addresses;

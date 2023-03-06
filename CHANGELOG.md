@@ -1,3 +1,10 @@
+## [3.76.2](https://github.com/informatievlaanderen/address-registry/compare/v3.76.1...v3.76.2) (2023-03-06)
+
+
+### Performance Improvements
+
+* add streetnamelatest syndication index ([6fcbc9d](https://github.com/informatievlaanderen/address-registry/commit/6fcbc9de1c6f274aee6d03f03af26eb81b39fb7a))
+
 ## [3.76.1](https://github.com/informatievlaanderen/address-registry/compare/v3.76.0...v3.76.1) (2023-03-01)
 
 

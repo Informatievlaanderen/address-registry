@@ -1,3 +1,10 @@
+## [3.77.1](https://github.com/informatievlaanderen/address-registry/compare/v3.77.0...v3.77.1) (2023-03-06)
+
+
+### Bug Fixes
+
+* typo in migration ([7210895](https://github.com/informatievlaanderen/address-registry/commit/7210895cbad39cdf18c7831fb472c6c3d1499f96))
+
 # [3.77.0](https://github.com/informatievlaanderen/address-registry/compare/v3.76.2...v3.77.0) (2023-03-06)
 
 

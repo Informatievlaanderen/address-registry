@@ -1,3 +1,11 @@
+# [3.77.0](https://github.com/informatievlaanderen/address-registry/compare/v3.76.2...v3.77.0) (2023-03-06)
+
+
+### Features
+
+* create addresslistview and use in addresslist ([08c1e62](https://github.com/informatievlaanderen/address-registry/commit/08c1e6274ceef6b66e311ae630bf73b422bc900c))
+* remove address because streetname was removed ([072d893](https://github.com/informatievlaanderen/address-registry/commit/072d893ace2416eb38ebdab7c8e22dd96ffa0e74))
+
 ## [3.76.2](https://github.com/informatievlaanderen/address-registry/compare/v3.76.1...v3.76.2) (2023-03-06)
 
 

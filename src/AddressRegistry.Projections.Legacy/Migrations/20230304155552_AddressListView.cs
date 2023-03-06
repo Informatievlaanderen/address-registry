@@ -50,7 +50,7 @@ AS
   ,m.NameGermanSearch as MunicipalityNameGermanSearch
 FROM [AddressRegistryLegacy].[AddressList] al
 INNER JOIN AddressRegistrySyndication.StreetNameLatestSyndication s
-	ON ad.StreetNameId = s.StreetNameId AND s.IsComplete = 1 AND s.IsRemoved = 0
+	ON al.StreetNameId = s.StreetNameId AND s.IsComplete = 1 AND s.IsRemoved = 0
 INNER JOIN AddressRegistrySyndication.MunicipalityLatestSyndication m
 	ON s.NisCode = m.NisCode
 WHERE al.Complete = 1 AND al.Removed = 0 AND al.PersistentLocalId <> 0 AND al.PersistentLocalId IS NOT NULL");

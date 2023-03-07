@@ -1,3 +1,10 @@
+## [3.77.2](https://github.com/informatievlaanderen/address-registry/compare/v3.77.1...v3.77.2) (2023-03-07)
+
+
+### Bug Fixes
+
+* make producer reliable ([cfed4ff](https://github.com/informatievlaanderen/address-registry/commit/cfed4ff82cda9976f5dd3ac717dd23573766a3e8))
+
 ## [3.77.1](https://github.com/informatievlaanderen/address-registry/compare/v3.77.0...v3.77.1) (2023-03-06)
 
 

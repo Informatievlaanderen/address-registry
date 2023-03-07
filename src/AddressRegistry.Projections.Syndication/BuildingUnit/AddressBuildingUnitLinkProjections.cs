@@ -46,21 +46,18 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
             When(BuildingEvent.BuildingWasCorrectedToRetired, AddSyndicationItemEntry);
             When(BuildingEvent.BuildingWasNotRealized, AddSyndicationItemEntry);
             When(BuildingEvent.BuildingWasCorrectedToNotRealized, AddSyndicationItemEntry);
+
+            //TODO: Remove after fix building unit readdressing
+            When(BuildingEvent.BuildingUnitPositionWasAppointedByAdministrator, AddSyndicationItemEntry);
+            When(BuildingEvent.BuildingUnitPositionWasDerivedFromObject, AddSyndicationItemEntry);
+            When(BuildingEvent.BuildingUnitPositionWasCorrectedToAppointedByAdministrator, AddSyndicationItemEntry);
+            When(BuildingEvent.BuildingUnitPositionWasCorrectedToDerivedFromObject, AddSyndicationItemEntry);
         }
 
         private async Task RemoveBuilding(AtomEntry<SyndicationItem<Building>> entry, SyndicationContext context,
             CancellationToken ct)
         {
             var addressBuildingUnitLinkExtractItems = GetBuildingUnitItemsByBuilding(entry, context);
-
-            //TODO: Remove logging
-            if (addressBuildingUnitLinkExtractItems.Any(x =>
-                    x.BuildingUnitId == new Guid("F152384D-B701-5030-BEAE-00DBBA062CF0") ||
-                    x.BuildingUnitId == new Guid("5785DCCE-1DA1-51A0-9087-6519D0406686")))
-            {
-                _logger.LogWarning($"Removed building for {entry.Content.Object.Id}");
-            }
-
             context.AddressBuildingUnitLinkExtract.RemoveRange(addressBuildingUnitLinkExtractItems);
         }
 
@@ -68,15 +65,8 @@ namespace AddressRegistry.Projections.Syndication.BuildingUnit
             bool isComplete, CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested();
+            
             var addressBuildingUnitLinkExtractItems = GetBuildingUnitItemsByBuilding(entry, context);
-
-            if (addressBuildingUnitLinkExtractItems.Any(x =>
-                    x.BuildingUnitId == new Guid("F152384D-B701-5030-BEAE-00DBBA062CF0") ||
-                    x.BuildingUnitId == new Guid("5785DCCE-1DA1-51A0-9087-6519D0406686")))
-            {
-                _logger.LogWarning($"Completed building ({isComplete}) for {entry.Content.Object.Id}");
-            }
-
             addressBuildingUnitLinkExtractItems.ForEach(buildingUnitItem =>
                 buildingUnitItem.IsBuildingComplete = isComplete);
         }

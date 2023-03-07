@@ -1,3 +1,10 @@
+## [3.77.3](https://github.com/informatievlaanderen/address-registry/compare/v3.77.2...v3.77.3) (2023-03-07)
+
+
+### Bug Fixes
+
+* temporary enable addressposition events in BU sync ([93c28ad](https://github.com/informatievlaanderen/address-registry/commit/93c28ad5c5602cfdd5e3a189dfef28c14b41cec9))
+
 ## [3.77.2](https://github.com/informatievlaanderen/address-registry/compare/v3.77.1...v3.77.2) (2023-03-07)
 
 

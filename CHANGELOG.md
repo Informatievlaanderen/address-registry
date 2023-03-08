@@ -1,3 +1,10 @@
+# [3.78.0](https://github.com/informatievlaanderen/address-registry/compare/v3.77.3...v3.78.0) (2023-03-08)
+
+
+### Features
+
+* add v2 address match to legacy ([10d29c0](https://github.com/informatievlaanderen/address-registry/commit/10d29c0fff348a09ad304fc2411ba37155a044a1))
+
 ## [3.77.3](https://github.com/informatievlaanderen/address-registry/compare/v3.77.2...v3.77.3) (2023-03-07)
 
 

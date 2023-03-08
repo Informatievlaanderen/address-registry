@@ -1,11 +1,11 @@
-namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
+namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
 {
     using System;
+    using AddressRegistry.Api.Legacy.AddressMatch.Responses;
+    using AddressRegistry.Api.Legacy.Infrastructure;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
-    using Infrastructure;
-    using Responses;
 
     public class AdresMatchScorableItem : IScoreable
     {

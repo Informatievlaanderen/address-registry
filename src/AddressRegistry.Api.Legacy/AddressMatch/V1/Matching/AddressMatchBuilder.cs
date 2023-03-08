@@ -1,12 +1,12 @@
-namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
+namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
 {
     using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using Projections.Legacy.AddressDetail;
-    using Projections.Syndication.Municipality;
-    using Projections.Syndication.StreetName;
+    using AddressRegistry.Projections.Legacy.AddressDetail;
+    using AddressRegistry.Projections.Syndication.Municipality;
+    using AddressRegistry.Projections.Syndication.StreetName;
 
     public class AddressMatchBuilder : IEnumerable<AddressMatchBuilder.MunicipalityWrapper>, IProvidesRepresentationsForScoring
     {

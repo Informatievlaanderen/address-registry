@@ -6,7 +6,6 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Straatnaam;
     using Infrastructure.Options;
-    using Matching;
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
     using Swashbuckle.AspNetCore.Filters;
@@ -18,6 +17,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
     using System.Xml.Serialization;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Microsoft.EntityFrameworkCore;
+    using V1;
+    using V1.Matching;
 
     [DataContract(Name = "AdresMatchCollectie", Namespace = "")]
     public class AddressMatchCollection
@@ -66,7 +67,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         public AdresMatchItemGemeente Gemeente { get; set; }
 
         /// <summary>
-        /// De postinfo die deel uitmaakt van het adres. 
+        /// De postinfo die deel uitmaakt van het adres.
         /// </summary>
         [DataMember(Name = "Postinfo", Order = 4, EmitDefaultValue = false)]
         [JsonProperty(Required = Required.Default)]
@@ -94,7 +95,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         public string Huisnummer { get; set; }
 
         /// <summary>
-        /// Het busnummer van het adres. 
+        /// Het busnummer van het adres.
         /// </summary>
         [DataMember(Name = "Busnummer", Order = 8, EmitDefaultValue = false)]
         [JsonProperty(Required = Required.Default)]
@@ -129,7 +130,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         public PositieGeometrieMethode? PositieGeometrieMethode { get; set; }
 
         /// <summary>
-        /// De status van het adres. 
+        /// De status van het adres.
         /// </summary>
         [DataMember(Name = "AdresStatus", Order = 13, EmitDefaultValue = false)]
         [JsonProperty(Required = Required.Default)]
@@ -143,7 +144,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         public bool? OfficieelToegekend { get; set; }
 
         /// <summary>
-        /// De aan het adres gekoppelde objecten. 
+        /// De aan het adres gekoppelde objecten.
         /// </summary>
         [XmlArray(ElementName = "AdresseerbareObjecten", Order = 15)]
         [XmlArrayItem(ElementName = "AdresseerbaarObject")]
@@ -254,7 +255,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
     public class AdresMatchItemStraatnaam
     {
         /// <summary>
-        /// De objectidentificator van de gekoppelde straatnaam. 
+        /// De objectidentificator van de gekoppelde straatnaam.
         /// </summary>
         [DataMember(Name = "ObjectId", Order = 1)]
         [JsonProperty(Required = Required.DisallowNull)]
@@ -284,13 +285,13 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
     }
 
     /// <summary>
-    /// De postinfo die deel uitmaakt van het adres. 
+    /// De postinfo die deel uitmaakt van het adres.
     /// </summary>
     [DataContract(Name = "AdresMatchItemPostinfo", Namespace = "")]
     public class AdresMatchItemPostinfo
     {
         /// <summary>
-        /// De objectidentificator van de gekoppelde postinfo. 
+        /// De objectidentificator van de gekoppelde postinfo.
         /// </summary>
         [DataMember(Name = "ObjectId", Order = 1)]
         [JsonProperty(Required = Required.DisallowNull)]

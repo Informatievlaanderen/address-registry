@@ -2,7 +2,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch
 {
     using System.Collections.Generic;
     using System.Runtime.Serialization;
-    using Matching;
+    using V1.Matching;
 
     internal class ValidationMessageWarningLogger : IWarningLogger
     {

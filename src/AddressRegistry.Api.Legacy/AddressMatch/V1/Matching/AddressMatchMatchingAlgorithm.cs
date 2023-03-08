@@ -1,9 +1,9 @@
-namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
+namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
 {
     using System.Collections.Generic;
-    using Projections.Legacy.AddressDetail;
-    using Projections.Syndication.Municipality;
-    using Projections.Syndication.StreetName;
+    using AddressRegistry.Projections.Legacy.AddressDetail;
+    using AddressRegistry.Projections.Syndication.Municipality;
+    using AddressRegistry.Projections.Syndication.StreetName;
 
     /// <summary>
     /// Implements an algorithm for matching AdresMatchQueryComponents to Gemeentes, Straatnamen or Adressen and scoring the results.

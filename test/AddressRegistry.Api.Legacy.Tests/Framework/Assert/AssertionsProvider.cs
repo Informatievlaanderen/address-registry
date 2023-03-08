@@ -4,8 +4,8 @@ namespace AddressRegistry.Api.Legacy.Tests.Framework.Assert
     using System.Threading.Tasks;
     using AddressMatch;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
-    using Legacy.AddressMatch.Matching;
     using Legacy.AddressMatch.Responses;
+    using Legacy.AddressMatch.V1.Matching;
 
     internal static class AssertionsProvider
     {

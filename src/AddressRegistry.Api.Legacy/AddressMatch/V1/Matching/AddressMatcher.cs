@@ -1,8 +1,8 @@
-namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
+namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Projections.Legacy.AddressDetail;
+    using AddressRegistry.Projections.Legacy.AddressDetail;
 
     internal class AddressMatcher<TResult> : ScoreableObjectMatcherBase<AddressMatchBuilder, TResult>
         where TResult : class, IScoreable

@@ -1,19 +1,19 @@
-namespace AddressRegistry.Api.Legacy.AddressMatch
+namespace AddressRegistry.Api.Legacy.AddressMatch.V1
 {
     using System.Reflection;
     using AddressRegistry.Infrastructure;
+    using AddressRegistry.Projections.Legacy;
+    using AddressRegistry.Projections.Legacy.AddressDetail;
+    using AddressRegistry.Projections.Legacy.AddressMatch;
+    using AddressRegistry.Projections.Legacy.CrabIdToPersistentLocalId;
+    using AddressRegistry.Projections.Syndication;
+    using AddressRegistry.Projections.Syndication.BuildingUnit;
+    using AddressRegistry.Projections.Syndication.Municipality;
+    using AddressRegistry.Projections.Syndication.Parcel;
+    using AddressRegistry.Projections.Syndication.PostalInfo;
+    using AddressRegistry.Projections.Syndication.StreetName;
     using Be.Vlaanderen.Basisregisters.EntityFrameworkCore.EntityTypeConfiguration;
     using Microsoft.EntityFrameworkCore;
-    using Projections.Legacy;
-    using Projections.Legacy.AddressDetail;
-    using Projections.Legacy.AddressMatch;
-    using Projections.Legacy.CrabIdToPersistentLocalId;
-    using Projections.Syndication;
-    using Projections.Syndication.BuildingUnit;
-    using Projections.Syndication.Municipality;
-    using Projections.Syndication.Parcel;
-    using Projections.Syndication.PostalInfo;
-    using Projections.Syndication.StreetName;
 
     public class AddressMatchContext : DbContext
     {

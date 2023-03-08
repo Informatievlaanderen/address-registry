@@ -1,9 +1,9 @@
-namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
+namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
 {
-    using Projections.Syndication.Municipality;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using AddressRegistry.Projections.Syndication.Municipality;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
 
     internal class MunicipalityNameComparer : EqualityComparer<AddressMatchBuilder.MunicipalityWrapper>

@@ -2,7 +2,7 @@ namespace AddressRegistry.Api.Legacy.Tests.Framework.Assert
 {
     using System.Threading.Tasks;
     using FluentAssertions;
-    using Legacy.AddressMatch.Matching;
+    using Legacy.AddressMatch.V1.Matching;
 
     internal class HuisnummerWithSubadresTaskAssertions : TaskContinuationAssertion<HouseNumberWithSubaddress, HuisnummerWithSubadresTaskAssertions>
     {

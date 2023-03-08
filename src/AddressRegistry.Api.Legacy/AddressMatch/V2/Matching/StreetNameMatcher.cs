@@ -1,30 +1,27 @@
-namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
+namespace AddressRegistry.Api.Legacy.AddressMatch.V2.Matching
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using AddressRegistry.Api.Legacy.AddressMatch;
-    using AddressRegistry.Projections.Syndication.StreetName;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Consumer.Read.StreetName.Projections;
 
     internal class StreetNameMatcher<TResult> : ScoreableObjectMatcherBase<AddressMatchBuilder, TResult>
         where TResult : class, IScoreable
     {
         private readonly ILatestQueries _latestQueries;
-        private readonly IKadRrService _streetNameService;
         private readonly ManualAddressMatchConfig _config;
         private readonly IMapper<StreetNameLatestItem, TResult> _mapper;
         private readonly IWarningLogger _warnings;
 
         public StreetNameMatcher(
             ILatestQueries latestQueries,
-            IKadRrService streetNameService,
             ManualAddressMatchConfig config,
             IMapper<StreetNameLatestItem, TResult> mapper,
             IWarningLogger warnings)
         {
             _latestQueries = latestQueries;
-            _streetNameService = streetNameService;
             _config = config;
             _mapper = mapper;
             _warnings = warnings;
@@ -32,12 +29,6 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
 
         protected override AddressMatchBuilder? DoMatchInternal(AddressMatchBuilder? results)
         {
-            if (!string.IsNullOrEmpty(results?.Query.KadStreetNameCode))
-                FindStreetNamesByKadStreetCode(results);
-
-            if (!string.IsNullOrEmpty(results?.Query.RrStreetCode) && !string.IsNullOrEmpty(results.Query.PostalCode))
-                FindStreetNamesByRrStreetCode(results);
-
             if (!string.IsNullOrEmpty(results?.Query.StreetName))
             {
                 var municipalityWithStreetNames =
@@ -98,64 +89,6 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
                 .AllStreetNames()
                 .Select(w => _mapper.Map(w.StreetName))
                 .ToList();
-
-        private void FindStreetNamesByKadStreetCode(AddressMatchBuilder results)
-        {
-            if (string.IsNullOrWhiteSpace(results?.Query.KadStreetNameCode))
-                return;
-
-            foreach (var municipalityWrapper in results)
-                municipalityWrapper
-                    .AddStreetNames(
-                        _streetNameService
-                            .GetStreetNamesByKadStreet(
-                                results.Query.KadStreetNameCode,
-                                municipalityWrapper.NisCode));
-
-            var searchName = results
-                ?.Query
-                ?.StreetName
-                ?.RemoveDiacritics();
-
-            if (!string.IsNullOrEmpty(results?.Query?.StreetName) &&
-                !results.AllStreetNames().Any(w =>
-                    !string.IsNullOrWhiteSpace(w.StreetName.NameDutchSearch) && w.StreetName.NameDutchSearch.EqIgnoreCase(searchName) ||
-                    !string.IsNullOrWhiteSpace(w.StreetName.NameFrenchSearch) && w.StreetName.NameFrenchSearch.EqIgnoreCase(searchName) ||
-                    !string.IsNullOrWhiteSpace(w.StreetName.NameGermanSearch) && w.StreetName.NameGermanSearch.EqIgnoreCase(searchName) ||
-                    !string.IsNullOrWhiteSpace(w.StreetName.NameEnglishSearch) && w.StreetName.NameEnglishSearch.EqIgnoreCase(searchName)))
-            {
-                _warnings.AddWarning("7", "Geen overeenkomst tussen 'KadStraatcode' en 'Straatnaam'.");
-            }
-        }
-
-        private void FindStreetNamesByRrStreetCode(AddressMatchBuilder results)
-        {
-            var streetName = _streetNameService
-                .GetStreetNameByRrStreet(
-                    results.Query.RrStreetCode,
-                    results.Query.PostalCode);
-
-            if (streetName != null)
-                results
-                    .Where(g => g.PostalCode == results.Query.PostalCode)
-                    .ToList()
-                    .ForEach(g => g.AddStreetName(streetName));
-
-            var searchName = results
-                ?.Query
-                ?.StreetName
-                ?.RemoveDiacritics();
-
-            if (!string.IsNullOrEmpty(results?.Query?.StreetName) &&
-                !results.AllStreetNames().Any(w =>
-                    !string.IsNullOrWhiteSpace(w.StreetName.NameDutchSearch) && w.StreetName.NameDutchSearch.EqIgnoreCase(searchName) ||
-                    !string.IsNullOrWhiteSpace(w.StreetName.NameFrenchSearch) && w.StreetName.NameFrenchSearch.EqIgnoreCase(searchName) ||
-                    !string.IsNullOrWhiteSpace(w.StreetName.NameGermanSearch) && w.StreetName.NameGermanSearch.EqIgnoreCase(searchName) ||
-                    !string.IsNullOrWhiteSpace(w.StreetName.NameEnglishSearch) && w.StreetName.NameEnglishSearch.EqIgnoreCase(searchName)))
-            {
-                _warnings.AddWarning("7", "Geen overeenkomst tussen 'RrStraatcode' en 'Straatnaam'.");
-            }
-        }
 
         private static void FindStreetNamesByName(AddressMatchBuilder results, IReadOnlyDictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames)
             => FindStreetNamesBy(

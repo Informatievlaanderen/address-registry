@@ -1,4 +1,4 @@
-namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
+namespace AddressRegistry.Api.Legacy.AddressMatch
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -29,7 +29,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
 
                 scoreableObject.Score = scores.Any(x => x == 100) ? 100 : scores.Average(x => x);
             }
-               
+
 
             return results;
         }

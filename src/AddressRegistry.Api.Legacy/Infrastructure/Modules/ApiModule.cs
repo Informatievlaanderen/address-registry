@@ -6,6 +6,7 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
     using AddressMatch;
     using AddressMatch.V1;
     using AddressMatch.V1.Matching;
+    using AddressMatch.V2;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
@@ -114,6 +115,13 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
                 .AddDbContext<BuildingContext>((provider, options) => options
                     .UseLoggerFactory(loggerFactory)
                     .UseSqlServer(provider.GetRequiredService<TraceDbConnection<BuildingContext>>(),
+                        sqlServerOptions => { sqlServerOptions.EnableRetryOnFailure(); }))
+                .AddScoped(s => new TraceDbConnection<AddressMatchContextV2>(
+                    new SqlConnection(backofficeProjectionsConnectionString),
+                    configuration["DataDog:ServiceName"]))
+                .AddDbContext<AddressMatchContextV2>((provider, options) => options
+                    .UseLoggerFactory(loggerFactory)
+                    .UseSqlServer(provider.GetRequiredService<TraceDbConnection<AddressMatchContextV2>>(),
                         sqlServerOptions => { sqlServerOptions.EnableRetryOnFailure(); }));
         }
 
@@ -134,11 +142,15 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
                     .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { }))
                 .AddDbContext<BuildingContext>(options => options
                     .UseLoggerFactory(loggerFactory)
+                    .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { }))
+                .AddDbContext<AddressMatchContextV2>(options => options
+                    .UseLoggerFactory(loggerFactory)
                     .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { }));
 
             logger.LogWarning("Running InMemory for {Context}!", nameof(AddressBosaContext));
             logger.LogWarning("Running InMemory for {Context}!", nameof(AddressQueryContext));
             logger.LogWarning("Running InMemory for {Context}!", nameof(AddressMatchContext));
+            logger.LogWarning("Running InMemory for {Context}!", nameof(AddressMatchContextV2));
             logger.LogWarning("Running InMemory for {Context}!", nameof(BuildingContext));
         }
     }

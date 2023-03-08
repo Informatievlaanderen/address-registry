@@ -5,4 +5,8 @@ namespace AddressRegistry.Api.Legacy.Tests.Framework.Mocking
     public class LatestQueriesVerification : MockingVerification<ILatestQueries>
     {
     }
+
+    public class LatestQueriesV2Verification : MockingVerification<Legacy.AddressMatch.V2.Matching.ILatestQueries>
+    {
+    }
 }

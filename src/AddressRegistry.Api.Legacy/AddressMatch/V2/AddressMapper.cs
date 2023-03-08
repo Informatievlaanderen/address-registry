@@ -1,38 +1,41 @@
-namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
+namespace AddressRegistry.Api.Legacy.AddressMatch.V2
 {
     using System.Linq;
     using Address;
+    using AddressMatch;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Gemeente;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Straatnaam;
+    using Convertors;
     using Infrastructure.Options;
-    using Projections.Legacy.AddressDetail;
-    using V1.Matching;
+    using Matching;
+    using Projections.Legacy.AddressDetailV2;
+    using Responses;
 
-    internal class AdresMapper : IMapper<AddressDetailItem, AdresMatchScorableItem>
+    internal class AddressMapper : IMapper<AddressDetailItemV2, AddressMatchScoreableItemV2>
     {
         private readonly ResponseOptions _responseOptions;
         private readonly ILatestQueries _latestQueries;
 
-        public AdresMapper(ResponseOptions responseOptions, ILatestQueries latestQueries)
+        public AddressMapper(ResponseOptions responseOptions, ILatestQueries latestQueries)
         {
             _responseOptions = responseOptions;
             _latestQueries = latestQueries;
         }
 
-        public AdresMatchScorableItem Map(AddressDetailItem source)
+        public AddressMatchScoreableItemV2 Map(AddressDetailItemV2 source)
         {
-            var streetName = _latestQueries.GetAllLatestStreetNames().Single(x => x.StreetNameId == source.StreetNameId);
+            var streetName = _latestQueries.GetAllLatestStreetNames().Single(x => x.PersistentLocalId == source.StreetNamePersistentLocalId);
             var municipality = _latestQueries.GetAllLatestMunicipalities().Single(x => x.NisCode == streetName.NisCode);
-            var defaultStreetName = AddressMapper.GetDefaultStreetNameName(streetName, municipality.PrimaryLanguage);
-            var homonym = AddressMapper.GetDefaultHomonymAddition(streetName, municipality.PrimaryLanguage);
+            var defaultStreetName = Address.AddressMapper.GetDefaultStreetNameName(streetName, municipality.PrimaryLanguage);
+            var homonym = Address.AddressMapper.GetDefaultHomonymAddition(streetName, municipality.PrimaryLanguage);
 
-            return new AdresMatchScorableItem
+            return new AddressMatchScoreableItemV2
             {
-                AddressId = source.AddressId,
-                Identificator = new AdresIdentificator(_responseOptions.Naamruimte, source.PersistentLocalId.ToString(), source.VersionTimestamp.ToBelgianDateTimeOffset()),
-                Detail = string.Format(_responseOptions.DetailUrl, source.PersistentLocalId.Value.ToString()),
+                AddressPersistentLocalId = source.AddressPersistentLocalId,
+                Identificator = new AdresIdentificator(_responseOptions.Naamruimte, source.AddressPersistentLocalId.ToString(), source.VersionTimestamp.ToBelgianDateTimeOffset()),
+                Detail = string.Format(_responseOptions.DetailUrl, source.AddressPersistentLocalId.ToString()),
                 Gemeente = new AdresMatchItemGemeente
                 {
                     ObjectId = municipality.NisCode,
@@ -41,7 +44,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
                 },
                 Straatnaam = new AdresMatchItemStraatnaam
                 {
-                    ObjectId = streetName.PersistentLocalId,
+                    ObjectId = streetName.PersistentLocalId.ToString(),
                     Detail = string.Format(_responseOptions.StraatnaamDetailUrl, streetName.PersistentLocalId),
                     Straatnaam = new Straatnaam(new GeografischeNaam(defaultStreetName.Value, defaultStreetName.Key)),
                 },
@@ -53,11 +56,11 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
                 },
                 Huisnummer = source.HouseNumber,
                 Busnummer = source.BoxNumber,
-                VolledigAdres = AddressMapper.GetVolledigAdres(source.HouseNumber, source.BoxNumber, source.PostalCode, streetName, municipality),
-                AdresPositie = AddressMapper.GetAddressPoint(source.Position),
-                PositieSpecificatie = AddressMapper.ConvertFromGeometrySpecification(source.PositionSpecification),
-                PositieGeometrieMethode = AddressMapper.ConvertFromGeometryMethod(source.PositionMethod),
-                AdresStatus = AddressMapper.ConvertFromAddressStatus(source.Status),
+                VolledigAdres = Address.AddressMapper.GetVolledigAdres(source.HouseNumber, source.BoxNumber, source.PostalCode, streetName, municipality),
+                AdresPositie = Address.AddressMapper.GetAddressPoint(source.Position),
+                PositieSpecificatie = Address.AddressMapper.ConvertFromGeometrySpecification(source.PositionSpecification),
+                PositieGeometrieMethode = Address.AddressMapper.ConvertFromGeometryMethod(source.PositionMethod),
+                AdresStatus = source.Status.ConvertFromAddressStatus(),
                 OfficieelToegekend = source.OfficiallyAssigned,
             };
         }

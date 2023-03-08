@@ -2,6 +2,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
 {
     using System.Collections.Generic;
     using System.Linq;
+    using AddressRegistry.Api.Legacy.AddressMatch;
     using AddressRegistry.Projections.Legacy.AddressDetail;
 
     internal class RrAddressMatcher<TResult> : MatcherBase<AddressMatchBuilder, TResult>

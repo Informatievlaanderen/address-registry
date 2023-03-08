@@ -1,10 +1,10 @@
-namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
+namespace AddressRegistry.Api.Legacy.AddressMatch.V2.Matching
 {
     using System.Collections.Generic;
     using AddressRegistry.Api.Legacy.AddressMatch;
-    using AddressRegistry.Projections.Legacy.AddressDetail;
-    using AddressRegistry.Projections.Syndication.Municipality;
-    using AddressRegistry.Projections.Syndication.StreetName;
+    using AddressRegistry.Projections.Legacy.AddressDetailV2;
+    using Consumer.Read.Municipality.Projections;
+    using Consumer.Read.StreetName.Projections;
 
     /// <summary>
     /// Implements an algorithm for matching AdresMatchQueryComponents to Gemeentes, Straatnamen or Adressen and scoring the results.
@@ -14,18 +14,16 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
         where TResult : class, IScoreable
     {
         public AddressMatchMatchingAlgorithm(
-            IKadRrService kadRrService,
             ManualAddressMatchConfig config,
             ILatestQueries latestQueries,
             IMapper<MunicipalityLatestItem, TResult> municipalityMapper,
             IMapper<StreetNameLatestItem, TResult> streetNameMapper,
-            IMapper<AddressDetailItem, TResult> addressMapper,
+            IMapper<AddressDetailItemV2, TResult> addressMapper,
             int maxNumberOfResults,
             IWarningLogger warnings) :
             base(
-                new RrAddressMatcher<TResult>(kadRrService, addressMapper, maxNumberOfResults, warnings),
                 new MunicipalityMatcher<TResult>(latestQueries, config, municipalityMapper, warnings),
-                new StreetNameMatcher<TResult>(latestQueries, kadRrService, config, streetNameMapper, warnings),
+                new StreetNameMatcher<TResult>(latestQueries, config, streetNameMapper, warnings),
                 new AddressMatcher<TResult>(latestQueries, addressMapper, warnings)) { }
 
         public override IReadOnlyList<TResult> Process(AddressMatchBuilder seed)

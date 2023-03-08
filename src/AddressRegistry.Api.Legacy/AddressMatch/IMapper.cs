@@ -1,4 +1,4 @@
-namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
+namespace AddressRegistry.Api.Legacy.AddressMatch
 {
     public interface IMapper<in TSource, out TDestination>
     {

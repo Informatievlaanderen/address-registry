@@ -1,4 +1,4 @@
-namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
+namespace AddressRegistry.Api.Legacy.AddressMatch
 {
     using System;
     using System.Collections.Generic;
@@ -168,8 +168,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
 
             // huisnummer als prefix in straatnaam
             if (new Regex("[0-9]+ ").IsMatch(streetName)
-                && possibleIndexInStreet == "0000" 
-                && int.TryParse(possibleNumberInStreet, out int hnr) 
+                && possibleIndexInStreet == "0000"
+                && int.TryParse(possibleNumberInStreet, out int hnr)
                 && hnr != 0)
             {
                 formattedParts.HouseNumber = possibleNumberInStreet;
@@ -177,9 +177,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
 
             // huisnummer met niet-numeriek bisnummer als prefix in straatnaam
             if (new Regex("[0-9]+[a-zA-Z] ").IsMatch(streetName)
-                && possibleNumberInStreet != null 
-                && int.TryParse(possibleNumberInStreet, out hnr) 
-                && hnr != 0 
+                && possibleNumberInStreet != null
+                && int.TryParse(possibleNumberInStreet, out hnr)
+                && hnr != 0
                 && new Regex("[0-9]+[a-zA-Z]$").IsMatch(requestStraatnaamWithoutStraatnaam))
             {
                 formattedParts.HouseNumber = possibleNumberInStreet + LeftIndex(possibleIndexInStreet).ToUpper();
@@ -196,9 +196,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
 
             // huisnummer met niet-numeriek bisnummer als suffix in straatnaam
             if (new Regex(" [0-9]+[a-zA-Z]$").IsMatch(streetName)
-                && possibleNumberInStreet != null 
-                && int.TryParse(possibleNumberInStreet, out hnr) 
-                && hnr != 0 
+                && possibleNumberInStreet != null
+                && int.TryParse(possibleNumberInStreet, out hnr)
+                && hnr != 0
                 && new Regex("[0-9]+[a-zA-Z]$").IsMatch(requestStraatnaamWithoutStraatnaam))
             {
                 formattedParts.HouseNumber = possibleNumberInStreet + LeftIndex(possibleIndexInStreet).ToUpper();
@@ -598,7 +598,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
 
             return (fromHouseNumber, toHouseNumber) switch
             {
-                var (f, t) when (IsEven(f) && IsEven(t)) || (IsOdd(f) && IsOdd(t)) =>
+                var (f, t) when IsEven(f) && IsEven(t) || IsOdd(f) && IsOdd(t) =>
                     RangedEnumeration(f, t, 2)
                         .Select(x => new HouseNumberWithSubaddress(x.ToString(), null, null))
                         .ToList(),

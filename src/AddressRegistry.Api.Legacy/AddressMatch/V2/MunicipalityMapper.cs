@@ -1,22 +1,24 @@
-namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
+namespace AddressRegistry.Api.Legacy.AddressMatch.V2
 {
+    using AddressMatch;
+    using Responses;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Gemeente;
+    using Consumer.Read.Municipality.Projections;
     using Infrastructure.Options;
-    using Projections.Syndication.Municipality;
-    using V1.Matching;
+    using Matching;
 
-    internal class GemeenteMapper : IMapper<MunicipalityLatestItem, AdresMatchScorableItem>
+    internal class MunicipalityMapper : IMapper<MunicipalityLatestItem, AddressMatchScoreableItemV2>
     {
         private readonly ResponseOptions _responseOptions;
 
-        public GemeenteMapper(ResponseOptions responseOptions)
+        public MunicipalityMapper(ResponseOptions responseOptions)
         {
             _responseOptions = responseOptions;
         }
 
-        public AdresMatchScorableItem Map(MunicipalityLatestItem source) =>
-            new AdresMatchScorableItem
+        public AddressMatchScoreableItemV2 Map(MunicipalityLatestItem source) =>
+            new AddressMatchScoreableItemV2
             {
                 Gemeente = new AdresMatchItemGemeente
                 {

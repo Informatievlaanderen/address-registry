@@ -1,4 +1,4 @@
-namespace AddressRegistry.Api.Legacy.AddressMatch
+namespace AddressRegistry.Api.Legacy.AddressMatch.V1
 {
     using System;
     using System.Collections.ObjectModel;

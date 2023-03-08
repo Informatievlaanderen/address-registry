@@ -7,8 +7,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Gemeente;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Straatnaam;
     using Infrastructure.Options;
-    using Matching;
     using Projections.Legacy.AddressDetail;
+    using V1.Matching;
 
     internal class AdresMapper : IMapper<AddressDetailItem, AdresMatchScorableItem>
     {

@@ -3,7 +3,7 @@ namespace AddressRegistry.Api.Legacy.Tests.Framework.Mocking
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Legacy.AddressMatch.Matching;
+    using Legacy.AddressMatch.V1.Matching;
     using Moq;
     using Projections.Legacy.AddressDetail;
     using Projections.Syndication.Municipality;

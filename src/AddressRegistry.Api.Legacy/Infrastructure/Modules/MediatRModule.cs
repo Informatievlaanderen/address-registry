@@ -8,6 +8,7 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
     using Address.List;
     using Address.Sync;
     using AddressMatch;
+    using AddressMatch.V1;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Consumer.Read.Municipality;

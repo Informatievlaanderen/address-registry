@@ -1,15 +1,15 @@
-namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
+namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
 {
-    using Microsoft.Extensions.Caching.Memory;
-    using Projections.Legacy.AddressDetail;
-    using Projections.Syndication.Municipality;
-    using Projections.Syndication.PostalInfo;
-    using Projections.Syndication.StreetName;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using AddressRegistry.Projections.Legacy.AddressDetail;
+    using AddressRegistry.Projections.Syndication.Municipality;
+    using AddressRegistry.Projections.Syndication.PostalInfo;
+    using AddressRegistry.Projections.Syndication.StreetName;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Caching.Memory;
 
     public interface ILatestQueries
     {

@@ -6,9 +6,10 @@ namespace AddressRegistry.Api.Legacy.Tests.Framework
     using Autofac;
     using Infrastructure.Options;
     using Legacy.AddressMatch;
-    using Legacy.AddressMatch.Matching;
     using Legacy.AddressMatch.Requests;
     using Legacy.AddressMatch.Responses;
+    using Legacy.AddressMatch.V1;
+    using Legacy.AddressMatch.V1.Matching;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Options;
     using Mocking;

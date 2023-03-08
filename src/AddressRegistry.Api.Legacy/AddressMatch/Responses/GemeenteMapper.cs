@@ -3,8 +3,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Gemeente;
     using Infrastructure.Options;
-    using Matching;
     using Projections.Syndication.Municipality;
+    using V1.Matching;
 
     internal class GemeenteMapper : IMapper<MunicipalityLatestItem, AdresMatchScorableItem>
     {

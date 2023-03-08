@@ -1,14 +1,14 @@
-namespace AddressRegistry.Api.Legacy.AddressMatch
+namespace AddressRegistry.Api.Legacy.AddressMatch.V1
 {
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Infrastructure.Options;
+    using AddressRegistry.Api.Legacy.AddressMatch.Requests;
+    using AddressRegistry.Api.Legacy.AddressMatch.Responses;
+    using AddressRegistry.Api.Legacy.Infrastructure.Options;
     using Matching;
     using MediatR;
     using Microsoft.Extensions.Options;
-    using Requests;
-    using Responses;
 
     public sealed class AddressMatchHandler : IRequestHandler<AddressMatchRequest, AddressMatchCollection>
     {

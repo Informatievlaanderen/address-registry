@@ -1,10 +1,10 @@
-namespace AddressRegistry.Api.Legacy.AddressMatch.Matching
+namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using AddressRegistry.Projections.Syndication.StreetName;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
-    using Projections.Syndication.StreetName;
 
     internal class StreetNameMatcher<TResult> : ScoreableObjectMatcherBase<AddressMatchBuilder, TResult>
         where TResult : class, IScoreable

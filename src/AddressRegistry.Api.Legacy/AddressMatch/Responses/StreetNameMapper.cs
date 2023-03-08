@@ -5,9 +5,9 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Gemeente;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Straatnaam;
     using Infrastructure.Options;
-    using Matching;
     using Projections.Syndication.StreetName;
     using System.Linq;
+    using V1.Matching;
 
     internal class StreetNameMapper : IMapper<StreetNameLatestItem, AdresMatchScorableItem>
     {

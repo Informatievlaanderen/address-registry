@@ -4,7 +4,8 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
     using Address;
     using Address.Bosa;
     using AddressMatch;
-    using AddressMatch.Matching;
+    using AddressMatch.V1;
+    using AddressMatch.V1.Matching;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;

@@ -1,6 +1,7 @@
 namespace AddressRegistry.Api.Legacy.Tests.Framework.Assert
 {
     using System.Threading.Tasks;
+    using AddressRegistry.Api.Legacy.AddressMatch;
     using FluentAssertions;
     using Legacy.AddressMatch.V1.Matching;
 

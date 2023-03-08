@@ -1,35 +1,36 @@
-namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
+namespace AddressRegistry.Api.Legacy.AddressMatch.V2.Matching
 {
     using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using AddressRegistry.Api.Legacy.AddressMatch;
-    using AddressRegistry.Projections.Legacy.AddressDetail;
-    using AddressRegistry.Projections.Syndication.Municipality;
-    using AddressRegistry.Projections.Syndication.StreetName;
+    using AddressMatch;
+    using Consumer.Read.Municipality.Projections;
+    using Consumer.Read.StreetName.Projections;
+    using Convertors;
+    using Projections.Legacy.AddressDetailV2;
 
     public class AddressMatchBuilder : IEnumerable<AddressMatchBuilder.MunicipalityWrapper>, IProvidesRepresentationsForScoring
     {
-        public class StreetNameWrapper : IEnumerable<AddressDetailItem>
+        public class StreetNameWrapper : IEnumerable<AddressDetailItemV2>
         {
-            private IList<AddressDetailItem> _addresses;
+            private IList<AddressDetailItemV2> _addresses;
 
-            public static readonly IEqualityComparer<StreetNameWrapper> Comparer = new PropertyEqualityComparer<StreetNameWrapper, string>(s => s.StreetName.PersistentLocalId);
-            public static readonly IEqualityComparer<AddressDetailItem> AddressComparer = new PropertyEqualityComparer<AddressDetailItem, int>(a => a.PersistentLocalId.Value);
+            public static readonly IEqualityComparer<StreetNameWrapper> Comparer = new PropertyEqualityComparer<StreetNameWrapper, int>(s => s.StreetName.PersistentLocalId);
+            public static readonly IEqualityComparer<AddressDetailItemV2> AddressComparer = new PropertyEqualityComparer<AddressDetailItemV2, int>(a => a.AddressPersistentLocalId);
 
             public StreetNameWrapper()
-                => _addresses = new List<AddressDetailItem>();
+                => _addresses = new List<AddressDetailItemV2>();
 
             public StreetNameLatestItem StreetName { get; set; }
 
-            public void AddAddresses(IEnumerable<AddressDetailItem> addresses)
+            public void AddAddresses(IEnumerable<AddressDetailItemV2> addresses)
                 => _addresses = _addresses
                     .Concat(addresses)
                     .Distinct(AddressComparer)
                     .ToList();
 
-            public IEnumerator<AddressDetailItem> GetEnumerator()
+            public IEnumerator<AddressDetailItemV2> GetEnumerator()
                 => _addresses.GetEnumerator();
 
             IEnumerator IEnumerable.GetEnumerator()
@@ -74,7 +75,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
         }
 
         private readonly Dictionary<string, MunicipalityWrapper> _municipalities;
-        private readonly List<AddressDetailItem> _rrAddresses;
+        private readonly List<AddressDetailItemV2> _rrAddresses;
         private readonly Sanitizer _sanitizer;
 
         public AddressMatchQueryComponents Query { get; }
@@ -83,7 +84,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
         {
             Query = query;
             _municipalities = new Dictionary<string, MunicipalityWrapper>();
-            _rrAddresses = new List<AddressDetailItem>();
+            _rrAddresses = new List<AddressDetailItemV2>();
             _sanitizer = new Sanitizer();
         }
 
@@ -128,13 +129,10 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
             }
         }
 
-        public void AddRrAddresses(IEnumerable<AddressDetailItem> rrAddresses)
-            => _rrAddresses.AddRange(rrAddresses);
-
         public IEnumerable<StreetNameWrapper> AllStreetNames()
             => this.SelectMany(municipalityWrapper => municipalityWrapper).Distinct(StreetNameWrapper.Comparer);
 
-        public IEnumerable<AddressDetailItem> AllAddresses()
+        public IEnumerable<AddressDetailItemV2> AllAddresses()
             => AllStreetNames()
                 .SelectMany(s => s)
                 .Union(_rrAddresses)
@@ -166,7 +164,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
                 }
 
                 var municipality = _municipalities[nisCode];
-                return streetName.GetDefaultName(municipality.Municipality.PrimaryLanguage);
+                return streetName.GetDefaultName(municipality.Municipality.PrimaryLanguage.ToTaal());
             }
 
             var streetNames = relevantStreetNames
@@ -230,7 +228,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
                         var houseNumbers = _sanitizer.Sanitize(
                             streetName,
                             Query.HouseNumber,
-                            Query.Index,
+                            null,
                             true);
 
                         if (houseNumbers.Count > 1)

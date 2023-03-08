@@ -4,6 +4,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using AddressRegistry.Api.Legacy.AddressMatch;
     using AddressRegistry.Projections.Legacy.AddressDetail;
     using AddressRegistry.Projections.Legacy.AddressMatch;
     using AddressRegistry.Projections.Syndication.StreetName;

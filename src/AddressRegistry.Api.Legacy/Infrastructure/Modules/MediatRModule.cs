@@ -9,6 +9,10 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
     using Address.Sync;
     using AddressMatch;
     using AddressMatch.V1;
+    using AddressMatch.V1.Matching;
+    using AddressMatch.V2;
+    using AddressRegistry.Api.Legacy.AddressMatch.Requests;
+    using AddressRegistry.Api.Legacy.AddressMatch.Responses;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Consumer.Read.Municipality;
@@ -49,10 +53,6 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
                 .InstancePerLifetimeScope();
 
             builder.RegisterType<CrabSubaddressCountHandler>()
-                .AsImplementedInterfaces()
-                .InstancePerLifetimeScope();
-
-            builder.RegisterType<AddressMatchHandler>()
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();
 
@@ -141,6 +141,27 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
                         c.Resolve<LegacyContext>(),
                         c.Resolve<SyndicationContext>(),
                         c.Resolve<IOptions<ResponseOptions>>());
+            }).InstancePerLifetimeScope();
+
+            builder.Register(c =>
+            {
+                if (c.Resolve<UseProjectionsV2Toggle>().FeatureEnabled)
+                {
+                    return (IRequestHandler<AddressMatchRequest, AddressMatchCollection>)
+                        new AddressMatchHandlerV2(
+                            c.Resolve<AddressMatch.V2.Matching.ILatestQueries>(),
+                            c.Resolve<AddressMatchContextV2>(),
+                            c.Resolve<IOptions<ResponseOptions>>());
+                }
+
+                return (IRequestHandler<AddressMatchRequest, AddressMatchCollection>)
+                    new AddressMatchHandler(
+                        c.Resolve<IKadRrService>(),
+                        c.Resolve<AddressMatch.V1.Matching.ILatestQueries>(),
+                        c.Resolve<AddressMatchContext>(),
+                        c.Resolve<BuildingContext>(),
+                        c.Resolve<IOptions<ResponseOptions>>());
+
             }).InstancePerLifetimeScope();
         }
     }

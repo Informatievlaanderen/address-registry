@@ -4,6 +4,7 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
     using System.Collections.Generic;
     using System.Linq;
     using AddressRegistry.Infrastructure;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Newtonsoft.Json;
@@ -80,6 +81,26 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
             NisCode = nisCode;
             VersionTimestamp = timestamp;
         }
+
+        public string GetDefaultName()
+            => (PrimaryLanguage switch
+            {
+                MunicipalityLanguage.Dutch => NameDutch,
+                MunicipalityLanguage.French => NameFrench,
+                MunicipalityLanguage.German => NameGerman,
+                MunicipalityLanguage.English => NameEnglish,
+                _ => NameDutch
+            })!;
+
+        public KeyValuePair<Taal, string> DefaultName
+            => PrimaryLanguage switch
+            {
+                MunicipalityLanguage.Dutch => new KeyValuePair<Taal, string>(Taal.NL, NameDutch),
+                MunicipalityLanguage.French => new KeyValuePair<Taal, string>(Taal.FR, NameFrench),
+                MunicipalityLanguage.German => new KeyValuePair<Taal, string>(Taal.DE, NameGerman),
+                MunicipalityLanguage.English => new KeyValuePair<Taal, string>(Taal.EN, NameEnglish),
+                _ => new KeyValuePair<Taal, string>(Taal.NL, NameDutch)
+            };
     }
 
     public enum MunicipalityStatus

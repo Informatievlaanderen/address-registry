@@ -1,4 +1,4 @@
-namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
+namespace AddressRegistry.Api.Legacy.AddressMatch
 {
     using System;
     using System.Linq;

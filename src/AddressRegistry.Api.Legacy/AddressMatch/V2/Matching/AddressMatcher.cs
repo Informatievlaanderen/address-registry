@@ -1,20 +1,20 @@
-namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
+namespace AddressRegistry.Api.Legacy.AddressMatch.V2.Matching
 {
     using System.Collections.Generic;
     using System.Linq;
     using AddressRegistry.Api.Legacy.AddressMatch;
-    using AddressRegistry.Projections.Legacy.AddressDetail;
+    using Projections.Legacy.AddressDetailV2;
 
     internal class AddressMatcher<TResult> : ScoreableObjectMatcherBase<AddressMatchBuilder, TResult>
         where TResult : class, IScoreable
     {
         private readonly ILatestQueries _latestQueries;
-        private readonly IMapper<AddressDetailItem, TResult> _mapper;
+        private readonly IMapper<AddressDetailItemV2, TResult> _mapper;
         private readonly Sanitizer _sanitizer;
 
         public AddressMatcher(
             ILatestQueries latestQueries,
-            IMapper<AddressDetailItem, TResult> mapper,
+            IMapper<AddressDetailItemV2, TResult> mapper,
             IWarningLogger warnings)
         {
             _latestQueries = latestQueries;
@@ -30,7 +30,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
                 _sanitizer.Sanitize(
                     results?.Query.StreetName,
                     results?.Query.HouseNumber,
-                    results?.Query.Index));
+                    null));
 
             if (!string.IsNullOrEmpty(results?.Query.BoxNumber))
             {

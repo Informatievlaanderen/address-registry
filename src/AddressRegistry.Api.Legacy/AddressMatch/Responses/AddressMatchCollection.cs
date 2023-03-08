@@ -19,6 +19,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
     using Microsoft.EntityFrameworkCore;
     using V1;
     using V1.Matching;
+    using V2;
+    using V2.Matching;
 
     [DataContract(Name = "AdresMatchCollectie", Namespace = "")]
     public class AddressMatchCollection
@@ -216,6 +218,31 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
                             })
                             .ToList())
                     .ToList()
+            };
+        }
+
+        public static AdresMatchItem Create(
+            AddressMatchScoreableItemV2 scoreableItem,
+            AddressMatchContextV2 addressMatchContext,
+            ResponseOptions responseOptions)
+        {
+            return new AdresMatchItem
+            {
+                Identificator = scoreableItem.Identificator,
+                Detail = scoreableItem.Detail,
+                Gemeente = scoreableItem.Gemeente,
+                Straatnaam = scoreableItem.Straatnaam,
+                AdresStatus = scoreableItem.AdresStatus,
+                Postinfo = scoreableItem.Postinfo,
+                HomoniemToevoeging = scoreableItem.HomoniemToevoeging,
+                Huisnummer = scoreableItem.Huisnummer,
+                Busnummer = scoreableItem.Busnummer,
+                PositieGeometrieMethode = scoreableItem.PositieGeometrieMethode,
+                AdresPositie = scoreableItem.AdresPositie,
+                PositieSpecificatie = scoreableItem.PositieSpecificatie,
+                VolledigAdres = scoreableItem.VolledigAdres,
+                OfficieelToegekend = scoreableItem.OfficieelToegekend,
+                Score = scoreableItem.Score
             };
         }
     }

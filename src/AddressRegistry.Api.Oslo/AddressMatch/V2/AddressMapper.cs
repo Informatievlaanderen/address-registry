@@ -55,9 +55,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
                 Huisnummer = source.HouseNumber,
                 Busnummer = source.BoxNumber,
                 VolledigAdres = Address.AddressMapper.GetVolledigAdres(source.HouseNumber, source.BoxNumber, source.PostalCode, streetName, municipality),
-                AdresPositie = Address.AddressMapper.GetAddressPoint(source.Position),
-                PositieSpecificatie = Address.AddressMapper.ConvertFromGeometrySpecification(source.PositionSpecification),
-                PositieGeometrieMethode = Address.AddressMapper.ConvertFromGeometryMethod(source.PositionMethod),
+                AdresPositie = Address.AddressMapper.GetAddressPoint(source.Position,  source.PositionMethod, source.PositionSpecification),
                 AdresStatus = source.Status.ConvertFromAddressStatus(),
                 OfficieelToegekend = source.OfficiallyAssigned,
             };

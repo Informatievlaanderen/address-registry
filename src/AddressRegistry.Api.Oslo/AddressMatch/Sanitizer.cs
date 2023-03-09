@@ -5,7 +5,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch
     using System.Linq;
     using System.Text.RegularExpressions;
 
-    internal class Sanitizer
+    public sealed class Sanitizer
     {
         private static readonly Regex ContainsNumber = new Regex("[0-9]+");
         private static readonly Regex Begin = new Regex("^[0-9]+|^[a-zA-Z]+");

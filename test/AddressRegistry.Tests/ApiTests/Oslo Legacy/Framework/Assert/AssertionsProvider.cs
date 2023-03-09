@@ -15,12 +15,6 @@ namespace AddressRegistry.Tests.ApiTests.Oslo_Legacy.Framework.Assert
         public static HuisnummerWithSubadresTaskAssertions Should(this Task<HouseNumberWithSubaddress> task)
             => new HuisnummerWithSubadresTaskAssertions(task);
 
-        public static SanitizationTaskAssertions<AdresListFilterStub> Should(this Task<List<AdresListFilterStub>> task)
-            => new SanitizationTaskAssertions<AdresListFilterStub>(task);
-
-        public static AdresListFiltersTaskAssertions Should(this Task<AdresListFilterStub> task)
-            => new AdresListFiltersTaskAssertions(task);
-
         public static AdresMatchCollectieAssertions Should(this AddressMatchCollection subject)
             => new AdresMatchCollectieAssertions(subject);
 

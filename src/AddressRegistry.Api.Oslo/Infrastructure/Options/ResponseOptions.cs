@@ -13,5 +13,7 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Options
         public string GemeenteDetailUrl { get; set; }
         public string ContextUrlList { get; set; }
         public string ContextUrlDetail { get; set; }
+        public double SimilarityThreshold { get; set; }
+        public int MaxStreetNamesThreshold { get; set; }
     }
 }

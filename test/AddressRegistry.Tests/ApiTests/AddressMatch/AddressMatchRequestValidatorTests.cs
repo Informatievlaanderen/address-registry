@@ -1,8 +1,7 @@
-namespace AddressRegistry.Tests.ApiTests.Oslo_Legacy.AddressMatch
+namespace AddressRegistry.Tests.ApiTests.AddressMatch
 {
-    using AddressRegistry.Api.Oslo.AddressMatch.Requests;
+    using Api.Oslo.AddressMatch.Requests;
     using FluentValidation.TestHelper;
-    using Framework.Generate;
     using Xunit;
 
     public class AddressMatchRequestValidatorTests

@@ -5,6 +5,7 @@ namespace AddressRegistry.Tests.ApiTests.Oslo_Legacy.AddressMatch
     using System.Linq;
     using System.Threading.Tasks;
     using AddressRegistry.Api.Oslo.AddressMatch.Requests;
+    using ApiTests.AddressMatch;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Framework;

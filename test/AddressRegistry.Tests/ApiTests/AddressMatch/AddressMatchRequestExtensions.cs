@@ -1,4 +1,4 @@
-namespace AddressRegistry.Tests.ApiTests.Oslo_Legacy.Framework.Generate
+namespace AddressRegistry.Tests.ApiTests.AddressMatch
 {
     using AddressRegistry.Api.Oslo.AddressMatch.Requests;
 

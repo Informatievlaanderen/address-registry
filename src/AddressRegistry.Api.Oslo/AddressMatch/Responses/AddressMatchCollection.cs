@@ -6,6 +6,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
     using System.Linq;
     using System.Runtime.Serialization;
     using System.Xml.Serialization;
+    using Address;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
@@ -111,25 +112,11 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
         public VolledigAdres VolledigAdres { get; set; }
 
         /// <summary>
-        /// Een GML3 punt of een GeoJSON punt, afhankelijk van het Content-Type.
+        /// De geometrie van het object in gml-formaat.
         /// </summary>
         [DataMember(Name = "AdresPositie", Order = 10, EmitDefaultValue = false)]
         [JsonProperty(Required = Required.Default)]
-        public Point AdresPositie { get; set; }
-
-        /// <summary>
-        /// De specificatie van het object, voorgesteld door de positie.
-        /// </summary>
-        [DataMember(Name = "PositieSpecificatie", Order = 11, EmitDefaultValue = false)]
-        [JsonProperty(Required = Required.Default)]
-        public PositieSpecificatie? PositieSpecificatie { get; set; }
-
-        /// <summary>
-        /// De geometrie methode van de positie.
-        /// </summary>
-        [DataMember(Name = "PositieGeometrieMethode", Order = 12, EmitDefaultValue = false)]
-        [JsonProperty(Required = Required.Default)]
-        public PositieGeometrieMethode? PositieGeometrieMethode { get; set; }
+        public AddressPosition AdresPositie { get; set; }
 
         /// <summary>
         /// De status van het adres.
@@ -179,9 +166,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
                 HomoniemToevoeging = scorableItem.HomoniemToevoeging,
                 Huisnummer = scorableItem.Huisnummer,
                 Busnummer = scorableItem.Busnummer,
-                PositieGeometrieMethode = scorableItem.PositieGeometrieMethode,
                 AdresPositie = scorableItem.AdresPositie,
-                PositieSpecificatie = scorableItem.PositieSpecificatie,
                 VolledigAdres = scorableItem.VolledigAdres,
                 OfficieelToegekend = scorableItem.OfficieelToegekend,
                 Score = scorableItem.Score,
@@ -205,9 +190,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
                 HomoniemToevoeging = scoreableItem.HomoniemToevoeging,
                 Huisnummer = scoreableItem.Huisnummer,
                 Busnummer = scoreableItem.Busnummer,
-                PositieGeometrieMethode = scoreableItem.PositieGeometrieMethode,
                 AdresPositie = scoreableItem.AdresPositie,
-                PositieSpecificatie = scoreableItem.PositieSpecificatie,
                 VolledigAdres = scoreableItem.VolledigAdres,
                 OfficieelToegekend = scoreableItem.OfficieelToegekend,
                 Score = scoreableItem.Score
@@ -351,6 +334,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
 
         public AddressMatchCollection GetExamples()
         {
+
             return new AddressMatchCollection
             {
                 AdresMatches = new List<AdresMatchItem>
@@ -369,20 +353,12 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
                         Postinfo = AdresMatchItemPostinfo.Create("9032", string.Format(_options.PostInfoDetailUrl, "9032")),
                         Huisnummer = "14",
                         Busnummer = null,
-                        AdresPositie = new Point
-                        {
-                            JsonPoint = new GeoJSONPoint
-                            {
-                                Type = "point",
-                                Coordinates = new[] { 103024.22, 197113.18 }
-                            },
-                            XmlPoint = new GmlPoint
-                            {
-                                Pos = "103024.22 197113.18"
-                            }
-                        },
-                        PositieSpecificatie = PositieSpecificatie.Perceel,
-                        PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
+
+                        AdresPositie = new AddressPosition(
+                            new GmlJsonPoint("<gml:Point srsName=\"https://www.opengis.net/def/crs/EPSG/0/31370\" xmlns:gml=\"http://www.opengis.net/gml/3.2\"><gml:pos>140252.76 198794.27</gml:pos></gml:Point>"),
+                            PositieGeometrieMethode.AangeduidDoorBeheerder,
+                            PositieSpecificatie.Gebouw),
+
                         VolledigAdres = new VolledigAdres(new GeografischeNaam("Aalbessenlaan 14, 9032 Gent", Taal.NL)),
                         AdresStatus = AdresStatus.InGebruik,
                         AdresseerbareObjecten = new List<AdresseerbaarObject>(),

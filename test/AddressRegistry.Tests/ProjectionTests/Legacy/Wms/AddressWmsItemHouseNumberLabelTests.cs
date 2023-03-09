@@ -2,6 +2,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.StreetName;
     using AddressRegistry.StreetName.Events;
     using Api.BackOffice.Abstractions;
@@ -428,7 +429,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     three.HouseNumberLabelLength.Should().Be(1);
                 });
         }
-        
+
         [Fact]
         public async Task WhenAddressWasRetiredBecauseStreetNameWasRejected()
         {

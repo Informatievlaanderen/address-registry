@@ -1,6 +1,7 @@
 namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
 {
     using System;
+    using Address;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
@@ -18,9 +19,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
         public string Huisnummer { get; set; }
         public string Busnummer { get; set; }
         public VolledigAdres VolledigAdres { get; set; }
-        public Point AdresPositie { get; set; }
-        public PositieSpecificatie? PositieSpecificatie { get; set; }
-        public PositieGeometrieMethode? PositieGeometrieMethode { get; set; }
+        public AddressPosition AdresPositie { get; set; }
         public AdresStatus? AdresStatus { get; set; }
         public bool? OfficieelToegekend { get; set; }
         public double Score { get; set; }

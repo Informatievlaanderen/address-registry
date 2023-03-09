@@ -26,5 +26,26 @@ namespace AddressRegistry.Api.Oslo.Convertors
                     throw new ArgumentOutOfRangeException(nameof(status), status, null);
             }
         }
+
+        public static AdresStatus ConvertFromAddressStatus(this AddressStatus status)
+        {
+            switch (status)
+            {
+                case AddressStatus.Proposed:
+                    return AdresStatus.Voorgesteld;
+
+                case AddressStatus.Current:
+                    return AdresStatus.InGebruik;
+
+                case AddressStatus.Retired:
+                    return AdresStatus.Gehistoreerd;
+
+                case AddressStatus.Rejected:
+                    return AdresStatus.Afgekeurd;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(status), status, null);
+            }
+        }
     }
 }

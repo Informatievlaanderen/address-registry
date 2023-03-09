@@ -72,7 +72,9 @@ namespace AddressRegistry.Api.Oslo.Address
             writer.WriteEndElement();
         }
 
-        public static AddressPosition GetAddressPoint(byte[] point, GeometryMethod? method,
+        public static AddressPosition GetAddressPoint(
+            byte[] point,
+            GeometryMethod? method,
             GeometrySpecification? specification)
         {
             var geometry = WKBReaderFactory.CreateForLegacy().Read(point);

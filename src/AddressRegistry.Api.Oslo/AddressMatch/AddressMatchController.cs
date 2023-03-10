@@ -12,8 +12,8 @@ namespace AddressRegistry.Api.Oslo.AddressMatch
     using Swashbuckle.AspNetCore.Filters;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
-    [ApiVersion("1.0")]
-    [AdvertiseApiVersions("1.0")]
+    [ApiVersion("2.0")]
+    [AdvertiseApiVersions("2.0")]
     [ApiRoute("adresmatch")]
     [ApiExplorerSettings(GroupName = "AdresMatch")]
     public class AddressMatchController : ApiController

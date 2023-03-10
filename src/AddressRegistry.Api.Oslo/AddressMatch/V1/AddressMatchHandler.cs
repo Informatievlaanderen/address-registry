@@ -68,11 +68,8 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V1
                 MunicipalityName = request.Gemeentenaam,
                 HouseNumber = request.Huisnummer,
                 BoxNumber = request.Busnummer,
-                Index = request.Index,
-                KadStreetNameCode = request.KadStraatcode,
                 NisCode = request.Niscode,
                 PostalCode = request.Postcode,
-                RrStreetCode = request.RrStraatcode,
                 StreetName = request.Straatnaam
             };
     }

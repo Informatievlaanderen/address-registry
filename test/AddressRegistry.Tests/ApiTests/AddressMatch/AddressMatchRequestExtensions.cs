@@ -10,11 +10,8 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
                 Busnummer = request.Busnummer,
                 Gemeentenaam = "Springfield",
                 Huisnummer = request.Huisnummer,
-                Index = request.Index,
-                KadStraatcode = request.KadStraatcode,
                 Niscode = request.Niscode,
                 Postcode = request.Postcode,
-                RrStraatcode = request.RrStraatcode,
                 Straatnaam = "Evergreen Terrace"
             };
 
@@ -24,11 +21,8 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
                 Busnummer = request.Busnummer,
                 Gemeentenaam = request.Gemeentenaam,
                 Huisnummer = request.Huisnummer,
-                Index = request.Index,
-                KadStraatcode = request.KadStraatcode,
                 Niscode = request.Niscode,
                 Postcode = "49007",
-                RrStraatcode = request.RrStraatcode,
                 Straatnaam = "Evergreen Terrace"
             };
 
@@ -38,11 +32,8 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
                 Busnummer = request.Busnummer,
                 Gemeentenaam = request.Gemeentenaam,
                 Huisnummer = request.Huisnummer,
-                Index = request.Index,
-                KadStraatcode = request.KadStraatcode,
                 Niscode = "12345",
                 Postcode = request.Postcode,
-                RrStraatcode = request.RrStraatcode,
                 Straatnaam = "Evergreen Terrace"
             };
 
@@ -52,11 +43,8 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
                 Busnummer = request.Busnummer,
                 Gemeentenaam = "Springfield",
                 Huisnummer = request.Huisnummer,
-                Index = request.Index,
-                KadStraatcode = "6789",
                 Niscode = request.Niscode,
                 Postcode = request.Postcode,
-                RrStraatcode = request.RrStraatcode,
                 Straatnaam = request.Straatnaam,
             };
 
@@ -66,11 +54,8 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
                 Busnummer = request.Busnummer,
                 Gemeentenaam = request.Gemeentenaam,
                 Huisnummer = request.Huisnummer,
-                Index = request.Index,
-                KadStraatcode = request.KadStraatcode,
                 Niscode = request.Niscode,
                 Postcode = "9770",
-                RrStraatcode = "987",
                 Straatnaam = request.Straatnaam
             };
 
@@ -80,11 +65,8 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
                 Busnummer = request.Busnummer,
                 Gemeentenaam = "Springfield",
                 Huisnummer = request.Huisnummer,
-                Index = request.Index,
-                KadStraatcode = request.KadStraatcode,
                 Niscode = "12345",
                 Postcode = request.Postcode,
-                RrStraatcode = request.RrStraatcode,
                 Straatnaam = "Evergreen Terrace"
             };
     }

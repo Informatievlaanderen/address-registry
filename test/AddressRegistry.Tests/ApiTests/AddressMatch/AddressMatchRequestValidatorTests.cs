@@ -21,18 +21,5 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
             //Act & Assert
             _validator.ShouldHaveValidationErrorFor(r => r.Postcode, request);
         }
-
-        [Fact]
-        public void BusnummerAndIndexAreMutuallyExclusive()
-        {
-            //Arrange
-            var request = new AddressMatchRequest().WithGemeenteAndStraatnaam();
-            request.Huisnummer = "742";
-            request.Busnummer = "C2";
-            request.Index = "verd2";
-
-            //Act & Assert
-            _validator.ShouldHaveValidationErrorFor(r => "Busnummer, Index", request);
-        }
     }
 }

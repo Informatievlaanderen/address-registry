@@ -25,7 +25,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Requests
 
             RuleFor(r => r)
                 .Must(HaveMinimumOne(r => r.Gemeentenaam, r => r.Niscode, r => r.Postcode)).WithMessage(MinimumOne).WithErrorCode("15")
-                .Must(HaveMaximumOne(r => r.Busnummer)).WithMessage(MaximumOne).WithErrorCode("20");
+                .Must(HaveMinimumOne(r => r.Straatnaam)).WithMessage("Gelieve het veld 'Straatnaam' mee te geven.").WithErrorCode("16");
 
             RuleFor(r => r.Niscode).MaximumLength(5).WithMessage(MaxLength).WithErrorCode("18");
             RuleFor(r => r.Postcode).MaximumLength(4).WithMessage(MaxLength).WithErrorCode("18");

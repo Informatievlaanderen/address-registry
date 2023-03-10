@@ -115,16 +115,6 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V1.Matching
                 ?.Query
                 ?.StreetName
                 ?.RemoveDiacritics();
-
-            if (!string.IsNullOrEmpty(results?.Query?.StreetName) &&
-                !results.AllStreetNames().Any(w =>
-                    !string.IsNullOrWhiteSpace(w.StreetName.NameDutchSearch) && w.StreetName.NameDutchSearch.EqIgnoreCase(searchName) ||
-                    !string.IsNullOrWhiteSpace(w.StreetName.NameFrenchSearch) && w.StreetName.NameFrenchSearch.EqIgnoreCase(searchName) ||
-                    !string.IsNullOrWhiteSpace(w.StreetName.NameGermanSearch) && w.StreetName.NameGermanSearch.EqIgnoreCase(searchName) ||
-                    !string.IsNullOrWhiteSpace(w.StreetName.NameEnglishSearch) && w.StreetName.NameEnglishSearch.EqIgnoreCase(searchName)))
-            {
-                _warnings.AddWarning("7", "Geen overeenkomst tussen 'KadStraatcode' en 'Straatnaam'.");
-            }
         }
 
         private void FindStreetNamesByRrStreetCode(AddressMatchBuilder results)
@@ -144,16 +134,6 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V1.Matching
                 ?.Query
                 ?.StreetName
                 ?.RemoveDiacritics();
-
-            if (!string.IsNullOrEmpty(results?.Query?.StreetName) &&
-                !results.AllStreetNames().Any(w =>
-                    !string.IsNullOrWhiteSpace(w.StreetName.NameDutchSearch) && w.StreetName.NameDutchSearch.EqIgnoreCase(searchName) ||
-                    !string.IsNullOrWhiteSpace(w.StreetName.NameFrenchSearch) && w.StreetName.NameFrenchSearch.EqIgnoreCase(searchName) ||
-                    !string.IsNullOrWhiteSpace(w.StreetName.NameGermanSearch) && w.StreetName.NameGermanSearch.EqIgnoreCase(searchName) ||
-                    !string.IsNullOrWhiteSpace(w.StreetName.NameEnglishSearch) && w.StreetName.NameEnglishSearch.EqIgnoreCase(searchName)))
-            {
-                _warnings.AddWarning("7", "Geen overeenkomst tussen 'RrStraatcode' en 'Straatnaam'.");
-            }
         }
 
         private static void FindStreetNamesByName(AddressMatchBuilder results, IReadOnlyDictionary<string, List<StreetNameLatestItem>> municipalitiesWithStreetNames)

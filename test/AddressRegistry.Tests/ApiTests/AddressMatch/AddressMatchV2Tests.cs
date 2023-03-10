@@ -80,8 +80,7 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
         [Theory]
         [InlineData("Springfeld", "Springfield")]
         [InlineData("Springfelt", "Springfield")]
-        public async Task CanFindGemeenteByGemeentenaam_FuzzyMatch(string requestedGemeentenaam,
-            string existingGemeentenaam)
+        public async Task CanFindGemeenteByGemeentenaam_FuzzyMatch(string requestedGemeentenaam, string existingGemeentenaam)
         {
             //Arrange
             var nisCode = "11001";
@@ -145,64 +144,6 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
             //Assert
             response.Should().NotBeNull();
             response.Should().HaveMatches(0);
-        }
-
-        private MunicipalityLatestItem MockGetAllLatestMunicipalities(string nisCode, string gemeentenaam)
-        {
-            var municipalityLatestItem =
-                new MunicipalityLatestItem(Guid.NewGuid(), nisCode, SystemClock.Instance.GetCurrentInstant())
-                {
-                    NameDutch = gemeentenaam,
-                    NameDutchSearch = gemeentenaam.RemoveDiacritics(),
-                    OfficialLanguages = new List<string> { "Dutch" }
-                };
-
-            _latestQueries
-                .Setup(x => x.GetAllLatestMunicipalities())
-                .Returns(new[]
-                {
-                    municipalityLatestItem
-                });
-
-            return municipalityLatestItem;
-        }
-
-        private void MockGetAllLatestMunicipalities(IEnumerable<string> nisCodes, string gemeentenaam)
-        {
-            _latestQueries
-                .Setup(x => x.GetAllLatestMunicipalities())
-                .Returns(
-                    nisCodes.Select(x =>
-                        new MunicipalityLatestItem(Guid.NewGuid(), x, SystemClock.Instance.GetCurrentInstant())
-                        {
-                            NameDutch = gemeentenaam,
-                            NameDutchSearch = gemeentenaam.RemoveDiacritics(),
-                            OfficialLanguages = new List<string> { "Dutch" }
-                        })
-                );
-        }
-
-        private void MockGetAllPostalInfo(string nisCode, string postcode, string postnaam = "")
-        {
-            var postalInfoLatestItem = new PostalInfoLatestItem { NisCode = nisCode, PostalCode = postcode, };
-
-            if (!string.IsNullOrWhiteSpace(postnaam))
-            {
-                postalInfoLatestItem.PostalNames = new List<PostalInfoPostalName>
-                {
-                    new PostalInfoPostalName
-                    {
-                        Language = Taal.NL, PostalCode = postcode, PostalName = postnaam
-                    }
-                };
-            }
-
-            _latestQueries
-                .Setup(x => x.GetAllPostalInfo())
-                .Returns(new[]
-                {
-                    postalInfoLatestItem
-                });
         }
 
         [Fact]
@@ -333,13 +274,11 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
         [InlineData("Evergreen Terras", "Evergreen Terrace")] // fuzzy match
         [InlineData("evergreen terras", "Evergreen Terrace")] // case insensitive
         [InlineData("St-Evergreen Terrace", "Sint-Evergreen Terrace")] // replace abreviations in input
-        [InlineData("Onze Lieve Vrouw-Evergreen Terrace",
-            "O.l.v.-Evergreen Terrace")] // replace abreviations in existing straatnaam
+        [InlineData("Onze Lieve Vrouw-Evergreen Terrace", "O.l.v.-Evergreen Terrace")] // replace abreviations in existing straatnaam
         [InlineData("Clevergreen Terrace Avenue", "Evergreen")] // containment of existing straatnaam
         [InlineData("Evergreen", "Clevergreen Terrace Avenue")] // containment of input
         [InlineData("Trammesantlei", "Evergreen Terrace", false)] // no match
-        public async Task CanFindStraatnaamByStraatnaamMatch(string requestedStraatnaam, string existingStraatnaam,
-            bool isMatch = true)
+        public async Task CanFindStraatnaamByStraatnaamMatch(string requestedStraatnaam, string existingStraatnaam, bool isMatch = true)
         {
             var existingNisCode = "11001";
             var existingStraatnaamId = 1;
@@ -390,36 +329,6 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
             }
         }
 
-        private StreetNameLatestItem MockStreetNames(string existingStraatnaam, int existingStraatnaamId,
-            string existingNisCode,
-            string existingGemeentenaam)
-        {
-            var streetNameLatestItem = new StreetNameLatestItem(existingStraatnaamId, existingNisCode)
-            {
-                NameDutch = existingStraatnaam,
-                NameDutchSearch = existingStraatnaam.RemoveDiacritics()
-            };
-
-            _latestQueries
-                .Setup(x => x.GetAllLatestStreetNames())
-                .Returns(new[]
-                {
-                    streetNameLatestItem
-                });
-            _latestQueries
-                .Setup(x => x.GetLatestStreetNamesBy(existingGemeentenaam))
-                .Returns(new[]
-                {
-                    streetNameLatestItem
-                });
-            _latestQueries
-                .Setup(x => x.FindLatestStreetNameById(existingStraatnaamId))
-                .Returns(
-                    streetNameLatestItem);
-
-            return streetNameLatestItem;
-        }
-
         [Fact]
         public async Task CanFindAdresMatch()
         {
@@ -455,20 +364,7 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
 
             firstMatch.Should().HaveVolledigAdres()
                 .Which.Should()
-                .HaveGeografischeNaam(
-                    $"{existingStraatnaam.NameDutch} {request.Huisnummer}, {postcode} {existingGemeentenaam}");
-        }
-
-        private void MockGetLatestAddressesBy(int existingStraatnaamId, string postcode, string huisnummer, string? busnummer = null)
-        {
-            _latestQueries
-                .Setup(x => x.GetLatestAddressesBy(existingStraatnaamId, huisnummer, busnummer))
-                .Returns(new[]
-                {
-                    new AddressDetailItemV2(2, existingStraatnaamId, postcode, huisnummer, busnummer,
-                        AddressStatus.Current, true, new Point(120, 45).AsBinary(), GeometryMethod.DerivedFromObject,
-                        GeometrySpecification.Entry, false, SystemClock.Instance.GetCurrentInstant())
-                });
+                .HaveGeografischeNaam($"{existingStraatnaam.NameDutch} {request.Huisnummer}, {postcode} {existingGemeentenaam}");
         }
 
         [Fact]
@@ -510,6 +406,94 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
                 .Which.Should().HaveGeografischeNaam($"{existingStraatnaam.NameDutch} {request.Huisnummer} bus {request.Busnummer}, {postcode} {existingGemeentenaam}");
 
             firstMatch.Should().HaveScore(100);
+        }
+
+        private MunicipalityLatestItem MockGetAllLatestMunicipalities(string nisCode, string gemeentenaam)
+        {
+            var municipalityLatestItem =
+                new MunicipalityLatestItem(Guid.NewGuid(), nisCode, SystemClock.Instance.GetCurrentInstant())
+                {
+                    NameDutch = gemeentenaam,
+                    NameDutchSearch = gemeentenaam.RemoveDiacritics(),
+                    OfficialLanguages = new List<string> { "Dutch" }
+                };
+
+            _latestQueries
+                .Setup(x => x.GetAllLatestMunicipalities())
+                .Returns(new[]
+                {
+                    municipalityLatestItem
+                });
+
+            return municipalityLatestItem;
+        }
+
+        private void MockGetAllLatestMunicipalities(IEnumerable<string> nisCodes, string municipalityName)
+        {
+            _latestQueries
+                .Setup(x => x.GetAllLatestMunicipalities())
+                .Returns(
+                    nisCodes.Select(x =>
+                        new MunicipalityLatestItem(Guid.NewGuid(), x, SystemClock.Instance.GetCurrentInstant())
+                        {
+                            NameDutch = municipalityName,
+                            NameDutchSearch = municipalityName.RemoveDiacritics(),
+                            OfficialLanguages = new List<string> { "Dutch" }
+                        })
+                );
+        }
+
+        private void MockGetAllPostalInfo(string nisCode, string postalCode, string postalName = "")
+        {
+            var postalInfoLatestItem = new PostalInfoLatestItem { NisCode = nisCode, PostalCode = postalCode, };
+
+            if (!string.IsNullOrWhiteSpace(postalName))
+            {
+                postalInfoLatestItem.PostalNames = new List<PostalInfoPostalName>
+                {
+                    new PostalInfoPostalName
+                    {
+                        Language = Taal.NL, PostalCode = postalCode, PostalName = postalName
+                    }
+                };
+            }
+
+            _latestQueries
+                .Setup(x => x.GetAllPostalInfo())
+                .Returns(new[] { postalInfoLatestItem });
+        }
+
+        private StreetNameLatestItem MockStreetNames(string streetName, int streetNamePersistentLocalId, string nisCode, string municipalityName)
+        {
+            var streetNameLatestItem = new StreetNameLatestItem(streetNamePersistentLocalId, nisCode)
+            {
+                NameDutch = streetName,
+                NameDutchSearch = streetName.RemoveDiacritics()
+            };
+
+            _latestQueries
+                .Setup(x => x.GetAllLatestStreetNames())
+                .Returns(new[] { streetNameLatestItem });
+            _latestQueries
+                .Setup(x => x.GetLatestStreetNamesBy(municipalityName))
+                .Returns(new[] { streetNameLatestItem });
+            _latestQueries
+                .Setup(x => x.FindLatestStreetNameById(streetNamePersistentLocalId))
+                .Returns(streetNameLatestItem);
+
+            return streetNameLatestItem;
+        }
+
+        private void MockGetLatestAddressesBy(int streetNamePersistentLocalId, string postcode, string huisnummer, string? busnummer = null)
+        {
+            _latestQueries
+                .Setup(x => x.GetLatestAddressesBy(streetNamePersistentLocalId, huisnummer, busnummer))
+                .Returns(new[]
+                {
+                    new AddressDetailItemV2(2, streetNamePersistentLocalId, postcode, huisnummer, busnummer,
+                        AddressStatus.Current, true, new Point(120, 45).AsBinary(), GeometryMethod.DerivedFromObject,
+                        GeometrySpecification.Entry, false, SystemClock.Instance.GetCurrentInstant())
+                });
         }
     }
 }

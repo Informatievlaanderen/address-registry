@@ -1,4 +1,4 @@
-namespace AddressRegistry.Tests.ApiTests.Oslo_Legacy.Framework.Assert
+namespace AddressRegistry.Tests.ApiTests.AddressMatch.Asserts
 {
     using System;
     using System.Diagnostics;

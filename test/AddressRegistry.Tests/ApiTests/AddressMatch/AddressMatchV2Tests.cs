@@ -9,32 +9,30 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
     using Api.Oslo.AddressMatch.V2;
     using Api.Oslo.AddressMatch.V2.Matching;
     using Api.Oslo.Infrastructure.Options;
+    using Asserts;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Consumer.Read.Municipality.Projections;
     using Consumer.Read.StreetName.Projections;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Options;
     using Moq;
     using NetTopologySuite.Geometries;
     using NodaTime;
-    using Oslo_Legacy.Framework;
-    using Oslo_Legacy.Framework.Assert;
     using Projections.Legacy.AddressDetailV2;
     using Projections.Syndication.PostalInfo;
     using StreetName;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class AddressMatchV2Tests
+    public class AddressMatchV2Tests : AddressMatchTestBase
     {
-        private readonly ITestOutputHelper _testOutputHelper;
         private readonly AddressMatchContextMemoryV2 _addresMatchContext;
         private readonly Mock<ILatestQueries> _latestQueries;
         private readonly AddressMatchHandlerV2 _handler;
 
-        public AddressMatchV2Tests(ITestOutputHelper testOutputHelper)
+        public AddressMatchV2Tests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            _testOutputHelper = testOutputHelper;
             _addresMatchContext = new AddressMatchContextMemoryV2();
             _latestQueries = new Mock<ILatestQueries>();
             _handler = new AddressMatchHandlerV2(_latestQueries.Object, _addresMatchContext,
@@ -495,5 +493,11 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
                         GeometrySpecification.Entry, false, SystemClock.Instance.GetCurrentInstant())
                 });
         }
+    }
+
+    public class AddressMatchContextMemoryV2 : AddressMatchContextV2
+    {
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+            => optionsBuilder.UseInMemoryDatabase("DB", AddressMatchTestBase.InMemoryDatabaseRootRoot);
     }
 }

@@ -1,20 +1,10 @@
-namespace AddressRegistry.Tests.ApiTests.Oslo_Legacy.Framework.Assert
+namespace AddressRegistry.Tests.ApiTests.AddressMatch.Asserts
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using AddressMatch;
-    using AddressRegistry.Api.Oslo.AddressMatch;
     using AddressRegistry.Api.Oslo.AddressMatch.Responses;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
 
     internal static class AssertionsProvider
     {
-        public static SanitizationTaskAssertions<HouseNumberWithSubaddress> Should(this Task<List<HouseNumberWithSubaddress>> task)
-            => new SanitizationTaskAssertions<HouseNumberWithSubaddress>(task);
-
-        public static HuisnummerWithSubadresTaskAssertions Should(this Task<HouseNumberWithSubaddress> task)
-            => new HuisnummerWithSubadresTaskAssertions(task);
-
         public static AdresMatchCollectieAssertions Should(this AddressMatchCollection subject)
             => new AdresMatchCollectieAssertions(subject);
 

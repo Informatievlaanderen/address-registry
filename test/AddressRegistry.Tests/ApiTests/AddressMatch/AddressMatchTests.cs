@@ -9,13 +9,13 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
     using Api.Oslo.AddressMatch.V1;
     using Api.Oslo.AddressMatch.V1.Matching;
     using Api.Oslo.Infrastructure.Options;
+    using Asserts;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Options;
     using Moq;
     using NetTopologySuite.Geometries;
-    using Oslo_Legacy.Framework;
-    using Oslo_Legacy.Framework.Assert;
     using Projections.Legacy.AddressDetail;
     using Projections.Syndication.Municipality;
     using Projections.Syndication.PostalInfo;
@@ -23,16 +23,14 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
     using Xunit;
     using Xunit.Abstractions;
 
-    public class AddressMatchTests
+    public class AddressMatchTests : AddressMatchTestBase
     {
-        private readonly ITestOutputHelper _testOutputHelper;
         private readonly AddressMatchContextMemory _addresMatchContext;
         private readonly Mock<ILatestQueries> _latestQueries;
         private readonly AddressMatchHandler _handler;
 
-        public AddressMatchTests(ITestOutputHelper testOutputHelper)
+        public AddressMatchTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            _testOutputHelper = testOutputHelper;
             _addresMatchContext = new AddressMatchContextMemory();
             _latestQueries = new Mock<ILatestQueries>();
             _handler = new AddressMatchHandler(
@@ -621,5 +619,17 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
                     }
                 });
         }
+    }
+
+    public class AddressMatchContextMemory : AddressMatchContext
+    {
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+            => optionsBuilder.UseInMemoryDatabase("DB", AddressMatchTestBase.InMemoryDatabaseRootRoot);
+    }
+
+    public class BuildingContextMemory : BuildingContext
+    {
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+            => optionsBuilder.UseInMemoryDatabase("DB", AddressMatchTestBase.InMemoryDatabaseRootRoot);
     }
 }

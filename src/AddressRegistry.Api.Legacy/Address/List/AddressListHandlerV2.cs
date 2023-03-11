@@ -89,7 +89,7 @@ namespace AddressRegistry.Api.Legacy.Address.List
             return new AddressListResponse
             {
                 Adressen = addressListItemResponsesV2,
-                Volgende = pagedAddressesV2.PaginationInfo.BuildNextUri(_responseOptions.Value.VolgendeUrl),
+                Volgende = pagedAddressesV2.PaginationInfo.BuildNextUri(addressListItemResponsesV2.Count, _responseOptions.Value.VolgendeUrl),
                 Sorting = pagedAddressesV2.Sorting,
                 Pagination = pagedAddressesV2.PaginationInfo
             };

@@ -54,7 +54,7 @@ namespace AddressRegistry.Api.Legacy.Address.List
             return new AddressListResponse
             {
                 Adressen = addressListItemResponses,
-                Volgende = pagedAddresses.PaginationInfo.BuildNextUri(_responseOptions.Value.VolgendeUrl),
+                Volgende = pagedAddresses.PaginationInfo.BuildNextUri(addressListItemResponses.Count, _responseOptions.Value.VolgendeUrl),
                 Sorting = pagedAddresses.Sorting,
                 Pagination = pagedAddresses.PaginationInfo
             };

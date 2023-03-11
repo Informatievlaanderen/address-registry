@@ -5,14 +5,15 @@ namespace AddressRegistry.Api.Legacy.Address
 
     public static class PaginationNextUriExtension
     {
-        public static Uri BuildNextUri(
+        public static Uri? BuildNextUri(
             this PaginationInfo paginationInfo,
+            int itemCountInCollection,
             string nextUrlBase)
         {
             var offset = paginationInfo.Offset;
             var limit = paginationInfo.Limit;
 
-            return paginationInfo.HasNextPage
+            return paginationInfo.HasNextPage(itemCountInCollection)
                 ? new Uri(string.Format(nextUrlBase, offset + limit, limit))
                 : null;
         }

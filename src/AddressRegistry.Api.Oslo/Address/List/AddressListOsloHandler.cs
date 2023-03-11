@@ -95,7 +95,7 @@ namespace AddressRegistry.Api.Oslo.Address.List
             return new AddressListOsloResponse
             {
                 Adressen = addressListItemResponses,
-                Volgende = pagedAddresses.PaginationInfo.BuildNextUri(_responseOptions.Value.VolgendeUrl),
+                Volgende = pagedAddresses.PaginationInfo.BuildNextUri(addressListItemResponses.Count, _responseOptions.Value.VolgendeUrl),
                 Context = _responseOptions.Value.ContextUrlList,
                 Sorting = pagedAddresses.Sorting,
                 Pagination = pagedAddresses.PaginationInfo

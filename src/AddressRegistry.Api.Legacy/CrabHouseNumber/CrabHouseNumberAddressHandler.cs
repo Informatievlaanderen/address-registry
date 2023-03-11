@@ -40,7 +40,7 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
         {
             var pagedAddresses = new CrabHouseNumberQuery(_legacyContext)
                 .Fetch(request.Filtering, request.Sorting, request.Pagination);
-            
+
             var addresses = await pagedAddresses
                 .Items
                 .ToListAsync(cancellationToken);
@@ -85,7 +85,7 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
             return new CrabHouseNumberAddressListResponse
             {
                 Addresses = addressListItemResponses,
-                Volgende = pagedAddresses.PaginationInfo.BuildNextUri(_responseOptions.Value.CrabHuisnummersVolgendeUrl),
+                Volgende = pagedAddresses.PaginationInfo.BuildNextUri(addressListItemResponses.Count, _responseOptions.Value.CrabHuisnummersVolgendeUrl),
                 Sorting = pagedAddresses.Sorting,
                 Pagination = pagedAddresses.PaginationInfo
             };

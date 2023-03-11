@@ -86,7 +86,7 @@ namespace AddressRegistry.Api.Legacy.CrabSubaddress
             return new CrabSubAddressListResponse
             {
                 Addresses = addressListItemResponses,
-                Volgende = pagedAddresses.PaginationInfo.BuildNextUri(_responseOptions.Value.CrabSubadressenVolgendeUrl),
+                Volgende = pagedAddresses.PaginationInfo.BuildNextUri(addressListItemResponses.Count, _responseOptions.Value.CrabSubadressenVolgendeUrl),
                 Sorting = pagedAddresses.Sorting,
                 Pagination = pagedAddresses.PaginationInfo
             };

@@ -5,7 +5,7 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch.Asserts
 
     internal static class AssertionsProvider
     {
-        public static AdresMatchCollectieAssertions Should(this AddressMatchCollection subject)
+        public static AdresMatchCollectieAssertions Should(this AddressMatchOsloCollection subject)
             => new AdresMatchCollectieAssertions(subject);
 
         public static AdresMatchItemAssertions Should(this AdresMatchItem subject)

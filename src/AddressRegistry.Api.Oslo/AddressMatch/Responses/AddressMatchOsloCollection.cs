@@ -20,7 +20,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
     using V2.Matching;
 
     [DataContract(Name = "AdresMatchCollectie", Namespace = "")]
-    public class AddressMatchCollection
+    public class AddressMatchOsloCollection
     {
         /// <summary>
         /// De 10 adresmatches met de hoogste score (gesorteerd van hoog naar laag).
@@ -332,7 +332,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
         public string Detail { get; set; }
     }
 
-    public class AddressMatchResponseExamples : IExamplesProvider<AddressMatchCollection>
+    public class AddressMatchResponseExamples : IExamplesProvider<AddressMatchOsloCollection>
     {
         private readonly ResponseOptions _options;
 
@@ -341,10 +341,10 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
             _options = options.Value;
         }
 
-        public AddressMatchCollection GetExamples()
+        public AddressMatchOsloCollection GetExamples()
         {
 
-            return new AddressMatchCollection
+            return new AddressMatchOsloCollection
             {
                 AdresMatches = new List<AdresMatchItem>
                 {

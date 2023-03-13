@@ -3,7 +3,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Requests
     using MediatR;
     using Responses;
 
-    public class AddressMatchRequest : IRequest<AddressMatchCollection>
+    public class AddressMatchRequest : IRequest<AddressMatchOsloCollection>
     {
         /// <summary>
         /// municipality name

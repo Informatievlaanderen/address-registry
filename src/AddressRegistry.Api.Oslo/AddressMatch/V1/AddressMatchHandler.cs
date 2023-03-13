@@ -10,7 +10,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V1
     using Requests;
     using Responses;
 
-    public sealed class AddressMatchHandler : IRequestHandler<AddressMatchRequest, AddressMatchCollection>
+    public sealed class AddressMatchHandler : IRequestHandler<AddressMatchRequest, AddressMatchOsloCollection>
     {
         private readonly IKadRrService _kadRrService;
         private readonly ILatestQueries _latestQueries;
@@ -29,7 +29,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V1
             _responseOptions = responseOptions;
         }
 
-        public Task<AddressMatchCollection> Handle(AddressMatchRequest request, CancellationToken cancellationToken)
+        public Task<AddressMatchOsloCollection> Handle(AddressMatchRequest request, CancellationToken cancellationToken)
         {
             const int maxNumberOfResults = 10;
 
@@ -52,7 +52,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V1
                 .Select(x => AdresMatchItem.Create(x, _responseOptions.Value))
                 .ToList();
 
-            return Task.FromResult(new AddressMatchCollection
+            return Task.FromResult(new AddressMatchOsloCollection
             {
                 AdresMatches = result,
                 Warnings = warningLogger.Warnings

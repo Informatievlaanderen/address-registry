@@ -19,7 +19,7 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
     using Options;
     using Projections.Legacy;
     using Projections.Syndication;
-    using Module = Autofac.Module;
+    using ILatestQueries = AddressMatch.V2.Matching.ILatestQueries;
 
     public sealed class MediatRModule : Module
     {
@@ -89,7 +89,7 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
                 {
                     return (IRequestHandler<AddressMatchRequest, AddressMatchCollection>)
                         new AddressMatchHandlerV2(
-                            c.Resolve<AddressMatch.V2.Matching.ILatestQueries>(),
+                            c.Resolve<ILatestQueries>(),
                             c.Resolve<AddressMatchContextV2>(),
                             c.Resolve<IOptions<ResponseOptions>>());
                 }
@@ -99,7 +99,6 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
                         c.Resolve<IKadRrService>(),
                         c.Resolve<AddressMatch.V1.Matching.ILatestQueries>(),
                         c.Resolve<AddressMatchContext>(),
-                        c.Resolve<BuildingContext>(),
                         c.Resolve<IOptions<ResponseOptions>>());
 
             }).InstancePerLifetimeScope();

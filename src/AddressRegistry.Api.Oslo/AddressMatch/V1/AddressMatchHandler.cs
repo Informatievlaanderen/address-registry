@@ -15,20 +15,17 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V1
         private readonly IKadRrService _kadRrService;
         private readonly ILatestQueries _latestQueries;
         private readonly AddressMatchContext _addressMatchContext;
-        private readonly BuildingContext _buildingContext;
         private readonly IOptions<ResponseOptions> _responseOptions;
 
         public AddressMatchHandler(
             IKadRrService kadRrService,
             ILatestQueries latestQueries,
             AddressMatchContext addressMatchContext,
-            BuildingContext buildingContext,
             IOptions<ResponseOptions> responseOptions)
         {
             _kadRrService = kadRrService;
             _latestQueries = latestQueries;
             _addressMatchContext = addressMatchContext;
-            _buildingContext = buildingContext;
             _responseOptions = responseOptions;
         }
 
@@ -52,7 +49,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V1
                 .OrderByDescending(x => x.Score)
                 .ThenBy(x => x.ScoreableProperty)
                 .Take(maxNumberOfResults)
-                .Select(x => AdresMatchItem.Create(x, _buildingContext, _addressMatchContext, _responseOptions.Value))
+                .Select(x => AdresMatchItem.Create(x, _addressMatchContext, _responseOptions.Value))
                 .ToList();
 
             return Task.FromResult(new AddressMatchCollection

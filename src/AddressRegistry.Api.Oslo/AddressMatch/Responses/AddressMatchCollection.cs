@@ -3,7 +3,6 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
-    using System.Linq;
     using System.Runtime.Serialization;
     using System.Xml.Serialization;
     using Address;
@@ -14,7 +13,6 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Straatnaam;
     using Infrastructure.Options;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
     using Swashbuckle.AspNetCore.Filters;
@@ -151,7 +149,6 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
 
         public static AdresMatchItem Create(
             AdresMatchScorableItem scorableItem,
-            BuildingContext buildingContext,
             AddressMatchContext addressMatchContext,
             ResponseOptions responseOptions)
         {

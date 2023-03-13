@@ -37,7 +37,6 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
                 Mock.Of<IKadRrService>(),
                 _latestQueries.Object,
                 _addresMatchContext,
-                new BuildingContextMemory(),
                 new OptionsWrapper<ResponseOptions>(new ResponseOptions
                 {
                     DetailUrl = "detail/{0}",
@@ -622,12 +621,6 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
     }
 
     public class AddressMatchContextMemory : AddressMatchContext
-    {
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseInMemoryDatabase("DB", AddressMatchTestBase.InMemoryDatabaseRootRoot);
-    }
-
-    public class BuildingContextMemory : BuildingContext
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             => optionsBuilder.UseInMemoryDatabase("DB", AddressMatchTestBase.InMemoryDatabaseRootRoot);

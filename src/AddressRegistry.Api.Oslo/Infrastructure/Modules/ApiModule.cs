@@ -95,13 +95,6 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
                     .UseLoggerFactory(loggerFactory)
                     .UseSqlServer(provider.GetRequiredService<TraceDbConnection<AddressMatchContext>>(),
                         sqlServerOptions => { sqlServerOptions.EnableRetryOnFailure(); }))
-                //.AddScoped(s => new TraceDbConnection<BuildingContext>(
-                //    new SqlConnection(buildingProjectionsConnectionString),
-                //    configuration["DataDog:ServiceName"]))
-                .AddDbContext<BuildingContext>((provider, options) => options
-                    .UseLoggerFactory(loggerFactory)
-                    .UseSqlServer(provider.GetRequiredService<TraceDbConnection<BuildingContext>>(),
-                        sqlServerOptions => { sqlServerOptions.EnableRetryOnFailure(); }))
                 .AddScoped(s => new TraceDbConnection<AddressMatchContextV2>(
                     new SqlConnection(backofficeProjectionsConnectionString),
                     configuration["DataDog:ServiceName"]))
@@ -121,9 +114,6 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
                     .UseLoggerFactory(loggerFactory)
                     .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { }))
                 .AddDbContext<AddressMatchContext>(options => options
-                    .UseLoggerFactory(loggerFactory)
-                    .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { }))
-                .AddDbContext<BuildingContext>(options => options
                     .UseLoggerFactory(loggerFactory)
                     .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { }))
                 .AddDbContext<AddressMatchContextV2>(options => options

@@ -1,4 +1,4 @@
-namespace AddressRegistry.Tests.ApiTests.Oslo_Legacy.Framework.Assert
+namespace AddressRegistry.Tests.ApiTests.AddressMatch.Asserts
 {
     using AddressRegistry.Api.Oslo.AddressMatch.Responses;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
@@ -34,24 +34,6 @@ namespace AddressRegistry.Tests.ApiTests.Oslo_Legacy.Framework.Assert
             Subject.VolledigAdres.Should().NotBeNull();
 
             return AndWhich(Subject.VolledigAdres);
-        }
-
-        public AndConstraint<AdresMatchItemAssertions> BeExactMatch()
-        {
-            AssertingThat("The match is exact (Score=100%)");
-
-            Subject.Score.Should().Be(100);
-
-            return And();
-        }
-
-        public AndConstraint<AdresMatchItemAssertions> NotBeExactMatch()
-        {
-            AssertingThat("The match is not exact (Score<100%)");
-
-            Subject.Score.Should().BeLessThan(100);
-
-            return And();
         }
 
         public AndConstraint<AdresMatchItemAssertions> HaveNoStraatnaam()

@@ -1,4 +1,4 @@
-namespace AddressRegistry.Tests.ApiTests.Oslo_Legacy.Framework.Assert
+namespace AddressRegistry.Tests.ApiTests.AddressMatch.Asserts
 {
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using FluentAssertions;

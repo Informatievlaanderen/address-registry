@@ -1,8 +1,7 @@
-namespace AddressRegistry.Tests.ApiTests.Oslo_Legacy.AddressMatch
+namespace AddressRegistry.Tests.ApiTests.AddressMatch
 {
-    using AddressRegistry.Api.Oslo.AddressMatch.Requests;
+    using Api.Oslo.AddressMatch.Requests;
     using FluentValidation.TestHelper;
-    using Framework.Generate;
     using Xunit;
 
     public class AddressMatchRequestValidatorTests
@@ -21,19 +20,6 @@ namespace AddressRegistry.Tests.ApiTests.Oslo_Legacy.AddressMatch
 
             //Act & Assert
             _validator.ShouldHaveValidationErrorFor(r => r.Postcode, request);
-        }
-
-        [Fact]
-        public void BusnummerAndIndexAreMutuallyExclusive()
-        {
-            //Arrange
-            var request = new AddressMatchRequest().WithGemeenteAndStraatnaam();
-            request.Huisnummer = "742";
-            request.Busnummer = "C2";
-            request.Index = "verd2";
-
-            //Act & Assert
-            _validator.ShouldHaveValidationErrorFor(r => "Busnummer, Index", request);
         }
     }
 }

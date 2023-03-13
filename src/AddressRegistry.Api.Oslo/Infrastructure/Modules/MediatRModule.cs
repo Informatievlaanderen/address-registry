@@ -4,6 +4,11 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
     using Address.Count;
     using Address.Detail;
     using Address.List;
+    using AddressMatch.Requests;
+    using AddressMatch.Responses;
+    using AddressMatch.V1;
+    using AddressMatch.V1.Matching;
+    using AddressMatch.V2;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Consumer.Read.Municipality;
@@ -14,7 +19,7 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
     using Options;
     using Projections.Legacy;
     using Projections.Syndication;
-    using Module = Autofac.Module;
+    using ILatestQueries = AddressMatch.V2.Matching.ILatestQueries;
 
     public sealed class MediatRModule : Module
     {
@@ -75,6 +80,27 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
                     new AddressCountOsloHandler(
                         c.Resolve<LegacyContext>(),
                         c.Resolve<AddressQueryContext>());
+            }).InstancePerLifetimeScope();
+
+
+            builder.Register(c =>
+            {
+                if (c.Resolve<UseProjectionsV2Toggle>().FeatureEnabled)
+                {
+                    return (IRequestHandler<AddressMatchRequest, AddressMatchCollection>)
+                        new AddressMatchHandlerV2(
+                            c.Resolve<ILatestQueries>(),
+                            c.Resolve<AddressMatchContextV2>(),
+                            c.Resolve<IOptions<ResponseOptions>>());
+                }
+
+                return (IRequestHandler<AddressMatchRequest, AddressMatchCollection>)
+                    new AddressMatchHandler(
+                        c.Resolve<IKadRrService>(),
+                        c.Resolve<AddressMatch.V1.Matching.ILatestQueries>(),
+                        c.Resolve<AddressMatchContext>(),
+                        c.Resolve<IOptions<ResponseOptions>>());
+
             }).InstancePerLifetimeScope();
         }
     }

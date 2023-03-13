@@ -1,9 +1,8 @@
-namespace AddressRegistry.Tests.ApiTests.Oslo_Legacy.Framework.Assert
+namespace AddressRegistry.Tests.ApiTests.AddressMatch.Asserts
 {
     using System.Collections.Generic;
     using AddressRegistry.Api.Oslo.AddressMatch.Responses;
     using FluentAssertions;
-    using Newtonsoft.Json;
 
     internal class AdresMatchCollectieAssertions : Assertions<AddressMatchCollection, AdresMatchCollectieAssertions>
     {
@@ -35,11 +34,6 @@ namespace AddressRegistry.Tests.ApiTests.Oslo_Legacy.Framework.Assert
             Subject.Warnings.Should().NotContain(w => w.Message.Contains(warningMessagePart));
 
             return And();
-        }
-
-        public void BeEquivalentTo(AddressMatchCollection addressMatchCollection)
-        {
-            JsonConvert.SerializeObject(Subject).Should().Be(JsonConvert.SerializeObject(addressMatchCollection));
         }
     }
 }

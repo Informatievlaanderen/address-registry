@@ -40,7 +40,6 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V1.Matching
             if (!rrAddresses.Any())
                 return builder;
 
-            _warnings.AddWarning("21", "De adressen in het resultaat werden gevonden via een rechtstreekse link naar het opgegeven rijksregister adres.");
             builder.AddRrAddresses(rrAddresses);
 
             return builder;

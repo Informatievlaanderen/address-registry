@@ -23,30 +23,15 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Requests
             When(r => !string.IsNullOrEmpty(r.Niscode), () =>
                 RuleFor(r => r.Niscode).Must(BeNumeric).WithMessage(Numeric).WithErrorCode("12"));
 
-            When(r => !string.IsNullOrEmpty(r.KadStraatcode), () =>
-                RuleFor(r => r.KadStraatcode).Must(BeNumeric).WithMessage(Numeric).WithErrorCode("13"));
-
-            When(r => !string.IsNullOrEmpty(r.RrStraatcode), () =>
-                RuleFor(r => r.RrStraatcode).Must(BeNumeric).WithMessage(Numeric).WithErrorCode("14"));
-
-            When(r => !string.IsNullOrEmpty(r.RrStraatcode), () =>
-                RuleFor(r => r.RrStraatcode).MaximumLength(4).WithMessage(MaxLength).WithErrorCode("18"));
-
-            When(r => !string.IsNullOrEmpty(r.RrStraatcode), () =>
-                RuleFor(r => r.Postcode).NotEmpty().WithMessage(string.Format(WhenProp1ThenProp2, "RrStraatCode")).WithErrorCode("19"));
-
             RuleFor(r => r)
                 .Must(HaveMinimumOne(r => r.Gemeentenaam, r => r.Niscode, r => r.Postcode)).WithMessage(MinimumOne).WithErrorCode("15")
-                .Must(HaveMinimumOne(r => r.KadStraatcode, r => r.RrStraatcode, r => r.Straatnaam)).WithMessage(MinimumOne).WithErrorCode("16")
-                .Must(HaveMaximumOne(r => r.KadStraatcode, r => r.RrStraatcode)).WithMessage(MaximumOne).WithErrorCode("17")
-                .Must(HaveMaximumOne(r => r.Busnummer, r => r.Index)).WithMessage(MaximumOne).WithErrorCode("20");
+                .Must(HaveMinimumOne(r => r.Straatnaam)).WithMessage("Gelieve het veld 'Straatnaam' mee te geven.").WithErrorCode("16");
 
             RuleFor(r => r.Niscode).MaximumLength(5).WithMessage(MaxLength).WithErrorCode("18");
             RuleFor(r => r.Postcode).MaximumLength(4).WithMessage(MaxLength).WithErrorCode("18");
             RuleFor(r => r.Straatnaam).MaximumLength(80).WithMessage(MaxLength).WithErrorCode("18");
             RuleFor(r => r.Huisnummer).MaximumLength(40).WithMessage(MaxLength).WithErrorCode("18");
             RuleFor(r => r.Busnummer).MaximumLength(40).WithMessage(MaxLength).WithErrorCode("18");
-            RuleFor(r => r.Index).MaximumLength(40).WithMessage(MaxLength).WithErrorCode("18");
             RuleFor(r => r.Gemeentenaam).MaximumLength(40).WithMessage(MaxLength).WithErrorCode("18");
         }
 

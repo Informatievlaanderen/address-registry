@@ -1,3 +1,15 @@
+# [3.80.0](https://github.com/informatievlaanderen/address-registry/compare/v3.79.2...v3.80.0) (2023-03-13)
+
+
+### Bug Fixes
+
+* add Oslo suffix to address match V2 response classes to satisfy swagger ([431fb20](https://github.com/informatievlaanderen/address-registry/commit/431fb20144185fcb510fb817d753f7a1f75e295c))
+
+
+### Features
+
+* guard postalcode of box number address ([#970](https://github.com/informatievlaanderen/address-registry/issues/970)) ([9e1d9bd](https://github.com/informatievlaanderen/address-registry/commit/9e1d9bdda476bb1aa0b905e2dc8b84d36c0e89d3))
+
 ## [3.79.2](https://github.com/informatievlaanderen/address-registry/compare/v3.79.1...v3.79.2) (2023-03-13)
 
 

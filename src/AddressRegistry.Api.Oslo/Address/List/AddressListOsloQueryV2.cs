@@ -12,7 +12,7 @@ namespace AddressRegistry.Api.Oslo.Address.List
     using Microsoft.EntityFrameworkCore;
     using Projections.Legacy.AddressListV2;
 
-    public class AddressListOsloQueryV2 : Query<AddressListItemV2, AddressFilter>
+    public class AddressListOsloQueryV2 : Query<AddressListViewItemV2, AddressFilter>
     {
         private readonly AddressQueryContext _context;
 
@@ -23,24 +23,13 @@ namespace AddressRegistry.Api.Oslo.Address.List
             _context = context;
         }
 
-        protected override IQueryable<AddressListItemV2> Filter(FilteringHeader<AddressFilter> filtering)
+        protected override IQueryable<AddressListViewItemV2> Filter(FilteringHeader<AddressFilter> filtering)
         {
             var addressesV2 = _context
-                .AddressListV2
+                .AddressListViewV2
                 .AsNoTracking()
                 .OrderBy(x => x.AddressPersistentLocalId)
-                .Where(a => !a.Removed && a.AddressPersistentLocalId != 0);
-
-            var municipalities = _context
-                .MunicipalityConsumerLatestItems
-                .AsNoTracking();
-
-            var streetNames = _context
-                .StreetNameConsumerLatestItems
-                .AsNoTracking()
-                .Where(x => !x.IsRemoved);
-
-            var filterStreet = false;
+                .AsQueryable();
 
             if (!filtering.ShouldFilter)
             {
@@ -80,77 +69,51 @@ namespace AddressRegistry.Api.Oslo.Address.List
 
             if (!string.IsNullOrEmpty(filtering.Filter.NisCode))
             {
-                streetNames = streetNames.Where(x => x.NisCode == filtering.Filter.NisCode);
-                municipalities = municipalities.Where(m => m.NisCode == filtering.Filter.NisCode);
-                filterStreet = true;
+                addressesV2 = addressesV2.Where(x => x.NisCode == filtering.Filter.NisCode);
             }
 
             if (!string.IsNullOrEmpty(filtering.Filter.MunicipalityName))
             {
                 var searchName = filtering.Filter.MunicipalityName.RemoveDiacritics();
 
-                var municipalityNisCodes = municipalities.Where(m =>
-                        m.NameDutchSearch == searchName ||
-                        m.NameFrenchSearch == searchName ||
-                        m.NameGermanSearch == searchName ||
-                        m.NameEnglishSearch == searchName)
-                    .Select(x => x.NisCode)
-                    .ToList();
-
-                if (!municipalityNisCodes.Any())
-                {
-                    return new List<AddressListItemV2>().AsQueryable();
-                }
-
-                streetNames = streetNames.Where(x => municipalityNisCodes.Contains(x.NisCode));
-
-                filterStreet = true;
+                addressesV2 = addressesV2.Where(m =>
+                    m.MunicipalityNameDutchSearch == searchName ||
+                    m.MunicipalityNameFrenchSearch == searchName ||
+                    m.MunicipalityNameGermanSearch == searchName ||
+                    m.MunicipalityNameEnglishSearch == searchName);
             }
 
             if (!string.IsNullOrEmpty(filtering.Filter.StreetName))
             {
                 var searchName = filtering.Filter.StreetName.RemoveDiacritics();
 
-                streetNames = streetNames.Where(s =>
-                    s.NameDutchSearch == searchName ||
-                    s.NameFrenchSearch == searchName ||
-                    s.NameGermanSearch == searchName ||
-                    s.NameEnglishSearch == searchName);
-
-                filterStreet = true;
+                addressesV2 = addressesV2.Where(s =>
+                    s.StreetNameDutchSearch == searchName ||
+                    s.StreetNameFrenchSearch == searchName ||
+                    s.StreetNameGermanSearch == searchName ||
+                    s.StreetNameEnglishSearch == searchName);
             }
 
             if (!string.IsNullOrEmpty(filtering.Filter.HomonymAddition))
             {
-                streetNames = streetNames.Where(s =>
+                addressesV2 = addressesV2.Where(s =>
                     s.HomonymAdditionDutch == filtering.Filter.HomonymAddition ||
                     s.HomonymAdditionFrench == filtering.Filter.HomonymAddition ||
                     s.HomonymAdditionGerman == filtering.Filter.HomonymAddition ||
                     s.HomonymAdditionEnglish == filtering.Filter.HomonymAddition);
-
-                filterStreet = true;
             }
 
             if (!string.IsNullOrEmpty(filtering.Filter.StreetNameId))
             {
                 if (int.TryParse(filtering.Filter.StreetNameId, out var streetNameId))
                 {
-                    streetNames = streetNames.Where(x => x.PersistentLocalId == streetNameId);
-                    filterStreet = true;
+                    addressesV2 = addressesV2.Where(x => x.StreetNamePersistentLocalId == streetNameId);
                 }
                 else
                 {
                     // don't bother sending to sql, no results will be returned
-                    return new List<AddressListItemV2>().AsQueryable();
+                    return new List<AddressListViewItemV2>().AsQueryable();
                 }
-            }
-
-            if (filterStreet)
-            {
-                addressesV2 = addressesV2
-                    .Where(x => streetNames
-                        .Select(y => y.PersistentLocalId)
-                        .Contains(x.StreetNamePersistentLocalId));
             }
 
             return addressesV2;

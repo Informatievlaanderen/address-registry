@@ -21,6 +21,9 @@ namespace AddressRegistry.Api.Oslo.Address
         public DbSet<StreetNameLatestItem> StreetNameLatestItems { get; set; }
         public DbSet<Consumer.Read.StreetName.Projections.StreetNameLatestItem> StreetNameConsumerLatestItems { get; set; }
 
+        public DbSet<AddressListViewItem> AddressListView { get; set; }
+        public DbSet<AddressListViewItemV2> AddressListViewV2 { get; set; }
+
         public AddressQueryContext()
         {
             ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;

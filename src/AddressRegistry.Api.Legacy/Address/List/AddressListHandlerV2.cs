@@ -3,9 +3,7 @@ namespace AddressRegistry.Api.Legacy.Address.List
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Address;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
-    using Consumer.Read.Municipality.Projections;
     using Convertors;
     using Infrastructure.Options;
     using MediatR;
@@ -31,59 +29,18 @@ namespace AddressRegistry.Api.Legacy.Address.List
                 .Fetch(request.Filtering, request.Sorting, request.Pagination);
 
             var addressesV2 = await pagedAddressesV2.Items
-                    .Select(a =>
-                    new
-                    {
-                        a.AddressPersistentLocalId,
-                        a.StreetNamePersistentLocalId,
-                        a.HouseNumber,
-                        a.BoxNumber,
-                        a.PostalCode,
-                        a.Status,
-                        a.VersionTimestamp
-                    })
-                    .ToListAsync(cancellationToken);
-
-            var streetNameIdsV2 = addressesV2
-                .Select(x => x.StreetNamePersistentLocalId)
-                .Distinct()
-                .ToList();
-
-            var streetNamesV2 = await _addressQueryContext
-                .StreetNameConsumerLatestItems
-                .Where(x => streetNameIdsV2.Contains(x.PersistentLocalId))
-                .ToListAsync(cancellationToken);
-
-            var nisCodesV2 = streetNamesV2
-                .Select(x => x.NisCode)
-                .Distinct()
-                .ToList();
-
-            var municipalitiesV2 = await _addressQueryContext
-                .MunicipalityConsumerLatestItems
-                .Where(x => nisCodesV2.Contains(x.NisCode))
                 .ToListAsync(cancellationToken);
 
             var addressListItemResponsesV2 = addressesV2
-                .Select(a =>
-                {
-                    var streetName = streetNamesV2.SingleOrDefault(x => x.PersistentLocalId == a.StreetNamePersistentLocalId);
-                    MunicipalityLatestItem? municipality = null;
-                    if (streetName != null)
-                    {
-                        municipality = municipalitiesV2.SingleOrDefault(x => x.NisCode == streetName.NisCode);
-                    }
-
-                    return new AddressListItemResponse(
-                        a.AddressPersistentLocalId,
-                        _responseOptions.Value.Naamruimte,
-                        _responseOptions.Value.DetailUrl,
-                        a.HouseNumber,
-                        a.BoxNumber,
-                        AddressMapper.GetVolledigAdres(a.HouseNumber, a.BoxNumber, a.PostalCode, streetName, municipality),
-                        a.Status.ConvertFromAddressStatus(),
-                        a.VersionTimestamp.ToBelgianDateTimeOffset());
-                })
+                .Select(address => new AddressListItemResponse(
+                    address.AddressPersistentLocalId,
+                    _responseOptions.Value.Naamruimte,
+                    _responseOptions.Value.DetailUrl,
+                    address.HouseNumber,
+                    address.BoxNumber,
+                    AddressMapper.GetVolledigAdres(address),
+                    address.Status.ConvertFromAddressStatus(),
+                    address.VersionTimestampAsInstant.ToBelgianDateTimeOffset()))
                 .ToList();
 
             return new AddressListResponse

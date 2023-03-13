@@ -9,7 +9,7 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch.Asserts
         public AdresMatchCollectieAssertions(AddressMatchOsloCollection subject)
             : base(subject) { }
 
-        public AndWhichConstraint<AdresMatchCollectieAssertions, List<AdresMatchItem>> HaveMatches(int matchCount)
+        public AndWhichConstraint<AdresMatchCollectieAssertions, List<AdresMatchOsloItem>> HaveMatches(int matchCount)
         {
             AssertingThat($"[{matchCount}] match(es) were found");
 

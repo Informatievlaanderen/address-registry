@@ -3,9 +3,9 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch.Asserts
     using AddressRegistry.Api.Oslo.AddressMatch.Responses;
     using FluentAssertions;
 
-    internal class AdresMatchItemGemeenteAssertions : Assertions<AdresMatchItemGemeente, AdresMatchItemGemeenteAssertions>
+    internal class AdresMatchItemGemeenteAssertions : Assertions<AdresMatchOsloItemGemeente, AdresMatchItemGemeenteAssertions>
     {
-        public AdresMatchItemGemeenteAssertions(AdresMatchItemGemeente subject)
+        public AdresMatchItemGemeenteAssertions(AdresMatchOsloItemGemeente subject)
             : base(subject) { }
 
         public AndConstraint<AdresMatchItemGemeenteAssertions> HaveGemeentenaam(string expectedGemeentenaam)

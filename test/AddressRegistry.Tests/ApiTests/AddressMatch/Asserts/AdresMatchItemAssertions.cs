@@ -4,12 +4,12 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch.Asserts
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using FluentAssertions;
 
-    internal class AdresMatchItemAssertions : Assertions<AdresMatchItem, AdresMatchItemAssertions>
+    internal class AdresMatchItemAssertions : Assertions<AdresMatchOsloItem, AdresMatchItemAssertions>
     {
-        public AdresMatchItemAssertions(AdresMatchItem subject)
+        public AdresMatchItemAssertions(AdresMatchOsloItem subject)
             : base(subject) { }
 
-        public AndWhichConstraint<AdresMatchItemAssertions, AdresMatchItemGemeente> HaveGemeente()
+        public AndWhichConstraint<AdresMatchItemAssertions, AdresMatchOsloItemGemeente> HaveGemeente()
         {
             AssertingThat("'Gemeente' is not null");
 
@@ -18,7 +18,7 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch.Asserts
             return AndWhich(Subject.Gemeente);
         }
 
-        public AndWhichConstraint<AdresMatchItemAssertions, AdresMatchItemStraatnaam> HaveStraatnaam()
+        public AndWhichConstraint<AdresMatchItemAssertions, AdresMatchOsloItemStraatnaam> HaveStraatnaam()
         {
             AssertingThat("'Straatnaam' is not null");
 

@@ -29,7 +29,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
         [XmlArrayItem(ElementName = "AdresMatch")]
         [JsonProperty(PropertyName = "AdresMatches")]
         [DataMember(Name = "AdresMatches", Order = 1)]
-        public List<AdresMatchItem> AdresMatches { get; set; }
+        public List<AdresMatchOsloItem> AdresMatches { get; set; }
 
         /// <summary>
         /// Bevat waarschuwingen met betrekking tot conflicterende input.
@@ -38,11 +38,11 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
         [XmlArrayItem(ElementName = "Warning")]
         [JsonProperty(PropertyName = "Warnings")]
         [DataMember(Name = "Warnings", Order = 2)]
-        public List<ValidationMessage> Warnings { get; set; }
+        public List<ValidationOsloMessage> Warnings { get; set; }
     }
 
     [DataContract(Name = "AdresMatch", Namespace = "")]
-    public class AdresMatchItem
+    public class AdresMatchOsloItem
     {
         /// <summary>
         /// De linked-data context van het adres.
@@ -77,21 +77,21 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
         /// </summary>
         [DataMember(Name = "Gemeente", Order = 3, EmitDefaultValue = false)]
         [JsonProperty(Required = Required.Default)]
-        public AdresMatchItemGemeente Gemeente { get; set; }
+        public AdresMatchOsloItemGemeente Gemeente { get; set; }
 
         /// <summary>
         /// De postinfo die deel uitmaakt van het adres.
         /// </summary>
         [DataMember(Name = "Postinfo", Order = 4, EmitDefaultValue = false)]
         [JsonProperty(Required = Required.Default)]
-        public AdresMatchItemPostinfo Postinfo { get; set; }
+        public AdresMatchOsloItemPostinfo Postinfo { get; set; }
 
         /// <summary>
         /// De straatnaam die deel uitmaakt van het adres.
         /// </summary>
         [DataMember(Name = "Straatnaam", Order = 5, EmitDefaultValue = false)]
         [JsonProperty(Required = Required.Default)]
-        public AdresMatchItemStraatnaam Straatnaam { get; set; }
+        public AdresMatchOsloItemStraatnaam Straatnaam { get; set; }
 
         /// <summary>
         /// De homoniemtoevoeging in de eerste officiële taal van de gemeente.
@@ -143,15 +143,6 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
         public bool? OfficieelToegekend { get; set; }
 
         /// <summary>
-        /// De aan het adres gekoppelde objecten.
-        /// </summary>
-        [XmlArray(ElementName = "AdresseerbareObjecten", Order = 15)]
-        [XmlArrayItem(ElementName = "AdresseerbaarObject")]
-        [DataMember(Name = "AdresseerbareObjecten", Order = 15, EmitDefaultValue = false)]
-        [JsonProperty(PropertyName = "AdresseerbareObjecten", Order = 15, DefaultValueHandling = DefaultValueHandling.Ignore, Required = Required.Default)]
-        public List<AdresseerbaarObject> AdresseerbareObjecten { get; set; }
-
-        /// <summary>
         /// De graad van gelijkenis tussen het gevonden adres en de invoer.
         /// </summary>
         [Range(0.0, 100.0)]
@@ -159,11 +150,11 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
         [JsonProperty(Required = Required.Default)]
         public double Score { get; set; }
 
-        public static AdresMatchItem Create(
+        public static AdresMatchOsloItem Create(
             AdresMatchScorableItem scorableItem,
             ResponseOptions responseOptions)
         {
-            return new AdresMatchItem
+            return new AdresMatchOsloItem
             {
                 Context = responseOptions.ContextUrlAddressMatch,
                 Identificator = scorableItem.Identificator,
@@ -178,16 +169,15 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
                 AdresPositie = scorableItem.AdresPositie,
                 VolledigAdres = scorableItem.VolledigAdres,
                 OfficieelToegekend = scorableItem.OfficieelToegekend,
-                Score = scorableItem.Score,
-                AdresseerbareObjecten = new List<AdresseerbaarObject>()
+                Score = scorableItem.Score
             };
         }
 
-        public static AdresMatchItem Create(
+        public static AdresMatchOsloItem Create(
             AddressMatchScoreableItemV2 scoreableItem,
             ResponseOptions responseOptions)
         {
-            return new AdresMatchItem
+            return new AdresMatchOsloItem
             {
                 Context = responseOptions.ContextUrlAddressMatch,
                 Identificator = scoreableItem.Identificator,
@@ -211,7 +201,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
     /// De gemeente die deel uitmaakt van het adres.
     /// </summary>
     [DataContract(Name = "AdresMatchItemGemeente", Namespace = "")]
-    public class AdresMatchItemGemeente
+    public class AdresMatchOsloItemGemeente
     {
         /// <summary>
         /// De objectidentificator van de gekoppelde gemeente.
@@ -239,7 +229,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
     /// De straatnaam die deel uitmaakt van het adres.
     /// </summary>
     [DataContract(Name = "AdresMatchItemStraatnaam", Namespace = "")]
-    public class AdresMatchItemStraatnaam
+    public class AdresMatchOsloItemStraatnaam
     {
         /// <summary>
         /// De objectidentificator van de gekoppelde straatnaam.
@@ -262,8 +252,8 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
         [JsonProperty(Required = Required.DisallowNull)]
         public Straatnaam Straatnaam { get; set; }
 
-        public static AdresMatchItemStraatnaam Create(string objectId, string detail, GeografischeNaam straatnaam) =>
-            new AdresMatchItemStraatnaam
+        public static AdresMatchOsloItemStraatnaam Create(string objectId, string detail, GeografischeNaam straatnaam) =>
+            new AdresMatchOsloItemStraatnaam
             {
                 ObjectId = objectId,
                 Detail = detail,
@@ -275,7 +265,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
     /// De postinfo die deel uitmaakt van het adres.
     /// </summary>
     [DataContract(Name = "AdresMatchItemPostinfo", Namespace = "")]
-    public class AdresMatchItemPostinfo
+    public class AdresMatchOsloItemPostinfo
     {
         /// <summary>
         /// De objectidentificator van de gekoppelde postinfo.
@@ -291,45 +281,12 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
         [JsonProperty(Required = Required.DisallowNull)]
         public string Detail { get; set; }
 
-        public static AdresMatchItemPostinfo Create(string objectId, string detail) =>
-            new AdresMatchItemPostinfo
+        public static AdresMatchOsloItemPostinfo Create(string objectId, string detail) =>
+            new AdresMatchOsloItemPostinfo
             {
                 ObjectId = objectId,
                 Detail = detail,
             };
-    }
-
-    public enum ObjectType
-    {
-        Gebouweenheid,
-        Perceel,
-        Standplaats,
-        Ligplaats
-    }
-
-    [DataContract(Name = "AdresseerbaarObject", Namespace = "")]
-    public class AdresseerbaarObject
-    {
-        /// <summary>
-        /// Het object type van het gerelateerde object.
-        /// </summary>
-        [DataMember(Name = "ObjectType", Order = 1)]
-        [JsonProperty(Required = Required.DisallowNull)]
-        public ObjectType ObjectType { get; set; }
-
-        /// <summary>
-        /// De identificator van het gekoppelde object.
-        /// </summary>
-        [DataMember(Name = "ObjectId", Order = 2)]
-        [JsonProperty(Required = Required.DisallowNull)]
-        public string ObjectId { get; set; }
-
-        /// <summary>
-        /// De URL die de details van de meest recente versie van het gekoppelde object weergeeft.
-        /// </summary>
-        [DataMember(Name = "Detail", Order = 3)]
-        [JsonProperty(Required = Required.DisallowNull)]
-        public string Detail { get; set; }
     }
 
     public class AddressMatchResponseExamples : IExamplesProvider<AddressMatchOsloCollection>
@@ -346,20 +303,20 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
 
             return new AddressMatchOsloCollection
             {
-                AdresMatches = new List<AdresMatchItem>
+                AdresMatches = new List<AdresMatchOsloItem>
                 {
-                    new AdresMatchItem
+                    new AdresMatchOsloItem
                     {
                         Identificator = new AdresIdentificator(_options.Naamruimte, "36416228", DateTimeOffset.Now.ToExampleOffset()),
                         Detail = string.Format(_options.DetailUrl, "36416228"),
-                        Gemeente = new AdresMatchItemGemeente
+                        Gemeente = new AdresMatchOsloItemGemeente
                         {
                             ObjectId = "44021",
                             Detail = string.Format(_options.GemeenteDetailUrl, "44021"),
                             Gemeentenaam =  new Gemeentenaam(new GeografischeNaam("Gent", Taal.NL))
                         },
-                        Straatnaam = AdresMatchItemStraatnaam.Create("69499", string.Format(_options.StraatnaamDetailUrl, "69499"), new GeografischeNaam("Aalbessenlaan", Taal.NL)),
-                        Postinfo = AdresMatchItemPostinfo.Create("9032", string.Format(_options.PostInfoDetailUrl, "9032")),
+                        Straatnaam = AdresMatchOsloItemStraatnaam.Create("69499", string.Format(_options.StraatnaamDetailUrl, "69499"), new GeografischeNaam("Aalbessenlaan", Taal.NL)),
+                        Postinfo = AdresMatchOsloItemPostinfo.Create("9032", string.Format(_options.PostInfoDetailUrl, "9032")),
                         Huisnummer = "14",
                         Busnummer = null,
 
@@ -370,14 +327,13 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
 
                         VolledigAdres = new VolledigAdres(new GeografischeNaam("Aalbessenlaan 14, 9032 Gent", Taal.NL)),
                         AdresStatus = AdresStatus.InGebruik,
-                        AdresseerbareObjecten = new List<AdresseerbaarObject>(),
                         OfficieelToegekend = false,
                         Score = 89.3
                     }
                 },
-                Warnings = new List<ValidationMessage>
+                Warnings = new List<ValidationOsloMessage>
                 {
-                    new ValidationMessage { Code="4", Message = "Onbekende 'Postcode'." }
+                    new ValidationOsloMessage { Code="4", Message = "Onbekende 'Postcode'." }
                 }
             };
         }

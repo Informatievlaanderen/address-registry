@@ -8,13 +8,13 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch.Asserts
         public static AdresMatchCollectieAssertions Should(this AddressMatchOsloCollection subject)
             => new AdresMatchCollectieAssertions(subject);
 
-        public static AdresMatchItemAssertions Should(this AdresMatchItem subject)
+        public static AdresMatchItemAssertions Should(this AdresMatchOsloItem subject)
             => new AdresMatchItemAssertions(subject);
 
-        public static AdresMatchItemGemeenteAssertions Should(this AdresMatchItemGemeente subject)
+        public static AdresMatchItemGemeenteAssertions Should(this AdresMatchOsloItemGemeente subject)
             => new AdresMatchItemGemeenteAssertions(subject);
 
-        public static AdresMatchItemStraatnaamAssertions Should(this AdresMatchItemStraatnaam subject)
+        public static AdresMatchItemStraatnaamAssertions Should(this AdresMatchOsloItemStraatnaam subject)
             => new AdresMatchItemStraatnaamAssertions(subject);
 
         public static VolledigAdresAssertions Should(this VolledigAdres subject)

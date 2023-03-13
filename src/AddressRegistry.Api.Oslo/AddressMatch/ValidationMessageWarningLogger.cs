@@ -5,21 +5,21 @@ namespace AddressRegistry.Api.Oslo.AddressMatch
 
     internal class ValidationMessageWarningLogger : IWarningLogger
     {
-        public List<ValidationMessage> Warnings { get; }
+        public List<ValidationOsloMessage> Warnings { get; }
 
         public ValidationMessageWarningLogger()
         {
-            Warnings = new List<ValidationMessage>();
+            Warnings = new List<ValidationOsloMessage>();
         }
 
-        public void AddWarning(string code, string message) => Warnings.Add(new ValidationMessage { Code = code, Message = message });
+        public void AddWarning(string code, string message) => Warnings.Add(new ValidationOsloMessage { Code = code, Message = message });
     }
 
     /// <summary>
     /// contains a warning message in dutch and english
     /// </summary>
     [DataContract(Name = "Warning", Namespace = "")]
-    public class ValidationMessage
+    public class ValidationOsloMessage
     {
         /// <summary>
         /// Code van de warning.

@@ -34,20 +34,20 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V1
                 AddressId = source.AddressId,
                 Identificator = new AdresIdentificator(_responseOptions.Naamruimte, source.PersistentLocalId.ToString(), source.VersionTimestamp.ToBelgianDateTimeOffset()),
                 Detail = string.Format(_responseOptions.DetailUrl, source.PersistentLocalId.Value.ToString()),
-                Gemeente = new AdresMatchItemGemeente
+                Gemeente = new AdresMatchOsloItemGemeente
                 {
                     ObjectId = municipality.NisCode,
                     Detail = string.Format(_responseOptions.GemeenteDetailUrl, municipality.NisCode),
                     Gemeentenaam = new Gemeentenaam(new GeografischeNaam(municipality.DefaultName.Value, municipality.DefaultName.Key))
                 },
-                Straatnaam = new AdresMatchItemStraatnaam
+                Straatnaam = new AdresMatchOsloItemStraatnaam
                 {
                     ObjectId = streetName.PersistentLocalId,
                     Detail = string.Format(_responseOptions.StraatnaamDetailUrl, streetName.PersistentLocalId),
                     Straatnaam = new Straatnaam(new GeografischeNaam(defaultStreetName.Value, defaultStreetName.Key)),
                 },
                 HomoniemToevoeging = homonym == null ? null : new HomoniemToevoeging(new GeografischeNaam(homonym.Value.Value, homonym.Value.Key)),
-                Postinfo = new AdresMatchItemPostinfo
+                Postinfo = new AdresMatchOsloItemPostinfo
                 {
                     ObjectId = source.PostalCode,
                     Detail = string.Format(_responseOptions.PostInfoDetailUrl, source.PostalCode),

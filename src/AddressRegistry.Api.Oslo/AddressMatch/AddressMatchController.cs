@@ -26,6 +26,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch
         }
 
         [HttpGet]
+        [Produces(AcceptTypes.JsonLd)]
         [ProducesResponseType(typeof(AddressMatchCollection), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]

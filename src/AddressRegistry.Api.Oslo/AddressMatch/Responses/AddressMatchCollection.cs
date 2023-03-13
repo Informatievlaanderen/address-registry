@@ -16,9 +16,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
     using Swashbuckle.AspNetCore.Filters;
-    using V1;
     using V1.Matching;
-    using V2;
     using V2.Matching;
 
     [DataContract(Name = "AdresMatchCollectie", Namespace = "")]
@@ -46,6 +44,20 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
     [DataContract(Name = "AdresMatch", Namespace = "")]
     public class AdresMatchItem
     {
+        /// <summary>
+        /// De linked-data context van het adres.
+        /// </summary>
+        [DataMember(Name = "@context", Order = 0)]
+        [JsonProperty(Required = Required.DisallowNull)]
+        public string Context { get; set; }
+
+        /// <summary>
+        /// Het linked-data type van het adres.
+        /// </summary>
+        [DataMember(Name = "@type", Order = 1)]
+        [JsonProperty(Required = Required.DisallowNull)]
+        public string Type => "Adres";
+
         /// <summary>
         /// De identificator van het adres.
         /// </summary>
@@ -149,11 +161,11 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
 
         public static AdresMatchItem Create(
             AdresMatchScorableItem scorableItem,
-            AddressMatchContext addressMatchContext,
             ResponseOptions responseOptions)
         {
             return new AdresMatchItem
             {
+                Context = responseOptions.ContextUrlAddressMatch,
                 Identificator = scorableItem.Identificator,
                 Detail = scorableItem.Detail,
                 Gemeente = scorableItem.Gemeente,
@@ -173,11 +185,11 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
 
         public static AdresMatchItem Create(
             AddressMatchScoreableItemV2 scoreableItem,
-            AddressMatchContextV2 addressMatchContext,
             ResponseOptions responseOptions)
         {
             return new AdresMatchItem
             {
+                Context = responseOptions.ContextUrlAddressMatch,
                 Identificator = scoreableItem.Identificator,
                 Detail = scoreableItem.Detail,
                 Gemeente = scoreableItem.Gemeente,

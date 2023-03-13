@@ -3,9 +3,9 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch.Asserts
     using AddressRegistry.Api.Oslo.AddressMatch.Responses;
     using FluentAssertions;
 
-    internal class AdresMatchItemStraatnaamAssertions : Assertions<AdresMatchItemStraatnaam, AdresMatchItemStraatnaamAssertions>
+    internal class AdresMatchItemStraatnaamAssertions : Assertions<AdresMatchOsloItemStraatnaam, AdresMatchItemStraatnaamAssertions>
     {
-        public AdresMatchItemStraatnaamAssertions(AdresMatchItemStraatnaam subject)
+        public AdresMatchItemStraatnaamAssertions(AdresMatchOsloItemStraatnaam subject)
             : base(subject) { }
 
         public AndConstraint<AdresMatchItemStraatnaamAssertions> HaveStraatnaam(string straatnaam)

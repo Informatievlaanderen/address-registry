@@ -49,7 +49,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V1
                 .OrderByDescending(x => x.Score)
                 .ThenBy(x => x.ScoreableProperty)
                 .Take(maxNumberOfResults)
-                .Select(x => AdresMatchItem.Create(x, _responseOptions.Value))
+                .Select(x => AdresMatchOsloItem.Create(x, _responseOptions.Value))
                 .ToList();
 
             return Task.FromResult(new AddressMatchOsloCollection

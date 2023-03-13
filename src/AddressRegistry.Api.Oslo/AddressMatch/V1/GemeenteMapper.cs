@@ -19,7 +19,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V1
         public AdresMatchScorableItem Map(MunicipalityLatestItem source) =>
             new AdresMatchScorableItem
             {
-                Gemeente = new AdresMatchItemGemeente
+                Gemeente = new AdresMatchOsloItemGemeente
                 {
                     ObjectId = source.NisCode,
                     Detail = string.Format(_responseOptions.GemeenteDetailUrl, source.NisCode),

@@ -28,13 +28,13 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
 
             return new AddressMatchScoreableItemV2
             {
-                Gemeente = new AdresMatchItemGemeente
+                Gemeente = new AdresMatchOsloItemGemeente
                 {
                     ObjectId = source.NisCode,
                     Detail = string.Format(_responseOptions.GemeenteDetailUrl, source.NisCode),
                     Gemeentenaam = new Gemeentenaam(new GeografischeNaam(municipality.DefaultName.Value, municipality.DefaultName.Key))
                 },
-                Straatnaam = new AdresMatchItemStraatnaam
+                Straatnaam = new AdresMatchOsloItemStraatnaam
                 {
                     ObjectId = source.PersistentLocalId.ToString(),
                     Detail = string.Format(_responseOptions.StraatnaamDetailUrl, source.PersistentLocalId),

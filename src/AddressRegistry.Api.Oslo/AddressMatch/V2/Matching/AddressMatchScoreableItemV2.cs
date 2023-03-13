@@ -12,9 +12,9 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
         public int AddressPersistentLocalId { get; set; }
         public AdresIdentificator Identificator { get; set; }
         public string Detail { get; set; }
-        public AdresMatchItemGemeente Gemeente { get; set; }
-        public AdresMatchItemPostinfo Postinfo { get; set; }
-        public AdresMatchItemStraatnaam Straatnaam { get; set; }
+        public AdresMatchOsloItemGemeente Gemeente { get; set; }
+        public AdresMatchOsloItemPostinfo Postinfo { get; set; }
+        public AdresMatchOsloItemStraatnaam Straatnaam { get; set; }
         public HomoniemToevoeging HomoniemToevoeging { get; set; }
         public string Huisnummer { get; set; }
         public string Busnummer { get; set; }

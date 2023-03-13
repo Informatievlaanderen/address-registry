@@ -23,6 +23,13 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
     public class AddressMatchOsloCollection
     {
         /// <summary>
+        /// De linked-data context van het adres.
+        /// </summary>
+        [DataMember(Name = "@context", Order = 0)]
+        [JsonProperty(Required = Required.DisallowNull)]
+        public string Context { get; set; }
+
+        /// <summary>
         /// De 10 adresmatches met de hoogste score (gesorteerd van hoog naar laag).
         /// </summary>
         [XmlArray(ElementName = "AdresMatches")]
@@ -44,13 +51,6 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
     [DataContract(Name = "AdresMatch", Namespace = "")]
     public class AdresMatchOsloItem
     {
-        /// <summary>
-        /// De linked-data context van het adres.
-        /// </summary>
-        [DataMember(Name = "@context", Order = 0)]
-        [JsonProperty(Required = Required.DisallowNull)]
-        public string Context { get; set; }
-
         /// <summary>
         /// Het linked-data type van het adres.
         /// </summary>
@@ -150,13 +150,10 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
         [JsonProperty(Required = Required.Default)]
         public double Score { get; set; }
 
-        public static AdresMatchOsloItem Create(
-            AdresMatchScorableItem scorableItem,
-            ResponseOptions responseOptions)
+        public static AdresMatchOsloItem Create(AdresMatchScorableItem scorableItem)
         {
             return new AdresMatchOsloItem
             {
-                Context = responseOptions.ContextUrlAddressMatch,
                 Identificator = scorableItem.Identificator,
                 Detail = scorableItem.Detail,
                 Gemeente = scorableItem.Gemeente,
@@ -173,13 +170,10 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
             };
         }
 
-        public static AdresMatchOsloItem Create(
-            AddressMatchScoreableItemV2 scoreableItem,
-            ResponseOptions responseOptions)
+        public static AdresMatchOsloItem Create(AddressMatchScoreableItemV2 scoreableItem)
         {
             return new AdresMatchOsloItem
             {
-                Context = responseOptions.ContextUrlAddressMatch,
                 Identificator = scoreableItem.Identificator,
                 Detail = scoreableItem.Detail,
                 Gemeente = scoreableItem.Gemeente,
@@ -303,6 +297,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
 
             return new AddressMatchOsloCollection
             {
+                Context = _options.ContextUrlAddressMatch,
                 AdresMatches = new List<AdresMatchOsloItem>
                 {
                     new AdresMatchOsloItem

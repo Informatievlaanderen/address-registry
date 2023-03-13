@@ -25,18 +25,15 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
 
     public class AddressMatchTests : AddressMatchTestBase
     {
-        private readonly AddressMatchContextMemory _addresMatchContext;
         private readonly Mock<ILatestQueries> _latestQueries;
         private readonly AddressMatchHandler _handler;
 
         public AddressMatchTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            _addresMatchContext = new AddressMatchContextMemory();
             _latestQueries = new Mock<ILatestQueries>();
             _handler = new AddressMatchHandler(
                 Mock.Of<IKadRrService>(),
                 _latestQueries.Object,
-                _addresMatchContext,
                 new OptionsWrapper<ResponseOptions>(new ResponseOptions
                 {
                     DetailUrl = "detail/{0}",

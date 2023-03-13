@@ -42,11 +42,12 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
                 .OrderByDescending(x => x.Score)
                 .ThenBy(x => x.ScoreableProperty)
                 .Take(maxNumberOfResults)
-                .Select(x => AdresMatchOsloItem.Create(x, _responseOptions.Value))
+                .Select(AdresMatchOsloItem.Create)
                 .ToList();
 
             return Task.FromResult(new AddressMatchOsloCollection
             {
+                Context = _responseOptions.Value.ContextUrlAddressMatch,
                 AdresMatches = result,
                 Warnings = warningLogger.Warnings
             });

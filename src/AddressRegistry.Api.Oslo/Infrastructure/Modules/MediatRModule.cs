@@ -97,7 +97,6 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
                     new AddressMatchHandler(
                         c.Resolve<IKadRrService>(),
                         c.Resolve<AddressMatch.V1.Matching.ILatestQueries>(),
-                        c.Resolve<AddressMatchContext>(),
                         c.Resolve<IOptions<ResponseOptions>>());
 
             }).InstancePerLifetimeScope();

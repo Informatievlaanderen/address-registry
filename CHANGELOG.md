@@ -1,3 +1,12 @@
+# [3.79.0](https://github.com/informatievlaanderen/address-registry/compare/v3.78.0...v3.79.0) (2023-03-13)
+
+
+### Features
+
+* add address match v2 ([853b367](https://github.com/informatievlaanderen/address-registry/commit/853b36791a6545e1a1f8ff7cf551a29db301cbcb))
+* add addressmatch to oslo ([b4c2d28](https://github.com/informatievlaanderen/address-registry/commit/b4c2d28f1a902dfd9dd7c4794e660f3c6d8f587d))
+* copy addressmatch tests & refactor namespaces ([9beb4ab](https://github.com/informatievlaanderen/address-registry/commit/9beb4ab75c5edd6e0378cdec38b0eca12cab0a36))
+
 # [3.78.0](https://github.com/informatievlaanderen/address-registry/compare/v3.77.3...v3.78.0) (2023-03-08)
 
 

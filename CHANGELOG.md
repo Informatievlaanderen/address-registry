@@ -1,3 +1,10 @@
+## [3.79.2](https://github.com/informatievlaanderen/address-registry/compare/v3.79.1...v3.79.2) (2023-03-13)
+
+
+### Bug Fixes
+
+* rename AddressMatchCollection to AddressMatchOsloCollection ([3b6ceae](https://github.com/informatievlaanderen/address-registry/commit/3b6ceae4730cb2ef295bfc4ba579dfbc28e4eab4))
+
 ## [3.79.1](https://github.com/informatievlaanderen/address-registry/compare/v3.79.0...v3.79.1) (2023-03-13)
 
 

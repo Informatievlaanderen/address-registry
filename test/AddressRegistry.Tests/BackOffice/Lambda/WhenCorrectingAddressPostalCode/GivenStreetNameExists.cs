@@ -125,6 +125,51 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
         }
 
         [Fact]
+        public async Task WhenAddressHasBoxNumber_ThenTicketingErrorIsExpected()
+        {
+            // Arrange
+            var ticketing = new Mock<ITicketing>();
+            var nisCode = Fixture.Create<NisCode>();
+            var municipalityId = Fixture.Create<MunicipalityId>();
+            var postalCode = "9000";
+
+            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem { PostalCode = postalCode, NisCode = nisCode });
+            await _syndicationContext.SaveChangesAsync();
+
+            _municipalityContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem { MunicipalityId = municipalityId, NisCode = nisCode });
+            await _municipalityContext.SaveChangesAsync();
+
+            var sut = new CorrectAddressPostalCodeLambdaHandler(
+                Container.Resolve<IConfiguration>(),
+                new FakeRetryPolicy(),
+                ticketing.Object,
+                Mock.Of<IStreetNames>(),
+                MockExceptionIdempotentCommandHandler<AddressHasBoxNumberException>().Object,
+                _syndicationContext,
+                _municipalityContext);
+
+            // Act
+            await sut.Handle(new CorrectAddressPostalCodeLambdaRequest(
+                Fixture.Create<int>().ToString(),
+                new CorrectAddressPostalCodeSqsRequest
+                {
+                    Request = new CorrectAddressPostalCodeRequest { PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postalCode}" },
+                    TicketId = Guid.NewGuid(),
+                    Metadata = new Dictionary<string, object?>(),
+                    ProvenanceData = Fixture.Create<ProvenanceData>()
+                }), CancellationToken.None);
+
+            //Assert
+            ticketing.Verify(x =>
+                x.Error(
+                    It.IsAny<Guid>(),
+                    new TicketError(
+                        "Het is niet mogelijk om de postcode van een busnummer te veranderen.",
+                        "AdresPostinfoGeenHuisnummer"),
+                    CancellationToken.None));
+        }
+
+        [Fact]
         public async Task WhenAddressHasInvalidStatus_ThenTicketingErrorIsExpected()
         {
             // Arrange

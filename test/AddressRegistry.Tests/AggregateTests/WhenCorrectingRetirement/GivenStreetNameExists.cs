@@ -111,7 +111,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRetirement
         }
 
         [Fact]
-        public void WhenParentHouseNumberIsInConsistent_ThenThrowsAddressBoxNumberHasInconsistentHouseNumberException()
+        public void WhenParentHouseNumberIsInConsistent_ThenThrowsBoxNumberHouseNumberDoesNotMatchParentHouseNumberException()
         {
             var command = new CorrectAddressRetirement(
                 Fixture.Create<StreetNamePersistentLocalId>(),
@@ -155,11 +155,11 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRetirement
                     parentAddressWasMigratedToStreetName,
                     addressWasMigratedToStreetName)
                 .When(command)
-                .Throws(new AddressBoxNumberHasInconsistentHouseNumberException()));
+                .Throws(new BoxNumberHouseNumberDoesNotMatchParentHouseNumberException()));
         }
 
         [Fact]
-        public void WhenParentPostalCodeIsInconsistent_ThenThrowsAddressBoxNumberHasInconsistentPostalCodeException()
+        public void WhenParentPostalCodeIsInconsistent_ThenThrowsBoxNumberPostalCodeDoesNotMatchHouseNumberPostalCodeException()
         {
             var command = new CorrectAddressRetirement(
                 Fixture.Create<StreetNamePersistentLocalId>(),
@@ -203,7 +203,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRetirement
                     parentAddressWasMigratedToStreetName,
                     addressWasMigratedToStreetName)
                 .When(command)
-                .Throws(new AddressBoxNumberHasInconsistentPostalCodeException()));
+                .Throws(new BoxNumberPostalCodeDoesNotMatchHouseNumberPostalCodeException()));
         }
 
         [Theory]

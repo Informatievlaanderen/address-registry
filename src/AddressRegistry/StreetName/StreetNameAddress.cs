@@ -304,6 +304,11 @@ namespace AddressRegistry.StreetName
         {
             GuardNotRemovedAddress();
 
+            if (IsBoxNumberAddress)
+            {
+                throw new AddressHasBoxNumberException();
+            }
+
             var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
             GuardAddressStatus(validStatuses);
 
@@ -334,9 +339,9 @@ namespace AddressRegistry.StreetName
 
             guardHouseNumberAddressIsUnique();
 
-            if (BoxNumber is not null)
+            if (IsBoxNumberAddress)
             {
-                throw new HouseNumberToCorrectHasBoxNumberException();
+                throw new AddressHasBoxNumberException();
             }
 
             if (HouseNumber == houseNumber)
@@ -427,12 +432,12 @@ namespace AddressRegistry.StreetName
 
             if (Parent is not null && Parent.HouseNumber != HouseNumber)
             {
-                throw new AddressBoxNumberHasInconsistentHouseNumberException();
+                throw new BoxNumberHouseNumberDoesNotMatchParentHouseNumberException();
             }
 
             if (Parent is not null && Parent.PostalCode != PostalCode)
             {
-                throw new AddressBoxNumberHasInconsistentPostalCodeException();
+                throw new BoxNumberPostalCodeDoesNotMatchHouseNumberPostalCodeException();
             }
 
             if (Status == AddressStatus.Proposed)
@@ -453,12 +458,12 @@ namespace AddressRegistry.StreetName
 
             if (Parent is not null && Parent.HouseNumber != HouseNumber)
             {
-                throw new AddressBoxNumberHasInconsistentHouseNumberException();
+                throw new BoxNumberHouseNumberDoesNotMatchParentHouseNumberException();
             }
 
             if (Parent is not null && Parent.PostalCode != PostalCode)
             {
-                throw new AddressBoxNumberHasInconsistentPostalCodeException();
+                throw new BoxNumberPostalCodeDoesNotMatchHouseNumberPostalCodeException();
             }
 
             if (Status == AddressStatus.Current)
@@ -527,6 +532,11 @@ namespace AddressRegistry.StreetName
         public void ChangePostalCode(PostalCode postalCode)
         {
             GuardNotRemovedAddress();
+
+            if (IsBoxNumberAddress)
+            {
+                throw new AddressHasBoxNumberException();
+            }
 
             var validStatuses = new[] { AddressStatus.Proposed, AddressStatus.Current };
             GuardAddressStatus(validStatuses);

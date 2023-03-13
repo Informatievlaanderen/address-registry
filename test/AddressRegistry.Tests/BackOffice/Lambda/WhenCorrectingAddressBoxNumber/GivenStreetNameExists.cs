@@ -50,6 +50,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressBoxNumber
             var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
             var parentAddressPersistentLocalId = new AddressPersistentLocalId(456);
             var childAddressPersistentLocalId = new AddressPersistentLocalId(789);
+            var postalCode = Fixture.Create<PostalCode>();
 
             ImportMigratedStreetName(
                 new StreetNameId(Guid.NewGuid()),
@@ -59,7 +60,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressBoxNumber
             ProposeAddress(
                 streetNamePersistentLocalId,
                 parentAddressPersistentLocalId,
-                Fixture.Create<PostalCode>(),
+                postalCode,
                 Fixture.Create<MunicipalityId>(),
                 new HouseNumber("11"),
                 null);
@@ -67,7 +68,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressBoxNumber
             ProposeAddress(
                 streetNamePersistentLocalId,
                 childAddressPersistentLocalId,
-                Fixture.Create<PostalCode>(),
+                postalCode,
                 Fixture.Create<MunicipalityId>(),
                 new HouseNumber("11"),
                 new BoxNumber("1A"));

@@ -63,6 +63,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 AddressHasInvalidStatusException => new TicketError(
                     ValidationErrors.Common.PostalCode.CannotBeChanged.Message,
                     ValidationErrors.Common.PostalCode.CannotBeChanged.Code),
+
+                AddressHasBoxNumberException => ValidationErrors.ChangeAddressPostalCode.AddressHasBoxNumber.ToTicketError(),
                 _ => null
             };
         }

@@ -68,7 +68,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 HouseNumberHasInvalidFormatException => new TicketError(
                     ValidationErrors.Common.HouseNumberInvalidFormat.Message,
                     ValidationErrors.Common.HouseNumberInvalidFormat.Code),
-                HouseNumberToCorrectHasBoxNumberException => new TicketError(
+                AddressHasBoxNumberException => new TicketError(
                     ValidationErrors.CorrectHouseNumber.HouseNumberOfBoxNumberCannotBeChanged.Message,
                     ValidationErrors.CorrectHouseNumber.HouseNumberOfBoxNumberCannotBeChanged.Code),
                 _ => null

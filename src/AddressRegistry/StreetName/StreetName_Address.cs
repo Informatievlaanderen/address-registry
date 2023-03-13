@@ -109,6 +109,11 @@
                 throw new AddressAlreadyExistsException(houseNumber, boxNumber!);
             }
 
+            if (isChild && parent.PostalCode != postalCode)
+            {
+                throw new BoxNumberPostalCodeDoesNotMatchHouseNumberPostalCodeException();
+            }
+
             StreetNameAddress.GuardGeometry(geometryMethod, geometrySpecification);
 
             ApplyChange(new AddressWasProposedV2(

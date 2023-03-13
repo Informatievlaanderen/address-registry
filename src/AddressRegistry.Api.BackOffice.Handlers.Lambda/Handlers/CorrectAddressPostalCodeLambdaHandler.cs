@@ -92,6 +92,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException => new TicketError(
                     ValidationErrors.Common.PostalCode.PostalCodeNotInMunicipality.Message,
                     ValidationErrors.Common.PostalCode.PostalCodeNotInMunicipality.Code),
+                AddressHasBoxNumberException => ValidationErrors.CorrectAddressPostalCode.AddressHasBoxNumber.ToTicketError(),
                 _ => null
             };
         }

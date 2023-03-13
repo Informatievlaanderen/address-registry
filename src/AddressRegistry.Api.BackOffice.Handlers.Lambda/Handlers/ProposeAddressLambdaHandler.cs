@@ -115,6 +115,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 AddressHasInvalidGeometrySpecificationException => new TicketError(
                     ValidationErrors.Common.PositionSpecification.Invalid.Message,
                     ValidationErrors.Common.PositionSpecification.Invalid.Code),
+                BoxNumberPostalCodeDoesNotMatchHouseNumberPostalCodeException =>
+                    ValidationErrors.Propose.BoxNumberPostalCodeDoesNotMatchHouseNumberPostalCode.ToTicketError(),
                 _ => null
             };
         }

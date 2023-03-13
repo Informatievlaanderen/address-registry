@@ -203,7 +203,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
                 new FakeRetryPolicy(),
                 ticketing.Object,
                 Mock.Of<IStreetNames>(),
-                MockExceptionIdempotentCommandHandler<AddressBoxNumberHasInconsistentHouseNumberException>().Object);
+                MockExceptionIdempotentCommandHandler<BoxNumberHouseNumberDoesNotMatchParentHouseNumberException>().Object);
 
             // Act
             await sut.Handle(new CorrectAddressRejectionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressRejectionSqsRequest
@@ -235,7 +235,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
                 new FakeRetryPolicy(),
                 ticketing.Object,
                 Mock.Of<IStreetNames>(),
-                MockExceptionIdempotentCommandHandler<AddressBoxNumberHasInconsistentPostalCodeException>().Object);
+                MockExceptionIdempotentCommandHandler<BoxNumberPostalCodeDoesNotMatchHouseNumberPostalCodeException>().Object);
 
             // Act
             await sut.Handle(new CorrectAddressRejectionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressRejectionSqsRequest

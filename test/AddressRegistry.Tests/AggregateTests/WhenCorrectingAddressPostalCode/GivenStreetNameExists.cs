@@ -139,6 +139,33 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressPostalCode
                 .Throws(new AddressIsRemovedException(Fixture.Create<AddressPersistentLocalId>())));
         }
 
+        [Fact]
+        public void WithAddressHasBoxNumber_ThenThrowsAddresHasBoxNumberException()
+        {
+            var parentAddressPersistentLocalId = new AddressPersistentLocalId(1);
+            var childAddressPersistentLocalId = new AddressPersistentLocalId(2);
+            var parentAddressWasMigrated = CreateAddressWasMigratedToStreetName(parentAddressPersistentLocalId);
+            var childAddressWasMigrated = CreateAddressWasMigratedToStreetName(
+                childAddressPersistentLocalId,
+                houseNumber: new HouseNumber(parentAddressWasMigrated.HouseNumber),
+                parentAddressPersistentLocalId: parentAddressPersistentLocalId);
+
+            var command = new CorrectAddressPostalCode(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                childAddressPersistentLocalId,
+                Fixture.Create<PostalCode>(),
+                Fixture.Create<MunicipalityId>(),
+                Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    Fixture.Create<StreetNameWasImported>(),
+                    parentAddressWasMigrated,
+                    childAddressWasMigrated)
+                .When(command)
+                .Throws(new AddressHasBoxNumberException()));
+        }
+
         [Theory]
         [InlineData(StreetNameStatus.Rejected)]
         [InlineData(StreetNameStatus.Retired)]

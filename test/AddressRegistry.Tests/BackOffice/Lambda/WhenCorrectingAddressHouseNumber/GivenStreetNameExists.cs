@@ -194,7 +194,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
                 new FakeRetryPolicy(),
                 ticketing.Object,
                 Mock.Of<IStreetNames>(),
-                MockExceptionIdempotentCommandHandler<HouseNumberToCorrectHasBoxNumberException>().Object);
+                MockExceptionIdempotentCommandHandler<AddressHasBoxNumberException>().Object);
 
             // Act
             await sut.Handle(new CorrectAddressHouseNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressHouseNumberSqsRequest()

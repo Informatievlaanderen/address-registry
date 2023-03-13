@@ -35,12 +35,13 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
         public void WithExistingParent_ThenAddressWasProposed()
         {
             var houseNumber = Fixture.Create<HouseNumber>();
+            var postalCode = Fixture.Create<PostalCode>();
 
             var parentAddressWasProposed = new AddressWasProposedV2(
                 Fixture.Create<StreetNamePersistentLocalId>(),
                 Fixture.Create<AddressPersistentLocalId>(),
                 parentPersistentLocalId: null,
-                Fixture.Create<PostalCode>(),
+                postalCode,
                 houseNumber,
                 boxNumber: null,
                 GeometryMethod.AppointedByAdministrator,
@@ -50,7 +51,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
 
             var proposeChildAddress = new ProposeAddress(
                 Fixture.Create<StreetNamePersistentLocalId>(),
-                Fixture.Create<PostalCode>(),
+                postalCode,
                 Fixture.Create<MunicipalityId>(),
                 Fixture.Create<AddressPersistentLocalId>(),
                 houseNumber,
@@ -79,7 +80,6 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                             GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry()))));
         }
 
-
         [Fact]
         public void WithExistingParent_ThenChildAddressWasAddedToStreetNameAddresses()
         {
@@ -101,7 +101,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 Fixture.Create<StreetNamePersistentLocalId>(),
                 Fixture.Create<AddressPersistentLocalId>(),
                 parentPersistentLocalId: null,
-                Fixture.Create<PostalCode>(),
+                postalCode,
                 houseNumber,
                 boxNumber: null,
                 geometryMethod,
@@ -415,6 +415,43 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                     Fixture.Create<StreetNameWasImported>())
                 .When(command)
                 .Throws(new AddressHasInvalidGeometrySpecificationException()));
+        }
+
+        [Fact]
+        public void WithBoxNumberPostalCodeDoesNotMatchHouseNumberPostalCode_ThenThrowsBoxNumberPostalCodeDoesNotMatchHouseNumberPostalCodeException()
+        {
+            var houseNumber = Fixture.Create<HouseNumber>();
+
+            var parentAddressWasProposed = new AddressWasProposedV2(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<AddressPersistentLocalId>(),
+                parentPersistentLocalId: null,
+                new PostalCode("9000"),
+                houseNumber,
+                boxNumber: null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
+            ((ISetProvenance)parentAddressWasProposed).SetProvenance(Fixture.Create<Provenance>());
+
+            var proposeChildAddress = new ProposeAddress(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                new PostalCode("9820"),
+                Fixture.Create<MunicipalityId>(),
+                Fixture.Create<AddressPersistentLocalId>(),
+                houseNumber,
+                new BoxNumber("1A"),
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
+                Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    Fixture.Create<MigratedStreetNameWasImported>(),
+                    parentAddressWasProposed)
+                .When(proposeChildAddress)
+                .Throws(new BoxNumberPostalCodeDoesNotMatchHouseNumberPostalCodeException()));
         }
     }
 }

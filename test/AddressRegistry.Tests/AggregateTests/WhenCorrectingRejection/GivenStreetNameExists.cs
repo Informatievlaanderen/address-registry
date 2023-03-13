@@ -147,7 +147,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRejection
         }
 
         [Fact]
-        public void WhenParentHouseNumberIsInconsistent_ThenThrowsAddressBoxNumberHasInconsistentHouseNumberException()
+        public void WhenParentHouseNumberIsInconsistent_ThenThrowsBoxNumberHouseNumberDoesNotMatchParentHouseNumberException()
         {
             var command = new CorrectAddressRejection(
                 Fixture.Create<StreetNamePersistentLocalId>(),
@@ -187,12 +187,12 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRejection
                     addressWasProposedV2,
                     addressWasMigratedToStreetName)
                 .When(command)
-                .Throws(new AddressBoxNumberHasInconsistentHouseNumberException()));
+                .Throws(new BoxNumberHouseNumberDoesNotMatchParentHouseNumberException()));
         }
 
 
         [Fact]
-        public void WhenParentPostalCodeIsInconsistent_ThenThrowsAddressBoxNumberHasInconsistentPostalCodeException()
+        public void WhenParentPostalCodeIsInconsistent_ThenThrowsBoxNumberPostalCodeDoesNotMatchHouseNumberPostalCodeException()
         {
             var command = new CorrectAddressRejection(
                 Fixture.Create<StreetNamePersistentLocalId>(),
@@ -232,7 +232,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRejection
                     addressWasProposedV2,
                     addressWasMigratedToStreetName)
                 .When(command)
-                .Throws(new AddressBoxNumberHasInconsistentPostalCodeException()));
+                .Throws(new BoxNumberPostalCodeDoesNotMatchHouseNumberPostalCodeException()));
         }
 
         [Theory]

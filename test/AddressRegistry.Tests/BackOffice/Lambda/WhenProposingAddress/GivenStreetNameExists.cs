@@ -88,7 +88,6 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             var nisCode = Fixture.Create<NisCode>();
             var postInfoId = Fixture.Create<PostalCode>();
             var houseNumber = Fixture.Create<HouseNumber>();
-            var boxNumber = Fixture.Create<BoxNumber>();
             var provenanceData = Fixture.Create<ProvenanceData>();
 
             await SetupMunicipalityAndStreetName(postInfoId, nisCode, Fixture.Create<MunicipalityId>(), streetNamePersistentLocalId);
@@ -399,6 +398,38 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                     new TicketError(
                         "Ongeldige positieSpecificatie.",
                         "AdresPositieSpecificatieValidatie"),
+                    CancellationToken.None));
+        }
+
+        [Fact]
+        public async Task WhenBoxNumberPostalCodeDoesNotMatchHouseNumberPostalCode_ThenTicketingErrorIsExpected()
+        {
+            // Arrange
+            var ticketing = new Mock<ITicketing>();
+
+            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
+            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
+            var nisCode = Fixture.Create<NisCode>();
+            var postInfoId = Fixture.Create<PostalCode>();
+
+            var proposeAddressLambdaHandler = CreateProposeAddressLambdaHandler(
+                MockExceptionIdempotentCommandHandler<BoxNumberPostalCodeDoesNotMatchHouseNumberPostalCodeException>().Object,
+                ticketing.Object);
+
+            await SetupMunicipalityAndStreetName(postInfoId, nisCode, Fixture.Create<MunicipalityId>(), streetNamePersistentLocalId);
+
+            // Act
+            await proposeAddressLambdaHandler.Handle(
+                CreateProposeAddressLambdaRequest(streetNamePersistentLocalId, addressPersistentLocalId, postInfoId),
+                CancellationToken.None);
+
+            //Assert
+            ticketing.Verify(x =>
+                x.Error(
+                    It.IsAny<Guid>(),
+                    new TicketError(
+                        "De ingevoerde postcode komt niet overeen met het huisnummer.",
+                        "AdresPostinfoOngeldigHuisnummerPostInfo"),
                     CancellationToken.None));
         }
 

@@ -93,6 +93,40 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenChangingAddressPostalCode
         }
 
         [Fact]
+        public async Task WhenAddressHasBoxNumber_ThenTicketingErrorIsExpected()
+        {
+            // Arrange
+            var ticketing = new Mock<ITicketing>();
+
+            var sut = new ChangeAddressPostalCodeLambdaHandler(
+                Container.Resolve<IConfiguration>(),
+                new FakeRetryPolicy(),
+                ticketing.Object,
+                Mock.Of<IStreetNames>(),
+                MockExceptionIdempotentCommandHandler<AddressHasBoxNumberException>().Object);
+
+            // Act
+            await sut.Handle(new ChangeAddressPostalCodeLambdaRequest(
+                Fixture.Create<int>().ToString(),
+                new ChangeAddressPostalCodeSqsRequest
+                {
+                    Request = new ChangeAddressPostalCodeRequest { PostInfoId = "https://data.vlaanderen.be/id/postinfo/123" },
+                    TicketId = Guid.NewGuid(),
+                    Metadata = new Dictionary<string, object?>(),
+                    ProvenanceData = Fixture.Create<ProvenanceData>()
+                }), CancellationToken.None);
+
+            //Assert
+            ticketing.Verify(x =>
+                x.Error(
+                    It.IsAny<Guid>(),
+                    new TicketError(
+                        "Het is niet mogelijk om de postcode van een busnummer te veranderen.",
+                        "AdresPostinfoGeenHuisnummer"),
+                    CancellationToken.None));
+        }
+
+        [Fact]
         public async Task WhenAddressHasInvalidStatus_ThenTicketingErrorIsExpected()
         {
             // Arrange

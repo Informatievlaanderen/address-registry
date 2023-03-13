@@ -235,7 +235,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressHouseNumber
         }
 
         [Fact]
-        public void OnChangeHouseNumberOfBoxNumberAddress_ThenThrowsHouseNumberToCorrectHasBoxNumberException()
+        public void OnChangeHouseNumberOfBoxNumberAddress_ThenThrowsAddresHasBoxNumberException()
         {
             var parentAddressPersistentLocalId = new AddressPersistentLocalId(1);
             var childAddressPersistentLocalId = new AddressPersistentLocalId(2);
@@ -257,7 +257,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressHouseNumber
                     parentAddressWasMigrated,
                     childAddressWasMigrated)
                 .When(command)
-                .Throws(new HouseNumberToCorrectHasBoxNumberException()));
+                .Throws(new AddressHasBoxNumberException()));
         }
 
         [Fact]

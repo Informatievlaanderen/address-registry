@@ -4,9 +4,9 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch.Asserts
     using AddressRegistry.Api.Oslo.AddressMatch.Responses;
     using FluentAssertions;
 
-    internal class AdresMatchCollectieAssertions : Assertions<AddressMatchCollection, AdresMatchCollectieAssertions>
+    internal class AdresMatchCollectieAssertions : Assertions<AddressMatchOsloCollection, AdresMatchCollectieAssertions>
     {
-        public AdresMatchCollectieAssertions(AddressMatchCollection subject)
+        public AdresMatchCollectieAssertions(AddressMatchOsloCollection subject)
             : base(subject) { }
 
         public AndWhichConstraint<AdresMatchCollectieAssertions, List<AdresMatchItem>> HaveMatches(int matchCount)

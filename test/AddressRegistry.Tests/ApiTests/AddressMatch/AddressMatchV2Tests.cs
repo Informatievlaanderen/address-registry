@@ -27,15 +27,13 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
 
     public class AddressMatchV2Tests : AddressMatchTestBase
     {
-        private readonly AddressMatchContextMemoryV2 _addresMatchContext;
         private readonly Mock<ILatestQueries> _latestQueries;
         private readonly AddressMatchHandlerV2 _handler;
 
         public AddressMatchV2Tests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            _addresMatchContext = new AddressMatchContextMemoryV2();
             _latestQueries = new Mock<ILatestQueries>();
-            _handler = new AddressMatchHandlerV2(_latestQueries.Object, _addresMatchContext,
+            _handler = new AddressMatchHandlerV2(_latestQueries.Object,
                 new OptionsWrapper<ResponseOptions>(new ResponseOptions
                 {
                     DetailUrl = "detail/{0}",

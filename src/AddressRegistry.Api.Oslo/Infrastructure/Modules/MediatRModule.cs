@@ -87,14 +87,13 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
             {
                 if (c.Resolve<UseProjectionsV2Toggle>().FeatureEnabled)
                 {
-                    return (IRequestHandler<AddressMatchRequest, AddressMatchCollection>)
+                    return (IRequestHandler<AddressMatchRequest, AddressMatchOsloCollection>)
                         new AddressMatchHandlerV2(
                             c.Resolve<ILatestQueries>(),
-                            c.Resolve<AddressMatchContextV2>(),
                             c.Resolve<IOptions<ResponseOptions>>());
                 }
 
-                return (IRequestHandler<AddressMatchRequest, AddressMatchCollection>)
+                return (IRequestHandler<AddressMatchRequest, AddressMatchOsloCollection>)
                     new AddressMatchHandler(
                         c.Resolve<IKadRrService>(),
                         c.Resolve<AddressMatch.V1.Matching.ILatestQueries>(),

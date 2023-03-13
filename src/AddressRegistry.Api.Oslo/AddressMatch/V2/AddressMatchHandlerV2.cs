@@ -10,23 +10,20 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
     using Requests;
     using Responses;
 
-    public sealed class AddressMatchHandlerV2 : IRequestHandler<AddressMatchRequest, AddressMatchCollection>
+    public sealed class AddressMatchHandlerV2 : IRequestHandler<AddressMatchRequest, AddressMatchOsloCollection>
     {
         private readonly ILatestQueries _latestQueries;
-        private readonly AddressMatchContextV2 _addressMatchContext;
         private readonly IOptions<ResponseOptions> _responseOptions;
 
         public AddressMatchHandlerV2(
             ILatestQueries latestQueries,
-            AddressMatchContextV2 addressMatchContext,
             IOptions<ResponseOptions> responseOptions)
         {
             _latestQueries = latestQueries;
-            _addressMatchContext = addressMatchContext;
             _responseOptions = responseOptions;
         }
 
-        public Task<AddressMatchCollection> Handle(AddressMatchRequest request, CancellationToken cancellationToken)
+        public Task<AddressMatchOsloCollection> Handle(AddressMatchRequest request, CancellationToken cancellationToken)
         {
             const int maxNumberOfResults = 10;
 
@@ -48,7 +45,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
                 .Select(x => AdresMatchItem.Create(x, _responseOptions.Value))
                 .ToList();
 
-            return Task.FromResult(new AddressMatchCollection
+            return Task.FromResult(new AddressMatchOsloCollection
             {
                 AdresMatches = result,
                 Warnings = warningLogger.Warnings

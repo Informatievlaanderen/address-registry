@@ -8,7 +8,7 @@ namespace AddressRegistry.StreetName.Events
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Newtonsoft.Json;
 
-    [EventTags(Tag.StreetName)]
+    [EventTags(Tag.StreetName, EventTag.For.Sync, EventTag.For.Edit)]
     [EventName(EventName)]
     [EventDescription("Het adres werd verwijderd omdat de straatnaam werd verwijderd.")]
     public class AddressWasRemovedBecauseStreetNameWasRemoved : IStreetNameEvent, IHasAddressPersistentLocalId

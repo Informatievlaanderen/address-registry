@@ -1,3 +1,11 @@
+## [3.79.1](https://github.com/informatievlaanderen/address-registry/compare/v3.79.0...v3.79.1) (2023-03-13)
+
+
+### Bug Fixes
+
+* addressmatch v2 produces jsonld ([ad413ec](https://github.com/informatievlaanderen/address-registry/commit/ad413ec0d5a6b075883adfba25de129a1b2e6c49))
+* AddressWasRemovedBecauseStreetNameWasRemoved tags ([8aed11a](https://github.com/informatievlaanderen/address-registry/commit/8aed11a7896a9f108c7ea02251fc8722cf48b58a))
+
 # [3.79.0](https://github.com/informatievlaanderen/address-registry/compare/v3.78.0...v3.79.0) (2023-03-13)
 
 

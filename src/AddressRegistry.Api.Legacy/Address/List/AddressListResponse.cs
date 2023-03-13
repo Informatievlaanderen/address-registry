@@ -75,7 +75,7 @@ namespace AddressRegistry.Api.Legacy.Address.List
         /// </summary>
         [DataMember(Name = "Busnummer", Order = 4, EmitDefaultValue = false)]
         [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string Busnummer { get; set; }
+        public string? Busnummer { get; set; }
 
         /// <summary>
         /// Adresvoorstelling in de eerste officiële taal van de gemeente.
@@ -96,7 +96,7 @@ namespace AddressRegistry.Api.Legacy.Address.List
             string naamruimte,
             string detail,
             string huisnummer,
-            string busnummer,
+            string? busnummer,
             VolledigAdres volledigAdres,
             AdresStatus status,
             DateTimeOffset version)

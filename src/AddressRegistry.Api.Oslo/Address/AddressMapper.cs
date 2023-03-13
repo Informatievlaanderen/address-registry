@@ -11,9 +11,47 @@ namespace AddressRegistry.Api.Oslo.Address
     using Consumer.Read.StreetName.Projections;
     using NetTopologySuite.Geometries;
     using NetTopologySuite.Utilities;
+    using Projections.Legacy.AddressList;
+    using Projections.Legacy.AddressListV2;
+    using MunicipalityLanguage = Consumer.Read.Municipality.Projections.MunicipalityLanguage;
 
     public static class AddressMapper
     {
+        public static VolledigAdres? GetVolledigAdres(AddressListViewItem addressListViewItem)
+        {
+            if (string.IsNullOrEmpty(addressListViewItem.StreetNamePersistentLocalId)
+                || string.IsNullOrEmpty(addressListViewItem.NisCode))
+            {
+                return null;
+            }
+
+            var defaultMunicipalityName = addressListViewItem.DefaultMunicipalityName;
+            return new VolledigAdres(
+                addressListViewItem.DefaultStreetNameName.Value,
+                addressListViewItem.HouseNumber,
+                addressListViewItem.BoxNumber,
+                addressListViewItem.PostalCode,
+                defaultMunicipalityName.Value,
+                defaultMunicipalityName.Key);
+        }
+
+        public static VolledigAdres? GetVolledigAdres(AddressListViewItemV2 addressListViewItem)
+        {
+            if (string.IsNullOrEmpty(addressListViewItem.NisCode))
+            {
+                return null;
+            }
+
+            var defaultMunicipalityName = addressListViewItem.DefaultMunicipalityName;
+            return new VolledigAdres(
+                addressListViewItem.DefaultStreetNameName.Value,
+                addressListViewItem.HouseNumber,
+                addressListViewItem.BoxNumber,
+                addressListViewItem.PostalCode,
+                defaultMunicipalityName.Value,
+                defaultMunicipalityName.Key);
+        }
+
         public static VolledigAdres? GetVolledigAdres(string houseNumber, string boxNumber, string postalCode,
             StreetNameLatestItem streetName, MunicipalityLatestItem? municipality)
         {

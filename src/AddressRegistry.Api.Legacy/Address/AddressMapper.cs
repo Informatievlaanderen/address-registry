@@ -7,9 +7,11 @@ namespace AddressRegistry.Api.Legacy.Address
     using Consumer.Read.Municipality.Projections;
     using Consumer.Read.StreetName.Projections;
     using Projections.Legacy.AddressList;
+    using Projections.Legacy.AddressListV2;
     using StreetName;
     using AddressStatus = AddressRegistry.Address.AddressStatus;
     using MunicipalityBosaItem = Projections.Syndication.Municipality.MunicipalityBosaItem;
+    using MunicipalityLanguage = Consumer.Read.Municipality.Projections.MunicipalityLanguage;
     using StreetNameBosaItem = Projections.Syndication.StreetName.StreetNameBosaItem;
 
     public static class AddressMapper
@@ -18,6 +20,23 @@ namespace AddressRegistry.Api.Legacy.Address
         {
             if (string.IsNullOrEmpty(addressListViewItem.StreetNamePersistentLocalId)
                 || string.IsNullOrEmpty(addressListViewItem.NisCode))
+            {
+                return null;
+            }
+
+            var defaultMunicipalityName = addressListViewItem.DefaultMunicipalityName;
+            return new VolledigAdres(
+                addressListViewItem.DefaultStreetNameName.Value,
+                addressListViewItem.HouseNumber,
+                addressListViewItem.BoxNumber,
+                addressListViewItem.PostalCode,
+                defaultMunicipalityName.Value,
+                defaultMunicipalityName.Key);
+        }
+
+        public static VolledigAdres? GetVolledigAdres(AddressListViewItemV2 addressListViewItem)
+        {
+            if (string.IsNullOrEmpty(addressListViewItem.NisCode))
             {
                 return null;
             }

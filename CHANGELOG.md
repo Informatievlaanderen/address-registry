@@ -1,3 +1,10 @@
+## [3.81.2](https://github.com/informatievlaanderen/address-registry/compare/v3.81.1...v3.81.2) (2023-03-14)
+
+
+### Bug Fixes
+
+* AddressListViewV2 nullable postal code ([b725774](https://github.com/informatievlaanderen/address-registry/commit/b7257743a8744d3e0f8d0e06a2f4f347d5bf553d))
+
 ## [3.81.1](https://github.com/informatievlaanderen/address-registry/compare/v3.81.0...v3.81.1) (2023-03-14)
 
 

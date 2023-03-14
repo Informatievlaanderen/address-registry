@@ -1,3 +1,10 @@
+# [3.81.0](https://github.com/informatievlaanderen/address-registry/compare/v3.80.1...v3.81.0) (2023-03-14)
+
+
+### Features
+
+* add addresslist view for v2 and oslo ([a3898a5](https://github.com/informatievlaanderen/address-registry/commit/a3898a5a91bfcb557bbe62f455e508aa2eaa2ba3))
+
 ## [3.80.1](https://github.com/informatievlaanderen/address-registry/compare/v3.80.0...v3.80.1) (2023-03-14)
 
 

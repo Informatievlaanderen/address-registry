@@ -1,3 +1,10 @@
+## [3.80.1](https://github.com/informatievlaanderen/address-registry/compare/v3.80.0...v3.80.1) (2023-03-14)
+
+
+### Bug Fixes
+
+* address match response context ([7598a85](https://github.com/informatievlaanderen/address-registry/commit/7598a854870d60b1f7630d00a565fe32ee769e88))
+
 # [3.80.0](https://github.com/informatievlaanderen/address-registry/compare/v3.79.2...v3.80.0) (2023-03-13)
 
 

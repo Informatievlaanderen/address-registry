@@ -44,7 +44,7 @@ namespace AddressRegistry.Consumer.Read.StreetName
     {
         public StreetNameConsumerContext CreateDbContext(string[] args)
         {
-            const string migrationConnectionStringName = "ConsumerAdmin";
+            const string migrationConnectionStringName = "ConsumerStreetNameAdmin";
 
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())

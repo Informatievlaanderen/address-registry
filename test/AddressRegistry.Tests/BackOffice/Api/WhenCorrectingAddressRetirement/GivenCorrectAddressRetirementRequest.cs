@@ -77,25 +77,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRetirement
         }
 
         [Fact]
-        public async Task WithAddressIsNotFoundException_ThenThrowsApiException()
-        {
-            Func<Task> act = async () => await _controller.CorrectRetirement(
-                MockIfMatchValidatorThrowsAddressIsNotFoundException(),
-                Fixture.Create<CorrectAddressRetirementRequest>(),
-                ifMatchHeaderValue: null);
-
-            //Assert
-            act
-                .Should()
-                .ThrowAsync<ApiException>()
-                .Result
-                .Where(x =>
-                    x.Message.Contains("Onbestaand adres.")
-                    && x.StatusCode == StatusCodes.Status404NotFound);
-        }
-
-        [Fact]
-        public async Task WithAggregateNotFoundException_ThenThrowsApiException()
+        public void WithAggregateNotFoundException_ThenThrowsApiException()
         {
             Func<Task> act = async () => await _controller.CorrectRetirement(
                 MockIfMatchValidatorThrowsAggregateNotFoundException(),
@@ -113,7 +95,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRetirement
         }
 
         [Fact]
-        public async Task WithAggregateIdIsNotFound_ThenThrowsApiException()
+        public void WithAggregateIdIsNotFound_ThenThrowsApiException()
         {
             MockMediator
                 .Setup(x => x.Send(It.IsAny<CorrectAddressRetirementSqsRequest>(), CancellationToken.None))

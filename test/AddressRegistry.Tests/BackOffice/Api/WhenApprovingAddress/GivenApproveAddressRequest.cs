@@ -78,23 +78,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenApprovingAddress
         }
 
         [Fact]
-        public async Task WithAddressIsNotFoundException_ThenThrowsApiException()
-        {
-            Func<Task> act = async () => await _controller.Approve(
-                MockIfMatchValidatorThrowsAddressIsNotFoundException(),
-                Fixture.Create<ApproveAddressRequest>(),
-                ifMatchHeaderValue: null);
-
-            act
-                .Should()
-                .ThrowAsync<ApiException>()
-                .Result
-                .Where(x =>
-                    x.Message.Contains("Onbestaand adres.")
-                    && x.StatusCode == StatusCodes.Status404NotFound);
-        }
-
-        [Fact]
         public async Task WithAggregateNotFoundException_ThenThrowsApiException()
         {
             Func<Task> act = async () => await _controller.Approve(

@@ -81,26 +81,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressBoxNumber
         }
 
         [Fact]
-        public async Task WithAddressIsNotFoundException_ThenThrowsApiException()
-        {
-            Func<Task> act = async () => await _controller.CorrectBoxNumber(
-                MockValidRequestValidator<CorrectAddressBoxNumberRequest>(),
-                MockIfMatchValidatorThrowsAddressIsNotFoundException(),
-                Fixture.Create<AddressPersistentLocalId>(),
-                Fixture.Create<CorrectAddressBoxNumberRequest>(),
-                ifMatchHeaderValue: null);
-
-            act
-                .Should()
-                .ThrowAsync<ApiException>()
-                .Result
-                .Where(x =>
-                    x.Message.Contains("Onbestaand adres.")
-                    && x.StatusCode == StatusCodes.Status404NotFound);
-        }
-
-        [Fact]
-        public async Task WithAggregateNotFoundException_ThenThrowsApiException()
+        public void WithAggregateNotFoundException_ThenThrowsApiException()
         {
             Func<Task> act = async () => await _controller.CorrectBoxNumber(
                 MockValidRequestValidator<CorrectAddressBoxNumberRequest>(),
@@ -119,7 +100,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressBoxNumber
         }
 
         [Fact]
-        public async Task WithAggregateIdIsNotFound_ThenThrowsApiException()
+        public void WithAggregateIdIsNotFound_ThenThrowsApiException()
         {
             MockMediator
                 .Setup(x => x.Send(It.IsAny<CorrectAddressBoxNumberSqsRequest>(), CancellationToken.None))

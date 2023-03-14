@@ -40,7 +40,7 @@
 
         public string? NisCode { get; set; }
 
-        private string OfficialLanguages { get; set; }
+        public string OfficialLanguages { get; private set; }
 
         public List<string> OfficialLanguagesAsList
         {

@@ -1,3 +1,11 @@
+## [3.81.1](https://github.com/informatievlaanderen/address-registry/compare/v3.81.0...v3.81.1) (2023-03-14)
+
+
+### Bug Fixes
+
+* address list ([a0cd11c](https://github.com/informatievlaanderen/address-registry/commit/a0cd11c42ca5130f6f239085b85790b0dcf05aa1))
+* AddressWasRemovedBecauseStreetNameWasRemoved docs ([cf59423](https://github.com/informatievlaanderen/address-registry/commit/cf5942394015ed09877ffc2e53f06054dbdef82d))
+
 # [3.81.0](https://github.com/informatievlaanderen/address-registry/compare/v3.80.1...v3.81.0) (2023-03-14)
 
 

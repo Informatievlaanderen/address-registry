@@ -1,12 +1,16 @@
 namespace AddressRegistry.Consumer.Read.Municipality
 {
     using System;
+    using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Infrastructure;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Design;
+    using Microsoft.Extensions.Configuration;
     using Projections;
 
     public class MunicipalityConsumerContext : RunnerDbContext<MunicipalityConsumerContext>
@@ -24,6 +28,37 @@ namespace AddressRegistry.Consumer.Read.Municipality
         { }
 
         public override string ProjectionStateSchema => Schema.ConsumerReadMunicipality;
+    }
+
+    public class ConsumerContextFactory : IDesignTimeDbContextFactory<MunicipalityConsumerContext>
+    {
+        public MunicipalityConsumerContext CreateDbContext(string[] args)
+        {
+            const string migrationConnectionStringName = "ConsumerMunicipalityAdmin";
+
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+                .AddJsonFile($"appsettings.{Environment.MachineName.ToLowerInvariant()}.json", optional: true, reloadOnChange: false)
+                .AddEnvironmentVariables()
+                .Build();
+
+            var builder = new DbContextOptionsBuilder<MunicipalityConsumerContext>();
+
+            var connectionString = configuration.GetConnectionString(migrationConnectionStringName);
+            if (string.IsNullOrEmpty(connectionString))
+                throw new InvalidOperationException($"Could not find a connection string with name '{migrationConnectionStringName}'");
+
+            builder
+                .UseSqlServer(connectionString, sqlServerOptions =>
+                {
+                    sqlServerOptions.EnableRetryOnFailure();
+                    sqlServerOptions.MigrationsHistoryTable(MigrationTables.ConsumerReadMunicipality, Schema.ConsumerReadMunicipality);
+                })
+                .UseExtendedSqlServerMigrations();
+
+            return new MunicipalityConsumerContext(builder.Options);
+        }
     }
 
     public static class AddressDetailExtensions

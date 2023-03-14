@@ -15,7 +15,7 @@
     {
         public int AddressPersistentLocalId { get; set; }
 
-        public string PostalCode { get; set; }
+        public string? PostalCode { get; set; }
         public string HouseNumber { get; set; }
         public string? BoxNumber { get; set; }
         public AddressStatus Status { get; set; }

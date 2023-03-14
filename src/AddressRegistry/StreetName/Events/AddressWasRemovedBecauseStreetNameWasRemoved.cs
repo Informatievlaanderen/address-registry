@@ -10,13 +10,18 @@ namespace AddressRegistry.StreetName.Events
 
     [EventTags(Tag.StreetName, EventTag.For.Sync, EventTag.For.Edit)]
     [EventName(EventName)]
-    [EventDescription("Het adres werd verwijderd omdat de straatnaam werd verwijderd.")]
+    [EventDescription("Het adres werd verwijderd door verwijdering straatnaam.")]
     public class AddressWasRemovedBecauseStreetNameWasRemoved : IStreetNameEvent, IHasAddressPersistentLocalId
     {
         public const string EventName = "AddressWasRemovedBecauseStreetNameWasRemoved"; // BE CAREFUL CHANGING THIS!!
 
+        [EventPropertyDescription("Objectidentificator van de straatnaam aan dewelke het adres is toegewezen.")]
         public int StreetNamePersistentLocalId { get; }
+
+        [EventPropertyDescription("Objectidentificator van het adres.")]
         public int AddressPersistentLocalId { get; }
+
+        [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
         public AddressWasRemovedBecauseStreetNameWasRemoved(

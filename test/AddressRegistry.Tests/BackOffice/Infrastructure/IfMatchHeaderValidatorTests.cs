@@ -11,14 +11,14 @@
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
     using FluentAssertions;
-    using StreetName;
-    using Xunit;
-    using Xunit.Abstractions;
     using global::AutoFixture;
     using Moq;
+    using StreetName;
     using StreetName.Events;
-    using StreetName.Exceptions;
+    using Xunit;
+    using Xunit.Abstractions;
 
     public class IfMatchHeaderValidatorTests : AddressRegistryTest
     {
@@ -141,7 +141,7 @@
         }
 
         [Fact]
-        public async Task WhenStreetNameAddressRelationCannotBeFound_ThenThrowsAddressIsNotFoundException()
+        public void WhenStreetNameAddressRelationCannotBeFound_ThenThrowsAggregateIdIsNotFoundException()
         {
             var sut = new IfMatchHeaderValidator(_backOfficeContext, Mock.Of<IStreetNames>());
 
@@ -154,7 +154,7 @@
             // Assert
             act
                 .Should()
-                .ThrowAsync<AddressIsNotFoundException>();
+                .ThrowAsync<AggregateIdIsNotFoundException>();
         }
 
         [Theory]

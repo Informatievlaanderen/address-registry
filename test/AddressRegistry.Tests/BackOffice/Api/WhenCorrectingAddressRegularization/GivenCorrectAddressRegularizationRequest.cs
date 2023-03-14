@@ -75,25 +75,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRegularizati
         }
 
         [Fact]
-        public async Task WithAddressIsNotFoundException_ThenThrowsApiException()
-        {
-            Func<Task> act = async () => await _controller.CorrectRegularization(
-                MockIfMatchValidatorThrowsAddressIsNotFoundException(),
-                ifMatchHeaderValue: null,
-                Fixture.Create<AddressPersistentLocalId>(),
-                CancellationToken.None);
-
-            act
-                .Should()
-                .ThrowAsync<ApiException>()
-                .Result
-                .Where(x =>
-                    x.Message.Contains("Onbestaand adres.")
-                    && x.StatusCode == StatusCodes.Status404NotFound);
-        }
-
-        [Fact]
-        public async Task WithAggregateNotFoundException_ThenThrowsApiException()
+        public void WithAggregateNotFoundException_ThenThrowsApiException()
         {
             Func<Task> act = async () => await _controller.CorrectRegularization(
                 MockIfMatchValidatorThrowsAggregateNotFoundException(),
@@ -111,7 +93,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressRegularizati
         }
 
         [Fact]
-        public async Task WhenAggregateIdIsNotFoundException_ThenApiException()
+        public void WhenAggregateIdIsNotFoundException_ThenApiException()
         {
             //Arrange
             MockMediator

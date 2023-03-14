@@ -5,8 +5,8 @@
     using System.Threading.Tasks;
     using Abstractions;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
+    using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
     using StreetName;
-    using StreetName.Exceptions;
 
     public interface IIfMatchHeaderValidator
     {
@@ -60,7 +60,7 @@
 
             if (relation is null)
             {
-                throw new AddressIsNotFoundException();
+                throw new AggregateIdIsNotFoundException();
             }
 
             return new StreetNamePersistentLocalId(relation.StreetNamePersistentLocalId);

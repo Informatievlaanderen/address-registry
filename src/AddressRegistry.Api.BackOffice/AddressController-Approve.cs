@@ -17,7 +17,6 @@ namespace AddressRegistry.Api.BackOffice
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using StreetName;
-    using StreetName.Exceptions;
     using Swashbuckle.AspNetCore.Filters;
 
     public partial class AddressController
@@ -70,10 +69,6 @@ namespace AddressRegistry.Api.BackOffice
                 throw new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound);
             }
             catch (AggregateNotFoundException)
-            {
-                throw new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound);
-            }
-            catch (AddressIsNotFoundException)
             {
                 throw new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound);
             }

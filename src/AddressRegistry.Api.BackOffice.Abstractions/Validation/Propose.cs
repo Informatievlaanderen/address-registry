@@ -23,8 +23,8 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
 
             public static class BoxNumberPostalCodeDoesNotMatchHouseNumberPostalCode
             {
-                public const string Code = "AdresPostinfoOngeldigHuisnummerPostInfo";
-                public const string Message = "De ingevoerde postcode komt niet overeen met het huisnummer.";
+                public const string Code = "AdresPostinfoNietHetzelfdeAlsHuisnummer";
+                public const string Message = "De ingevoerde postcode komt niet overeen met de postcode van het huisnummer.";
 
                 public static TicketError ToTicketError() => new(Message, Code);
             }

@@ -428,8 +428,8 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                 x.Error(
                     It.IsAny<Guid>(),
                     new TicketError(
-                        "De ingevoerde postcode komt niet overeen met het huisnummer.",
-                        "AdresPostinfoOngeldigHuisnummerPostInfo"),
+                        "De ingevoerde postcode komt niet overeen met de postcode van het huisnummer.",
+                        "AdresPostinfoNietHetzelfdeAlsHuisnummer"),
                     CancellationToken.None));
         }
 

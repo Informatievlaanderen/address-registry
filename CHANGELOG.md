@@ -1,3 +1,10 @@
+## [3.81.3](https://github.com/informatievlaanderen/address-registry/compare/v3.81.2...v3.81.3) (2023-03-15)
+
+
+### Bug Fixes
+
+* box number postal code error message on propose address ([6697aa2](https://github.com/informatievlaanderen/address-registry/commit/6697aa2fffc561a80ba75b815562aab6c29c8755))
+
 ## [3.81.2](https://github.com/informatievlaanderen/address-registry/compare/v3.81.1...v3.81.2) (2023-03-14)
 
 

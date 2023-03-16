@@ -40,6 +40,32 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
                 }
             });
 
+            When<Envelope<StreetNameHomonymAdditionsWereCorrected>>(async (context, message, ct) =>
+            {
+                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
+                {
+                    var item = await context.FindAndUpdateAddressDetail(
+                        addressPersistentLocalId,
+                        x =>  { },
+                        ct);
+
+                    UpdateVersionTimestampIfNewer(item, message.Message.Provenance.Timestamp);
+                }
+            });
+
+            When<Envelope<StreetNameHomonymAdditionsWereRemoved>>(async (context, message, ct) =>
+            {
+                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
+                {
+                    var item = await context.FindAndUpdateAddressDetail(
+                        addressPersistentLocalId,
+                        x =>  { },
+                        ct);
+
+                    UpdateVersionTimestampIfNewer(item, message.Message.Provenance.Timestamp);
+                }
+            });
+
             // Address
             When<Envelope<AddressWasMigratedToStreetName>>(async (context, message, ct) =>
             {

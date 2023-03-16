@@ -16,40 +16,42 @@ namespace AddressRegistry.Tests.AggregateTests.Builders
         private AddressPersistentLocalId? _parentAddressPersistentLocalId;
         private HouseNumber? _houseNumber;
         private BoxNumber? _boxNumber;
+        private bool _isRemoved;
 
-        public AddressWasMigratedToStreetNameBuilder(Fixture fixture,
-            AddressStatus addressStatus = AddressStatus.Proposed)
+        public AddressWasMigratedToStreetNameBuilder(Fixture fixture, AddressStatus addressStatus = AddressStatus.Proposed)
         {
             _fixture = fixture;
             _addressStatus = addressStatus;
         }
 
-        public AddressWasMigratedToStreetNameBuilder WithStreetNamePersistentLocalId(
-            StreetNamePersistentLocalId persistentLocalId)
+        public AddressWasMigratedToStreetNameBuilder WithStreetNamePersistentLocalId(StreetNamePersistentLocalId persistentLocalId)
         {
             _streetNamePersistentLocalId = persistentLocalId;
             return this;
         }
 
-        public AddressWasMigratedToStreetNameBuilder WithAddressPersistentLocalId(
-            AddressPersistentLocalId persistentLocalId)
+        public AddressWasMigratedToStreetNameBuilder WithAddressPersistentLocalId(AddressPersistentLocalId persistentLocalId)
         {
             _addressPersistentLocalId = persistentLocalId;
             return this;
         }
 
-        public AddressWasMigratedToStreetNameBuilder WithHouseNumber(
-            HouseNumber houseNumber)
+        public AddressWasMigratedToStreetNameBuilder WithHouseNumber(HouseNumber houseNumber)
         {
             _houseNumber = houseNumber;
             return this;
         }
 
-        public AddressWasMigratedToStreetNameBuilder WithBoxNumber(BoxNumber boxNumber,
-            AddressPersistentLocalId parentAddressPersistentLocalId)
+        public AddressWasMigratedToStreetNameBuilder WithBoxNumber(BoxNumber boxNumber, AddressPersistentLocalId parentAddressPersistentLocalId)
         {
             _boxNumber = boxNumber;
             _parentAddressPersistentLocalId = parentAddressPersistentLocalId;
+            return this;
+        }
+
+        public AddressWasMigratedToStreetNameBuilder WithIsRemoved(bool isRemoved = true)
+        {
+            _isRemoved = isRemoved;
             return this;
         }
 
@@ -67,7 +69,7 @@ namespace AddressRegistry.Tests.AggregateTests.Builders
                 officiallyAssigned: true,
                 _fixture.Create<PostalCode>(),
                 isCompleted: true,
-                isRemoved: false,
+                _isRemoved,
                 _parentAddressPersistentLocalId);
 
             ((ISetProvenance)@event).SetProvenance(_fixture.Create<Provenance>());

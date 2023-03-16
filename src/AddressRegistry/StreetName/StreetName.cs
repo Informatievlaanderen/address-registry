@@ -113,7 +113,9 @@ namespace AddressRegistry.StreetName
             ApplyChange(new StreetNameNamesWereCorrected(
                 PersistentLocalId,
                 streetNameNames,
-                StreetNameAddresses.Select(x => new AddressPersistentLocalId(x.AddressPersistentLocalId))));
+                StreetNameAddresses
+                    .Where(x => !x.IsRemoved)
+                    .Select(x => new AddressPersistentLocalId(x.AddressPersistentLocalId))));
         }
 
         public void CorrectStreetNameHomonymAdditions(IDictionary<string,string> streetNameHomonymAdditions)
@@ -121,7 +123,9 @@ namespace AddressRegistry.StreetName
             ApplyChange(new StreetNameHomonymAdditionsWereCorrected(
                 PersistentLocalId,
                 streetNameHomonymAdditions,
-                StreetNameAddresses.Select(x => new AddressPersistentLocalId(x.AddressPersistentLocalId))));
+                StreetNameAddresses
+                    .Where(x => !x.IsRemoved)
+                    .Select(x => new AddressPersistentLocalId(x.AddressPersistentLocalId))));
         }
 
         public void RemoveStreetNameHomonymAdditions(IList<string> streetNameHomonymAdditionLanguages)
@@ -129,7 +133,9 @@ namespace AddressRegistry.StreetName
             ApplyChange(new StreetNameHomonymAdditionsWereRemoved(
                 PersistentLocalId,
                 streetNameHomonymAdditionLanguages,
-                StreetNameAddresses.Select(x => new AddressPersistentLocalId(x.AddressPersistentLocalId))));
+                StreetNameAddresses
+                    .Where(x => !x.IsRemoved)
+                    .Select(x => new AddressPersistentLocalId(x.AddressPersistentLocalId))));
         }
 
         public void CorrectStreetNameApproval()

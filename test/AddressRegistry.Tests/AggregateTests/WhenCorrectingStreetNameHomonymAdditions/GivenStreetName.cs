@@ -7,6 +7,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingStreetNameHomonymAd
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Builders;
     using FluentAssertions;
     using global::AutoFixture;
     using StreetName;
@@ -65,6 +66,37 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingStreetNameHomonymAd
                             })
                         )
                     ));
+        }
+
+        [Fact]
+        public void WithRemovedAddress_ThenOnlyNonRemovedAddressesAreAffected()
+        {
+            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
+
+            var command = Fixture.Create<CorrectStreetNameHomonymAdditions>();
+
+            var streetNameWasImported = new StreetNameWasImported(
+                streetNamePersistentLocalId,
+                Fixture.Create<MunicipalityId>(),
+                StreetNameStatus.Retired);
+            ((ISetProvenance)streetNameWasImported).SetProvenance(Fixture.Create<Provenance>());
+
+            var addressWasMigrated = new AddressWasMigratedToStreetNameBuilder(Fixture).Build();
+            var removedAddressWasMigrated = new AddressWasMigratedToStreetNameBuilder(Fixture).WithIsRemoved().Build();
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    streetNameWasImported,
+                    addressWasMigrated,
+                    removedAddressWasMigrated)
+                .When(command)
+                .Then(
+                    new Fact(new StreetNameStreamId(command.PersistentLocalId),
+                        new StreetNameHomonymAdditionsWereCorrected(
+                            streetNamePersistentLocalId,
+                            command.HomonymAdditions,
+                            new List<AddressPersistentLocalId> { new AddressPersistentLocalId(addressWasMigrated.AddressPersistentLocalId) }))
+                ));
         }
 
         [Fact]

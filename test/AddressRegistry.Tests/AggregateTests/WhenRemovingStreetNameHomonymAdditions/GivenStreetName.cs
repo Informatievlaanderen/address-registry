@@ -7,6 +7,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRemovingStreetNameHomonymAddi
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Builders;
     using FluentAssertions;
     using global::AutoFixture;
     using StreetName;
@@ -59,11 +60,38 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRemovingStreetNameHomonymAddi
                         new StreetNameHomonymAdditionsWereRemoved(
                             streetNamePersistentLocalId,
                             command.Languages,
-                            new List<AddressPersistentLocalId>
-                            {
-                                new AddressPersistentLocalId(addressWasProposedV2.AddressPersistentLocalId)
-                            })
-                        )
+                            new List<AddressPersistentLocalId> { new AddressPersistentLocalId(addressWasProposedV2.AddressPersistentLocalId) }))
+                    ));
+        }
+
+        [Fact]
+        public void WithRemovedAddress_ThenOnlyNonRemovedAddressesAreAffected()
+        {
+            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
+
+            var command = Fixture.Create<RemoveStreetNameHomonymAdditions>();
+
+            var streetNameWasImported = new StreetNameWasImported(
+                streetNamePersistentLocalId,
+                Fixture.Create<MunicipalityId>(),
+                StreetNameStatus.Retired);
+            ((ISetProvenance)streetNameWasImported).SetProvenance(Fixture.Create<Provenance>());
+
+            var addressWasMigrated = new AddressWasMigratedToStreetNameBuilder(Fixture).Build();
+            var removedAddressWasMigrated = new AddressWasMigratedToStreetNameBuilder(Fixture).WithIsRemoved().Build();
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    streetNameWasImported,
+                    addressWasMigrated,
+                    removedAddressWasMigrated)
+                .When(command)
+                .Then(
+                    new Fact(new StreetNameStreamId(command.PersistentLocalId),
+                        new StreetNameHomonymAdditionsWereRemoved(
+                            streetNamePersistentLocalId,
+                            command.Languages,
+                            new List<AddressPersistentLocalId> { new AddressPersistentLocalId(addressWasMigrated.AddressPersistentLocalId) }))
                     ));
         }
 

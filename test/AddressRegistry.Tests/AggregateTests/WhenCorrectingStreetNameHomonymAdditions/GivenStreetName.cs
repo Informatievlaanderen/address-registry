@@ -27,11 +27,11 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingStreetNameHomonymAd
         }
 
         [Fact]
-        public void ThenStreetNameHomonymAdditionsWereRemoved()
+        public void ThenStreetNameHomonymAdditionsWereCorrected()
         {
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
 
-            var command = Fixture.Create<RemoveStreetNameHomonymAdditions>();
+            var command = Fixture.Create<CorrectStreetNameHomonymAdditions>();
 
             var streetNameWasImported = new StreetNameWasImported(
                 streetNamePersistentLocalId,
@@ -56,9 +56,9 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingStreetNameHomonymAd
                 .When(command)
                 .Then(
                     new Fact(new StreetNameStreamId(command.PersistentLocalId),
-                        new StreetNameHomonymAdditionsWereRemoved(
+                        new StreetNameHomonymAdditionsWereCorrected(
                             streetNamePersistentLocalId,
-                            command.Languages,
+                            command.HomonymAdditions,
                             new List<AddressPersistentLocalId>
                             {
                                 new AddressPersistentLocalId(addressWasProposedV2.AddressPersistentLocalId)
@@ -93,11 +93,11 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingStreetNameHomonymAd
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
-            var streetNameHomonymAdditionsWereRemoved = new StreetNameHomonymAdditionsWereRemoved(
+            var streetNameHomonymAdditionsWereCorrected = new StreetNameHomonymAdditionsWereCorrected(
                 new StreetNamePersistentLocalId(migratedStreetNameWasImported.StreetNamePersistentLocalId),
-                Fixture.Create<List<string>>(),
+                Fixture.Create<Dictionary<string, string>>(),
                 new List<AddressPersistentLocalId> { new AddressPersistentLocalId(addressWasProposedV2.AddressPersistentLocalId) });
-            ((ISetProvenance)streetNameHomonymAdditionsWereRemoved).SetProvenance(Fixture.Create<Provenance>());
+            ((ISetProvenance)streetNameHomonymAdditionsWereCorrected).SetProvenance(Fixture.Create<Provenance>());
 
             var sut = new StreetNameFactory(NoSnapshotStrategy.Instance).Create();
 
@@ -106,13 +106,13 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingStreetNameHomonymAd
             {
                 migratedStreetNameWasImported,
                 addressWasProposedV2,
-                streetNameHomonymAdditionsWereRemoved
+                streetNameHomonymAdditionsWereCorrected
             });
 
             // Assert
             foreach (var streetNameAddress in sut.StreetNameAddresses)
             {
-                streetNameAddress.LastEventHash.Should().Be(streetNameHomonymAdditionsWereRemoved.GetHash());
+                streetNameAddress.LastEventHash.Should().Be(streetNameHomonymAdditionsWereCorrected.GetHash());
             }
         }
     }

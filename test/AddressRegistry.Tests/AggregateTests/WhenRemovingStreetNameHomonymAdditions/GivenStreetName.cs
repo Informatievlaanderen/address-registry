@@ -1,17 +1,17 @@
 namespace AddressRegistry.Tests.AggregateTests.WhenRemovingStreetNameHomonymAdditions
 {
     using System.Collections.Generic;
-    using AddressRegistry.Api.BackOffice.Abstractions;
-    using AddressRegistry.StreetName;
-    using AddressRegistry.StreetName.Commands;
-    using AddressRegistry.StreetName.Events;
-    using AddressRegistry.Tests.AutoFixture;
+    using Api.BackOffice.Abstractions;
+    using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentAssertions;
     using global::AutoFixture;
+    using StreetName;
+    using StreetName.Commands;
+    using StreetName.Events;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -27,11 +27,11 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRemovingStreetNameHomonymAddi
         }
 
         [Fact]
-        public void ThenStreetNameHomonymAdditionsWereCorrected()
+        public void ThenStreetNameHomonymAdditionsWereRemoved()
         {
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
 
-            var command = Fixture.Create<CorrectStreetNameHomonymAdditions>();
+            var command = Fixture.Create<RemoveStreetNameHomonymAdditions>();
 
             var streetNameWasImported = new StreetNameWasImported(
                 streetNamePersistentLocalId,
@@ -56,9 +56,9 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRemovingStreetNameHomonymAddi
                 .When(command)
                 .Then(
                     new Fact(new StreetNameStreamId(command.PersistentLocalId),
-                        new StreetNameHomonymAdditionsWereCorrected(
+                        new StreetNameHomonymAdditionsWereRemoved(
                             streetNamePersistentLocalId,
-                            command.HomonymAdditions,
+                            command.Languages,
                             new List<AddressPersistentLocalId>
                             {
                                 new AddressPersistentLocalId(addressWasProposedV2.AddressPersistentLocalId)
@@ -93,11 +93,11 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRemovingStreetNameHomonymAddi
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
-            var streetNameHomonymAdditionsWereCorrected = new StreetNameHomonymAdditionsWereCorrected(
+            var streetNameHomonymAdditionsWereRemoved = new StreetNameHomonymAdditionsWereRemoved(
                 new StreetNamePersistentLocalId(migratedStreetNameWasImported.StreetNamePersistentLocalId),
-                Fixture.Create<Dictionary<string, string>>(),
+                Fixture.Create<List<string>>(),
                 new List<AddressPersistentLocalId> { new AddressPersistentLocalId(addressWasProposedV2.AddressPersistentLocalId) });
-            ((ISetProvenance)streetNameHomonymAdditionsWereCorrected).SetProvenance(Fixture.Create<Provenance>());
+            ((ISetProvenance)streetNameHomonymAdditionsWereRemoved).SetProvenance(Fixture.Create<Provenance>());
 
             var sut = new StreetNameFactory(NoSnapshotStrategy.Instance).Create();
 
@@ -106,13 +106,13 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRemovingStreetNameHomonymAddi
             {
                 migratedStreetNameWasImported,
                 addressWasProposedV2,
-                streetNameHomonymAdditionsWereCorrected
+                streetNameHomonymAdditionsWereRemoved
             });
 
             // Assert
             foreach (var streetNameAddress in sut.StreetNameAddresses)
             {
-                streetNameAddress.LastEventHash.Should().Be(streetNameHomonymAdditionsWereCorrected.GetHash());
+                streetNameAddress.LastEventHash.Should().Be(streetNameHomonymAdditionsWereRemoved.GetHash());
             }
         }
     }

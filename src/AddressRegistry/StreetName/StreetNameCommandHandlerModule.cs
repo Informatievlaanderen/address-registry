@@ -131,6 +131,30 @@ namespace AddressRegistry.StreetName
                     streetName.CorrectStreetNameNames(message.Command.StreetNameNames);
                 });
 
+            For<CorrectStreetNameHomonymAdditions>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<CorrectStreetNameHomonymAdditions, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streetNameStreamId = new StreetNameStreamId(message.Command.PersistentLocalId);
+                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+
+                    streetName.CorrectStreetNameHomonymAdditions(message.Command.HomonymAdditions);
+                });
+
+            For<RemoveStreetNameHomonymAdditions>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<RemoveStreetNameHomonymAdditions, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streetNameStreamId = new StreetNameStreamId(message.Command.PersistentLocalId);
+                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+
+                    streetName.RemoveStreetNameHomonymAdditions(message.Command.Languages);
+                });
+
             For<CorrectStreetNameApproval>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
                 .AddEventHash<CorrectStreetNameApproval, StreetName>(getUnitOfWork)

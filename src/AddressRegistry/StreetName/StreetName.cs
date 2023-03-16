@@ -116,6 +116,22 @@ namespace AddressRegistry.StreetName
                 StreetNameAddresses.Select(x => new AddressPersistentLocalId(x.AddressPersistentLocalId))));
         }
 
+        public void CorrectStreetNameHomonymAdditions(IDictionary<string,string> streetNameHomonymAdditions)
+        {
+            ApplyChange(new StreetNameHomonymAdditionsWereCorrected(
+                PersistentLocalId,
+                streetNameHomonymAdditions,
+                StreetNameAddresses.Select(x => new AddressPersistentLocalId(x.AddressPersistentLocalId))));
+        }
+
+        public void RemoveStreetNameHomonymAdditions(IList<string> streetNameHomonymAdditionLanguages)
+        {
+            ApplyChange(new StreetNameHomonymAdditionsWereRemoved(
+                PersistentLocalId,
+                streetNameHomonymAdditionLanguages,
+                StreetNameAddresses.Select(x => new AddressPersistentLocalId(x.AddressPersistentLocalId))));
+        }
+
         public void CorrectStreetNameApproval()
         {
             if (Status != StreetNameStatus.Proposed)

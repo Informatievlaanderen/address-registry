@@ -23,6 +23,26 @@
                 await commandHandler.Handle(command, ct);
             });
 
+            When<StreetNameHomonymAdditionsWereCorrected>(async (commandHandler, message, ct) =>
+            {
+                var command = new CorrectStreetNameHomonymAdditions(
+                    new StreetNamePersistentLocalId(message.PersistentLocalId),
+                    message.HomonymAdditions,
+                    FromProvenance(message.Provenance));
+
+                await commandHandler.Handle(command, ct);
+            });
+
+            When<StreetNameHomonymAdditionsWereRemoved>(async (commandHandler, message, ct) =>
+            {
+                var command = new RemoveStreetNameHomonymAdditions(
+                    new StreetNamePersistentLocalId(message.PersistentLocalId),
+                    message.Languages,
+                    FromProvenance(message.Provenance));
+
+                await commandHandler.Handle(command, ct);
+            });
+
             When<StreetNameWasRemovedV2>(async (commandHandler, message, ct) =>
             {
                 var command = new RemoveStreetName(

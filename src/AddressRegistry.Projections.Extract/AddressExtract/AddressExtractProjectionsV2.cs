@@ -53,6 +53,24 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 }
             });
 
+            When<Envelope<StreetNameHomonymAdditionsWereCorrected>>(async (context, message, ct) =>
+            {
+                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
+                {
+                    var item = await context.AddressExtractV2.FindAsync(addressPersistentLocalId, cancellationToken: ct);
+                    UpdateVersieIfNewer(item, message.Message.Provenance.Timestamp);
+                }
+            });
+
+            When<Envelope<StreetNameHomonymAdditionsWereRemoved>>(async (context, message, ct) =>
+            {
+                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
+                {
+                    var item = await context.AddressExtractV2.FindAsync(addressPersistentLocalId, cancellationToken: ct);
+                    UpdateVersieIfNewer(item, message.Message.Provenance.Timestamp);
+                }
+            });
+
             // Address
             When<Envelope<AddressWasMigratedToStreetName>>(async (context, message, ct) =>
             {

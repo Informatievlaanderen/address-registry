@@ -113,7 +113,29 @@ namespace AddressRegistry.StreetName
             ApplyChange(new StreetNameNamesWereCorrected(
                 PersistentLocalId,
                 streetNameNames,
-                StreetNameAddresses.Select(x => new AddressPersistentLocalId(x.AddressPersistentLocalId))));
+                StreetNameAddresses
+                    .Where(x => !x.IsRemoved)
+                    .Select(x => new AddressPersistentLocalId(x.AddressPersistentLocalId))));
+        }
+
+        public void CorrectStreetNameHomonymAdditions(IDictionary<string,string> streetNameHomonymAdditions)
+        {
+            ApplyChange(new StreetNameHomonymAdditionsWereCorrected(
+                PersistentLocalId,
+                streetNameHomonymAdditions,
+                StreetNameAddresses
+                    .Where(x => !x.IsRemoved)
+                    .Select(x => new AddressPersistentLocalId(x.AddressPersistentLocalId))));
+        }
+
+        public void RemoveStreetNameHomonymAdditions(IList<string> streetNameHomonymAdditionLanguages)
+        {
+            ApplyChange(new StreetNameHomonymAdditionsWereRemoved(
+                PersistentLocalId,
+                streetNameHomonymAdditionLanguages,
+                StreetNameAddresses
+                    .Where(x => !x.IsRemoved)
+                    .Select(x => new AddressPersistentLocalId(x.AddressPersistentLocalId))));
         }
 
         public void CorrectStreetNameApproval()

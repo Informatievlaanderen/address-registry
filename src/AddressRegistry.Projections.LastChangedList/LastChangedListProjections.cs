@@ -231,6 +231,22 @@ namespace AddressRegistry.Projections.LastChangedList
                 }
             });
 
+            When<Envelope<StreetNameHomonymAdditionsWereCorrected>>(async (context, message, ct) =>
+            {
+                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
+                {
+                    await GetLastChangedRecordsAndUpdatePosition(addressPersistentLocalId.ToString(), message.Position, context, ct);
+                }
+            });
+
+            When<Envelope<StreetNameHomonymAdditionsWereRemoved>>(async (context, message, ct) =>
+            {
+                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
+                {
+                    await GetLastChangedRecordsAndUpdatePosition(addressPersistentLocalId.ToString(), message.Position, context, ct);
+                }
+            });
+
             When<Envelope<AddressWasMigrated>>(async (context, message, ct) =>
             {
                 var attachedRecords = await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);

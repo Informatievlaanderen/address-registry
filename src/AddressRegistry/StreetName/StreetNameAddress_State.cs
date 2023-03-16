@@ -70,6 +70,8 @@ namespace AddressRegistry.StreetName
             Register<AddressWasRemovedBecauseStreetNameWasRemoved>(When);
 
             Register<StreetNameNamesWereCorrected>(When);
+            Register<StreetNameHomonymAdditionsWereCorrected>(When);
+            Register<StreetNameHomonymAdditionsWereRemoved>(When);
         }
 
         private void When(AddressWasMigratedToStreetName @event)
@@ -331,6 +333,16 @@ namespace AddressRegistry.StreetName
         }
 
         private void When(StreetNameNamesWereCorrected @event)
+        {
+            _lastEvent = @event;
+        }
+
+        private void When(StreetNameHomonymAdditionsWereCorrected @event)
+        {
+            _lastEvent = @event;
+        }
+
+        private void When(StreetNameHomonymAdditionsWereRemoved @event)
         {
             _lastEvent = @event;
         }

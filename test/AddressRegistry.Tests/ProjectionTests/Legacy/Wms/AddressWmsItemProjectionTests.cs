@@ -1028,5 +1028,59 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     item.VersionTimestamp.Should().Be(addressWasProposedV2.Provenance.Timestamp);
                 });
         }
+
+        [Fact]
+        public async Task WhenStreetNameHomonymAdditionsWereCorrected()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var streetNameHomonymAdditionsWereCorrected = _fixture.Create<StreetNameHomonymAdditionsWereCorrected>();
+            var streetNameNamesWereCorrectedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, streetNameHomonymAdditionsWereCorrected.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<StreetNameHomonymAdditionsWereCorrected>(new Envelope(streetNameHomonymAdditionsWereCorrected, streetNameNamesWereCorrectedMetadata)))
+                .Then(async ct =>
+                {
+                    var item = (await ct.AddressWmsItems.FindAsync(addressWasProposedV2.AddressPersistentLocalId));
+                    item.Should().NotBeNull();
+                    item.VersionTimestamp.Should().Be(streetNameHomonymAdditionsWereCorrected.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
+        public async Task WhenStreetNameHomonymAdditionsWereRemoved()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var streetNameHomonymAdditionsWereRemoved = _fixture.Create<StreetNameHomonymAdditionsWereRemoved>();
+            var streetNameNamesWereCorrectedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, streetNameHomonymAdditionsWereRemoved.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<StreetNameHomonymAdditionsWereRemoved>(new Envelope(streetNameHomonymAdditionsWereRemoved, streetNameNamesWereCorrectedMetadata)))
+                .Then(async ct =>
+                {
+                    var item = (await ct.AddressWmsItems.FindAsync(addressWasProposedV2.AddressPersistentLocalId));
+                    item.Should().NotBeNull();
+                    item.VersionTimestamp.Should().Be(streetNameHomonymAdditionsWereRemoved.Provenance.Timestamp);
+                });
+        }
     }
 }

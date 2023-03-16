@@ -1,10 +1,7 @@
-namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingStreetNameNames
+namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingStreetNameHomonymAdditions
 {
     using System.Collections.Generic;
     using Api.BackOffice.Abstractions;
-    using StreetName;
-    using StreetName.Commands;
-    using StreetName.Events;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
@@ -13,6 +10,9 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingStreetNameNames
     using Builders;
     using FluentAssertions;
     using global::AutoFixture;
+    using StreetName;
+    using StreetName.Commands;
+    using StreetName.Events;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -28,11 +28,11 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingStreetNameNames
         }
 
         [Fact]
-        public void ThenStreetNameNamesWereCorrected()
+        public void ThenStreetNameHomonymAdditionsWereCorrected()
         {
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
 
-            var command = Fixture.Create<CorrectStreetNameNames>();
+            var command = Fixture.Create<CorrectStreetNameHomonymAdditions>();
 
             var streetNameWasImported = new StreetNameWasImported(
                 streetNamePersistentLocalId,
@@ -57,9 +57,9 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingStreetNameNames
                 .When(command)
                 .Then(
                     new Fact(new StreetNameStreamId(command.PersistentLocalId),
-                        new StreetNameNamesWereCorrected(
+                        new StreetNameHomonymAdditionsWereCorrected(
                             streetNamePersistentLocalId,
-                            command.StreetNameNames,
+                            command.HomonymAdditions,
                             new List<AddressPersistentLocalId>
                             {
                                 new AddressPersistentLocalId(addressWasProposedV2.AddressPersistentLocalId)
@@ -73,7 +73,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingStreetNameNames
         {
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
 
-            var command = Fixture.Create<CorrectStreetNameNames>();
+            var command = Fixture.Create<CorrectStreetNameHomonymAdditions>();
 
             var streetNameWasImported = new StreetNameWasImported(
                 streetNamePersistentLocalId,
@@ -92,9 +92,9 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingStreetNameNames
                 .When(command)
                 .Then(
                     new Fact(new StreetNameStreamId(command.PersistentLocalId),
-                        new StreetNameNamesWereCorrected(
+                        new StreetNameHomonymAdditionsWereCorrected(
                             streetNamePersistentLocalId,
-                            command.StreetNameNames,
+                            command.HomonymAdditions,
                             new List<AddressPersistentLocalId> { new AddressPersistentLocalId(addressWasMigrated.AddressPersistentLocalId) }))
                 ));
         }
@@ -125,12 +125,11 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingStreetNameNames
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
-            var streetNameNamesWereCorrected = new StreetNameNamesWereCorrected(
+            var streetNameHomonymAdditionsWereCorrected = new StreetNameHomonymAdditionsWereCorrected(
                 new StreetNamePersistentLocalId(migratedStreetNameWasImported.StreetNamePersistentLocalId),
                 Fixture.Create<Dictionary<string, string>>(),
-                new List<AddressPersistentLocalId>
-                    { new AddressPersistentLocalId(addressWasProposedV2.AddressPersistentLocalId) });
-            ((ISetProvenance)streetNameNamesWereCorrected).SetProvenance(Fixture.Create<Provenance>());
+                new List<AddressPersistentLocalId> { new AddressPersistentLocalId(addressWasProposedV2.AddressPersistentLocalId) });
+            ((ISetProvenance)streetNameHomonymAdditionsWereCorrected).SetProvenance(Fixture.Create<Provenance>());
 
             var sut = new StreetNameFactory(NoSnapshotStrategy.Instance).Create();
 
@@ -139,13 +138,13 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingStreetNameNames
             {
                 migratedStreetNameWasImported,
                 addressWasProposedV2,
-                streetNameNamesWereCorrected
+                streetNameHomonymAdditionsWereCorrected
             });
 
             // Assert
             foreach (var streetNameAddress in sut.StreetNameAddresses)
             {
-                streetNameAddress.LastEventHash.Should().Be(streetNameNamesWereCorrected.GetHash());
+                streetNameAddress.LastEventHash.Should().Be(streetNameHomonymAdditionsWereCorrected.GetHash());
             }
         }
     }

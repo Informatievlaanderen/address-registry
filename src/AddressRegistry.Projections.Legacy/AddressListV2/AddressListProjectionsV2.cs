@@ -34,6 +34,38 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
                 }
             });
 
+            When<Envelope<StreetNameHomonymAdditionsWereCorrected>>(async (context, message, ct) =>
+            {
+                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
+                {
+                    var item = await context.FindAndUpdateAddressListItemV2(
+                        addressPersistentLocalId,
+                        item =>
+                        {
+                            UpdateVersionTimestampIfNewer(item, message.Message.Provenance.Timestamp);
+                        },
+                        ct);
+
+                    UpdateHash(item, message);
+                }
+            });
+
+            When<Envelope<StreetNameHomonymAdditionsWereRemoved>>(async (context, message, ct) =>
+            {
+                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
+                {
+                    var item = await context.FindAndUpdateAddressListItemV2(
+                        addressPersistentLocalId,
+                        item =>
+                        {
+                            UpdateVersionTimestampIfNewer(item, message.Message.Provenance.Timestamp);
+                        },
+                        ct);
+
+                    UpdateHash(item, message);
+                }
+            });
+
             // Address
             When<Envelope<AddressWasMigratedToStreetName>>(async (context, message, ct) =>
             {

@@ -1,3 +1,10 @@
+# [3.82.0](https://github.com/informatievlaanderen/address-registry/compare/v3.81.3...v3.82.0) (2023-03-16)
+
+
+### Features
+
+* consume streetname homonym addition corrections in domain ([0bbb251](https://github.com/informatievlaanderen/address-registry/commit/0bbb25192baaae012cad3db67663343559ad6be4))
+
 ## [3.81.3](https://github.com/informatievlaanderen/address-registry/compare/v3.81.2...v3.81.3) (2023-03-15)
 
 

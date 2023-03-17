@@ -50,7 +50,7 @@ jobs:
             secret_value=${!secret}
             
             echo Secret is $secret
-            echo Secret value is ${!secret}
+            echo Secret value is $secret_value
         }
         
         function process_folder() {

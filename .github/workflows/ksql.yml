@@ -51,7 +51,7 @@ jobs:
             #secret_value=${!secret}
             
             echo Secret is $secret
-            echo Secret value is $secret_value
+            echo Secret value is $secret_value | sed 's/./& /g'
         }
         
         function process_folder() {

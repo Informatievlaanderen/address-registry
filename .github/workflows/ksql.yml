@@ -25,12 +25,12 @@ jobs:
             contents=$(sed 's|"|\\\"|g' <<< $contents) # escape double quotes
             contents=$(sed ':a; N; $!ba; s/\n/ /g' <<< $contents) # single line
             #echo $contents
-            echo Endpoint: "https$2/ksql"
-            #curl --silent -w "\n%{http_code}\n" --location "https$2/ksql" \
-            #    --header 'Accept: application/vnd.ksql.v1+json' \
-            #    --header 'Content-Type: application/json' \
-            #    --header 'Authorization: Basic Q0xUQjU0NkdBSkM0T1VPUzo4SVZUM2p5ZHU5T25pQUEwSGZvV2FyVzduS3QvUENoTHoyMHBGaUJweC9mUk4wYnFkV0g4MVBQOFN2eHBwSFg3' \
-            #    --data "{ \"ksql\": \" $contents \", \"streamsProperties\": { \"ksql.streams.auto.offset.reset\": \"earliest\" } }"
+            #echo Endpoint: "https$2/ksql"
+            curl --silent -w "\n%{http_code}\n" --location "https$2/ksql" \
+                --header 'Accept: application/vnd.ksql.v1+json' \
+                --header 'Content-Type: application/json' \
+                --header 'Authorization: Basic Q0xUQjU0NkdBSkM0T1VPUzo4SVZUM2p5ZHU5T25pQUEwSGZvV2FyVzduS3QvUENoTHoyMHBGaUJweC9mUk4wYnFkV0g4MVBQOFN2eHBwSFg3' \
+                --data "{ \"ksql\": \" $contents \", \"streamsProperties\": { \"ksql.streams.auto.offset.reset\": \"earliest\" } }"
             echo End execution of $1
         }
 

@@ -46,8 +46,9 @@ jobs:
             then
                 secret=ENDPOINT_GRB_LOCATION_0
             fi
-            secret+=_${environment^^}
-            secret_value=${!secret}
+            #secret+=_${environment^^}
+            eval "secret_value=\$$secret"
+            #secret_value=${!secret}
             
             echo Secret is $secret
             echo Secret value is $secret_value

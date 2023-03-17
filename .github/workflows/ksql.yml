@@ -7,6 +7,7 @@ jobs:
   build:
     if: github.repository_owner == 'Informatievlaanderen'
     name: Deploy ksql statements
+    environment: stg
     runs-on: ubuntu-latest
 
     steps:
@@ -96,6 +97,6 @@ jobs:
         done
 
         popd > /dev/null
-      environment: stg
+      env:
         ENDPOINT_GEOLOCATION_LOCATION_0: ${{ secrets.VBR_KSQLDB_CLUSTER_ENDPOINT_GEOLOCATION_0_STG }}
         ENDPOINT_GRB_LOCATION_0: ${{ secrets.VBR_KSQLDB_CLUSTER_ENDPOINT_GRB_0_STG }}

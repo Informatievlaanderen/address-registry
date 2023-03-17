@@ -35,6 +35,7 @@ jobs:
 
         function lookup_secret() {
             secret=''
+            secret_value=''
             if [[ $1 =~ 'INTEGRATION_0' ]]
             then
                 secret=$ENDPOINT_GEOLOCATION_LOCATION_0

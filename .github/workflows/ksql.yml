@@ -19,23 +19,23 @@ jobs:
         shopt -s nocasematch
         
         function process_file() {
-	    echo Start execution of $1
-	    contents=$(<$1)
+            echo Start execution of $1
+            contents=$(<$1)
             contents=$(sed 's|"|\\\"|g' <<< $contents) # escape double quotes
             contents=$(sed ':a; N; $!ba; s/\n/ /g' <<< $contents) # single line
             #echo $contents
-	    #curl --silent -w "\n%{http_code}\n" --location "$2/ksql" \
-	    #	--header 'Accept: application/vnd.ksql.v1+json' \
+            #curl --silent -w "\n%{http_code}\n" --location "$2/ksql" \
+            #    --header 'Accept: application/vnd.ksql.v1+json' \
             #    --header 'Content-Type: application/json' \
             #    --header 'Authorization: Basic Q0xUQjU0NkdBSkM0T1VPUzo4SVZUM2p5ZHU5T25pQUEwSGZvV2FyVzduS3QvUENoTHoyMHBGaUJweC9mUk4wYnFkV0g4MVBQOFN2eHBwSFg3' \
             #    --data "{ \"ksql\": \" $contents \", \"streamsProperties\": { \"ksql.streams.auto.offset.reset\": \"earliest\" } }"
-	    echo End execution of $1
+            echo End execution of $1
         }
-		
-	function lookup_secret() {
-	    secret=''
-	    if [[ $1 =~ 'INTEGRATION_0' ]]
-	    then
+
+        function lookup_secret() {
+            secret=''
+            if [[ $1 =~ 'INTEGRATION_0' ]]
+            then
                 secret=$ENDPOINT_GEOLOCATION_LOCATION_0
             elif [[ $1 =~ 'GEOLOCATION_0' ]]
             then
@@ -44,26 +44,26 @@ jobs:
             then
                 secret=ENDPOINT_GRB_LOCATION_0
             fi
-	    secret+=_${environment^^}
-	    secret_value=${!secret}
+            secret+=_${environment^^}
+            secret_value=${!secret}
             
             echo Secret is $secret
             echo Secret value is ${!secret}
-	}
+        }
         
         function process_folder() {
             echo Processing folder $1
         
             # look up secret
-	    lookup_secret $1
+            lookup_secret $1
             
             # execute remembered files with secret
-	    for REMEMBERED_FILE in $remembered_files ; do
-	    	process_file $REMEMBERED_FILE $secret_value
-	    done
+            for REMEMBERED_FILE in $remembered_files ; do
+                process_file $REMEMBERED_FILE $secret_value
+            done
         
             pushd $1 > /dev/null
-			
+
             for FILE in *.ksql; do 
               process_file $FILE $secret_value
             done
@@ -72,7 +72,7 @@ jobs:
         }
         
         pushd .ksql > /dev/null
-		
+
         #list files
         remembered_files=()
         for FILE in *.ksql; do 
@@ -94,7 +94,7 @@ jobs:
                 process_folder $FOLDER
             fi
         done
-		
+
         popd > /dev/null
       environment: stg
         ENDPOINT_GEOLOCATION_LOCATION_0: ${{ secrets.VBR_KSQLDB_CLUSTER_ENDPOINT_GEOLOCATION_0_STG }}

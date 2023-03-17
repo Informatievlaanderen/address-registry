@@ -25,7 +25,7 @@ jobs:
             contents=$(sed 's|"|\\\"|g' <<< $contents) # escape double quotes
             contents=$(sed ':a; N; $!ba; s/\n/ /g' <<< $contents) # single line
             #echo $contents
-            echo Endpoint -> "$2/ksql"
+            echo Endpoint: "$2/ksql"
             #curl --silent -w "\n%{http_code}\n" --location "$2/ksql" \
             #    --header 'Accept: application/vnd.ksql.v1+json' \
             #    --header 'Content-Type: application/json' \

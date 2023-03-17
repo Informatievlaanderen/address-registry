@@ -278,6 +278,8 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRetiremen
                 Fixture.Create<HouseNumber>(),
                 null);
 
+            ApproveAddress(Fixture.Create<StreetNamePersistentLocalId>(), Fixture.Create<AddressPersistentLocalId>());
+
             RetireAddress(
                 Fixture.Create<StreetNamePersistentLocalId>(),
                 Fixture.Create<AddressPersistentLocalId>());

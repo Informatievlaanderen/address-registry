@@ -73,7 +73,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
         {
             using var scope = Container.BeginLifetimeScope();
             var bus = scope.Resolve<ICommandHandlerResolver>();
-            bus.Dispatch(command.CreateCommandId(), command);
+            bus.Dispatch(command.CreateCommandId(), command).GetAwaiter().GetResult();
         }
 
         protected void ImportMigratedStreetName(

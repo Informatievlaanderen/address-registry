@@ -185,6 +185,8 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRetiringAddress
                 houseNumber,
                 null);
 
+            ApproveAddress(streetNamePersistentLocalId, addressPersistentLocalId);
+
             var retireAddress = new RetireAddress(
                 streetNamePersistentLocalId,
                 addressPersistentLocalId,

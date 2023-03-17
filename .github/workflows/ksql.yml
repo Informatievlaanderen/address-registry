@@ -36,22 +36,20 @@ jobs:
         function lookup_secret() {
             secret=''
             secret_value=''
+            
             if [[ $1 =~ 'INTEGRATION_0' ]]
             then
-                secret=$ENDPOINT_GEOLOCATION_LOCATION_0
+                secret=$ENDPOINT_INTEGRATION_0
             elif [[ $1 =~ 'GEOLOCATION_0' ]]
             then
-                secret=$ENDPOINT_GEOLOCATION_LOCATION_0
+                secret=$ENDPOINT_GEOLOCATION_0
             elif [[ $1 =~ 'GRB_0' ]]
             then
-                secret=ENDPOINT_GRB_LOCATION_0
+                secret=ENDPOINT_GRB_0
             fi
+            
             #secret+=_${environment^^}
             eval "secret_value=\$$secret"
-            #secret_value=${!secret}
-            
-            echo Secret is $secret
-            echo Secret value is $secret_value | sed 's/./& /g'
         }
         
         function process_folder() {
@@ -100,5 +98,6 @@ jobs:
 
         popd > /dev/null
       env:
-        ENDPOINT_GEOLOCATION_LOCATION_0: ${{ secrets.VBR_KSQLDB_CLUSTER_ENDPOINT_GEOLOCATION_0_STG }}
-        ENDPOINT_GRB_LOCATION_0: ${{ secrets.VBR_KSQLDB_CLUSTER_ENDPOINT_GRB_0_STG }}
+        ENDPOINT_INTEGRATION_0:  ${{ secrets.VBR_KSQLDB_CLUSTER_ENDPOINT_INTEGRATION_0_STG }}
+        ENDPOINT_GEOLOCATION_0: ${{ secrets.VBR_KSQLDB_CLUSTER_ENDPOINT_GEOLOCATION_0_STG }}
+        ENDPOINT_GRB_0: ${{ secrets.VBR_KSQLDB_CLUSTER_ENDPOINT_GRB_0_STG }}

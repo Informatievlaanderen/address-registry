@@ -28,9 +28,6 @@ namespace AddressRegistry.Tests.BackOffice.Api
 
     public class BackOfficeApiTest : AddressRegistryTest
     {
-        protected const string StraatNaamPuri = $"https://data.vlaanderen.be/id/straatnaam/";
-        protected const string PostInfoPuri = $"https://data.vlaanderen.be/id/postinfo/";
-
         protected const string PublicTicketUrl = "https://www.ticketing.com";
         protected const string InternalTicketUrl = "https://www.internalticketing.com";
 

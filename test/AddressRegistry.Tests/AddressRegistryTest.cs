@@ -18,6 +18,10 @@ namespace AddressRegistry.Tests
 
     public class AddressRegistryTest : AutofacBasedTest
     {
+        protected const string StraatNaamPuri = $"https://data.vlaanderen.be/id/straatnaam/";
+        protected const string AdresPuri = $"https://data.vlaanderen.be/id/adres/";
+        protected const string PostInfoPuri = $"https://data.vlaanderen.be/id/postinfo/";
+
         protected Fixture Fixture { get; }
         protected string ConfigDetailUrl => "http://base/{0}";
         protected JsonSerializerSettings EventSerializerSettings { get; } = EventsJsonSerializerSettingsProvider.CreateSerializerSettings();

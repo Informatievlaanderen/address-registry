@@ -8,6 +8,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Design;
     using Microsoft.Extensions.Configuration;
+    using StreetName;
 
     public class BackOfficeContext : DbContext
     {
@@ -23,13 +24,21 @@ namespace AddressRegistry.Api.BackOffice.Abstractions
             int streetNamePersistentLocalId,
             CancellationToken cancellationToken)
         {
-            var relation = await AddressPersistentIdStreetNamePersistentIds.FindAsync(new object?[] { addressPersistentLocalId }, cancellationToken);
+            var relation = await FindRelationAsync(new AddressPersistentLocalId(addressPersistentLocalId), cancellationToken);
             if (relation is null)
             {
                 relation = new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentLocalId);
                 await AddressPersistentIdStreetNamePersistentIds.AddAsync(relation, cancellationToken);
             }
 
+            return relation;
+        }
+
+        public async Task<AddressPersistentIdStreetNamePersistentId?> FindRelationAsync(AddressPersistentLocalId addressPersistentLocalId, CancellationToken cancellationToken)
+        {
+            var relation =
+                await AddressPersistentIdStreetNamePersistentIds.FindAsync(new object?[] { (int)addressPersistentLocalId },
+                    cancellationToken);
             return relation;
         }
 

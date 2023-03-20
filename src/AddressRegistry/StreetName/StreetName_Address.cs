@@ -65,7 +65,6 @@
         }
 
         public void ProposeAddress(
-            StreetNamePersistentLocalId streetNamePersistentLocalId,
             AddressPersistentLocalId addressPersistentLocalId,
             PostalCode postalCode,
             MunicipalityId municipalityIdByPostalCode,
@@ -75,7 +74,7 @@
             GeometrySpecification geometrySpecification,
             ExtendedWkbGeometry geometryPosition)
         {
-            GuardActiveStreetName(streetNamePersistentLocalId);
+            GuardActiveStreetName(PersistentLocalId);
 
             if (StreetNameAddresses.HasPersistentLocalId(addressPersistentLocalId))
             {
@@ -101,7 +100,7 @@
 
             if (isChild && parentNotFound)
             {
-                throw new ParentAddressNotFoundException(streetNamePersistentLocalId, houseNumber);
+                throw new ParentAddressNotFoundException(PersistentLocalId, houseNumber);
             }
 
             if (isChild && !parent.BoxNumberIsUnique(boxNumber!))
@@ -117,7 +116,7 @@
             StreetNameAddress.GuardGeometry(geometryMethod, geometrySpecification);
 
             ApplyChange(new AddressWasProposedV2(
-                streetNamePersistentLocalId,
+                PersistentLocalId,
                 addressPersistentLocalId,
                 parent?.AddressPersistentLocalId,
                 postalCode,

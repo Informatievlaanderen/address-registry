@@ -6,8 +6,15 @@ namespace AddressRegistry.StreetName.Exceptions
     [Serializable]
     public sealed class AddressHasInvalidStatusException : AddressRegistryException
     {
+        public AddressPersistentLocalId AddressPersistentLocalId { get; }
+
         public AddressHasInvalidStatusException()
         { }
+
+        public AddressHasInvalidStatusException(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            AddressPersistentLocalId = addressPersistentLocalId;
+        }
 
         private AddressHasInvalidStatusException(SerializationInfo info, StreamingContext context)
             : base(info, context)

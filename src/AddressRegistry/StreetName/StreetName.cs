@@ -1,10 +1,22 @@
 namespace AddressRegistry.StreetName
 {
+    using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
+    using System.Runtime.InteropServices.ComTypes;
+    using Address;
+    using AddressRegistry.StreetName.Exceptions;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
+    using Be.Vlaanderen.Basisregisters.EventHandling;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Be.Vlaanderen.Basisregisters.Utilities;
+    using Commands;
+    using DataStructures;
     using Events;
+    using Newtonsoft.Json;
 
     public partial class StreetName : AggregateRootEntity, ISnapshotable
     {
@@ -108,7 +120,7 @@ namespace AddressRegistry.StreetName
             }
         }
 
-        public void CorrectStreetNameNames(IDictionary<string,string> streetNameNames)
+        public void CorrectStreetNameNames(IDictionary<string, string> streetNameNames)
         {
             ApplyChange(new StreetNameNamesWereCorrected(
                 PersistentLocalId,
@@ -118,7 +130,7 @@ namespace AddressRegistry.StreetName
                     .Select(x => new AddressPersistentLocalId(x.AddressPersistentLocalId))));
         }
 
-        public void CorrectStreetNameHomonymAdditions(IDictionary<string,string> streetNameHomonymAdditions)
+        public void CorrectStreetNameHomonymAdditions(IDictionary<string, string> streetNameHomonymAdditions)
         {
             ApplyChange(new StreetNameHomonymAdditionsWereCorrected(
                 PersistentLocalId,
@@ -160,6 +172,183 @@ namespace AddressRegistry.StreetName
             {
                 ApplyChange(new StreetNameWasCorrectedFromRetiredToCurrent(PersistentLocalId));
             }
+        }
+
+        [EventTags(EventTag.For.Edit, EventTag.For.Sync)]
+        [EventName(EventName)]
+        [EventDescription("Het adres werd afgekeurd.")]
+        public class StreetNameWasReaddressed : IStreetNameEvent
+        {
+            public const string EventName = "StreetNameWasReaddressed"; // BE CAREFUL CHANGING THIS!!
+
+            [EventPropertyDescription("Objectidentificator van de straatnaam aan dewelke het adres is toegewezen.")]
+            public int StreetNamePersistentLocalId { get; }
+
+            [EventPropertyDescription("De voorgestelde adressen.")]
+            public IReadOnlyList<int> ProposedAddressPersistentLocalIds { get; }
+            [EventPropertyDescription("De heradresseerde adressen.")]
+            public IReadOnlyList<ReaddressAddressData> ReaddressAddresses { get; }
+
+            [EventPropertyDescription("Metadata bij het event.")]
+            public ProvenanceData Provenance { get; private set; }
+
+            public StreetNameWasReaddressed(
+                StreetNamePersistentLocalId streetNamePersistentLocalId,
+                List<AddressPersistentLocalId> proposedAddressPersistentLocalIds,
+                List<ReaddressAddressData> readdressAddresses)
+            {
+                StreetNamePersistentLocalId = streetNamePersistentLocalId;
+                ProposedAddressPersistentLocalIds = proposedAddressPersistentLocalIds.Select(x => (int) x).ToList();
+                ReaddressAddresses = readdressAddresses;
+            }
+
+            [JsonConstructor]
+            private StreetNameWasReaddressed(
+                int streetNamePersistentLocalId,
+                List<int> proposedAddressPersistentLocalIds,
+                List<ReaddressAddressData> readdressAddresses,
+                ProvenanceData provenance)
+                : this(
+                    new StreetNamePersistentLocalId(streetNamePersistentLocalId),
+                    proposedAddressPersistentLocalIds.Select(x => new AddressPersistentLocalId(x)).ToList(),
+                    readdressAddresses)
+                => ((ISetProvenance) this).SetProvenance(provenance.ToProvenance());
+
+            void ISetProvenance.SetProvenance(Provenance provenance) => Provenance = new ProvenanceData(provenance);
+
+            public IEnumerable<string> GetHashFields()
+            {
+                var fields = Provenance.GetHashFields().ToList();
+                fields.Add(StreetNamePersistentLocalId.ToString(CultureInfo.InvariantCulture));
+
+                foreach (var item in ProposedAddressPersistentLocalIds)
+                {
+                    fields.Add(item.ToString());
+                }
+
+                foreach (var item in ReaddressAddresses)
+                {
+                    fields.Add(item.SourceAddressPersistentLocalId.ToString());
+                    fields.Add(item.DestinationAddressPersistentLocalId.ToString());
+                    fields.Add(item.SourceHouseNumber);
+                    fields.Add(item.SourcePostalCode);
+                    fields.Add(item.SourceStatus.ToString());
+                    fields.Add(item.SourceGeometryMethod.ToString());
+                    fields.Add(item.SourceGeometrySpecification.ToString());
+                    fields.Add(item.SourceExtendedWkbGeometry);
+                    fields.Add(item.SourceIsOfficiallyAssigned.ToString());
+                }
+
+                return fields;
+            }
+
+            public string GetHash() => this.ToEventHash(EventName);
+        }
+
+        public void Readdress(
+            IPersistentLocalIdGenerator persistentLocalIdGenerator,
+            IEnumerable<ReaddressAddressItem> readdressItems,
+            ReaddressExecutionContext executionContext)
+        {
+            GuardActiveStreetName(PersistentLocalId);
+
+            // CASE 1:
+            // From address_5 to non-existing address_6
+
+            // Propose new address_6
+            // Generate persistentLocalId
+            // Call ProposeAddress
+            // Copy attributes from address_5 to address_6
+            // attributes: status, position, postalCode, officially assigned
+
+            var proposedAddresses = new List<AddressPersistentLocalId>();
+            var readdressAddresses = new List<ReaddressAddressData>();
+
+            foreach (var item in readdressItems)
+            {
+                var sourceAddress =
+                    StreetNameAddresses.GetNotRemovedByPersistentLocalId(item.SourceAddressPersistentLocalId);
+
+                // TODO: question, does housenumber already exist?
+
+                if (!sourceAddress.IsHouseNumberAddress)
+                {
+                    throw new AddressHasBoxNumberException(sourceAddress.AddressPersistentLocalId);
+                }
+
+                if (!sourceAddress.IsActive)
+                {
+                    throw new AddressHasInvalidStatusException(sourceAddress.AddressPersistentLocalId);
+                }
+
+                if (sourceAddress.PostalCode is null)
+                {
+                    throw new AddressHasNoPostalCodeException(sourceAddress.AddressPersistentLocalId);
+                }
+
+                var newPersistentLocalId =
+                    new AddressPersistentLocalId(persistentLocalIdGenerator.GenerateNextPersistentLocalId());
+
+                ProposeAddress(
+                    newPersistentLocalId,
+                    sourceAddress.PostalCode,
+                    MunicipalityId,
+                    item.DestinationHouseNumber,
+                    null,
+                    sourceAddress.Geometry.GeometryMethod,
+                    sourceAddress.Geometry.GeometrySpecification,
+                    sourceAddress.Geometry.Geometry
+                );
+
+                proposedAddresses.Add(newPersistentLocalId);
+                executionContext.AddressesAdded.Add((PersistentLocalId, newPersistentLocalId));
+
+                readdressAddresses.Add(new ReaddressAddressData(
+                    item.SourceAddressPersistentLocalId,
+                    newPersistentLocalId,
+                    sourceAddress.Status,
+                    sourceAddress.HouseNumber,
+                    sourceAddress.PostalCode,
+                    sourceAddress.Geometry,
+                    sourceAddress.IsOfficiallyAssigned
+                ));
+            }
+
+            ApplyChange(new StreetNameWasReaddressed(
+                PersistentLocalId,
+                proposedAddresses,
+                readdressAddresses));
+        }
+
+        // public void Readdress(
+        //     IEnumerable<IGrouping<StreetName, ReaddressAddressItem>> readdressItems,
+        //     IEnumerable<IGrouping<StreetNamePersistentLocalId, RetireAddressItem>> retireAddressItems)
+        // {
+        //     var readdressStreetNameEvent = new ReaddressedStreetNameEvent();
+        //
+        //     foreach (var sourceAggregate in readdressItems)
+        //     {
+        //         foreach (var address in sourceAggregate)
+        //         {
+        //             var s = sourceAggregate.Key;
+        //             var sourceAddress = s.StreetNameAddresses.Single(x => x.AddressPersistentLocalId == address.SourceAddressPersistentLocalId);
+        //
+        //             var destinationAddress = StreetNameAddresses.FirstOrDefault(x => x.HouseNumber == address.DestinationHouseNumber);
+        //
+        //             var readdressAddressItem = new ReaddressAddres(
+        //                 destinationAddress.AddressPersistentLocalId,
+        //                 sourceAddress.Status,
+        //                 sourceAddress.Geometry);
+        //
+        //             readdressStreetNameEvent.ReaddressItems.Add(readdressAddressItem);
+        //         }
+        //     }
+        //
+        //     ApplyChange(readdressStreetNameEvent);
+        // }
+
+        public void RetireReaddressItems()
+        {
         }
 
         private void RejectAddressesBecauseStreetNameWasRejected(IEnumerable<StreetNameAddress> addresses)

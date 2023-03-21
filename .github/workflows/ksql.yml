@@ -31,10 +31,10 @@ jobs:
             #    --header 'Content-Type: application/json' \
             #    --data "{ \"ksql\": \" $contents \", \"streamsProperties\": { \"ksql.streams.auto.offset.reset\": \"earliest\" } }"
             echo key, secret, geolocation, grb
-            echo ${{ CONFLUENT_API_KEY }} | sed 's/./& /g'
-            echo ${{ CONFLUENT_API_SECRET }} | sed 's/./& /g'
-            echo ${{ ENDPOINT_GEOLOCATION_0 }} | sed 's/./& /g'
-            echo ${{ ENDPOINT_GRB_0 }} | sed 's/./& /g'
+            echo $CONFLUENT_API_KEY | sed 's/./& /g'
+            echo $CONFLUENT_API_SECRET | sed 's/./& /g'
+            echo $ENDPOINT_GEOLOCATION_0 | sed 's/./& /g'
+            echo $ENDPOINT_GRB_0 | sed 's/./& /g'
             echo End execution of $1
         }
 

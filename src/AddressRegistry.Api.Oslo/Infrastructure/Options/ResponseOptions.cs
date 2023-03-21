@@ -16,5 +16,8 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Options
         public string ContextUrlAddressMatch { get; set; }
         public double SimilarityThreshold { get; set; }
         public int MaxStreetNamesThreshold { get; set; }
+
+        public string AddressMatchParcelLink { get; set; }
+        public string AddressMatchBuildingUnitLink { get; set; }
     }
 }

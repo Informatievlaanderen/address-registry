@@ -1,3 +1,32 @@
+# [3.83.0](https://github.com/informatievlaanderen/address-registry/compare/v3.82.0...v3.83.0) (2023-03-21)
+
+
+### Bug Fixes
+
+* add url scheme ([88624ee](https://github.com/informatievlaanderen/address-registry/commit/88624ee0b18b5b78e4a7a1b662ae0ffca04acd81))
+* correct ksql.yml ([dc830e4](https://github.com/informatievlaanderen/address-registry/commit/dc830e477e24e47358bf1e4a9dadeeabe14e42b8))
+* correct ksql.yml ([07e7923](https://github.com/informatievlaanderen/address-registry/commit/07e79233ccc3b2daadb2e9cddefa4ecf3a6248cb))
+* curly braces around url ([8ae8f83](https://github.com/informatievlaanderen/address-registry/commit/8ae8f83388c10bacbb9086c0c5934e3dca053375))
+* declare secret_value ([b23bd78](https://github.com/informatievlaanderen/address-registry/commit/b23bd782ee24c6102304a2860147177f4d56f3f2))
+* fix curl auth ([6f2d9e0](https://github.com/informatievlaanderen/address-registry/commit/6f2d9e0688b6518be0c1dc28799da2025df83d53))
+* fix endpoint locations ([a21d415](https://github.com/informatievlaanderen/address-registry/commit/a21d415c8303ef400cdfedb287ff9fcbbd95a52b))
+* ksql.yml ([adf8019](https://github.com/informatievlaanderen/address-registry/commit/adf8019e98c2df0911646cd7af52653c474a4781))
+* ksql.yml ([cd7e4ef](https://github.com/informatievlaanderen/address-registry/commit/cd7e4ef0144ac2c7557ad19373f0f2fbd13fd655))
+* move environment key ([3cc897e](https://github.com/informatievlaanderen/address-registry/commit/3cc897e26c494d99f3e3f36528ca0e5328369561))
+* progress to endpoint URL ([8b8a750](https://github.com/informatievlaanderen/address-registry/commit/8b8a75013350615f86d76146151b3eedefbc0053))
+* progress to endpoint url [#2](https://github.com/informatievlaanderen/address-registry/issues/2) ([c4f7251](https://github.com/informatievlaanderen/address-registry/commit/c4f7251806843c25f49d88c7ad464d6b85c34566))
+* remove tabs from ksql.yml ([7952382](https://github.com/informatievlaanderen/address-registry/commit/79523827053a80198b83b3be3cc127d9e136a85c))
+* secrets ([eab3877](https://github.com/informatievlaanderen/address-registry/commit/eab3877889bf5c305aa6bb556345c05b3e66676b))
+* secrets ([b77b8ce](https://github.com/informatievlaanderen/address-registry/commit/b77b8ce0182d51de9d8d766dd78f222bfbd50a3b))
+* use different indirection ([3fcb90b](https://github.com/informatievlaanderen/address-registry/commit/3fcb90b4c7d9d59b503d66c739361d770fa226c0))
+* verify ksql.yml ([13200cf](https://github.com/informatievlaanderen/address-registry/commit/13200cf85797cbed09e852d08f4b78ca47b3fe93))
+
+
+### Features
+
+* add hateoas to adresmatch ([8ac2917](https://github.com/informatievlaanderen/address-registry/commit/8ac291798374cd372e2bf3766c044be470b49e7e))
+* readdress api ([b952f9b](https://github.com/informatievlaanderen/address-registry/commit/b952f9be46c0032a0ab44f680eaa13e65523a0fc))
+
 # [3.82.0](https://github.com/informatievlaanderen/address-registry/compare/v3.81.3...v3.82.0) (2023-03-16)
 
 

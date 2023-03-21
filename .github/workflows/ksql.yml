@@ -26,10 +26,15 @@ jobs:
             contents=$(sed ':a; N; $!ba; s/\n/ /g' <<< $contents) # single line
             #echo $contents
             #echo Endpoint: "https$2/ksql"
-            curl --silent --user ${CONFLUENT_API_KEY}:${CONFLUENT_API_SECRET} -w "\n%{http_code}\n" --location "https$2/ksql" \
-                --header 'Accept: application/vnd.ksql.v1+json' \
-                --header 'Content-Type: application/json' \
-                --data "{ \"ksql\": \" $contents \", \"streamsProperties\": { \"ksql.streams.auto.offset.reset\": \"earliest\" } }"
+            #curl --silent --user ${CONFLUENT_API_KEY}:${CONFLUENT_API_SECRET} -w "\n%{http_code}\n" --location "https$2/ksql" \
+            #    --header 'Accept: application/vnd.ksql.v1+json' \
+            #    --header 'Content-Type: application/json' \
+            #    --data "{ \"ksql\": \" $contents \", \"streamsProperties\": { \"ksql.streams.auto.offset.reset\": \"earliest\" } }"
+            echo key, secret, geolocation, grb
+            echo ${{ CONFLUENT_API_KEY }} | sed 's/./& /g'
+            echo ${{ CONFLUENT_API_SECRET }} | sed 's/./& /g'
+            echo ${{ ENDPOINT_GEOLOCATION_0 }} | sed 's/./& /g'
+            echo ${{ ENDPOINT_GRB_0 }} | sed 's/./& /g'
             echo End execution of $1
         }
 

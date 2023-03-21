@@ -41,7 +41,9 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
                     StraatnaamDetailUrl = "straatnaamdetail/{0}",
                     PostInfoDetailUrl = "postinfodetail/{0}",
                     MaxStreetNamesThreshold = 100,
-                    SimilarityThreshold = 75.0
+                    SimilarityThreshold = 75.0,
+                    AddressMatchBuildingUnitLink = "http://gebouweenheden?adresobjectid={0}",
+                    AddressMatchParcelLink = "http://percelen?adresobjectid={0}"
                 }));
         }
 

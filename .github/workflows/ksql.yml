@@ -32,7 +32,7 @@ jobs:
               endpoint="https$endpoint"
             fi
 
-            echo Endpoint: "$2/ksql" | sed 's/./& /g'
+            echo Endpoint: "$endpoint/ksql" | sed 's/./& /g'
             #curl --silent --user ${CONFLUENT_API_KEY}:${CONFLUENT_API_SECRET} -w "\n%{http_code}\n" --location "$endpoint/ksql" \
             #    --header 'Accept: application/vnd.ksql.v1+json' \
             #    --header 'Content-Type: application/json' \

@@ -26,7 +26,8 @@ jobs:
             contents=$(sed ':a; N; $!ba; s/\n/ /g' <<< $contents) # single line
             #echo $contents
             
-            endpoint = $2
+            endpoint=''
+            endpoint=$2
             if [[ ! $endpoint == https* ]]; then
               endpoint = "https$endpoint"
             fi

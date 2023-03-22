@@ -1,5 +1,6 @@
 namespace AddressRegistry.StreetName
 {
+    using System;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo;
 
@@ -8,6 +9,12 @@ namespace AddressRegistry.StreetName
         public static PostalCode CreateForPersistentId(IdentifierUri<string> persistentId)
             => new PostalCode(persistentId.Value);
 
-        public PostalCode(string postCode) : base(postCode) { }
+        public PostalCode(string postalCode) : base(postalCode)
+        {
+            if (string.IsNullOrEmpty(postalCode))
+            {
+                throw new ArgumentNullException(nameof(postalCode));
+            }
+        }
     }
 }

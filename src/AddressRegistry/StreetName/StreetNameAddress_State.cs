@@ -23,7 +23,7 @@ namespace AddressRegistry.StreetName
         public BoxNumber? BoxNumber { get; private set; }
         public bool IsHouseNumberAddress => !IsBoxNumberAddress;
         public bool IsBoxNumberAddress => BoxNumber is not null;
-        public PostalCode PostalCode { get; private set; }
+        public PostalCode? PostalCode { get; private set; }
         public AddressGeometry Geometry { get; private set; }
         public bool IsOfficiallyAssigned { get; set; }
         public bool IsRemoved { get; private set; }
@@ -81,7 +81,7 @@ namespace AddressRegistry.StreetName
             Status = @event.Status;
             HouseNumber = new HouseNumber(@event.HouseNumber);
             BoxNumber = string.IsNullOrEmpty(@event.BoxNumber) ? null : new BoxNumber(@event.BoxNumber);
-            PostalCode = new PostalCode(@event.PostalCode);
+            PostalCode = string.IsNullOrEmpty(@event.PostalCode) ? null : new PostalCode(@event.PostalCode);
             Geometry = new AddressGeometry(
                 @event.GeometryMethod,
                 @event.GeometrySpecification,

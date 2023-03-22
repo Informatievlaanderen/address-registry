@@ -27,14 +27,9 @@ jobs:
             #echo $contents
             
             if [[ ! $2 == https* ]]; then
-              echo "*** Doesn't start with https"
+              $2 = "https$2"
             fi
 
-            #if ! [[ $2 == https* ]]
-            #then
-            #  $2 = "https$2"
-            #fi
-            
             echo Endpoint: "$2/ksql" | sed 's/./& /g'
             #curl --silent --user ${CONFLUENT_API_KEY}:${CONFLUENT_API_SECRET} -w "\n%{http_code}\n" --location "$2/ksql" \
             #    --header 'Accept: application/vnd.ksql.v1+json' \

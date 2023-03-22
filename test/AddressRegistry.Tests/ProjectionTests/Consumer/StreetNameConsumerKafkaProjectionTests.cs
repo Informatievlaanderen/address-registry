@@ -65,7 +65,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
                     new object[] { new StreetNameWasRejected(municipalityId, streetNamePersistentLocalId, provenance) },
                     new object[] { new StreetNameWasCorrectedFromRejectedToProposed(municipalityId, streetNamePersistentLocalId, provenance) },
                     new object[] { new StreetNameWasRetiredV2(municipalityId, streetNamePersistentLocalId, provenance) },
-                    new object[] { new StreetNameWasCorrectedFromRetiredToCurrent(municipalityId, streetNamePersistentLocalId, provenance) }
+                    new object[] { new StreetNameWasCorrectedFromRetiredToCurrent(municipalityId, streetNamePersistentLocalId, provenance) },
+                    new object[] { new StreetNameWasRemovedV2(municipalityId, streetNamePersistentLocalId, provenance) }
 
                 };
                 return result.GetEnumerator();
@@ -283,6 +284,29 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
             {
                 _mockCommandHandler.Verify(
                     x => x.Handle(It.Is<IHasCommandProvenance>(x => x is CorrectStreetNameRetirement), CancellationToken.None),
+                    Times.Once);
+                await Task.CompletedTask;
+            });
+        }
+
+        [Fact]
+        public async Task GivenStreetNameWasRemovedV2_ThenStreetNameIsRemoved()
+        {
+            var @event = new StreetNameWasRemovedV2(
+                Fixture.Create<MunicipalityId>(),
+                Fixture.Create<PersistentLocalId>(),
+                new Provenance(
+                    Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
+                    Application.AddressRegistry.ToString(),
+                    Modification.Delete.ToString(),
+                    Organisation.Aiv.ToString(),
+                    "test"));
+
+            Given(@event);
+            await Then(async _ =>
+            {
+                _mockCommandHandler.Verify(
+                    x => x.Handle(It.Is<IHasCommandProvenance>(x => x is RemoveStreetName), CancellationToken.None),
                     Times.Once);
                 await Task.CompletedTask;
             });

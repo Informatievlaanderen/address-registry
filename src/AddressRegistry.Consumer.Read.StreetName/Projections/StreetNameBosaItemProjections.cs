@@ -137,6 +137,15 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections
                     UpdateVersionTimestamp(item, message.Provenance.Timestamp);
                 }, ct);
             });
+
+            When<StreetNameWasRemovedV2>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateBosaItem(message.PersistentLocalId, item =>
+                {
+                    item.IsRemoved = true;
+                    UpdateVersionTimestamp(item, message.Provenance.Timestamp);
+                }, ct);
+            });
         }
 
         private void UpdateNames(StreetNameBosaItem item, IDictionary<string, string> names)

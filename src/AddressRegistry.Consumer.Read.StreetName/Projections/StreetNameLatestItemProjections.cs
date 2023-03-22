@@ -102,7 +102,6 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections
                 }, ct);
             });
 
-
             When<StreetNameHomonymAdditionsWereCorrected>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateLatestItem(message.PersistentLocalId, item =>
@@ -137,6 +136,15 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections
                         }
                     }
 
+                    UpdateVersionTimestamp(item, message.Provenance.Timestamp);
+                }, ct);
+            });
+
+            When<StreetNameWasRemovedV2>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateLatestItem(message.PersistentLocalId, item =>
+                {
+                    item.IsRemoved = true;
                     UpdateVersionTimestamp(item, message.Provenance.Timestamp);
                 }, ct);
             });

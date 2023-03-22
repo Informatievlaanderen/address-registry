@@ -12,7 +12,6 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
     using FluentAssertions;
     using global::AutoFixture;
     using Microsoft.EntityFrameworkCore;
-    using NetTopologySuite.Index.HPRtree;
     using NodaTime;
     using NodaTime.Text;
     using Xunit;
@@ -266,7 +265,7 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
         public async Task StreetNameNamesWereCorrected()
         {
             var streetNamePersistentLocalId = _fixture.Create<StreetNamePersistentLocalId>();
-            
+
             var @event = new StreetNameNamesWereCorrected(
                 Fixture.Create<MunicipalityId>(),
                 streetNamePersistentLocalId,
@@ -377,6 +376,26 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
 
                 result.HomonymAdditionDutch.Should().BeNull();
                 result.HomonymAdditionFrench.Should().Be("QSD");
+            });
+        }
+
+        [Fact]
+        public async Task StreetNameWasRemovedV2()
+        {
+            var streetNamePersistentLocalId = _fixture.Create<StreetNamePersistentLocalId>();
+
+            var streetNameWasRemovedV2 = new StreetNameWasRemovedV2(
+                _fixture.Create<Guid>().ToString(),
+                streetNamePersistentLocalId,
+                _provenance);
+
+            Given(_streetNameWasProposedV2, streetNameWasRemovedV2);
+            await Then(async ctx =>
+            {
+                var result = await ctx.StreetNameBosaItems.FindAsync((int)streetNamePersistentLocalId);
+                result.Should().NotBeNull();
+                result.IsRemoved.Should().BeTrue();
+                result.VersionTimestamp.Should().Be(InstantPattern.General.Parse(streetNameWasRemovedV2.Provenance.Timestamp).Value);
             });
         }
 

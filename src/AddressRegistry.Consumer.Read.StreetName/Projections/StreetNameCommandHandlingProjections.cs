@@ -9,6 +9,11 @@
     using NodaTime;
     using Contracts = Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common;
 
+    /// <summary>
+    /// Here we handle the streetname events which are not tracked in the domain.
+    /// The reason we have an addition command handling here, is to keep the address version up-to-date,
+    /// AND we don't want to have the StreetNameLatestItemProject ahead of this projection.
+    /// </summary>
     public class StreetNameCommandHandlingProjections : ConnectedProjection<StreetNameCommandHandler>
     {
         public StreetNameCommandHandlingProjections()
@@ -39,15 +44,6 @@
                     new StreetNamePersistentLocalId(message.PersistentLocalId),
                     message.Languages,
                     FromProvenance(message.Provenance));
-
-                await commandHandler.Handle(command, ct);
-            });
-
-            When<StreetNameWasRemovedV2>(async (commandHandler, message, ct) =>
-            {
-                var command = new RemoveStreetName(
-                        new StreetNamePersistentLocalId(message.PersistentLocalId),
-                        FromProvenance(message.Provenance));
 
                 await commandHandler.Handle(command, ct);
             });

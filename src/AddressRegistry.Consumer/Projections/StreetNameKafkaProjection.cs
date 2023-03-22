@@ -12,6 +12,9 @@ namespace AddressRegistry.Consumer.Projections
     using Provenance = Be.Vlaanderen.Basisregisters.GrAr.Provenance.Provenance;
     using StreetNameId = AddressRegistry.StreetName.StreetNameId;
 
+    /// <summary>
+    /// Here we handle the streetname events which impact the state of the streetname aggregate.
+    /// </summary>
     public class StreetNameKafkaProjection : ConnectedProjection<CommandHandler>
     {
         private static Provenance FromProvenance(Contracts.Provenance provenance, Modification modification = Modification.Update) =>
@@ -105,6 +108,14 @@ namespace AddressRegistry.Consumer.Projections
                 );
             }
 
+            if (type == typeof(StreetNameWasRemovedV2))
+            {
+                var msg = (StreetNameWasRemovedV2)message;
+                return new RemoveStreetName(
+                    new StreetNamePersistentLocalId(msg.PersistentLocalId),
+                    FromProvenance(msg.Provenance, Modification.Delete));
+            }
+
             throw new InvalidOperationException($"No command found for {type.FullName}");
         }
 
@@ -162,6 +173,12 @@ namespace AddressRegistry.Consumer.Projections
             });
 
             When<StreetNameWasCorrectedFromRetiredToCurrent>(async (commandHandler, message, ct) =>
+            {
+                var command = GetCommand(message);
+                await commandHandler.Handle(command, ct);
+            });
+
+            When<StreetNameWasRemovedV2>(async (commandHandler, message, ct) =>
             {
                 var command = GetCommand(message);
                 await commandHandler.Handle(command, ct);

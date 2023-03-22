@@ -90,13 +90,7 @@ jobs:
         for FOLDER in */ ; do
             [[ $FOLDER =~ 'CONNECTORS' ]] && continue
 
-            if [[ $FOLDER =~ 'INTEGRATION_0' ]]
-            then
-                process_folder $FOLDER
-            elif [[ $FOLDER =~ 'GEOLOCATION_0' ]]
-            then
-                process_folder $FOLDER
-            elif [[ $FOLDER =~ 'GRB_0' ]]
+            if [[ $FOLDER =~ 'INTEGRATION_0' || $FOLDER =~ 'GEOLOCATION_0' || $FOLDER =~ 'GRB_0' ]]
             then
                 process_folder $FOLDER
             fi

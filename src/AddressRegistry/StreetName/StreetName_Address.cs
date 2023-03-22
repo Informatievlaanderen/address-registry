@@ -19,7 +19,7 @@
             BoxNumber boxNumber,
             AddressGeometry geometry,
             bool? officiallyAssigned,
-            PostalCode postalCode,
+            PostalCode? postalCode,
             bool isCompleted,
             bool isRemoved,
             AddressId? parentAddressId)

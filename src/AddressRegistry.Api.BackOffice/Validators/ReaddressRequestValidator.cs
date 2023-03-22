@@ -28,6 +28,16 @@
                 .WithErrorCode(ValidationErrors.Readdress.EmptyAddressesToReaddress.Code);
 
             RuleForEach(x => x.HerAdresseer)
+                .Must((request, item) => request.HerAdresseer.Count(x => x.BronAdresId == item.BronAdresId) == 1)
+                .WithMessage((_, x) => ValidationErrors.Readdress.DuplicateSourceAddressId.Message(x.BronAdresId))
+                .WithErrorCode(ValidationErrors.Readdress.DuplicateSourceAddressId.Code);
+
+            RuleForEach(x => x.HerAdresseer)
+                .Must((request, item) => request.HerAdresseer.Count(x => x.DoelHuisnummer == item.DoelHuisnummer) == 1)
+                .WithMessage((_, x) => ValidationErrors.Readdress.DuplicateDestinationHouseNumber.Message(x.DoelHuisnummer))
+                .WithErrorCode(ValidationErrors.Readdress.DuplicateDestinationHouseNumber.Code);
+
+            RuleForEach(x => x.HerAdresseer)
                 .MustAsync(async (x, ct) =>
                     OsloPuriValidator.TryParseIdentifier(x.BronAdresId, out var addressId)
                     && int.TryParse(addressId, out var addressPersistentLocalId)

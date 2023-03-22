@@ -1,3 +1,30 @@
+# [3.84.0](https://github.com/informatievlaanderen/address-registry/compare/v3.83.0...v3.84.0) (2023-03-22)
+
+
+### Bug Fixes
+
+* add https ([06afe53](https://github.com/informatievlaanderen/address-registry/commit/06afe5341d45b11b2134bd9165fd40ba18f3a674))
+* consume StreetNameWasRemovedV2 ([c597499](https://github.com/informatievlaanderen/address-registry/commit/c597499e95cdb885de1e8209a02b242ff45cd04e))
+* correct if not ([4318a83](https://github.com/informatievlaanderen/address-registry/commit/4318a8350b95a1b455612a2950b057cbba174d6c))
+* echo endpoint ([d168d23](https://github.com/informatievlaanderen/address-registry/commit/d168d23277f9d41ec52c00b233442261bfe14eae))
+* echo variable ([f884fda](https://github.com/informatievlaanderen/address-registry/commit/f884fda19c015e9402bc1d10ccf0ce6440271be7))
+* execute statements ([74422e1](https://github.com/informatievlaanderen/address-registry/commit/74422e1e277f592a8b565703215f68802bbd053a))
+* initialize variable ([f7b968e](https://github.com/informatievlaanderen/address-registry/commit/f7b968e6cbed8353a8e916001759e5693c5ddc19))
+* initialize variable ([5e20fc6](https://github.com/informatievlaanderen/address-registry/commit/5e20fc6098ad28b78493e90de8952c2512653bf4))
+* no bash if not ([7755a49](https://github.com/informatievlaanderen/address-registry/commit/7755a4985cc03b22b6590674ca47075c873e8bd9))
+* postalcode nullability ([c678d36](https://github.com/informatievlaanderen/address-registry/commit/c678d361d9318a8ebd0e2046f93a0a6b0d18cf48))
+* prefix https ([f34e874](https://github.com/informatievlaanderen/address-registry/commit/f34e874bfbd0df56689c39decabdcfcd69e24e97))
+* secrets ([2667fa0](https://github.com/informatievlaanderen/address-registry/commit/2667fa011c77f198df8b4d5dc829f5df98787152))
+* secrets ([1ee1dfc](https://github.com/informatievlaanderen/address-registry/commit/1ee1dfc9033cc376dc5eea5050563a51b4e2d104))
+* simplify folder processing ([d5563ef](https://github.com/informatievlaanderen/address-registry/commit/d5563ef7c3a5a3473ab603507de76f39186847ec))
+* use different variable ([5f8f0b6](https://github.com/informatievlaanderen/address-registry/commit/5f8f0b6df500d288c37150835a298a09269606f2))
+
+
+### Features
+
+* add readdress duplication validations ([fe41373](https://github.com/informatievlaanderen/address-registry/commit/fe41373e58093955d91c43687f9fe551cb9733fb))
+* disable toggle addressmatch v2 data in legacy ([7203a71](https://github.com/informatievlaanderen/address-registry/commit/7203a7152574df05b256ce3a643310114daef010))
+
 # [3.83.0](https://github.com/informatievlaanderen/address-registry/compare/v3.82.0...v3.83.0) (2023-03-21)
 
 

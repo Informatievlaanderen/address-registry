@@ -145,14 +145,15 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
 
             builder.Register(c =>
             {
-                if (c.Resolve<UseProjectionsV2Toggle>().FeatureEnabled)
-                {
-                    return (IRequestHandler<AddressMatchRequest, AddressMatchCollection>)
-                        new AddressMatchHandlerV2(
-                            c.Resolve<AddressMatch.V2.Matching.ILatestQueries>(),
-                            c.Resolve<AddressMatchContextV2>(),
-                            c.Resolve<IOptions<ResponseOptions>>());
-                }
+                // Decision made to keep addressmatch with old (CRAB) data in legacy endpoint
+                // if (c.Resolve<UseProjectionsV2Toggle>().FeatureEnabled)
+                // {
+                //     return (IRequestHandler<AddressMatchRequest, AddressMatchCollection>)
+                //         new AddressMatchHandlerV2(
+                //             c.Resolve<AddressMatch.V2.Matching.ILatestQueries>(),
+                //             c.Resolve<AddressMatchContextV2>(),
+                //             c.Resolve<IOptions<ResponseOptions>>());
+                // }
 
                 return (IRequestHandler<AddressMatchRequest, AddressMatchCollection>)
                     new AddressMatchHandler(

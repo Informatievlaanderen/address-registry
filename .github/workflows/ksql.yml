@@ -26,12 +26,13 @@ jobs:
             contents=$(sed ':a; N; $!ba; s/\n/ /g' <<< $contents) # single line
             #echo $contents
             
-            if [[ ! $2 == https* ]]; then
-              $2 = "https$2"
+            endpoint = $2
+            if [[ ! $endpoint == https* ]]; then
+              endpoint = "https$endpoint"
             fi
 
             echo Endpoint: "$2/ksql" | sed 's/./& /g'
-            #curl --silent --user ${CONFLUENT_API_KEY}:${CONFLUENT_API_SECRET} -w "\n%{http_code}\n" --location "$2/ksql" \
+            #curl --silent --user ${CONFLUENT_API_KEY}:${CONFLUENT_API_SECRET} -w "\n%{http_code}\n" --location "$endpoint/ksql" \
             #    --header 'Accept: application/vnd.ksql.v1+json' \
             #    --header 'Content-Type: application/json' \
             #    --data "{ \"ksql\": \" $contents \", \"streamsProperties\": { \"ksql.streams.auto.offset.reset\": \"earliest\" } }"

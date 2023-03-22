@@ -131,6 +131,48 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
 
 
         [Fact]
+        public void WithoutPostalCode_ThenExpectedAddressWasAddedToStreetName()
+        {
+            var command = Fixture.Create<MigrateAddressToStreetName>()
+                .WithPostalCode(null);
+
+            var aggregate = new StreetNameFactory(IntervalStrategy.Default).Create();
+            aggregate.Initialize(new List<object>
+            {
+                Fixture.Create<MigratedStreetNameWasImported>()
+            });
+
+            // Act
+            aggregate.MigrateAddress(
+                command.AddressId,
+                command.StreetNameId,
+                command.AddressPersistentLocalId,
+                command.Status,
+                command.HouseNumber,
+                command.BoxNumber,
+                command.Geometry,
+                command.OfficiallyAssigned,
+                command.PostalCode,
+                command.IsCompleted,
+                command.IsRemoved,
+                null);
+
+            // Assert
+            var result = aggregate.StreetNameAddresses.GetByPersistentLocalId(command.AddressPersistentLocalId);
+            result.Should().NotBeNull();
+
+            result.AddressPersistentLocalId.Should().Be(command.AddressPersistentLocalId);
+            result.Status.Should().Be(command.Status);
+            result.HouseNumber.Should().Be(command.HouseNumber);
+            result.BoxNumber.Should().Be(command.BoxNumber);
+            result.PostalCode.Should().Be(command.PostalCode);
+            result.Geometry.Should().Be(command.Geometry);
+            result.IsOfficiallyAssigned.Should().Be(command.OfficiallyAssigned ?? false);
+            result.IsRemoved.Should().Be(command.IsRemoved);
+            result.Parent.Should().BeNull();
+        }
+
+        [Fact]
         public void WithoutParentAddressMigrated_ThenThrowsInvalidOperationException()
         {
             IgnoreExceptionMessage = true;

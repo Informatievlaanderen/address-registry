@@ -37,6 +37,28 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
                 command.Provenance);
         }
 
+        public static MigrateAddressToStreetName WithPostalCode(this MigrateAddressToStreetName command, string? postalCode)
+        {
+            return new MigrateAddressToStreetName(
+                new AddressId(command.AddressId),
+                command.StreetNamePersistentLocalId,
+                new StreetNameId(command.StreetNameId),
+                new PersistentLocalId(command.AddressPersistentLocalId),
+                (AddressStatus)command.Status,
+                new HouseNumber(command.HouseNumber),
+                new BoxNumber(command.BoxNumber),
+                new AddressGeometry(
+                    (GeometryMethod)command.Geometry.GeometryMethod,
+                    (GeometrySpecification)command.Geometry.GeometrySpecification,
+                    new ExtendedWkbGeometry(command.Geometry.Geometry.ToString())),
+                command.OfficiallyAssigned,
+                string.IsNullOrEmpty(postalCode) ? null : new PostalCode(postalCode),
+                command.IsCompleted,
+                command.IsRemoved,
+                null,
+                command.Provenance);
+        }
+
         public static MigrateAddressToStreetName WithParentAddressId(this MigrateAddressToStreetName command, AddressId parentId)
         {
             return new MigrateAddressToStreetName(

@@ -20,7 +20,7 @@ namespace AddressRegistry.StreetName.Commands
         public BoxNumber? BoxNumber { get; }
         public AddressGeometry Geometry { get; }
         public bool? OfficiallyAssigned { get; }
-        public PostalCode PostalCode { get; }
+        public PostalCode? PostalCode { get; }
         public bool IsCompleted { get; }
         public bool IsRemoved { get; }
         public AddressId? ParentAddressId { get; }
@@ -36,7 +36,7 @@ namespace AddressRegistry.StreetName.Commands
             Address.BoxNumber? boxNumber,
             Address.AddressGeometry geometry,
             bool? officiallyAssigned,
-            Address.PostalCode postalCode,
+            Address.PostalCode? postalCode,
             bool isComplete,
             bool isRemoved,
             Address.AddressId? parentAddressId,
@@ -51,7 +51,7 @@ namespace AddressRegistry.StreetName.Commands
             BoxNumber = boxNumber is null ? null : new BoxNumber(boxNumber);
             Geometry = new AddressGeometry(geometry.GeometryMethod, geometry.GeometrySpecification, geometry.Geometry);
             OfficiallyAssigned = officiallyAssigned;
-            PostalCode = new PostalCode(postalCode);
+            PostalCode = postalCode is null ? null : new PostalCode(postalCode);
             IsCompleted = isComplete;
             IsRemoved = isRemoved;
             ParentAddressId = parentAddressId is null ? null : new AddressId(parentAddressId);
@@ -75,7 +75,7 @@ namespace AddressRegistry.StreetName.Commands
             yield return IsRemoved;
             yield return BoxNumber ?? string.Empty;
             yield return HouseNumber;
-            yield return PostalCode;
+            yield return PostalCode ?? string.Empty;
             yield return Geometry;
             yield return ParentAddressId ?? string.Empty;
             yield return OfficiallyAssigned.HasValue ? OfficiallyAssigned.Value : string.Empty;

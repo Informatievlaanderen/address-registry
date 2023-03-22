@@ -26,6 +26,10 @@ jobs:
             contents=$(sed ':a; N; $!ba; s/\n/ /g' <<< $contents) # single line
             #echo $contents
             
+            if [[ ! $2 == https* ]]; then
+              echo "*** Doesn't start with https"
+            fi
+
             #if ! [[ $2 == https* ]]
             #then
             #  $2 = "https$2"

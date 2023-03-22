@@ -6,7 +6,7 @@ CREATE SINK CONNECTOR `AddressOsloGrbConnector` with (
     "connector.class"= 'MicrosoftSqlServerSink',
     "name"= 'AddressOsloGrbConnector',
     "kafka.auth.mode"= 'KAFKA_API_KEY',
-    "kafka.api.key"= 'B65LDWZMQCZNM6P6',
+    "kafka.api.key"= 'DZKR6A5UYAZDBARE',
     "kafka.api.secret"= '***',
     "connection.host"= 'aiv-beta-grb-basisregisters-db.database.windows.net',
     "connection.port"= '1433',

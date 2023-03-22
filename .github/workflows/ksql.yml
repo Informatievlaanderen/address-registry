@@ -29,7 +29,7 @@ jobs:
             endpoint=''
             endpoint=$2
             if [[ ! $endpoint == https* ]]; then
-              endpoint = "https$endpoint"
+              endpoint="https$endpoint"
             fi
 
             echo Endpoint: "$2/ksql" | sed 's/./& /g'

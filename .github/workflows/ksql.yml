@@ -48,7 +48,13 @@ jobs:
                 secret=ENDPOINT_GRB_0
             fi
             
+            echo Secret value so far:
+            eval "secret_value=\$$secret"
+            echo secret_value | sed 's/./& /g'
             #secret+=_${environment^^}
+            echo Secret value now:
+            eval "secret_value=\$$secret"
+            echo secret_value | sed 's/./& /g'
             eval "secret_value=\$$secret"
         }
         

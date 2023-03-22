@@ -200,6 +200,67 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenReaddressing
                     x.Errors.Any(e => e.ErrorMessage == "OpheffenAdressen andere items." && e.ErrorCode == "OpheffenAdressenAnders"));
         }
 
+        [Fact]
+        public async Task WithDuplicateSourceAddressIds_ThenThrowsValidationException()
+        {
+            var streamStore = MockStreamStore(streamExists: true);
+            var backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
+            var existingAdddressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
+            await backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(existingAdddressPersistentLocalId, Fixture.Create<StreetNamePersistentLocalId>());
+
+            var bronAdresId = $"{AdresPuri}{existingAdddressPersistentLocalId}";
+            var request = new ReaddressRequest
+            {
+                DoelStraatnaamId = $"{StraatNaamPuri}/1",
+                HerAdresseer = new List<AddressToReaddressItem>
+                {
+                    new AddressToReaddressItem {BronAdresId = bronAdresId, DoelHuisnummer = "1"},
+                    new AddressToReaddressItem {BronAdresId = bronAdresId, DoelHuisnummer = "2"}
+                }
+            };
+            var act = async () => await _controller.Readdress(
+                new ReaddressRequestValidator(new StreetNameExistsValidator(streamStore.Object), backOfficeContext),
+                request);
+
+            act.Should()
+                .ThrowAsync<ValidationException>()
+                .Result
+                .Where(x =>
+                    x.Errors.Any(e => e.ErrorMessage == $"Duplicate bron adres id '{bronAdresId}'." && e.ErrorCode == "AdresDuplicateBronAdresId"));
+        }
+
+        [Fact]
+        public async Task WithDuplicateDestinationHouseNumbers_ThenThrowsValidationException()
+        {
+            var streamStore = MockStreamStore(streamExists: true);
+            var backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
+            var existingAddressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
+            var existingAddressPersistentLocalId2 = new AddressPersistentLocalId(existingAddressPersistentLocalId + 1);
+            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
+
+            await backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(existingAddressPersistentLocalId, streetNamePersistentLocalId);
+            await backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(existingAddressPersistentLocalId2, streetNamePersistentLocalId);
+
+            var request = new ReaddressRequest
+            {
+                DoelStraatnaamId = $"{StraatNaamPuri}/1",
+                HerAdresseer = new List<AddressToReaddressItem>
+                {
+                    new AddressToReaddressItem {BronAdresId = $"{AdresPuri}{existingAddressPersistentLocalId}", DoelHuisnummer = "1"},
+                    new AddressToReaddressItem {BronAdresId = $"{AdresPuri}{existingAddressPersistentLocalId2}", DoelHuisnummer = "1"}
+                }
+            };
+            var act = async () => await _controller.Readdress(
+                new ReaddressRequestValidator(new StreetNameExistsValidator(streamStore.Object), backOfficeContext),
+                request);
+
+            act.Should()
+                .ThrowAsync<ValidationException>()
+                .Result
+                .Where(x =>
+                    x.Errors.Any(e => e.ErrorMessage == $"Duplicate doel huisnummer '1'." && e.ErrorCode == "AdresDuplicateDoelHuisnummer"));
+        }
+
         private static Mock<IStreamStore> MockStreamStore(bool streamExists)
         {
             var streamStore = new Mock<IStreamStore>();

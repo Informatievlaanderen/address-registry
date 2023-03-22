@@ -21,6 +21,18 @@
                 public const string Code = "AdresOngeldigHuisnummerformaat";
                 public static string Message(string houseNumber) => $"Ongeldig huisnummerformaat '{houseNumber}'.";
             }
+
+            public static class DuplicateSourceAddressId
+            {
+                public const string Code = "AdresDuplicateBronAdresId";
+                public static string Message(string addressId) => $"Duplicate bron adres id '{addressId}'.";
+            }
+
+            public static class DuplicateDestinationHouseNumber
+            {
+                public const string Code = "AdresDuplicateDoelHuisnummer";
+                public static string Message(string houseNumber) => $"Duplicate doel huisnummer '{houseNumber}'.";
+            }
         }
     }
 }

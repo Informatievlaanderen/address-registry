@@ -219,7 +219,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 idempotentCommandHandler)
         { }
 
-        protected override Task<ETagResponse> InnerHandle(
+        protected override Task<object> InnerHandle(
             ApproveAddressLambdaRequest request,
             CancellationToken cancellationToken)
         {
@@ -229,7 +229,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 new Dictionary<string, object>(),
                 cancellationToken);
 
-            return Task.FromResult(new ETagResponse("bla", "etag"));
+            return Task.FromResult((object)new ETagResponse("bla", "etag"));
         }
 
         protected override TicketError? InnerMapDomainException(DomainException exception, ApproveAddressLambdaRequest request)

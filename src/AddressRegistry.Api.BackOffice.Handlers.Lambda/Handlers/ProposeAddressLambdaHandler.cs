@@ -47,7 +47,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             _municipalityConsumerContext = municipalityConsumerContext;
         }
 
-        protected override async Task<ETagResponse> InnerHandle(ProposeAddressLambdaRequest request, CancellationToken cancellationToken)
+        protected override async Task<object> InnerHandle(ProposeAddressLambdaRequest request, CancellationToken cancellationToken)
         {
             var postInfoIdentifier = request.Request.PostInfoId.AsIdentifier().Map(x => x);
             var postalCode = new PostalCode(postInfoIdentifier.Value);

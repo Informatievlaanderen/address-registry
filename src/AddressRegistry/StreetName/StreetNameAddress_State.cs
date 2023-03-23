@@ -356,7 +356,7 @@ namespace AddressRegistry.StreetName
 
         public void Readdress(ReaddressAddressData readdressItem, StreetName.StreetNameWasReaddressed @event)
         {
-            HouseNumber = new HouseNumber(readdressItem.SourceHouseNumber);
+            HouseNumber = new HouseNumber(readdressItem.DestinationHouseNumber);
             Status = readdressItem.SourceStatus;
             PostalCode = new PostalCode(readdressItem.SourcePostalCode);
             IsOfficiallyAssigned = readdressItem.SourceIsOfficiallyAssigned;

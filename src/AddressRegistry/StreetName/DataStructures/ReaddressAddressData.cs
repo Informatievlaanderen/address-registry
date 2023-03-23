@@ -8,7 +8,7 @@
         public int DestinationAddressPersistentLocalId { get; }
         public AddressStatus SourceStatus { get; }
 
-        public string SourceHouseNumber { get; }
+        public string DestinationHouseNumber { get; }
 
         //public string? SourceBoxNumber { get; }
         public string SourcePostalCode { get; }
@@ -24,7 +24,7 @@
             AddressPersistentLocalId sourceAddressPersistentLocalId,
             AddressPersistentLocalId destinationAddressPersistentLocalId,
             AddressStatus sourceStatus,
-            HouseNumber sourceHouseNumber,
+            HouseNumber destinationHouseNumber,
             //BoxNumber? boxNumber,
             PostalCode sourcePostalCode,
             AddressGeometry geometry,
@@ -35,7 +35,7 @@
             SourceAddressPersistentLocalId = sourceAddressPersistentLocalId;
             DestinationAddressPersistentLocalId = destinationAddressPersistentLocalId;
             SourceStatus = sourceStatus;
-            SourceHouseNumber = sourceHouseNumber;
+            DestinationHouseNumber = destinationHouseNumber;
             //BoxNumber = boxNumber is null ? (string?)null : boxNumber;
             SourcePostalCode = sourcePostalCode;
             SourceGeometryMethod = geometry.GeometryMethod;
@@ -50,7 +50,7 @@
             int sourceAddressPersistentLocalId,
             int destinationAddressPersistentLocalId,
             AddressStatus sourceStatus,
-            string sourceHouseNumber,
+            string destinationHouseNumber,
             //string? boxNumber,
             string sourcePostalCode,
             GeometryMethod sourceGeometryMethod,
@@ -63,7 +63,7 @@
             SourceAddressPersistentLocalId = sourceAddressPersistentLocalId;
             DestinationAddressPersistentLocalId = destinationAddressPersistentLocalId;
             SourceStatus = sourceStatus;
-            SourceHouseNumber = sourceHouseNumber;
+            DestinationHouseNumber = destinationHouseNumber;
             //BoxNumber = boxNumber;
             SourcePostalCode = sourcePostalCode;
             SourceGeometryMethod = sourceGeometryMethod;

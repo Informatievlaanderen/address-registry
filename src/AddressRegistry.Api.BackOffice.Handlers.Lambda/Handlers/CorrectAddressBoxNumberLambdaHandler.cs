@@ -60,8 +60,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                     ValidationErrors.Common.PostalCode.CannotBeChanged.Message,
                     ValidationErrors.Common.PostalCode.CannotBeChanged.Code),
                 StreetNameHasInvalidStatusException => new TicketError(
-                    ValidationErrors.Common.StreetNameStatusInvalidForCorrection.Message,
-                    ValidationErrors.Common.StreetNameStatusInvalidForCorrection.Code),
+                    ValidationErrors.Common.StreetNameStatusInvalidForAction.Message,
+                    ValidationErrors.Common.StreetNameStatusInvalidForAction.Code),
                 BoxNumberHasInvalidFormatException => new TicketError(
                     ValidationErrors.Common.BoxNumberInvalidFormat.Message,
                     ValidationErrors.Common.BoxNumberInvalidFormat.Code),

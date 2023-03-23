@@ -1,6 +1,7 @@
 namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
 {
     using Abstractions;
+    using Abstractions.Validation;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo.Extensions;
     using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
@@ -11,6 +12,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
     using Requests;
     using StreetName;
     using StreetName.Commands;
+    using StreetName.Exceptions;
     using TicketingService.Abstractions;
 
     public sealed class ReaddressLambdaHandler : SqsLambdaHandler<ReaddressLambdaRequest>
@@ -56,7 +58,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             }
 
             var retireAddressItems = new List<RetireAddressItem>();
-            
+
             foreach (var item in request.Request.OpheffenAdressen ?? new List<string>())
             {
                 var addressPersistentLocalId =
@@ -85,9 +87,10 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             {
                 // Idempotent: Do Nothing return last etag
             }
+            // TODO: ExecutionContext is empty when idempotencyException was thrown
 
             var etagResponses = new List<ETagResponse>();
-            
+
             // add relations between new addresses & destinationStreetName
             foreach (var (streetNamePersistentLocalId, addressPersistentLocalId) in cmd.ExecutionContext.AddressesAdded)
             {
@@ -107,12 +110,13 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
         {
             return exception switch
             {
-                // StreetNameHasInvalidStatusException => new TicketError(
-                //     ValidationErrors.Common.StreetNameIsNotActive.Message,
-                //     ValidationErrors.Common.StreetNameIsNotActive.Code),
-                // AddressHasInvalidStatusException => new TicketError(
-                //     ValidationErrors.RetireAddress.AddressInvalidStatus.Message,
-                //     ValidationErrors.RetireAddress.AddressInvalidStatus.Code),
+                StreetNameIsRemovedException => ValidationErrors.Common.StreetNameIsRemoved.ToTicketError(),
+                StreetNameHasInvalidStatusException => ValidationErrors.Common.StreetNameIsNotActive.ToTicketError(),
+                PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException => ValidationErrors.Common.PostalCode.PostalCodeNotInMunicipality.ToTicketError(), // TODO: to refine to test
+                AddressHasInvalidStatusException ex => ValidationErrors.Readdress.AddressInvalidStatus.ToTicketError(ex.AddressPersistentLocalId),
+                AddressHasBoxNumberException ex => ValidationErrors.Readdress.AddressHasBoxNumber.ToTicketError(ex.AddressPersistentLocalId),
+                AddressHasNoPostalCodeException ex => ValidationErrors.Readdress.AddressHasNoPostalCode.ToTicketError(ex.AddressPersistentLocalId),
+                HouseNumberHasInvalidFormatException => ValidationErrors.Common.HouseNumberInvalidFormat.ToTicketError(),
                 _ => null
             };
         }

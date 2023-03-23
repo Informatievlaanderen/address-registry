@@ -9,6 +9,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     using Tests;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Straatnaam;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
     using Be.Vlaanderen.Basisregisters.Sqs.Responses;
@@ -21,12 +22,16 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
     public class BackOfficeLambdaTest : AddressRegistryTest
     {
         protected const string StraatNaamPuri = "https://data.vlaanderen.be/id/straatnaam/";
+        protected const string AdresPuri = "https://data.vlaanderen.be/id/adres/";
         protected const string PostInfoPuri = "https://data.vlaanderen.be/id/postinfo/";
 
         protected BackOfficeLambdaTest(
             ITestOutputHelper testOutputHelper)
             : base(testOutputHelper)
         { }
+
+        public static string StreetNamePuriFor(int id) => StraatNaamPuri + id;
+        public static string AddressPuriFor(int id) => AdresPuri + id;
 
         protected Mock<ITicketing> MockTicketing(Action<ETagResponse> ticketingCompleteCallback)
         {
@@ -37,6 +42,21 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 .Callback<Guid, TicketResult, CancellationToken>((_, ticketResult, _) =>
                 {
                     var eTagResponse = JsonConvert.DeserializeObject<ETagResponse>(ticketResult.ResultAsJson!)!;
+                    ticketingCompleteCallback(eTagResponse);
+                });
+
+            return ticketing;
+        }
+
+        protected Mock<ITicketing> MockTicketing(Action<List<ETagResponse>> ticketingCompleteCallback)
+        {
+            var ticketing = new Mock<ITicketing>();
+
+            ticketing
+                .Setup(x => x.Complete(It.IsAny<Guid>(), It.IsAny<TicketResult>(), CancellationToken.None))
+                .Callback<Guid, TicketResult, CancellationToken>((_, ticketResult, _) =>
+                {
+                    var eTagResponse = JsonConvert.DeserializeObject<List<ETagResponse>>(ticketResult.ResultAsJson!)!;
                     ticketingCompleteCallback(eTagResponse);
                 });
 
@@ -92,7 +112,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
             DispatchArrangeCommand(importMunicipality);
         }
 
-        protected void ProposeAddress(
+        protected ProposeAddress ProposeAddress(
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             AddressPersistentLocalId addressPersistentLocalId,
             PostalCode postalCode,
@@ -112,6 +132,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                 Fixture.Create<Provenance>());
             DispatchArrangeCommand(proposeCommand);
+            return proposeCommand;
         }
 
         protected void ApproveAddress(

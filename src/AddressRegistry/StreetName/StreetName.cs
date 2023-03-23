@@ -1,21 +1,18 @@
 namespace AddressRegistry.StreetName
 {
-    using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
-    using System.Runtime.InteropServices.ComTypes;
     using Address;
-    using AddressRegistry.StreetName.Exceptions;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using Be.Vlaanderen.Basisregisters.Utilities;
     using Commands;
     using DataStructures;
     using Events;
+    using Exceptions;
     using Newtonsoft.Json;
 
     public partial class StreetName : AggregateRootEntity, ISnapshotable
@@ -176,7 +173,7 @@ namespace AddressRegistry.StreetName
 
         [EventTags(EventTag.For.Edit, EventTag.For.Sync)]
         [EventName(EventName)]
-        [EventDescription("Het adres werd afgekeurd.")]
+        [EventDescription("Het adres werd geheradresseerd.")]
         public class StreetNameWasReaddressed : IStreetNameEvent
         {
             public const string EventName = "StreetNameWasReaddressed"; // BE CAREFUL CHANGING THIS!!
@@ -230,7 +227,7 @@ namespace AddressRegistry.StreetName
                 {
                     fields.Add(item.SourceAddressPersistentLocalId.ToString());
                     fields.Add(item.DestinationAddressPersistentLocalId.ToString());
-                    fields.Add(item.SourceHouseNumber);
+                    fields.Add(item.DestinationHouseNumber);
                     fields.Add(item.SourcePostalCode);
                     fields.Add(item.SourceStatus.ToString());
                     fields.Add(item.SourceGeometryMethod.ToString());
@@ -307,7 +304,7 @@ namespace AddressRegistry.StreetName
                     item.SourceAddressPersistentLocalId,
                     newPersistentLocalId,
                     sourceAddress.Status,
-                    sourceAddress.HouseNumber,
+                    item.DestinationHouseNumber,
                     sourceAddress.PostalCode,
                     sourceAddress.Geometry,
                     sourceAddress.IsOfficiallyAssigned
@@ -318,37 +315,6 @@ namespace AddressRegistry.StreetName
                 PersistentLocalId,
                 proposedAddresses,
                 readdressAddresses));
-        }
-
-        // public void Readdress(
-        //     IEnumerable<IGrouping<StreetName, ReaddressAddressItem>> readdressItems,
-        //     IEnumerable<IGrouping<StreetNamePersistentLocalId, RetireAddressItem>> retireAddressItems)
-        // {
-        //     var readdressStreetNameEvent = new ReaddressedStreetNameEvent();
-        //
-        //     foreach (var sourceAggregate in readdressItems)
-        //     {
-        //         foreach (var address in sourceAggregate)
-        //         {
-        //             var s = sourceAggregate.Key;
-        //             var sourceAddress = s.StreetNameAddresses.Single(x => x.AddressPersistentLocalId == address.SourceAddressPersistentLocalId);
-        //
-        //             var destinationAddress = StreetNameAddresses.FirstOrDefault(x => x.HouseNumber == address.DestinationHouseNumber);
-        //
-        //             var readdressAddressItem = new ReaddressAddres(
-        //                 destinationAddress.AddressPersistentLocalId,
-        //                 sourceAddress.Status,
-        //                 sourceAddress.Geometry);
-        //
-        //             readdressStreetNameEvent.ReaddressItems.Add(readdressAddressItem);
-        //         }
-        //     }
-        //
-        //     ApplyChange(readdressStreetNameEvent);
-        // }
-
-        public void RetireReaddressItems()
-        {
         }
 
         private void RejectAddressesBecauseStreetNameWasRejected(IEnumerable<StreetNameAddress> addresses)

@@ -30,7 +30,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                  idempotentCommandHandler)
         { }
 
-        protected override async Task<ETagResponse> InnerHandle(CorrectAddressApprovalLambdaRequest request, CancellationToken cancellationToken)
+        protected override async Task<object> InnerHandle(CorrectAddressApprovalLambdaRequest request, CancellationToken cancellationToken)
         {
             var addressPersistentLocalId = new AddressPersistentLocalId(request.Request.PersistentLocalId);
             var cmd = request.ToCommand();

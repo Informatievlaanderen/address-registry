@@ -42,7 +42,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             _municipalityConsumerContext = municipalityConsumerContext;
         }
 
-        protected override async Task<ETagResponse> InnerHandle(CorrectAddressPostalCodeLambdaRequest request, CancellationToken cancellationToken)
+        protected override async Task<object> InnerHandle(CorrectAddressPostalCodeLambdaRequest request, CancellationToken cancellationToken)
         {
             var addressPersistentLocalId = new AddressPersistentLocalId(request.AddressPersistentLocalId);
             var postInfoIdentifier = request.Request.PostInfoId

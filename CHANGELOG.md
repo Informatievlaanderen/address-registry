@@ -1,3 +1,10 @@
+## [3.84.1](https://github.com/informatievlaanderen/address-registry/compare/v3.84.0...v3.84.1) (2023-03-24)
+
+
+### Bug Fixes
+
+* type of address links sync feed ([a97a377](https://github.com/informatievlaanderen/address-registry/commit/a97a377edeabf9d268abf2ca20d05cc075cf8750))
+
 # [3.84.0](https://github.com/informatievlaanderen/address-registry/compare/v3.83.0...v3.84.0) (2023-03-22)
 
 

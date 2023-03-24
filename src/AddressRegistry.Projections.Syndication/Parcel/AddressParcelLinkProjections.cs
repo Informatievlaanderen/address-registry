@@ -38,7 +38,7 @@ namespace AddressRegistry.Projections.Syndication.Parcel
             addressParcelLinkExtractItems.ForEach(parcel => parcel.IsParcelRemoved = true);
         }
 
-        private static async Task AddRecoveredSyndicationItemEntry(AtomEntry<SyndicationItem<Parcel>> entry, SyndicationContext context, CancellationToken ct)
+        private static Task AddRecoveredSyndicationItemEntry(AtomEntry<SyndicationItem<Parcel>> entry, SyndicationContext context, CancellationToken ct)
         {
             var addressParcelLinkExtractItems =
                 context
@@ -49,6 +49,7 @@ namespace AddressRegistry.Projections.Syndication.Parcel
                     .ToList();
 
             addressParcelLinkExtractItems.ForEach(parcel => parcel.IsParcelRemoved = false);
+            return Task.CompletedTask;
         }
 
         private async Task AddSyndicationItemEntry(AtomEntry<SyndicationItem<Parcel>> entry, SyndicationContext context, CancellationToken ct)
@@ -61,13 +62,18 @@ namespace AddressRegistry.Projections.Syndication.Parcel
                     .Concat(context.AddressParcelLinkExtract.Local.Where(x => x.ParcelId == entry.Content.Object.Id))
                     .ToList();
 
+            var addressObjectIds = entry.Content.Object.AddressIds
+                .Where(x => Guid.TryParse(x, out _))
+                .Select(Guid.Parse)
+                .ToList();
+
             foreach (var addressParcelLinkExtractItem in addressParcelLinkExtractItems)
             {
-                if (!entry.Content.Object.AddressIds.Contains(addressParcelLinkExtractItem.AddressId))
+                if (!addressObjectIds.Contains(addressParcelLinkExtractItem.AddressId))
                     addressParcelLinkExtractItem.IsAddressLinkRemoved = true;
             }
 
-            foreach (var addressId in entry.Content.Object.AddressIds)
+            foreach (var addressId in addressObjectIds)
             {
                 var addressItem = addressParcelLinkExtractItems.FirstOrDefault(x => x.AddressId == addressId);
                 if (addressItem == null)

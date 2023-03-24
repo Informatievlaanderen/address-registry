@@ -1,6 +1,6 @@
 namespace AddressRegistry.Projections.Syndication.Parcel
 {
-    using System.Collections.Generic;
+    using System;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -21,7 +21,7 @@ namespace AddressRegistry.Projections.Syndication.Parcel
             When(ParcelEvent.ParcelAddressWasDetached, AddSyndicationItemEntry);
         }
 
-        private static async Task RemoveParcel(AtomEntry<SyndicationItem<Parcel>> entry, SyndicationContext context, CancellationToken ct)
+        private static Task RemoveParcel(AtomEntry<SyndicationItem<Parcel>> entry, SyndicationContext context, CancellationToken ct)
         {
             var parcelAddressMatchLatestItems =
                 context
@@ -31,7 +31,11 @@ namespace AddressRegistry.Projections.Syndication.Parcel
                     .Concat(context.ParcelAddressMatchLatestItems.Local.Where(x => x.ParcelId == entry.Content.Object.Id));
 
             foreach (var parcelAddressMatchLatestItem in parcelAddressMatchLatestItems)
+            {
                 parcelAddressMatchLatestItem.IsRemoved = true;
+            }
+
+            return Task.CompletedTask;
         }
 
         private static async Task AddSyndicationItemEntry(AtomEntry<SyndicationItem<Parcel>> entry, SyndicationContext context, CancellationToken ct)
@@ -44,19 +48,26 @@ namespace AddressRegistry.Projections.Syndication.Parcel
                     .Concat(context.ParcelAddressMatchLatestItems.Local.Where(x => x.ParcelId == entry.Content.Object.Id))
                     .ToList();
 
-            var removedParcelAddressMatchItems = parcelAddressMatchLatestItems.Where(p => p.IsRemoved).ToList();
+            var removedParcelAddressMatchItems = parcelAddressMatchLatestItems
+                .Where(p => p.IsRemoved)
+                .ToList();
 
-            var itemsToRemove = new List<ParcelAddressMatchLatestItem>();
-            foreach (var parcelAddressMatchLatestItem in parcelAddressMatchLatestItems)
-            {
-                if (!entry.Content.Object.AddressIds.Contains(parcelAddressMatchLatestItem.AddressId))
-                    itemsToRemove.Add(parcelAddressMatchLatestItem);
-            }
+            var addressObjectIds = entry.Content.Object.AddressIds
+                .Where(x => Guid.TryParse(x, out _))
+                .Select(Guid.Parse)
+                .ToList();
+
+            var itemsToRemove = parcelAddressMatchLatestItems
+                .Where(
+                    parcelAddressMatchLatestItem => !addressObjectIds.Contains(parcelAddressMatchLatestItem.AddressId))
+                .ToList();
 
             foreach (var parcelAddressMatchLatestItem in itemsToRemove)
+            {
                 parcelAddressMatchLatestItem.IsRemoved = true;
+            }
 
-            foreach (var addressId in entry.Content.Object.AddressIds)
+            foreach (var addressId in addressObjectIds)
             {
                 if (parcelAddressMatchLatestItems.All(x => x.AddressId != addressId))
                 {
@@ -72,7 +83,6 @@ namespace AddressRegistry.Projections.Syndication.Parcel
                     var parcel = removedParcelAddressMatchItems.First(x => x.AddressId == addressId);
                     parcel.IsRemoved = false;
                 }
-
             }
         }
     }

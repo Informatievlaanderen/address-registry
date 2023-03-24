@@ -19,11 +19,11 @@ namespace AddressRegistry.Projections.Syndication.Parcel
         public PerceelStatus? Status { get; set; }
 
         [DataMember(Name = "AdressenIds", Order = 4)]
-        public List<Guid> AddressIds { get; set; }
+        public List<string> AddressIds { get; set; }
 
         public Parcel()
         {
-            AddressIds = new List<Guid>();
+            AddressIds = new List<string>();
         }
     }
 }

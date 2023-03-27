@@ -1,11 +1,17 @@
 namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRejection
 {
+    using System.Collections.Generic;
+    using System.Linq;
     using Api.BackOffice.Abstractions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
+    using Be.Vlaanderen.Basisregisters.GrAr.Contracts.StreetNameRegistry;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using FluentAssertions;
     using global::AutoFixture;
+    using ProjectionTests.Legacy.Extensions;
     using StreetName;
     using StreetName.Commands;
     using StreetName.Events;
@@ -400,6 +406,26 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRejection
                     )
                 .When(correctChildAddressRejection)
                 .Throws(new ParentAddressHasInvalidStatusException()));
+        }
+
+        [Fact]
+        public void StateCheck()
+        {
+            var addressWasCorrectedFromRejectedToProposed = Fixture.Create<AddressWasCorrectedFromRejectedToProposed>();
+
+            var sut = new StreetNameFactory(NoSnapshotStrategy.Instance).Create();
+            sut.Initialize(new List<object>
+            {
+                Fixture.Create<StreetNameWasProposedV2>(),
+                Fixture.Create<AddressWasProposedV2>().WithParentAddressPersistentLocalId(null),
+                Fixture.Create<AddressWasRejected>(),
+                addressWasCorrectedFromRejectedToProposed
+            });
+
+            var address = sut.StreetNameAddresses.Single(x => x.AddressPersistentLocalId == Fixture.Create<AddressPersistentLocalId>());
+
+            address.Status.Should().Be(AddressStatus.Proposed);
+            address.LastEventHash.Should().Be(addressWasCorrectedFromRejectedToProposed.GetHash());
         }
     }
 }

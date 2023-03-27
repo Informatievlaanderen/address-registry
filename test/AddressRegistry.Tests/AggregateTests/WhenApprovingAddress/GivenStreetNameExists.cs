@@ -1,11 +1,17 @@
 namespace AddressRegistry.Tests.AggregateTests.WhenApprovingAddress
 {
+    using System.Collections.Generic;
+    using System.Linq;
     using Api.BackOffice.Abstractions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
+    using Be.Vlaanderen.Basisregisters.GrAr.Contracts.StreetNameRegistry;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using FluentAssertions;
     using global::AutoFixture;
+    using ProjectionTests.Legacy.Extensions;
     using StreetName;
     using StreetName.Commands;
     using StreetName.Events;
@@ -250,6 +256,25 @@ namespace AddressRegistry.Tests.AggregateTests.WhenApprovingAddress
                     addressWasApproved)
                 .When(command)
                 .ThenNone());
+        }
+
+        [Fact]
+        public void StateCheck()
+        {
+            var addressWasApproved = Fixture.Create<AddressWasApproved>();
+
+            var sut = new StreetNameFactory(NoSnapshotStrategy.Instance).Create();
+            sut.Initialize(new List<object>
+            {
+                Fixture.Create<StreetNameWasProposedV2>(),
+                Fixture.Create<AddressWasProposedV2>().WithParentAddressPersistentLocalId(null),
+                addressWasApproved
+            });
+
+            var address = sut.StreetNameAddresses.Single(x => x.AddressPersistentLocalId == Fixture.Create<AddressPersistentLocalId>());
+
+            address.Status.Should().Be(AddressStatus.Current);
+            address.LastEventHash.Should().Be(addressWasApproved.GetHash());
         }
     }
 }

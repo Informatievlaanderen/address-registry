@@ -1,8 +1,11 @@
 namespace AddressRegistry.Tests.AggregateTests.WhenImportingStreetName
 {
+    using System.Collections.Generic;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
+    using FluentAssertions;
     using global::AutoFixture;
     using StreetName;
     using StreetName.Commands;
@@ -28,6 +31,22 @@ namespace AddressRegistry.Tests.AggregateTests.WhenImportingStreetName
                 .Then(
                     new Fact(new StreetNameStreamId(command.PersistentLocalId),
                         new StreetNameWasImported(command.PersistentLocalId, command.MunicipalityId, command.StreetNameStatus))));
+        }
+
+        [Fact]
+        public void StateCheck()
+        {
+            var @event = Fixture.Create<StreetNameWasImported>();
+
+            var sut = new StreetNameFactory(NoSnapshotStrategy.Instance).Create();
+            sut.Initialize(new List<object>
+            {
+                @event
+            });
+
+            sut.PersistentLocalId.Should().Be(new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId));
+            sut.MunicipalityId.Should().Be(new MunicipalityId(@event.MunicipalityId));
+            sut.Status.Should().Be(@event.StreetNameStatus);
         }
     }
 }

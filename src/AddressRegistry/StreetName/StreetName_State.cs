@@ -263,7 +263,7 @@ namespace AddressRegistry.StreetName
 
         private void When(StreetNameWasReaddressed @event)
         {
-            foreach (var readdressItem in @event.ReaddressAddresses)
+            foreach (var readdressItem in @event.ReaddressedAddresses)
             {
                 var destinationAddress = StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(readdressItem.DestinationAddressPersistentLocalId));
 

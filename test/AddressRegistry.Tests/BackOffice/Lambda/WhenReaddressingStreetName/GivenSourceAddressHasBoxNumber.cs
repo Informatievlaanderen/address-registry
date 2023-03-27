@@ -64,7 +64,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddressingStreetName
                 x.Error(
                     It.IsAny<Guid>(),
                     new TicketError(
-                        "Deze actie is niet toegestaan op adressen met een busnummer.",
+                        "Deze actie is niet toegestaan op adressen met een busnummer: http://base/1.",
                         "AdresBusnummer"),
                     CancellationToken.None));
         }

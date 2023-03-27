@@ -354,7 +354,7 @@ namespace AddressRegistry.StreetName
             _lastEvent = @event;
         }
 
-        public void Readdress(ReaddressAddressData readdressItem, StreetName.StreetNameWasReaddressed @event)
+        internal void Readdress(ReaddressAddressData readdressItem, StreetNameWasReaddressed @event)
         {
             HouseNumber = new HouseNumber(readdressItem.DestinationHouseNumber);
             Status = readdressItem.SourceStatus;

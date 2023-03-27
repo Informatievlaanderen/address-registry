@@ -10,17 +10,17 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
             public static class AddressInvalidStatus
             {
                 public const string Code = "AdresAfgekeurdGehistoreerd";
-                public static string Message(AddressPersistentLocalId addressId) => $"Dit adres '{addressId}' heeft niet status 'voorgesteld' of 'inGebruik'.";
+                public static string Message(string addressPuri) => $"Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik': {addressPuri}.";
 
-                public static TicketError ToTicketError(AddressPersistentLocalId addressId) => new(Message(addressId), Code);
+                public static TicketError ToTicketError(string addressPuri) => new(Message(addressPuri), Code);
             }
 
             public static class AddressHasBoxNumber
             {
                 public const string Code = "AdresBusnummer";
-                public static string Message(AddressPersistentLocalId addressId) => $"Deze actie is niet toegestaan op adressen met een busnummer.";
+                public static string Message(string addressPuri) => $"Deze actie is niet toegestaan op adressen met een busnummer: {addressPuri}.";
 
-                public static TicketError ToTicketError(AddressPersistentLocalId addressId) => new(Message(addressId), Code);
+                public static TicketError ToTicketError(string addressPuri) => new(Message(addressPuri), Code);
             }
 
             public static class AddressHasNoPostalCode

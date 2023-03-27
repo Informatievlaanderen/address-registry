@@ -64,7 +64,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddressingStreetName
                 x.Error(
                     It.IsAny<Guid>(),
                     new TicketError(
-                        "Dit adres '1' heeft niet status 'voorgesteld' of 'inGebruik'.",
+                        "Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik': http://base/1.",
                         "AdresAfgekeurdGehistoreerd"),
                     CancellationToken.None));
         }

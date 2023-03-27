@@ -1,4 +1,4 @@
-﻿namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing
+namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -77,7 +77,7 @@
                         migrateSourceAddress.GeometrySpecification,
                         new ExtendedWkbGeometry(migrateSourceAddress.ExtendedWkbGeometry))),
                     new Fact(_streamId,
-                        new StreetName.StreetNameWasReaddressed(_streetNamePersistentLocalId,
+                        new StreetNameWasReaddressed(_streetNamePersistentLocalId,
                             new List<AddressPersistentLocalId>
                             {
                                  destinationAddressPersistentLocalId
@@ -132,7 +132,7 @@
                 sourceAddressWasMigratedToStreetName.GeometrySpecification,
                 new ExtendedWkbGeometry(sourceAddressWasMigratedToStreetName.ExtendedWkbGeometry));
 
-            var streetNameWasReaddressed = new StreetName.StreetNameWasReaddressed(_streetNamePersistentLocalId,
+            var streetNameWasReaddressed = new StreetNameWasReaddressed(_streetNamePersistentLocalId,
                 new List<AddressPersistentLocalId>
                 {
                     destinationAddressPersistentLocalId

@@ -97,10 +97,10 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
 
                 foreach (var item in request.Request.HerAdresseer)
                 {
-                    addressesUpdated.Add((cmd.DestinationStreetNamePersistentLocalId,  new AddressPersistentLocalId(Convert.ToInt32(item.BronAdresId.AsIdentifier().Map(x => x).Value))));
+                    //addressesUpdated.Add((cmd.DestinationStreetNamePersistentLocalId,  new AddressPersistentLocalId(Convert.ToInt32(item.BronAdresId.AsIdentifier().Map(x => x).Value))));
 
-                    var doelAddress = streetName.StreetNameAddresses.FindActiveParentByHouseNumber(HouseNumber.Create(item.DoelHuisnummer));
-                    addressesUpdated.Add((cmd.DestinationStreetNamePersistentLocalId, doelAddress.AddressPersistentLocalId));
+                    var destinationAddress = streetName.StreetNameAddresses.FindActiveParentByHouseNumber(HouseNumber.Create(item.DoelHuisnummer));
+                    addressesUpdated.Add((cmd.DestinationStreetNamePersistentLocalId, destinationAddress!.AddressPersistentLocalId));
                 }
 
                 foreach (var addressToRetirePuri in request.Request.OpheffenAdressen ?? new List<string>())
@@ -130,12 +130,17 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 StreetNameIsRemovedException => ValidationErrors.Common.StreetNameIsRemoved.ToTicketError(),
                 StreetNameHasInvalidStatusException => ValidationErrors.Common.StreetNameIsNotActive.ToTicketError(),
                 PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException => ValidationErrors.Common.PostalCode.PostalCodeNotInMunicipality.ToTicketError(),
-                AddressHasInvalidStatusException ex => ValidationErrors.Readdress.AddressInvalidStatus.ToTicketError(ex.AddressPersistentLocalId),
-                AddressHasBoxNumberException ex => ValidationErrors.Readdress.AddressHasBoxNumber.ToTicketError(ex.AddressPersistentLocalId),
+                AddressHasInvalidStatusException ex => ValidationErrors.Readdress.AddressInvalidStatus.ToTicketError(CreatePuri(ex.AddressPersistentLocalId)),
+                AddressHasBoxNumberException ex => ValidationErrors.Readdress.AddressHasBoxNumber.ToTicketError(CreatePuri(ex.AddressPersistentLocalId)),
                 AddressHasNoPostalCodeException ex => ValidationErrors.Readdress.AddressHasNoPostalCode.ToTicketError(ex.AddressPersistentLocalId),
                 HouseNumberHasInvalidFormatException => ValidationErrors.Common.HouseNumberInvalidFormat.ToTicketError(),
                 _ => null
             };
+        }
+
+        private string CreatePuri(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            return string.Format(DetailUrlFormat, addressPersistentLocalId);
         }
     }
 }

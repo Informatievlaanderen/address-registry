@@ -56,17 +56,11 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
         {
             return exception switch
             {
-                StreetNameHasInvalidStatusException => new TicketError(
-                    ValidationErrors.Common.StreetNameStatusInvalidForAction.Message,
-                    ValidationErrors.Common.StreetNameStatusInvalidForAction.Code),
+                StreetNameHasInvalidStatusException => ValidationErrors.Common.StreetNameStatusInvalidForAction.ToTicketError(),
 
-                AddressHasInvalidStatusException => new TicketError(
-                    ValidationErrors.CorrectRejection.AddressInvalidStatus.Message,
-                    ValidationErrors.CorrectRejection.AddressInvalidStatus.Code),
+                AddressHasInvalidStatusException => ValidationErrors.CorrectRejection.AddressInvalidStatus.ToTicketError(),
 
-                AddressAlreadyExistsException => new TicketError(
-                    ValidationErrors.Common.AddressAlreadyExists.Message,
-                    ValidationErrors.Common.AddressAlreadyExists.Code),
+                AddressAlreadyExistsException => ValidationErrors.Common.AddressAlreadyExists.ToTicketError(),
 
                 BoxNumberHouseNumberDoesNotMatchParentHouseNumberException =>
                     ValidationErrors.CorrectRejection.InconsistentHouseNumber.ToTicketError(),
@@ -74,9 +68,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 BoxNumberPostalCodeDoesNotMatchHouseNumberPostalCodeException =>
                     ValidationErrors.CorrectRejection.InconsistentPostalCode.ToTicketError(),
 
-                ParentAddressHasInvalidStatusException => new TicketError(
-                    ValidationErrors.CorrectRejection.ParentInvalidStatus.Message,
-                    ValidationErrors.CorrectRejection.ParentInvalidStatus.Code),
+                ParentAddressHasInvalidStatusException => ValidationErrors.CorrectRejection.ParentInvalidStatus.ToTicketError(),
 
                 _ => null
             };

@@ -56,21 +56,11 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
         {
             return exception switch
             {
-                StreetNameHasInvalidStatusException => new TicketError(
-                    ValidationErrors.Common.StreetNameStatusInvalidForAction.Message,
-                    ValidationErrors.Common.StreetNameStatusInvalidForAction.Code),
-                AddressHasInvalidStatusException => new TicketError(
-                    ValidationErrors.Common.PostalCode.CannotBeChanged.Message,
-                    ValidationErrors.Common.PostalCode.CannotBeChanged.Code),
-                AddressAlreadyExistsException => new TicketError(
-                    ValidationErrors.Common.AddressAlreadyExists.Message,
-                    ValidationErrors.Common.AddressAlreadyExists.Code),
-                HouseNumberHasInvalidFormatException => new TicketError(
-                    ValidationErrors.Common.HouseNumberInvalidFormat.Message,
-                    ValidationErrors.Common.HouseNumberInvalidFormat.Code),
-                AddressHasBoxNumberException => new TicketError(
-                    ValidationErrors.CorrectHouseNumber.HouseNumberOfBoxNumberCannotBeChanged.Message,
-                    ValidationErrors.CorrectHouseNumber.HouseNumberOfBoxNumberCannotBeChanged.Code),
+                StreetNameHasInvalidStatusException => ValidationErrors.Common.StreetNameStatusInvalidForAction.ToTicketError(),
+                AddressHasInvalidStatusException => ValidationErrors.CorrectHouseNumber.CannotBeChanged.ToTicketError(),
+                AddressAlreadyExistsException => ValidationErrors.Common.AddressAlreadyExists.ToTicketError(),
+                HouseNumberHasInvalidFormatException => ValidationErrors.Common.HouseNumberInvalidFormat.ToTicketError(),
+                AddressHasBoxNumberException => ValidationErrors.CorrectHouseNumber.HouseNumberOfBoxNumberCannotBeChanged.ToTicketError(),
                 _ => null
             };
         }

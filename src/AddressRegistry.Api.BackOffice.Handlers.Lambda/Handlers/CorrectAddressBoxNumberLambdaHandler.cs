@@ -56,21 +56,11 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
         {
             return exception switch
             {
-                AddressHasInvalidStatusException => new TicketError(
-                    ValidationErrors.Common.PostalCode.CannotBeChanged.Message,
-                    ValidationErrors.Common.PostalCode.CannotBeChanged.Code),
-                StreetNameHasInvalidStatusException => new TicketError(
-                    ValidationErrors.Common.StreetNameStatusInvalidForAction.Message,
-                    ValidationErrors.Common.StreetNameStatusInvalidForAction.Code),
-                BoxNumberHasInvalidFormatException => new TicketError(
-                    ValidationErrors.Common.BoxNumberInvalidFormat.Message,
-                    ValidationErrors.Common.BoxNumberInvalidFormat.Code),
-                AddressHasNoBoxNumberException => new TicketError(
-                    ValidationErrors.CorrectBoxNumber.HasNoBoxNumber.Message,
-                    ValidationErrors.CorrectBoxNumber.HasNoBoxNumber.Code),
-                AddressAlreadyExistsException => new TicketError(
-                    ValidationErrors.Common.AddressAlreadyExists.Message,
-                    ValidationErrors.Common.AddressAlreadyExists.Code),
+                AddressHasInvalidStatusException => ValidationErrors.Common.PostalCode.CannotBeChanged.ToTicketError(),
+                StreetNameHasInvalidStatusException => ValidationErrors.Common.StreetNameStatusInvalidForAction.ToTicketError(),
+                BoxNumberHasInvalidFormatException => ValidationErrors.Common.BoxNumberInvalidFormat.ToTicketError(),
+                AddressHasNoBoxNumberException => ValidationErrors.CorrectBoxNumber.HasNoBoxNumber.ToTicketError(),
+                AddressAlreadyExistsException => ValidationErrors.Common.AddressAlreadyExists.ToTicketError(),
                 _ => null
             };
         }

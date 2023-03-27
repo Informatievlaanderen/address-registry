@@ -56,13 +56,9 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
         {
             return exception switch
             {
-                StreetNameHasInvalidStatusException => new TicketError(
-                    ValidationErrors.Common.StreetNameStatusInvalidForAction.Message,
-                    ValidationErrors.Common.StreetNameStatusInvalidForAction.Code),
+                StreetNameHasInvalidStatusException => ValidationErrors.Common.StreetNameStatusInvalidForAction.ToTicketError(),
 
-                AddressHasInvalidStatusException => new TicketError(
-                    ValidationErrors.Common.PostalCode.CannotBeChanged.Message,
-                    ValidationErrors.Common.PostalCode.CannotBeChanged.Code),
+                AddressHasInvalidStatusException => ValidationErrors.Common.PostalCode.CannotBeChanged.ToTicketError(),
 
                 AddressHasBoxNumberException => ValidationErrors.ChangeAddressPostalCode.AddressHasBoxNumber.ToTicketError(),
                 _ => null

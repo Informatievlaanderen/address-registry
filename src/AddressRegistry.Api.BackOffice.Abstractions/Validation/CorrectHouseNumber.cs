@@ -13,6 +13,14 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
 
                 public static TicketError ToTicketError() => new(Message, Code);
             }
+
+            public static class CannotBeChanged
+            {
+                public const string Code = "AdresGehistoreerdOfAfgekeurd";
+                public const string Message = "Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik'.";
+
+                public static TicketError ToTicketError() => new(Message, Code);
+            }
         }
     }
 }

@@ -74,6 +74,11 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
 
             var cmd = request.ToCommand(readdressAddressItems, retireAddressItems);
 
+            var addressesAdded = new List<(StreetNamePersistentLocalId, AddressPersistentLocalId)>();
+            var addressesUpdated = new List<(StreetNamePersistentLocalId, AddressPersistentLocalId)>();
+
+            var etagResponses = new List<ETagResponse>();
+
             try
             {
                 // pass context object by reference
@@ -82,22 +87,34 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                     cmd,
                     request.Metadata,
                     cancellationToken);
+
+                addressesAdded = cmd.ExecutionContext.AddressesAdded;
+                addressesUpdated = cmd.ExecutionContext.AddressesAdded.Union(cmd.ExecutionContext.AddressesUpdated).ToList();
             }
             catch (IdempotencyException)
             {
-                // Idempotent: Do Nothing return last etag
+                var streetName = await StreetNames.GetAsync(new StreetNameStreamId(cmd.DestinationStreetNamePersistentLocalId), cancellationToken);
+
+                foreach (var item in request.Request.HerAdresseer)
+                {
+                    addressesUpdated.Add((cmd.DestinationStreetNamePersistentLocalId,  new AddressPersistentLocalId(Convert.ToInt32(item.BronAdresId.AsIdentifier().Map(x => x).Value))));
+
+                    var doelAddress = streetName.StreetNameAddresses.FindActiveParentByHouseNumber(HouseNumber.Create(item.DoelHuisnummer));
+                    addressesUpdated.Add((cmd.DestinationStreetNamePersistentLocalId, doelAddress.AddressPersistentLocalId));
+                }
+
+                foreach (var addressToRetirePuri in request.Request.OpheffenAdressen ?? new List<string>())
+                {
+                    addressesUpdated.Add((cmd.DestinationStreetNamePersistentLocalId,  new AddressPersistentLocalId(Convert.ToInt32(addressToRetirePuri.AsIdentifier().Map(x => x).Value))));
+                }
             }
-            // TODO: ExecutionContext is empty when idempotencyException was thrown
 
-            var etagResponses = new List<ETagResponse>();
-
-            // add relations between new addresses & destinationStreetName
-            foreach (var (streetNamePersistentLocalId, addressPersistentLocalId) in cmd.ExecutionContext.AddressesAdded)
+            foreach (var (streetNamePersistentLocalId, addressPersistentLocalId) in addressesAdded)
             {
                 await _backOfficeContext.AddIdempotentAddressStreetNameIdRelation(addressPersistentLocalId, streetNamePersistentLocalId, cancellationToken);
             }
 
-            foreach (var (streetNamePersistentLocalId, addressPersistentLocalId) in cmd.ExecutionContext.AddressesAdded.Union(cmd.ExecutionContext.AddressesUpdated))
+            foreach (var (streetNamePersistentLocalId, addressPersistentLocalId) in addressesUpdated.Distinct())
             {
                 var lastHash = await GetHash(streetNamePersistentLocalId, addressPersistentLocalId, cancellationToken);
                 etagResponses.Add(new ETagResponse(string.Format(DetailUrlFormat, addressPersistentLocalId), lastHash));
@@ -112,7 +129,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             {
                 StreetNameIsRemovedException => ValidationErrors.Common.StreetNameIsRemoved.ToTicketError(),
                 StreetNameHasInvalidStatusException => ValidationErrors.Common.StreetNameIsNotActive.ToTicketError(),
-                PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException => ValidationErrors.Common.PostalCode.PostalCodeNotInMunicipality.ToTicketError(), // TODO: to refine to test
+                PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException => ValidationErrors.Common.PostalCode.PostalCodeNotInMunicipality.ToTicketError(),
                 AddressHasInvalidStatusException ex => ValidationErrors.Readdress.AddressInvalidStatus.ToTicketError(ex.AddressPersistentLocalId),
                 AddressHasBoxNumberException ex => ValidationErrors.Readdress.AddressHasBoxNumber.ToTicketError(ex.AddressPersistentLocalId),
                 AddressHasNoPostalCodeException ex => ValidationErrors.Readdress.AddressHasNoPostalCode.ToTicketError(ex.AddressPersistentLocalId),

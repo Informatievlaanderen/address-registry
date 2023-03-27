@@ -281,35 +281,12 @@ namespace AddressRegistry.StreetName
                     streetName.ChangeAddressPostalCode(message.Command.AddressPersistentLocalId, message.Command.PostalCode);
                 });
 
-            // For<Readdress>()
-            //     .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
-            //     .AddEventHash<Readdress, StreetName>(getUnitOfWork)
-            //     .AddProvenance(getUnitOfWork, provenanceFactory)
-            //     .Handle(async (message, ct) =>
-            //     {
-            //         var readdressGroups = message.Command.ReaddressAddressItems.GroupBy(x => x.SourceStreetNamePersistentLocalId);
-            //         var retireAddressGroup = message.Command.RetireAddressItems.GroupBy(x => x.StreetNamePersistentLocalId);
-            //
-            //
-            //         foreach (var group in readdressGroups)
-            //         {
-            //             var streetName = await getStreetNames().GetAsync(new StreetNameStreamId(group.Key), ct);
-            //         }
-            //
-            //
-            //         var destinationStreetNameStreamId = new StreetNameStreamId(message.Command.DestinationStreetNamePersistentLocalId);
-            //         var destinationStreetName = await getStreetNames().GetAsync(destinationStreetNameStreamId, ct);
-            //
-            //         destinationStreetName.Readdress(readdressGroups, retireAddressGroup);
-            //     });
-
-            For<Readdress>()
+           For<Readdress>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
                 .AddEventHash<Readdress, StreetName>(getUnitOfWork)
                 .AddProvenance(getUnitOfWork, provenanceFactory)
                 .Handle(async (message, ct) =>
                 {
-                    //var readdressGroups = message.Command.ReaddressAddressItems.GroupBy(x => x.SourceStreetNamePersistentLocalId);
                     var retireAddressGroup = message.Command.RetireAddressItems.GroupBy(x => x.StreetNamePersistentLocalId);
 
                     var destinationStreetNameStreamId = new StreetNameStreamId(message.Command.DestinationStreetNamePersistentLocalId);

@@ -10,6 +10,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingAddress
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentAssertions;
     using global::AutoFixture;
+    using ProjectionTests.Legacy.Extensions;
     using StreetName;
     using StreetName.Commands;
     using StreetName.Events;

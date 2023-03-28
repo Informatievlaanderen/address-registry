@@ -74,7 +74,7 @@
             GeometrySpecification geometrySpecification,
             ExtendedWkbGeometry geometryPosition)
         {
-            GuardActiveStreetName(PersistentLocalId);
+            GuardActiveStreetName();
 
             if (StreetNameAddresses.HasPersistentLocalId(addressPersistentLocalId))
             {
@@ -129,6 +129,8 @@
 
         public void ApproveAddress(AddressPersistentLocalId addressPersistentLocalId)
         {
+            GuardActiveStreetName();
+
             StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
                 .Approve();
@@ -325,11 +327,11 @@
             return address.LastEventHash;
         }
 
-        private void GuardActiveStreetName(StreetNamePersistentLocalId streetNamePersistentLocalId)
+        private void GuardActiveStreetName()
         {
             if (IsRemoved)
             {
-                throw new StreetNameIsRemovedException(streetNamePersistentLocalId);
+                throw new StreetNameIsRemovedException(PersistentLocalId);
             }
 
             var validStatuses = new[] { StreetNameStatus.Proposed, StreetNameStatus.Current };

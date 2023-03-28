@@ -1,19 +1,14 @@
 namespace AddressRegistry.StreetName
 {
     using System.Collections.Generic;
-    using System.Globalization;
     using System.Linq;
     using Address;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
-    using Be.Vlaanderen.Basisregisters.EventHandling;
-    using Be.Vlaanderen.Basisregisters.GrAr.Common;
-    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Commands;
     using DataStructures;
     using Events;
     using Exceptions;
-    using Newtonsoft.Json;
 
     public partial class StreetName : AggregateRootEntity, ISnapshotable
     {
@@ -170,13 +165,13 @@ namespace AddressRegistry.StreetName
                 ApplyChange(new StreetNameWasCorrectedFromRetiredToCurrent(PersistentLocalId));
             }
         }
-        
+
         public void Readdress(
             IPersistentLocalIdGenerator persistentLocalIdGenerator,
             IEnumerable<ReaddressAddressItem> readdressItems,
             ReaddressExecutionContext executionContext)
         {
-            GuardActiveStreetName(PersistentLocalId);
+            GuardActiveStreetName();
 
             // CASE 1:
             // From address_5 to non-existing address_6

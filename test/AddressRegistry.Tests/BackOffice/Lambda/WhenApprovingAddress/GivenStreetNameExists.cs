@@ -118,8 +118,8 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenApprovingAddress
                 x.Error(
                     It.IsAny<Guid>(),
                     new TicketError(
-                        "De straatnaam is gehistoreerd of afgekeurd.",
-                        "AdresStraatnaamGehistoreerdOfAfgekeurd"),
+                        "Deze actie is enkel toegestaan binnen straatnamen met status 'voorgesteld' of 'inGebruik'.",
+                        "AdresStraatnaamVoorgesteldOfInGebruik"),
                     CancellationToken.None));
         }
 

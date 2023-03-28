@@ -13,6 +13,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringAddress
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentAssertions;
     using global::AutoFixture;
+    using ProjectionTests.Legacy.Extensions;
     using Xunit;
     using Xunit.Abstractions;
 

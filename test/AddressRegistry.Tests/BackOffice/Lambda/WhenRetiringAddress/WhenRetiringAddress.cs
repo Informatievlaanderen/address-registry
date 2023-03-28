@@ -129,38 +129,6 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRetiringAddress
         }
 
         [Fact]
-        public async Task WhenStreetNameHasInvalidStatusException_ThenTicketingErrorIsExpected()
-        {
-            // Arrange
-            var ticketing = new Mock<ITicketing>();
-
-            var sut = new RetireAddressLambdaHandler(
-                Container.Resolve<IConfiguration>(),
-                new FakeRetryPolicy(),
-                ticketing.Object,
-                Mock.Of<IStreetNames>(),
-                MockExceptionIdempotentCommandHandler<StreetNameHasInvalidStatusException>().Object);
-
-            // Act
-            await sut.Handle(new RetireAddressLambdaRequest(Fixture.Create<int>().ToString(), new RetireAddressSqsRequest()
-            {
-                Request = new RetireAddressRequest(),
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object?>(),
-                ProvenanceData = Fixture.Create<ProvenanceData>()
-            }), CancellationToken.None);
-
-            //Assert
-            ticketing.Verify(x =>
-                x.Error(
-                    It.IsAny<Guid>(),
-                    new TicketError(
-                        "De straatnaam is gehistoreerd of afgekeurd.",
-                        "AdresStraatnaamGehistoreerdOfAfgekeurd"),
-                    CancellationToken.None));
-        }
-
-        [Fact]
         public async Task WhenIdempotencyException_ThenTicketingCompleteIsExpected()
         {
             // Arrange

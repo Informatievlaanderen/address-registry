@@ -56,9 +56,6 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
         {
             return exception switch
             {
-                StreetNameHasInvalidStatusException => new TicketError(
-                    ValidationErrors.Common.StreetNameIsNotActive.Message,
-                    ValidationErrors.Common.StreetNameIsNotActive.Code),
                 AddressHasInvalidStatusException => new TicketError(
                     ValidationErrors.RetireAddress.AddressInvalidStatus.Message,
                     ValidationErrors.RetireAddress.AddressInvalidStatus.Code),

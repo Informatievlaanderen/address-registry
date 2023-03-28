@@ -34,9 +34,19 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
             {
                 public const string Code = "AdresStraatnaamNietGekendValidatie";
                 public static string Message(string streetNamePuri) => $"De straatnaam '{streetNamePuri}' is niet gekend in het straatnaamregister.";
+
+                public static TicketError ToTicketError(string streetNamePuri) => new(Message(streetNamePuri), Code);
             }
 
-            public static class StreetNameStatusInvalidForCorrection
+            public static class StreetNameIsRemoved
+            {
+                public const string Code = "VerwijderdeStraatnaam";
+                public const string Message = "Verwijderde straatnaam.";
+
+                public static TicketError ToTicketError() => new(Message, Code);
+            }
+
+            public static class StreetNameStatusInvalidForAction
             {
                 public const string Code = "AdresStraatnaamVoorgesteldOfInGebruik";
                 public const string Message = "Deze actie is enkel toegestaan binnen straatnamen met status 'voorgesteld' of 'inGebruik'.";

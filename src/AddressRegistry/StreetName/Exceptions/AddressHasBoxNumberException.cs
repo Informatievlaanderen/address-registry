@@ -6,8 +6,15 @@ namespace AddressRegistry.StreetName.Exceptions
     [Serializable]
     public sealed class AddressHasBoxNumberException : AddressRegistryException
     {
+        public AddressPersistentLocalId AddressPersistentLocalId { get; }
+
         public AddressHasBoxNumberException()
         { }
+
+        public AddressHasBoxNumberException(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            AddressPersistentLocalId = addressPersistentLocalId;
+        }
 
         private AddressHasBoxNumberException(SerializationInfo info, StreamingContext context)
             : base(info, context)

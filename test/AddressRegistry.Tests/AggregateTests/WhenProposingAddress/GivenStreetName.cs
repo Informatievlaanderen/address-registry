@@ -151,7 +151,6 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
 
             // Act
             aggregate.ProposeAddress(
-                aggregateId,
                 childPersistentLocalId,
                 postalCode,
                 municipalityId,

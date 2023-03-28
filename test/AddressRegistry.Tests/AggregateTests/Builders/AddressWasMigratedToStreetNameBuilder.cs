@@ -16,12 +16,15 @@ namespace AddressRegistry.Tests.AggregateTests.Builders
         private AddressPersistentLocalId? _parentAddressPersistentLocalId;
         private HouseNumber? _houseNumber;
         private BoxNumber? _boxNumber;
+        private PostalCode? _postalCode;
+        private AddressGeometry? _addressGeometry;
         private bool _isRemoved;
 
         public AddressWasMigratedToStreetNameBuilder(Fixture fixture, AddressStatus addressStatus = AddressStatus.Proposed)
         {
             _fixture = fixture;
             _addressStatus = addressStatus;
+            _postalCode = _fixture.Create<PostalCode>();
         }
 
         public AddressWasMigratedToStreetNameBuilder WithStreetNamePersistentLocalId(StreetNamePersistentLocalId persistentLocalId)
@@ -55,6 +58,18 @@ namespace AddressRegistry.Tests.AggregateTests.Builders
             return this;
         }
 
+        public AddressWasMigratedToStreetNameBuilder WithPostalCode(PostalCode? postalCode)
+        {
+            _postalCode = postalCode;
+            return this;
+        }
+
+        public AddressWasMigratedToStreetNameBuilder WithAddressGeometry(AddressGeometry addressGeometry)
+        {
+            _addressGeometry = addressGeometry;
+            return this;
+        }
+
         public AddressWasMigratedToStreetName Build()
         {
             var @event = new AddressWasMigratedToStreetName(
@@ -65,9 +80,9 @@ namespace AddressRegistry.Tests.AggregateTests.Builders
                 _addressStatus,
                 _houseNumber ?? _fixture.Create<HouseNumber>(),
                 _boxNumber,
-                _fixture.Create<AddressGeometry>(),
+                _addressGeometry ?? _fixture.Create<AddressGeometry>(),
                 officiallyAssigned: true,
-                _fixture.Create<PostalCode>(),
+                _postalCode,
                 isCompleted: true,
                 _isRemoved,
                 _parentAddressPersistentLocalId);

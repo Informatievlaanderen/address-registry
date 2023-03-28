@@ -83,15 +83,9 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
         {
             return exception switch
             {
-                StreetNameHasInvalidStatusException => new TicketError(
-                    ValidationErrors.Common.StreetNameStatusInvalidForCorrection.Message,
-                    ValidationErrors.Common.StreetNameStatusInvalidForCorrection.Code),
-                AddressHasInvalidStatusException => new TicketError(
-                    ValidationErrors.Common.PostalCode.CannotBeChanged.Message,
-                    ValidationErrors.Common.PostalCode.CannotBeChanged.Code),
-                PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException => new TicketError(
-                    ValidationErrors.Common.PostalCode.PostalCodeNotInMunicipality.Message,
-                    ValidationErrors.Common.PostalCode.PostalCodeNotInMunicipality.Code),
+                StreetNameHasInvalidStatusException => ValidationErrors.Common.StreetNameStatusInvalidForAction.ToTicketError(),
+                AddressHasInvalidStatusException => ValidationErrors.Common.PostalCode.CannotBeChanged.ToTicketError(),
+                PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException => ValidationErrors.Common.PostalCode.PostalCodeNotInMunicipality.ToTicketError(),
                 AddressHasBoxNumberException => ValidationErrors.CorrectAddressPostalCode.AddressHasBoxNumber.ToTicketError(),
                 _ => null
             };

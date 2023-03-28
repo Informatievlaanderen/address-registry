@@ -4,9 +4,11 @@ namespace AddressRegistry.Tests
 
     public class FakePersistentLocalIdGenerator : IPersistentLocalIdGenerator
     {
+        private int _persistentLocalId = 0;
+
         public PersistentLocalId GenerateNextPersistentLocalId()
         {
-            return new PersistentLocalId(1);
+            return new PersistentLocalId(++_persistentLocalId);
         }
     }
 }

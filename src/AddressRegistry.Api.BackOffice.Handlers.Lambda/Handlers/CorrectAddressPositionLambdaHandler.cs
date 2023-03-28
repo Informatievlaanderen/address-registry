@@ -56,18 +56,10 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
         {
             return exception switch
             {
-                StreetNameHasInvalidStatusException => new TicketError(
-                    ValidationErrors.Common.StreetNameStatusInvalidForCorrection.Message,
-                    ValidationErrors.Common.StreetNameStatusInvalidForCorrection.Code),
-                AddressHasInvalidStatusException => new TicketError(
-                    ValidationErrors.Common.Position.CannotBeChanged.Message,
-                    ValidationErrors.Common.Position.CannotBeChanged.Code),
-                AddressHasInvalidGeometryMethodException => new TicketError(
-                    ValidationErrors.Common.PositionGeometryMethod.Invalid.Message,
-                    ValidationErrors.Common.PositionGeometryMethod.Invalid.Code),
-                AddressHasInvalidGeometrySpecificationException => new TicketError(
-                    ValidationErrors.Common.PositionSpecification.Invalid.Message,
-                    ValidationErrors.Common.PositionSpecification.Invalid.Code),
+                StreetNameHasInvalidStatusException => ValidationErrors.Common.StreetNameStatusInvalidForAction.ToTicketError(),
+                AddressHasInvalidStatusException => ValidationErrors.Common.Position.CannotBeChanged.ToTicketError(),
+                AddressHasInvalidGeometryMethodException => ValidationErrors.Common.PositionGeometryMethod.Invalid.ToTicketError(),
+                AddressHasInvalidGeometrySpecificationException => ValidationErrors.Common.PositionSpecification.Invalid.ToTicketError(),
                 _ => null
             };
         }

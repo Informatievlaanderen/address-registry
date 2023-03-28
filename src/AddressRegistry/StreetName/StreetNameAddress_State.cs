@@ -353,5 +353,19 @@ namespace AddressRegistry.StreetName
 
             _lastEvent = @event;
         }
+
+        internal void Readdress(ReaddressAddressData readdressItem, StreetNameWasReaddressed @event)
+        {
+            HouseNumber = new HouseNumber(readdressItem.DestinationHouseNumber);
+            Status = readdressItem.SourceStatus;
+            PostalCode = new PostalCode(readdressItem.SourcePostalCode);
+            IsOfficiallyAssigned = readdressItem.SourceIsOfficiallyAssigned;
+            Geometry = new AddressGeometry(
+                readdressItem.SourceGeometryMethod,
+                readdressItem.SourceGeometrySpecification,
+                new ExtendedWkbGeometry(readdressItem.SourceExtendedWkbGeometry));
+
+            _lastEvent = @event;
+        }
     }
 }

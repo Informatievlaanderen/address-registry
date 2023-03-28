@@ -32,6 +32,7 @@ namespace AddressRegistry.Tests
         {
             Fixture = new Fixture();
             Fixture.Register(() => (ISnapshotStrategy)NoSnapshotStrategy.Instance);
+            Fixture.Customize(new InfrastructureCustomization());
             Fixture.Customize(new WithValidHouseNumber());
         }
 

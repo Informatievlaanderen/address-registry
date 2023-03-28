@@ -1,10 +1,19 @@
 namespace AddressRegistry.StreetName
 {
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
+    using Address;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
+    using Be.Vlaanderen.Basisregisters.EventHandling;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Commands;
+    using DataStructures;
     using Events;
+    using Exceptions;
+    using Newtonsoft.Json;
 
     public partial class StreetName : AggregateRootEntity, ISnapshotable
     {
@@ -108,7 +117,7 @@ namespace AddressRegistry.StreetName
             }
         }
 
-        public void CorrectStreetNameNames(IDictionary<string,string> streetNameNames)
+        public void CorrectStreetNameNames(IDictionary<string, string> streetNameNames)
         {
             ApplyChange(new StreetNameNamesWereCorrected(
                 PersistentLocalId,
@@ -118,7 +127,7 @@ namespace AddressRegistry.StreetName
                     .Select(x => new AddressPersistentLocalId(x.AddressPersistentLocalId))));
         }
 
-        public void CorrectStreetNameHomonymAdditions(IDictionary<string,string> streetNameHomonymAdditions)
+        public void CorrectStreetNameHomonymAdditions(IDictionary<string, string> streetNameHomonymAdditions)
         {
             ApplyChange(new StreetNameHomonymAdditionsWereCorrected(
                 PersistentLocalId,
@@ -160,6 +169,81 @@ namespace AddressRegistry.StreetName
             {
                 ApplyChange(new StreetNameWasCorrectedFromRetiredToCurrent(PersistentLocalId));
             }
+        }
+        
+        public void Readdress(
+            IPersistentLocalIdGenerator persistentLocalIdGenerator,
+            IEnumerable<ReaddressAddressItem> readdressItems,
+            ReaddressExecutionContext executionContext)
+        {
+            GuardActiveStreetName(PersistentLocalId);
+
+            // CASE 1:
+            // From address_5 to non-existing address_6
+
+            // Propose new address_6
+            // Generate persistentLocalId
+            // Call ProposeAddress
+            // Copy attributes from address_5 to address_6
+            // attributes: status, position, postalCode, officially assigned
+
+            var proposedAddresses = new List<AddressPersistentLocalId>();
+            var readdressAddresses = new List<ReaddressAddressData>();
+
+            foreach (var item in readdressItems)
+            {
+                var sourceAddress =
+                    StreetNameAddresses.GetNotRemovedByPersistentLocalId(item.SourceAddressPersistentLocalId);
+
+                // TODO: question, does housenumber already exist?
+
+                if (!sourceAddress.IsHouseNumberAddress)
+                {
+                    throw new AddressHasBoxNumberException(sourceAddress.AddressPersistentLocalId);
+                }
+
+                if (!sourceAddress.IsActive)
+                {
+                    throw new AddressHasInvalidStatusException(sourceAddress.AddressPersistentLocalId);
+                }
+
+                if (sourceAddress.PostalCode is null)
+                {
+                    throw new AddressHasNoPostalCodeException(sourceAddress.AddressPersistentLocalId);
+                }
+
+                var newPersistentLocalId =
+                    new AddressPersistentLocalId(persistentLocalIdGenerator.GenerateNextPersistentLocalId());
+
+                ProposeAddress(
+                    newPersistentLocalId,
+                    sourceAddress.PostalCode,
+                    MunicipalityId,
+                    item.DestinationHouseNumber,
+                    null,
+                    sourceAddress.Geometry.GeometryMethod,
+                    sourceAddress.Geometry.GeometrySpecification,
+                    sourceAddress.Geometry.Geometry
+                );
+
+                proposedAddresses.Add(newPersistentLocalId);
+                executionContext.AddressesAdded.Add((PersistentLocalId, newPersistentLocalId));
+
+                readdressAddresses.Add(new ReaddressAddressData(
+                    item.SourceAddressPersistentLocalId,
+                    newPersistentLocalId,
+                    sourceAddress.Status,
+                    item.DestinationHouseNumber,
+                    sourceAddress.PostalCode,
+                    sourceAddress.Geometry,
+                    sourceAddress.IsOfficiallyAssigned
+                ));
+            }
+
+            ApplyChange(new StreetNameWasReaddressed(
+                PersistentLocalId,
+                proposedAddresses,
+                readdressAddresses));
         }
 
         private void RejectAddressesBecauseStreetNameWasRejected(IEnumerable<StreetNameAddress> addresses)

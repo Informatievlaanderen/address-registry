@@ -56,15 +56,9 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
         {
             return exception switch
             {
-                StreetNameHasInvalidStatusException => new TicketError(
-                    ValidationErrors.Common.StreetNameStatusInvalidForCorrection.Message,
-                    ValidationErrors.Common.StreetNameStatusInvalidForCorrection.Code),
-                AddressHasInvalidStatusException => new TicketError(
-                    ValidationErrors.CorrectApproval.AddressInvalidStatus.Message,
-                    ValidationErrors.CorrectApproval.AddressInvalidStatus.Code),
-                AddressIsNotOfficiallyAssignedException => new TicketError(
-                    ValidationErrors.CorrectApproval.AddressIsNotOfficiallyAssigned.Message,
-                    ValidationErrors.CorrectApproval.AddressIsNotOfficiallyAssigned.Code),
+                StreetNameHasInvalidStatusException => ValidationErrors.Common.StreetNameStatusInvalidForAction.ToTicketError(),
+                AddressHasInvalidStatusException => ValidationErrors.CorrectApproval.AddressInvalidStatus.ToTicketError(),
+                AddressIsNotOfficiallyAssignedException => ValidationErrors.CorrectApproval.AddressIsNotOfficiallyAssigned.ToTicketError(),
                 _ => null
             };
         }

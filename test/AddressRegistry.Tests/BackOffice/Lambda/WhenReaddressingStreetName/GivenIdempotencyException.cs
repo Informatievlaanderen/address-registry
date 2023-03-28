@@ -23,6 +23,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddressingStreetName
     using Infrastructure;
     using Microsoft.Extensions.Configuration;
     using StreetName;
+    using StreetName.Commands;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -54,13 +55,12 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddressingStreetName
                 _streetNamePersistentLocalId,
                 new NisCode("12345"));
 
-            var proposeAddress = ProposeAddress(
-                _streetNamePersistentLocalId,
-                new AddressPersistentLocalId(456),
-                new PostalCode("2018"),
-                Fixture.Create<MunicipalityId>(),
-                new HouseNumber("11"),
-                null);
+            var houseNumber = new HouseNumber("11");
+            var proposeHouseNumberAddress = await ProposeAddress(new AddressPersistentLocalId(123), houseNumber);
+            var proposeBoxNumber = await ProposeAddress(new AddressPersistentLocalId(456), houseNumber, new BoxNumber("A1"));
+            var proposeBoxNumberToApprove = await ProposeAddress(new AddressPersistentLocalId(789), houseNumber, new BoxNumber("A2"));
+            ApproveAddress(_streetNamePersistentLocalId, new AddressPersistentLocalId(proposeHouseNumberAddress.AddressPersistentLocalId));
+            ApproveAddress(_streetNamePersistentLocalId, new AddressPersistentLocalId(proposeBoxNumberToApprove.AddressPersistentLocalId));
 
             var destinationHouseNumber = "13";
 
@@ -74,21 +74,16 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddressingStreetName
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext),
                 _fakeBackOfficeContext);
 
-            await _fakeBackOfficeContext.AddIdempotentAddressStreetNameIdRelation(
-                proposeAddress.AddressPersistentLocalId,
-                _streetNamePersistentLocalId,
-                CancellationToken.None);
-
             var request = new ReaddressLambdaRequest(_streetNamePersistentLocalId, new ReaddressSqsRequest
             {
-                Request = new ReaddressRequest()
+                Request = new ReaddressRequest
                 {
                     DoelStraatnaamId = StreetNamePuriFor(_streetNamePersistentLocalId),
                     HerAdresseer = new List<AddressToReaddressItem>
                     {
                         new AddressToReaddressItem
                         {
-                            BronAdresId = AddressPuriFor(proposeAddress.AddressPersistentLocalId),
+                            BronAdresId = AddressPuriFor(proposeHouseNumberAddress.AddressPersistentLocalId),
                             DoelHuisnummer = destinationHouseNumber
                         }
                     }
@@ -103,11 +98,10 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddressingStreetName
             await sut.Handle(request, CancellationToken.None);
 
             // Assert
-            _fakeBackOfficeContext.AddressPersistentIdStreetNamePersistentIds
-                .Find((int) proposeAddress.AddressPersistentLocalId)
-                .Should().NotBeNull();
+            var destinationAddressPersistentLocalId = new AddressPersistentLocalId(1); // FakePersistentLocalIdGenerator always starts with id 1
 
-            var destinationAddressPersistentLocalId = new AddressPersistentLocalId(1); // FakePersistentLocalIdGenerator always generates with id 1
+            (await _fakeBackOfficeContext.AddressPersistentIdStreetNamePersistentIds
+                    .FindAsync((int) destinationAddressPersistentLocalId)).Should().NotBeNull();
 
             eTagResponses.Count.Should().Be(1);
             var destinationAddressEtagResponse = eTagResponses.FirstOrDefault(x => x.Location == string.Format(ConfigDetailUrl, destinationAddressPersistentLocalId));
@@ -115,6 +109,27 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddressingStreetName
 
             var destinationStreetName = await Container.Resolve<IStreetNames>().GetAsync(_streetNameStreamId, CancellationToken.None);
             destinationAddressEtagResponse.ETag.Should().Be(destinationStreetName.GetAddressHash(destinationAddressPersistentLocalId));
+        }
+
+        private async Task<ProposeAddress> ProposeAddress(
+            AddressPersistentLocalId addressPersistentLocalId,
+            HouseNumber houseNumber,
+            BoxNumber? boxNumber = null)
+        {
+            var proposeAddress = ProposeAddress(
+                _streetNamePersistentLocalId,
+                addressPersistentLocalId,
+                new PostalCode("2018"),
+                Fixture.Create<MunicipalityId>(),
+                houseNumber,
+                boxNumber);
+
+            await _fakeBackOfficeContext.AddIdempotentAddressStreetNameIdRelation(
+                proposeAddress.AddressPersistentLocalId,
+                _streetNamePersistentLocalId,
+                CancellationToken.None);
+
+            return proposeAddress;
         }
     }
 }

@@ -9,7 +9,6 @@ namespace AddressRegistry.StreetName.Events
     using DataStructures;
     using Newtonsoft.Json;
 
-
     [EventTags(EventTag.For.Edit, EventTag.For.Sync)]
     [EventName(EventName)]
     [EventDescription("Het adres werd geheradresseerd.")]
@@ -22,6 +21,7 @@ namespace AddressRegistry.StreetName.Events
 
         [EventPropertyDescription("De voorgestelde adressen.")]
         public IReadOnlyList<int> ProposedAddressPersistentLocalIds { get; }
+
         [EventPropertyDescription("De heradresseerde adressen.")]
         public IReadOnlyList<ReaddressAddressData> ReaddressedAddresses { get; }
 

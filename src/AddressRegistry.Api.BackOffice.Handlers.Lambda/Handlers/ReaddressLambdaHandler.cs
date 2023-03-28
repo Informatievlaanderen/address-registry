@@ -39,14 +39,12 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
         protected override async Task<object> InnerHandle(ReaddressLambdaRequest request, CancellationToken cancellationToken)
         {
             // Get streetNamePersistentLocalId for each address in the request
-            // TODO: Describe steps being executed
 
             var readdressAddressItems = new List<ReaddressAddressItem>();
 
             foreach (var item in request.Request.HerAdresseer)
             {
-                var addressPersistentLocalId =
-                    new AddressPersistentLocalId(Convert.ToInt32(item.BronAdresId.AsIdentifier().Map(x => x).Value));
+                var addressPersistentLocalId = new AddressPersistentLocalId(Convert.ToInt32(item.BronAdresId.AsIdentifier().Map(x => x).Value));
                 var relation = await _backOfficeContext.FindRelationAsync(addressPersistentLocalId, cancellationToken);
 
                 var readdressAddressItem = new ReaddressAddressItem(
@@ -61,8 +59,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
 
             foreach (var item in request.Request.OpheffenAdressen ?? new List<string>())
             {
-                var addressPersistentLocalId =
-                    new AddressPersistentLocalId(Convert.ToInt32(item.AsIdentifier().Map(x => x).Value));
+                var addressPersistentLocalId = new AddressPersistentLocalId(Convert.ToInt32(item.AsIdentifier().Map(x => x).Value));
 
                 // We don't look into the context because OpheffenAdressen should all be in HerAdresseer
                 var streetNamePersistentLocalId = readdressAddressItems
@@ -81,7 +78,6 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
 
             try
             {
-                // pass context object by reference
                 await IdempotentCommandHandler.Dispatch(
                     cmd.CreateCommandId(),
                     cmd,
@@ -89,7 +85,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                     cancellationToken);
 
                 addressesAdded = cmd.ExecutionContext.AddressesAdded;
-                addressesUpdated = cmd.ExecutionContext.AddressesAdded.Union(cmd.ExecutionContext.AddressesUpdated).ToList();
+                addressesUpdated = cmd.ExecutionContext.AddressesUpdated;
             }
             catch (IdempotencyException)
             {

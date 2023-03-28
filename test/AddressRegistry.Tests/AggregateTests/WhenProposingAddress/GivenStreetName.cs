@@ -452,5 +452,66 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                 .When(proposeChildAddress)
                 .Throws(new BoxNumberPostalCodeDoesNotMatchHouseNumberPostalCodeException()));
         }
+
+        [Theory]
+        [InlineData(StreetNameStatus.Rejected)]
+        [InlineData(StreetNameStatus.Retired)]
+        public void WithStreetNameHasInvalidStatus_ThenThrowsStreetNameHasInvalidStatusException(StreetNameStatus streetNameStatus)
+        {
+            var migratedStreetNameWasImported = new MigratedStreetNameWasImported(
+                Fixture.Create<StreetNameId>(),
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<MunicipalityId>(), Fixture.Create<NisCode>(),
+                streetNameStatus);
+            ((ISetProvenance)migratedStreetNameWasImported).SetProvenance(Fixture.Create<Provenance>());
+
+            var proposeAddress = new ProposeAddress(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                new PostalCode("9820"),
+                Fixture.Create<MunicipalityId>(),
+                Fixture.Create<AddressPersistentLocalId>(),
+                Fixture.Create<HouseNumber>(),
+                null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
+                Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId, migratedStreetNameWasImported)
+                .When(proposeAddress)
+                .Throws(new StreetNameHasInvalidStatusException()));
+        }
+
+        [Fact]
+        public void WithRemovedStreetName_ThenThrowsStreetNameHasInvalidStatusException()
+        {
+            var migratedStreetNameWasImported = new  MigratedStreetNameWasImported(
+                Fixture.Create<StreetNameId>(),
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<MunicipalityId>(), Fixture.Create<NisCode>(),
+                StreetNameStatus.Current);
+            ((ISetProvenance)migratedStreetNameWasImported).SetProvenance(Fixture.Create<Provenance>());
+
+            var streetNameWasRemoved = new StreetNameWasRemoved(Fixture.Create<StreetNamePersistentLocalId>());
+            ((ISetProvenance)streetNameWasRemoved).SetProvenance(Fixture.Create<Provenance>());
+
+            var proposeAddress = new ProposeAddress(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                new PostalCode("9820"),
+                Fixture.Create<MunicipalityId>(),
+                Fixture.Create<AddressPersistentLocalId>(),
+                Fixture.Create<HouseNumber>(),
+                null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
+                Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId, migratedStreetNameWasImported, streetNameWasRemoved)
+                .When(proposeAddress)
+                .Throws(new StreetNameIsRemovedException(Fixture.Create<StreetNamePersistentLocalId>())));
+        }
     }
 }

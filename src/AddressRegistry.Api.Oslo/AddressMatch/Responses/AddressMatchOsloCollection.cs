@@ -152,16 +152,34 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
         public double Score { get; set; }
 
         /// <summary>
-        /// Url's naar gerelateerde resources.
+        /// Een lijst van gerelateerde resources om te achterhalen wat de gelinkte objecten zijn aan het adres.
         /// </summary>
         [DataMember(Name = "Links", Order = 21, EmitDefaultValue = false)]
         [JsonProperty(Required = Required.Default)]
         public IEnumerable<HateoasLink> Links { get; set; }
 
+        [DataContract(Name = "HateoasLink", Namespace = "")]
         public class HateoasLink
         {
+            /// <summary>
+            /// De URL van de link.
+            /// </summary>
+            [DataMember(Name = "Ref", Order = 1, EmitDefaultValue = false)]
+            [JsonProperty(Required = Required.Default)]
             public Uri Ref { get; set; }
+
+            /// <summary>
+            /// Welke relatie de link tot het adres heeft.
+            /// </summary>
+            [DataMember(Name = "Rel", Order = 2, EmitDefaultValue = false)]
+            [JsonProperty(Required = Required.Default)]
             public string Rel { get; set; }
+
+            /// <summary>
+            /// Welke soort HttpMethode het is.
+            /// </summary>
+            [DataMember(Name = "Type", Order = 3, EmitDefaultValue = false)]
+            [JsonProperty(Required = Required.Default)]
             public string Type { get; set; }
 
             public HateoasLink(Uri @ref, string rel, string type)

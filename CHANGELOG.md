@@ -1,3 +1,11 @@
+# [3.85.0](https://github.com/informatievlaanderen/address-registry/compare/v3.84.1...v3.85.0) (2023-03-28)
+
+
+### Features
+
+* add first scenario of readdress domain ([1f5d7b0](https://github.com/informatievlaanderen/address-registry/commit/1f5d7b035cf4f5aca77d62178a0a4bda93f7e3a5))
+* add missing streetname status validations ([2224259](https://github.com/informatievlaanderen/address-registry/commit/22242594940773880cfbb6eadde2423dd6dd2afc))
+
 ## [3.84.1](https://github.com/informatievlaanderen/address-registry/compare/v3.84.0...v3.84.1) (2023-03-24)
 
 

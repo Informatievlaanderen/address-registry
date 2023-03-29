@@ -3,11 +3,16 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
+    using Autofac;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
+    using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentAssertions;
     using global::AutoFixture;
+    using SqlStreamStore;
+    using SqlStreamStore.Streams;
     using StreetName;
     using StreetName.DataStructures;
     using StreetName.Events;
@@ -99,12 +104,27 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                 return addresses;
             });
 
-            _sut = new StreetNameFactory(IntervalStrategy.Default).Create();
             _streetNameSnapshot = Fixture.Create<StreetNameSnapshot>();
-            _sut.Initialize(new List<object>
-            {
-                _streetNameSnapshot
-            });
+
+            var eventSerializer = Container.Resolve<EventSerializer>();
+            var eventMapping = Container.Resolve<EventMapping>();
+
+            var streamId = new StreetNameStreamId(Fixture.Create<StreetNamePersistentLocalId>());
+            Container.Resolve<ISnapshotStore>().SaveSnapshotAsync(streamId,
+                new SnapshotContainer
+                {
+                    Data = eventSerializer.SerializeObject(_streetNameSnapshot),
+                    Info = new SnapshotInfo
+                    {
+                        StreamVersion = 1,
+                        Type = eventMapping.GetEventName(_streetNameSnapshot.GetType()),
+                    }
+                },
+                CancellationToken.None);
+
+            Container.Resolve<IStreamStore>().AppendToStream(new StreamId(streamId), ExpectedVersion.NoStream, Fixture.Create<NewStreamMessage>());
+
+            _sut = Container.Resolve<IStreetNames>().GetAsync(streamId, CancellationToken.None).GetAwaiter().GetResult();
         }
 
         [Fact]
@@ -127,7 +147,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
 
                 snapshotAddress.Should().NotBeNull();
 
-                address.PostalCode.Should().Be(new PostalCode(snapshotAddress.PostalCode));
+                address.PostalCode.Should().Be(new PostalCode(snapshotAddress!.PostalCode));
                 address.HouseNumber.Should().Be(new HouseNumber(snapshotAddress.HouseNumber));
 
                 if (snapshotAddress.BoxNumber is null)
@@ -146,7 +166,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                 address.Status.Should().Be(snapshotAddress.Status);
                 address.IsOfficiallyAssigned.Should().Be(snapshotAddress.IsOfficiallyAssigned);
                 address.IsRemoved.Should().Be(snapshotAddress.IsRemoved);
-                address.LastProvenanceData.Should().Be(snapshotAddress.LastProvenanceData);
+                address.LastProvenanceData.Should().BeEquivalentTo(snapshotAddress.LastProvenanceData);
                 address.LastEventHash.Should().Be(snapshotAddress.LastEventHash);
             }
         }

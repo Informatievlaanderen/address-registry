@@ -183,7 +183,7 @@ namespace AddressRegistry.StreetName
             // attributes: status, position, postalCode, officially assigned
 
             var proposedAddresses = new List<AddressPersistentLocalId>();
-            var readdressAddresses = new List<ReaddressAddressData>();
+            var readdressedAddresses = new List<ReaddressedAddressData>();
 
             foreach (var item in readdressItems)
             {
@@ -228,7 +228,7 @@ namespace AddressRegistry.StreetName
 
                 executionContext.AddressesUpdated.Add((PersistentLocalId, destinationAddressPersistentLocalId));
 
-                readdressAddresses.Add(new ReaddressAddressData(
+                readdressedAddresses.Add(new ReaddressedAddressData(
                     item.SourceAddressPersistentLocalId,
                     destinationAddressPersistentLocalId,
                     sourceAddress.Status,
@@ -258,7 +258,7 @@ namespace AddressRegistry.StreetName
                     proposedAddresses.Add(boxNumberPersistentLocalId);
                     executionContext.AddressesAdded.Add((PersistentLocalId, boxNumberPersistentLocalId));
 
-                    readdressAddresses.Add(new ReaddressAddressData(
+                    readdressedAddresses.Add(new ReaddressedAddressData(
                         boxNumberAddress.AddressPersistentLocalId,
                         boxNumberPersistentLocalId,
                         boxNumberAddress.Status,
@@ -284,7 +284,7 @@ namespace AddressRegistry.StreetName
             ApplyChange(new StreetNameWasReaddressed(
                 PersistentLocalId,
                 proposedAddresses,
-                readdressAddresses));
+                readdressedAddresses));
         }
 
         private void RejectAddressesBecauseStreetNameWasRejected(IEnumerable<StreetNameAddress> addresses)

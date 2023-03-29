@@ -71,9 +71,9 @@
                     new Fact(_streamId,
                         new StreetNameWasReaddressed(_streetNamePersistentLocalId,
                             new List<AddressPersistentLocalId>(),
-                            new List<ReaddressAddressData>
+                            new List<ReaddressedAddressData>
                             {
-                                new ReaddressAddressData(
+                                new ReaddressedAddressData(
                                     sourceAddressPersistentLocalId,
                                     destinationAddressPersistentLocalId,
                                     migratedSourceAddress.Status,
@@ -150,9 +150,9 @@
                     new Fact(_streamId,
                         new StreetNameWasReaddressed(_streetNamePersistentLocalId,
                             new List<AddressPersistentLocalId> { destinationAddressPersistentLocalId },
-                            new List<ReaddressAddressData>
+                            new List<ReaddressedAddressData>
                             {
-                                new ReaddressAddressData(
+                                new ReaddressedAddressData(
                                     sourceAddressPersistentLocalId,
                                     destinationAddressPersistentLocalId,
                                     migratedSourceAddress.Status,
@@ -230,9 +230,9 @@
                     new Fact(_streamId,
                         new StreetNameWasReaddressed(_streetNamePersistentLocalId,
                             new List<AddressPersistentLocalId> { destinationAddressPersistentLocalId },
-                            new List<ReaddressAddressData>
+                            new List<ReaddressedAddressData>
                             {
-                                new ReaddressAddressData(
+                                new ReaddressedAddressData(
                                     sourceAddressPersistentLocalId,
                                     destinationAddressPersistentLocalId,
                                     migratedSourceAddress.Status,
@@ -359,9 +359,9 @@
                     new Fact(_streamId,
                         new StreetNameWasReaddressed(_streetNamePersistentLocalId,
                             new List<AddressPersistentLocalId> { expectedProposedBoxNumberAddressPersistentLocalId, expectedCurrentBoxNumberAddressPersistentLocalId },
-                            new List<ReaddressAddressData>
+                            new List<ReaddressedAddressData>
                             {
-                                new ReaddressAddressData(
+                                new ReaddressedAddressData(
                                     sourceAddressPersistentLocalId,
                                     destinationAddressPersistentLocalId,
                                     migratedSourceAddress.Status,
@@ -374,7 +374,7 @@
                                         new ExtendedWkbGeometry(migratedSourceAddress.ExtendedWkbGeometry)),
                                     migratedSourceAddress.OfficiallyAssigned,
                                     parentAddressPersistentLocalId: null),
-                                new ReaddressAddressData(
+                                new ReaddressedAddressData(
                                     sourceProposedBoxNumberAddressPersistentLocalId,
                                     expectedProposedBoxNumberAddressPersistentLocalId,
                                     migratedProposedBoxNumberAddress.Status,
@@ -387,7 +387,7 @@
                                         new ExtendedWkbGeometry(migratedProposedBoxNumberAddress.ExtendedWkbGeometry)),
                                     migratedProposedBoxNumberAddress.OfficiallyAssigned,
                                     parentAddressPersistentLocalId: destinationAddressPersistentLocalId),
-                                new ReaddressAddressData(
+                                new ReaddressedAddressData(
                                     sourceCurrentBoxNumberAddressAddressPersistentLocalId,
                                     expectedCurrentBoxNumberAddressPersistentLocalId,
                                     migratedCurrentBoxNumberAddress.Status,

@@ -354,16 +354,16 @@ namespace AddressRegistry.StreetName
             _lastEvent = @event;
         }
 
-        internal void Readdress(ReaddressAddressData readdressItem, StreetNameWasReaddressed @event)
+        internal void Readdress(ReaddressedAddressData readdressedItem, StreetNameWasReaddressed @event)
         {
-            HouseNumber = new HouseNumber(readdressItem.DestinationHouseNumber);
-            Status = readdressItem.SourceStatus;
-            PostalCode = new PostalCode(readdressItem.SourcePostalCode);
-            IsOfficiallyAssigned = readdressItem.SourceIsOfficiallyAssigned;
+            HouseNumber = new HouseNumber(readdressedItem.DestinationHouseNumber);
+            Status = readdressedItem.SourceStatus;
+            PostalCode = new PostalCode(readdressedItem.SourcePostalCode);
+            IsOfficiallyAssigned = readdressedItem.SourceIsOfficiallyAssigned;
             Geometry = new AddressGeometry(
-                readdressItem.SourceGeometryMethod,
-                readdressItem.SourceGeometrySpecification,
-                new ExtendedWkbGeometry(readdressItem.SourceExtendedWkbGeometry));
+                readdressedItem.SourceGeometryMethod,
+                readdressedItem.SourceGeometrySpecification,
+                new ExtendedWkbGeometry(readdressedItem.SourceExtendedWkbGeometry));
 
             _lastEvent = @event;
         }

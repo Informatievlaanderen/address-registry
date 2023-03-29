@@ -81,9 +81,9 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing
                             {
                                  destinationAddressPersistentLocalId
                             },
-                            new List<ReaddressAddressData>
+                            new List<ReaddressedAddressData>
                             {
-                                new ReaddressAddressData(
+                                new ReaddressedAddressData(
                                     migrateSourceAddressPersistentLocalId,
                                     destinationAddressPersistentLocalId,
                                     migrateSourceAddress.Status,
@@ -217,9 +217,9 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing
                                  destinationProposedBoxNumberAddressPersistentLocalId,
                                  destinationCurrentBoxNumberAddressPersistentLocalId,
                             },
-                            new List<ReaddressAddressData>
+                            new List<ReaddressedAddressData>
                             {
-                                new ReaddressAddressData(
+                                new ReaddressedAddressData(
                                     migrateSourceAddressPersistentLocalId,
                                     destinationAddressPersistentLocalId,
                                     migratedSourceAddress.Status,
@@ -232,7 +232,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing
                                         new ExtendedWkbGeometry(migratedSourceAddress.ExtendedWkbGeometry)),
                                     migratedSourceAddress.OfficiallyAssigned,
                                     parentAddressPersistentLocalId: null),
-                                new ReaddressAddressData(
+                                new ReaddressedAddressData(
                                     proposedBoxNumberAddressPersistentLocalId,
                                     destinationProposedBoxNumberAddressPersistentLocalId,
                                     proposedBoxNumberAddress.Status,
@@ -245,7 +245,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing
                                         new ExtendedWkbGeometry(proposedBoxNumberAddress.ExtendedWkbGeometry)),
                                     proposedBoxNumberAddress.OfficiallyAssigned,
                                     parentAddressPersistentLocalId: destinationAddressPersistentLocalId),
-                                new ReaddressAddressData(
+                                new ReaddressedAddressData(
                                     currentBoxNumberAddressPersistentLocalId,
                                     destinationCurrentBoxNumberAddressPersistentLocalId,
                                     currentBoxNumberAddress.Status,
@@ -375,9 +375,9 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing
                     destinationProposedBoxNumberAddressPersistentLocalId,
                     destinationCurrentBoxNumberAddressPersistentLocalId
                 },
-                new List<ReaddressAddressData>
+                new List<ReaddressedAddressData>
                 {
-                    new ReaddressAddressData(
+                    new ReaddressedAddressData(
                         sourceAddressPersistentLocalId,
                         destinationAddressPersistentLocalId,
                         sourceAddressWasMigratedToStreetName.Status,
@@ -390,7 +390,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing
                             new ExtendedWkbGeometry(sourceAddressWasMigratedToStreetName.ExtendedWkbGeometry)),
                         sourceAddressWasMigratedToStreetName.OfficiallyAssigned,
                         parentAddressPersistentLocalId: null),
-                        new ReaddressAddressData(
+                        new ReaddressedAddressData(
                             proposedBoxNumberAddressPersistentLocalId,
                             destinationProposedBoxNumberAddressPersistentLocalId,
                             proposedBoxNumberAddress.Status,
@@ -403,7 +403,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing
                                 new ExtendedWkbGeometry(proposedBoxNumberAddress.ExtendedWkbGeometry)),
                             proposedBoxNumberAddress.OfficiallyAssigned,
                             parentAddressPersistentLocalId: destinationAddressPersistentLocalId),
-                        new ReaddressAddressData(
+                        new ReaddressedAddressData(
                             currentBoxNumberAddressPersistentLocalId,
                             destinationCurrentBoxNumberAddressPersistentLocalId,
                             currentBoxNumberAddress.Status,

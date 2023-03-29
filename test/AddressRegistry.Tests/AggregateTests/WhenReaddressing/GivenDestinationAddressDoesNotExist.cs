@@ -18,12 +18,12 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing
     using Xunit;
     using Xunit.Abstractions;
 
-    public class GivenDestinationAddressDoesntExist : AddressRegistryTest
+    public class GivenDestinationAddressDoesNotExist : AddressRegistryTest
     {
         private readonly StreetNameStreamId _streamId;
         private readonly StreetNamePersistentLocalId _streetNamePersistentLocalId;
 
-        public GivenDestinationAddressDoesntExist(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public GivenDestinationAddressDoesNotExist(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             Fixture.Customize(new WithFixedStreetNamePersistentLocalId());
 
@@ -65,16 +65,16 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing
                 .Then(new[]
                 {
                     new Fact(_streamId,
-                    new AddressWasProposedV2(
-                        _streetNamePersistentLocalId,
-                        destinationAddressPersistentLocalId,
-                        null,
-                        new PostalCode(migrateSourceAddress.PostalCode!),
-                        destinationHouseNumber,
-                        null,
-                        migrateSourceAddress.GeometryMethod,
-                        migrateSourceAddress.GeometrySpecification,
-                        new ExtendedWkbGeometry(migrateSourceAddress.ExtendedWkbGeometry))),
+                        new AddressWasProposedV2(
+                            _streetNamePersistentLocalId,
+                            destinationAddressPersistentLocalId,
+                            null,
+                            new PostalCode(migrateSourceAddress.PostalCode!),
+                            destinationHouseNumber,
+                            null,
+                            migrateSourceAddress.GeometryMethod,
+                            migrateSourceAddress.GeometrySpecification,
+                            new ExtendedWkbGeometry(migrateSourceAddress.ExtendedWkbGeometry))),
                     new Fact(_streamId,
                         new StreetNameWasReaddressed(_streetNamePersistentLocalId,
                             new List<AddressPersistentLocalId>

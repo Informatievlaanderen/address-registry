@@ -1,4 +1,4 @@
-﻿namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing
+namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing
 {
     using System.Collections.Generic;
     using Api.BackOffice.Abstractions;
@@ -98,7 +98,7 @@
         [Theory]
         [InlineData(AddressStatus.Rejected)]
         [InlineData(AddressStatus.Retired)]
-        public void WithNonActiveStatusDestinationAddres_ThenDestinationAddressWasProposed(AddressStatus addressStatus)
+        public void WithNonActiveStatusDestinationAddress_ThenDestinationAddressWasProposed(AddressStatus addressStatus)
         {
             var sourceAddressPersistentLocalId = new AddressPersistentLocalId(10);
             var destinationAddressPersistentLocalId = new AddressPersistentLocalId(1); // FakePersistentLocalIdGenerator starts with id 1
@@ -177,7 +177,7 @@
         }
 
         [Fact]
-        public void WithRemovedDestinationAddres_ThenDestinationAddressWasProposed()
+        public void WithRemovedDestinationAddress_ThenDestinationAddressWasProposed()
         {
             var sourceAddressPersistentLocalId = new AddressPersistentLocalId(10);
             var destinationAddressPersistentLocalId = new AddressPersistentLocalId(1); // FakePersistentLocalIdGenerator starts with id 1

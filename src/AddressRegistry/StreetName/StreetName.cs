@@ -173,15 +173,6 @@ namespace AddressRegistry.StreetName
         {
             GuardActiveStreetName();
 
-            // CASE 1:
-            // From address_5 to non-existing address_6
-
-            // Propose new address_6
-            // Generate persistentLocalId
-            // Call ProposeAddress
-            // Copy attributes from address_5 to address_6
-            // attributes: status, position, postalCode, officially assigned
-
             var proposedAddresses = new List<AddressPersistentLocalId>();
             var readdressedAddresses = new List<ReaddressedAddressData>();
 
@@ -225,12 +216,26 @@ namespace AddressRegistry.StreetName
                     proposedAddresses.Add(destinationAddressPersistentLocalId);
                     executionContext.AddressesAdded.Add((PersistentLocalId, destinationAddressPersistentLocalId));
                 }
+                else
+                {
+                    foreach (var boxNumberAddress in destinationAddress.Children.Where(x => x.IsActive))
+                    {
+                        if (boxNumberAddress.Status == AddressStatus.Proposed)
+                        {
+                            RejectAddress(boxNumberAddress.AddressPersistentLocalId);
+                        }
+                        else if (boxNumberAddress.Status == AddressStatus.Current)
+                        {
+                            RetireAddress(boxNumberAddress.AddressPersistentLocalId);
+                        }
+                    }
+                }
 
-                executionContext.AddressesUpdated.Add((PersistentLocalId, destinationAddressPersistentLocalId));
+                executionContext.AddressesUpdated.Add((PersistentLocalId, destinationAddressPersistentLocalId!));
 
                 readdressedAddresses.Add(new ReaddressedAddressData(
                     item.SourceAddressPersistentLocalId,
-                    destinationAddressPersistentLocalId,
+                    destinationAddressPersistentLocalId!,
                     sourceAddress.Status,
                     item.DestinationHouseNumber,
                     boxNumber: null,

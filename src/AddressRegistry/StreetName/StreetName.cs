@@ -247,6 +247,11 @@ namespace AddressRegistry.StreetName
 
                 foreach (var boxNumberAddress in sourceAddress.Children.Where(x => x.IsActive))
                 {
+                    if (proposedAddresses.Contains(boxNumberAddress.AddressPersistentLocalId))
+                    {
+                        continue;
+                    }
+
                     var boxNumberPersistentLocalId = new AddressPersistentLocalId(persistentLocalIdGenerator.GenerateNextPersistentLocalId());
 
                     ProposeAddress(

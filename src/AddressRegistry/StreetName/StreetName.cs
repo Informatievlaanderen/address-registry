@@ -168,7 +168,7 @@ namespace AddressRegistry.StreetName
 
         public void Readdress(
             IPersistentLocalIdGenerator persistentLocalIdGenerator,
-            IEnumerable<ReaddressAddressItem> readdressItems,
+            IList<ReaddressAddressItem> readdressItems,
             ReaddressExecutionContext executionContext)
         {
             GuardActiveStreetName();
@@ -216,7 +216,7 @@ namespace AddressRegistry.StreetName
                     proposedAddresses.Add(destinationAddressPersistentLocalId);
                     executionContext.AddressesAdded.Add((PersistentLocalId, destinationAddressPersistentLocalId));
                 }
-                else
+                else if(!readdressItems.Select(x => x.SourceAddressPersistentLocalId).Contains(destinationAddress.AddressPersistentLocalId))
                 {
                     foreach (var boxNumberAddress in destinationAddress.Children.Where(x => x.IsActive))
                     {

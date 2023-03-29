@@ -187,10 +187,7 @@ namespace AddressRegistry.StreetName
 
             foreach (var item in readdressItems)
             {
-                var sourceAddress =
-                    StreetNameAddresses.GetNotRemovedByPersistentLocalId(item.SourceAddressPersistentLocalId);
-
-                // TODO: question, does housenumber already exist?
+                var sourceAddress = StreetNameAddresses.GetNotRemovedByPersistentLocalId(item.SourceAddressPersistentLocalId);
 
                 if (!sourceAddress.IsHouseNumberAddress)
                 {
@@ -207,27 +204,33 @@ namespace AddressRegistry.StreetName
                     throw new AddressHasNoPostalCodeException(sourceAddress.AddressPersistentLocalId);
                 }
 
-                var houseNumberPersistentLocalId =
-                    new AddressPersistentLocalId(persistentLocalIdGenerator.GenerateNextPersistentLocalId());
+                var destinationAddress = StreetNameAddresses.FindActiveParentByHouseNumber(item.DestinationHouseNumber);
+                var destinationAddressPersistentLocalId = destinationAddress?.AddressPersistentLocalId;
 
-                ProposeAddress(
-                    houseNumberPersistentLocalId,
-                    sourceAddress.PostalCode,
-                    MunicipalityId,
-                    item.DestinationHouseNumber,
-                    null,
-                    sourceAddress.Geometry.GeometryMethod,
-                    sourceAddress.Geometry.GeometrySpecification,
-                    sourceAddress.Geometry.Geometry
-                );
+                if (destinationAddress is null)
+                {
+                    destinationAddressPersistentLocalId = new AddressPersistentLocalId(persistentLocalIdGenerator.GenerateNextPersistentLocalId());
 
-                proposedAddresses.Add(houseNumberPersistentLocalId);
-                executionContext.AddressesAdded.Add((PersistentLocalId, houseNumberPersistentLocalId));
-                executionContext.AddressesUpdated.Add((PersistentLocalId, houseNumberPersistentLocalId));
+                    ProposeAddress(
+                        destinationAddressPersistentLocalId,
+                        sourceAddress.PostalCode,
+                        MunicipalityId,
+                        item.DestinationHouseNumber,
+                        null,
+                        sourceAddress.Geometry.GeometryMethod,
+                        sourceAddress.Geometry.GeometrySpecification,
+                        sourceAddress.Geometry.Geometry
+                    );
+
+                    proposedAddresses.Add(destinationAddressPersistentLocalId);
+                    executionContext.AddressesAdded.Add((PersistentLocalId, destinationAddressPersistentLocalId));
+                }
+
+                executionContext.AddressesUpdated.Add((PersistentLocalId, destinationAddressPersistentLocalId));
 
                 readdressAddresses.Add(new ReaddressAddressData(
                     item.SourceAddressPersistentLocalId,
-                    houseNumberPersistentLocalId,
+                    destinationAddressPersistentLocalId,
                     sourceAddress.Status,
                     item.DestinationHouseNumber,
                     boxNumber: null,
@@ -264,7 +267,7 @@ namespace AddressRegistry.StreetName
                         sourceAddress.PostalCode,
                         boxNumberAddress.Geometry,
                         boxNumberAddress.IsOfficiallyAssigned,
-                        houseNumberPersistentLocalId
+                        destinationAddressPersistentLocalId
                     ));
 
                     if (boxNumberAddress.Status == AddressStatus.Proposed)

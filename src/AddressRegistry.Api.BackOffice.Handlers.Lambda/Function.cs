@@ -7,19 +7,17 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
     using System.Reflection;
     using Abstractions;
     using Abstractions.SqsRequests;
-    using Infrastructure;
-    using Infrastructure.Modules;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Aws.Lambda;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.EventHandling;
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Infrastructure;
-    using Consumer.Infrastructure.Modules;
     using Consumer.Read.Municipality.Infrastructure.Modules;
+    using Infrastructure;
+    using Infrastructure.Modules;
     using MediatR;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -60,7 +58,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
 
             builder.RegisterAssemblyTypes(typeof(MessageHandler).GetTypeInfo().Assembly).AsImplementedInterfaces();
 
-            builder.Register(c => configuration)
+            builder.Register(_ => configuration)
                 .AsSelf()
                 .As<IConfiguration>()
                 .SingleInstance();
@@ -82,6 +80,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
             builder
                 .RegisterModule(new DataDogModule(configuration))
                 .RegisterModule(new CommandHandlingModule(configuration))
+                .RegisterModule(new SequenceModule(configuration, services, loggerFactory))
                 .RegisterModule(new BackOfficeModule(configuration, services, loggerFactory))
                 .RegisterModule(new MunicipalityConsumerModule(configuration, services, loggerFactory))
                 .RegisterModule(new SyndicationModule(configuration, services, loggerFactory));
@@ -92,8 +91,10 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
                 .InstancePerLifetimeScope();
 
             services.ConfigureIdempotency(
-                configuration.GetSection(IdempotencyConfiguration.Section).Get<IdempotencyConfiguration>()
-                    .ConnectionString,
+                configuration
+                    .GetSection(IdempotencyConfiguration.Section)
+                    .Get<IdempotencyConfiguration>()
+                    .ConnectionString!,
                 new IdempotencyMigrationsTableInfo(Schema.Import),
                 new IdempotencyTableInfo(Schema.Import),
                 loggerFactory);

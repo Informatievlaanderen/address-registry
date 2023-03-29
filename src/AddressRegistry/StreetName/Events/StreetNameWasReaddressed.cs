@@ -23,7 +23,7 @@ namespace AddressRegistry.StreetName.Events
         public IReadOnlyList<int> ProposedAddressPersistentLocalIds { get; }
 
         [EventPropertyDescription("De heradresseerde adressen.")]
-        public IReadOnlyList<ReaddressAddressData> ReaddressedAddresses { get; }
+        public IReadOnlyList<ReaddressedAddressData> ReaddressedAddresses { get; }
 
         [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
@@ -31,7 +31,7 @@ namespace AddressRegistry.StreetName.Events
         public StreetNameWasReaddressed(
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             List<AddressPersistentLocalId> proposedAddressPersistentLocalIds,
-            List<ReaddressAddressData> readdressedAddresses)
+            List<ReaddressedAddressData> readdressedAddresses)
         {
             StreetNamePersistentLocalId = streetNamePersistentLocalId;
             ProposedAddressPersistentLocalIds = proposedAddressPersistentLocalIds.Select(x => (int)x).ToList();
@@ -42,7 +42,7 @@ namespace AddressRegistry.StreetName.Events
         private StreetNameWasReaddressed(
             int streetNamePersistentLocalId,
             List<int> proposedAddressPersistentLocalIds,
-            List<ReaddressAddressData> readdressedAddresses,
+            List<ReaddressedAddressData> readdressedAddresses,
             ProvenanceData provenance)
             : this(
                 new StreetNamePersistentLocalId(streetNamePersistentLocalId),

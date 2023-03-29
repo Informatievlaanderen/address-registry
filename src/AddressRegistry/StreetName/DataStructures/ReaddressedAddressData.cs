@@ -1,8 +1,8 @@
-namespace AddressRegistry.StreetName.DataStructures
+﻿namespace AddressRegistry.StreetName.DataStructures
 {
     using Newtonsoft.Json;
 
-    public class ReaddressAddressData
+    public class ReaddressedAddressData
     {
         public int SourceAddressPersistentLocalId { get; }
         public int DestinationAddressPersistentLocalId { get; }
@@ -18,7 +18,7 @@ namespace AddressRegistry.StreetName.DataStructures
         public bool IsBoxNumberAddress => SourceBoxNumber is not null;
         public bool IsHouseNumberAddress => !IsBoxNumberAddress;
 
-        public ReaddressAddressData(
+        public ReaddressedAddressData(
             AddressPersistentLocalId sourceAddressPersistentLocalId,
             AddressPersistentLocalId destinationAddressPersistentLocalId,
             AddressStatus sourceStatus,
@@ -44,7 +44,7 @@ namespace AddressRegistry.StreetName.DataStructures
         }
 
         [JsonConstructor]
-        private ReaddressAddressData(
+        private ReaddressedAddressData(
             int sourceAddressPersistentLocalId,
             int destinationAddressPersistentLocalId,
             AddressStatus sourceStatus,

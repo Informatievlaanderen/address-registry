@@ -1,3 +1,15 @@
+# [3.86.0](https://github.com/informatievlaanderen/address-registry/compare/v3.85.0...v3.86.0) (2023-03-29)
+
+
+### Bug Fixes
+
+* register IPersistentLocalIdGenerator in lambda ([4d9d386](https://github.com/informatievlaanderen/address-registry/commit/4d9d3869456dbd2166eaf85e3769cd8ed533a10e))
+
+
+### Features
+
+* readdress first scenario with boxnumbers ([792ca8e](https://github.com/informatievlaanderen/address-registry/commit/792ca8e6067e0a811418cc9d5a2f70bd142626f8))
+
 # [3.85.0](https://github.com/informatievlaanderen/address-registry/compare/v3.84.1...v3.85.0) (2023-03-28)
 
 

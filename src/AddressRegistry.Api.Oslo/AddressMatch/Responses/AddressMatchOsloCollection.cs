@@ -164,27 +164,27 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
             /// <summary>
             /// De URL van de link.
             /// </summary>
-            [DataMember(Name = "Ref", Order = 1, EmitDefaultValue = false)]
+            [DataMember(Name = "href", Order = 1, EmitDefaultValue = false)]
             [JsonProperty(Required = Required.Default)]
-            public Uri Ref { get; set; }
+            public Uri HRef { get; set; }
 
             /// <summary>
             /// Welke relatie de link tot het adres heeft.
             /// </summary>
-            [DataMember(Name = "Rel", Order = 2, EmitDefaultValue = false)]
+            [DataMember(Name = "rel", Order = 2, EmitDefaultValue = false)]
             [JsonProperty(Required = Required.Default)]
             public string Rel { get; set; }
 
             /// <summary>
             /// Welke soort HttpMethode het is.
             /// </summary>
-            [DataMember(Name = "Type", Order = 3, EmitDefaultValue = false)]
+            [DataMember(Name = "type", Order = 3, EmitDefaultValue = false)]
             [JsonProperty(Required = Required.Default)]
             public string Type { get; set; }
 
-            public HateoasLink(Uri @ref, string rel, string type)
+            public HateoasLink(Uri hRef, string rel, string type)
             {
-                Ref = @ref;
+                HRef = hRef;
                 Rel = rel;
                 Type = type;
             }

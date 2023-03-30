@@ -1,3 +1,15 @@
+# [3.87.0](https://github.com/informatievlaanderen/address-registry/compare/v3.86.0...v3.87.0) (2023-03-30)
+
+
+### Bug Fixes
+
+* hateoas ref to href ([a2e3786](https://github.com/informatievlaanderen/address-registry/commit/a2e3786885c87ffbb6dcce22b58da4e1c9e9ef67))
+
+
+### Features
+
+* readdress scenario destination address exists ([d33f94b](https://github.com/informatievlaanderen/address-registry/commit/d33f94b37b47fddda828cd1b87502b2a16d1e923))
+
 # [3.86.0](https://github.com/informatievlaanderen/address-registry/compare/v3.85.0...v3.86.0) (2023-03-29)
 
 

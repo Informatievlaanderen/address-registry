@@ -338,10 +338,6 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing
                             migratedProposedBoxNumberAddress.GeometrySpecification,
                             new ExtendedWkbGeometry(migratedProposedBoxNumberAddress.ExtendedWkbGeometry))),
                     new Fact(_streamId,
-                        new AddressWasRejected(
-                            _streetNamePersistentLocalId,
-                            sourceProposedBoxNumberAddressPersistentLocalId)),
-                    new Fact(_streamId,
                         new AddressWasProposedV2(
                             _streetNamePersistentLocalId,
                             expectedCurrentBoxNumberAddressPersistentLocalId,
@@ -352,10 +348,6 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing
                             migratedCurrentBoxNumberAddress.GeometryMethod,
                             migratedCurrentBoxNumberAddress.GeometrySpecification,
                             new ExtendedWkbGeometry(migratedCurrentBoxNumberAddress.ExtendedWkbGeometry))),
-                    new Fact(_streamId,
-                        new AddressWasRetiredV2(
-                            _streetNamePersistentLocalId,
-                            sourceCurrentBoxNumberAddressAddressPersistentLocalId)),
                     new Fact(_streamId,
                         new StreetNameWasReaddressed(_streetNamePersistentLocalId,
                             new List<AddressPersistentLocalId> { expectedProposedBoxNumberAddressPersistentLocalId, expectedCurrentBoxNumberAddressPersistentLocalId },
@@ -436,7 +428,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing
                     GeometrySpecification.Entry,
                     GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry()))
                 .Build();
-            
+
             var migratedDestinationAddress = new AddressWasMigratedToStreetNameBuilder(Fixture)
                 .WithAddressPersistentLocalId(destinationAddressPersistentLocalId)
                 .WithHouseNumber(destinationHouseNumber)
@@ -513,7 +505,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing
                 }));
 
             command.ExecutionContext.AddressesAdded.Should().BeEmpty();
-            
+
             command.ExecutionContext.AddressesUpdated.Should().ContainSingle(x =>
                 x.streetNamePersistentLocalId == _streetNamePersistentLocalId
                 && x.addressPersistentLocalId == destinationAddressPersistentLocalId);

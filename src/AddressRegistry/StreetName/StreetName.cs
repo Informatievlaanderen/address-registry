@@ -218,6 +218,7 @@ namespace AddressRegistry.StreetName
                 }
                 else if(!readdressItems.Select(x => x.SourceAddressPersistentLocalId).Contains(destinationAddress.AddressPersistentLocalId))
                 {
+                    // If the destination address exists and it's never used as a source addres, then we can already reject or retire it's box number addresses.
                     foreach (var boxNumberAddress in destinationAddress.Children.Where(x => x.IsActive))
                     {
                         if (boxNumberAddress.Status == AddressStatus.Proposed)
@@ -285,8 +286,14 @@ namespace AddressRegistry.StreetName
                         destinationAddressPersistentLocalId
                     ));
 
-                    if (readdressedAddresses.Any(x =>
-                            x.DestinationAddressPersistentLocalId == boxNumberAddress.AddressPersistentLocalId))
+                    // 11 -> 13 -> 15
+                    // A     A1
+                    // B      B
+                    // When house number 13 is the current sourceAddress, then readdressedAddresses will contain boxNumberAddress 13B,
+                    // because 11B's properies were readdressed,
+                    // and in the case of house number 11, the current sourceAddress' house number is never used as a destination house number (it's only a source address, never a destination addres).
+                    if (readdressedAddresses.Any(x => x.DestinationAddressPersistentLocalId == boxNumberAddress.AddressPersistentLocalId) ||
+                        readdressItems.All(x => x.DestinationHouseNumber != sourceAddress.HouseNumber))
                     {
                         continue;
                     }

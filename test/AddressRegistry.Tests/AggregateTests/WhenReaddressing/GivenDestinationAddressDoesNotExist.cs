@@ -191,10 +191,6 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing
                             proposedBoxNumberAddress.GeometrySpecification,
                             new ExtendedWkbGeometry(proposedBoxNumberAddress.ExtendedWkbGeometry))),
                     new Fact(_streamId,
-                        new AddressWasRejected(
-                            _streetNamePersistentLocalId,
-                            proposedBoxNumberAddressPersistentLocalId)),
-                    new Fact(_streamId,
                         new AddressWasProposedV2(
                             _streetNamePersistentLocalId,
                             destinationCurrentBoxNumberAddressPersistentLocalId,
@@ -205,10 +201,6 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing
                             currentBoxNumberAddress.GeometryMethod,
                             currentBoxNumberAddress.GeometrySpecification,
                             new ExtendedWkbGeometry(currentBoxNumberAddress.ExtendedWkbGeometry))),
-                    new Fact(_streamId,
-                        new AddressWasRetiredV2(
-                            _streetNamePersistentLocalId,
-                            currentBoxNumberAddressPersistentLocalId)),
                     new Fact(_streamId,
                         new StreetNameWasReaddressed(_streetNamePersistentLocalId,
                             new List<AddressPersistentLocalId>
@@ -349,10 +341,6 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing
                 proposedBoxNumberAddress.GeometrySpecification,
                 new ExtendedWkbGeometry(proposedBoxNumberAddress.ExtendedWkbGeometry));
 
-            var addressWasRejected = new AddressWasRejected(
-                _streetNamePersistentLocalId,
-                proposedBoxNumberAddressPersistentLocalId);
-
             var destinationSecondBoxNumberWasProposed = new AddressWasProposedV2(
                 _streetNamePersistentLocalId,
                 destinationCurrentBoxNumberAddressPersistentLocalId,
@@ -363,10 +351,6 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing
                 currentBoxNumberAddress.GeometryMethod,
                 currentBoxNumberAddress.GeometrySpecification,
                 new ExtendedWkbGeometry(currentBoxNumberAddress.ExtendedWkbGeometry));
-
-            var addressWasRetired = new AddressWasRetiredV2(
-                _streetNamePersistentLocalId,
-                currentBoxNumberAddressPersistentLocalId);
 
             var streetNameWasReaddressed = new StreetNameWasReaddressed(_streetNamePersistentLocalId,
                 new List<AddressPersistentLocalId>
@@ -427,9 +411,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing
                 currentBoxNumberAddress,
                 destinationHouseNumberAddressWasProposed,
                 destinationFirstBoxNumberWasProposed,
-                addressWasRejected,
                 destinationSecondBoxNumberWasProposed,
-                addressWasRetired,
                 streetNameWasReaddressed
             });
 
@@ -466,13 +448,13 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing
             destinationCurrentBoxNumberAddress.PostalCode.Should().Be(new PostalCode(currentBoxNumberAddress.PostalCode!));
             destinationCurrentBoxNumberAddress.IsOfficiallyAssigned.Should().Be(currentBoxNumberAddress.OfficiallyAssigned);
 
-            var rejectedAddress = sut.StreetNameAddresses.SingleOrDefault(x => x.AddressPersistentLocalId == proposedBoxNumberAddressPersistentLocalId);
-            rejectedAddress.Should().NotBeNull();
-            rejectedAddress.Status.Should().Be(AddressStatus.Rejected);
+            var expectedProposedBoxNumberAddress = sut.StreetNameAddresses.SingleOrDefault(x => x.AddressPersistentLocalId == proposedBoxNumberAddressPersistentLocalId);
+            expectedProposedBoxNumberAddress.Should().NotBeNull();
+            expectedProposedBoxNumberAddress.Status.Should().Be(AddressStatus.Proposed);
 
-            var retiredAddress = sut.StreetNameAddresses.SingleOrDefault(x => x.AddressPersistentLocalId == currentBoxNumberAddressPersistentLocalId);
-            retiredAddress.Should().NotBeNull();
-            retiredAddress.Status.Should().Be(AddressStatus.Retired);
+            var expectedCurrentBoxNumberAddress = sut.StreetNameAddresses.SingleOrDefault(x => x.AddressPersistentLocalId == currentBoxNumberAddressPersistentLocalId);
+            expectedCurrentBoxNumberAddress.Should().NotBeNull();
+            expectedCurrentBoxNumberAddress.Status.Should().Be(AddressStatus.Current);
         }
     }
 }

@@ -86,9 +86,9 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 RegisterExtractProjectionsV2(builder);
                 RegisterLegacyProjectionsV2(builder);
                 RegisterWfsProjectionsV2(builder);
-                //RegisterWmsProjectionsV2(builder);
-                RegisterWfsProjections(builder); //TODO: Remove when Wfs has been filled in staging
-                RegisterWmsProjections(builder); //TODO: Remove when Wms has been filled in staging
+                RegisterWmsProjectionsV2(builder);
+                // RegisterWfsProjections(builder); //TODO: Remove when Wfs has been filled in staging
+                // RegisterWmsProjections(builder); //TODO: Remove when Wms has been filled in staging
             }
             else
             {
@@ -263,7 +263,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                         _services,
                         _loggerFactory));
 
-            var wfsProjectionSettings = ConnectedProjectionSettings
+            var wmsProjectionSettings = ConnectedProjectionSettings
                 .Configure(settings =>
                     settings.ConfigureLinearBackoff<SqlException>(_configuration, "Wms"));
 
@@ -274,7 +274,30 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
 
             .RegisterProjections<AddressRegistry.Projections.Wms.AddressDetail.AddressDetailProjections, WmsContext>(() =>
                     new AddressRegistry.Projections.Wms.AddressDetail.AddressDetailProjections(WKBReaderFactory.CreateForLegacy()),
-                wfsProjectionSettings);
+                wmsProjectionSettings);
+        }
+
+        private void RegisterWmsProjectionsV2(ContainerBuilder builder)
+        {
+            builder
+                .RegisterModule(
+                    new WmsModule(
+                        _configuration,
+                        _services,
+                        _loggerFactory));
+
+            var wmsProjectionSettings = ConnectedProjectionSettings
+                .Configure(settings =>
+                    settings.ConfigureLinearBackoff<SqlException>(_configuration, "Wms"));
+
+            builder
+                .RegisterProjectionMigrator<WmsContextMigrationFactory>(
+                    _configuration,
+                    _loggerFactory)
+
+                .RegisterProjections<AddressRegistry.Projections.Wms.AddressWmsItem.AddressWmsItemProjections, WmsContext>(() =>
+                        new AddressRegistry.Projections.Wms.AddressWmsItem.AddressWmsItemProjections(WKBReaderFactory.CreateForLegacy()),
+                    wmsProjectionSettings);
         }
     }
 }

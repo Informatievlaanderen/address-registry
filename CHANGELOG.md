@@ -1,3 +1,10 @@
+# [3.88.0](https://github.com/informatievlaanderen/address-registry/compare/v3.87.0...v3.88.0) (2023-03-30)
+
+
+### Features
+
+* add wms v2 views ([a35d7a0](https://github.com/informatievlaanderen/address-registry/commit/a35d7a07c4d396b9cb269eea74f2738a1807671c))
+
 # [3.87.0](https://github.com/informatievlaanderen/address-registry/compare/v3.86.0...v3.87.0) (2023-03-30)
 
 

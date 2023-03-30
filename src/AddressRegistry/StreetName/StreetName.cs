@@ -252,21 +252,26 @@ namespace AddressRegistry.StreetName
                         continue;
                     }
 
-                    var boxNumberPersistentLocalId = new AddressPersistentLocalId(persistentLocalIdGenerator.GenerateNextPersistentLocalId());
+                    var destinationBoxNumberAddress = destinationAddress?.Children.SingleOrDefault(x => x.BoxNumber == boxNumberAddress.BoxNumber);
+                    var boxNumberPersistentLocalId = destinationBoxNumberAddress?.AddressPersistentLocalId
+                        ?? new AddressPersistentLocalId(persistentLocalIdGenerator.GenerateNextPersistentLocalId());
 
-                    ProposeAddress(
-                        boxNumberPersistentLocalId,
-                        sourceAddress.PostalCode,
-                        MunicipalityId,
-                        item.DestinationHouseNumber,
-                        boxNumberAddress.BoxNumber,
-                        boxNumberAddress.Geometry.GeometryMethod,
-                        boxNumberAddress.Geometry.GeometrySpecification,
-                        boxNumberAddress.Geometry.Geometry
-                    );
+                    if (destinationBoxNumberAddress is null)
+                    {
+                        ProposeAddress(
+                            boxNumberPersistentLocalId,
+                            sourceAddress.PostalCode,
+                            MunicipalityId,
+                            item.DestinationHouseNumber,
+                            boxNumberAddress.BoxNumber,
+                            boxNumberAddress.Geometry.GeometryMethod,
+                            boxNumberAddress.Geometry.GeometrySpecification,
+                            boxNumberAddress.Geometry.Geometry
+                        );
 
-                    proposedAddresses.Add(boxNumberPersistentLocalId);
-                    executionContext.AddressesAdded.Add((PersistentLocalId, boxNumberPersistentLocalId));
+                        proposedAddresses.Add(boxNumberPersistentLocalId);
+                        executionContext.AddressesAdded.Add((PersistentLocalId, boxNumberPersistentLocalId));
+                    }
 
                     readdressedAddresses.Add(new ReaddressedAddressData(
                         boxNumberAddress.AddressPersistentLocalId,
@@ -279,6 +284,12 @@ namespace AddressRegistry.StreetName
                         boxNumberAddress.IsOfficiallyAssigned,
                         destinationAddressPersistentLocalId
                     ));
+
+                    if (readdressedAddresses.Any(x =>
+                            x.DestinationAddressPersistentLocalId == boxNumberAddress.AddressPersistentLocalId))
+                    {
+                        continue;
+                    }
 
                     if (boxNumberAddress.Status == AddressStatus.Proposed)
                     {

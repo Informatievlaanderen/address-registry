@@ -1,3 +1,10 @@
+# [3.89.0](https://github.com/informatievlaanderen/address-registry/compare/v3.88.0...v3.89.0) (2023-03-31)
+
+
+### Features
+
+* add vol adres to extract v2 ([0310cca](https://github.com/informatievlaanderen/address-registry/commit/0310cca79d2dfce109a2cdcdf6fcc64ac36c43a3))
+
 # [3.88.0](https://github.com/informatievlaanderen/address-registry/compare/v3.87.0...v3.88.0) (2023-03-30)
 
 

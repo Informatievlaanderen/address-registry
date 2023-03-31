@@ -5,6 +5,7 @@ namespace AddressRegistry.Api.Extract.Extracts
     using Be.Vlaanderen.Basisregisters.Api.Extract;
     using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.Shaperon;
     using Consumer.Read.Municipality;
     using Consumer.Read.Municipality.Projections;
@@ -113,7 +114,7 @@ namespace AddressRegistry.Api.Extract.Extracts
                 ExtractFileNames.Address,
                 ProjectedCoordinateSystem.Belge_Lambert_1972);
         }
-        
+
         public static IEnumerable<ExtractFile> CreateAddressFilesV2(
             ExtractContext context,
             StreetNameConsumerContext streetNameConsumerContext,
@@ -132,7 +133,7 @@ namespace AddressRegistry.Api.Extract.Extracts
 
             var extractMetadata = new Dictionary<string, string>
             {
-                { ExtractMetadataKeys.LatestEventId, addressProjectionState.Position.ToString()}
+                { ExtractMetadataKeys.LatestEventId, addressProjectionState.Position.ToString() }
             };
 
             var cachedMunicipalities = municipalityConsumerContext.MunicipalityLatestItems.AsNoTracking().ToList();
@@ -154,8 +155,8 @@ namespace AddressRegistry.Api.Extract.Extracts
 
             byte[] TransformRecord(AddressExtractItemV2 r)
             {
-                var item = new AddressDbaseRecord();
-                item.FromBytes(r.DbaseRecord, DbfFileWriter<AddressDbaseRecord>.Encoding);
+                var item = new AddressDbaseRecordV2();
+                item.FromBytes(r.DbaseRecord, DbfFileWriter<AddressDbaseRecordV2>.Encoding);
 
                 // update streetname, municipality
                 var streetName = cachedStreetNames.First(x => x.PersistentLocalId == r.StreetNamePersistentLocalId);
@@ -165,11 +166,6 @@ namespace AddressRegistry.Api.Extract.Extracts
 
                 switch (municipality.PrimaryLanguage)
                 {
-                    default:
-                        item.gemeentenm.Value = municipality.NameDutch;
-                        item.straatnm.Value = streetName.NameDutch;
-                        break;
-
                     case MunicipalityLanguage.French:
                         item.gemeentenm.Value = municipality.NameFrench;
                         item.straatnm.Value = streetName.NameFrench;
@@ -184,14 +180,29 @@ namespace AddressRegistry.Api.Extract.Extracts
                         item.gemeentenm.Value = municipality.NameEnglish;
                         item.straatnm.Value = streetName.NameEnglish;
                         break;
+
+                    default:
+                        item.gemeentenm.Value = municipality.NameDutch;
+                        item.straatnm.Value = streetName.NameDutch;
+                        break;
                 }
 
-                return item.ToBytes(DbfFileWriter<AddressDbaseRecord>.Encoding);
+                item.voladres.Value = new VolledigAdres(
+                        item.straatnm.Value,
+                        item.huisnr.Value,
+                        item.busnr.Value,
+                        item.postcode.Value,
+                        item.gemeentenm.Value,
+                        Taal.NL) //irrelevant cause we use spelling
+                    .GeografischeNaam
+                    .Spelling;
+
+                return item.ToBytes(DbfFileWriter<AddressDbaseRecordV2>.Encoding);
             }
 
-            yield return ExtractBuilder.CreateDbfFile<AddressExtractItemV2, AddressDbaseRecord>(
+            yield return ExtractBuilder.CreateDbfFile<AddressExtractItemV2, AddressDbaseRecordV2>(
                 ExtractFileNames.Address,
-                new AddressDbaseSchema(),
+                new AddressDbaseSchemaV2(),
                 extractItems,
                 extractItems.Count,
                 TransformRecord);

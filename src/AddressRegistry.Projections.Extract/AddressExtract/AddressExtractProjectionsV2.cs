@@ -77,7 +77,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 var coordinate = wkbReader.Read(message.Message.ExtendedWkbGeometry.ToByteArray()).Coordinate;
                 var pointShapeContent = new PointShapeContent(new Point(coordinate.X, coordinate.Y));
 
-                var addressDbaseRecord = new AddressDbaseRecord
+                var addressDbaseRecord = new AddressDbaseRecordV2
                 {
                     id = { Value = $"{extractConfig.Value.DataVlaanderenNamespace}/{message.Message.AddressPersistentLocalId}" },
                     adresid = { Value = message.Message.AddressPersistentLocalId },
@@ -88,7 +88,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                     posspec = { Value = Map(message.Message.GeometrySpecification) },
                     straatnmid = { Value = message.Message.StreetNamePersistentLocalId.ToString() },
                     status = { Value = Map(message.Message.Status)},
-                    versieid = { Value = message.Message.Provenance.Timestamp.ToBelgianDateTimeOffset().FromDateTimeOffset() }
+                    versieid = { Value = message.Message.Provenance.Timestamp.ToBelgianDateTimeOffset().FromDateTimeOffset() },
                 };
 
                 if (!string.IsNullOrEmpty(message.Message.BoxNumber))
@@ -113,7 +113,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
 
             When<Envelope<AddressWasProposedV2>>(async (context, message, ct) =>
             {
-                var addressDbaseRecord = new AddressDbaseRecord
+                var addressDbaseRecord = new AddressDbaseRecordV2
                 {
                     id = { Value = $"{extractConfig.Value.DataVlaanderenNamespace}/{message.Message.AddressPersistentLocalId}" },
                     adresid = { Value = message.Message.AddressPersistentLocalId },
@@ -205,7 +205,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 UpdateDbaseRecordField(item, record => record.status.Value = Map(AddressStatus.Retired));
                 UpdateVersie(item, message.Message.Provenance.Timestamp);
             });
-            
+
             When<Envelope<AddressWasRejectedBecauseStreetNameWasRetired>>(async (context, message, ct) =>
             {
                 var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);
@@ -384,7 +384,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
             });
         }
 
-        private void UpdateShape(AddressExtractItemV2 item, WKBReader wkbReader, string extendedWkbGeometry)
+        private static void UpdateShape(AddressExtractItemV2 item, WKBReader wkbReader, string extendedWkbGeometry)
         {
             var coordinate = wkbReader.Read(extendedWkbGeometry.ToByteArray()).Coordinate;
             var pointShapeContent = new PointShapeContent(new Point(coordinate.X, coordinate.Y));
@@ -397,9 +397,9 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
             item.ShapeRecordContentLength = pointShapeContent.ContentLength.ToInt32();
         }
 
-        private void UpdateDbaseRecordField(AddressExtractItemV2 item, Action<AddressDbaseRecord> update)
+        private void UpdateDbaseRecordField(AddressExtractItemV2 item, Action<AddressDbaseRecordV2> update)
         {
-            var record = new AddressDbaseRecord();
+            var record = new AddressDbaseRecordV2();
             record.FromBytes(item.DbaseRecord, _encoding);
             update(record);
             item.DbaseRecord = record.ToBytes(_encoding);

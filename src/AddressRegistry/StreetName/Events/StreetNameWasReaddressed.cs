@@ -21,6 +21,10 @@ namespace AddressRegistry.StreetName.Events
 
         [EventPropertyDescription("De voorgestelde adressen.")]
         public IReadOnlyList<int> ProposedAddressPersistentLocalIds { get; }
+        [EventPropertyDescription("De afgekeurde adressen.")]
+        public IReadOnlyList<int> RejectedAddressPersistentLocalIds { get; }
+        [EventPropertyDescription("De opgeheven adressen.")]
+        public IReadOnlyList<int> RetiredAddressPersistentLocalIds { get; }
 
         [EventPropertyDescription("De heradresseerde adressen.")]
         public IReadOnlyList<ReaddressedAddressData> ReaddressedAddresses { get; }
@@ -31,10 +35,14 @@ namespace AddressRegistry.StreetName.Events
         public StreetNameWasReaddressed(
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             List<AddressPersistentLocalId> proposedAddressPersistentLocalIds,
+            List<AddressPersistentLocalId> rejectedAddressPersistentLocalIds,
+            List<AddressPersistentLocalId> retiredAddressPersistentLocalIds,
             List<ReaddressedAddressData> readdressedAddresses)
         {
             StreetNamePersistentLocalId = streetNamePersistentLocalId;
             ProposedAddressPersistentLocalIds = proposedAddressPersistentLocalIds.Select(x => (int)x).ToList();
+            RejectedAddressPersistentLocalIds = rejectedAddressPersistentLocalIds.Select(x => (int)x).ToList();
+            RetiredAddressPersistentLocalIds = retiredAddressPersistentLocalIds.Select(x => (int)x).ToList();
             ReaddressedAddresses = readdressedAddresses;
         }
 
@@ -42,11 +50,15 @@ namespace AddressRegistry.StreetName.Events
         private StreetNameWasReaddressed(
             int streetNamePersistentLocalId,
             List<int> proposedAddressPersistentLocalIds,
+            List<int> rejectedAddressPersistentLocalIds,
+            List<int> retiredAddressPersistentLocalIds,
             List<ReaddressedAddressData> readdressedAddresses,
             ProvenanceData provenance)
             : this(
                 new StreetNamePersistentLocalId(streetNamePersistentLocalId),
                 proposedAddressPersistentLocalIds.Select(x => new AddressPersistentLocalId(x)).ToList(),
+                rejectedAddressPersistentLocalIds.Select(x => new AddressPersistentLocalId(x)).ToList(),
+                retiredAddressPersistentLocalIds.Select(x => new AddressPersistentLocalId(x)).ToList(),
                 readdressedAddresses)
             => ((ISetProvenance)this).SetProvenance(provenance.ToProvenance());
 
@@ -58,6 +70,16 @@ namespace AddressRegistry.StreetName.Events
             fields.Add(StreetNamePersistentLocalId.ToString(CultureInfo.InvariantCulture));
 
             foreach (var item in ProposedAddressPersistentLocalIds)
+            {
+                fields.Add(item.ToString());
+            }
+
+            foreach (var item in RejectedAddressPersistentLocalIds)
+            {
+                fields.Add(item.ToString());
+            }
+
+            foreach (var item in RetiredAddressPersistentLocalIds)
             {
                 fields.Add(item.ToString());
             }

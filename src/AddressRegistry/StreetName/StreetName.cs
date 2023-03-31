@@ -2,13 +2,9 @@ namespace AddressRegistry.StreetName
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Address;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
-    using Commands;
-    using DataStructures;
     using Events;
-    using Exceptions;
 
     public partial class StreetName : AggregateRootEntity, ISnapshotable
     {
@@ -164,155 +160,6 @@ namespace AddressRegistry.StreetName
             {
                 ApplyChange(new StreetNameWasCorrectedFromRetiredToCurrent(PersistentLocalId));
             }
-        }
-
-        public void Readdress(
-            IPersistentLocalIdGenerator persistentLocalIdGenerator,
-            IList<ReaddressAddressItem> readdressItems,
-            ReaddressExecutionContext executionContext)
-        {
-            GuardActiveStreetName();
-
-            var proposedAddresses = new List<AddressPersistentLocalId>();
-            var readdressedAddresses = new List<ReaddressedAddressData>();
-
-            foreach (var item in readdressItems)
-            {
-                var sourceAddress = StreetNameAddresses.GetNotRemovedByPersistentLocalId(item.SourceAddressPersistentLocalId);
-
-                if (!sourceAddress.IsHouseNumberAddress)
-                {
-                    throw new AddressHasBoxNumberException(sourceAddress.AddressPersistentLocalId);
-                }
-
-                if (!sourceAddress.IsActive)
-                {
-                    throw new AddressHasInvalidStatusException(sourceAddress.AddressPersistentLocalId);
-                }
-
-                if (sourceAddress.PostalCode is null)
-                {
-                    throw new AddressHasNoPostalCodeException(sourceAddress.AddressPersistentLocalId);
-                }
-
-                var destinationAddress = StreetNameAddresses.FindActiveParentByHouseNumber(item.DestinationHouseNumber);
-                var destinationAddressPersistentLocalId = destinationAddress?.AddressPersistentLocalId;
-
-                if (destinationAddress is null)
-                {
-                    destinationAddressPersistentLocalId = new AddressPersistentLocalId(persistentLocalIdGenerator.GenerateNextPersistentLocalId());
-
-                    ProposeAddress(
-                        destinationAddressPersistentLocalId,
-                        sourceAddress.PostalCode,
-                        MunicipalityId,
-                        item.DestinationHouseNumber,
-                        null,
-                        sourceAddress.Geometry.GeometryMethod,
-                        sourceAddress.Geometry.GeometrySpecification,
-                        sourceAddress.Geometry.Geometry
-                    );
-
-                    proposedAddresses.Add(destinationAddressPersistentLocalId);
-                    executionContext.AddressesAdded.Add((PersistentLocalId, destinationAddressPersistentLocalId));
-                }
-                else if(!readdressItems.Select(x => x.SourceAddressPersistentLocalId).Contains(destinationAddress.AddressPersistentLocalId))
-                {
-                    // If the destination address exists and it's never used as a source addres, then we can already reject or retire it's box number addresses.
-                    foreach (var boxNumberAddress in destinationAddress.Children.Where(x => x.IsActive))
-                    {
-                        if (boxNumberAddress.Status == AddressStatus.Proposed)
-                        {
-                            RejectAddress(boxNumberAddress.AddressPersistentLocalId);
-                        }
-                        else if (boxNumberAddress.Status == AddressStatus.Current)
-                        {
-                            RetireAddress(boxNumberAddress.AddressPersistentLocalId);
-                        }
-                    }
-                }
-
-                executionContext.AddressesUpdated.Add((PersistentLocalId, destinationAddressPersistentLocalId!));
-
-                readdressedAddresses.Add(new ReaddressedAddressData(
-                    item.SourceAddressPersistentLocalId,
-                    destinationAddressPersistentLocalId!,
-                    sourceAddress.Status,
-                    item.DestinationHouseNumber,
-                    boxNumber: null,
-                    sourceAddress.PostalCode,
-                    sourceAddress.Geometry,
-                    sourceAddress.IsOfficiallyAssigned,
-                    parentAddressPersistentLocalId: null
-                ));
-
-                foreach (var boxNumberAddress in sourceAddress.Children.Where(x => x.IsActive))
-                {
-                    if (proposedAddresses.Contains(boxNumberAddress.AddressPersistentLocalId))
-                    {
-                        continue;
-                    }
-
-                    var destinationBoxNumberAddress = destinationAddress?.Children.SingleOrDefault(x => x.BoxNumber == boxNumberAddress.BoxNumber);
-                    var boxNumberPersistentLocalId = destinationBoxNumberAddress?.AddressPersistentLocalId
-                        ?? new AddressPersistentLocalId(persistentLocalIdGenerator.GenerateNextPersistentLocalId());
-
-                    if (destinationBoxNumberAddress is null)
-                    {
-                        ProposeAddress(
-                            boxNumberPersistentLocalId,
-                            sourceAddress.PostalCode,
-                            MunicipalityId,
-                            item.DestinationHouseNumber,
-                            boxNumberAddress.BoxNumber,
-                            boxNumberAddress.Geometry.GeometryMethod,
-                            boxNumberAddress.Geometry.GeometrySpecification,
-                            boxNumberAddress.Geometry.Geometry
-                        );
-
-                        proposedAddresses.Add(boxNumberPersistentLocalId);
-                        executionContext.AddressesAdded.Add((PersistentLocalId, boxNumberPersistentLocalId));
-                    }
-
-                    readdressedAddresses.Add(new ReaddressedAddressData(
-                        boxNumberAddress.AddressPersistentLocalId,
-                        boxNumberPersistentLocalId,
-                        boxNumberAddress.Status,
-                        item.DestinationHouseNumber,
-                        boxNumberAddress.BoxNumber,
-                        sourceAddress.PostalCode,
-                        boxNumberAddress.Geometry,
-                        boxNumberAddress.IsOfficiallyAssigned,
-                        destinationAddressPersistentLocalId
-                    ));
-
-                    // 11 -> 13 -> 15
-                    // A     A1
-                    // B      B
-                    // When house number 13 is the current sourceAddress, then readdressedAddresses will contain boxNumberAddress 13B,
-                    // because 11B's properies were readdressed,
-                    // and in the case of house number 11, the current sourceAddress' house number is never used as a destination house number (it's only a source address, never a destination addres).
-                    if (readdressedAddresses.Any(x => x.DestinationAddressPersistentLocalId == boxNumberAddress.AddressPersistentLocalId) ||
-                        readdressItems.All(x => x.DestinationHouseNumber != sourceAddress.HouseNumber))
-                    {
-                        continue;
-                    }
-
-                    if (boxNumberAddress.Status == AddressStatus.Proposed)
-                    {
-                        RejectAddress(boxNumberAddress.AddressPersistentLocalId);
-                    }
-                    else if (boxNumberAddress.Status == AddressStatus.Current)
-                    {
-                        RetireAddress(boxNumberAddress.AddressPersistentLocalId);
-                    }
-                }
-            }
-
-            ApplyChange(new StreetNameWasReaddressed(
-                PersistentLocalId,
-                proposedAddresses,
-                readdressedAddresses));
         }
 
         private void RejectAddressesBecauseStreetNameWasRejected(IEnumerable<StreetNameAddress> addresses)

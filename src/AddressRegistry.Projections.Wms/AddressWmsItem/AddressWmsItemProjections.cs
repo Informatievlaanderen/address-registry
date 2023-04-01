@@ -40,7 +40,8 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                         },
                         ct,
                         updateHouseNumberLabelsBeforeAddressUpdate: false,
-                        updateHouseNumberLabelsAfterAddressUpdate: false);
+                        updateHouseNumberLabelsAfterAddressUpdate: false,
+                        allowUpdateRemovedAddress: true);
                 }
             });
 
@@ -56,7 +57,8 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                         },
                         ct,
                         updateHouseNumberLabelsBeforeAddressUpdate: false,
-                        updateHouseNumberLabelsAfterAddressUpdate: false);
+                        updateHouseNumberLabelsAfterAddressUpdate: false,
+                        allowUpdateRemovedAddress: true);
                 }
             });
 
@@ -72,7 +74,8 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                         },
                         ct,
                         updateHouseNumberLabelsBeforeAddressUpdate: false,
-                        updateHouseNumberLabelsAfterAddressUpdate: false);
+                        updateHouseNumberLabelsAfterAddressUpdate: false,
+                        allowUpdateRemovedAddress: true);
                 }
             });
 
@@ -220,7 +223,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
                     updateHouseNumberLabelsAfterAddressUpdate: true);
             });
-            
+
             When<Envelope<AddressWasRetiredBecauseStreetNameWasRejected>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressDetail(
@@ -234,7 +237,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
                     updateHouseNumberLabelsAfterAddressUpdate: true);
             });
-            
+
             When<Envelope<AddressWasRejectedBecauseStreetNameWasRetired>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressDetail(
@@ -480,7 +483,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
                     allowUpdateRemovedAddress: true);
             });
-            
+
             When<Envelope<AddressWasRemovedBecauseStreetNameWasRemoved>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressDetail(

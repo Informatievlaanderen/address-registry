@@ -60,6 +60,14 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
                 public const string Code = "AdresDuplicateDoelHuisnummer";
                 public static string Message(string houseNumber) => $"Duplicate doel huisnummer '{houseNumber}'.";
             }
+
+            public static class SourceAndDestinationAddressAreTheSame
+            {
+                public const string Code = "AdresBronAdresIdDoelHuisnummer";
+                public static string Message(string addressId) => $"Het bron adres id verwijst reeds naar het doel busnummer: '{addressId}'.";
+
+                public static TicketError ToTicketError(string addressId) => new TicketError(Message(addressId), Code);
+            }
         }
     }
 }

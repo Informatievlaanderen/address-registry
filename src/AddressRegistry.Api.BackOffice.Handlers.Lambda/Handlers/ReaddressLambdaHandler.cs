@@ -130,6 +130,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 AddressHasBoxNumberException ex => ValidationErrors.Readdress.AddressHasBoxNumber.ToTicketError(CreatePuri(ex.AddressPersistentLocalId)),
                 AddressHasNoPostalCodeException ex => ValidationErrors.Readdress.AddressHasNoPostalCode.ToTicketError(ex.AddressPersistentLocalId),
                 HouseNumberHasInvalidFormatException => ValidationErrors.Common.HouseNumberInvalidFormat.ToTicketError(),
+                SourceAndDestinationAddressAreTheSameException ex => ValidationErrors.Readdress.SourceAndDestinationAddressAreTheSame.ToTicketError(CreatePuri(ex.SourceAddressPersistentLocalId)),
                 _ => null
             };
         }

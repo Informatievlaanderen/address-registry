@@ -7,9 +7,6 @@ RUN addgroup --gid 1000 --system app && adduser --uid 1000 -system app --gid 100
 RUN mkdir /app && chown -R app:app /app
 WORKDIR /app
 
-# switch to created user
-USER app
-
 LABEL maintainer "Digitaal Vlaanderen <digitaal.vlaanderen@vlaanderen.be>"
 LABEL registry="address-registry"
 
@@ -22,5 +19,8 @@ RUN apt-get update && \
 
 EXPOSE 5000/tcp
 ENV ASPNETCORE_URLS http://*:5000
+
+# switch to created user
+USER app
 
 ENTRYPOINT ["./init.sh"]

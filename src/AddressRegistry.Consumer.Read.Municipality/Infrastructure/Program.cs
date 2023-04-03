@@ -56,7 +56,7 @@ namespace AddressRegistry.Consumer.Read.Municipality.Infrastructure
                 {
                     SelfLog.Enable(Console.WriteLine);
 
-                    Log.Logger = new LoggerConfiguration()
+                    Log.Logger = new LoggerConfiguration() //NOSONAR logging configuration is safe
                         .ReadFrom.Configuration(hostContext.Configuration)
                         .Enrich.FromLogContext()
                         .Enrich.WithMachineName()
@@ -70,7 +70,7 @@ namespace AddressRegistry.Consumer.Read.Municipality.Infrastructure
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
-                    var loggerFactory = new SerilogLoggerFactory(Log.Logger);
+                    var loggerFactory = new SerilogLoggerFactory(Log.Logger); //NOSONAR logging configuration is safe
 
                     services
                         .AddTransient(s => new TraceDbConnection<MunicipalityConsumerContext>(

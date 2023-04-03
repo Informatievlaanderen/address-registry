@@ -1,3 +1,10 @@
+## [3.89.1](https://github.com/informatievlaanderen/address-registry/compare/v3.89.0...v3.89.1) (2023-04-03)
+
+
+### Bug Fixes
+
+* update removed items in WMS for aggregate events ([e6c1cfe](https://github.com/informatievlaanderen/address-registry/commit/e6c1cfebc0a6aae8e77fbe05dd237936af2195c7))
+
 # [3.89.0](https://github.com/informatievlaanderen/address-registry/compare/v3.88.0...v3.89.0) (2023-03-31)
 
 

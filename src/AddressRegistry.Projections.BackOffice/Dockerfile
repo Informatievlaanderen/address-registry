@@ -7,9 +7,6 @@ RUN addgroup --gid 1000 --system app && adduser --uid 1000 -system app --gid 100
 RUN mkdir /app && chown -R app:app /app
 WORKDIR /app
 
-# switch to created user
-USER app
-
 LABEL maintainer "Digitaal Vlaanderen <digitaal.vlaanderen@vlaanderen.be>"
 LABEL registry="address-registry"
 
@@ -19,5 +16,8 @@ WORKDIR /app
 RUN apt-get update && \
     apt-get install curl jq -y && \
     chmod +x ./init.sh
+
+# switch to created user
+USER app
 
 ENTRYPOINT ["./init.sh"]

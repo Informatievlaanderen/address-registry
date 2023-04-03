@@ -1,7 +1,6 @@
 namespace AddressRegistry.StreetName
 {
     using System;
-    using System.Linq;
     using Address;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
@@ -287,12 +286,13 @@ namespace AddressRegistry.StreetName
                 .AddProvenance(getUnitOfWork, provenanceFactory)
                 .Handle(async (message, ct) =>
                 {
-                    var retireAddressGroup = message.Command.RetireAddressItems.GroupBy(x => x.StreetNamePersistentLocalId);
-
                     var destinationStreetNameStreamId = new StreetNameStreamId(message.Command.DestinationStreetNamePersistentLocalId);
-                    var destinationStreetName = await getStreetNames().GetAsync(destinationStreetNameStreamId, ct);
+
+                    var streetNames = getStreetNames();
+                    var destinationStreetName = await streetNames.GetAsync(destinationStreetNameStreamId, ct);
 
                     destinationStreetName.Readdress(
+                        streetNames,
                         lazyPersistentLocalIdGenerator.Value,
                         message.Command.ReaddressAddressItems,
                         message.Command.ExecutionContext);

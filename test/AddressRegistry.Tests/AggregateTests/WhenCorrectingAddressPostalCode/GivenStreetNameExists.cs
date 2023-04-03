@@ -13,6 +13,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressPostalCode
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using EventExtensions;
     using FluentAssertions;
     using global::AutoFixture;
     using Xunit;
@@ -294,17 +295,6 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressPostalCode
 
             parentAddress.PostalCode.Should().Be(expectedPostalCode);
             childAddress.PostalCode.Should().Be(expectedPostalCode);
-        }
-    }
-
-    public static class StreetNameWasImportedExtensions
-    {
-        public static StreetNameWasImported WithMunicipalityId(this StreetNameWasImported @event, MunicipalityId municipalityId)
-        {
-            var newEvent = new StreetNameWasImported(new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId), municipalityId, @event.StreetNameStatus);
-            ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
-
-            return newEvent;
         }
     }
 }

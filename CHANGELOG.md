@@ -1,3 +1,16 @@
+## [3.89.2](https://github.com/informatievlaanderen/address-registry/compare/v3.89.1...v3.89.2) (2023-04-03)
+
+
+### Bug Fixes
+
+* api-backoffice non-root ([15a3e44](https://github.com/informatievlaanderen/address-registry/commit/15a3e44fe67cafc4877ba20fb171a3f7944f637b))
+* run apt-get as root ([92c981c](https://github.com/informatievlaanderen/address-registry/commit/92c981c1442f0e2408ade3c2d66cb063790f974d))
+* run containers as non-root ([beb879e](https://github.com/informatievlaanderen/address-registry/commit/beb879e54bdb4e1efd595f6abbeed37428aa70ec))
+* use --gid instead of --group ([e4f29c2](https://github.com/informatievlaanderen/address-registry/commit/e4f29c2abca6bd44e74ba078f5b4aa10614e905e))
+* use --group instead of -G ([c312c4f](https://github.com/informatievlaanderen/address-registry/commit/c312c4fda51eedb8dbddae7c54f88bf5e6d61cff))
+* use --system instead of -S ([6743f43](https://github.com/informatievlaanderen/address-registry/commit/6743f43ccf252bcf7be50681fdcfe30af93be8da))
+* use group number instead of variable ([8e8d851](https://github.com/informatievlaanderen/address-registry/commit/8e8d851451ab814d4add4948f17ae0ca6eb51a39))
+
 ## [3.89.1](https://github.com/informatievlaanderen/address-registry/compare/v3.89.0...v3.89.1) (2023-04-03)
 
 

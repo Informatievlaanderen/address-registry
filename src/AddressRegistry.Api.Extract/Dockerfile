@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/dotnet/runtime-deps:6.0.3
 
 # create group & user
-RUN addgroup --gid 1000 -S app && adduser --uid 1000 -S app -G app
+RUN addgroup --gid 1000 --system app && adduser --uid 1000 -system app -G app
 
 # create work dir and set permissions as WORKDIR sets permissions as root
 RUN mkdir /app && chown -R app:app /app

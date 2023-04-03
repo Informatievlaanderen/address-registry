@@ -43,13 +43,20 @@ namespace AddressRegistry.StreetName
                 var destinationAddress = _streetName.StreetNameAddresses.FindActiveParentByHouseNumber(addressToReaddress.DestinationHouseNumber);
                 var destinationAddressPersistentLocalId = destinationAddress?.AddressPersistentLocalId;
 
+                if (addressToReaddress.SourceAddressPersistentLocalId == destinationAddressPersistentLocalId)
+                {
+                    throw new SourceAndDestinationAddressAreTheSameException(
+                        addressToReaddress.SourceAddressPersistentLocalId,
+                        addressToReaddress.DestinationHouseNumber);
+                }
+
                 if (destinationAddress is null)
                 {
                     destinationAddressPersistentLocalId = new AddressPersistentLocalId(_persistentLocalIdGenerator.GenerateNextPersistentLocalId());
 
                     Actions.Add((ReaddressAction.ProposeHouseNumber, destinationAddressPersistentLocalId));
                 }
-                else if (!IsUsedAsSourceAddress(destinationAddress))
+                else if (IsOnlyUsedAsDestinationAddress(destinationAddress))
                 {
                     // 11 -> 13
                     // 11 is the source address and 13 is ONLY a destination address. Therefore 13's box numbers should be rejected or retired.
@@ -152,9 +159,9 @@ namespace AddressRegistry.StreetName
             }
         }
 
-        private bool IsUsedAsSourceAddress(StreetNameAddress address)
+        private bool IsOnlyUsedAsDestinationAddress(StreetNameAddress address)
         {
-            return _addressesToReaddress.Select(x => x.SourceAddressPersistentLocalId).Contains(address.AddressPersistentLocalId);
+            return !_addressesToReaddress.Select(x => x.SourceAddressPersistentLocalId).Contains(address.AddressPersistentLocalId);
         }
 
         private bool IsUsedAsDestinationAddress(StreetNameAddress address)

@@ -40,6 +40,11 @@ namespace AddressRegistry.StreetName
                  && x.BoxNumber == boxNumber) is null;
         }
 
+        public StreetNameAddress? FindBoxNumberAddress(BoxNumber boxNumber)
+        {
+            return _children.SingleOrDefault(x => x.BoxNumber! == boxNumber);
+        }
+
         public void Approve()
         {
             GuardNotRemovedAddress();

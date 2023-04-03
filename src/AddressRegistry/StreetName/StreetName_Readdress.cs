@@ -10,13 +10,14 @@ namespace AddressRegistry.StreetName
     public partial class StreetName
     {
         public void Readdress(
+            IStreetNames streetNames,
             IPersistentLocalIdGenerator persistentLocalIdGenerator,
             IEnumerable<ReaddressAddressItem> readdressItems,
             ReaddressExecutionContext executionContext)
         {
             GuardActiveStreetName();
 
-            var streetNameReaddresser = new StreetNameReaddresser(persistentLocalIdGenerator, readdressItems, this);
+            var streetNameReaddresser = new StreetNameReaddresser(streetNames, persistentLocalIdGenerator, readdressItems, this);
 
             foreach (var item in streetNameReaddresser.ReaddressedAddresses.Where(x => x.IsHouseNumberAddress))
             {

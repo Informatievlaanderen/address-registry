@@ -73,7 +73,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
         /// </summary>
         [DataMember(Name = "Postinfo", Order = 4, EmitDefaultValue = false)]
         [JsonProperty(Required = Required.Default)]
-        public AdresMatchItemPostinfo Postinfo { get; set; }
+        public AdresMatchItemPostinfo? Postinfo { get; set; }
 
         /// <summary>
         /// De straatnaam die deel uitmaakt van het adres.

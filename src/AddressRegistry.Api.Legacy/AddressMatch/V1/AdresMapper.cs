@@ -49,7 +49,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.V1
                     Straatnaam = new Straatnaam(new GeografischeNaam(defaultStreetName.Value, defaultStreetName.Key)),
                 },
                 HomoniemToevoeging = homonym == null ? null : new HomoniemToevoeging(new GeografischeNaam(homonym.Value.Value, homonym.Value.Key)),
-                Postinfo = new AdresMatchItemPostinfo
+                Postinfo = string.IsNullOrWhiteSpace(source.PostalCode) ? null : new AdresMatchItemPostinfo
                 {
                     ObjectId = source.PostalCode,
                     Detail = string.Format(_responseOptions.PostInfoDetailUrl, source.PostalCode),

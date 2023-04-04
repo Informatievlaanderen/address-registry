@@ -14,7 +14,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V1.Matching
         public AdresIdentificator Identificator { get; set; }
         public string Detail { get; set; }
         public AdresMatchOsloItemGemeente Gemeente { get; set; }
-        public AdresMatchOsloItemPostinfo Postinfo { get; set; }
+        public AdresMatchOsloItemPostinfo? Postinfo { get; set; }
         public AdresMatchOsloItemStraatnaam Straatnaam { get; set; }
         public HomoniemToevoeging HomoniemToevoeging { get; set; }
         public string Huisnummer { get; set; }

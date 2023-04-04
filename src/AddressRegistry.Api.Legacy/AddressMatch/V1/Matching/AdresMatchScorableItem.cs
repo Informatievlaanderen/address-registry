@@ -14,7 +14,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.V1.Matching
         public AdresIdentificator Identificator { get; set; }
         public string Detail { get; set; }
         public AdresMatchItemGemeente Gemeente { get; set; }
-        public AdresMatchItemPostinfo Postinfo { get; set; }
+        public AdresMatchItemPostinfo? Postinfo { get; set; }
         public AdresMatchItemStraatnaam Straatnaam { get; set; }
         public HomoniemToevoeging HomoniemToevoeging { get; set; }
         public string Huisnummer { get; set; }

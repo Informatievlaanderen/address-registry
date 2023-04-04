@@ -114,6 +114,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenDestination
                 },
                 new List<AddressPersistentLocalId>(),
                 new List<AddressPersistentLocalId>(),
+                new List<AddressPersistentLocalId>(),
                 new List<ReaddressedAddressData>
                 {
                     new ReaddressedAddressData(

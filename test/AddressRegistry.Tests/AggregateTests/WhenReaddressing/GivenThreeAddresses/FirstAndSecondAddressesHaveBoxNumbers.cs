@@ -189,6 +189,7 @@
                             },
                             new List<AddressPersistentLocalId>(),
                             new List<AddressPersistentLocalId> { secondAddressCurrentBoxNumberAddressPersistentLocalId },
+                            new List<AddressPersistentLocalId>(),
                             new List<ReaddressedAddressData>
                             {
                                 new ReaddressedAddressData(

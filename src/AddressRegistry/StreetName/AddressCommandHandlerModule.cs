@@ -295,8 +295,21 @@ namespace AddressRegistry.StreetName
                         streetNames,
                         lazyPersistentLocalIdGenerator.Value,
                         message.Command.ReaddressAddressItems,
+                        message.Command.RetireAddressItems,
                         message.Command.ExecutionContext);
                 });
+
+           For<RejectOrRetireAddressesForReaddressing>()
+               .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+               .AddEventHash<RejectOrRetireAddressesForReaddressing, StreetName>(getUnitOfWork)
+               .AddProvenance(getUnitOfWork, provenanceFactory)
+               .Handle(async (message, ct) =>
+               {
+                   var streetNameStreamId = new StreetNameStreamId(message.Command.StreetNamePersistentLocalId);
+                   var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+
+                   streetName.RejectOrRetireAddressesForReaddressing(message.Command.AddressPersistentLocalIds);
+               });
         }
     }
 }

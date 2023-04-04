@@ -127,6 +127,7 @@
                             new List<AddressPersistentLocalId> { expectedProposedBoxNumberAddressPersistentLocalId, expectedCurrentBoxNumberAddressPersistentLocalId },
                             new List<AddressPersistentLocalId>(),
                             new List<AddressPersistentLocalId>(),
+                            new List<AddressPersistentLocalId>(),
                             new List<ReaddressedAddressData>
                             {
                                 new ReaddressedAddressData(

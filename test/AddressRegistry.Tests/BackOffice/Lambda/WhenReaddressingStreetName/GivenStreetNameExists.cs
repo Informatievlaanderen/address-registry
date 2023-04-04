@@ -43,12 +43,12 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddressingStreetName
             _idempotencyContext = new FakeIdempotencyContextFactory().CreateDbContext();
             _fakeBackOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
             _streetNames = Container.Resolve<IStreetNames>();
-            _streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
+            _streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
             _streetNameStreamId = new StreetNameStreamId(_streetNamePersistentLocalId);
         }
 
         [Fact]
-        public async Task GivenRequestWithOneNonExistingDestination_ThenPersistentLocalIdETagResponses()
+        public async Task WithRequestWithOneNonExistingDestination_ThenPersistentLocalIdETagResponses()
         {
             ImportMigratedStreetName(
                 new StreetNameId(Guid.NewGuid()),
@@ -73,7 +73,8 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddressingStreetName
                 MockTicketing(result => { eTagResponses = result; }).Object,
                 _streetNames,
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext),
-                _fakeBackOfficeContext);
+                _fakeBackOfficeContext,
+                Container);
 
             await _fakeBackOfficeContext.AddIdempotentAddressStreetNameIdRelation(
                 proposeAddress.AddressPersistentLocalId,
@@ -105,7 +106,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddressingStreetName
             var destinationAddressPersistentLocalId = new AddressPersistentLocalId(1); // FakePersistentLocalIdGenerator starts always with id 1
 
             _fakeBackOfficeContext.AddressPersistentIdStreetNamePersistentIds
-                .Find((int) destinationAddressPersistentLocalId)
+                .Find((int)destinationAddressPersistentLocalId)
                 .Should().NotBeNull();
 
             eTagResponses.Count.Should().Be(1);
@@ -117,7 +118,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddressingStreetName
         }
 
         [Fact]
-        public async Task GivenRequestWithTwoNonExistingDestinations_ThenPersistentLocalIdETagResponses()
+        public async Task WithRequestWithTwoNonExistingDestinations_ThenPersistentLocalIdETagResponses()
         {
             ImportMigratedStreetName(
                 new StreetNameId(Guid.NewGuid()),
@@ -161,7 +162,8 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddressingStreetName
                 MockTicketing(result => { eTagResponses = result; }).Object,
                 _streetNames,
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext),
-                _fakeBackOfficeContext);
+                _fakeBackOfficeContext,
+                Container);
 
             // Act
             await sut.Handle(new ReaddressLambdaRequest(_streetNamePersistentLocalId, new ReaddressSqsRequest
@@ -194,11 +196,11 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddressingStreetName
             var destinationAddressPersistentLocalId2 = new AddressPersistentLocalId(2);
 
             _fakeBackOfficeContext.AddressPersistentIdStreetNamePersistentIds
-                .Find((int) destinationAddressPersistentLocalId1)
+                .Find((int)destinationAddressPersistentLocalId1)
                 .Should().NotBeNull();
-             _fakeBackOfficeContext.AddressPersistentIdStreetNamePersistentIds
-                .Find((int) destinationAddressPersistentLocalId2)
-                .Should().NotBeNull();
+            _fakeBackOfficeContext.AddressPersistentIdStreetNamePersistentIds
+               .Find((int)destinationAddressPersistentLocalId2)
+               .Should().NotBeNull();
 
             eTagResponses.Count.Should().Be(2);
 
@@ -215,7 +217,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddressingStreetName
         }
 
         [Fact]
-        public async Task GivenSourceAddressWithBoxNumbersAndNonExistingDestinationAddress_ThenPersistentLocalIdETagResponses()
+        public async Task WithSourceAddressWithBoxNumbersAndNonExistingDestinationAddress_ThenPersistentLocalIdETagResponses()
         {
             ImportMigratedStreetName(new StreetNameId(Guid.NewGuid()), _streetNamePersistentLocalId, new NisCode("12345"));
 
@@ -236,7 +238,8 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddressingStreetName
                 MockTicketing(result => { eTagResponses = result; }).Object,
                 _streetNames,
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext),
-                _fakeBackOfficeContext);
+                _fakeBackOfficeContext,
+                Container);
 
             // Act
             await sut.Handle(new ReaddressLambdaRequest(_streetNamePersistentLocalId, new ReaddressSqsRequest
@@ -265,11 +268,11 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddressingStreetName
             var destinationCurrentBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(3);
 
             (await _fakeBackOfficeContext.AddressPersistentIdStreetNamePersistentIds
-                    .FindAsync((int) destinationHouseNumberAddressPersistentLocalId)).Should().NotBeNull();
+                    .FindAsync((int)destinationHouseNumberAddressPersistentLocalId)).Should().NotBeNull();
             (await _fakeBackOfficeContext.AddressPersistentIdStreetNamePersistentIds
-                    .FindAsync((int) destinationProposedBoxNumberAddressPersistentLocalId)).Should().NotBeNull();
+                    .FindAsync((int)destinationProposedBoxNumberAddressPersistentLocalId)).Should().NotBeNull();
             (await _fakeBackOfficeContext.AddressPersistentIdStreetNamePersistentIds
-                    .FindAsync((int) destinationCurrentBoxNumberAddressPersistentLocalId)).Should().NotBeNull();
+                    .FindAsync((int)destinationCurrentBoxNumberAddressPersistentLocalId)).Should().NotBeNull();
 
             eTagResponses.Count.Should().Be(1);
 
@@ -281,6 +284,132 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddressingStreetName
 
             destinationAddressEtagResponse!.ETag.Should().Be(destinationStreetName.GetAddressHash(destinationHouseNumberAddressPersistentLocalId));
         }
+
+        [Fact]
+        public async Task WithAddressesToRetireOutsideDestinationStreetName_ThenPersistentLocalIdETagResponses()
+        {
+            var firstOtherStreetNamePersistentLocalId = new StreetNamePersistentLocalId(456);
+            var secondOtherStreetNamePersistentLocalId = new StreetNamePersistentLocalId(789);
+
+            ImportMigratedStreetName(
+                new StreetNameId(Guid.NewGuid()),
+                _streetNamePersistentLocalId,
+                new NisCode("12345"));
+
+            ImportMigratedStreetName(
+              new StreetNameId(Guid.NewGuid()),
+              firstOtherStreetNamePersistentLocalId,
+              new NisCode("12345"));
+
+            ImportMigratedStreetName(
+              new StreetNameId(Guid.NewGuid()),
+              secondOtherStreetNamePersistentLocalId,
+              new NisCode("12345"));
+
+            var proposedAddressOfFirstStreetName = ProposeAddress(
+                firstOtherStreetNamePersistentLocalId,
+                new AddressPersistentLocalId(456),
+                new PostalCode("2018"),
+                Fixture.Create<MunicipalityId>(),
+                new HouseNumber("11"),
+                null);
+
+            var proposedAddressOfSecondStreetName = ProposeAddress(
+                secondOtherStreetNamePersistentLocalId,
+                new AddressPersistentLocalId(789),
+                new PostalCode("2018"),
+                Fixture.Create<MunicipalityId>(),
+                new HouseNumber("11"),
+                null);
+
+            var destinationHouseNumber = "13";
+            var secondDestinationHouseNumber = "15";
+
+            var eTagResponses = new List<ETagResponse>();
+
+            var sut = new ReaddressLambdaHandler(
+                Container.Resolve<IConfiguration>(),
+                new FakeRetryPolicy(),
+                MockTicketing(result => { eTagResponses = result; }).Object,
+                _streetNames,
+                new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext),
+                _fakeBackOfficeContext,
+                Container);
+
+            await _fakeBackOfficeContext.AddIdempotentAddressStreetNameIdRelation(
+                proposedAddressOfFirstStreetName.AddressPersistentLocalId,
+                firstOtherStreetNamePersistentLocalId,
+                CancellationToken.None);
+
+            await _fakeBackOfficeContext.AddIdempotentAddressStreetNameIdRelation(
+                proposedAddressOfSecondStreetName.AddressPersistentLocalId,
+                secondOtherStreetNamePersistentLocalId,
+                CancellationToken.None);
+
+            // Act
+            await sut.Handle(new ReaddressLambdaRequest(_streetNamePersistentLocalId, new ReaddressSqsRequest
+            {
+                Request = new ReaddressRequest()
+                {
+                    DoelStraatnaamId = StreetNamePuriFor(_streetNamePersistentLocalId),
+                    HerAdresseer = new List<AddressToReaddressItem>
+                    {
+                        new AddressToReaddressItem
+                        {
+                            BronAdresId = AddressPuriFor(proposedAddressOfFirstStreetName.AddressPersistentLocalId),
+                            DoelHuisnummer = destinationHouseNumber
+                        },
+                        new AddressToReaddressItem
+                        {
+                            BronAdresId = AddressPuriFor(proposedAddressOfSecondStreetName.AddressPersistentLocalId),
+                            DoelHuisnummer = secondDestinationHouseNumber
+                        }
+                    },
+                    OpheffenAdressen = new List<string>()
+                    {
+                        AddressPuriFor(proposedAddressOfFirstStreetName.AddressPersistentLocalId),
+                        AddressPuriFor(proposedAddressOfSecondStreetName.AddressPersistentLocalId)
+                    }
+                },
+                TicketId = Guid.NewGuid(),
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            }),
+            CancellationToken.None);
+
+            // Assert
+            var firstDestinationAddressPersistentLocalId = new AddressPersistentLocalId(1); // FakePersistentLocalIdGenerator starts always with id 1
+            var secondDestinationAddressPersistentLocalId = new AddressPersistentLocalId(2);
+
+            _fakeBackOfficeContext.AddressPersistentIdStreetNamePersistentIds
+                .Find((int)firstDestinationAddressPersistentLocalId)
+                .Should().NotBeNull();
+
+            _fakeBackOfficeContext.AddressPersistentIdStreetNamePersistentIds
+               .Find((int)secondDestinationAddressPersistentLocalId)
+               .Should().NotBeNull();
+
+            eTagResponses.Count.Should().Be(4);
+            var firstDestinationAddressEtagResponse = eTagResponses.FirstOrDefault(x => x.Location == string.Format(ConfigDetailUrl, firstDestinationAddressPersistentLocalId));
+            firstDestinationAddressEtagResponse.Should().NotBeNull();
+            var secondDestinationAddressEtagResponse = eTagResponses.FirstOrDefault(x => x.Location == string.Format(ConfigDetailUrl, secondDestinationAddressPersistentLocalId));
+            secondDestinationAddressEtagResponse.Should().NotBeNull();
+
+            var firstRejectedAddressEtagResponse = eTagResponses.FirstOrDefault(x => x.Location == string.Format(ConfigDetailUrl, proposedAddressOfFirstStreetName.AddressPersistentLocalId));
+            firstRejectedAddressEtagResponse.Should().NotBeNull();
+            var secondRejectedAddressEtagResponse = eTagResponses.FirstOrDefault(x => x.Location == string.Format(ConfigDetailUrl, proposedAddressOfSecondStreetName.AddressPersistentLocalId));
+            secondRejectedAddressEtagResponse.Should().NotBeNull();
+
+            var destinationStreetName = await Container.Resolve<IStreetNames>().GetAsync(_streetNameStreamId, CancellationToken.None);
+            firstDestinationAddressEtagResponse!.ETag.Should().Be(destinationStreetName.GetAddressHash(firstDestinationAddressPersistentLocalId));
+            secondDestinationAddressEtagResponse!.ETag.Should().Be(destinationStreetName.GetAddressHash(secondDestinationAddressPersistentLocalId));
+
+            var firstSourceStreetName = await Container.Resolve<IStreetNames>().GetAsync(new StreetNameStreamId(firstOtherStreetNamePersistentLocalId), CancellationToken.None);
+            firstRejectedAddressEtagResponse!.ETag.Should().Be(firstSourceStreetName.GetAddressHash(proposedAddressOfFirstStreetName.AddressPersistentLocalId));
+            var secondSourceStreetName = await Container.Resolve<IStreetNames>().GetAsync(new StreetNameStreamId(secondOtherStreetNamePersistentLocalId), CancellationToken.None);
+            secondRejectedAddressEtagResponse!.ETag.Should().Be(secondSourceStreetName.GetAddressHash(proposedAddressOfSecondStreetName.AddressPersistentLocalId));
+        }
+
 
         private async Task<ProposeAddress> ProposeAddress(
             AddressPersistentLocalId addressPersistentLocalId,
@@ -301,6 +430,14 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddressingStreetName
                 CancellationToken.None);
 
             return proposeAddress;
+        }
+
+        protected override void ConfigureCommandHandling(ContainerBuilder builder)
+        {
+            base.ConfigureCommandHandling(builder);
+
+            builder.Register(c => new IdempotentCommandHandler(c.Resolve<ICommandHandlerResolver>(), _idempotencyContext))
+                .As<IIdempotentCommandHandler>();
         }
     }
 }

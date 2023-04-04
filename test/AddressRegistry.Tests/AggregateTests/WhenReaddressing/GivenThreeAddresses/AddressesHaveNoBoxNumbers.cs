@@ -96,6 +96,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenThreeAddres
                             new List<AddressPersistentLocalId> { thirdAddressPersistentLocalId },
                             new List<AddressPersistentLocalId>(),
                             new List<AddressPersistentLocalId>(),
+                            new List<AddressPersistentLocalId>(),
                             new List<ReaddressedAddressData>
                             {
                                 new ReaddressedAddressData(

@@ -1,4 +1,4 @@
-﻿namespace AddressRegistry.StreetName.DataStructures
+namespace AddressRegistry.StreetName.DataStructures
 {
     using Newtonsoft.Json;
 
@@ -14,7 +14,7 @@
         public GeometrySpecification SourceGeometrySpecification { get; }
         public string SourceExtendedWkbGeometry { get; }
         public bool SourceIsOfficiallyAssigned { get; }
-        public int? DestinationParentId { get; }
+        public int? DestinationParentAddressPersistentLocalId { get; }
         public bool IsBoxNumberAddress => SourceBoxNumber is not null;
         public bool IsHouseNumberAddress => !IsBoxNumberAddress;
 
@@ -40,7 +40,7 @@
             SourceGeometrySpecification = geometry.GeometrySpecification;
             SourceExtendedWkbGeometry = geometry.Geometry.ToString();
             SourceIsOfficiallyAssigned = sourceIsOfficiallyAssigned;
-            DestinationParentId = parentAddressPersistentLocalId ?? (int?) null;
+            DestinationParentAddressPersistentLocalId = parentAddressPersistentLocalId ?? (int?) null;
         }
 
         [JsonConstructor]
@@ -55,7 +55,7 @@
             GeometrySpecification sourceGeometrySpecification,
             string sourceExtendedWkbGeometry,
             bool sourceIsOfficiallyAssigned,
-            int? destinationParentId)
+            int? destinationParentAddressPersistentLocalId)
         {
             SourceAddressPersistentLocalId = sourceAddressPersistentLocalId;
             DestinationAddressPersistentLocalId = destinationAddressPersistentLocalId;
@@ -67,7 +67,7 @@
             SourceGeometrySpecification = sourceGeometrySpecification;
             SourceExtendedWkbGeometry = sourceExtendedWkbGeometry;
             SourceIsOfficiallyAssigned = sourceIsOfficiallyAssigned;
-            DestinationParentId = destinationParentId;
+            DestinationParentAddressPersistentLocalId = destinationParentAddressPersistentLocalId;
         }
     }
 }

@@ -43,7 +43,8 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddressingStreetName
                 ticketing.Object,
                 Mock.Of<IStreetNames>(),
                 MockExceptionIdempotentCommandHandler(() => new StreetNameIsRemovedException()).Object,
-                _fakeBackOfficeContext);
+                _fakeBackOfficeContext,
+                Container);
 
             // Act
             await sut.Handle(new ReaddressLambdaRequest(Fixture.Create<int>().ToString(), new ReaddressSqsRequest

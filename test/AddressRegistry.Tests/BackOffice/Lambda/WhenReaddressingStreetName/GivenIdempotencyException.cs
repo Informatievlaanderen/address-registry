@@ -72,7 +72,8 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddressingStreetName
                 MockTicketing(result => { eTagResponses = result; }).Object,
                 _streetNames,
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext),
-                _fakeBackOfficeContext);
+                _fakeBackOfficeContext,
+                Container);
 
             var request = new ReaddressLambdaRequest(_streetNamePersistentLocalId, new ReaddressSqsRequest
             {

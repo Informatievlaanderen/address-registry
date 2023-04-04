@@ -157,6 +157,7 @@
                             },
                             new List<AddressPersistentLocalId> { proposedBoxNumberAddressPersistentLocalId },
                             new List<AddressPersistentLocalId> { currentBoxNumberAddressPersistentLocalId },
+                            new List<AddressPersistentLocalId>(),
                             new List<ReaddressedAddressData>
                             {
                                 new ReaddressedAddressData(

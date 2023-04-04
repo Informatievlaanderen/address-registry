@@ -84,6 +84,7 @@
                             new List<AddressPersistentLocalId> { destinationAddressPersistentLocalId },
                             new List<AddressPersistentLocalId>(),
                             new List<AddressPersistentLocalId>(),
+                            new List<AddressPersistentLocalId>(),
                             new List<ReaddressedAddressData>
                             {
                                 new ReaddressedAddressData(

@@ -114,7 +114,10 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenSourceAddre
                 {
                     new ReaddressAddressItem(sourceStreetNamePersistentLocalId, sourceAddressPersistentLocalId , destinationHouseNumber)
                 },
-                new List<RetireAddressItem>(),
+                new List<RetireAddressItem>
+                {
+                    new RetireAddressItem(sourceStreetNamePersistentLocalId, sourceAddressPersistentLocalId)
+                },
                 Fixture.Create<Provenance>());
 
             var expectedBoxNumberPersistentLocalId = new AddressPersistentLocalId(1); // FakePersistentLocalIdGenerator starts with 1.
@@ -142,9 +145,10 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenSourceAddre
                     new Fact(destinationStreetNameStreamId,
                         new StreetNameWasReaddressed(
                             destinationStreetNamePersistentLocalId,
-                            new List<AddressPersistentLocalId> { expectedBoxNumberPersistentLocalId },
-                            new List<AddressPersistentLocalId>(),
-                            new List<AddressPersistentLocalId>(),
+                            proposedAddressPersistentLocalIds: new List<AddressPersistentLocalId> { expectedBoxNumberPersistentLocalId },
+                            rejectedAddressPersistentLocalIds: new List<AddressPersistentLocalId>(),
+                            retiredAddressPersistentLocalIds: new List<AddressPersistentLocalId>(),
+                            addressesWhichWillBeRejectedOrRetiredPersistentLocalIds: new List<AddressPersistentLocalId> { sourceAddressPersistentLocalId },
                             new List<ReaddressedAddressData>
                             {
                                 new ReaddressedAddressData(

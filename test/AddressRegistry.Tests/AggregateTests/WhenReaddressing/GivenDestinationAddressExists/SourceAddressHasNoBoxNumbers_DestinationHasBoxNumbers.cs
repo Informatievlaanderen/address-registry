@@ -41,7 +41,7 @@
             var destinationHouseNumber = new HouseNumber("13");
             var postalCode = Fixture.Create<PostalCode>();
 
-            var sourceAddressWasMigrated = new AddressWasMigratedToStreetNameBuilder(Fixture)
+            var sourceAddressWasMigrated = new AddressWasMigratedToStreetNameBuilder(Fixture, AddressStatus.Proposed)
                 .WithAddressPersistentLocalId(sourceAddressPersistentLocalId)
                 .WithHouseNumber(sourceHouseNumber)
                 .WithPostalCode(postalCode)
@@ -84,7 +84,7 @@
             var command = new Readdress(
                 _streetNamePersistentLocalId,
                 new List<ReaddressAddressItem> { new ReaddressAddressItem(_streetNamePersistentLocalId, sourceAddressPersistentLocalId , destinationHouseNumber) },
-                new List<RetireAddressItem>(),
+                new List<RetireAddressItem> { new RetireAddressItem(_streetNamePersistentLocalId, sourceAddressPersistentLocalId) },
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -106,10 +106,19 @@
                             _streetNamePersistentLocalId,
                             currentBoxNumberAddressAddressPersistentLocalId)),
                     new Fact(_streamId,
+                        new AddressWasRejected(
+                            _streetNamePersistentLocalId,
+                            sourceAddressPersistentLocalId)),
+                    new Fact(_streamId,
                         new StreetNameWasReaddressed(_streetNamePersistentLocalId,
-                            new List<AddressPersistentLocalId>(),
-                            new List<AddressPersistentLocalId> { proposedBoxNumberAddressPersistentLocalId },
-                            new List<AddressPersistentLocalId> { currentBoxNumberAddressAddressPersistentLocalId },
+                            proposedAddressPersistentLocalIds: new List<AddressPersistentLocalId>(),
+                            rejectedAddressPersistentLocalIds: new List<AddressPersistentLocalId>
+                            {
+                                proposedBoxNumberAddressPersistentLocalId,
+                                sourceAddressPersistentLocalId
+                            },
+                            retiredAddressPersistentLocalIds: new List<AddressPersistentLocalId> { currentBoxNumberAddressAddressPersistentLocalId },
+                            addressesWhichWillBeRejectedOrRetiredPersistentLocalIds: new List<AddressPersistentLocalId>(),
                             new List<ReaddressedAddressData>
                             {
                                 new ReaddressedAddressData(
@@ -130,9 +139,13 @@
 
             command.ExecutionContext.AddressesAdded.Should().BeEmpty();
 
+            command.ExecutionContext.AddressesUpdated.Should().HaveCount(2);
             command.ExecutionContext.AddressesUpdated.Should().ContainSingle(x =>
                 x.streetNamePersistentLocalId == _streetNamePersistentLocalId
                 && x.addressPersistentLocalId == destinationAddressPersistentLocalId);
+            command.ExecutionContext.AddressesUpdated.Should().ContainSingle(x =>
+                x.streetNamePersistentLocalId == _streetNamePersistentLocalId
+                && x.addressPersistentLocalId == sourceAddressPersistentLocalId);
         }
     }
 }

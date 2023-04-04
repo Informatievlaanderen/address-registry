@@ -1,6 +1,5 @@
 namespace AddressRegistry.StreetName
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Address;
@@ -13,6 +12,7 @@ namespace AddressRegistry.StreetName
         private readonly IStreetNames _streetNames;
         private readonly IPersistentLocalIdGenerator _persistentLocalIdGenerator;
         private readonly IEnumerable<ReaddressAddressItem> _addressesToReaddress;
+        private readonly IEnumerable<RetireAddressItem> _addressesToRejectOrRetire;
         private readonly StreetName _streetName;
 
         public List<ReaddressedAddressData> ReaddressedAddresses { get; }
@@ -22,11 +22,13 @@ namespace AddressRegistry.StreetName
             IStreetNames streetNames,
             IPersistentLocalIdGenerator persistentLocalIdGenerator,
             IEnumerable<ReaddressAddressItem> addressesToReaddress,
+            IEnumerable<RetireAddressItem> addressesToRejectOrRetire,
             StreetName streetName)
         {
             _streetNames = streetNames;
             _persistentLocalIdGenerator = persistentLocalIdGenerator;
             _addressesToReaddress = addressesToReaddress;
+            _addressesToRejectOrRetire = addressesToRejectOrRetire;
             _streetName = streetName;
 
             ReaddressedAddresses = new List<ReaddressedAddressData>();
@@ -91,6 +93,13 @@ namespace AddressRegistry.StreetName
                     }
 
                     RejectOrRetireAddress(boxNumberAddress);
+                }
+
+                foreach (var addressToRejectOrRetire in _addressesToRejectOrRetire)
+                {
+                    var address =  _streetName.StreetNameAddresses.GetNotRemovedByPersistentLocalId(addressToRejectOrRetire.AddressPersistentLocalId);
+
+                    RejectOrRetireAddress(address);
                 }
             }
         }
@@ -169,18 +178,16 @@ namespace AddressRegistry.StreetName
             }
         }
 
-        private void RejectOrRetireAddress(StreetNameAddress boxNumberAddress)
+        private void RejectOrRetireAddress(StreetNameAddress address)
         {
-            switch (boxNumberAddress.Status)
+            switch (address.Status)
             {
                 case AddressStatus.Proposed:
-                    Actions.Add((ReaddressAction.Reject, boxNumberAddress.AddressPersistentLocalId));
+                    Actions.Add((ReaddressAction.Reject, address.AddressPersistentLocalId));
                     break;
                 case AddressStatus.Current:
-                    Actions.Add((ReaddressAction.Retire, boxNumberAddress.AddressPersistentLocalId));
+                    Actions.Add((ReaddressAction.Retire, address.AddressPersistentLocalId));
                     break;
-                default:
-                    throw new NotImplementedException();
             }
         }
 

@@ -45,7 +45,8 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddressingStreetName
                 MockExceptionIdempotentCommandHandler(() => new SourceAndDestinationAddressAreTheSameException(
                     new AddressPersistentLocalId(1),
                     new HouseNumber("100"))).Object,
-                _fakeBackOfficeContext);
+                _fakeBackOfficeContext,
+                Container);
 
             // Act
             await sut.Handle(new ReaddressLambdaRequest(Fixture.Create<int>().ToString(), new ReaddressSqsRequest

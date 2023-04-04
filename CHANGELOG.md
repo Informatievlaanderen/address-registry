@@ -1,3 +1,17 @@
+# [3.90.0](https://github.com/informatievlaanderen/address-registry/compare/v3.89.2...v3.90.0) (2023-04-04)
+
+
+### Bug Fixes
+
+* addressmatch nullable postalcode ([3df83bb](https://github.com/informatievlaanderen/address-registry/commit/3df83bbc86bf81274f087cc2350a3f357dcd39ee))
+
+
+### Features
+
+* readdress scenario destination address exists with boxnumbers ([dcdc19d](https://github.com/informatievlaanderen/address-registry/commit/dcdc19d356829a98448d9353f5bd1800d486fcf1))
+* readdress scenario other source streetname ([2e5bad3](https://github.com/informatievlaanderen/address-registry/commit/2e5bad3a1be6be76d18935f5eb5d1c3477d673ee))
+* readress validation source and destination address are not the same ([5d9d27e](https://github.com/informatievlaanderen/address-registry/commit/5d9d27e5531e49c70c6f061966825965bb7e4410))
+
 ## [3.89.2](https://github.com/informatievlaanderen/address-registry/compare/v3.89.1...v3.89.2) (2023-04-03)
 
 

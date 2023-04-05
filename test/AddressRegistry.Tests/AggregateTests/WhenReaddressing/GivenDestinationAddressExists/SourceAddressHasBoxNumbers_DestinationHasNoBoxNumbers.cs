@@ -123,29 +123,28 @@
                             currentBoxNumberAddressWasMigrated.GeometrySpecification,
                             new ExtendedWkbGeometry(currentBoxNumberAddressWasMigrated.ExtendedWkbGeometry))),
                     new Fact(_streamId,
-                        new StreetNameWasReaddressed(_streetNamePersistentLocalId,
-                            new List<AddressPersistentLocalId> { expectedProposedBoxNumberAddressPersistentLocalId, expectedCurrentBoxNumberAddressPersistentLocalId },
-                            new List<AddressPersistentLocalId>(),
-                            new List<AddressPersistentLocalId>(),
-                            new List<AddressPersistentLocalId>(),
-                            new List<ReaddressedAddressData>
+                        new AddressHouseNumberWasReaddressed(
+                            _streetNamePersistentLocalId,
+                            destinationAddressPersistentLocalId,
+                            readdressedHouseNumber: new ReaddressedAddressData(
+                                sourceAddressPersistentLocalId,
+                                destinationAddressPersistentLocalId,
+                                isDestinationNewlyProposed: false,
+                                sourceAddressWasMigrated.Status,
+                                destinationHouseNumber,
+                                boxNumber: null,
+                                new PostalCode(sourceAddressWasMigrated.PostalCode!),
+                                new AddressGeometry(
+                                    sourceAddressWasMigrated.GeometryMethod,
+                                    sourceAddressWasMigrated.GeometrySpecification,
+                                    new ExtendedWkbGeometry(sourceAddressWasMigrated.ExtendedWkbGeometry)),
+                                sourceAddressWasMigrated.OfficiallyAssigned),
+                            readdressedBoxNumbers: new List<ReaddressedAddressData>
                             {
-                                new ReaddressedAddressData(
-                                    sourceAddressPersistentLocalId,
-                                    destinationAddressPersistentLocalId,
-                                    sourceAddressWasMigrated.Status,
-                                    destinationHouseNumber,
-                                    boxNumber: null,
-                                    new PostalCode(sourceAddressWasMigrated.PostalCode!),
-                                    new AddressGeometry(
-                                        sourceAddressWasMigrated.GeometryMethod,
-                                        sourceAddressWasMigrated.GeometrySpecification,
-                                        new ExtendedWkbGeometry(sourceAddressWasMigrated.ExtendedWkbGeometry)),
-                                    sourceAddressWasMigrated.OfficiallyAssigned,
-                                    parentAddressPersistentLocalId: null),
                                 new ReaddressedAddressData(
                                     proposedBoxNumberAddressPersistentLocalId,
                                     expectedProposedBoxNumberAddressPersistentLocalId,
+                                    isDestinationNewlyProposed: true,
                                     proposedBoxNumberAddressWasMigrated.Status,
                                     destinationHouseNumber,
                                     new BoxNumber(proposedBoxNumberAddressWasMigrated.BoxNumber),
@@ -154,11 +153,11 @@
                                         proposedBoxNumberAddressWasMigrated.GeometryMethod,
                                         proposedBoxNumberAddressWasMigrated.GeometrySpecification,
                                         new ExtendedWkbGeometry(proposedBoxNumberAddressWasMigrated.ExtendedWkbGeometry)),
-                                    proposedBoxNumberAddressWasMigrated.OfficiallyAssigned,
-                                    parentAddressPersistentLocalId: destinationAddressPersistentLocalId),
+                                    proposedBoxNumberAddressWasMigrated.OfficiallyAssigned),
                                 new ReaddressedAddressData(
                                     currentBoxNumberAddressAddressPersistentLocalId,
                                     expectedCurrentBoxNumberAddressPersistentLocalId,
+                                    isDestinationNewlyProposed: true,
                                     currentBoxNumberAddressWasMigrated.Status,
                                     destinationHouseNumber,
                                     new BoxNumber(currentBoxNumberAddressWasMigrated.BoxNumber),
@@ -167,10 +166,10 @@
                                         currentBoxNumberAddressWasMigrated.GeometryMethod,
                                         currentBoxNumberAddressWasMigrated.GeometrySpecification,
                                         new ExtendedWkbGeometry(currentBoxNumberAddressWasMigrated.ExtendedWkbGeometry)),
-                                    currentBoxNumberAddressWasMigrated.OfficiallyAssigned,
-                                    parentAddressPersistentLocalId: destinationAddressPersistentLocalId)
-
-                            }))
+                                    currentBoxNumberAddressWasMigrated.OfficiallyAssigned)
+                            },
+                            rejectedBoxNumberAddressPersistentLocalIds: new List<AddressPersistentLocalId>(),
+                            retiredBoxNumberAddressPersistentLocalIds: new List<AddressPersistentLocalId>()))
                 }));
 
             command.ExecutionContext.AddressesAdded.Should().HaveCount(2);

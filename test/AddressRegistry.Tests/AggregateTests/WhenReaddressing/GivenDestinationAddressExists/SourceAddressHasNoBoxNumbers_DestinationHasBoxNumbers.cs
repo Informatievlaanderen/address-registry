@@ -106,24 +106,24 @@
                             _streetNamePersistentLocalId,
                             currentBoxNumberAddressAddressPersistentLocalId)),
                     new Fact(_streamId,
+                        new AddressHouseNumberWasReplacedBecauseOfReaddress(
+                            _streetNamePersistentLocalId,
+                            _streetNamePersistentLocalId,
+                            sourceAddressPersistentLocalId,
+                            destinationAddressPersistentLocalId,
+                            new List<AddressBoxNumberReplacedBecauseOfReaddressData>())),
+                    new Fact(_streamId,
                         new AddressWasRejected(
                             _streetNamePersistentLocalId,
                             sourceAddressPersistentLocalId)),
                     new Fact(_streamId,
-                        new StreetNameWasReaddressed(_streetNamePersistentLocalId,
-                            proposedAddressPersistentLocalIds: new List<AddressPersistentLocalId>(),
-                            rejectedAddressPersistentLocalIds: new List<AddressPersistentLocalId>
-                            {
-                                proposedBoxNumberAddressPersistentLocalId,
-                                sourceAddressPersistentLocalId
-                            },
-                            retiredAddressPersistentLocalIds: new List<AddressPersistentLocalId> { currentBoxNumberAddressAddressPersistentLocalId },
-                            addressesWhichWillBeRejectedOrRetiredPersistentLocalIds: new List<AddressPersistentLocalId>(),
-                            new List<ReaddressedAddressData>
-                            {
-                                new ReaddressedAddressData(
+                        new AddressHouseNumberWasReaddressed(
+                            _streetNamePersistentLocalId,
+                            destinationAddressPersistentLocalId,
+                            new ReaddressedAddressData(
                                     sourceAddressPersistentLocalId,
                                     destinationAddressPersistentLocalId,
+                                    isDestinationNewlyProposed: false,
                                     sourceAddressWasMigrated.Status,
                                     destinationHouseNumber,
                                     boxNumber: null,
@@ -132,9 +132,10 @@
                                         sourceAddressWasMigrated.GeometryMethod,
                                         sourceAddressWasMigrated.GeometrySpecification,
                                         new ExtendedWkbGeometry(sourceAddressWasMigrated.ExtendedWkbGeometry)),
-                                    sourceAddressWasMigrated.OfficiallyAssigned,
-                                    parentAddressPersistentLocalId: null),
-                            }))
+                                    sourceAddressWasMigrated.OfficiallyAssigned),
+                            readdressedBoxNumbers: new List<ReaddressedAddressData>(),
+                            rejectedBoxNumberAddressPersistentLocalIds: new List<AddressPersistentLocalId> { proposedBoxNumberAddressPersistentLocalId },
+                            retiredBoxNumberAddressPersistentLocalIds: new List<AddressPersistentLocalId> { currentBoxNumberAddressAddressPersistentLocalId }))
                 }));
 
             command.ExecutionContext.AddressesAdded.Should().BeEmpty();

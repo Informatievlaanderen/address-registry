@@ -48,7 +48,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddressingStreetName
         }
 
         [Fact]
-        public async Task WithRequestWithOneNonExistingDestination_ThenPersistentLocalIdETagResponses()
+        public async Task WithRequestWithOneNoneExistingDestination_ThenPersistentLocalIdETagResponses()
         {
             ImportMigratedStreetName(
                 new StreetNameId(Guid.NewGuid()),
@@ -118,7 +118,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddressingStreetName
         }
 
         [Fact]
-        public async Task WithRequestWithTwoNonExistingDestinations_ThenPersistentLocalIdETagResponses()
+        public async Task WithRequestWithTwoNoneExistingDestinations_ThenPersistentLocalIdETagResponses()
         {
             ImportMigratedStreetName(
                 new StreetNameId(Guid.NewGuid()),
@@ -322,6 +322,14 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddressingStreetName
                 new HouseNumber("11"),
                 null);
 
+            var proposedBoxNumberAddressOfSecondStreetName = ProposeAddress(
+                secondOtherStreetNamePersistentLocalId,
+                new AddressPersistentLocalId(7891),
+                new PostalCode("2018"),
+                Fixture.Create<MunicipalityId>(),
+                new HouseNumber("11"),
+                new BoxNumber("A"));
+
             var destinationHouseNumber = "13";
             var secondDestinationHouseNumber = "15";
 
@@ -346,10 +354,15 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddressingStreetName
                 secondOtherStreetNamePersistentLocalId,
                 CancellationToken.None);
 
+            await _fakeBackOfficeContext.AddIdempotentAddressStreetNameIdRelation(
+                proposedBoxNumberAddressOfSecondStreetName.AddressPersistentLocalId,
+                secondOtherStreetNamePersistentLocalId,
+                CancellationToken.None);
+
             // Act
             await sut.Handle(new ReaddressLambdaRequest(_streetNamePersistentLocalId, new ReaddressSqsRequest
             {
-                Request = new ReaddressRequest()
+                Request = new ReaddressRequest
                 {
                     DoelStraatnaamId = StreetNamePuriFor(_streetNamePersistentLocalId),
                     HerAdresseer = new List<AddressToReaddressItem>
@@ -380,6 +393,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddressingStreetName
             // Assert
             var firstDestinationAddressPersistentLocalId = new AddressPersistentLocalId(1); // FakePersistentLocalIdGenerator starts always with id 1
             var secondDestinationAddressPersistentLocalId = new AddressPersistentLocalId(2);
+            var secondDestinationBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(3);
 
             _fakeBackOfficeContext.AddressPersistentIdStreetNamePersistentIds
                 .Find((int)firstDestinationAddressPersistentLocalId)
@@ -387,6 +401,10 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddressingStreetName
 
             _fakeBackOfficeContext.AddressPersistentIdStreetNamePersistentIds
                .Find((int)secondDestinationAddressPersistentLocalId)
+               .Should().NotBeNull();
+
+            _fakeBackOfficeContext.AddressPersistentIdStreetNamePersistentIds
+               .Find((int)secondDestinationBoxNumberAddressPersistentLocalId)
                .Should().NotBeNull();
 
             eTagResponses.Count.Should().Be(4);
@@ -409,7 +427,6 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddressingStreetName
             var secondSourceStreetName = await Container.Resolve<IStreetNames>().GetAsync(new StreetNameStreamId(secondOtherStreetNamePersistentLocalId), CancellationToken.None);
             secondRejectedAddressEtagResponse!.ETag.Should().Be(secondSourceStreetName.GetAddressHash(proposedAddressOfSecondStreetName.AddressPersistentLocalId));
         }
-
 
         private async Task<ProposeAddress> ProposeAddress(
             AddressPersistentLocalId addressPersistentLocalId,

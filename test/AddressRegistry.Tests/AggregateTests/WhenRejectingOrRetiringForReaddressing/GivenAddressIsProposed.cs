@@ -9,6 +9,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingOrRetiringForReaddre
     using global::AutoFixture;
     using StreetName;
     using StreetName.Commands;
+    using StreetName.DataStructures;
     using StreetName.Events;
     using Xunit;
     using Xunit.Abstractions;
@@ -35,12 +36,15 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingOrRetiringForReaddre
                 .WithAddressPersistentLocalId(addressPersistentLocalId)
                 .Build();
 
-            var command = new RejectOrRetireAddressesForReaddressing(
+            var destinationStreetNamePersistentLocalId = new StreetNamePersistentLocalId(_streetNamePersistentLocalId + 1);
+            var destinationAddressPersistentLocalId = new AddressPersistentLocalId(addressPersistentLocalId + 1);
+
+            var command = new RejectOrRetireAddressForReaddressing(
                 _streetNamePersistentLocalId,
-                new List<AddressPersistentLocalId>
-                {
-                    addressPersistentLocalId
-                },
+                destinationStreetNamePersistentLocalId,
+                addressPersistentLocalId,
+                destinationAddressPersistentLocalId,
+                new List<BoxNumberAddressPersistentLocalId>(),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -50,6 +54,13 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingOrRetiringForReaddre
                 .When(command)
                 .Then(new[]
                 {
+                    new Fact(_streamId,
+                        new AddressHouseNumberWasReplacedBecauseOfReaddress(
+                            _streetNamePersistentLocalId,
+                            destinationStreetNamePersistentLocalId,
+                            addressPersistentLocalId,
+                            destinationAddressPersistentLocalId,
+                            new List<AddressBoxNumberReplacedBecauseOfReaddressData>())),
                     new Fact(_streamId,
                         new AddressWasRejected(
                             _streetNamePersistentLocalId,

@@ -89,22 +89,54 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
             string? status,
             CancellationToken ct)
         {
-            return context
+            var localItems = context
                 .AddressWmsItems
                 .Local
                 .Where(i => i.PositionX == position.X
-                    && i.PositionY == position.Y
-                    && i.AddressPersistentLocalId != addressPersistentLocalId
-                    && i.Status == status 
-                    && !i.Removed)                              
-                .Union(await context.AddressWmsItems 
-                    .Where(i => i.PositionX == position.X
-                        && i.PositionY == position.Y
-                        && i.AddressPersistentLocalId != addressPersistentLocalId
-                        && i.Status == status
-                        && !i.Removed)
-                    .ToListAsync(ct))
+                            && i.PositionY == position.Y
+                            && i.AddressPersistentLocalId != addressPersistentLocalId
+                            && i.Status == status
+                            && !i.Removed)
                 .ToList();
+
+            var dbItems = await context.AddressWmsItems
+                .Where(i => i.PositionX == position.X
+                            && i.PositionY == position.Y
+                            && i.AddressPersistentLocalId != addressPersistentLocalId
+                            && i.Status == status
+                            && !i.Removed)
+                .ToListAsync(ct);
+
+            // We need to verify that the AddressWmsItem retrieved from the DB is not already in the local cache.
+            // If it is already in the local cache, but not in the localItems list, then its position or status was updated and is no longer shared.
+            // An example:
+            //  context.AddressWmsItems.Local (local cache) contains items: A, B, C and D
+            //  localItems returns: A, B and C
+            //  dbItems returns: A and D
+            // This implies that D was updated but not yet persisted to the database, but was updated in memory only.
+            // Because localItems didn't return D, its position (or status) didn't match the specified position.
+            var verifiedDbItems = new List<AddressWmsItem>();
+            foreach (var dbItem in dbItems)
+            {
+                if (localItems.Any(x => x.AddressPersistentLocalId == dbItem.AddressPersistentLocalId))
+                {
+                    continue;
+                }
+
+                if (context.AddressWmsItems.Local.Any(x =>
+                        x.AddressPersistentLocalId == dbItem.AddressPersistentLocalId))
+                {
+                    continue;
+                }
+
+                verifiedDbItems.Add(dbItem);
+            }
+
+            var union = localItems
+                .Union(verifiedDbItems)
+                .ToList();
+
+            return union;
         }
 
         private static string? CalculateHouseNumberLabel(this IEnumerable<AddressWmsItem> addresses)

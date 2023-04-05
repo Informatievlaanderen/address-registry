@@ -1,5 +1,6 @@
 namespace AddressRegistry.Producer.Extensions
 {
+    using System.Linq;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Contracts = Be.Vlaanderen.Basisregisters.GrAr.Contracts.AddressRegistry;
     using AddressAggregate = Address.Events;
@@ -273,6 +274,53 @@ namespace AddressRegistry.Producer.Extensions
 
         public static Contracts.AddressWasRemovedBecauseStreetNameWasRemoved ToContract(this StreetNameAggregate.AddressWasRemovedBecauseStreetNameWasRemoved message) =>
             new Contracts.AddressWasRemovedBecauseStreetNameWasRemoved(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
+
+        public static Contracts.AddressHouseNumberWasReplacedBecauseOfReaddress ToContract(this StreetNameAggregate.AddressHouseNumberWasReplacedBecauseOfReaddress message) =>
+            new Contracts.AddressHouseNumberWasReplacedBecauseOfReaddress(
+                message.StreetNamePersistentLocalId,
+                message.DestinationStreetNamePersistentLocalId,
+                message.AddressPersistentLocalId,
+                message.DestinationAddressPersistentLocalId,
+                message.BoxNumberAddressPersistentLocalIds
+                    .Select(x => new Contracts.AddressBoxNumberReplacedBecauseOfReaddressData(
+                        x.SourceAddressPersistentLocalId, x.DestinationAddressPersistentLocalId))
+                    .ToList(),
+                message.Provenance.ToContract());
+
+        public static Contracts.AddressHouseNumberWasReaddressed ToContract(this StreetNameAggregate.AddressHouseNumberWasReaddressed message) =>
+            new Contracts.AddressHouseNumberWasReaddressed(
+                message.StreetNamePersistentLocalId,
+                message.AddressPersistentLocalId,
+                new Contracts.ReaddressedAddressData(
+                    message.ReaddressedHouseNumber.SourceAddressPersistentLocalId,
+                    message.ReaddressedHouseNumber.DestinationAddressPersistentLocalId,
+                    message.ReaddressedHouseNumber.IsDestinationNewlyProposed,
+                    message.ReaddressedHouseNumber.SourceStatus.ToString(),
+                    message.ReaddressedHouseNumber.DestinationHouseNumber,
+                    message.ReaddressedHouseNumber.SourceBoxNumber,
+                    message.ReaddressedHouseNumber.SourcePostalCode,
+                    message.ReaddressedHouseNumber.SourceGeometryMethod.ToString(),
+                    message.ReaddressedHouseNumber.SourceGeometrySpecification.ToString(),
+                    message.ReaddressedHouseNumber.SourceExtendedWkbGeometry,
+                    message.ReaddressedHouseNumber.SourceIsOfficiallyAssigned),
+                message.ReaddressedBoxNumbers
+                    .Select(x =>
+                        new Contracts.ReaddressedAddressData(
+                            x.SourceAddressPersistentLocalId,
+                            x.DestinationAddressPersistentLocalId,
+                            x.IsDestinationNewlyProposed,
+                            x.SourceStatus.ToString(),
+                            x.DestinationHouseNumber,
+                            x.SourceBoxNumber,
+                            x.SourcePostalCode,
+                            x.SourceGeometryMethod.ToString(),
+                            x.SourceGeometrySpecification.ToString(),
+                            x.SourceExtendedWkbGeometry,
+                            x.SourceIsOfficiallyAssigned))
+                    .ToList(),
+                message.RejectedBoxNumberAddressPersistentLocalIds,
+                message.RetiredBoxNumberAddressPersistentLocalIds,
+                message.Provenance.ToContract());
 
         private static Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common.Provenance ToContract(this ProvenanceData provenance)
             => new Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common.Provenance(

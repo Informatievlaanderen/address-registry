@@ -4,8 +4,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.StreetName;
+    using AddressRegistry.StreetName.DataStructures;
     using AddressRegistry.StreetName.Events;
-    using Api.BackOffice.Abstractions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
@@ -912,6 +912,95 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     one.HouseNumberLabelLength.Should().Be(3);
                     two.HouseNumberLabelLength.Should().Be(3);
                     three.HouseNumberLabelLength.Should().Be(1);
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressHouseNumberWasReaddressed()
+        {
+            var addressPersistentLocalId = _fixture.Create<AddressPersistentLocalId>();
+            var addressBoxNumberPersistentLocalId = new AddressPersistentLocalId(addressPersistentLocalId + 1);
+            var houseNumberThreeWasProposed = _fixture.Create<AddressWasProposedV2>()
+                .WithHouseNumber(new HouseNumber("3"))
+                .WithBoxNumber(null);
+            var boxNumberThreeWasProposed = _fixture.Create<AddressWasProposedV2>()
+                .WithAddressPersistentLocalId(addressBoxNumberPersistentLocalId)
+                .WithHouseNumber(new HouseNumber("3"))
+                .WithBoxNumber(new BoxNumber("A"))
+                .WithExtendedWkbGeometry(houseNumberThreeWasProposed.ExtendedWkbGeometry);
+
+            var originalPosition = houseNumberThreeWasProposed.ExtendedWkbGeometry;
+            var newPosition = GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry();
+
+            var streetNameWasReaddressed = new AddressHouseNumberWasReaddressed(
+                _fixture.Create<StreetNamePersistentLocalId>(),
+                addressPersistentLocalId,
+                new ReaddressedAddressData(
+                    new AddressPersistentLocalId(addressPersistentLocalId + 10),
+                    addressPersistentLocalId,
+                    isDestinationNewlyProposed: true,
+                    AddressStatus.Proposed,
+                    new HouseNumber("3"),
+                    boxNumber: null,
+                    new PostalCode(houseNumberThreeWasProposed.PostalCode),
+                    new AddressGeometry(
+                        houseNumberThreeWasProposed.GeometryMethod,
+                        houseNumberThreeWasProposed.GeometrySpecification,
+                        newPosition),
+                    sourceIsOfficiallyAssigned: true),
+                new List<ReaddressedAddressData>
+                {
+                    new ReaddressedAddressData(
+                        new AddressPersistentLocalId(addressPersistentLocalId + 11),
+                        addressBoxNumberPersistentLocalId,
+                        isDestinationNewlyProposed: true,
+                        AddressStatus.Proposed,
+                        new HouseNumber("3"),
+                        new BoxNumber("A"),
+                        new PostalCode(houseNumberThreeWasProposed.PostalCode),
+                        new AddressGeometry(
+                            houseNumberThreeWasProposed.GeometryMethod,
+                            houseNumberThreeWasProposed.GeometrySpecification,
+                            newPosition),
+                        sourceIsOfficiallyAssigned: true)
+                },
+                new List<AddressPersistentLocalId>(),
+                new List<AddressPersistentLocalId>());
+            ((ISetProvenance)streetNameWasReaddressed).SetProvenance(_fixture.Create<Provenance>());
+
+            var houseNumberFiveWasMigrated = CreateAddressWasMigratedToStreetName(
+                new AddressPersistentLocalId(20),
+                new HouseNumber("5"),
+                AddressStatus.Proposed,
+                newPosition);
+            var houseNumberSevenWasMigrated = CreateAddressWasMigratedToStreetName(
+                new AddressPersistentLocalId(30),
+                new HouseNumber("7"),
+                AddressStatus.Proposed,
+                new ExtendedWkbGeometry(originalPosition));
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(houseNumberThreeWasProposed, new Dictionary<string, object>())),
+                    new Envelope<AddressWasProposedV2>(new Envelope(boxNumberThreeWasProposed, new Dictionary<string, object>())),
+                    new Envelope<AddressWasMigratedToStreetName>(new Envelope(houseNumberSevenWasMigrated, new Dictionary<string, object>())),
+                    new Envelope<AddressWasMigratedToStreetName>(new Envelope(houseNumberFiveWasMigrated, new Dictionary<string, object>())),
+                    new Envelope<AddressHouseNumberWasReaddressed>(new Envelope(streetNameWasReaddressed, new Dictionary<string, object>())))
+                .Then(async ct =>
+                {
+                    var houseNumberThree = await ct.AddressWmsItems.FindAsync(houseNumberThreeWasProposed.AddressPersistentLocalId);
+                    houseNumberThree.Should().NotBeNull();
+                    var houseNumberFive = await ct.AddressWmsItems.FindAsync(houseNumberFiveWasMigrated.AddressPersistentLocalId);
+                    houseNumberFive.Should().NotBeNull();
+                    var houseNumberSeven = await ct.AddressWmsItems.FindAsync(houseNumberSevenWasMigrated.AddressPersistentLocalId);
+                    houseNumberSeven.Should().NotBeNull();
+
+                    houseNumberThree!.HouseNumberLabel.Should().Be("3-5");
+                    houseNumberFive!.HouseNumberLabel.Should().Be("3-5");
+                    houseNumberSeven!.HouseNumberLabel.Should().Be("7");
+                    houseNumberThree.HouseNumberLabelLength.Should().Be(3);
+                    houseNumberFive.HouseNumberLabelLength.Should().Be(3);
+                    houseNumberSeven.HouseNumberLabelLength.Should().Be(1);
                 });
         }
 

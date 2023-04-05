@@ -23,7 +23,7 @@ namespace AddressRegistry.StreetName.Events
         public int AddressPersistentLocalId { get; }
 
         [EventPropertyDescription("Het heradresseerde huisnummeradres.")]
-        public ReaddressedAddressData ReaddressedHouseNumber { get; set; }
+        public ReaddressedAddressData ReaddressedHouseNumber { get; }
 
         [EventPropertyDescription("De heradresseerde busadressen.")]
         public IReadOnlyList<ReaddressedAddressData> ReaddressedBoxNumbers { get; }

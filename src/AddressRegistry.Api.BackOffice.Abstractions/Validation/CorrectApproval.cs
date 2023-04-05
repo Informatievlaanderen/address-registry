@@ -1,14 +1,14 @@
-using TicketingService.Abstractions;
-
 namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
 {
+    using TicketingService.Abstractions;
+
     public static partial class ValidationErrors
     {
         public static class CorrectApproval
         {
             public static class AddressInvalidStatus
             {
-                public const string Code = "AdresGehistoreerdOfAfgekeurd";
+                public const string Code = "AdresAfgekeurdGehistoreerd";
                 public const string Message = "Deze actie is enkel toegestaan op adressen met status 'inGebruik'.";
 
                 public static TicketError ToTicketError() => new(Message, Code);

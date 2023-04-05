@@ -105,58 +105,53 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenDestination
                 secondBoxNumberAddressWasMigrated.GeometrySpecification,
                 new ExtendedWkbGeometry(secondBoxNumberAddressWasMigrated.ExtendedWkbGeometry));
 
-            var streetNameWasReaddressed = new StreetNameWasReaddressed(_streetNamePersistentLocalId,
-                new List<AddressPersistentLocalId>
-                {
+            var streetNameWasReaddressed = new AddressHouseNumberWasReaddressed(
+                _streetNamePersistentLocalId,
+                destinationAddressPersistentLocalId,
+                readdressedHouseNumber: new ReaddressedAddressData(
+                    sourceAddressPersistentLocalId,
                     destinationAddressPersistentLocalId,
-                    destinationFirstBoxNumberAddressPersistentLocalId,
-                    destinationSecondBoxNumberAddressPersistentLocalId
-                },
-                new List<AddressPersistentLocalId>(),
-                new List<AddressPersistentLocalId>(),
-                new List<AddressPersistentLocalId>(),
-                new List<ReaddressedAddressData>
+                    isDestinationNewlyProposed: true,
+                    sourceAddressWasMigrated.Status,
+                    destinationHouseNumber,
+                    boxNumber: null,
+                    new PostalCode(sourceAddressWasMigrated.PostalCode!),
+                    new AddressGeometry(
+                        sourceAddressWasMigrated.GeometryMethod,
+                        sourceAddressWasMigrated.GeometrySpecification,
+                        new ExtendedWkbGeometry(sourceAddressWasMigrated.ExtendedWkbGeometry)),
+                    sourceAddressWasMigrated.OfficiallyAssigned),
+                readdressedBoxNumbers: new List<ReaddressedAddressData>
                 {
-                    new ReaddressedAddressData(
-                        sourceAddressPersistentLocalId,
-                        destinationAddressPersistentLocalId,
-                        sourceAddressWasMigrated.Status,
-                        destinationHouseNumber,
-                        boxNumber: null,
-                        new PostalCode(sourceAddressWasMigrated.PostalCode!),
-                        new AddressGeometry(
-                            sourceAddressWasMigrated.GeometryMethod,
-                            sourceAddressWasMigrated.GeometrySpecification,
-                            new ExtendedWkbGeometry(sourceAddressWasMigrated.ExtendedWkbGeometry)),
-                        sourceAddressWasMigrated.OfficiallyAssigned,
-                        parentAddressPersistentLocalId: null),
                         new ReaddressedAddressData(
                             proposedBoxNumberAddressPersistentLocalId,
                             destinationFirstBoxNumberAddressPersistentLocalId,
+                            isDestinationNewlyProposed: true,
                             firstBoxNumberAddressWasMigrated.Status,
                             destinationHouseNumber,
-                            boxNumber: new BoxNumber(firstBoxNumberAddressWasMigrated.BoxNumber!),
+                            new BoxNumber(firstBoxNumberAddressWasMigrated.BoxNumber!),
                             new PostalCode(sourceAddressWasMigrated.PostalCode!),
                             new AddressGeometry(
                                 firstBoxNumberAddressWasMigrated.GeometryMethod,
                                 firstBoxNumberAddressWasMigrated.GeometrySpecification,
                                 new ExtendedWkbGeometry(firstBoxNumberAddressWasMigrated.ExtendedWkbGeometry)),
-                            firstBoxNumberAddressWasMigrated.OfficiallyAssigned,
-                            parentAddressPersistentLocalId: destinationAddressPersistentLocalId),
+                            firstBoxNumberAddressWasMigrated.OfficiallyAssigned),
                         new ReaddressedAddressData(
                             currentBoxNumberAddressPersistentLocalId,
                             destinationSecondBoxNumberAddressPersistentLocalId,
+                            isDestinationNewlyProposed: true,
                             secondBoxNumberAddressWasMigrated.Status,
                             destinationHouseNumber,
-                            boxNumber: new BoxNumber(secondBoxNumberAddressWasMigrated.BoxNumber!),
+                            new BoxNumber(secondBoxNumberAddressWasMigrated.BoxNumber!),
                             new PostalCode(sourceAddressWasMigrated.PostalCode!),
                             new AddressGeometry(
                                 secondBoxNumberAddressWasMigrated.GeometryMethod,
                                 secondBoxNumberAddressWasMigrated.GeometrySpecification,
                                 new ExtendedWkbGeometry(secondBoxNumberAddressWasMigrated.ExtendedWkbGeometry)),
-                            secondBoxNumberAddressWasMigrated.OfficiallyAssigned,
-                            parentAddressPersistentLocalId: destinationAddressPersistentLocalId)
-                });
+                            secondBoxNumberAddressWasMigrated.OfficiallyAssigned)
+                },
+                rejectedBoxNumberAddressPersistentLocalIds: new List<AddressPersistentLocalId>(),
+                retiredBoxNumberAddressPersistentLocalIds: new List<AddressPersistentLocalId>());
 
             var streetName = new StreetNameFactory(NoSnapshotStrategy.Instance).Create();
             streetName.Initialize(new List<object>

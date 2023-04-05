@@ -73,7 +73,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 foreach (var item in request.Request.HerAdresseer)
                 {
                     var destinationAddress =
-                        streetName.StreetNameAddresses.FindActiveParentByHouseNumber(HouseNumber.Create(item.DoelHuisnummer));
+                        streetName.StreetNameAddresses.FindActiveParentByHouseNumber(
+                            HouseNumber.Create(item.DoelHuisnummer));
                     addressesUpdated.Add((
                         readdressCommand.DestinationStreetNamePersistentLocalId,
                         destinationAddress!.AddressPersistentLocalId));
@@ -83,7 +84,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 {
                     addressesUpdated.Add((
                         readdressCommand.DestinationStreetNamePersistentLocalId,
-                        new AddressPersistentLocalId(Convert.ToInt32(addressToRetirePuri.AsIdentifier().Map(x => x).Value))));
+                        new AddressPersistentLocalId(
+                            Convert.ToInt32(addressToRetirePuri.AsIdentifier().Map(x => x).Value))));
                 }
             }
 
@@ -92,25 +94,45 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                          .GroupBy(x => x.StreetNamePersistentLocalId))
             {
                 await using var scope = _lifetimeScope.BeginLifetimeScope();
-                try
-                {
-                    var rejectOrRetireAddresses = new RejectOrRetireAddressesForReaddressing(
-                        addressesByStreetName.Key,
-                        addressesByStreetName.Select(x => x.AddressPersistentLocalId).ToList(),
-                        request.Provenance);
 
-                    await scope.Resolve<IIdempotentCommandHandler>().Dispatch(
-                        rejectOrRetireAddresses.CreateCommandId(),
-                        rejectOrRetireAddresses,
-                        request.Metadata,
-                        cancellationToken);
-                }
-                catch (IdempotencyException)
+                var streetNames = scope.Resolve<IStreetNames>();
+                var streetName = await streetNames.GetAsync(
+                    new StreetNameStreamId(readdressCommand.DestinationStreetNamePersistentLocalId), cancellationToken);
+
+                foreach (var (_, addressPersistentLocalId) in addressesByStreetName)
                 {
+                    try
+                    {
+                        var houseNumber = addressesToReaddress
+                            .Single(x => x.SourceAddressPersistentLocalId == addressPersistentLocalId)
+                            .DestinationHouseNumber;
+
+                        var destinationAddress = streetName.StreetNameAddresses.FindActiveParentByHouseNumber(HouseNumber.Create(houseNumber));
+                        var destinationBoxNumbers = destinationAddress.Children
+                            .Where(x => x.IsActive)
+                            .Select(x => new BoxNumberAddressPersistentLocalId(x.BoxNumber!, x.AddressPersistentLocalId))
+                            .ToList();
+
+                        var rejectOrRetireAddresses = new RejectOrRetireAddressForReaddressing(
+                            addressesByStreetName.Key,
+                            readdressCommand.DestinationStreetNamePersistentLocalId,
+                            addressPersistentLocalId,
+                            destinationAddress.AddressPersistentLocalId,
+                            destinationBoxNumbers,
+                            request.Provenance);
+
+                        await scope.Resolve<IIdempotentCommandHandler>().Dispatch(
+                            rejectOrRetireAddresses.CreateCommandId(),
+                            rejectOrRetireAddresses,
+                            request.Metadata,
+                            cancellationToken);
+                    }
+                    catch (IdempotencyException)
+                    {
+                    }
                 }
 
-                addressesUpdated.AddRange(
-                    addressesByStreetName.Select(x => (addressesByStreetName.Key, x.AddressPersistentLocalId)));
+                addressesUpdated.AddRange(addressesByStreetName.Select(x => (addressesByStreetName.Key, x.AddressPersistentLocalId)));
             }
 
             foreach (var (streetNamePersistentLocalId, addressPersistentLocalId) in addressesAdded)
@@ -121,6 +143,9 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                     cancellationToken);
             }
 
+            // Only etags for house number addresses are returned as they were not part of the original request.
+            // An additional argument is because in case of an IdempotencyException,
+            //  we no longer know which destination box number was rejected or retired in the scope of this command or previously.
             foreach (var (streetNamePersistentLocalId, addressPersistentLocalId) in addressesUpdated.Distinct())
             {
                 var lastHash = await GetHash(streetNamePersistentLocalId, addressPersistentLocalId, cancellationToken);
@@ -131,7 +156,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
         }
 
         private async Task<List<ReaddressAddressItem>> MapReaddressAddressItems(
-            List<AddressToReaddressItem> addressesToReaddress,
+            IEnumerable<AddressToReaddressItem> addressesToReaddress,
             CancellationToken cancellationToken)
         {
             var readdressAddressItems = new List<ReaddressAddressItem>();
@@ -156,8 +181,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
         }
 
         private static List<RetireAddressItem> MapRetireAddressItems(
-            List<string>? addressesToRetire,
-            List<ReaddressAddressItem> addressesToReaddress)
+            IEnumerable<string>? addressesToRetire,
+            IEnumerable<ReaddressAddressItem> addressesToReaddress)
         {
             var retireAddressItems = new List<RetireAddressItem>();
 

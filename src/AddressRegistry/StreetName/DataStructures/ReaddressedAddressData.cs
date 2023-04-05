@@ -6,6 +6,7 @@ namespace AddressRegistry.StreetName.DataStructures
     {
         public int SourceAddressPersistentLocalId { get; }
         public int DestinationAddressPersistentLocalId { get; }
+        public bool IsDestinationNewlyProposed { get; }
         public AddressStatus SourceStatus { get; }
         public string DestinationHouseNumber { get; }
         public string? SourceBoxNumber { get; }
@@ -14,24 +15,21 @@ namespace AddressRegistry.StreetName.DataStructures
         public GeometrySpecification SourceGeometrySpecification { get; }
         public string SourceExtendedWkbGeometry { get; }
         public bool SourceIsOfficiallyAssigned { get; }
-        public int? DestinationParentAddressPersistentLocalId { get; }
-        public bool IsBoxNumberAddress => SourceBoxNumber is not null;
-        public bool IsHouseNumberAddress => !IsBoxNumberAddress;
 
         public ReaddressedAddressData(
             AddressPersistentLocalId sourceAddressPersistentLocalId,
             AddressPersistentLocalId destinationAddressPersistentLocalId,
+            bool isDestinationNewlyProposed,
             AddressStatus sourceStatus,
             HouseNumber destinationHouseNumber,
             BoxNumber? boxNumber,
             PostalCode sourcePostalCode,
             AddressGeometry geometry,
-            bool sourceIsOfficiallyAssigned,
-            AddressPersistentLocalId? parentAddressPersistentLocalId
-        )
+            bool sourceIsOfficiallyAssigned)
         {
             SourceAddressPersistentLocalId = sourceAddressPersistentLocalId;
             DestinationAddressPersistentLocalId = destinationAddressPersistentLocalId;
+            IsDestinationNewlyProposed = isDestinationNewlyProposed;
             SourceStatus = sourceStatus;
             DestinationHouseNumber = destinationHouseNumber;
             SourceBoxNumber = boxNumber is null ? (string?)null : boxNumber;
@@ -40,13 +38,13 @@ namespace AddressRegistry.StreetName.DataStructures
             SourceGeometrySpecification = geometry.GeometrySpecification;
             SourceExtendedWkbGeometry = geometry.Geometry.ToString();
             SourceIsOfficiallyAssigned = sourceIsOfficiallyAssigned;
-            DestinationParentAddressPersistentLocalId = parentAddressPersistentLocalId ?? (int?) null;
         }
 
         [JsonConstructor]
         private ReaddressedAddressData(
             int sourceAddressPersistentLocalId,
             int destinationAddressPersistentLocalId,
+            bool isDestinationNewlyProposed,
             AddressStatus sourceStatus,
             string destinationHouseNumber,
             string? sourceBoxNumber,
@@ -59,6 +57,7 @@ namespace AddressRegistry.StreetName.DataStructures
         {
             SourceAddressPersistentLocalId = sourceAddressPersistentLocalId;
             DestinationAddressPersistentLocalId = destinationAddressPersistentLocalId;
+            IsDestinationNewlyProposed = isDestinationNewlyProposed;
             SourceStatus = sourceStatus;
             DestinationHouseNumber = destinationHouseNumber;
             SourceBoxNumber = sourceBoxNumber;
@@ -67,7 +66,6 @@ namespace AddressRegistry.StreetName.DataStructures
             SourceGeometrySpecification = sourceGeometrySpecification;
             SourceExtendedWkbGeometry = sourceExtendedWkbGeometry;
             SourceIsOfficiallyAssigned = sourceIsOfficiallyAssigned;
-            DestinationParentAddressPersistentLocalId = destinationParentAddressPersistentLocalId;
         }
     }
 }

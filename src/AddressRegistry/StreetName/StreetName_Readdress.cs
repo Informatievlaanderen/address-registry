@@ -19,58 +19,55 @@ namespace AddressRegistry.StreetName
         {
             GuardActiveStreetName();
 
-            var addresssToRejectOrRetireWithinStreetName = addressesToRejectOrRetire
-                .Where(x => x.StreetNamePersistentLocalId == PersistentLocalId)
-                .ToList();
-
-            var streetNameReaddresser = new StreetNameReaddresser(
-                streetNames,
-                persistentLocalIdGenerator,
-                addressesToReaddress,
-                addresssToRejectOrRetireWithinStreetName,
-                this);
+            var streetNameReaddresser = new StreetNameReaddresser(this, streetNames, persistentLocalIdGenerator, addressesToReaddress);
+            var readdressedHouseNumbers = streetNameReaddresser.ReaddressedHouseNumbers.ToList();
+            var readdressedAddressDatas = streetNameReaddresser.ReaddressedBoxNumbers.ToList();
 
             // Perform all actions gathered by the StreetNameReaddresser.
             foreach (var (action, addressPersistentLocalId) in streetNameReaddresser.Actions)
             {
-                HandleAction(action, addressPersistentLocalId, streetNameReaddresser.ReaddressedAddresses, executionContext);
+                HandleAction(
+                    action,
+                    addressPersistentLocalId,
+                    readdressedHouseNumbers,
+                    readdressedAddressDatas,
+                    executionContext);
             }
 
-            // Collect all addresses specified from the addressesToRejectOrRetire list which are outside of this StreetName.
-            // Theses addresses cannot be rejected or retired in this transaction scope
-            // because the ConcurrentUnitOfWork can only handle changes from only one aggregate within a given transaction scope.
-            // These addresses will be rejected or retired through one or more separate commands.
-            var addressesWhichWillBeRejectedOrRetired = addressesToRejectOrRetire
-                .Where(x => x.StreetNamePersistentLocalId != PersistentLocalId)
-                .Select(x => x.AddressPersistentLocalId)
+            // Reject or retire the specified addresses which are within the current street name.
+            var addresssToRejectOrRetireWithinStreetName = addressesToRejectOrRetire
+                .Where(x => x.StreetNamePersistentLocalId == PersistentLocalId)
                 .ToList();
+            RejectOrRetireAddresses(addresssToRejectOrRetireWithinStreetName, streetNameReaddresser);
 
             executionContext.AddressesUpdated.AddRange(
-                streetNameReaddresser.ReaddressedAddresses
-                    .Where(x => x.IsHouseNumberAddress)
-                    .Select(x => (PersistentLocalId, new AddressPersistentLocalId(x.DestinationAddressPersistentLocalId))));
+                readdressedHouseNumbers.Select(x => (PersistentLocalId, new AddressPersistentLocalId(x.DestinationAddressPersistentLocalId))));
             executionContext.AddressesUpdated.AddRange(
                 addresssToRejectOrRetireWithinStreetName.Select(x => (PersistentLocalId, x.AddressPersistentLocalId)));
 
-            ApplyChange(new StreetNameWasReaddressed(
-                PersistentLocalId,
-                streetNameReaddresser.GetAddressesByActions(ReaddressAction.ProposeHouseNumber, ReaddressAction.ProposeBoxNumber).ToList(),
-                streetNameReaddresser.GetAddressesByActions(ReaddressAction.Reject).ToList(),
-                streetNameReaddresser.GetAddressesByActions(ReaddressAction.Retire).ToList(),
-                addressesWhichWillBeRejectedOrRetired,
-                streetNameReaddresser.ReaddressedAddresses));
+            foreach (var (addressPersistentLocalId, readressedData) in streetNameReaddresser.ReaddressedAddresses)
+            {
+                ApplyChange(new AddressHouseNumberWasReaddressed(
+                    PersistentLocalId,
+                    addressPersistentLocalId,
+                    readressedData.readdressedHouseNumber,
+                    readressedData.readdressedBoxNumbers,
+                    readressedData.rejectedBoxNumberPersistentLocalIds,
+                    readressedData.retiredBoxNumberPersistentLocalIds));
+            }
         }
 
         private void HandleAction(
             ReaddressAction action,
             AddressPersistentLocalId addressPersistentLocalId,
-            IEnumerable<ReaddressedAddressData> readdressedAddresses,
+            IEnumerable<ReaddressedAddressData> readdressedHouseNumbers,
+            IEnumerable<ReaddressedAddressData> readdressedBoxNumbers,
             ReaddressExecutionContext executionContext)
         {
             switch (action)
             {
                 case ReaddressAction.ProposeHouseNumber:
-                    var addressData = readdressedAddresses.Single(x =>
+                    var addressData = readdressedHouseNumbers.Single(x =>
                         x.DestinationAddressPersistentLocalId == addressPersistentLocalId);
 
                     ProposeAddress(
@@ -88,7 +85,7 @@ namespace AddressRegistry.StreetName
                     break;
 
                 case ReaddressAction.ProposeBoxNumber:
-                    addressData = readdressedAddresses.Single(x =>
+                    addressData = readdressedBoxNumbers.Single(x =>
                         x.DestinationAddressPersistentLocalId == addressPersistentLocalId);
 
                     ProposeAddress(
@@ -118,26 +115,90 @@ namespace AddressRegistry.StreetName
             }
         }
 
-        public void RejectOrRetireAddressesForReaddressing(IEnumerable<AddressPersistentLocalId> addressPersistentLocalIds)
+        private void RejectOrRetireAddresses(
+            IEnumerable<RetireAddressItem> addresssToRejectOrRetireWithinStreetName,
+            StreetNameReaddresser streetNameReaddresser)
         {
-            foreach (var addressPersistentLocalId in addressPersistentLocalIds)
+            foreach (var (_, addressPersistentLocalId) in addresssToRejectOrRetireWithinStreetName)
             {
-                var address = StreetNameAddresses.GetByPersistentLocalId(addressPersistentLocalId);
+                var sourceAddress = StreetNameAddresses.GetByPersistentLocalId(addressPersistentLocalId);
+                var destinationAddress = streetNameReaddresser.ReaddressedAddresses
+                    .Single(x => x.Value.readdressedHouseNumber.SourceAddressPersistentLocalId == addressPersistentLocalId)
+                    .Value;
 
-                if (address.IsRemoved)
+                var boxNumberAddressPersistentLocalIds = new List<AddressBoxNumberReplacedBecauseOfReaddressData>();
+                foreach (var sourceAddressBoxNumber in sourceAddress.Children.Where(x => x.IsActive))
                 {
-                    continue;
+                    var destinationAddressBoxNumberPersistentLocalId = destinationAddress.readdressedBoxNumbers
+                        .Single(x => x.SourceAddressPersistentLocalId == sourceAddressBoxNumber.AddressPersistentLocalId)
+                        .DestinationAddressPersistentLocalId;
+
+                    boxNumberAddressPersistentLocalIds.Add(new AddressBoxNumberReplacedBecauseOfReaddressData(
+                        sourceAddressBoxNumber.AddressPersistentLocalId,
+                        new AddressPersistentLocalId(destinationAddressBoxNumberPersistentLocalId)));
                 }
 
-                if (address.Status == AddressStatus.Proposed)
+                ApplyChange(new AddressHouseNumberWasReplacedBecauseOfReaddress(
+                    PersistentLocalId,
+                    PersistentLocalId,
+                    addressPersistentLocalId,
+                    new AddressPersistentLocalId(destinationAddress.readdressedHouseNumber.DestinationAddressPersistentLocalId),
+                    boxNumberAddressPersistentLocalIds));
+
+                if (sourceAddress.Status == AddressStatus.Proposed)
                 {
                     RejectAddress(addressPersistentLocalId);
                 }
 
-                if (address.Status == AddressStatus.Current)
+                if (sourceAddress.Status == AddressStatus.Current)
                 {
                     RetireAddress(addressPersistentLocalId);
                 }
+            }
+        }
+
+        public void RejectOrRetireAddressForReaddressing(
+            StreetNamePersistentLocalId destinationStreetNamePersistentLocalId,
+            AddressPersistentLocalId addressPersistentLocalId,
+            AddressPersistentLocalId destinationAddressPersistentLocalId,
+            IEnumerable<BoxNumberAddressPersistentLocalId> destinationBoxNumbers)
+        {
+            var address = StreetNameAddresses.GetByPersistentLocalId(addressPersistentLocalId);
+
+            if (address.IsRemoved)
+            {
+                return;
+            }
+
+            if (address.Status != AddressStatus.Proposed && address.Status != AddressStatus.Current)
+            {
+                return;
+            }
+
+            var boxNumbers = new List<AddressBoxNumberReplacedBecauseOfReaddressData>();
+            foreach (var destinationBoxNumber in destinationBoxNumbers)
+            {
+                var sourceAddressBoxNumber = address.Children.Single(x => x.BoxNumber == destinationBoxNumber.BoxNumber);
+                boxNumbers.Add(new AddressBoxNumberReplacedBecauseOfReaddressData(
+                    sourceAddressBoxNumber.AddressPersistentLocalId,
+                    destinationBoxNumber.AddressPersistentLocalId));
+            }
+
+            ApplyChange(new AddressHouseNumberWasReplacedBecauseOfReaddress(
+                PersistentLocalId,
+                destinationStreetNamePersistentLocalId,
+                addressPersistentLocalId,
+                destinationAddressPersistentLocalId,
+                boxNumbers));
+
+            if (address.Status == AddressStatus.Proposed)
+            {
+                RejectAddress(addressPersistentLocalId);
+            }
+
+            if (address.Status == AddressStatus.Current)
+            {
+                RetireAddress(addressPersistentLocalId);
             }
         }
     }

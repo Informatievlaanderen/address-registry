@@ -36,12 +36,12 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingOrRetiringForReaddre
                 .WithAddressPersistentLocalId(addressPersistentLocalId)
                 .Build();
 
-            var command = new RejectOrRetireAddressesForReaddressing(
+            var command = new RejectOrRetireAddressForReaddressing(
                 _streetNamePersistentLocalId,
-                new List<AddressPersistentLocalId>
-                {
-                    addressPersistentLocalId
-                },
+                new StreetNamePersistentLocalId(_streetNamePersistentLocalId + 1),
+                addressPersistentLocalId,
+                new AddressPersistentLocalId(addressPersistentLocalId + 1),
+                new List<BoxNumberAddressPersistentLocalId>(),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -64,12 +64,12 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingOrRetiringForReaddre
                 .WithIsRemoved()
                 .Build();
 
-            var command = new RejectOrRetireAddressesForReaddressing(
+            var command = new RejectOrRetireAddressForReaddressing(
                 _streetNamePersistentLocalId,
-                new List<AddressPersistentLocalId>
-                {
-                    addressPersistentLocalId
-                },
+                new StreetNamePersistentLocalId(_streetNamePersistentLocalId + 1),
+                addressPersistentLocalId,
+                new AddressPersistentLocalId(addressPersistentLocalId + 1),
+                new List<BoxNumberAddressPersistentLocalId>(),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()

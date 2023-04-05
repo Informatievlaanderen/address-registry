@@ -68,6 +68,8 @@ namespace AddressRegistry.StreetName
             Register<AddressPositionWasChanged>(When);
             Register<AddressPostalCodeWasChangedV2>(When);
             Register<AddressWasRemovedBecauseStreetNameWasRemoved>(When);
+            Register<AddressHouseNumberWasReaddressed>(When);
+            Register<AddressHouseNumberWasReplacedBecauseOfReaddress>(When);
 
             Register<StreetNameNamesWereCorrected>(When);
             Register<StreetNameHomonymAdditionsWereCorrected>(When);
@@ -354,17 +356,38 @@ namespace AddressRegistry.StreetName
             _lastEvent = @event;
         }
 
-        internal void Readdress(ReaddressedAddressData readdressedItem, StreetNameWasReaddressed @event)
+        private void When(AddressHouseNumberWasReaddressed @event)
         {
-            HouseNumber = new HouseNumber(readdressedItem.DestinationHouseNumber);
-            Status = readdressedItem.SourceStatus;
-            PostalCode = new PostalCode(readdressedItem.SourcePostalCode);
-            IsOfficiallyAssigned = readdressedItem.SourceIsOfficiallyAssigned;
+            Status = @event.ReaddressedHouseNumber.SourceStatus;
+            HouseNumber = new HouseNumber(@event.ReaddressedHouseNumber.DestinationHouseNumber);
+            PostalCode = new PostalCode(@event.ReaddressedHouseNumber.SourcePostalCode);
+            IsOfficiallyAssigned = @event.ReaddressedHouseNumber.SourceIsOfficiallyAssigned;
             Geometry = new AddressGeometry(
-                readdressedItem.SourceGeometryMethod,
-                readdressedItem.SourceGeometrySpecification,
-                new ExtendedWkbGeometry(readdressedItem.SourceExtendedWkbGeometry));
+                @event.ReaddressedHouseNumber.SourceGeometryMethod,
+                @event.ReaddressedHouseNumber.SourceGeometrySpecification,
+                new ExtendedWkbGeometry(@event.ReaddressedHouseNumber.SourceExtendedWkbGeometry));
 
+            foreach (var readdressedBoxNumber in @event.ReaddressedBoxNumbers)
+            {
+                var boxNumberAddress = _children.Single(
+                    x => x.AddressPersistentLocalId == readdressedBoxNumber.DestinationAddressPersistentLocalId);
+
+                boxNumberAddress.Status = readdressedBoxNumber.SourceStatus;
+                boxNumberAddress.HouseNumber = new HouseNumber(readdressedBoxNumber.DestinationHouseNumber);
+                boxNumberAddress.BoxNumber = new BoxNumber(readdressedBoxNumber.SourceBoxNumber!);
+                boxNumberAddress.PostalCode = new PostalCode(readdressedBoxNumber.SourcePostalCode);
+                boxNumberAddress.IsOfficiallyAssigned = readdressedBoxNumber.SourceIsOfficiallyAssigned;
+                boxNumberAddress.Geometry = new AddressGeometry(
+                    readdressedBoxNumber.SourceGeometryMethod,
+                    readdressedBoxNumber.SourceGeometrySpecification,
+                    new ExtendedWkbGeometry(readdressedBoxNumber.SourceExtendedWkbGeometry));
+            }
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressHouseNumberWasReplacedBecauseOfReaddress @event)
+        {
             _lastEvent = @event;
         }
     }

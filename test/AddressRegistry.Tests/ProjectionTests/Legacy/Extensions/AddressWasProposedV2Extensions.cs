@@ -119,5 +119,24 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Extensions
 
             return newEvent;
         }
+
+        public static AddressWasProposedV2 WithExtendedWkbGeometry(
+            this AddressWasProposedV2 @event,
+            string extendedWkbGeometry)
+        {
+            var newEvent = new AddressWasProposedV2(
+                new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId),
+                new AddressPersistentLocalId(@event.AddressPersistentLocalId),
+                @event.ParentPersistentLocalId is not null ? new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value) : null,
+                new PostalCode(@event.PostalCode),
+                new HouseNumber(@event.HouseNumber),
+                @event.BoxNumber is not null ? new BoxNumber(@event.BoxNumber) : null,
+                @event.GeometryMethod,
+                @event.GeometrySpecification,
+                new ExtendedWkbGeometry(extendedWkbGeometry));
+            ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
+
+            return newEvent;
+        }
     }
 }

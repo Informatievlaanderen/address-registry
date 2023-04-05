@@ -334,6 +334,53 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 UpdateVersie(item, message.Message.Provenance.Timestamp);
             });
 
+            When<Envelope<AddressHouseNumberWasReaddressed>>(async (context, message, ct) =>
+            {
+                var houseNumberItem = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);
+                UpdateDbaseRecordField(houseNumberItem, record =>
+                {
+                    record.status.Value = Map(message.Message.ReaddressedHouseNumber.SourceStatus);
+                    record.huisnr.Value = message.Message.ReaddressedHouseNumber.DestinationHouseNumber;
+                    record.postcode.Value = message.Message.ReaddressedHouseNumber.SourcePostalCode;
+                    record.offtoegknd.Value = message.Message.ReaddressedHouseNumber.SourceIsOfficiallyAssigned;
+                    record.posgeommet.Value = Map(message.Message.ReaddressedHouseNumber.SourceGeometryMethod);
+                    record.posspec.Value = Map(message.Message.ReaddressedHouseNumber.SourceGeometrySpecification);
+
+                    UpdateShape(houseNumberItem, wkbReader, message.Message.ReaddressedHouseNumber.SourceExtendedWkbGeometry);
+                });
+                UpdateVersie(houseNumberItem, message.Message.Provenance.Timestamp);
+
+                foreach (var readdressedBoxNumber in message.Message.ReaddressedBoxNumbers)
+                {
+                    var boxNumberItem = await context.AddressExtractV2.FindAsync(readdressedBoxNumber.DestinationAddressPersistentLocalId, cancellationToken: ct);
+                    UpdateDbaseRecordField(boxNumberItem, record =>
+                    {
+                        record.status.Value = Map(readdressedBoxNumber.SourceStatus);
+                        record.huisnr.Value = readdressedBoxNumber.DestinationHouseNumber;
+                        record.busnr.Value = readdressedBoxNumber.SourceBoxNumber;
+                        record.postcode.Value = readdressedBoxNumber.SourcePostalCode;
+                        record.offtoegknd.Value = readdressedBoxNumber.SourceIsOfficiallyAssigned;
+                        record.posgeommet.Value = Map(readdressedBoxNumber.SourceGeometryMethod);
+                        record.posspec.Value = Map(readdressedBoxNumber.SourceGeometrySpecification);
+
+                        UpdateShape(boxNumberItem, wkbReader, readdressedBoxNumber.SourceExtendedWkbGeometry);
+                    });
+                    UpdateVersie(boxNumberItem, message.Message.Provenance.Timestamp);
+                }
+            });
+
+            When<Envelope<AddressHouseNumberWasReplacedBecauseOfReaddress>>(async (context, message, ct) =>
+            {
+                var houseNumberItem = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);
+                UpdateVersie(houseNumberItem, message.Message.Provenance.Timestamp);
+
+                foreach (var readdressedBoxNumber in message.Message.BoxNumberAddressPersistentLocalIds)
+                {
+                    var boxNumberItem = await context.AddressExtractV2.FindAsync(readdressedBoxNumber.SourceAddressPersistentLocalId, cancellationToken: ct);
+                    UpdateVersie(boxNumberItem, message.Message.Provenance.Timestamp);
+                }
+            });
+
             When<Envelope<AddressWasRemovedV2>>(async (context, message, ct) =>
             {
                 var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);

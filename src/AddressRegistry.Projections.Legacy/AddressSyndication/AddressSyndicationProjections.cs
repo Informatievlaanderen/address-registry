@@ -535,7 +535,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     x => x.Status = AddressStatus.Rejected,
                     ct);
             });
-            
+
             When<Envelope<AddressWasRetiredBecauseStreetNameWasRejected>>(async (context, message, ct) =>
             {
                 await context.CreateNewAddressSyndicationItem(
@@ -549,7 +549,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     x => x.Status = AddressStatus.Retired,
                     ct);
             });
-            
+
             When<Envelope<AddressWasRejectedBecauseStreetNameWasRetired>>(async (context, message, ct) =>
             {
                 await context.CreateNewAddressSyndicationItem(
@@ -766,6 +766,76 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                         x.PointPosition = message.Message.ExtendedWkbGeometry.ToByteArray();
                     },
                     ct);
+            });
+
+            When<Envelope<AddressHouseNumberWasReaddressed>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressPersistentLocalId,
+                    message,
+                    x =>
+                    {
+                        x.Status = message.Message.ReaddressedHouseNumber.SourceStatus;
+                        x.HouseNumber = message.Message.ReaddressedHouseNumber.DestinationHouseNumber;
+                        x.PostalCode = message.Message.ReaddressedHouseNumber.SourcePostalCode;
+                        x.IsOfficiallyAssigned = message.Message.ReaddressedHouseNumber.SourceIsOfficiallyAssigned;
+                        x.PositionMethod = message.Message.ReaddressedHouseNumber.SourceGeometryMethod;
+                        x.PositionSpecification = message.Message.ReaddressedHouseNumber.SourceGeometrySpecification;
+                        x.PointPosition = message.Message.ReaddressedHouseNumber.SourceExtendedWkbGeometry.ToByteArray();
+                    },
+                    ct);
+
+                foreach (var readdressedBoxNumber in message.Message.ReaddressedBoxNumbers)
+                {
+                    await context.CreateNewAddressSyndicationItem(
+                        readdressedBoxNumber.DestinationAddressPersistentLocalId,
+                        message,
+                        x =>
+                        {
+                            x.Status = readdressedBoxNumber.SourceStatus;
+                            x.HouseNumber = readdressedBoxNumber.DestinationHouseNumber;
+                            x.BoxNumber = readdressedBoxNumber.SourceBoxNumber;
+                            x.PostalCode = readdressedBoxNumber.SourcePostalCode;
+                            x.IsOfficiallyAssigned = readdressedBoxNumber.SourceIsOfficiallyAssigned;
+                            x.PositionMethod = readdressedBoxNumber.SourceGeometryMethod;
+                            x.PositionSpecification = readdressedBoxNumber.SourceGeometrySpecification;
+                            x.PointPosition = readdressedBoxNumber.SourceExtendedWkbGeometry.ToByteArray();
+                        },
+                        ct);
+
+                    await context.UpdateAddressBoxNumberSyndicationHelper(
+                        readdressedBoxNumber.DestinationAddressPersistentLocalId,
+                        x =>
+                        {
+                            x.Status = readdressedBoxNumber.SourceStatus;
+                            x.HouseNumber = readdressedBoxNumber.DestinationHouseNumber;
+                            x.BoxNumber = readdressedBoxNumber.SourceBoxNumber;
+                            x.PostalCode = readdressedBoxNumber.SourcePostalCode;
+                            x.IsOfficiallyAssigned = readdressedBoxNumber.SourceIsOfficiallyAssigned;
+                            x.PositionMethod = readdressedBoxNumber.SourceGeometryMethod;
+                            x.PositionSpecification = readdressedBoxNumber.SourceGeometrySpecification;
+                            x.PointPosition = readdressedBoxNumber.SourceExtendedWkbGeometry.ToByteArray();
+                        },
+                        ct);
+                }
+            });
+
+            When<Envelope<AddressHouseNumberWasReplacedBecauseOfReaddress>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressPersistentLocalId,
+                    message,
+                    _ => { },
+                    ct);
+
+                foreach (var readdressedBoxNumber in message.Message.BoxNumberAddressPersistentLocalIds)
+                {
+                    await context.CreateNewAddressSyndicationItem(
+                        readdressedBoxNumber.SourceAddressPersistentLocalId,
+                        message,
+                        _ => { },
+                        ct);
+                }
             });
 
             When<Envelope<AddressWasRemovedV2>>(async (context, message, ct) =>

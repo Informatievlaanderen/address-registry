@@ -8,7 +8,6 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using NodaTime;
     using StreetName;
-    using StreetName.Commands;
     using StreetName.Events;
 
     [ConnectedProjectionName("API endpoint lijst adressen")]
@@ -202,7 +201,7 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
 
                 UpdateHash(item, message);
             });
-            
+
             When<Envelope<AddressWasRetiredBecauseStreetNameWasRejected>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressListItemV2(
@@ -216,7 +215,7 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
 
                 UpdateHash(item, message);
             });
-            
+
             When<Envelope<AddressWasRejectedBecauseStreetNameWasRetired>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressListItemV2(
@@ -436,6 +435,65 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
                     ct);
 
                 UpdateHash(item, message);
+            });
+
+            When<Envelope<AddressHouseNumberWasReaddressed>>(async (context, message, ct) =>
+            {
+                var houseNumberItem = await context.FindAndUpdateAddressListItemV2(
+                    message.Message.AddressPersistentLocalId,
+                    item =>
+                    {
+                        item.Status = message.Message.ReaddressedHouseNumber.SourceStatus;
+                        item.HouseNumber = message.Message.ReaddressedHouseNumber.DestinationHouseNumber;
+                        item.PostalCode = message.Message.ReaddressedHouseNumber.SourcePostalCode;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+
+                UpdateHash(houseNumberItem, message);
+
+                foreach (var readdressedBoxNumber in message.Message.ReaddressedBoxNumbers)
+                {
+                    var boxNumberItem = await context.FindAndUpdateAddressListItemV2(
+                        readdressedBoxNumber.DestinationAddressPersistentLocalId,
+                        item =>
+                        {
+                            item.Status = readdressedBoxNumber.SourceStatus;
+                            item.HouseNumber = readdressedBoxNumber.DestinationHouseNumber;
+                            item.BoxNumber = readdressedBoxNumber.SourceBoxNumber;
+                            item.PostalCode = readdressedBoxNumber.SourcePostalCode;
+                            UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                        },
+                        ct);
+
+                    UpdateHash(boxNumberItem, message);
+                }
+            });
+
+            When<Envelope<AddressHouseNumberWasReplacedBecauseOfReaddress>>(async (context, message, ct) =>
+            {
+                var houseNumberItem = await context.FindAndUpdateAddressListItemV2(
+                    message.Message.AddressPersistentLocalId,
+                    item =>
+                    {
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+
+                UpdateHash(houseNumberItem, message);
+
+                foreach (var readdressedBoxNumber in message.Message.BoxNumberAddressPersistentLocalIds)
+                {
+                    var boxNumberItem = await context.FindAndUpdateAddressListItemV2(
+                        readdressedBoxNumber.SourceAddressPersistentLocalId,
+                        item =>
+                        {
+                            UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                        },
+                        ct);
+
+                    UpdateHash(boxNumberItem, message);
+                }
             });
 
             When<Envelope<AddressWasRemovedV2>>(async (context, message, ct) =>

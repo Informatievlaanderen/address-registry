@@ -3,7 +3,9 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using AddressRegistry.StreetName;
+    using AddressRegistry.StreetName.DataStructures;
     using AddressRegistry.StreetName.Events;
+    using Api.BackOffice.Abstractions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Pipes;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
@@ -301,7 +303,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
                 });
         }
-        
+
         [Fact]
         public async Task WhenAddressWasRetiredBecauseStreetNameWasRejected()
         {
@@ -329,7 +331,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRetired.Provenance.Timestamp);
                 });
         }
-        
+
         [Fact]
         public async Task WhenAddressWasRejectedBecauseStreetNameWasRetired()
         {
@@ -808,6 +810,160 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     addressWmsItem.PositionSpecification.Should().Be(AddressWmsItemProjections.ConvertGeometrySpecificationToString(addressPositionWasCorrectedV2.GeometrySpecification));
                     addressWmsItem.Position.Should().Be((Point)_wkbReader.Read(addressPositionWasCorrectedV2.ExtendedWkbGeometry.ToByteArray()));
                     addressWmsItem.VersionTimestamp.Should().Be(addressPositionWasCorrectedV2.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressHouseNumberWasReaddressed()
+        {
+            var addressPersistentLocalId = _fixture.Create<AddressPersistentLocalId>();
+            var boxNumberAddressPersistentLocalId = new AddressPersistentLocalId(addressPersistentLocalId + 1);
+
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
+                .WithBoxNumber(null);
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressBoxNumberWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
+                .WithAddressPersistentLocalId(boxNumberAddressPersistentLocalId);
+            var proposedBoxNumberMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressBoxNumberWasProposedV2.GetHash() }
+            };
+
+            var readdressedHouseNumber = new ReaddressedAddressData(
+                new AddressPersistentLocalId(addressPersistentLocalId + 10),
+                addressPersistentLocalId,
+                isDestinationNewlyProposed: true,
+                AddressStatus.Current,
+                new HouseNumber("3"),
+                boxNumber: null,
+                new PostalCode("9000"),
+                new AddressGeometry(
+                    GeometryMethod.AppointedByAdministrator,
+                    GeometrySpecification.Entry,
+                    GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry()),
+                sourceIsOfficiallyAssigned: false);
+
+            var readdressedBoxNumber = new ReaddressedAddressData(
+                new AddressPersistentLocalId(addressPersistentLocalId + 11),
+                boxNumberAddressPersistentLocalId,
+                isDestinationNewlyProposed: true,
+                AddressStatus.Current,
+                new HouseNumber("3"),
+                new BoxNumber("A"),
+                new PostalCode("9000"),
+                new AddressGeometry(
+                    GeometryMethod.AppointedByAdministrator,
+                    GeometrySpecification.Entry,
+                    GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry()),
+                sourceIsOfficiallyAssigned: false);
+
+            var addressHouseNumberWasReaddressed = new AddressHouseNumberWasReaddressed(
+                _fixture.Create<StreetNamePersistentLocalId>(),
+                addressPersistentLocalId,
+                readdressedHouseNumber,
+                new List<ReaddressedAddressData> { readdressedBoxNumber },
+                new List<AddressPersistentLocalId>(),
+                new List<AddressPersistentLocalId>());
+            ((ISetProvenance)addressHouseNumberWasReaddressed).SetProvenance(_fixture.Create<Provenance>());
+
+            var addressHouseNumberWasReaddressedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressHouseNumberWasReaddressed.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressBoxNumberWasProposedV2, proposedBoxNumberMetadata)),
+                    new Envelope<AddressHouseNumberWasReaddressed>(new Envelope(addressHouseNumberWasReaddressed, addressHouseNumberWasReaddressedMetadata)))
+                .Then(async ct =>
+                {
+                    var houseNumberItem = await ct.AddressWmsItems.FindAsync((int)addressPersistentLocalId);
+                    houseNumberItem.Should().NotBeNull();
+
+                    houseNumberItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(readdressedHouseNumber.SourceStatus));
+                    houseNumberItem.HouseNumber.Should().Be(readdressedHouseNumber.DestinationHouseNumber);
+                    houseNumberItem.BoxNumber.Should().Be(null);
+                    houseNumberItem.PostalCode.Should().Be(readdressedHouseNumber.SourcePostalCode);
+                    houseNumberItem.OfficiallyAssigned.Should().Be(readdressedHouseNumber.SourceIsOfficiallyAssigned);
+                    houseNumberItem.PositionMethod.Should().Be(AddressWmsItemProjections.ConvertGeometryMethodToString(readdressedHouseNumber.SourceGeometryMethod));
+                    houseNumberItem.PositionSpecification.Should().Be(AddressWmsItemProjections.ConvertGeometrySpecificationToString(readdressedHouseNumber.SourceGeometrySpecification));
+                    houseNumberItem.Position.Should().Be((Point)_wkbReader.Read(readdressedHouseNumber.SourceExtendedWkbGeometry.ToByteArray()));
+                    houseNumberItem.VersionTimestamp.Should().Be(addressHouseNumberWasReaddressed.Provenance.Timestamp);
+
+                    var boxNumberItem = await ct.AddressWmsItems.FindAsync((int)boxNumberAddressPersistentLocalId);
+                    boxNumberItem.Should().NotBeNull();
+
+                    boxNumberItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(readdressedBoxNumber.SourceStatus));
+                    boxNumberItem.HouseNumber.Should().Be(readdressedBoxNumber.DestinationHouseNumber);
+                    boxNumberItem.BoxNumber.Should().Be(readdressedBoxNumber.SourceBoxNumber);
+                    boxNumberItem.PostalCode.Should().Be(readdressedBoxNumber.SourcePostalCode);
+                    boxNumberItem.OfficiallyAssigned.Should().Be(readdressedBoxNumber.SourceIsOfficiallyAssigned);
+                    boxNumberItem.PositionMethod.Should().Be(AddressWmsItemProjections.ConvertGeometryMethodToString(readdressedBoxNumber.SourceGeometryMethod));
+                    boxNumberItem.PositionSpecification.Should().Be(AddressWmsItemProjections.ConvertGeometrySpecificationToString(readdressedBoxNumber.SourceGeometrySpecification));
+                    boxNumberItem.Position.Should().Be((Point)_wkbReader.Read(readdressedBoxNumber.SourceExtendedWkbGeometry.ToByteArray()));
+                    boxNumberItem.VersionTimestamp.Should().Be(addressHouseNumberWasReaddressed.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressHouseNumberWasReplacedBecauseOfReaddress()
+        {
+            var addressPersistentLocalId = _fixture.Create<AddressPersistentLocalId>();
+            var boxNumberAddressPersistentLocalId = new AddressPersistentLocalId(addressPersistentLocalId + 1);
+
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
+                .WithBoxNumber(null);
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressBoxNumberWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
+                .WithAddressPersistentLocalId(boxNumberAddressPersistentLocalId);
+            var proposedBoxNumberMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressBoxNumberWasProposedV2.GetHash() }
+            };
+
+            var addressHouseNumberWasReplacedBecauseOfReaddress = new AddressHouseNumberWasReplacedBecauseOfReaddress(
+                _fixture.Create<StreetNamePersistentLocalId>(),
+                _fixture.Create<StreetNamePersistentLocalId>(),
+                addressPersistentLocalId,
+                new AddressPersistentLocalId(addressPersistentLocalId + 10),
+                new List<AddressBoxNumberReplacedBecauseOfReaddressData>
+                {
+                    new AddressBoxNumberReplacedBecauseOfReaddressData(
+                        boxNumberAddressPersistentLocalId,
+                        boxNumberAddressPersistentLocalId + 10)
+                });
+            ((ISetProvenance)addressHouseNumberWasReplacedBecauseOfReaddress).SetProvenance(_fixture.Create<Provenance>());
+
+            var addressHouseNumberWasReaddressedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressHouseNumberWasReplacedBecauseOfReaddress.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressBoxNumberWasProposedV2, proposedBoxNumberMetadata)),
+                    new Envelope<AddressHouseNumberWasReplacedBecauseOfReaddress>(new Envelope(addressHouseNumberWasReplacedBecauseOfReaddress, addressHouseNumberWasReaddressedMetadata)))
+                .Then(async ct =>
+                {
+                    var houseNumberItem = await ct.AddressWmsItems.FindAsync((int)addressPersistentLocalId);
+                    houseNumberItem.Should().NotBeNull();
+
+                    houseNumberItem.VersionTimestamp.Should().Be(addressHouseNumberWasReplacedBecauseOfReaddress.Provenance.Timestamp);
+
+                    var boxNumberItem = await ct.AddressWmsItems.FindAsync((int)boxNumberAddressPersistentLocalId);
+                    boxNumberItem.Should().NotBeNull();
+
+                    boxNumberItem.VersionTimestamp.Should().Be(addressHouseNumberWasReplacedBecauseOfReaddress.Provenance.Timestamp);
                 });
         }
 

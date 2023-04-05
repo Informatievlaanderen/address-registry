@@ -188,7 +188,7 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
 
                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
             });
-            
+
             When<Envelope<AddressWasRejectedBecauseStreetNameWasRetired>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressDetail(
@@ -361,6 +361,65 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
                     ct);
 
                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+            });
+
+            When<Envelope<AddressHouseNumberWasReaddressed>>(async (context, message, ct) =>
+            {
+                var houseNumberItem = await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    item =>
+                    {
+                        item.Status = MapStatus(message.Message.ReaddressedHouseNumber.SourceStatus);
+                        item.HouseNumber = message.Message.ReaddressedHouseNumber.DestinationHouseNumber;
+                        item.PostalCode = message.Message.ReaddressedHouseNumber.SourcePostalCode;
+                        item.OfficiallyAssigned = message.Message.ReaddressedHouseNumber.SourceIsOfficiallyAssigned;
+                        item.PositionMethod = ConvertGeometryMethodToString(message.Message.ReaddressedHouseNumber.SourceGeometryMethod);
+                        item.PositionSpecification = ConvertGeometrySpecificationToString(message.Message.ReaddressedHouseNumber.SourceGeometrySpecification);
+                        item.Position = ParsePosition(message.Message.ReaddressedHouseNumber.SourceExtendedWkbGeometry);
+                    },
+                    ct);
+
+                UpdateVersionTimestamp(houseNumberItem, message.Message.Provenance.Timestamp);
+
+                foreach (var readdressedBoxNumber in message.Message.ReaddressedBoxNumbers)
+                {
+                    var boxNumberItem = await context.FindAndUpdateAddressDetail(
+                        readdressedBoxNumber.DestinationAddressPersistentLocalId,
+                        item =>
+                        {
+                            item.Status = MapStatus(readdressedBoxNumber.SourceStatus);
+                            item.HouseNumber = readdressedBoxNumber.DestinationHouseNumber;
+                            item.BoxNumber = readdressedBoxNumber.SourceBoxNumber;
+                            item.PostalCode = readdressedBoxNumber.SourcePostalCode;
+                            item.OfficiallyAssigned = readdressedBoxNumber.SourceIsOfficiallyAssigned;
+                            item.PositionMethod = ConvertGeometryMethodToString(readdressedBoxNumber.SourceGeometryMethod);
+                            item.PositionSpecification = ConvertGeometrySpecificationToString(readdressedBoxNumber.SourceGeometrySpecification);
+                            item.Position = ParsePosition(readdressedBoxNumber.SourceExtendedWkbGeometry);
+                        },
+                        ct);
+
+                    UpdateVersionTimestamp(boxNumberItem, message.Message.Provenance.Timestamp);
+                }
+            });
+
+            When<Envelope<AddressHouseNumberWasReplacedBecauseOfReaddress>>(async (context, message, ct) =>
+            {
+                var houseNumberItem = await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    _ => { },
+                    ct);
+
+                UpdateVersionTimestamp(houseNumberItem, message.Message.Provenance.Timestamp);
+
+                foreach (var readdressedBoxNumber in message.Message.BoxNumberAddressPersistentLocalIds)
+                {
+                    var boxNumberItem = await context.FindAndUpdateAddressDetail(
+                        readdressedBoxNumber.SourceAddressPersistentLocalId,
+                        _ => { },
+                        ct);
+
+                    UpdateVersionTimestamp(boxNumberItem, message.Message.Provenance.Timestamp);
+                }
             });
 
             When<Envelope<AddressWasRemovedV2>>(async (context, message, ct) =>

@@ -1,3 +1,16 @@
+# [3.91.0](https://github.com/informatievlaanderen/address-registry/compare/v3.90.0...v3.91.0) (2023-04-06)
+
+
+### Bug Fixes
+
+* make errorcodes unique GAWR-4709 ([c0c1b2f](https://github.com/informatievlaanderen/address-registry/commit/c0c1b2f2ff87ef8856240b84c30688038a4f4f43))
+* name to DestinationParentAddressPersistentLocalId ([26127f2](https://github.com/informatievlaanderen/address-registry/commit/26127f253c5518512059b904b94b897730f11d75))
+
+
+### Features
+
+* readdress RetireAddresses list ([429f8c4](https://github.com/informatievlaanderen/address-registry/commit/429f8c43a6e8c9be7ca4036653343841a4a30325))
+
 # [3.90.0](https://github.com/informatievlaanderen/address-registry/compare/v3.89.2...v3.90.0) (2023-04-04)
 
 

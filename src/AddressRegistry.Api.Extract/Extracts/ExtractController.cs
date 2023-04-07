@@ -51,16 +51,36 @@ namespace AddressRegistry.Api.Extract.Extracts
             {
                 return new IsolationExtractArchive(ExtractFileNames.GetAddressZip(), context)
                     {
-                        AddressRegistryExtractBuilder.CreateAddressFilesV2(context, streetNameConsumerContext, municipalityConsumerContext),
-                        AddressCrabHouseNumberIdExtractBuilder.CreateAddressCrabHouseNumberIdFile(context),
-                        AddressCrabSubaddressIdExtractBuilder.CreateAddressSubaddressIdFile(context)
+                        AddressRegistryExtractBuilder.CreateAddressFilesV2(context, streetNameConsumerContext, municipalityConsumerContext)
                     }
                     .CreateFileCallbackResult(cancellationToken);
             }
 
             return new IsolationExtractArchive(ExtractFileNames.GetAddressZip(), context)
                 {
-                    AddressRegistryExtractBuilder.CreateAddressFiles(context, syndicationContext),
+                    AddressRegistryExtractBuilder.CreateAddressFiles(context, syndicationContext)
+                }
+                .CreateFileCallbackResult(cancellationToken);
+        }
+
+        /// <summary>
+        /// Vraag een dump van de crab links in het register op.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="cancellationToken"></param>
+        /// <response code="200">Als crab-adresregister kan gedownload worden.</response>
+        /// <response code="500">Als er een interne fout is opgetreden.</response>
+        [HttpGet("crab")]
+        [ProducesResponseType(typeof(FileStreamResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(AddressRegistryResponseExample))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
+        public async Task<IActionResult> Get(
+            [FromServices] ExtractContext context,
+            CancellationToken cancellationToken = default)
+        {
+            return new IsolationExtractArchive(ExtractFileNames.GetAddressCrabZip(), context)
+                {
                     AddressCrabHouseNumberIdExtractBuilder.CreateAddressCrabHouseNumberIdFile(context),
                     AddressCrabSubaddressIdExtractBuilder.CreateAddressSubaddressIdFile(context)
                 }

@@ -1,3 +1,11 @@
+# [3.92.0](https://github.com/informatievlaanderen/address-registry/compare/v3.91.0...v3.92.0) (2023-04-07)
+
+
+### Features
+
+* readdress projections ([8f33254](https://github.com/informatievlaanderen/address-registry/commit/8f332540215702bea88dee79dcdc148b8b8e1d53))
+* split crab extract in seperate call ([78c8ec6](https://github.com/informatievlaanderen/address-registry/commit/78c8ec6f537bcdd503b56629e4760120ab51b307))
+
 # [3.91.0](https://github.com/informatievlaanderen/address-registry/compare/v3.90.0...v3.91.0) (2023-04-06)
 
 

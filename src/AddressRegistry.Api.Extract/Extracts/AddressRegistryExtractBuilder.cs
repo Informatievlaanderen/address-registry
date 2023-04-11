@@ -123,7 +123,6 @@ namespace AddressRegistry.Api.Extract.Extracts
             var extractItems = context
                 .AddressExtractV2
                 .AsNoTracking()
-                .Where(m => m.Complete)
                 .OrderBy(m => m.AddressPersistentLocalId);
 
             var addressProjectionState = context

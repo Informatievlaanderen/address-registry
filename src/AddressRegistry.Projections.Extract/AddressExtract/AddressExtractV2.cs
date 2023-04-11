@@ -7,7 +7,6 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
     public class AddressExtractItemV2
     {
         public int AddressPersistentLocalId { get; set; }
-        public bool Complete { get; set; }
         public byte[]? DbaseRecord { get; set; }
         public byte[]? ShapeRecordContent { get; set; }
         public int ShapeRecordContentLength { get; set; }
@@ -31,7 +30,6 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
             builder.Property(p => p.AddressPersistentLocalId)
                 .ValueGeneratedNever();
 
-            builder.Property(p => p.Complete);
             builder.Property(p => p.DbaseRecord);
             builder.Property(p => p.ShapeRecordContent);
             builder.Property(p => p.ShapeRecordContentLength);
@@ -42,7 +40,6 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
             builder.Property(p => p.StreetNamePersistentLocalId);
 
             builder.HasIndex(p => p.StreetNamePersistentLocalId);
-            builder.HasIndex(p => p.Complete);
         }
     }
 }

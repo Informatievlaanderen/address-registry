@@ -100,7 +100,6 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 {
                     AddressPersistentLocalId = message.Message.AddressPersistentLocalId,
                     StreetNamePersistentLocalId = message.Message.StreetNamePersistentLocalId,
-                    Complete =  true,
                     MinimumX = pointShapeContent.Shape.X,
                     MaximumX = pointShapeContent.Shape.X,
                     MinimumY = pointShapeContent.Shape.Y,
@@ -139,7 +138,6 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 {
                     AddressPersistentLocalId = message.Message.AddressPersistentLocalId,
                     StreetNamePersistentLocalId = message.Message.StreetNamePersistentLocalId,
-                    Complete = true,
                     MinimumX = pointShapeContent.Shape.X,
                     MaximumX = pointShapeContent.Shape.X,
                     MinimumY = pointShapeContent.Shape.Y,
@@ -384,22 +382,19 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
             When<Envelope<AddressWasRemovedV2>>(async (context, message, ct) =>
             {
                 var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);
-                UpdateDbaseRecordField(item, record => record.IsDeleted = true);
-                UpdateVersie(item, message.Message.Provenance.Timestamp);
+                context.AddressExtractV2.Remove(item);
             });
 
             When<Envelope<AddressWasRemovedBecauseStreetNameWasRemoved>>(async (context, message, ct) =>
             {
                 var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);
-                UpdateDbaseRecordField(item, record => record.IsDeleted = true);
-                UpdateVersie(item, message.Message.Provenance.Timestamp);
+                context.AddressExtractV2.Remove(item);
             });
 
             When<Envelope<AddressWasRemovedBecauseHouseNumberWasRemoved>>(async (context, message, ct) =>
             {
                 var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);
-                UpdateDbaseRecordField(item, record => record.IsDeleted = true);
-                UpdateVersie(item, message.Message.Provenance.Timestamp);
+                context.AddressExtractV2.Remove(item);
             });
 
             When<Envelope<AddressWasCorrectedFromRejectedToProposed>>(async (context, message, ct) =>

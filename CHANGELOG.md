@@ -1,3 +1,10 @@
+## [3.92.1](https://github.com/informatievlaanderen/address-registry/compare/v3.92.0...v3.92.1) (2023-04-11)
+
+
+### Bug Fixes
+
+* remove removed addresses from extract ([46d2185](https://github.com/informatievlaanderen/address-registry/commit/46d2185192fd43de742910d12268c5dc0e019f95))
+
 # [3.92.0](https://github.com/informatievlaanderen/address-registry/compare/v3.91.0...v3.92.0) (2023-04-07)
 
 

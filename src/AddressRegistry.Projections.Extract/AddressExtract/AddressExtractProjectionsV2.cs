@@ -74,6 +74,9 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
             // Address
             When<Envelope<AddressWasMigratedToStreetName>>(async (context, message, ct) =>
             {
+                if (message.Message.IsRemoved)
+                    return;
+
                 var coordinate = wkbReader.Read(message.Message.ExtendedWkbGeometry.ToByteArray()).Coordinate;
                 var pointShapeContent = new PointShapeContent(new Point(coordinate.X, coordinate.Y));
 

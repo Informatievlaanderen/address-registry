@@ -46,5 +46,7 @@ jobs:
       shell: bash
       run: dotnet test --nologo --no-build --filter 'FullyQualifiedName~IntegrationTests' AddressRegistry.sln
       env:
-        OAuth2IntrospectionOptions__ClientId: ${{ secrets.VBR_ACMIDM_CLIENT_ID_TST }}
-        OAuth2IntrospectionOptions__ClientSecret: ${{ secrets.VBR_ACMIDM_CLIENT_SECRET_TST }}
+        OAuth2IntrospectionOptions__ClientId: ${{ secrets.VBR_ACMIDM_INTROSPECTION_CLIENT_ID_TST }}
+        OAuth2IntrospectionOptions__ClientSecret: ${{ secrets.VBR_ACMIDM_INTROSPECTION_CLIENT_SECRET_TST }}
+        ClientId: ${{ secrets.VBR_ACMIDM_CLIENT_ID_TST }}
+        ClientSecret: ${{ secrets.VBR_ACMIDM_CLIENT_SECRET_TST }}

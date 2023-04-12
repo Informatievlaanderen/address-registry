@@ -1,3 +1,10 @@
+# [3.93.0](https://github.com/informatievlaanderen/address-registry/compare/v3.92.1...v3.93.0) (2023-04-12)
+
+
+### Features
+
+* add gemeenteid to extract ([258ca31](https://github.com/informatievlaanderen/address-registry/commit/258ca313f9be63b358ec1bca475796e4a62504d9))
+
 ## [3.92.1](https://github.com/informatievlaanderen/address-registry/compare/v3.92.0...v3.92.1) (2023-04-11)
 
 

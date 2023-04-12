@@ -14,10 +14,11 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
         public DbaseField huisnr => Fields[7];
         public DbaseField busnr => Fields[8];
         public DbaseField postcode => Fields[9];
-        public DbaseField gemeentenm => Fields[10];
-        public DbaseField status => Fields[11];
-        public DbaseField offtoegknd => Fields[12];
-        public DbaseField voladres => Fields[13];
+        public DbaseField gemeenteid => Fields[10];
+        public DbaseField gemeentenm => Fields[11];
+        public DbaseField status => Fields[12];
+        public DbaseField offtoegknd => Fields[13];
+        public DbaseField voladres => Fields[14];
 
         public AddressDbaseSchemaV2() => Fields = new[]
         {
@@ -31,6 +32,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
             DbaseField.CreateCharacterField(new DbaseFieldName(nameof(huisnr)), new DbaseFieldLength(11)),
             DbaseField.CreateCharacterField(new DbaseFieldName(nameof(busnr)), new DbaseFieldLength(35)),
             DbaseField.CreateCharacterField(new DbaseFieldName(nameof(postcode)), new DbaseFieldLength(4)),
+            DbaseField.CreateCharacterField(new DbaseFieldName(nameof(gemeenteid)), new DbaseFieldLength(5)),
             DbaseField.CreateCharacterField(new DbaseFieldName(nameof(gemeentenm)), new DbaseFieldLength(40)),
             DbaseField.CreateCharacterField(new DbaseFieldName(nameof(status)), new DbaseFieldLength(20)),
             DbaseField.CreateLogicalField(new DbaseFieldName(nameof(offtoegknd))),

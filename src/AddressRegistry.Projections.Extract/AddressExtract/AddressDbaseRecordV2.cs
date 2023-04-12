@@ -16,6 +16,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
         public DbaseCharacter huisnr { get; }
         public DbaseCharacter busnr { get; }
         public DbaseCharacter postcode { get; }
+        public DbaseCharacter gemeenteid { get; }
         public DbaseCharacter gemeentenm { get; }
         public DbaseCharacter status { get; }
         public DbaseLogical offtoegknd { get; }
@@ -33,6 +34,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
             huisnr = new DbaseCharacter(Schema.huisnr);
             busnr = new DbaseCharacter(Schema.busnr);
             postcode = new DbaseCharacter(Schema.postcode);
+            gemeenteid = new DbaseCharacter(Schema.gemeenteid);
             gemeentenm = new DbaseCharacter(Schema.gemeentenm);
             status = new DbaseCharacter(Schema.status);
             offtoegknd = new DbaseLogical(Schema.offtoegknd);
@@ -50,6 +52,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 huisnr,
                 busnr,
                 postcode,
+                gemeenteid,
                 gemeentenm,
                 status,
                 offtoegknd,

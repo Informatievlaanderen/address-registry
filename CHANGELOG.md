@@ -1,3 +1,11 @@
+## [3.93.1](https://github.com/informatievlaanderen/address-registry/compare/v3.93.0...v3.93.1) (2023-04-13)
+
+
+### Bug Fixes
+
+* case insensitive housenumber and boxnumber comparison ([4099be9](https://github.com/informatievlaanderen/address-registry/commit/4099be961e225ec339519ae11a3ac48c89a20f2e))
+* don't put migrated removed address in extract ([62a8371](https://github.com/informatievlaanderen/address-registry/commit/62a8371bd118723fe632b3cf705b2fa3fe78decc))
+
 # [3.93.0](https://github.com/informatievlaanderen/address-registry/compare/v3.92.1...v3.93.0) (2023-04-12)
 
 

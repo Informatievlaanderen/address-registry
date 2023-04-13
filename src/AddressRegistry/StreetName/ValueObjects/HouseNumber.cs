@@ -1,5 +1,6 @@
 namespace AddressRegistry.StreetName
 {
+    using System.Collections.Generic;
     using System.Text.RegularExpressions;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Exceptions;
@@ -22,5 +23,12 @@ namespace AddressRegistry.StreetName
         }
 
         public static bool HasValidFormat(string houseNumber) => FormatRegex.IsMatch(houseNumber);
+
+        protected override IEnumerable<object> Reflect()
+        {
+            yield return Value.ToLowerInvariant();
+        }
+
+        public override string ToString() => Value;
     }
 }

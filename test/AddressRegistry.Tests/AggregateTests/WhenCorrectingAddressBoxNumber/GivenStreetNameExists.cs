@@ -85,16 +85,17 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressBoxNumber
                         expectedBoxNumber))));
         }
 
-        [Fact]
-        public void WithDuplicateBoxNumberForHouseNumber_ThenThrowsAddressNotFoundException()
+        [Theory]
+        [InlineData("A", "A")]
+        [InlineData("A", "a")]
+        public void WithDuplicateBoxNumberForHouseNumber_ThenThrowsAddressAlreadyExistsException(string existingBoxNumber, string correctedBoxNumber)
         {
             var houseNumber = new HouseNumber("404");
-            var newBoxNumber = new BoxNumber("101");
 
             var command = new CorrectAddressBoxNumber(
                 Fixture.Create<StreetNamePersistentLocalId>(),
                 Fixture.Create<AddressPersistentLocalId>(),
-                newBoxNumber,
+                new BoxNumber(correctedBoxNumber),
                 Fixture.Create<Provenance>());
 
             var proposeAddressToCorrect = new AddressWasProposedV2(
@@ -114,8 +115,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressBoxNumber
                 new AddressPersistentLocalId(456), // DIFFERENT PERSISTENTID
                 parentPersistentLocalId: null,
                 Fixture.Create<PostalCode>(),
-                houseNumber, // SAME HOUSENUMBER
-                newBoxNumber, // SAME BOXNUMBER
+                houseNumber,
+                new BoxNumber(existingBoxNumber),
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Lot,
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
@@ -127,7 +128,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressBoxNumber
                     proposeAddressToCorrect,
                     addressToTestFiltering)
                 .When(command)
-                .Throws(new AddressAlreadyExistsException(houseNumber, newBoxNumber)));
+                .Throws(new AddressAlreadyExistsException(houseNumber, new BoxNumber(correctedBoxNumber))));
         }
 
         [Fact]

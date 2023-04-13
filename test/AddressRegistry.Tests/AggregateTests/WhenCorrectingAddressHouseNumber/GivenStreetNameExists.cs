@@ -119,8 +119,10 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressHouseNumber
                         expectedHouseNumber))));
         }
 
-        [Fact]
-        public void WithAlreadyExistingHouseNumber_ThenThrowsParentAddressAlreadyExistsException()
+        [Theory]
+        [InlineData("1A", "1A")]
+        [InlineData("1A", "1a")]
+        public void WithAlreadyExistingHouseNumber_ThenThrowsAddressAlreadyExistsException(string existingHouseNumber, string correctedHouseNumber)
         {
             var houseNumberFirstAddress = new HouseNumber("1");
             var firstAddressPersistentLocalId = new AddressPersistentLocalId(1);
@@ -128,16 +130,15 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressHouseNumber
                 addressPersistentLocalId: firstAddressPersistentLocalId,
                 houseNumber: houseNumberFirstAddress);
 
-            var houseNumberSecondAddress = new HouseNumber("2");
             var secondAddressPersistentLocalId = new AddressPersistentLocalId(2);
             var secondAddressWasMigratedToStreetName = CreateAddressWasMigratedToStreetName(
                 addressPersistentLocalId: secondAddressPersistentLocalId,
-                houseNumber: houseNumberSecondAddress);
+                houseNumber: new HouseNumber(existingHouseNumber));
 
             var command = new CorrectAddressHouseNumber(
                 Fixture.Create<StreetNamePersistentLocalId>(),
                 firstAddressPersistentLocalId,
-                houseNumberSecondAddress,
+                new HouseNumber(correctedHouseNumber),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -146,7 +147,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressHouseNumber
                     firstAddressWasMigratedToStreetName,
                     secondAddressWasMigratedToStreetName)
                 .When(command)
-                .Throws(new AddressAlreadyExistsException(houseNumberSecondAddress, null)));
+                .Throws(new AddressAlreadyExistsException(new HouseNumber(correctedHouseNumber), null)));
         }
 
         [Fact]

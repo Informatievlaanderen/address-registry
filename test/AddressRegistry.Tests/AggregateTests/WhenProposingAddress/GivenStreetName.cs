@@ -83,7 +83,6 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
         [Fact]
         public void WithExistingParent_ThenChildAddressWasAddedToStreetNameAddresses()
         {
-            var aggregateId = Fixture.Create<StreetNamePersistentLocalId>();
             var aggregate = new StreetNameFactory(IntervalStrategy.Default).Create();
 
             var postalCode = Fixture.Create<PostalCode>();
@@ -339,6 +338,95 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddress
                     addressWasProposedV2)
                 .When(proposeAddress)
                 .Throws(new AddressPersistentLocalIdAlreadyExistsException()));
+        }
+
+        [Theory]
+        [InlineData("1A", "1A")]
+        [InlineData("1A", "1a")]
+        public void WithHouseNumberAlreadyInUse_ThenThrowsParentAddressAlreadyExistsException(string existingHouseNumber, string houseNumberToPropose)
+        {
+            var command = new ProposeAddress(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<PostalCode>(),
+                Fixture.Create<MunicipalityId>(),
+                new AddressPersistentLocalId(200),
+                new HouseNumber(houseNumberToPropose),
+                boxNumber: null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
+                Fixture.Create<Provenance>());
+
+            var addressWasProposedV2 = new AddressWasProposedV2(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                new AddressPersistentLocalId(100),
+                parentPersistentLocalId: null,
+                Fixture.Create<PostalCode>(),
+                new HouseNumber(existingHouseNumber),
+                boxNumber: null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Lot,
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
+            ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    Fixture.Create<StreetNameWasImported>(),
+                    addressWasProposedV2)
+                .When(command)
+                .Throws(new ParentAddressAlreadyExistsException(new HouseNumber(houseNumberToPropose))));
+        }
+
+        [Theory]
+        [InlineData("A", "A")]
+        [InlineData("A", "a")]
+        public void WithHouseNumberAndBoxNumberAlreadyInUse_ThenThrowsAddressAlreadyExistsException(string existingBoxNumber, string boxNumberToPropose)
+        {
+            var postalCode = Fixture.Create<PostalCode>();
+
+            var command = new ProposeAddress(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                postalCode,
+                Fixture.Create<MunicipalityId>(),
+                new AddressPersistentLocalId(200),
+                new HouseNumber("1A"),
+                new BoxNumber(boxNumberToPropose),
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
+                Fixture.Create<Provenance>());
+
+            var parentAddressWasProposedV2 = new AddressWasProposedV2(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                new AddressPersistentLocalId(100),
+                parentPersistentLocalId: null,
+                postalCode,
+                new HouseNumber("1a"),
+                boxNumber: null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Lot,
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
+            ((ISetProvenance)parentAddressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
+
+            var addressWasProposedV2 = new AddressWasProposedV2(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                new AddressPersistentLocalId(101),
+                parentPersistentLocalId: new AddressPersistentLocalId(100),
+                postalCode,
+                new HouseNumber("1a"),
+                new BoxNumber(existingBoxNumber),
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Lot,
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
+            ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    Fixture.Create<StreetNameWasImported>(),
+                    parentAddressWasProposedV2,
+                    addressWasProposedV2)
+                .When(command)
+                .Throws(new AddressAlreadyExistsException(new HouseNumber("1A"), new BoxNumber(boxNumberToPropose))));
         }
 
         [Fact]

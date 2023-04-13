@@ -1,6 +1,7 @@
 namespace AddressRegistry.StreetName
 {
     using System;
+    using System.Collections.Generic;
     using System.Text.RegularExpressions;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Exceptions;
@@ -34,5 +35,12 @@ namespace AddressRegistry.StreetName
 
             return FormatRegex.IsMatch(boxNumber);
         }
+
+        protected override IEnumerable<object> Reflect()
+        {
+            yield return Value.ToLowerInvariant();
+        }
+
+        public override string ToString() => Value;
     }
 }

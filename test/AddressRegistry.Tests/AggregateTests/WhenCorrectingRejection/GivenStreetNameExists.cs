@@ -303,19 +303,20 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRejection
                 .Throws(new AddressHasInvalidStatusException()));
         }
 
-        [Fact]
-        public void WhenAddressAlreadyExists_ThrowAddressAlreadyExistsException()
+        [Theory]
+        [InlineData("1A", "1A")]
+        [InlineData("1A", "1a")]
+        public void WhenAddressAlreadyExists_ThrowAddressAlreadyExistsException(string firstHouseNumber, string secondHouseNumber)
         {
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-            var houseNumber = new HouseNumber("11");
 
             var address1WasProposed = new AddressWasProposedV2(
                 streetNamePersistentLocalId,
                 addressPersistentLocalId,
                 parentPersistentLocalId: null,
                 Fixture.Create<PostalCode>(),
-                houseNumber,
+                new HouseNumber(firstHouseNumber),
                 boxNumber: null,
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Lot,
@@ -332,7 +333,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRejection
                 new AddressPersistentLocalId(123),
                 parentPersistentLocalId: null,
                 Fixture.Create<PostalCode>(),
-                houseNumber,
+                new HouseNumber(secondHouseNumber),
                 boxNumber: null,
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Lot,
@@ -352,7 +353,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRejection
                     address2WasProposed
                     )
                 .When(correctAddress1Rejection)
-                .Throws(new AddressAlreadyExistsException(houseNumber, null)));
+                .Throws(new AddressAlreadyExistsException(new HouseNumber(firstHouseNumber), null)));
         }
 
         [Theory]

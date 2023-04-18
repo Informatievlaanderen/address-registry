@@ -9,9 +9,9 @@ namespace AddressRegistry.StreetName.Events
     [EventTags(EventTag.For.Sync, EventTag.For.Edit)]
     [EventName(EventName)]
     [EventDescription("Het adres werd voorgesteld door een heradressering.")]
-    public class AddressWasProposedBecauseOfReaddressing : IStreetNameEvent, IHasAddressPersistentLocalId
+    public class AddressWasProposedBecauseOfReaddress : IStreetNameEvent, IHasAddressPersistentLocalId
     {
-        public const string EventName = "AddressWasProposedBecauseOfReaddressing"; // BE CAREFUL CHANGING THIS!!
+        public const string EventName = "AddressWasProposedBecauseOfReaddress"; // BE CAREFUL CHANGING THIS!!
 
         [EventPropertyDescription("Objectidentificator van de straatnaam aan dewelke het adres is toegewezen.")]
         public int StreetNamePersistentLocalId { get; }
@@ -46,7 +46,7 @@ namespace AddressRegistry.StreetName.Events
         [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
-        public AddressWasProposedBecauseOfReaddressing(
+        public AddressWasProposedBecauseOfReaddress(
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             AddressPersistentLocalId addressPersistentLocal,
             AddressPersistentLocalId sourceAddressPersistentLocalId,
@@ -71,7 +71,7 @@ namespace AddressRegistry.StreetName.Events
         }
 
         [JsonConstructor]
-        private AddressWasProposedBecauseOfReaddressing(
+        private AddressWasProposedBecauseOfReaddress(
             int streetNamePersistentLocalId,
             int addressPersistentLocalId,
             int sourceAddressPersistentLocalId,

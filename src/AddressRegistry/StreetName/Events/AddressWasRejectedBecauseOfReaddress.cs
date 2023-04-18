@@ -11,9 +11,9 @@ namespace AddressRegistry.StreetName.Events
     [EventTags(EventTag.For.Edit, EventTag.For.Sync)]
     [EventName(EventName)]
     [EventDescription("Het adres met status voorgesteld werd afgekeurd door heradressering.")]
-    public class AddressWasRejectedBecauseOfReaddressing : IStreetNameEvent, IHasAddressPersistentLocalId
+    public class AddressWasRejectedBecauseOfReaddress : IStreetNameEvent, IHasAddressPersistentLocalId
     {
-        public const string EventName = "AddressWasRejectedBecauseOfReaddressing"; // BE CAREFUL CHANGING THIS!!
+        public const string EventName = "AddressWasRejectedBecauseOfReaddress"; // BE CAREFUL CHANGING THIS!!
 
         [EventPropertyDescription("Objectidentificator van de straatnaam aan dewelke het adres is toegewezen.")]
         public int StreetNamePersistentLocalId { get; }
@@ -24,7 +24,7 @@ namespace AddressRegistry.StreetName.Events
         [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
-        public AddressWasRejectedBecauseOfReaddressing(
+        public AddressWasRejectedBecauseOfReaddress(
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             AddressPersistentLocalId addressPersistentLocalId)
         {
@@ -33,7 +33,7 @@ namespace AddressRegistry.StreetName.Events
         }
 
         [JsonConstructor]
-        private AddressWasRejectedBecauseOfReaddressing(
+        private AddressWasRejectedBecauseOfReaddress(
             int streetNamePersistentLocalId,
             int addressPersistentLocalId,
             ProvenanceData provenance)

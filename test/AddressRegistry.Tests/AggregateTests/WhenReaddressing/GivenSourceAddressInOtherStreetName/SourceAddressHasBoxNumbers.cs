@@ -134,7 +134,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenSourceAddre
                 .Then(new[]
                 {
                     new Fact(destinationStreetNameStreamId,
-                        new AddressWasProposedBecauseOfReaddressing(
+                        new AddressWasProposedBecauseOfReaddress(
                             destinationStreetNamePersistentLocalId,
                             expectedBoxNumberPersistentLocalId,
                             secondBoxNumberAddressPersistentLocalId,

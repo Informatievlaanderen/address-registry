@@ -38,7 +38,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingOrRetiringForReaddre
 
             var destinationStreetNamePersistentLocalId = new StreetNamePersistentLocalId(_streetNamePersistentLocalId + 1);
             var destinationAddressPersistentLocalId = new AddressPersistentLocalId(addressPersistentLocalId + 1);
-            var command = new RejectOrRetireAddressForReaddressing(
+            var command = new RejectOrRetireAddressForReaddress(
                 _streetNamePersistentLocalId,
                 destinationStreetNamePersistentLocalId,
                 addressPersistentLocalId,
@@ -61,7 +61,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingOrRetiringForReaddre
                             destinationAddressPersistentLocalId,
                             new List<AddressBoxNumberReplacedBecauseOfReaddressData>())),
                     new Fact(_streamId,
-                        new AddressWasRetiredBecauseOfReaddressing(
+                        new AddressWasRetiredBecauseOfReaddress(
                             _streetNamePersistentLocalId,
                            addressPersistentLocalId))
                 }));

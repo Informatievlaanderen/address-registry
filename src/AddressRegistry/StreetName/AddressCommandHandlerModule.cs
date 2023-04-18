@@ -299,16 +299,16 @@ namespace AddressRegistry.StreetName
                         message.Command.ExecutionContext);
                 });
 
-           For<RejectOrRetireAddressForReaddressing>()
+           For<RejectOrRetireAddressForReaddress>()
                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
-               .AddEventHash<RejectOrRetireAddressForReaddressing, StreetName>(getUnitOfWork)
+               .AddEventHash<RejectOrRetireAddressForReaddress, StreetName>(getUnitOfWork)
                .AddProvenance(getUnitOfWork, provenanceFactory)
                .Handle(async (message, ct) =>
                {
                    var streetNameStreamId = new StreetNameStreamId(message.Command.StreetNamePersistentLocalId);
                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
 
-                   streetName.RejectOrRetireAddressForReaddressing(
+                   streetName.RejectOrRetireAddressForReaddress(
                        message.Command.DestinationStreetNamePersistentLocalId,
                        message.Command.AddressPersistentLocalId,
                        message.Command.DestinationAddressPersistentLocalId,

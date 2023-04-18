@@ -91,7 +91,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenDestination
                 .Then(new[]
                 {
                     new Fact(_streamId,
-                        new AddressWasProposedV2(
+                        new AddressWasProposedBecauseOfReaddressing(
                             _streetNamePersistentLocalId,
                             destinationAddressPersistentLocalId,
                             null,
@@ -102,7 +102,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenDestination
                             sourceAddressWasMigrated.GeometrySpecification,
                             new ExtendedWkbGeometry(sourceAddressWasMigrated.ExtendedWkbGeometry))),
                     new Fact(_streamId,
-                        new AddressWasProposedV2(
+                        new AddressWasProposedBecauseOfReaddressing(
                             _streetNamePersistentLocalId,
                             destinationProposedBoxNumberAddressPersistentLocalId,
                             destinationAddressPersistentLocalId,
@@ -113,7 +113,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenDestination
                             proposedBoxNumberAddressWasMigrated.GeometrySpecification,
                             new ExtendedWkbGeometry(proposedBoxNumberAddressWasMigrated.ExtendedWkbGeometry))),
                     new Fact(_streamId,
-                        new AddressWasProposedV2(
+                        new AddressWasProposedBecauseOfReaddressing(
                             _streetNamePersistentLocalId,
                             destinationCurrentBoxNumberAddressPersistentLocalId,
                             destinationAddressPersistentLocalId,

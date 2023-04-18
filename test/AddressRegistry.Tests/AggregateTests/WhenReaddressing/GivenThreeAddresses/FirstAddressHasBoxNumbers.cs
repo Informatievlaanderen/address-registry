@@ -109,7 +109,7 @@
                 .Then(new[]
                 {
                     new Fact(_streamId,
-                        new AddressWasProposedV2(
+                        new AddressWasProposedBecauseOfReaddressing(
                             _streetNamePersistentLocalId,
                             expectedProposedBoxNumberAddressPersistentLocalId,
                             secondAddressPersistentLocalId,
@@ -120,7 +120,7 @@
                             proposedBoxNumberAddressWasMigrated.GeometrySpecification,
                             new ExtendedWkbGeometry(proposedBoxNumberAddressWasMigrated.ExtendedWkbGeometry))),
                     new Fact(_streamId,
-                        new AddressWasProposedV2(
+                        new AddressWasProposedBecauseOfReaddressing(
                             _streetNamePersistentLocalId,
                             expectedCurrentBoxNumberAddressPersistentLocalId,
                             secondAddressPersistentLocalId,
@@ -131,7 +131,7 @@
                             currentBoxNumberAddressWasMigrated.GeometrySpecification,
                             new ExtendedWkbGeometry(currentBoxNumberAddressWasMigrated.ExtendedWkbGeometry))),
                     new Fact(_streamId,
-                        new AddressWasProposedV2(_streetNamePersistentLocalId,
+                        new AddressWasProposedBecauseOfReaddressing(_streetNamePersistentLocalId,
                             expectedThirdAddressPersistentLocalId,
                             null,
                             postalCode,

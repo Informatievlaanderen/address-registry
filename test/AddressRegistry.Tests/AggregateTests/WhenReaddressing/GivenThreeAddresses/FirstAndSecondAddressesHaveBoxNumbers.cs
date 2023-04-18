@@ -134,7 +134,7 @@
                 .Then(new[]
                 {
                     new Fact(_streamId,
-                        new AddressWasProposedV2(
+                        new AddressWasProposedBecauseOfReaddressing(
                             _streetNamePersistentLocalId,
                             expectedSecondAddressProposedBoxNumberAddressPersistentLocalId,
                             secondAddressPersistentLocalId,
@@ -145,7 +145,7 @@
                             firstAddressProposedBoxNumberAddressWasMigrated.GeometrySpecification,
                             new ExtendedWkbGeometry(firstAddressProposedBoxNumberAddressWasMigrated.ExtendedWkbGeometry))),
                     new Fact(_streamId,
-                        new AddressWasProposedV2(_streetNamePersistentLocalId,
+                        new AddressWasProposedBecauseOfReaddressing(_streetNamePersistentLocalId,
                             expectedThirdAddressPersistentLocalId,
                             null,
                             postalCode,
@@ -155,7 +155,7 @@
                             secondAddressWasMigrated.GeometrySpecification,
                             new ExtendedWkbGeometry(secondAddressWasMigrated.ExtendedWkbGeometry))),
                     new Fact(_streamId,
-                        new AddressWasProposedV2(_streetNamePersistentLocalId,
+                        new AddressWasProposedBecauseOfReaddressing(_streetNamePersistentLocalId,
                             expectedThirdAddressCurrentBoxNumberAddressPersistentLocalId,
                             expectedThirdAddressPersistentLocalId,
                             postalCode,
@@ -168,7 +168,7 @@
                         new AddressWasRetiredV2(_streetNamePersistentLocalId,
                             secondAddressCurrentBoxNumberAddressPersistentLocalId)),
                     new Fact(_streamId,
-                        new AddressWasProposedV2(_streetNamePersistentLocalId,
+                        new AddressWasProposedBecauseOfReaddressing(_streetNamePersistentLocalId,
                             expectedThirdAddressProposedBoxNumberAddressPersistentLocalId,
                             expectedThirdAddressPersistentLocalId,
                             postalCode,

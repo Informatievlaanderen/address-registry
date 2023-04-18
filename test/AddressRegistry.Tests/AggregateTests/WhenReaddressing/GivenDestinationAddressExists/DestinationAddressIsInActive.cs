@@ -70,8 +70,10 @@
                 .Then(new[]
                 {
                     new Fact(_streamId,
-                        new AddressWasProposedBecauseOfReaddressing(_streetNamePersistentLocalId,
+                        new AddressWasProposedBecauseOfReaddressing(
+                            _streetNamePersistentLocalId,
                             destinationAddressPersistentLocalId,
+                            sourceAddressPersistentLocalId,
                             null,
                             new PostalCode(sourceAddressWasMigrated.PostalCode!),
                             destinationHouseNumber,

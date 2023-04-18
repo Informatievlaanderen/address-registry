@@ -19,6 +19,9 @@ namespace AddressRegistry.StreetName.Events
         [EventPropertyDescription("Objectidentificator van het adres.")]
         public int AddressPersistentLocalId { get; }
 
+        [EventPropertyDescription("Objectidentificator van het bronadres.")]
+        public int SourceAddressPersistentLocalId { get; }
+
         [EventPropertyDescription("Objectidentificator van het huisnummer adres waaraan het busnummer gelinkt is.")]
         public int? ParentPersistentLocalId { get; }
 
@@ -46,6 +49,7 @@ namespace AddressRegistry.StreetName.Events
         public AddressWasProposedBecauseOfReaddressing(
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             AddressPersistentLocalId addressPersistentLocal,
+            AddressPersistentLocalId sourceAddressPersistentLocalId,
             AddressPersistentLocalId? parentPersistentLocalId,
             PostalCode postalCode,
             HouseNumber houseNumber,
@@ -56,6 +60,7 @@ namespace AddressRegistry.StreetName.Events
         {
             StreetNamePersistentLocalId = streetNamePersistentLocalId;
             AddressPersistentLocalId = addressPersistentLocal;
+            SourceAddressPersistentLocalId = sourceAddressPersistentLocalId;
             ParentPersistentLocalId = parentPersistentLocalId ?? (int?)null;
             PostalCode = postalCode;
             HouseNumber = houseNumber;
@@ -69,6 +74,7 @@ namespace AddressRegistry.StreetName.Events
         private AddressWasProposedBecauseOfReaddressing(
             int streetNamePersistentLocalId,
             int addressPersistentLocalId,
+            int sourceAddressPersistentLocalId,
             int? parentPersistentLocalId,
             string postalCode,
             string houseNumber,
@@ -80,6 +86,7 @@ namespace AddressRegistry.StreetName.Events
             : this(
                 new StreetNamePersistentLocalId(streetNamePersistentLocalId),
                 new AddressPersistentLocalId(addressPersistentLocalId),
+                new AddressPersistentLocalId(sourceAddressPersistentLocalId),
                 parentPersistentLocalId != null ? new AddressPersistentLocalId(parentPersistentLocalId.Value) : null,
                 new PostalCode(postalCode),
                 new HouseNumber(houseNumber),
@@ -96,6 +103,7 @@ namespace AddressRegistry.StreetName.Events
             var fields = Provenance.GetHashFields().ToList();
             fields.Add(StreetNamePersistentLocalId.ToString(System.Globalization.CultureInfo.InvariantCulture));
             fields.Add(AddressPersistentLocalId.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            fields.Add(SourceAddressPersistentLocalId.ToString(System.Globalization.CultureInfo.InvariantCulture));
             fields.Add(HouseNumber.ToString(System.Globalization.CultureInfo.InvariantCulture));
             fields.Add(GeometryMethod.ToString());
             fields.Add(GeometrySpecification.ToString());

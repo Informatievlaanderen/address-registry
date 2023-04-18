@@ -134,6 +134,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenSourceAddre
                         new AddressWasProposedBecauseOfReaddressing(
                             destinationStreetNamePersistentLocalId,
                             expectedBoxNumberPersistentLocalId,
+                            sourceAddressSecondBoxNumberPersistentLocalId,
                             destinationAddressPersistentLocalId,
                             postalCode,
                             destinationHouseNumber,

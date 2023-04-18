@@ -112,6 +112,7 @@
                         new AddressWasProposedBecauseOfReaddressing(
                             _streetNamePersistentLocalId,
                             expectedProposedBoxNumberAddressPersistentLocalId,
+                            proposedBoxNumberAddressPersistentLocalId,
                             secondAddressPersistentLocalId,
                             new PostalCode(firstAddressWasMigrated.PostalCode!),
                             secondHouseNumber,
@@ -123,6 +124,7 @@
                         new AddressWasProposedBecauseOfReaddressing(
                             _streetNamePersistentLocalId,
                             expectedCurrentBoxNumberAddressPersistentLocalId,
+                            currentBoxNumberAddressPersistentLocalId,
                             secondAddressPersistentLocalId,
                             new PostalCode(firstAddressWasMigrated.PostalCode!),
                             secondHouseNumber,
@@ -131,8 +133,10 @@
                             currentBoxNumberAddressWasMigrated.GeometrySpecification,
                             new ExtendedWkbGeometry(currentBoxNumberAddressWasMigrated.ExtendedWkbGeometry))),
                     new Fact(_streamId,
-                        new AddressWasProposedBecauseOfReaddressing(_streetNamePersistentLocalId,
+                        new AddressWasProposedBecauseOfReaddressing(
+                            _streetNamePersistentLocalId,
                             expectedThirdAddressPersistentLocalId,
+                            secondAddressPersistentLocalId,
                             null,
                             postalCode,
                             thirdHouseNumber,

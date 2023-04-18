@@ -113,7 +113,7 @@ namespace AddressRegistry.StreetName
             }
         }
 
-        public void ProposeAddressBecauseOfReaddressing(
+        private void ProposeAddressBecauseOfReaddressing(
             AddressPersistentLocalId addressPersistentLocalId,
             PostalCode postalCode,
             HouseNumber houseNumber,
@@ -122,52 +122,7 @@ namespace AddressRegistry.StreetName
             GeometrySpecification geometrySpecification,
             ExtendedWkbGeometry geometryPosition)
         {
-            // Already performed at the beginning of the readdress action
-            // GuardActiveStreetName();
-
-            // PersistentLocalId is generated.
-            // if (StreetNameAddresses.HasPersistentLocalId(addressPersistentLocalId))
-            // {
-            //     throw new AddressPersistentLocalIdAlreadyExistsException();
-            // }
-
-            // Address stays within the same streetname
-            // if (municipalityIdByPostalCode != MunicipalityId)
-            // {
-            //     throw new PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException();
-            // }
-
             var parent = StreetNameAddresses.FindActiveParentByHouseNumber(houseNumber);
-
-            // var isChild = boxNumber is not null;
-            // var isParent = !isChild;
-            // var parentFound = parent is not null;
-            // var parentNotFound = !parentFound;
-
-            // if (isParent && parentFound)
-            // {
-            //     throw new ParentAddressAlreadyExistsException(houseNumber);
-            // }
-            //
-            // if (isChild && parentNotFound)
-            // {
-            //     throw new ParentAddressNotFoundException(PersistentLocalId, houseNumber);
-            // }
-
-            // We already verified if the box number address needs to be proposed or just readdressed
-            // if (isChild && !parent.BoxNumberIsUnique(boxNumber!))
-            // {
-            //     throw new AddressAlreadyExistsException(houseNumber, boxNumber!);
-            // }
-
-            // We use the postalcode of the parent for boxnumbers
-            // if (isChild && parent.PostalCode != postalCode)
-            // {
-            //     throw new BoxNumberPostalCodeDoesNotMatchHouseNumberPostalCodeException();
-            // }
-
-            // Should already be validated.
-            // StreetNameAddress.GuardGeometry(geometryMethod, geometrySpecification);
 
             ApplyChange(new AddressWasProposedBecauseOfReaddressing(
                 PersistentLocalId,

@@ -470,6 +470,53 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
                 }
             });
 
+            When<Envelope<AddressWasProposedBecauseOfReaddress>>(async (context, message, ct) =>
+            {
+                var addressListItemV2 = new AddressListItemV2(
+                    message.Message.AddressPersistentLocalId,
+                    message.Message.StreetNamePersistentLocalId,
+                    message.Message.PostalCode,
+                    message.Message.HouseNumber,
+                    message.Message.BoxNumber,
+                    status: AddressStatus.Proposed,
+                    removed: false,
+                    message.Message.Provenance.Timestamp);
+
+                UpdateHash(addressListItemV2, message);
+
+                await context
+                    .AddressListV2
+                    .AddAsync(addressListItemV2, ct);
+            });
+
+            When<Envelope<AddressWasRejectedBecauseOfReaddress>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressListItemV2(
+                    message.Message.AddressPersistentLocalId,
+                    item =>
+                    {
+                        item.Status = AddressStatus.Rejected;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+
+                UpdateHash(item, message);
+            });
+
+            When<Envelope<AddressWasRetiredBecauseOfReaddress>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressListItemV2(
+                    message.Message.AddressPersistentLocalId,
+                    item =>
+                    {
+                        item.Status = AddressStatus.Retired;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+
+                UpdateHash(item, message);
+            });
+
             When<Envelope<AddressWasRemovedV2>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressListItemV2(

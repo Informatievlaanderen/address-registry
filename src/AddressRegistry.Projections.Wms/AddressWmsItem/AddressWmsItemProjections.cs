@@ -510,6 +510,57 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                 }
             });
 
+            When<Envelope<AddressWasProposedBecauseOfReaddress>>(async (context, message, ct) =>
+            {
+                var addressWmsItem = new AddressWmsItem(
+                    message.Message.AddressPersistentLocalId,
+                    message.Message.StreetNamePersistentLocalId,
+                    message.Message.PostalCode,
+                    message.Message.HouseNumber,
+                    message.Message.BoxNumber,
+                    MapStatus(AddressStatus.Proposed),
+                    officiallyAssigned: true,
+                    ParsePosition(message.Message.ExtendedWkbGeometry),
+                    ConvertGeometryMethodToString(message.Message.GeometryMethod),
+                    ConvertGeometrySpecificationToString(message.Message.GeometrySpecification),
+                    removed: false,
+                    message.Message.Provenance.Timestamp);
+
+                await context.UpdateHouseNumberLabels(addressWmsItem, ct, includeAddressInUpdate: true);
+
+                await context
+                    .AddressWmsItems
+                    .AddAsync(addressWmsItem, ct);
+            });
+
+            When<Envelope<AddressWasRejectedBecauseOfReaddress>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.Status =  MapStatus(AddressStatus.Rejected);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    ct,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true);
+            });
+
+            When<Envelope<AddressWasRetiredBecauseOfReaddress>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.Status =  MapStatus(AddressStatus.Retired);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    ct,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true);
+            });
+
             When<Envelope<AddressWasRemovedV2>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressDetail(

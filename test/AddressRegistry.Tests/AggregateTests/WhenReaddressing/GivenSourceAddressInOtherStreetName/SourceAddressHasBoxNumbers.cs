@@ -31,10 +31,19 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenSourceAddre
         {
             var sourceHouseNumber = new HouseNumber("100");
             var destinationHouseNumber = new HouseNumber("5");
+            var sharedBoxNumber = new BoxNumber("A");
             var postalCode = Fixture.Create<PostalCode>();
 
             var sourceStreetNamePersistentLocalId = new StreetNamePersistentLocalId(1);
-            var sourceAddressPersistentLocalId = new AddressPersistentLocalId(10);
+            var sourceAddressPersistentLocalId = new AddressPersistentLocalId(100);
+            var firstBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(101);
+            var secondBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(102);
+
+            var destinationStreetNamePersistentLocalId = new StreetNamePersistentLocalId(2);
+            var destinationStreetNameStreamId = new StreetNameStreamId(destinationStreetNamePersistentLocalId);
+            var destinationAddressPersistentLocalId = new AddressPersistentLocalId(103);
+            var destinationBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(104);
+
             var sourceAddressWasMigrated = new AddressWasMigratedToStreetNameBuilder(Fixture)
                 .WithStreetNamePersistentLocalId(sourceStreetNamePersistentLocalId)
                 .WithAddressPersistentLocalId(sourceAddressPersistentLocalId)
@@ -46,11 +55,10 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenSourceAddre
                     GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry()))
                 .Build();
 
-            var sourceAddressFirstBoxNumberPersistentLocalId = new AddressPersistentLocalId(11);
             var sourceAddressFirstBoxNumberWasMigrated = new AddressWasMigratedToStreetNameBuilder(Fixture)
                 .WithStreetNamePersistentLocalId(sourceStreetNamePersistentLocalId)
-                .WithAddressPersistentLocalId(sourceAddressFirstBoxNumberPersistentLocalId)
-                .WithBoxNumber(new BoxNumber("A"), sourceAddressPersistentLocalId)
+                .WithAddressPersistentLocalId(firstBoxNumberAddressPersistentLocalId)
+                .WithBoxNumber(sharedBoxNumber, sourceAddressPersistentLocalId)
                 .WithHouseNumber(sourceHouseNumber)
                 .WithAddressGeometry(new AddressGeometry(
                     GeometryMethod.AppointedByAdministrator,
@@ -58,10 +66,9 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenSourceAddre
                     GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry()))
                 .Build();
 
-            var sourceAddressSecondBoxNumberPersistentLocalId = new AddressPersistentLocalId(12);
             var sourceAddressSecondBoxNumberWasMigrated = new AddressWasMigratedToStreetNameBuilder(Fixture)
                 .WithStreetNamePersistentLocalId(sourceStreetNamePersistentLocalId)
-                .WithAddressPersistentLocalId(sourceAddressSecondBoxNumberPersistentLocalId)
+                .WithAddressPersistentLocalId(secondBoxNumberAddressPersistentLocalId)
                 .WithBoxNumber(new BoxNumber("B"), sourceAddressPersistentLocalId)
                 .WithHouseNumber(sourceHouseNumber)
                 .WithAddressGeometry(new AddressGeometry(
@@ -82,9 +89,6 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenSourceAddre
             var streetNames = Container.Resolve<IStreetNames>();
             streetNames.Add(new StreetNameStreamId(sourceStreetNamePersistentLocalId), sourceStreetName);
 
-            var destinationStreetNamePersistentLocalId = new StreetNamePersistentLocalId(2);
-            var destinationStreetNameStreamId = new StreetNameStreamId(destinationStreetNamePersistentLocalId);
-            var destinationAddressPersistentLocalId = new AddressPersistentLocalId(12);
             var destinationAddressWasMigrated = new AddressWasMigratedToStreetNameBuilder(Fixture)
                 .WithStreetNamePersistentLocalId(destinationStreetNamePersistentLocalId)
                 .WithAddressPersistentLocalId(destinationAddressPersistentLocalId)
@@ -96,11 +100,10 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenSourceAddre
                     GeometryHelpers.SecondGmlPointGeometry.ToExtendedWkbGeometry()))
                 .Build();
 
-            var destinationAddressBoxNumberPersistentLocalId = new AddressPersistentLocalId(13);
             var destinationAddressBoxNumberWasMigrated = new AddressWasMigratedToStreetNameBuilder(Fixture)
                 .WithStreetNamePersistentLocalId(destinationStreetNamePersistentLocalId)
-                .WithAddressPersistentLocalId(destinationAddressBoxNumberPersistentLocalId)
-                .WithBoxNumber(new BoxNumber("A"), destinationAddressPersistentLocalId)
+                .WithAddressPersistentLocalId(destinationBoxNumberAddressPersistentLocalId)
+                .WithBoxNumber(sharedBoxNumber, destinationAddressPersistentLocalId)
                 .WithHouseNumber(destinationHouseNumber)
                 .WithAddressGeometry(new AddressGeometry(
                     GeometryMethod.AppointedByAdministrator,
@@ -134,7 +137,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenSourceAddre
                         new AddressWasProposedBecauseOfReaddressing(
                             destinationStreetNamePersistentLocalId,
                             expectedBoxNumberPersistentLocalId,
-                            sourceAddressSecondBoxNumberPersistentLocalId,
+                            secondBoxNumberAddressPersistentLocalId,
                             destinationAddressPersistentLocalId,
                             postalCode,
                             destinationHouseNumber,
@@ -162,8 +165,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenSourceAddre
                             new List<ReaddressedAddressData>
                             {
                                 new ReaddressedAddressData(
-                                    sourceAddressFirstBoxNumberPersistentLocalId,
-                                    destinationAddressBoxNumberPersistentLocalId,
+                                    firstBoxNumberAddressPersistentLocalId,
+                                    destinationBoxNumberAddressPersistentLocalId,
                                     isDestinationNewlyProposed: false,
                                     sourceAddressFirstBoxNumberWasMigrated.Status,
                                     destinationHouseNumber,
@@ -175,7 +178,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenSourceAddre
                                         new ExtendedWkbGeometry(sourceAddressFirstBoxNumberWasMigrated.ExtendedWkbGeometry)),
                                     sourceAddressFirstBoxNumberWasMigrated.OfficiallyAssigned),
                                 new ReaddressedAddressData(
-                                    sourceAddressSecondBoxNumberPersistentLocalId,
+                                    secondBoxNumberAddressPersistentLocalId,
                                     expectedBoxNumberPersistentLocalId,
                                     isDestinationNewlyProposed: true,
                                     sourceAddressSecondBoxNumberWasMigrated.Status,

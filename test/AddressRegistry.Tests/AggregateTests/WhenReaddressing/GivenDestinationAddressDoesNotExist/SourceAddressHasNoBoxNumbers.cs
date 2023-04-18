@@ -33,6 +33,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenDestination
         public void ThenDestinationAddressWasProposed()
         {
             var sourceAddressPersistentLocalId = new AddressPersistentLocalId(123);
+            var destinationAddressPersistentLocalId = new AddressPersistentLocalId(1); // FakePersistentLocalIdGenerator starts with id 1
 
             var sourceHouseNumber = new HouseNumber("11");
             var destinationHouseNumber = new HouseNumber("13");
@@ -45,8 +46,6 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenDestination
                     GeometrySpecification.Entry,
                     GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry()))
                 .Build();
-
-            var destinationAddressPersistentLocalId = new AddressPersistentLocalId(1); // FakePersistentLocalIdGenerator starts with id 1
 
             var command = new Readdress(
                 _streetNamePersistentLocalId,

@@ -32,10 +32,10 @@
         [Fact]
         public void ThenDestinationBoxNumbersWereRejectedOrRetired()
         {
-            var sourceAddressPersistentLocalId = new AddressPersistentLocalId(10);
-            var destinationAddressPersistentLocalId = new AddressPersistentLocalId(13);
-            var proposedBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(14);
-            var currentBoxNumberAddressAddressPersistentLocalId = new AddressPersistentLocalId(15);
+            var sourceAddressPersistentLocalId = new AddressPersistentLocalId(100);
+            var destinationAddressPersistentLocalId = new AddressPersistentLocalId(101);
+            var proposedBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(102);
+            var currentBoxNumberAddressAddressPersistentLocalId = new AddressPersistentLocalId(103);
 
             var sourceHouseNumber = new HouseNumber("11");
             var destinationHouseNumber = new HouseNumber("13");

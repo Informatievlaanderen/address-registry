@@ -32,9 +32,13 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenDestination
         [Fact]
         public void ThenDestinationAddressHasBoxNumbers()
         {
-            var sourceAddressPersistentLocalId = new AddressPersistentLocalId(123);
-            var proposedBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(456);
-            var currentBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(789);
+            var sourceAddressPersistentLocalId = new AddressPersistentLocalId(100);
+            var proposedBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(101);
+            var currentBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(102);
+
+            var destinationAddressPersistentLocalId = new AddressPersistentLocalId(1); // FakePersistentLocalIdGenerator starts with id 1
+            var destinationProposedBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(2);
+            var destinationCurrentBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(3);
 
             var sourceHouseNumber = new HouseNumber("11");
             var destinationHouseNumber = new HouseNumber("13");
@@ -67,10 +71,6 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenDestination
                     GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry()))
                 .WithBoxNumber(new BoxNumber("A2"), sourceAddressPersistentLocalId)
                 .Build();
-
-            var destinationAddressPersistentLocalId = new AddressPersistentLocalId(1); // FakePersistentLocalIdGenerator starts with id 1
-            var destinationProposedBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(2);
-            var destinationCurrentBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(3);
 
             var command = new Readdress(
                 _streetNamePersistentLocalId,

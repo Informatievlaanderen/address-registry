@@ -82,7 +82,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenThreeAddres
                 .Then(new[]
                 {
                     new Fact(_streamId,
-                        new AddressWasProposedV2(_streetNamePersistentLocalId,
+                        new AddressWasProposedBecauseOfReaddressing(_streetNamePersistentLocalId,
                             thirdAddressPersistentLocalId,
                             null,
                             postalCode,

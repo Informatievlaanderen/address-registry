@@ -64,7 +64,9 @@ namespace AddressRegistry.StreetName
             Register<AddressPositionWasChanged>(When);
             Register<AddressPostalCodeWasChangedV2>(When);
             Register<AddressWasRemovedBecauseStreetNameWasRemoved>(When);
+
             Register<AddressHouseNumberWasReaddressed>(When);
+            Register<AddressWasProposedBecauseOfReaddressing>(When);
             Register<AddressHouseNumberWasReplacedBecauseOfReaddress>(When);
         }
 
@@ -262,6 +264,22 @@ namespace AddressRegistry.StreetName
         private void When(AddressWasRemovedBecauseStreetNameWasRemoved @event) => RouteToAddress(@event);
 
         private void When(AddressHouseNumberWasReaddressed @event) => RouteToAddress(@event);
+
+        private void When(AddressWasProposedBecauseOfReaddressing @event)
+        {
+            var address = new StreetNameAddress(applier: ApplyChange);
+            address.Route(@event);
+
+            if (@event.ParentPersistentLocalId.HasValue)
+            {
+                var parent =
+                    StreetNameAddresses.GetByPersistentLocalId(
+                        new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value));
+                parent.AddChild(address);
+            }
+
+            StreetNameAddresses.Add(address);
+        }
 
         private void When(AddressHouseNumberWasReplacedBecauseOfReaddress @event) => RouteToAddress(@event);
 

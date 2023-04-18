@@ -65,7 +65,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenDestination
                 .Then(new[]
                 {
                     new Fact(_streamId,
-                        new AddressWasProposedV2(
+                        new AddressWasProposedBecauseOfReaddressing(
                             _streetNamePersistentLocalId,
                             destinationAddressPersistentLocalId,
                             null,

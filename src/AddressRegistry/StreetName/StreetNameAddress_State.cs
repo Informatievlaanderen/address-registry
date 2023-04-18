@@ -68,7 +68,9 @@ namespace AddressRegistry.StreetName
             Register<AddressPositionWasChanged>(When);
             Register<AddressPostalCodeWasChangedV2>(When);
             Register<AddressWasRemovedBecauseStreetNameWasRemoved>(When);
+
             Register<AddressHouseNumberWasReaddressed>(When);
+            Register<AddressWasProposedBecauseOfReaddressing>(When);
             Register<AddressHouseNumberWasReplacedBecauseOfReaddress>(When);
 
             Register<StreetNameNamesWereCorrected>(When);
@@ -382,6 +384,23 @@ namespace AddressRegistry.StreetName
                     readdressedBoxNumber.SourceGeometrySpecification,
                     new ExtendedWkbGeometry(readdressedBoxNumber.SourceExtendedWkbGeometry));
             }
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressWasProposedBecauseOfReaddressing @event)
+        {
+            _streetNamePersistentLocalId = new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId);
+            AddressPersistentLocalId = new AddressPersistentLocalId(@event.AddressPersistentLocalId);
+            HouseNumber = new HouseNumber(@event.HouseNumber);
+            Status = AddressStatus.Proposed;
+            BoxNumber = string.IsNullOrEmpty(@event.BoxNumber) ? null : new BoxNumber(@event.BoxNumber);
+            PostalCode = new PostalCode(@event.PostalCode);
+            IsOfficiallyAssigned = true;
+            Geometry = new AddressGeometry(
+                @event.GeometryMethod,
+                @event.GeometrySpecification,
+                new ExtendedWkbGeometry(@event.ExtendedWkbGeometry));
 
             _lastEvent = @event;
         }

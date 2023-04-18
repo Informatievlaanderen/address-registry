@@ -21,7 +21,7 @@ namespace AddressRegistry.StreetName
 
             var streetNameReaddresser = new StreetNameReaddresser(this, streetNames, persistentLocalIdGenerator, addressesToReaddress);
             var readdressedHouseNumbers = streetNameReaddresser.ReaddressedHouseNumbers.ToList();
-            var readdressedAddressDatas = streetNameReaddresser.ReaddressedBoxNumbers.ToList();
+            var readdressedBoxNumbers = streetNameReaddresser.ReaddressedBoxNumbers.ToList();
 
             // Perform all actions gathered by the StreetNameReaddresser.
             foreach (var (action, addressPersistentLocalId) in streetNameReaddresser.Actions)
@@ -30,7 +30,7 @@ namespace AddressRegistry.StreetName
                     action,
                     addressPersistentLocalId,
                     readdressedHouseNumbers,
-                    readdressedAddressDatas,
+                    readdressedBoxNumbers,
                     executionContext);
             }
 
@@ -70,10 +70,9 @@ namespace AddressRegistry.StreetName
                     var addressData = readdressedHouseNumbers.Single(x =>
                         x.DestinationAddressPersistentLocalId == addressPersistentLocalId);
 
-                    ProposeAddress(
+                    ProposeAddressBecauseOfReaddressing(
                         addressPersistentLocalId,
                         new PostalCode(addressData.SourcePostalCode),
-                        MunicipalityId,
                         new HouseNumber(addressData.DestinationHouseNumber),
                         null,
                         addressData.SourceGeometryMethod,
@@ -88,10 +87,9 @@ namespace AddressRegistry.StreetName
                     addressData = readdressedBoxNumbers.Single(x =>
                         x.DestinationAddressPersistentLocalId == addressPersistentLocalId);
 
-                    ProposeAddress(
+                    ProposeAddressBecauseOfReaddressing(
                         addressPersistentLocalId,
                         new PostalCode(addressData.SourcePostalCode),
-                        MunicipalityId,
                         new HouseNumber(addressData.DestinationHouseNumber),
                         new BoxNumber(addressData.SourceBoxNumber!),
                         addressData.SourceGeometryMethod,
@@ -113,6 +111,74 @@ namespace AddressRegistry.StreetName
                 default:
                     throw new NotImplementedException();
             }
+        }
+
+        public void ProposeAddressBecauseOfReaddressing(
+            AddressPersistentLocalId addressPersistentLocalId,
+            PostalCode postalCode,
+            HouseNumber houseNumber,
+            BoxNumber? boxNumber,
+            GeometryMethod geometryMethod,
+            GeometrySpecification geometrySpecification,
+            ExtendedWkbGeometry geometryPosition)
+        {
+            // Already performed at the beginning of the readdress action
+            // GuardActiveStreetName();
+
+            // PersistentLocalId is generated.
+            // if (StreetNameAddresses.HasPersistentLocalId(addressPersistentLocalId))
+            // {
+            //     throw new AddressPersistentLocalIdAlreadyExistsException();
+            // }
+
+            // Address stays within the same streetname
+            // if (municipalityIdByPostalCode != MunicipalityId)
+            // {
+            //     throw new PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException();
+            // }
+
+            var parent = StreetNameAddresses.FindActiveParentByHouseNumber(houseNumber);
+
+            // var isChild = boxNumber is not null;
+            // var isParent = !isChild;
+            // var parentFound = parent is not null;
+            // var parentNotFound = !parentFound;
+
+            // if (isParent && parentFound)
+            // {
+            //     throw new ParentAddressAlreadyExistsException(houseNumber);
+            // }
+            //
+            // if (isChild && parentNotFound)
+            // {
+            //     throw new ParentAddressNotFoundException(PersistentLocalId, houseNumber);
+            // }
+
+            // We already verified if the box number address needs to be proposed or just readdressed
+            // if (isChild && !parent.BoxNumberIsUnique(boxNumber!))
+            // {
+            //     throw new AddressAlreadyExistsException(houseNumber, boxNumber!);
+            // }
+
+            // We use the postalcode of the parent for boxnumbers
+            // if (isChild && parent.PostalCode != postalCode)
+            // {
+            //     throw new BoxNumberPostalCodeDoesNotMatchHouseNumberPostalCodeException();
+            // }
+
+            // Should already be validated.
+            // StreetNameAddress.GuardGeometry(geometryMethod, geometrySpecification);
+
+            ApplyChange(new AddressWasProposedBecauseOfReaddressing(
+                PersistentLocalId,
+                addressPersistentLocalId,
+                parent?.AddressPersistentLocalId,
+                postalCode,
+                houseNumber,
+                boxNumber,
+                geometryMethod,
+                geometrySpecification,
+                geometryPosition));
         }
 
         private void RejectOrRetireAddresses(

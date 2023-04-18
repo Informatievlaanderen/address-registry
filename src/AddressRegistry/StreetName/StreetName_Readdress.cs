@@ -51,9 +51,7 @@ namespace AddressRegistry.StreetName
                     PersistentLocalId,
                     addressPersistentLocalId,
                     readressedData.readdressedHouseNumber,
-                    readressedData.readdressedBoxNumbers,
-                    readressedData.rejectedBoxNumberPersistentLocalIds,
-                    readressedData.retiredBoxNumberPersistentLocalIds));
+                    readressedData.readdressedBoxNumbers));
             }
         }
 

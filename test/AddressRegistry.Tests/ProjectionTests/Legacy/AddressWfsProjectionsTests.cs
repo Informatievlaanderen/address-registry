@@ -870,9 +870,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                 _fixture.Create<StreetNamePersistentLocalId>(),
                 addressPersistentLocalId,
                 readdressedHouseNumber,
-                new List<ReaddressedAddressData> { readdressedBoxNumber },
-                new List<AddressPersistentLocalId>(),
-                new List<AddressPersistentLocalId>());
+                new List<ReaddressedAddressData> { readdressedBoxNumber });
             ((ISetProvenance)addressHouseNumberWasReaddressed).SetProvenance(_fixture.Create<Provenance>());
 
             var addressHouseNumberWasReaddressedMetadata = new Dictionary<string, object>

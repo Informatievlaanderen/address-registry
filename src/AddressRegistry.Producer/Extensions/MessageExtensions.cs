@@ -1,5 +1,6 @@
 namespace AddressRegistry.Producer.Extensions
 {
+    using System.Collections.Generic;
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Contracts = Be.Vlaanderen.Basisregisters.GrAr.Contracts.AddressRegistry;
@@ -306,8 +307,6 @@ namespace AddressRegistry.Producer.Extensions
                             x.SourceExtendedWkbGeometry,
                             x.SourceIsOfficiallyAssigned))
                     .ToList(),
-                message.RejectedBoxNumberAddressPersistentLocalIds,
-                message.RetiredBoxNumberAddressPersistentLocalIds,
                 message.Provenance.ToContract());
 
         private static Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common.Provenance ToContract(this ProvenanceData provenance)

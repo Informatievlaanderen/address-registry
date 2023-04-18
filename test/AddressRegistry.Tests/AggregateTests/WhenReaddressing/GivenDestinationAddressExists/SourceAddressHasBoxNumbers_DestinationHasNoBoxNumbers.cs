@@ -169,9 +169,7 @@
                                         currentBoxNumberAddressWasMigrated.GeometrySpecification,
                                         new ExtendedWkbGeometry(currentBoxNumberAddressWasMigrated.ExtendedWkbGeometry)),
                                     currentBoxNumberAddressWasMigrated.OfficiallyAssigned)
-                            },
-                            rejectedBoxNumberAddressPersistentLocalIds: new List<AddressPersistentLocalId>(),
-                            retiredBoxNumberAddressPersistentLocalIds: new List<AddressPersistentLocalId>()))
+                            }))
                 }));
 
             command.ExecutionContext.AddressesAdded.Should().HaveCount(2);

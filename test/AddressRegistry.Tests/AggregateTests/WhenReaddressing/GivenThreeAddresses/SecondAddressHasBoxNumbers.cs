@@ -168,9 +168,7 @@
                                     firstAddressWasMigrated.GeometrySpecification,
                                     new ExtendedWkbGeometry(firstAddressWasMigrated.ExtendedWkbGeometry)),
                                 firstAddressWasMigrated.OfficiallyAssigned),
-                            readdressedBoxNumbers: new List<ReaddressedAddressData>(),
-                            rejectedBoxNumberAddressPersistentLocalIds: new List<AddressPersistentLocalId> { proposedBoxNumberAddressPersistentLocalId },
-                            retiredBoxNumberAddressPersistentLocalIds: new List<AddressPersistentLocalId> { currentBoxNumberAddressPersistentLocalId })),
+                            readdressedBoxNumbers: new List<ReaddressedAddressData>())),
                     new Fact(_streamId,
                         new AddressHouseNumberWasReaddressed(
                             _streetNamePersistentLocalId,
@@ -216,9 +214,7 @@
                                         currentBoxNumberAddressWasMigrated.GeometrySpecification,
                                         new ExtendedWkbGeometry(currentBoxNumberAddressWasMigrated.ExtendedWkbGeometry)),
                                     currentBoxNumberAddressWasMigrated.OfficiallyAssigned)
-                            },
-                            rejectedBoxNumberAddressPersistentLocalIds: new List<AddressPersistentLocalId>(),
-                            retiredBoxNumberAddressPersistentLocalIds: new List<AddressPersistentLocalId>()))
+                            }))
                 }));
 
             command.ExecutionContext.AddressesAdded.Should().HaveCount(3);

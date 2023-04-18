@@ -132,7 +132,7 @@
                             proposedBoxNumberAddressWasMigrated.GeometrySpecification,
                             new ExtendedWkbGeometry(proposedBoxNumberAddressWasMigrated.ExtendedWkbGeometry))),
                     new Fact(_streamId,
-                        new AddressWasRejected(
+                        new AddressWasRejectedBecauseOfReaddressing(
                             _streetNamePersistentLocalId,
                             proposedBoxNumberAddressPersistentLocalId)),
                     new Fact(_streamId,
@@ -148,7 +148,7 @@
                             currentBoxNumberAddressWasMigrated.GeometrySpecification,
                             new ExtendedWkbGeometry(currentBoxNumberAddressWasMigrated.ExtendedWkbGeometry))),
                     new Fact(_streamId,
-                        new AddressWasRetiredV2(
+                        new AddressWasRetiredBecauseOfReaddressing(
                             _streetNamePersistentLocalId,
                             currentBoxNumberAddressPersistentLocalId)),
                     new Fact(_streamId,

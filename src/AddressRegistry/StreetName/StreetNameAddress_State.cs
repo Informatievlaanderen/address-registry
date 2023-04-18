@@ -71,6 +71,8 @@ namespace AddressRegistry.StreetName
 
             Register<AddressHouseNumberWasReaddressed>(When);
             Register<AddressWasProposedBecauseOfReaddressing>(When);
+            Register<AddressWasRejectedBecauseOfReaddressing>(When);
+            Register<AddressWasRetiredBecauseOfReaddressing>(When);
             Register<AddressHouseNumberWasReplacedBecauseOfReaddress>(When);
 
             Register<StreetNameNamesWereCorrected>(When);
@@ -401,6 +403,20 @@ namespace AddressRegistry.StreetName
                 @event.GeometryMethod,
                 @event.GeometrySpecification,
                 new ExtendedWkbGeometry(@event.ExtendedWkbGeometry));
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressWasRejectedBecauseOfReaddressing @event)
+        {
+            Status = AddressStatus.Rejected;
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressWasRetiredBecauseOfReaddressing @event)
+        {
+            Status = AddressStatus.Retired;
 
             _lastEvent = @event;
         }

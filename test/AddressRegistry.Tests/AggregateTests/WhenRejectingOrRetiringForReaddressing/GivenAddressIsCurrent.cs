@@ -61,7 +61,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingOrRetiringForReaddre
                             destinationAddressPersistentLocalId,
                             new List<AddressBoxNumberReplacedBecauseOfReaddressData>())),
                     new Fact(_streamId,
-                        new AddressWasRetiredV2(
+                        new AddressWasRetiredBecauseOfReaddressing(
                             _streetNamePersistentLocalId,
                            addressPersistentLocalId))
                 }));

@@ -98,11 +98,11 @@
                 .Then(new[]
                 {
                     new Fact(_streamId,
-                        new AddressWasRejected(
+                        new AddressWasRejectedBecauseOfReaddressing(
                             _streetNamePersistentLocalId,
                             proposedBoxNumberAddressPersistentLocalId)),
                     new Fact(_streamId,
-                        new AddressWasRetiredV2(
+                        new AddressWasRetiredBecauseOfReaddressing(
                             _streetNamePersistentLocalId,
                             currentBoxNumberAddressAddressPersistentLocalId)),
                     new Fact(_streamId,
@@ -113,7 +113,7 @@
                             destinationAddressPersistentLocalId,
                             new List<AddressBoxNumberReplacedBecauseOfReaddressData>())),
                     new Fact(_streamId,
-                        new AddressWasRejected(
+                        new AddressWasRejectedBecauseOfReaddressing(
                             _streetNamePersistentLocalId,
                             sourceAddressPersistentLocalId)),
                     new Fact(_streamId,

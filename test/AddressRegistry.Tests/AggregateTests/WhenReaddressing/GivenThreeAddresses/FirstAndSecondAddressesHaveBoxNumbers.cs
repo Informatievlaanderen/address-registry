@@ -170,7 +170,8 @@
                             secondAddressCurrentBoxNumberAddressWasMigrated.GeometrySpecification,
                             new ExtendedWkbGeometry(secondAddressCurrentBoxNumberAddressWasMigrated.ExtendedWkbGeometry))),
                     new Fact(_streamId,
-                        new AddressWasRetiredV2(_streetNamePersistentLocalId,
+                        new AddressWasRetiredBecauseOfReaddressing(
+                            _streetNamePersistentLocalId,
                             secondAddressCurrentBoxNumberAddressPersistentLocalId)),
                     new Fact(_streamId,
                         new AddressWasProposedBecauseOfReaddressing(

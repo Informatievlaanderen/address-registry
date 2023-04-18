@@ -103,11 +103,11 @@ namespace AddressRegistry.StreetName
                     break;
 
                 case ReaddressAction.Reject:
-                    RejectAddress(addressPersistentLocalId);
+                    RejectAddressBecauseOfReaddressing(addressPersistentLocalId);
                     break;
 
                 case ReaddressAction.Retire:
-                    RetireAddress(addressPersistentLocalId);
+                    RetireAddressBecauseOfReaddressing(addressPersistentLocalId);
                     break;
 
                 default:
@@ -138,6 +138,20 @@ namespace AddressRegistry.StreetName
                 geometryMethod,
                 geometrySpecification,
                 geometryPosition));
+        }
+
+        private void RejectAddressBecauseOfReaddressing(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            StreetNameAddresses
+                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
+                .RejectBecauseOfReaddressing();
+        }
+
+        private void RetireAddressBecauseOfReaddressing(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            StreetNameAddresses
+                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
+                .RetireBecauseOfReaddressing();
         }
 
         private void RejectOrRetireAddresses(
@@ -172,12 +186,12 @@ namespace AddressRegistry.StreetName
 
                 if (sourceAddress.Status == AddressStatus.Proposed)
                 {
-                    RejectAddress(addressPersistentLocalId);
+                    RejectAddressBecauseOfReaddressing(addressPersistentLocalId);
                 }
 
                 if (sourceAddress.Status == AddressStatus.Current)
                 {
-                    RetireAddress(addressPersistentLocalId);
+                    RetireAddressBecauseOfReaddressing(addressPersistentLocalId);
                 }
             }
         }
@@ -218,12 +232,12 @@ namespace AddressRegistry.StreetName
 
             if (address.Status == AddressStatus.Proposed)
             {
-                RejectAddress(addressPersistentLocalId);
+                RejectAddressBecauseOfReaddressing(addressPersistentLocalId);
             }
 
             if (address.Status == AddressStatus.Current)
             {
-                RetireAddress(addressPersistentLocalId);
+                RetireAddressBecauseOfReaddressing(addressPersistentLocalId);
             }
         }
     }

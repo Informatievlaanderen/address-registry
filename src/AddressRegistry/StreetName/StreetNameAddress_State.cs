@@ -70,9 +70,9 @@ namespace AddressRegistry.StreetName
             Register<AddressWasRemovedBecauseStreetNameWasRemoved>(When);
 
             Register<AddressHouseNumberWasReaddressed>(When);
-            Register<AddressWasProposedBecauseOfReaddressing>(When);
-            Register<AddressWasRejectedBecauseOfReaddressing>(When);
-            Register<AddressWasRetiredBecauseOfReaddressing>(When);
+            Register<AddressWasProposedBecauseOfReaddress>(When);
+            Register<AddressWasRejectedBecauseOfReaddress>(When);
+            Register<AddressWasRetiredBecauseOfReaddress>(When);
             Register<AddressHouseNumberWasReplacedBecauseOfReaddress>(When);
 
             Register<StreetNameNamesWereCorrected>(When);
@@ -390,7 +390,7 @@ namespace AddressRegistry.StreetName
             _lastEvent = @event;
         }
 
-        private void When(AddressWasProposedBecauseOfReaddressing @event)
+        private void When(AddressWasProposedBecauseOfReaddress @event)
         {
             _streetNamePersistentLocalId = new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId);
             AddressPersistentLocalId = new AddressPersistentLocalId(@event.AddressPersistentLocalId);
@@ -407,14 +407,14 @@ namespace AddressRegistry.StreetName
             _lastEvent = @event;
         }
 
-        private void When(AddressWasRejectedBecauseOfReaddressing @event)
+        private void When(AddressWasRejectedBecauseOfReaddress @event)
         {
             Status = AddressStatus.Rejected;
 
             _lastEvent = @event;
         }
 
-        private void When(AddressWasRetiredBecauseOfReaddressing @event)
+        private void When(AddressWasRetiredBecauseOfReaddress @event)
         {
             Status = AddressStatus.Retired;
 

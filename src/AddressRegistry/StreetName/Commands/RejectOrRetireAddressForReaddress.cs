@@ -6,7 +6,7 @@ namespace AddressRegistry.StreetName.Commands
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Utilities;
 
-    public class RejectOrRetireAddressForReaddressing : IHasCommandProvenance
+    public class RejectOrRetireAddressForReaddress : IHasCommandProvenance
     {
         private static readonly Guid Namespace = new Guid("981bc7bf-bcfa-44b2-b105-0131d44a4d11");
 
@@ -17,7 +17,7 @@ namespace AddressRegistry.StreetName.Commands
         public IList<BoxNumberAddressPersistentLocalId> DestinationBoxNumbers  { get; }
         public Provenance Provenance { get; }
 
-        public RejectOrRetireAddressForReaddressing(
+        public RejectOrRetireAddressForReaddress(
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             StreetNamePersistentLocalId destinationStreetNamePersistentLocalId,
             AddressPersistentLocalId addressPersistentLocalId,
@@ -33,7 +33,7 @@ namespace AddressRegistry.StreetName.Commands
         }
 
         public Guid CreateCommandId()
-            => Deterministic.Create(Namespace, $"RejectOrRetireAddressForReaddressing-{ToString()}");
+            => Deterministic.Create(Namespace, $"RejectOrRetireAddressForReaddress-{ToString()}");
 
         public override string? ToString()
             => ToStringBuilder.ToString(IdentityFields());

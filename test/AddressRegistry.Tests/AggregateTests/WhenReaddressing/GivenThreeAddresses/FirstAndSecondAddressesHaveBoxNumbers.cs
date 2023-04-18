@@ -134,7 +134,7 @@
                 .Then(new[]
                 {
                     new Fact(_streamId,
-                        new AddressWasProposedBecauseOfReaddressing(
+                        new AddressWasProposedBecauseOfReaddress(
                             _streetNamePersistentLocalId,
                             expectedSecondAddressProposedBoxNumberAddressPersistentLocalId,
                             firstAddressProposedBoxNumberAddressPersistentLocalId,
@@ -146,7 +146,7 @@
                             firstAddressProposedBoxNumberAddressWasMigrated.GeometrySpecification,
                             new ExtendedWkbGeometry(firstAddressProposedBoxNumberAddressWasMigrated.ExtendedWkbGeometry))),
                     new Fact(_streamId,
-                        new AddressWasProposedBecauseOfReaddressing(
+                        new AddressWasProposedBecauseOfReaddress(
                             _streetNamePersistentLocalId,
                             expectedThirdAddressPersistentLocalId,
                             secondAddressPersistentLocalId,
@@ -158,7 +158,7 @@
                             secondAddressWasMigrated.GeometrySpecification,
                             new ExtendedWkbGeometry(secondAddressWasMigrated.ExtendedWkbGeometry))),
                     new Fact(_streamId,
-                        new AddressWasProposedBecauseOfReaddressing(
+                        new AddressWasProposedBecauseOfReaddress(
                             _streetNamePersistentLocalId,
                             expectedThirdAddressCurrentBoxNumberAddressPersistentLocalId,
                             secondAddressCurrentBoxNumberAddressPersistentLocalId,
@@ -170,11 +170,11 @@
                             secondAddressCurrentBoxNumberAddressWasMigrated.GeometrySpecification,
                             new ExtendedWkbGeometry(secondAddressCurrentBoxNumberAddressWasMigrated.ExtendedWkbGeometry))),
                     new Fact(_streamId,
-                        new AddressWasRetiredBecauseOfReaddressing(
+                        new AddressWasRetiredBecauseOfReaddress(
                             _streetNamePersistentLocalId,
                             secondAddressCurrentBoxNumberAddressPersistentLocalId)),
                     new Fact(_streamId,
-                        new AddressWasProposedBecauseOfReaddressing(
+                        new AddressWasProposedBecauseOfReaddress(
                             _streetNamePersistentLocalId,
                             expectedThirdAddressProposedBoxNumberAddressPersistentLocalId,
                             secondAddressProposedBoxNumberAddressPersistentLocalId,

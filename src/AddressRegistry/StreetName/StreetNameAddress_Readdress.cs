@@ -5,7 +5,7 @@ namespace AddressRegistry.StreetName
 
     public partial class StreetNameAddress
     {
-        public void RejectBecauseOfReaddressing()
+        public void RejectBecauseOfReaddress()
         {
             if (IsRemoved)
             {
@@ -19,13 +19,13 @@ namespace AddressRegistry.StreetName
 
             foreach (var child in _children)
             {
-                child.RejectBecauseParentWasRejectedBecauseOfReaddressing();
+                child.RejectBecauseParentWasRejectedBecauseOfReaddress();
             }
 
-            Apply(new AddressWasRejectedBecauseOfReaddressing(_streetNamePersistentLocalId, AddressPersistentLocalId));
+            Apply(new AddressWasRejectedBecauseOfReaddress(_streetNamePersistentLocalId, AddressPersistentLocalId));
         }
 
-        private void RejectBecauseParentWasRejectedBecauseOfReaddressing()
+        private void RejectBecauseParentWasRejectedBecauseOfReaddress()
         {
             if (IsRemoved)
             {
@@ -34,11 +34,11 @@ namespace AddressRegistry.StreetName
 
             if (Status == AddressStatus.Proposed)
             {
-                Apply(new AddressWasRejectedBecauseOfReaddressing(_streetNamePersistentLocalId, AddressPersistentLocalId));
+                Apply(new AddressWasRejectedBecauseOfReaddress(_streetNamePersistentLocalId, AddressPersistentLocalId));
             }
         }
 
-        public void RetireBecauseOfReaddressing()
+        public void RetireBecauseOfReaddress()
         {
             if (IsRemoved)
             {
@@ -52,18 +52,18 @@ namespace AddressRegistry.StreetName
 
             foreach (var child in _children.Where(address => address.Status == AddressStatus.Current))
             {
-                child.RetireBecauseParentWasRetiredBecauseOfReaddressing();
+                child.RetireBecauseParentWasRetiredBecauseOfReaddress();
             }
 
             foreach (var child in _children.Where(address => address.Status == AddressStatus.Proposed))
             {
-                child.RejectBecauseParentWasRetiredBecauseOfReaddressing();
+                child.RejectBecauseParentWasRetiredBecauseOfReaddress();
             }
 
-            Apply(new AddressWasRetiredBecauseOfReaddressing(_streetNamePersistentLocalId, AddressPersistentLocalId));
+            Apply(new AddressWasRetiredBecauseOfReaddress(_streetNamePersistentLocalId, AddressPersistentLocalId));
         }
 
-        private void RetireBecauseParentWasRetiredBecauseOfReaddressing()
+        private void RetireBecauseParentWasRetiredBecauseOfReaddress()
         {
             if (IsRemoved)
             {
@@ -72,11 +72,11 @@ namespace AddressRegistry.StreetName
 
             if (Status == AddressStatus.Current)
             {
-                Apply(new AddressWasRetiredBecauseOfReaddressing(_streetNamePersistentLocalId, AddressPersistentLocalId));
+                Apply(new AddressWasRetiredBecauseOfReaddress(_streetNamePersistentLocalId, AddressPersistentLocalId));
             }
         }
 
-        private void RejectBecauseParentWasRetiredBecauseOfReaddressing()
+        private void RejectBecauseParentWasRetiredBecauseOfReaddress()
         {
             if (IsRemoved)
             {
@@ -85,7 +85,7 @@ namespace AddressRegistry.StreetName
 
             if (Status == AddressStatus.Proposed)
             {
-                Apply(new AddressWasRejectedBecauseOfReaddressing(_streetNamePersistentLocalId, AddressPersistentLocalId));
+                Apply(new AddressWasRejectedBecauseOfReaddress(_streetNamePersistentLocalId, AddressPersistentLocalId));
             }
         }
     }

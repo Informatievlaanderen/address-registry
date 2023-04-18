@@ -70,7 +70,7 @@ namespace AddressRegistry.StreetName
                     var addressData = readdressedHouseNumbers.Single(x =>
                         x.DestinationAddressPersistentLocalId == addressPersistentLocalId);
 
-                    ProposeAddressBecauseOfReaddressing(
+                    ProposeAddressBecauseOfReaddress(
                         addressPersistentLocalId,
                         new AddressPersistentLocalId(addressData.SourceAddressPersistentLocalId),
                         new PostalCode(addressData.SourcePostalCode),
@@ -88,7 +88,7 @@ namespace AddressRegistry.StreetName
                     addressData = readdressedBoxNumbers.Single(x =>
                         x.DestinationAddressPersistentLocalId == addressPersistentLocalId);
 
-                    ProposeAddressBecauseOfReaddressing(
+                    ProposeAddressBecauseOfReaddress(
                         addressPersistentLocalId,
                         new AddressPersistentLocalId(addressData.SourceAddressPersistentLocalId),
                         new PostalCode(addressData.SourcePostalCode),
@@ -103,11 +103,11 @@ namespace AddressRegistry.StreetName
                     break;
 
                 case ReaddressAction.Reject:
-                    RejectAddressBecauseOfReaddressing(addressPersistentLocalId);
+                    RejectAddressBecauseOfReaddress(addressPersistentLocalId);
                     break;
 
                 case ReaddressAction.Retire:
-                    RetireAddressBecauseOfReaddressing(addressPersistentLocalId);
+                    RetireAddressBecauseOfReaddress(addressPersistentLocalId);
                     break;
 
                 default:
@@ -115,7 +115,7 @@ namespace AddressRegistry.StreetName
             }
         }
 
-        private void ProposeAddressBecauseOfReaddressing(
+        private void ProposeAddressBecauseOfReaddress(
             AddressPersistentLocalId destinationAddressPersistentLocalId,
             AddressPersistentLocalId sourceAddressPersistentLocalId,
             PostalCode postalCode,
@@ -127,7 +127,7 @@ namespace AddressRegistry.StreetName
         {
             var parent = StreetNameAddresses.FindActiveParentByHouseNumber(houseNumber);
 
-            ApplyChange(new AddressWasProposedBecauseOfReaddressing(
+            ApplyChange(new AddressWasProposedBecauseOfReaddress(
                 PersistentLocalId,
                 destinationAddressPersistentLocalId,
                 sourceAddressPersistentLocalId,
@@ -140,18 +140,18 @@ namespace AddressRegistry.StreetName
                 geometryPosition));
         }
 
-        private void RejectAddressBecauseOfReaddressing(AddressPersistentLocalId addressPersistentLocalId)
+        private void RejectAddressBecauseOfReaddress(AddressPersistentLocalId addressPersistentLocalId)
         {
             StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
-                .RejectBecauseOfReaddressing();
+                .RejectBecauseOfReaddress();
         }
 
-        private void RetireAddressBecauseOfReaddressing(AddressPersistentLocalId addressPersistentLocalId)
+        private void RetireAddressBecauseOfReaddress(AddressPersistentLocalId addressPersistentLocalId)
         {
             StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
-                .RetireBecauseOfReaddressing();
+                .RetireBecauseOfReaddress();
         }
 
         private void RejectOrRetireAddresses(
@@ -186,17 +186,17 @@ namespace AddressRegistry.StreetName
 
                 if (sourceAddress.Status == AddressStatus.Proposed)
                 {
-                    RejectAddressBecauseOfReaddressing(addressPersistentLocalId);
+                    RejectAddressBecauseOfReaddress(addressPersistentLocalId);
                 }
 
                 if (sourceAddress.Status == AddressStatus.Current)
                 {
-                    RetireAddressBecauseOfReaddressing(addressPersistentLocalId);
+                    RetireAddressBecauseOfReaddress(addressPersistentLocalId);
                 }
             }
         }
 
-        public void RejectOrRetireAddressForReaddressing(
+        public void RejectOrRetireAddressForReaddress(
             StreetNamePersistentLocalId destinationStreetNamePersistentLocalId,
             AddressPersistentLocalId addressPersistentLocalId,
             AddressPersistentLocalId destinationAddressPersistentLocalId,
@@ -232,12 +232,12 @@ namespace AddressRegistry.StreetName
 
             if (address.Status == AddressStatus.Proposed)
             {
-                RejectAddressBecauseOfReaddressing(addressPersistentLocalId);
+                RejectAddressBecauseOfReaddress(addressPersistentLocalId);
             }
 
             if (address.Status == AddressStatus.Current)
             {
-                RetireAddressBecauseOfReaddressing(addressPersistentLocalId);
+                RetireAddressBecauseOfReaddress(addressPersistentLocalId);
             }
         }
     }

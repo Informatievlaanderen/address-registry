@@ -36,7 +36,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingOrRetiringForReaddre
                 .WithAddressPersistentLocalId(addressPersistentLocalId)
                 .Build();
 
-            var command = new RejectOrRetireAddressForReaddressing(
+            var command = new RejectOrRetireAddressForReaddress(
                 _streetNamePersistentLocalId,
                 new StreetNamePersistentLocalId(_streetNamePersistentLocalId + 1),
                 addressPersistentLocalId,
@@ -64,7 +64,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingOrRetiringForReaddre
                 .WithIsRemoved()
                 .Build();
 
-            var command = new RejectOrRetireAddressForReaddressing(
+            var command = new RejectOrRetireAddressForReaddress(
                 _streetNamePersistentLocalId,
                 new StreetNamePersistentLocalId(_streetNamePersistentLocalId + 1),
                 addressPersistentLocalId,

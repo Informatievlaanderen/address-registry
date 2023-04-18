@@ -70,7 +70,7 @@
                 .Then(new[]
                 {
                     new Fact(_streamId,
-                        new AddressWasProposedBecauseOfReaddressing(
+                        new AddressWasProposedBecauseOfReaddress(
                             _streetNamePersistentLocalId,
                             destinationAddressPersistentLocalId,
                             sourceAddressPersistentLocalId,

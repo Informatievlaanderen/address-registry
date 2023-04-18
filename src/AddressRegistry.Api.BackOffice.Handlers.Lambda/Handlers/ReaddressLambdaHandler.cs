@@ -113,7 +113,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                             .Select(x => new BoxNumberAddressPersistentLocalId(x.BoxNumber!, x.AddressPersistentLocalId))
                             .ToList();
 
-                        var rejectOrRetireAddresses = new RejectOrRetireAddressForReaddressing(
+                        var rejectOrRetireAddresses = new RejectOrRetireAddressForReaddress(
                             addressesByStreetName.Key,
                             readdressCommand.DestinationStreetNamePersistentLocalId,
                             addressPersistentLocalId,

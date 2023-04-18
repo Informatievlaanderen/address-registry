@@ -106,13 +106,6 @@
                             _streetNamePersistentLocalId,
                             currentBoxNumberAddressAddressPersistentLocalId)),
                     new Fact(_streamId,
-                        new AddressHouseNumberWasReplacedBecauseOfReaddress(
-                            _streetNamePersistentLocalId,
-                            _streetNamePersistentLocalId,
-                            sourceAddressPersistentLocalId,
-                            destinationAddressPersistentLocalId,
-                            new List<AddressBoxNumberReplacedBecauseOfReaddressData>())),
-                    new Fact(_streamId,
                         new AddressWasRejectedBecauseOfReaddress(
                             _streetNamePersistentLocalId,
                             sourceAddressPersistentLocalId)),

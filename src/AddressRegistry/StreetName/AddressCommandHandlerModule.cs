@@ -308,11 +308,7 @@ namespace AddressRegistry.StreetName
                    var streetNameStreamId = new StreetNameStreamId(message.Command.StreetNamePersistentLocalId);
                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
 
-                   streetName.RejectOrRetireAddressForReaddress(
-                       message.Command.DestinationStreetNamePersistentLocalId,
-                       message.Command.AddressPersistentLocalId,
-                       message.Command.DestinationAddressPersistentLocalId,
-                       message.Command.DestinationBoxNumbers);
+                   streetName.RejectOrRetireAddressForReaddress(message.Command.AddressPersistentLocalId);
                });
         }
     }

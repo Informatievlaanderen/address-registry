@@ -510,28 +510,6 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                 }
             });
 
-            When<Envelope<AddressHouseNumberWasReplacedBecauseOfReaddress>>(async (context, message, ct) =>
-            {
-                await context.FindAndUpdateAddressDetail(
-                    message.Message.AddressPersistentLocalId,
-                    address =>
-                    {
-                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
-                    },
-                    ct);
-
-                foreach (var readdressedBoxNumber in message.Message.BoxNumberAddressPersistentLocalIds)
-                {
-                    await context.FindAndUpdateAddressDetail(
-                        readdressedBoxNumber.SourceAddressPersistentLocalId,
-                        address =>
-                        {
-                            UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
-                        },
-                        ct);
-                }
-            });
-
             When<Envelope<AddressWasRemovedV2>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressDetail(

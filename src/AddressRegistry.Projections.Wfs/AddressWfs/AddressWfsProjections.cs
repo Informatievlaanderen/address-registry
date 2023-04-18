@@ -402,26 +402,6 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
                 }
             });
 
-            When<Envelope<AddressHouseNumberWasReplacedBecauseOfReaddress>>(async (context, message, ct) =>
-            {
-                var houseNumberItem = await context.FindAndUpdateAddressDetail(
-                    message.Message.AddressPersistentLocalId,
-                    _ => { },
-                    ct);
-
-                UpdateVersionTimestamp(houseNumberItem, message.Message.Provenance.Timestamp);
-
-                foreach (var readdressedBoxNumber in message.Message.BoxNumberAddressPersistentLocalIds)
-                {
-                    var boxNumberItem = await context.FindAndUpdateAddressDetail(
-                        readdressedBoxNumber.SourceAddressPersistentLocalId,
-                        _ => { },
-                        ct);
-
-                    UpdateVersionTimestamp(boxNumberItem, message.Message.Provenance.Timestamp);
-                }
-            });
-
             When<Envelope<AddressWasRemovedV2>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressDetail(

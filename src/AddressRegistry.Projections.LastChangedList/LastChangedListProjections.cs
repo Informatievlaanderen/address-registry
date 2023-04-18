@@ -371,16 +371,6 @@ namespace AddressRegistry.Projections.LastChangedList
                 }
             });
 
-            When<Envelope<AddressHouseNumberWasReplacedBecauseOfReaddress>>(async (context, message, ct) =>
-            {
-                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
-
-                foreach (var readdressedBoxNumber in message.Message.BoxNumberAddressPersistentLocalIds)
-                {
-                    await GetLastChangedRecordsAndUpdatePosition(readdressedBoxNumber.SourceAddressPersistentLocalId.ToString(), message.Position, context, ct);
-                }
-            });
-
             When<Envelope<AddressWasRemovedV2>>(async (context, message, ct) =>
             {
                 await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);

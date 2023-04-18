@@ -911,63 +911,6 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
         }
 
         [Fact]
-        public async Task WhenAddressHouseNumberWasReplacedBecauseOfReaddress()
-        {
-            var addressPersistentLocalId = _fixture.Create<AddressPersistentLocalId>();
-            var boxNumberAddressPersistentLocalId = new AddressPersistentLocalId(addressPersistentLocalId + 1);
-
-            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
-                .WithBoxNumber(null);
-            var proposedMetadata = new Dictionary<string, object>
-            {
-                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
-            };
-
-            var addressBoxNumberWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
-                .WithAddressPersistentLocalId(boxNumberAddressPersistentLocalId);
-            var proposedBoxNumberMetadata = new Dictionary<string, object>
-            {
-                { AddEventHashPipe.HashMetadataKey, addressBoxNumberWasProposedV2.GetHash() }
-            };
-
-            var addressHouseNumberWasReplacedBecauseOfReaddress = new AddressHouseNumberWasReplacedBecauseOfReaddress(
-                _fixture.Create<StreetNamePersistentLocalId>(),
-                _fixture.Create<StreetNamePersistentLocalId>(),
-                addressPersistentLocalId,
-                new AddressPersistentLocalId(addressPersistentLocalId + 10),
-                new List<AddressBoxNumberReplacedBecauseOfReaddressData>
-                {
-                    new AddressBoxNumberReplacedBecauseOfReaddressData(
-                        boxNumberAddressPersistentLocalId,
-                        boxNumberAddressPersistentLocalId + 10)
-                });
-            ((ISetProvenance)addressHouseNumberWasReplacedBecauseOfReaddress).SetProvenance(_fixture.Create<Provenance>());
-
-            var addressHouseNumberWasReaddressedMetadata = new Dictionary<string, object>
-            {
-                { AddEventHashPipe.HashMetadataKey, addressHouseNumberWasReplacedBecauseOfReaddress.GetHash() }
-            };
-
-            await Sut
-                .Given(
-                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
-                    new Envelope<AddressWasProposedV2>(new Envelope(addressBoxNumberWasProposedV2, proposedBoxNumberMetadata)),
-                    new Envelope<AddressHouseNumberWasReplacedBecauseOfReaddress>(new Envelope(addressHouseNumberWasReplacedBecauseOfReaddress, addressHouseNumberWasReaddressedMetadata)))
-                .Then(async ct =>
-                {
-                    var houseNumberItem = await ct.AddressWmsItems.FindAsync((int)addressPersistentLocalId);
-                    houseNumberItem.Should().NotBeNull();
-
-                    houseNumberItem.VersionTimestamp.Should().Be(addressHouseNumberWasReplacedBecauseOfReaddress.Provenance.Timestamp);
-
-                    var boxNumberItem = await ct.AddressWmsItems.FindAsync((int)boxNumberAddressPersistentLocalId);
-                    boxNumberItem.Should().NotBeNull();
-
-                    boxNumberItem.VersionTimestamp.Should().Be(addressHouseNumberWasReplacedBecauseOfReaddress.Provenance.Timestamp);
-                });
-        }
-
-        [Fact]
         public async Task WhenAddressWasRemovedV2()
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();

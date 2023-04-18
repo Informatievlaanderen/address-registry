@@ -499,32 +499,6 @@ namespace AddressRegistry.Projections.Legacy.AddressDetailV2
                 }
             });
 
-            When<Envelope<AddressHouseNumberWasReplacedBecauseOfReaddress>>(async (context, message, ct) =>
-            {
-                var houseNumberItem = await context.FindAndUpdateAddressDetailV2(
-                    message.Message.AddressPersistentLocalId,
-                    item =>
-                    {
-                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-                    },
-                    ct);
-
-                UpdateHash(houseNumberItem, message);
-
-                foreach (var readdressedBoxNumber in message.Message.BoxNumberAddressPersistentLocalIds)
-                {
-                    var boxNumberItem = await context.FindAndUpdateAddressDetailV2(
-                        readdressedBoxNumber.SourceAddressPersistentLocalId,
-                        item =>
-                        {
-                            UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-                        },
-                        ct);
-
-                    UpdateHash(boxNumberItem, message);
-                }
-            });
-
             When<Envelope<AddressWasRemovedV2>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressDetailV2(

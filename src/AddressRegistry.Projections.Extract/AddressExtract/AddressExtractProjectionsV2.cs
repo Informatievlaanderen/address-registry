@@ -370,18 +370,6 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 }
             });
 
-            When<Envelope<AddressHouseNumberWasReplacedBecauseOfReaddress>>(async (context, message, ct) =>
-            {
-                var houseNumberItem = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);
-                UpdateVersie(houseNumberItem, message.Message.Provenance.Timestamp);
-
-                foreach (var readdressedBoxNumber in message.Message.BoxNumberAddressPersistentLocalIds)
-                {
-                    var boxNumberItem = await context.AddressExtractV2.FindAsync(readdressedBoxNumber.SourceAddressPersistentLocalId, cancellationToken: ct);
-                    UpdateVersie(boxNumberItem, message.Message.Provenance.Timestamp);
-                }
-            });
-
             When<Envelope<AddressWasRemovedV2>>(async (context, message, ct) =>
             {
                 var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);

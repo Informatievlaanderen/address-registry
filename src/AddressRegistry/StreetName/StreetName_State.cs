@@ -69,7 +69,6 @@ namespace AddressRegistry.StreetName
             Register<AddressWasProposedBecauseOfReaddress>(When);
             Register<AddressWasRejectedBecauseOfReaddress>(When);
             Register<AddressWasRetiredBecauseOfReaddress>(When);
-            Register<AddressHouseNumberWasReplacedBecauseOfReaddress>(When);
         }
 
         private void When(StreetNameSnapshot @event)
@@ -286,8 +285,6 @@ namespace AddressRegistry.StreetName
         private void When(AddressWasRejectedBecauseOfReaddress @event) => RouteToAddress(@event);
 
         private void When(AddressWasRetiredBecauseOfReaddress @event) => RouteToAddress(@event);
-
-        private void When(AddressHouseNumberWasReplacedBecauseOfReaddress @event) => RouteToAddress(@event);
 
         private void RouteToAddress<TEvent>(TEvent @event)
             where TEvent : IHasAddressPersistentLocalId, IStreetNameEvent

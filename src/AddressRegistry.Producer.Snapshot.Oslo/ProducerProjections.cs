@@ -476,32 +476,6 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                 }
             });
 
-            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressHouseNumberWasReplacedBecauseOfReaddress>>(async (_, message, ct) =>
-            {
-                await FindAndProduce(async () =>
-                        await snapshotManager.FindMatchingSnapshot(
-                            message.Message.AddressPersistentLocalId.ToString(),
-                            message.Message.Provenance.Timestamp,
-                            message.Position,
-                            throwStaleWhenGone: false,
-                            ct),
-                    message.Position,
-                    ct);
-
-                foreach (var readdressedBoxNumber in message.Message.BoxNumberAddressPersistentLocalIds)
-                {
-                    await FindAndProduce(async () =>
-                            await snapshotManager.FindMatchingSnapshot(
-                                readdressedBoxNumber.SourceAddressPersistentLocalId.ToString(),
-                                message.Message.Provenance.Timestamp,
-                                message.Position,
-                                throwStaleWhenGone: false,
-                                ct),
-                        message.Position,
-                        ct);
-                }
-            });
-
             When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasRemovedBecauseHouseNumberWasRemoved>>(async (_, message, ct) =>
             {
                 await Produce($"{osloNamespace}/{message.Message.AddressPersistentLocalId}", "{}", message.Position, ct);

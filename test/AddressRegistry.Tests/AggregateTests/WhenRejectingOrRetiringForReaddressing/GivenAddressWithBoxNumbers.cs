@@ -77,21 +77,6 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingOrRetiringForReaddre
                 .Then(new[]
                 {
                     new Fact(_streamId,
-                        new AddressHouseNumberWasReplacedBecauseOfReaddress(
-                            _streetNamePersistentLocalId,
-                            destinationStreetNamePersistentLocalId,
-                            addressPersistentLocalId,
-                            destinationAddressPersistentLocalId,
-                            new List<AddressBoxNumberReplacedBecauseOfReaddressData>
-                            {
-                                new AddressBoxNumberReplacedBecauseOfReaddressData(
-                                    proposedBoxNumberAddressPersistentLocalId,
-                                    new AddressPersistentLocalId(proposedBoxNumberAddressPersistentLocalId + 1)),
-                                new AddressBoxNumberReplacedBecauseOfReaddressData(
-                                    currentBoxNumberAddressPersistentLocalId,
-                                    new AddressPersistentLocalId(currentBoxNumberAddressPersistentLocalId + 1))
-                            })),
-                    new Fact(_streamId,
                         new AddressWasRetiredBecauseOfReaddress(
                             _streetNamePersistentLocalId,
                             currentBoxNumberAddressPersistentLocalId)),

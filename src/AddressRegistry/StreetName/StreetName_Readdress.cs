@@ -38,7 +38,7 @@ namespace AddressRegistry.StreetName
             var addresssToRejectOrRetireWithinStreetName = addressesToRejectOrRetire
                 .Where(x => x.StreetNamePersistentLocalId == PersistentLocalId)
                 .ToList();
-            RejectOrRetireAddresses(addresssToRejectOrRetireWithinStreetName, streetNameReaddresser);
+            RejectOrRetireAddresses(addresssToRejectOrRetireWithinStreetName);
 
             executionContext.AddressesUpdated.AddRange(
                 readdressedHouseNumbers.Select(x => (PersistentLocalId, new AddressPersistentLocalId(x.DestinationAddressPersistentLocalId))));
@@ -154,35 +154,11 @@ namespace AddressRegistry.StreetName
                 .RetireBecauseOfReaddress();
         }
 
-        private void RejectOrRetireAddresses(
-            IEnumerable<RetireAddressItem> addresssToRejectOrRetireWithinStreetName,
-            StreetNameReaddresser streetNameReaddresser)
+        private void RejectOrRetireAddresses(IEnumerable<RetireAddressItem> addresssToRejectOrRetireWithinStreetName)
         {
             foreach (var (_, addressPersistentLocalId) in addresssToRejectOrRetireWithinStreetName)
             {
                 var sourceAddress = StreetNameAddresses.GetByPersistentLocalId(addressPersistentLocalId);
-                var destinationAddress = streetNameReaddresser.ReaddressedAddresses
-                    .Single(x => x.Value.readdressedHouseNumber.SourceAddressPersistentLocalId == addressPersistentLocalId)
-                    .Value;
-
-                var boxNumberAddressPersistentLocalIds = new List<AddressBoxNumberReplacedBecauseOfReaddressData>();
-                foreach (var sourceAddressBoxNumber in sourceAddress.Children.Where(x => x.IsActive))
-                {
-                    var destinationAddressBoxNumberPersistentLocalId = destinationAddress.readdressedBoxNumbers
-                        .Single(x => x.SourceAddressPersistentLocalId == sourceAddressBoxNumber.AddressPersistentLocalId)
-                        .DestinationAddressPersistentLocalId;
-
-                    boxNumberAddressPersistentLocalIds.Add(new AddressBoxNumberReplacedBecauseOfReaddressData(
-                        sourceAddressBoxNumber.AddressPersistentLocalId,
-                        new AddressPersistentLocalId(destinationAddressBoxNumberPersistentLocalId)));
-                }
-
-                ApplyChange(new AddressHouseNumberWasReplacedBecauseOfReaddress(
-                    PersistentLocalId,
-                    PersistentLocalId,
-                    addressPersistentLocalId,
-                    new AddressPersistentLocalId(destinationAddress.readdressedHouseNumber.DestinationAddressPersistentLocalId),
-                    boxNumberAddressPersistentLocalIds));
 
                 if (sourceAddress.Status == AddressStatus.Proposed)
                 {
@@ -196,11 +172,7 @@ namespace AddressRegistry.StreetName
             }
         }
 
-        public void RejectOrRetireAddressForReaddress(
-            StreetNamePersistentLocalId destinationStreetNamePersistentLocalId,
-            AddressPersistentLocalId addressPersistentLocalId,
-            AddressPersistentLocalId destinationAddressPersistentLocalId,
-            IEnumerable<BoxNumberAddressPersistentLocalId> destinationBoxNumbers)
+        public void RejectOrRetireAddressForReaddress(AddressPersistentLocalId addressPersistentLocalId)
         {
             var address = StreetNameAddresses.GetByPersistentLocalId(addressPersistentLocalId);
 
@@ -213,22 +185,6 @@ namespace AddressRegistry.StreetName
             {
                 return;
             }
-
-            var boxNumbers = new List<AddressBoxNumberReplacedBecauseOfReaddressData>();
-            foreach (var destinationBoxNumber in destinationBoxNumbers)
-            {
-                var sourceAddressBoxNumber = address.Children.Single(x => x.BoxNumber == destinationBoxNumber.BoxNumber);
-                boxNumbers.Add(new AddressBoxNumberReplacedBecauseOfReaddressData(
-                    sourceAddressBoxNumber.AddressPersistentLocalId,
-                    destinationBoxNumber.AddressPersistentLocalId));
-            }
-
-            ApplyChange(new AddressHouseNumberWasReplacedBecauseOfReaddress(
-                PersistentLocalId,
-                destinationStreetNamePersistentLocalId,
-                addressPersistentLocalId,
-                destinationAddressPersistentLocalId,
-                boxNumbers));
 
             if (address.Status == AddressStatus.Proposed)
             {

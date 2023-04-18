@@ -820,24 +820,6 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                 }
             });
 
-            When<Envelope<AddressHouseNumberWasReplacedBecauseOfReaddress>>(async (context, message, ct) =>
-            {
-                await context.CreateNewAddressSyndicationItem(
-                    message.Message.AddressPersistentLocalId,
-                    message,
-                    _ => { },
-                    ct);
-
-                foreach (var readdressedBoxNumber in message.Message.BoxNumberAddressPersistentLocalIds)
-                {
-                    await context.CreateNewAddressSyndicationItem(
-                        readdressedBoxNumber.SourceAddressPersistentLocalId,
-                        message,
-                        _ => { },
-                        ct);
-                }
-            });
-
             When<Envelope<AddressWasRemovedV2>>(async (context, message, ct) =>
             {
                 await context.CreateNewAddressSyndicationItem(

@@ -73,7 +73,6 @@ namespace AddressRegistry.StreetName
             Register<AddressWasProposedBecauseOfReaddress>(When);
             Register<AddressWasRejectedBecauseOfReaddress>(When);
             Register<AddressWasRetiredBecauseOfReaddress>(When);
-            Register<AddressHouseNumberWasReplacedBecauseOfReaddress>(When);
 
             Register<StreetNameNamesWereCorrected>(When);
             Register<StreetNameHomonymAdditionsWereCorrected>(When);
@@ -418,11 +417,6 @@ namespace AddressRegistry.StreetName
         {
             Status = AddressStatus.Retired;
 
-            _lastEvent = @event;
-        }
-
-        private void When(AddressHouseNumberWasReplacedBecauseOfReaddress @event)
-        {
             _lastEvent = @event;
         }
     }

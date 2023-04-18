@@ -145,19 +145,6 @@
                             secondAddressWasMigrated.GeometrySpecification,
                             new ExtendedWkbGeometry(secondAddressWasMigrated.ExtendedWkbGeometry))),
                     new Fact(_streamId,
-                        new AddressHouseNumberWasReplacedBecauseOfReaddress(
-                            _streetNamePersistentLocalId,
-                            _streetNamePersistentLocalId,
-                            firstAddressPersistentLocalId,
-                            secondAddressPersistentLocalId,
-                            new List<AddressBoxNumberReplacedBecauseOfReaddressData>
-                            {
-                                new AddressBoxNumberReplacedBecauseOfReaddressData(
-                                    proposedBoxNumberAddressPersistentLocalId, expectedProposedBoxNumberAddressPersistentLocalId),
-                                new AddressBoxNumberReplacedBecauseOfReaddressData(
-                                    currentBoxNumberAddressPersistentLocalId, expectedCurrentBoxNumberAddressPersistentLocalId)
-                            })),
-                    new Fact(_streamId,
                         new AddressWasRetiredBecauseOfReaddress(
                             _streetNamePersistentLocalId,
                             currentBoxNumberAddressPersistentLocalId)),

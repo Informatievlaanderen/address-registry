@@ -275,18 +275,6 @@ namespace AddressRegistry.Producer.Extensions
         public static Contracts.AddressWasRemovedBecauseStreetNameWasRemoved ToContract(this StreetNameAggregate.AddressWasRemovedBecauseStreetNameWasRemoved message) =>
             new Contracts.AddressWasRemovedBecauseStreetNameWasRemoved(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
 
-        public static Contracts.AddressHouseNumberWasReplacedBecauseOfReaddress ToContract(this StreetNameAggregate.AddressHouseNumberWasReplacedBecauseOfReaddress message) =>
-            new Contracts.AddressHouseNumberWasReplacedBecauseOfReaddress(
-                message.StreetNamePersistentLocalId,
-                message.DestinationStreetNamePersistentLocalId,
-                message.AddressPersistentLocalId,
-                message.DestinationAddressPersistentLocalId,
-                message.BoxNumberAddressPersistentLocalIds
-                    .Select(x => new Contracts.AddressBoxNumberReplacedBecauseOfReaddressData(
-                        x.SourceAddressPersistentLocalId, x.DestinationAddressPersistentLocalId))
-                    .ToList(),
-                message.Provenance.ToContract());
-
         public static Contracts.AddressHouseNumberWasReaddressed ToContract(this StreetNameAggregate.AddressHouseNumberWasReaddressed message) =>
             new Contracts.AddressHouseNumberWasReaddressed(
                 message.StreetNamePersistentLocalId,

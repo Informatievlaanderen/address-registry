@@ -33,7 +33,12 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenSourceAddre
             var destinationHouseNumber = new HouseNumber("5");
 
             var sourceStreetNamePersistentLocalId = new StreetNamePersistentLocalId(1);
-            var sourceAddressPersistentLocalId = new AddressPersistentLocalId(1);
+            var sourceAddressPersistentLocalId = new AddressPersistentLocalId(100);
+
+            var destinationStreetNamePersistentLocalId = new StreetNamePersistentLocalId(2);
+            var destinationStreetNameStreamId = new StreetNameStreamId(destinationStreetNamePersistentLocalId);
+            var destinationAddressPersistentLocalId = new AddressPersistentLocalId(101);
+
             var sourceAddressWasMigrated = new AddressWasMigratedToStreetNameBuilder(Fixture)
                 .WithStreetNamePersistentLocalId(sourceStreetNamePersistentLocalId)
                 .WithAddressPersistentLocalId(sourceAddressPersistentLocalId)
@@ -54,9 +59,6 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenSourceAddre
             var streetNames = Container.Resolve<IStreetNames>();
             streetNames.Add(new StreetNameStreamId(sourceStreetNamePersistentLocalId), sourceStreetName);
 
-            var destinationStreetNamePersistentLocalId = new StreetNamePersistentLocalId(2);
-            var destinationStreetNameStreamId = new StreetNameStreamId(destinationStreetNamePersistentLocalId);
-            var destinationAddressPersistentLocalId = new AddressPersistentLocalId(2);
             var destinationAddressWasMigrated = new AddressWasMigratedToStreetNameBuilder(Fixture)
                 .WithStreetNamePersistentLocalId(destinationStreetNamePersistentLocalId)
                 .WithAddressPersistentLocalId(destinationAddressPersistentLocalId)

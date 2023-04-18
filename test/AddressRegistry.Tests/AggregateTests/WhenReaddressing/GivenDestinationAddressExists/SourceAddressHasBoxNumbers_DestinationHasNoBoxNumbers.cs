@@ -32,10 +32,13 @@
         [Fact]
         public void ThenSourceAddressWasReaddressedAndBoxNumbersWereProposed()
         {
-            var sourceAddressPersistentLocalId = new AddressPersistentLocalId(10);
-            var proposedBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(11);
-            var currentBoxNumberAddressAddressPersistentLocalId = new AddressPersistentLocalId(12);
-            var destinationAddressPersistentLocalId = new AddressPersistentLocalId(13);
+            var sourceAddressPersistentLocalId = new AddressPersistentLocalId(100);
+            var proposedBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(101);
+            var currentBoxNumberAddressAddressPersistentLocalId = new AddressPersistentLocalId(102);
+            var destinationAddressPersistentLocalId = new AddressPersistentLocalId(103);
+
+            var expectedProposedBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(1);  // FakePersistentLocalIdGenerator starts with id 1
+            var expectedCurrentBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(2);
 
             var sourceHouseNumber = new HouseNumber("11");
             var destinationHouseNumber = new HouseNumber("13");
@@ -86,9 +89,6 @@
                 new List<ReaddressAddressItem> { new ReaddressAddressItem(_streetNamePersistentLocalId, sourceAddressPersistentLocalId , destinationHouseNumber) },
                 new List<RetireAddressItem>(),
                 Fixture.Create<Provenance>());
-
-            var expectedProposedBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(1);  // FakePersistentLocalIdGenerator starts with id 1
-            var expectedCurrentBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(2);
 
             Assert(new Scenario()
                 .Given(_streamId,

@@ -34,7 +34,7 @@
         [InlineData(AddressStatus.Retired)]
         public void ThenDestinationAddressWasProposed(AddressStatus addressStatus)
         {
-            var sourceAddressPersistentLocalId = new AddressPersistentLocalId(10);
+            var sourceAddressPersistentLocalId = new AddressPersistentLocalId(100);
             var destinationAddressPersistentLocalId = new AddressPersistentLocalId(1); // FakePersistentLocalIdGenerator starts with id 1
 
             var sourceHouseNumber = new HouseNumber("11");

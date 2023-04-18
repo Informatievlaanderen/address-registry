@@ -32,11 +32,11 @@
         [Fact]
         public void ThenTheBoxNumbersAreProposedOnTheSecondAddress()
         {
-            var firstAddressPersistentLocalId = new AddressPersistentLocalId(123);
-            var proposedBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(11);
-            var currentBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(12);
+            var firstAddressPersistentLocalId = new AddressPersistentLocalId(100);
+            var proposedBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(101);
+            var currentBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(102);
 
-            var secondAddressPersistentLocalId = new AddressPersistentLocalId(456);
+            var secondAddressPersistentLocalId = new AddressPersistentLocalId(103);
 
             var firstHouseNumber = new HouseNumber("11");
             var secondHouseNumber = new HouseNumber("13");

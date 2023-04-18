@@ -32,8 +32,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenThreeAddres
         [Fact]
         public void ThenAllAddressesWereReaddressed()
         {
-            var firstAddressPersistentLocalId = new AddressPersistentLocalId(123);
-            var secondAddressPersistentLocalId = new AddressPersistentLocalId(456);
+            var firstAddressPersistentLocalId = new AddressPersistentLocalId(100);
+            var secondAddressPersistentLocalId = new AddressPersistentLocalId(101);
 
             var firstHouseNumber = new HouseNumber("11");
             var secondHouseNumber = new HouseNumber("13");

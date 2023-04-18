@@ -32,8 +32,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenDestination
         [Fact]
         public void ThenSourceAddressWasReaddressed()
         {
-            var sourceAddressPersistentLocalId = new AddressPersistentLocalId(10);
-            var destinationAddressPersistentLocalId = new AddressPersistentLocalId(11);
+            var sourceAddressPersistentLocalId = new AddressPersistentLocalId(100);
+            var destinationAddressPersistentLocalId = new AddressPersistentLocalId(101);
 
             var sourceHouseNumber = new HouseNumber("11");
             var destinationHouseNumber = new HouseNumber("13");

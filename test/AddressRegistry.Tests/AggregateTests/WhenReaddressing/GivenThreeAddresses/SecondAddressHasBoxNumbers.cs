@@ -32,10 +32,14 @@
         [Fact]
         public void ThenTheBoxNumbersAreInactivedOnTheSecondAddressAndTheBoxNumbersAreProposedOnTheThirdAddress()
         {
-            var firstAddressPersistentLocalId = new AddressPersistentLocalId(10);
-            var secondAddressPersistentLocalId = new AddressPersistentLocalId(11);
-            var proposedBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(12);
-            var currentBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(13);
+            var firstAddressPersistentLocalId = new AddressPersistentLocalId(100);
+            var secondAddressPersistentLocalId = new AddressPersistentLocalId(101);
+            var proposedBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(102);
+            var currentBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(103);
+
+            var expectedThirdAddressPersistentLocalId = new AddressPersistentLocalId(1); // FakePersistentLocalIdGenerator starts with id 1
+            var expectedProposedBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(2);
+            var expectedCurrentBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(3);
 
             var firstHouseNumber = new HouseNumber("11");
             var secondHouseNumber13 = new HouseNumber("13");
@@ -92,10 +96,6 @@
                 },
                 new List<RetireAddressItem>(),
                 Fixture.Create<Provenance>());
-
-            var expectedThirdAddressPersistentLocalId = new AddressPersistentLocalId(1); // FakePersistentLocalIdGenerator starts with id 1
-            var expectedProposedBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(2);
-            var expectedCurrentBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(3);
 
             Assert(new Scenario()
                 .Given(_streamId,

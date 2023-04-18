@@ -909,6 +909,95 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
         }
 
         [Fact]
+        public async Task WhenAddressWasProposedBecauseOfReaddress()
+        {
+            var addressWasProposed = _fixture.Create<AddressWasProposedBecauseOfReaddress>();
+
+            await Sut
+                .Given(new Envelope<AddressWasProposedBecauseOfReaddress>(new Envelope(addressWasProposed, new Dictionary<string, object>())))
+                .Then(async ct =>
+                {
+                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressWasProposed.AddressPersistentLocalId);
+                    addressWmsItem.Should().NotBeNull();
+                    addressWmsItem!.StreetNamePersistentLocalId.Should().Be(addressWasProposed.StreetNamePersistentLocalId);
+                    addressWmsItem.HouseNumber.Should().Be(addressWasProposed.HouseNumber);
+                    addressWmsItem.BoxNumber.Should().Be(addressWasProposed.BoxNumber);
+                    addressWmsItem.LabelType.Should().Be(Address.WmsAddressLabelType.BusNumber);
+                    addressWmsItem.PostalCode.Should().Be(addressWasProposed.PostalCode);
+                    addressWmsItem.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Proposed));
+                    addressWmsItem.OfficiallyAssigned.Should().BeTrue();
+                    addressWmsItem.Position.Should().BeEquivalentTo((Point)_wkbReader.Read(addressWasProposed.ExtendedWkbGeometry.ToByteArray()));
+                    addressWmsItem.PositionMethod.Should().Be(AddressWmsItemProjections.ConvertGeometryMethodToString(addressWasProposed.GeometryMethod));
+                    addressWmsItem.PositionSpecification.Should().Be(AddressWmsItemProjections.ConvertGeometrySpecificationToString(addressWasProposed.GeometrySpecification));
+                    addressWmsItem.Removed.Should().BeFalse();
+                    addressWmsItem.VersionTimestamp.Should().Be(addressWasProposed.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressWasRejectedBecauseOfReaddress()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasRejected = _fixture.Create<AddressWasRejectedBecauseOfReaddress>();
+            var rejectedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasRejected.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasRejectedBecauseOfReaddress>(new Envelope(addressWasRejected, rejectedMetadata)))
+                .Then(async ct =>
+                {
+                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressWasRejected.AddressPersistentLocalId);
+                    addressWmsItem.Should().NotBeNull();
+                    addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Rejected));
+                    addressWmsItem.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressWasRetiredBecauseOfReaddress()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasApproved = _fixture.Create<AddressWasApproved>();
+            var approvedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasApproved.GetHash() }
+            };
+
+            var addressWasRetired = _fixture.Create<AddressWasRetiredBecauseOfReaddress>();
+            var retiredMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasRetired.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasApproved>(new Envelope(addressWasApproved, approvedMetadata)),
+                    new Envelope<AddressWasRetiredBecauseOfReaddress>(new Envelope(addressWasRetired, retiredMetadata)))
+                .Then(async ct =>
+                {
+                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressWasRetired.AddressPersistentLocalId);
+                    addressWmsItem.Should().NotBeNull();
+                    addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Retired));
+                    addressWmsItem.VersionTimestamp.Should().Be(addressWasRetired.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
         public async Task WhenAddressWasRemovedV2()
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();

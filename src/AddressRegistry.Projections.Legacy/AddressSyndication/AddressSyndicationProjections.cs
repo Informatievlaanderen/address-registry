@@ -820,6 +820,87 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                 }
             });
 
+            When<Envelope<AddressWasProposedBecauseOfReaddress>>(async (context, message, ct) =>
+            {
+                var addressSyndicationItem = new AddressSyndicationItem
+                {
+                    Position = message.Position,
+                    PersistentLocalId = message.Message.AddressPersistentLocalId,
+                    StreetNamePersistentLocalId = message.Message.StreetNamePersistentLocalId,
+                    PostalCode = message.Message.PostalCode,
+                    HouseNumber = message.Message.HouseNumber,
+                    BoxNumber = message.Message.BoxNumber,
+                    PointPosition = message.Message.ExtendedWkbGeometry.ToByteArray(),
+                    PositionMethod = message.Message.GeometryMethod,
+                    PositionSpecification = message.Message.GeometrySpecification,
+                    Status = AddressStatus.Proposed,
+                    IsComplete = true,
+                    IsOfficiallyAssigned = true,
+
+                    RecordCreatedAt = message.Message.Provenance.Timestamp,
+                    LastChangedOn = message.Message.Provenance.Timestamp,
+                    ChangeType = message.EventName,
+                    SyndicationItemCreatedAt = DateTimeOffset.UtcNow
+                };
+
+                addressSyndicationItem.ApplyProvenance(message.Message.Provenance);
+                addressSyndicationItem.SetEventData(message.Message, message.EventName);
+
+                await context
+                    .AddressSyndication
+                    .AddAsync(addressSyndicationItem, ct);
+
+                if (!string.IsNullOrWhiteSpace(addressSyndicationItem.BoxNumber))
+                {
+                    var addressBoxNumberSyndicationHelper = new AddressBoxNumberSyndicationHelper
+                    {
+                        PersistentLocalId = addressSyndicationItem.PersistentLocalId.Value,
+                        PostalCode = addressSyndicationItem.PostalCode,
+                        HouseNumber = addressSyndicationItem.HouseNumber,
+                        BoxNumber = addressSyndicationItem.BoxNumber,
+                        PointPosition = addressSyndicationItem.PointPosition,
+                        PositionMethod = addressSyndicationItem.PositionMethod,
+                        PositionSpecification = addressSyndicationItem.PositionSpecification,
+                        Status = addressSyndicationItem.Status,
+                        IsComplete = addressSyndicationItem.IsComplete,
+                        IsOfficiallyAssigned = addressSyndicationItem.IsOfficiallyAssigned,
+                    };
+
+                    await context
+                        .AddressBoxNumberSyndicationHelper
+                        .AddAsync(addressBoxNumberSyndicationHelper);
+
+                }
+            });
+
+            When<Envelope<AddressWasRejectedBecauseOfReaddress>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressPersistentLocalId,
+                    message,
+                    x => x.Status = AddressStatus.Rejected,
+                    ct);
+
+                await context.UpdateAddressBoxNumberSyndicationHelper(
+                    message.Message.AddressPersistentLocalId,
+                    x => x.Status = AddressStatus.Rejected,
+                    ct);
+            });
+
+            When<Envelope<AddressWasRetiredBecauseOfReaddress>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressPersistentLocalId,
+                    message,
+                    x => x.Status = AddressStatus.Retired,
+                    ct);
+
+                await context.UpdateAddressBoxNumberSyndicationHelper(
+                    message.Message.AddressPersistentLocalId,
+                    x => x.Status = AddressStatus.Retired,
+                    ct);
+            });
+
             When<Envelope<AddressWasRemovedV2>>(async (context, message, ct) =>
             {
                 await context.CreateNewAddressSyndicationItem(

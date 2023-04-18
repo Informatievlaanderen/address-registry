@@ -402,6 +402,47 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
                 }
             });
 
+            When<Envelope<AddressWasProposedBecauseOfReaddress>>(async (context, message, ct) =>
+            {
+                var addressWfsItem = new AddressWfsItem(
+                    message.Message.AddressPersistentLocalId,
+                    message.Message.StreetNamePersistentLocalId,
+                    message.Message.PostalCode,
+                    message.Message.HouseNumber,
+                    message.Message.BoxNumber,
+                    MapStatus(AddressStatus.Proposed),
+                    officiallyAssigned: true,
+                    ParsePosition(message.Message.ExtendedWkbGeometry),
+                    ConvertGeometryMethodToString(message.Message.GeometryMethod),
+                    ConvertGeometrySpecificationToString(message.Message.GeometrySpecification),
+                    removed: false,
+                    message.Message.Provenance.Timestamp);
+
+                await context
+                    .AddressWfsItems
+                    .AddAsync(addressWfsItem, ct);
+            });
+
+            When<Envelope<AddressWasRejectedBecauseOfReaddress>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    item => item.Status = MapStatus(AddressStatus.Rejected),
+                    ct);
+
+                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+            });
+
+            When<Envelope<AddressWasRetiredBecauseOfReaddress>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    item => item.Status = MapStatus(AddressStatus.Retired),
+                    ct);
+
+                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+            });
+
             When<Envelope<AddressWasRemovedV2>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressDetail(

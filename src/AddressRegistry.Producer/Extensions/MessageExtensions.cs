@@ -309,6 +309,32 @@ namespace AddressRegistry.Producer.Extensions
                     .ToList(),
                 message.Provenance.ToContract());
 
+        public static Contracts.AddressWasProposedBecauseOfReaddress ToContract(this StreetNameAggregate.AddressWasProposedBecauseOfReaddress message) =>
+            new Contracts.AddressWasProposedBecauseOfReaddress(
+                message.StreetNamePersistentLocalId,
+                message.AddressPersistentLocalId,
+                message.SourceAddressPersistentLocalId,
+                message.ParentPersistentLocalId,
+                message.PostalCode,
+                message.HouseNumber,
+                message.BoxNumber,
+                message.GeometryMethod.ToString(),
+                message.GeometrySpecification.ToString(),
+                message.ExtendedWkbGeometry,
+                message.Provenance.ToContract());
+
+        public static Contracts.AddressWasRejectedBecauseOfReaddress ToContract(this StreetNameAggregate.AddressWasRejectedBecauseOfReaddress message) =>
+            new Contracts.AddressWasRejectedBecauseOfReaddress(
+                message.StreetNamePersistentLocalId,
+                message.AddressPersistentLocalId,
+                message.Provenance.ToContract());
+
+        public static Contracts.AddressWasRetiredBecauseOfReaddress ToContract(this StreetNameAggregate.AddressWasRetiredBecauseOfReaddress message) =>
+            new Contracts.AddressWasRetiredBecauseOfReaddress(
+                message.StreetNamePersistentLocalId,
+                message.AddressPersistentLocalId,
+                message.Provenance.ToContract());
+
         private static Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common.Provenance ToContract(this ProvenanceData provenance)
             => new Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common.Provenance(
                 provenance.Timestamp.ToString(),

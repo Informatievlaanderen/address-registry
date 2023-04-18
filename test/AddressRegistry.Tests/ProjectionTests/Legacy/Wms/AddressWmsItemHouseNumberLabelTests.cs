@@ -963,9 +963,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                             houseNumberThreeWasProposed.GeometrySpecification,
                             newPosition),
                         sourceIsOfficiallyAssigned: true)
-                },
-                new List<AddressPersistentLocalId>(),
-                new List<AddressPersistentLocalId>());
+                });
             ((ISetProvenance)streetNameWasReaddressed).SetProvenance(_fixture.Create<Provenance>());
 
             var houseNumberFiveWasMigrated = CreateAddressWasMigratedToStreetName(

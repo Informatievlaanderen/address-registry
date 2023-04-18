@@ -110,9 +110,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenThreeAddres
                                     firstAddressWasMigrated.GeometrySpecification,
                                     new ExtendedWkbGeometry(firstAddressWasMigrated.ExtendedWkbGeometry)),
                                 firstAddressWasMigrated.OfficiallyAssigned),
-                            readdressedBoxNumbers: new List<ReaddressedAddressData>(),
-                            rejectedBoxNumberAddressPersistentLocalIds: new List<AddressPersistentLocalId>(),
-                            retiredBoxNumberAddressPersistentLocalIds: new List<AddressPersistentLocalId>())),
+                            readdressedBoxNumbers: new List<ReaddressedAddressData>())),
                     new Fact(_streamId,
                         new AddressHouseNumberWasReaddressed(
                             _streetNamePersistentLocalId,
@@ -130,9 +128,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenThreeAddres
                                     secondAddressWasMigrated.GeometrySpecification,
                                     new ExtendedWkbGeometry(secondAddressWasMigrated.ExtendedWkbGeometry)),
                                 secondAddressWasMigrated.OfficiallyAssigned),
-                            readdressedBoxNumbers: new List<ReaddressedAddressData>(),
-                            rejectedBoxNumberAddressPersistentLocalIds: new List<AddressPersistentLocalId>(),
-                            retiredBoxNumberAddressPersistentLocalIds: new List<AddressPersistentLocalId>()))
+                            readdressedBoxNumbers: new List<ReaddressedAddressData>()))
                 }));
 
             command.ExecutionContext.AddressesAdded.Should().ContainSingle();

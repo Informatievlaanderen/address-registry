@@ -28,12 +28,6 @@ namespace AddressRegistry.StreetName.Events
         [EventPropertyDescription("De heradresseerde busadressen.")]
         public IReadOnlyList<ReaddressedAddressData> ReaddressedBoxNumbers { get; }
 
-        [EventPropertyDescription("De afgekeurde busnummeradressen.")]
-        public IReadOnlyList<int> RejectedBoxNumberAddressPersistentLocalIds { get; }
-
-        [EventPropertyDescription("De opgeheven busnummeradressen.")]
-        public IReadOnlyList<int> RetiredBoxNumberAddressPersistentLocalIds { get; }
-
         [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
@@ -41,16 +35,12 @@ namespace AddressRegistry.StreetName.Events
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             AddressPersistentLocalId addressPersistentLocalId,
             ReaddressedAddressData readdressedHouseNumber,
-            List<ReaddressedAddressData> readdressedBoxNumbers,
-            List<AddressPersistentLocalId> rejectedBoxNumberAddressPersistentLocalIds,
-            List<AddressPersistentLocalId> retiredBoxNumberAddressPersistentLocalIds)
+            List<ReaddressedAddressData> readdressedBoxNumbers)
         {
             StreetNamePersistentLocalId = streetNamePersistentLocalId;
             AddressPersistentLocalId = addressPersistentLocalId;
             ReaddressedHouseNumber = readdressedHouseNumber;
             ReaddressedBoxNumbers = readdressedBoxNumbers;
-            RejectedBoxNumberAddressPersistentLocalIds = rejectedBoxNumberAddressPersistentLocalIds.Select(x => (int)x).ToList();
-            RetiredBoxNumberAddressPersistentLocalIds = retiredBoxNumberAddressPersistentLocalIds.Select(x => (int)x).ToList();
         }
 
         [JsonConstructor]
@@ -66,9 +56,7 @@ namespace AddressRegistry.StreetName.Events
                 new StreetNamePersistentLocalId(streetNamePersistentLocalId),
                 new AddressPersistentLocalId(addressPersistentLocalId),
                 readdressedHouseNumber,
-                readdressedBoxNumbers,
-                rejectedBoxNumberAddressPersistentLocalIds.Select(x => new AddressPersistentLocalId(x)).ToList(),
-                retiredBoxNumberAddressPersistentLocalIds.Select(x => new AddressPersistentLocalId(x)).ToList())
+                readdressedBoxNumbers)
             => ((ISetProvenance)this).SetProvenance(provenance.ToProvenance());
 
         void ISetProvenance.SetProvenance(Provenance provenance) => Provenance = new ProvenanceData(provenance);
@@ -81,6 +69,7 @@ namespace AddressRegistry.StreetName.Events
 
             fields.Add(ReaddressedHouseNumber.SourceAddressPersistentLocalId.ToString());
             fields.Add(ReaddressedHouseNumber.DestinationAddressPersistentLocalId.ToString());
+            fields.Add(ReaddressedHouseNumber.IsDestinationNewlyProposed.ToString());
             fields.Add(ReaddressedHouseNumber.DestinationHouseNumber);
             fields.Add(ReaddressedHouseNumber.SourcePostalCode);
             fields.Add(ReaddressedHouseNumber.SourceStatus.ToString());
@@ -93,6 +82,7 @@ namespace AddressRegistry.StreetName.Events
             {
                 fields.Add(item.SourceAddressPersistentLocalId.ToString());
                 fields.Add(item.DestinationAddressPersistentLocalId.ToString());
+                fields.Add(item.IsDestinationNewlyProposed.ToString());
                 fields.Add(item.DestinationHouseNumber);
                 fields.Add(item.SourcePostalCode);
                 fields.Add(item.SourceStatus.ToString());
@@ -100,16 +90,6 @@ namespace AddressRegistry.StreetName.Events
                 fields.Add(item.SourceGeometrySpecification.ToString());
                 fields.Add(item.SourceExtendedWkbGeometry);
                 fields.Add(item.SourceIsOfficiallyAssigned.ToString());
-            }
-
-            foreach (var item in RejectedBoxNumberAddressPersistentLocalIds)
-            {
-                fields.Add(item.ToString());
-            }
-
-            foreach (var item in RetiredBoxNumberAddressPersistentLocalIds)
-            {
-                fields.Add(item.ToString());
             }
 
             return fields;

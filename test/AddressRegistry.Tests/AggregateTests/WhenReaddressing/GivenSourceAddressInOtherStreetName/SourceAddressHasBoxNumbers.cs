@@ -190,9 +190,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenSourceAddre
                                         sourceAddressSecondBoxNumberWasMigrated.GeometrySpecification,
                                         new ExtendedWkbGeometry(sourceAddressSecondBoxNumberWasMigrated.ExtendedWkbGeometry)),
                                     sourceAddressSecondBoxNumberWasMigrated.OfficiallyAssigned),
-                            },
-                            rejectedBoxNumberAddressPersistentLocalIds: new List<AddressPersistentLocalId>(),
-                            retiredBoxNumberAddressPersistentLocalIds: new List<AddressPersistentLocalId>()))
+                            }))
                 }));
 
             command.ExecutionContext.AddressesAdded.Should().ContainSingle();

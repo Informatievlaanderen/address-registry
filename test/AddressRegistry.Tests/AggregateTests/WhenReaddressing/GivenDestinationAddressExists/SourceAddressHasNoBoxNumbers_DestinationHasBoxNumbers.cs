@@ -126,9 +126,7 @@
                                         sourceAddressWasMigrated.GeometrySpecification,
                                         new ExtendedWkbGeometry(sourceAddressWasMigrated.ExtendedWkbGeometry)),
                                     sourceAddressWasMigrated.OfficiallyAssigned),
-                            readdressedBoxNumbers: new List<ReaddressedAddressData>(),
-                            rejectedBoxNumberAddressPersistentLocalIds: new List<AddressPersistentLocalId> { proposedBoxNumberAddressPersistentLocalId },
-                            retiredBoxNumberAddressPersistentLocalIds: new List<AddressPersistentLocalId> { currentBoxNumberAddressAddressPersistentLocalId }))
+                            readdressedBoxNumbers: new List<ReaddressedAddressData>()))
                 }));
 
             command.ExecutionContext.AddressesAdded.Should().BeEmpty();

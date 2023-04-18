@@ -87,9 +87,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenDestination
                                     sourceAddressWasMigrated.GeometrySpecification,
                                     new ExtendedWkbGeometry(sourceAddressWasMigrated.ExtendedWkbGeometry)),
                                 sourceAddressWasMigrated.OfficiallyAssigned),
-                            readdressedBoxNumbers: new List<ReaddressedAddressData>(),
-                            rejectedBoxNumberAddressPersistentLocalIds: new List<AddressPersistentLocalId>(),
-                            retiredBoxNumberAddressPersistentLocalIds: new List<AddressPersistentLocalId>()))
+                            readdressedBoxNumbers: new List<ReaddressedAddressData>()))
                 }));
 
             command.ExecutionContext.AddressesAdded.Should().BeEmpty();

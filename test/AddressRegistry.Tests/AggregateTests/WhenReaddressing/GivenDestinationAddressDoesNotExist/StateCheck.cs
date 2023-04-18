@@ -149,9 +149,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenDestination
                                 secondBoxNumberAddressWasMigrated.GeometrySpecification,
                                 new ExtendedWkbGeometry(secondBoxNumberAddressWasMigrated.ExtendedWkbGeometry)),
                             secondBoxNumberAddressWasMigrated.OfficiallyAssigned)
-                },
-                rejectedBoxNumberAddressPersistentLocalIds: new List<AddressPersistentLocalId>(),
-                retiredBoxNumberAddressPersistentLocalIds: new List<AddressPersistentLocalId>());
+                });
 
             var streetName = new StreetNameFactory(NoSnapshotStrategy.Instance).Create();
             streetName.Initialize(new List<object>

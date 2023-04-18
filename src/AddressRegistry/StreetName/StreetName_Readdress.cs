@@ -72,6 +72,7 @@ namespace AddressRegistry.StreetName
 
                     ProposeAddressBecauseOfReaddressing(
                         addressPersistentLocalId,
+                        new AddressPersistentLocalId(addressData.SourceAddressPersistentLocalId),
                         new PostalCode(addressData.SourcePostalCode),
                         new HouseNumber(addressData.DestinationHouseNumber),
                         null,
@@ -89,6 +90,7 @@ namespace AddressRegistry.StreetName
 
                     ProposeAddressBecauseOfReaddressing(
                         addressPersistentLocalId,
+                        new AddressPersistentLocalId(addressData.SourceAddressPersistentLocalId),
                         new PostalCode(addressData.SourcePostalCode),
                         new HouseNumber(addressData.DestinationHouseNumber),
                         new BoxNumber(addressData.SourceBoxNumber!),
@@ -114,7 +116,8 @@ namespace AddressRegistry.StreetName
         }
 
         private void ProposeAddressBecauseOfReaddressing(
-            AddressPersistentLocalId addressPersistentLocalId,
+            AddressPersistentLocalId destinationAddressPersistentLocalId,
+            AddressPersistentLocalId sourceAddressPersistentLocalId,
             PostalCode postalCode,
             HouseNumber houseNumber,
             BoxNumber? boxNumber,
@@ -126,7 +129,8 @@ namespace AddressRegistry.StreetName
 
             ApplyChange(new AddressWasProposedBecauseOfReaddressing(
                 PersistentLocalId,
-                addressPersistentLocalId,
+                destinationAddressPersistentLocalId,
+                sourceAddressPersistentLocalId,
                 parent?.AddressPersistentLocalId,
                 postalCode,
                 houseNumber,

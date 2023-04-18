@@ -94,6 +94,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenDestination
                         new AddressWasProposedBecauseOfReaddressing(
                             _streetNamePersistentLocalId,
                             destinationAddressPersistentLocalId,
+                            sourceAddressPersistentLocalId,
                             null,
                             new PostalCode(sourceAddressWasMigrated.PostalCode!),
                             destinationHouseNumber,
@@ -105,6 +106,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenDestination
                         new AddressWasProposedBecauseOfReaddressing(
                             _streetNamePersistentLocalId,
                             destinationProposedBoxNumberAddressPersistentLocalId,
+                            proposedBoxNumberAddressPersistentLocalId,
                             destinationAddressPersistentLocalId,
                             new PostalCode(sourceAddressWasMigrated.PostalCode!),
                             destinationHouseNumber,
@@ -116,6 +118,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenDestination
                         new AddressWasProposedBecauseOfReaddressing(
                             _streetNamePersistentLocalId,
                             destinationCurrentBoxNumberAddressPersistentLocalId,
+                            currentBoxNumberAddressPersistentLocalId,
                             destinationAddressPersistentLocalId,
                             new PostalCode(sourceAddressWasMigrated.PostalCode!),
                             destinationHouseNumber,

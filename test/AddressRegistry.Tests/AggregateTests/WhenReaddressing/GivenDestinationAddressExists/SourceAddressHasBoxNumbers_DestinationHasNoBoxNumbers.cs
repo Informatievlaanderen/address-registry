@@ -104,6 +104,7 @@
                         new AddressWasProposedBecauseOfReaddressing(
                             _streetNamePersistentLocalId,
                             expectedProposedBoxNumberAddressPersistentLocalId,
+                            proposedBoxNumberAddressPersistentLocalId,
                             destinationAddressPersistentLocalId,
                             new PostalCode(sourceAddressWasMigrated.PostalCode!),
                             destinationHouseNumber,
@@ -115,6 +116,7 @@
                         new AddressWasProposedBecauseOfReaddressing(
                             _streetNamePersistentLocalId,
                             expectedCurrentBoxNumberAddressPersistentLocalId,
+                            currentBoxNumberAddressAddressPersistentLocalId,
                             destinationAddressPersistentLocalId,
                             new PostalCode(sourceAddressWasMigrated.PostalCode!),
                             destinationHouseNumber,

@@ -68,6 +68,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddressing.GivenDestination
                         new AddressWasProposedBecauseOfReaddressing(
                             _streetNamePersistentLocalId,
                             destinationAddressPersistentLocalId,
+                            sourceAddressPersistentLocalId,
                             null,
                             new PostalCode(sourceAddressWasMigrated.PostalCode!),
                             destinationHouseNumber,

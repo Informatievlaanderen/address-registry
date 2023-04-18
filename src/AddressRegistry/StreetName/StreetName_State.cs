@@ -67,6 +67,8 @@ namespace AddressRegistry.StreetName
 
             Register<AddressHouseNumberWasReaddressed>(When);
             Register<AddressWasProposedBecauseOfReaddressing>(When);
+            Register<AddressWasRejectedBecauseOfReaddressing>(When);
+            Register<AddressWasRetiredBecauseOfReaddressing>(When);
             Register<AddressHouseNumberWasReplacedBecauseOfReaddress>(When);
         }
 
@@ -280,6 +282,10 @@ namespace AddressRegistry.StreetName
 
             StreetNameAddresses.Add(address);
         }
+
+        private void When(AddressWasRejectedBecauseOfReaddressing @event) => RouteToAddress(@event);
+
+        private void When(AddressWasRetiredBecauseOfReaddressing @event) => RouteToAddress(@event);
 
         private void When(AddressHouseNumberWasReplacedBecauseOfReaddress @event) => RouteToAddress(@event);
 

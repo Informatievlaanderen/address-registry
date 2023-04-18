@@ -158,15 +158,15 @@
                                     currentBoxNumberAddressPersistentLocalId, expectedCurrentBoxNumberAddressPersistentLocalId)
                             })),
                     new Fact(_streamId,
-                        new AddressWasRetiredBecauseHouseNumberWasRetired(
+                        new AddressWasRetiredBecauseOfReaddressing(
                             _streetNamePersistentLocalId,
                             currentBoxNumberAddressPersistentLocalId)),
                     new Fact(_streamId,
-                        new AddressWasRejectedBecauseHouseNumberWasRetired(
+                        new AddressWasRejectedBecauseOfReaddressing(
                             _streetNamePersistentLocalId,
                             proposedBoxNumberAddressPersistentLocalId)),
                     new Fact(_streamId,
-                        new AddressWasRetiredV2(
+                        new AddressWasRetiredBecauseOfReaddressing(
                             _streetNamePersistentLocalId,
                             firstAddressPersistentLocalId)),
                     new Fact(_streamId,

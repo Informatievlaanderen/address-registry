@@ -1,3 +1,17 @@
+# [3.94.0](https://github.com/informatievlaanderen/address-registry/compare/v3.93.2...v3.94.0) (2023-04-18)
+
+
+### Bug Fixes
+
+* remove AddressHouseNumberWasReplacedBecauseOfReaddress ([369300c](https://github.com/informatievlaanderen/address-registry/commit/369300c9364ad319d0f43c1b5f60d40c2905ef78))
+* remove rejected and retired boxnumbers from AddressHouseNumberWasReaddressed ([0f76cbf](https://github.com/informatievlaanderen/address-registry/commit/0f76cbfc0a7f94a7aa31995dcaef260e424a24ff))
+* rename readdressing to readdress ([5ec3a54](https://github.com/informatievlaanderen/address-registry/commit/5ec3a5434e3468676071eae3ac347b28d9fbc0ee))
+
+
+### Features
+
+* projections for new readdress events ([839a095](https://github.com/informatievlaanderen/address-registry/commit/839a095133a789bc4a516c8476e43b6f54c644ff))
+
 ## [3.93.2](https://github.com/informatievlaanderen/address-registry/compare/v3.93.1...v3.93.2) (2023-04-13)
 
 ## [3.93.1](https://github.com/informatievlaanderen/address-registry/compare/v3.93.0...v3.93.1) (2023-04-13)

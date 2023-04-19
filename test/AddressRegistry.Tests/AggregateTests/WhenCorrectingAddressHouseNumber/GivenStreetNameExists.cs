@@ -91,7 +91,9 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressHouseNumber
         {
             var parentAddressPersistentLocalId = new AddressPersistentLocalId(1);
             var childAddressPersistentLocalId = new AddressPersistentLocalId(2);
-            var parentAddressWasMigrated = CreateAddressWasMigratedToStreetName(parentAddressPersistentLocalId);
+            var parentAddressWasMigrated = CreateAddressWasMigratedToStreetName(
+                parentAddressPersistentLocalId,
+                houseNumber: new HouseNumber("99"));
             var childAddressWasMigrated = CreateAddressWasMigratedToStreetName(
                 childAddressPersistentLocalId,
                 houseNumber: new HouseNumber(parentAddressWasMigrated.HouseNumber),

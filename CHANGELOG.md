@@ -1,3 +1,12 @@
+## [3.94.1](https://github.com/informatievlaanderen/address-registry/compare/v3.94.0...v3.94.1) (2023-04-19)
+
+
+### Bug Fixes
+
+* add readdress request example ([011f895](https://github.com/informatievlaanderen/address-registry/commit/011f895abe2ba70ae84014a0c1bd35c8a2d27d89))
+* description of readdress request OpheffenAdressen ([ec6b93a](https://github.com/informatievlaanderen/address-registry/commit/ec6b93acbbf2d24d3772232ca1e6d85fdf8b30fc))
+* rename readdress ticket action name ([a00fdce](https://github.com/informatievlaanderen/address-registry/commit/a00fdcefcdbd0ed53d8c741d7869759a1af3c79b))
+
 # [3.94.0](https://github.com/informatievlaanderen/address-registry/compare/v3.93.2...v3.94.0) (2023-04-18)
 
 

@@ -9,7 +9,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers
 
     public sealed class ReaddressHandler : SqsHandler<ReaddressSqsRequest>
     {
-        public const string Action = "Readdress";
+        public const string Action = "ReaddressStreetNameAddresses";
 
         public ReaddressHandler(
             ISqsQueue sqsQueue,

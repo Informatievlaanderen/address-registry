@@ -9,9 +9,14 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
     using NetTopologySuite.IO;
     using NodaTime;
     using System;
+    using System.Linq;
     using System.Text;
+    using Address.Events;
+    using Be.Vlaanderen.Basisregisters.EventHandling;
     using StreetName;
     using Microsoft.Extensions.Options;
+    using SqlStreamStore;
+    using SqlStreamStore.Streams;
     using StreetName.Events;
 
     [ConnectedProjectionName("Extract adressen")]
@@ -39,7 +44,12 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
         private readonly string GeomSpecBuildingUnit = "Gebouweenheid";
         private readonly Encoding _encoding;
 
-        public AddressExtractProjectionsV2(IOptions<ExtractConfig> extractConfig, Encoding encoding, WKBReader wkbReader)
+        public AddressExtractProjectionsV2(
+            IReadonlyStreamStore streamStore,
+            EventDeserializer eventDeserializer,
+            IOptions<ExtractConfig> extractConfig,
+            Encoding encoding,
+            WKBReader wkbReader)
         {
             _encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
 
@@ -80,6 +90,14 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 var coordinate = wkbReader.Read(message.Message.ExtendedWkbGeometry.ToByteArray()).Coordinate;
                 var pointShapeContent = new PointShapeContent(new Point(coordinate.X, coordinate.Y));
 
+                var firstEventJsonData = await (await streamStore
+                    .ReadStreamForwards(message.Message.AddressId.ToString("D"), StreamVersion.Start, 1, ct))
+                    .Messages
+                    .First()
+                    .GetJsonData(ct);
+                var registeredEvent = (AddressWasRegistered)eventDeserializer.DeserializeObject(firstEventJsonData, typeof(AddressWasRegistered));
+                var creationTimestampAsString = registeredEvent.Provenance.Timestamp.ToBelgianDateTimeOffset().FromDateTimeOffset();
+
                 var addressDbaseRecord = new AddressDbaseRecordV2
                 {
                     id = { Value = $"{extractConfig.Value.DataVlaanderenNamespace}/{message.Message.AddressPersistentLocalId}" },
@@ -91,6 +109,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                     posspec = { Value = Map(message.Message.GeometrySpecification) },
                     straatnmid = { Value = message.Message.StreetNamePersistentLocalId.ToString() },
                     status = { Value = Map(message.Message.Status)},
+                    creatieid = { Value = creationTimestampAsString },
                     versieid = { Value = message.Message.Provenance.Timestamp.ToBelgianDateTimeOffset().FromDateTimeOffset() },
                 };
 
@@ -126,6 +145,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                     offtoegknd = { Value = true },
                     straatnmid = { Value = message.Message.StreetNamePersistentLocalId.ToString() },
                     status = { Value = Map(AddressStatus.Proposed) },
+                    creatieid = { Value = message.Message.Provenance.Timestamp.ToBelgianDateTimeOffset().FromDateTimeOffset() },
                     versieid = { Value = message.Message.Provenance.Timestamp.ToBelgianDateTimeOffset().FromDateTimeOffset() }
                 };
 
@@ -383,6 +403,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                     offtoegknd = { Value = true },
                     straatnmid = { Value = message.Message.StreetNamePersistentLocalId.ToString() },
                     status = { Value = Map(AddressStatus.Proposed) },
+                    creatieid = { Value = message.Message.Provenance.Timestamp.ToBelgianDateTimeOffset().FromDateTimeOffset() },
                     versieid = { Value = message.Message.Provenance.Timestamp.ToBelgianDateTimeOffset().FromDateTimeOffset() }
                 };
 

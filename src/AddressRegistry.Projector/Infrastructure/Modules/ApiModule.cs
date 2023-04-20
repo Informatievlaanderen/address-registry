@@ -35,6 +35,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using NetTopologySuite.IO;
+    using SqlStreamStore;
 
     public class ApiModule : Module
     {
@@ -135,7 +136,12 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                     _configuration,
                     _loggerFactory)
                 .RegisterProjections<AddressExtractProjectionsV2, ExtractContext>(
-                    context => new AddressExtractProjectionsV2(context.Resolve<IOptions<ExtractConfig>>(), DbaseCodePage.Western_European_ANSI.ToEncoding(), new WKBReader()),
+                    context => new AddressExtractProjectionsV2(
+                        context.Resolve<IReadonlyStreamStore>(),
+                        context.Resolve<EventDeserializer>(),
+                        context.Resolve<IOptions<ExtractConfig>>(),
+                        DbaseCodePage.Western_European_ANSI.ToEncoding(),
+                        new WKBReader()),
                     ConnectedProjectionSettings.Default)
                 .RegisterProjections<AddressCrabHouseNumberIdExtractProjection, ExtractContext>(
                     context => new AddressCrabHouseNumberIdExtractProjection(DbaseCodePage.Western_European_ANSI.ToEncoding()),

@@ -8,6 +8,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
 
         public DbaseCharacter id { get; }
         public DbaseInt32 adresid { get; }
+        public DbaseCharacter creatieid { get; }
         public DbaseCharacter versieid { get; }
         public DbaseCharacter posspec { get; }
         public DbaseCharacter posgeommet { get; }
@@ -26,6 +27,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
         {
             id = new DbaseCharacter(Schema.id);
             adresid = new DbaseInt32(Schema.adresid);
+            creatieid = new DbaseCharacter(Schema.creatieid);
             versieid = new DbaseCharacter(Schema.versieid);
             posspec = new DbaseCharacter(Schema.posspec);
             posgeommet = new DbaseCharacter(Schema.posgeommet);
@@ -44,6 +46,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
             {
                 id,
                 adresid,
+                creatieid,
                 versieid,
                 posspec,
                 posgeommet,

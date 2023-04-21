@@ -1,3 +1,10 @@
+# [3.95.0](https://github.com/informatievlaanderen/address-registry/compare/v3.94.1...v3.95.0) (2023-04-21)
+
+
+### Features
+
+* add creatieid to extract ([fe1ec21](https://github.com/informatievlaanderen/address-registry/commit/fe1ec21ecab2fdd2c5a95d3143384163a8099052))
+
 ## [3.94.1](https://github.com/informatievlaanderen/address-registry/compare/v3.94.0...v3.94.1) (2023-04-19)
 
 

@@ -210,18 +210,18 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             {
                 StreetNameIsRemovedException => ValidationErrors.Common.StreetNameIsRemoved.ToTicketError(),
                 StreetNameHasInvalidStatusException => ValidationErrors.Common.StreetNameIsNotActive.ToTicketError(),
-                PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException => ValidationErrors.Common.PostalCode
-                    .PostalCodeNotInMunicipality.ToTicketError(),
-                AddressHasInvalidStatusException ex => ValidationErrors.Readdress.AddressInvalidStatus.ToTicketError(
-                    CreatePuri(ex.AddressPersistentLocalId)),
-                AddressHasBoxNumberException ex => ValidationErrors.Readdress.AddressHasBoxNumber.ToTicketError(
-                    CreatePuri(ex.AddressPersistentLocalId)),
-                AddressHasNoPostalCodeException ex => ValidationErrors.Readdress.AddressHasNoPostalCode.ToTicketError(
-                    ex.AddressPersistentLocalId),
+                PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException =>
+                    ValidationErrors.Common.PostalCode.PostalCodeNotInMunicipality.ToTicketError(),
+                AddressHasInvalidStatusException ex =>
+                    ValidationErrors.Readdress.AddressInvalidStatus.ToTicketError(CreatePuri(ex.AddressPersistentLocalId)),
+                AddressHasBoxNumberException ex =>
+                    ValidationErrors.Readdress.AddressHasBoxNumber.ToTicketError(CreatePuri(ex.AddressPersistentLocalId)),
+                AddressHasNoPostalCodeException ex =>
+                    ValidationErrors.Readdress.AddressHasNoPostalCode.ToTicketError(CreatePuri(ex.AddressPersistentLocalId)),
                 HouseNumberHasInvalidFormatException ex =>
                     ValidationErrors.Readdress.HouseNumberInvalidFormat.ToTicketError(ex.HouseNumber),
-                SourceAndDestinationAddressAreTheSameException ex => ValidationErrors.Readdress
-                    .SourceAndDestinationAddressAreTheSame.ToTicketError(CreatePuri(ex.SourceAddressPersistentLocalId)),
+                SourceAndDestinationAddressAreTheSameException ex =>
+                    ValidationErrors.Readdress.SourceAndDestinationAddressAreTheSame.ToTicketError(CreatePuri(ex.SourceAddressPersistentLocalId)),
                 _ => null
             };
         }

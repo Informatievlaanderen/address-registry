@@ -54,19 +54,19 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
             public static class DuplicateSourceAddressId
             {
                 public const string Code = "BronAdresIdReedsInLijstHerAdresseer";
-                public static string Message(string addressId) => $"Het bronAdresId zit meerdere keren in lijst van herAdresseer: '{addressId}'.";
+                public static string Message(string addressId) => $"Het bronAdresId zit meerdere keren in lijst van herAdresseer: {addressId}.";
             }
 
             public static class DuplicateDestinationHouseNumber
             {
                 public const string Code = "DoelHuisnummerReedsInLijstHerAdresseer";
-                public static string Message(string houseNumber) => $"Het doelHuisnummer zit meerdere keren in lijst van herAdresseer: '{houseNumber}'.";
+                public static string Message(string houseNumber) => $"Het doelHuisnummer zit meerdere keren in lijst van herAdresseer: {houseNumber}.";
             }
 
             public static class SourceAndDestinationAddressAreTheSame
             {
                 public const string Code = "AdresBronAdresIdDoelHuisnummer";
-                public static string Message(string addressId) => $"Het bron adres id verwijst reeds naar het doel busnummer: '{addressId}'.";
+                public static string Message(string addressId) => $"Het bron adres id verwijst reeds naar het doel busnummer: {addressId}.";
 
                 public static TicketError ToTicketError(string addressId) => new TicketError(Message(addressId), Code);
             }

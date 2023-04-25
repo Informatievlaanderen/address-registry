@@ -22,7 +22,7 @@
         public List<AddressToReaddressItem> HerAdresseer { get; set; }
 
         /// <summary>
-        ///  Lijst van adressen welke afgekeurd of gehistoreerd worden.
+        ///  Lijst van adressen welke afgekeurd of gehistoreerd worden (optioneel).
         /// </summary>
         [DataMember(Name = "OpheffenAdressen", Order = 2)]
         [JsonProperty(Required = Required.Default)]

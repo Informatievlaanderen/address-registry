@@ -1,5 +1,6 @@
 namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
 {
+    using System.Linq;
     using System.Reflection;
     using Autofac;
     using Handlers;
@@ -15,7 +16,10 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
                 .As<IMediator>()
                 .InstancePerLifetimeScope();
 
-            builder.RegisterAssemblyTypes(typeof(ProposeAddressHandler).GetTypeInfo().Assembly).AsImplementedInterfaces();
+            builder
+                .RegisterAssemblyTypes(typeof(ProposeAddressHandler).GetTypeInfo().Assembly)
+                .Where(t => t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IRequestHandler<,>)))
+                .AsImplementedInterfaces();
         }
     }
 }

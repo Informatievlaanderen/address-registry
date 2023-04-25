@@ -1,3 +1,13 @@
+## [3.95.1](https://github.com/informatievlaanderen/address-registry/compare/v3.95.0...v3.95.1) (2023-04-25)
+
+
+### Bug Fixes
+
+* another bunch of corrections for readdress error messages and codes ([befd5e3](https://github.com/informatievlaanderen/address-registry/commit/befd5e30853595c7d172a2a590c3a982e666505f))
+* readdress error codes and error messages ([030f948](https://github.com/informatievlaanderen/address-registry/commit/030f9489a66af3de127d13eef78bc109f6781b85))
+* remove brackets around variable in error message ([30e50a2](https://github.com/informatievlaanderen/address-registry/commit/30e50a29a063f3e603dbc16c9bbc35f87b24d711))
+* sqs handlers registration ([ccca47e](https://github.com/informatievlaanderen/address-registry/commit/ccca47eb2e43503328acc9ee18656b9a70cfc236))
+
 # [3.95.0](https://github.com/informatievlaanderen/address-registry/compare/v3.94.1...v3.95.0) (2023-04-21)
 
 

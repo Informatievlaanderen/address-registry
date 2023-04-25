@@ -235,7 +235,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenReaddress
                 .Result
                 .Where(x =>
                     x.Errors.Any(e =>
-                        e.ErrorMessage == $"Het bronAdresId zit meerdere keren in lijst van herAdresseer: '{bronAdresId}'."
+                        e.ErrorMessage == $"Het bronAdresId zit meerdere keren in lijst van herAdresseer: {bronAdresId}."
                         && e.ErrorCode == "BronAdresIdReedsInLijstHerAdresseer"));
         }
 
@@ -269,7 +269,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenReaddress
                 .Result
                 .Where(x =>
                     x.Errors.Any(e =>
-                        e.ErrorMessage == "Het doelHuisnummer zit meerdere keren in lijst van herAdresseer: '1'."
+                        e.ErrorMessage == "Het doelHuisnummer zit meerdere keren in lijst van herAdresseer: 1."
                         && e.ErrorCode == "DoelHuisnummerReedsInLijstHerAdresseer"));
         }
 

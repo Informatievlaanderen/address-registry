@@ -67,7 +67,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
                 x.Error(
                     It.IsAny<Guid>(),
                     new TicketError(
-                        "Het bron adres id verwijst reeds naar het doel busnummer: 'http://base/1'.",
+                        "Het bron adres id verwijst reeds naar het doel busnummer: http://base/1.",
                         "AdresBronAdresIdDoelHuisnummer"),
                     CancellationToken.None));
         }

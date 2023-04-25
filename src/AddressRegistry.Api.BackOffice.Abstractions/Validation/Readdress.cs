@@ -25,10 +25,10 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
 
             public static class AddressHasNoPostalCode
             {
-                public const string Code = "AdresPostcode";
-                public static string Message(AddressPersistentLocalId addressId) => $"Het bron adres '{addressId}' heeft geen postcode.";
+                public const string Code = "BronAdresIdPostcode";
+                public static string Message(string addressId) => $"Deze actie is niet toegestaan op adressen die geen postcode hebben: {addressId}.";
 
-                public static TicketError ToTicketError(AddressPersistentLocalId addressId) => new(Message(addressId), Code);
+                public static TicketError ToTicketError(string addressId) => new(Message(addressId), Code);
             }
 
             public static class EmptyAddressesToReaddress
@@ -65,8 +65,8 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
 
             public static class SourceAndDestinationAddressAreTheSame
             {
-                public const string Code = "AdresBronAdresIdDoelHuisnummer";
-                public static string Message(string addressId) => $"Het bron adres id verwijst reeds naar het doel busnummer: {addressId}.";
+                public const string Code = "BronAdresIdHetzelfdeAlsDoelHuisnummer";
+                public static string Message(string addressId) => $"Het bronAdresId is hetzelfde als het doelHuisnummer: {addressId}.";
 
                 public static TicketError ToTicketError(string addressId) => new TicketError(Message(addressId), Code);
             }

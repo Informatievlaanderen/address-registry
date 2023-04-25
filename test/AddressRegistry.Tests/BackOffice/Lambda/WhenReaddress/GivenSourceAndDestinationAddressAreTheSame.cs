@@ -67,8 +67,8 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
                 x.Error(
                     It.IsAny<Guid>(),
                     new TicketError(
-                        "Het bron adres id verwijst reeds naar het doel busnummer: http://base/1.",
-                        "AdresBronAdresIdDoelHuisnummer"),
+                        "Het bronAdresId is hetzelfde als het doelHuisnummer: http://base/1.",
+                        "BronAdresIdHetzelfdeAlsDoelHuisnummer"),
                     CancellationToken.None));
         }
     }

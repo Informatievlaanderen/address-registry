@@ -65,8 +65,8 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
                 x.Error(
                     It.IsAny<Guid>(),
                     new TicketError(
-                        "Het bron adres '1' heeft geen postcode.",
-                        "AdresPostcode"),
+                        "Deze actie is niet toegestaan op adressen die geen postcode hebben: http://base/1.",
+                        "BronAdresIdPostcode"),
                     CancellationToken.None));
         }
     }

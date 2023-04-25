@@ -9,15 +9,15 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
     using AddressRegistry.Api.BackOffice.Abstractions.SqsRequests;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
-    using AddressRegistry.StreetName;
-    using AddressRegistry.StreetName.Exceptions;
-    using AddressRegistry.Tests.BackOffice.Infrastructure;
-    using AddressRegistry.Tests.BackOffice.Lambda.Infrastructure;
     using Autofac;
+    using BackOffice.Infrastructure;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using global::AutoFixture;
+    using Infrastructure;
     using Microsoft.Extensions.Configuration;
     using Moq;
+    using StreetName;
+    using StreetName.Exceptions;
     using TicketingService.Abstractions;
     using Xunit;
     using Xunit.Abstractions;
@@ -42,7 +42,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
                 new FakeRetryPolicy(),
                 ticketing.Object,
                 Mock.Of<IStreetNames>(),
-                MockExceptionIdempotentCommandHandler(() => new HouseNumberHasInvalidFormatException(new AddressPersistentLocalId(1))).Object,
+                MockExceptionIdempotentCommandHandler(() => new HouseNumberHasInvalidFormatException("A")).Object,
                 _fakeBackOfficeContext,
                 Container);
 
@@ -65,8 +65,8 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
                 x.Error(
                     It.IsAny<Guid>(),
                     new TicketError(
-                        "Ongeldig huisnummerformaat.",
-                        "AdresOngeldigHuisnummerformaat"),
+                        "Ongeldig huisnummerformaat: A.",
+                        "DoelHuisnummerOngeldigHuisnummerformaat"),
                     CancellationToken.None));
         }
 

@@ -218,8 +218,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                     CreatePuri(ex.AddressPersistentLocalId)),
                 AddressHasNoPostalCodeException ex => ValidationErrors.Readdress.AddressHasNoPostalCode.ToTicketError(
                     ex.AddressPersistentLocalId),
-                HouseNumberHasInvalidFormatException =>
-                    ValidationErrors.Common.HouseNumberInvalidFormat.ToTicketError(),
+                HouseNumberHasInvalidFormatException ex =>
+                    ValidationErrors.Readdress.HouseNumberInvalidFormat.ToTicketError(ex.Message),
                 SourceAndDestinationAddressAreTheSameException ex => ValidationErrors.Readdress
                     .SourceAndDestinationAddressAreTheSame.ToTicketError(CreatePuri(ex.SourceAddressPersistentLocalId)),
                 _ => null

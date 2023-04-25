@@ -159,7 +159,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
             var postInfoId = Fixture.Create<PostalCode>();
 
             var proposeAddressLambdaHandler = CreateProposeAddressLambdaHandler(
-                MockExceptionIdempotentCommandHandler<HouseNumberHasInvalidFormatException>().Object,
+                MockExceptionIdempotentCommandHandler(() => new HouseNumberHasInvalidFormatException("ABC")).Object,
                 ticketing.Object);
 
             await SetupMunicipalityAndStreetName(postInfoId, nisCode, Fixture.Create<MunicipalityId>(), streetNamePersistentLocalId);

@@ -52,8 +52,8 @@
 
             RuleFor(x => x)
                 .Must(x => ValidateOpheffenAddressen(x.OpheffenAdressen, x.HerAdresseer))
-                .WithMessage("OpheffenAdressen andere items.")
-                .WithErrorCode("OpheffenAdressenAnders")
+                .WithMessage(ValidationErrors.Readdress.AddressToRetireIsNotSourceAddress.Message)
+                .WithErrorCode(ValidationErrors.Readdress.AddressToRetireIsNotSourceAddress.Code)
                 .WithName(nameof(ReaddressRequest.OpheffenAdressen))
                 .When(x => x.OpheffenAdressen is not null);
         }

@@ -162,7 +162,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
                 new FakeRetryPolicy(),
                 ticketing.Object,
                 Mock.Of<IStreetNames>(),
-                MockExceptionIdempotentCommandHandler<HouseNumberHasInvalidFormatException>().Object);
+                MockExceptionIdempotentCommandHandler(() => new HouseNumberHasInvalidFormatException("ABC")).Object);
 
             // Act
             await sut.Handle(new CorrectAddressHouseNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressHouseNumberSqsRequest()

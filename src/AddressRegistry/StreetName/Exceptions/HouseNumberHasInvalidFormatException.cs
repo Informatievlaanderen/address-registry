@@ -6,15 +6,15 @@ namespace AddressRegistry.StreetName.Exceptions
     [Serializable]
     public sealed class HouseNumberHasInvalidFormatException : AddressRegistryException
     {
-        public HouseNumberHasInvalidFormatException()
-        { }
+        public string HouseNumber { get; }
+
+        public HouseNumberHasInvalidFormatException(string houseNumber)
+        {
+            HouseNumber = houseNumber;
+        }
 
         private HouseNumberHasInvalidFormatException(SerializationInfo info, StreamingContext context)
             : base(info, context)
-        { }
-
-        public HouseNumberHasInvalidFormatException(string message)
-            : base(message)
         { }
 
         public HouseNumberHasInvalidFormatException(string message, Exception inner)

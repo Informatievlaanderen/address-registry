@@ -219,7 +219,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 AddressHasNoPostalCodeException ex => ValidationErrors.Readdress.AddressHasNoPostalCode.ToTicketError(
                     ex.AddressPersistentLocalId),
                 HouseNumberHasInvalidFormatException ex =>
-                    ValidationErrors.Readdress.HouseNumberInvalidFormat.ToTicketError(ex.Message),
+                    ValidationErrors.Readdress.HouseNumberInvalidFormat.ToTicketError(ex.HouseNumber),
                 SourceAndDestinationAddressAreTheSameException ex => ValidationErrors.Readdress
                     .SourceAndDestinationAddressAreTheSame.ToTicketError(CreatePuri(ex.SourceAddressPersistentLocalId)),
                 _ => null

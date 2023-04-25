@@ -9,7 +9,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
         {
             public static class AddressInvalidStatus
             {
-                public const string Code = "AdresAfgekeurdGehistoreerd";
+                public const string Code = "BrondAdresIdAfgekeurdGehistoreerd";
                 public static string Message(string addressPuri) => $"Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik': {addressPuri}.";
 
                 public static TicketError ToTicketError(string addressPuri) => new(Message(addressPuri), Code);
@@ -17,7 +17,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
 
             public static class AddressHasBoxNumber
             {
-                public const string Code = "AdresBusnummer";
+                public const string Code = "BronAdresIdBusnummer";
                 public static string Message(string addressPuri) => $"Deze actie is niet toegestaan op adressen met een busnummer: {addressPuri}.";
 
                 public static TicketError ToTicketError(string addressPuri) => new(Message(addressPuri), Code);
@@ -45,20 +45,22 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
 
             public static class HouseNumberInvalidFormat
             {
-                public const string Code = "AdresOngeldigHuisnummerformaat";
-                public static string Message(string houseNumber) => $"Ongeldig huisnummerformaat '{houseNumber}'.";
+                public const string Code = "DoelHuisnummerOngeldigHuisnummerformaat";
+                public static string Message(string houseNumber) => $"Ongeldig huisnummerformaat: {houseNumber}.";
+
+                public static TicketError ToTicketError(string houseNumber) => new TicketError(Message(houseNumber), Code);
             }
 
             public static class DuplicateSourceAddressId
             {
-                public const string Code = "AdresDuplicateBronAdresId";
-                public static string Message(string addressId) => $"Duplicate bron adres id '{addressId}'.";
+                public const string Code = "BronAdresIdReedsInLijstHerAdresseer";
+                public static string Message(string addressId) => $"Het bronAdresId zit meerdere keren in lijst van herAdresseer: '{addressId}'.";
             }
 
             public static class DuplicateDestinationHouseNumber
             {
-                public const string Code = "AdresDuplicateDoelHuisnummer";
-                public static string Message(string houseNumber) => $"Duplicate doel huisnummer '{houseNumber}'.";
+                public const string Code = "DoelHuisnummerReedsInLijstHerAdresseer";
+                public static string Message(string houseNumber) => $"Het doelHuisnummer zit meerdere keren in lijst van herAdresseer: '{houseNumber}'.";
             }
 
             public static class SourceAndDestinationAddressAreTheSame
@@ -67,6 +69,12 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
                 public static string Message(string addressId) => $"Het bron adres id verwijst reeds naar het doel busnummer: '{addressId}'.";
 
                 public static TicketError ToTicketError(string addressId) => new TicketError(Message(addressId), Code);
+            }
+
+            public static class AddressToRetireIsNotSourceAddress
+            {
+                public const string Code = "OpgehevenAdresNietInLijstHerAdresseer";
+                public const string Message = "Het op te heffen adres dient voor te komen in de lijst van herAdresseer.";
             }
         }
     }

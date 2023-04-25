@@ -16,7 +16,7 @@ namespace AddressRegistry.StreetName
         {
             if (!HasValidFormat(houseNumber))
             {
-                throw new HouseNumberHasInvalidFormatException();
+                throw new HouseNumberHasInvalidFormatException(houseNumber);
             }
 
             return new HouseNumber(houseNumber);

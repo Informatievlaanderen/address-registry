@@ -9,18 +9,18 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenReaddress
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Abstractions.SqsRequests;
     using AddressRegistry.Api.BackOffice.Validators;
-    using AddressRegistry.StreetName;
-    using AddressRegistry.Tests.BackOffice.Infrastructure;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Sqs.Requests;
     using FluentAssertions;
     using FluentValidation;
     using global::AutoFixture;
+    using Infrastructure;
     using Microsoft.AspNetCore.Mvc;
     using Moq;
     using NodaTime;
     using SqlStreamStore;
     using SqlStreamStore.Streams;
+    using StreetName;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -156,7 +156,11 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenReaddress
                 DoelStraatnaamId = $"{StraatNaamPuri}/1",
                 HerAdresseer = new List<AddressToReaddressItem>
                 {
-                    new AddressToReaddressItem {BronAdresId = $"{AdresPuri}{existingAdddressPersistentLocalId}", DoelHuisnummer = "A"}
+                    new AddressToReaddressItem
+                    {
+                        BronAdresId = $"{AdresPuri}{existingAdddressPersistentLocalId}",
+                        DoelHuisnummer = "A"
+                    }
                 }
             };
             var act = async () => await _controller.Readdress(
@@ -167,7 +171,9 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenReaddress
                 .ThrowAsync<ValidationException>()
                 .Result
                 .Where(x =>
-                    x.Errors.Any(e => e.ErrorMessage == $"Ongeldig huisnummerformaat 'A'." && e.ErrorCode == "AdresOngeldigHuisnummerformaat"));
+                    x.Errors.Any(e =>
+                        e.ErrorMessage == "Ongeldig huisnummerformaat: A."
+                        && e.ErrorCode == "DoelHuisnummerOngeldigHuisnummerformaat"));
         }
 
         [Fact]
@@ -197,7 +203,9 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenReaddress
                 .ThrowAsync<ValidationException>()
                 .Result
                 .Where(x =>
-                    x.Errors.Any(e => e.ErrorMessage == "OpheffenAdressen andere items." && e.ErrorCode == "OpheffenAdressenAnders"));
+                    x.Errors.Any(e =>
+                        e.ErrorMessage == "Het op te heffen adres dient voor te komen in de lijst van herAdresseer."
+                        && e.ErrorCode == "OpgehevenAdresNietInLijstHerAdresseer"));
         }
 
         [Fact]
@@ -226,7 +234,9 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenReaddress
                 .ThrowAsync<ValidationException>()
                 .Result
                 .Where(x =>
-                    x.Errors.Any(e => e.ErrorMessage == $"Duplicate bron adres id '{bronAdresId}'." && e.ErrorCode == "AdresDuplicateBronAdresId"));
+                    x.Errors.Any(e =>
+                        e.ErrorMessage == $"Het bronAdresId zit meerdere keren in lijst van herAdresseer: '{bronAdresId}'."
+                        && e.ErrorCode == "BronAdresIdReedsInLijstHerAdresseer"));
         }
 
         [Fact]
@@ -258,7 +268,9 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenReaddress
                 .ThrowAsync<ValidationException>()
                 .Result
                 .Where(x =>
-                    x.Errors.Any(e => e.ErrorMessage == $"Duplicate doel huisnummer '1'." && e.ErrorCode == "AdresDuplicateDoelHuisnummer"));
+                    x.Errors.Any(e =>
+                        e.ErrorMessage == "Het doelHuisnummer zit meerdere keren in lijst van herAdresseer: '1'."
+                        && e.ErrorCode == "DoelHuisnummerReedsInLijstHerAdresseer"));
         }
 
         private static Mock<IStreamStore> MockStreamStore(bool streamExists)

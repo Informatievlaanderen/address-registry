@@ -1,3 +1,10 @@
+## [3.95.2](https://github.com/informatievlaanderen/address-registry/compare/v3.95.1...v3.95.2) (2023-04-26)
+
+
+### Bug Fixes
+
+* consumer sequences registration + recover lost offset ([24b599b](https://github.com/informatievlaanderen/address-registry/commit/24b599b5cf56c75a9b712ee719607047c6d468fe))
+
 ## [3.95.1](https://github.com/informatievlaanderen/address-registry/compare/v3.95.0...v3.95.1) (2023-04-25)
 
 

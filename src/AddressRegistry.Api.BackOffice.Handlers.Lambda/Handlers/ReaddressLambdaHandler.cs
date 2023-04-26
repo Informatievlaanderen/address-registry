@@ -213,22 +213,33 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException =>
                     ValidationErrors.Common.PostalCode.PostalCodeNotInMunicipality.ToTicketError(),
                 AddressHasInvalidStatusException ex =>
-                    ValidationErrors.Readdress.AddressInvalidStatus.ToTicketError(CreatePuri(ex.AddressPersistentLocalId)),
+                    ValidationErrors.Readdress.AddressInvalidStatus.ToTicketError(
+                        CreatePuri(request, ex.AddressPersistentLocalId)),
                 AddressHasBoxNumberException ex =>
-                    ValidationErrors.Readdress.AddressHasBoxNumber.ToTicketError(CreatePuri(ex.AddressPersistentLocalId)),
+                    ValidationErrors.Readdress.AddressHasBoxNumber.ToTicketError(
+                        CreatePuri(request, ex.AddressPersistentLocalId)),
                 AddressHasNoPostalCodeException ex =>
-                    ValidationErrors.Readdress.AddressHasNoPostalCode.ToTicketError(CreatePuri(ex.AddressPersistentLocalId)),
+                    ValidationErrors.Readdress.AddressHasNoPostalCode.ToTicketError(
+                        CreatePuri(request, ex.AddressPersistentLocalId)),
                 HouseNumberHasInvalidFormatException ex =>
                     ValidationErrors.Readdress.HouseNumberInvalidFormat.ToTicketError(ex.HouseNumber),
                 SourceAndDestinationAddressAreTheSameException ex =>
-                    ValidationErrors.Readdress.SourceAndDestinationAddressAreTheSame.ToTicketError(CreatePuri(ex.SourceAddressPersistentLocalId)),
+                    ValidationErrors.Readdress.SourceAndDestinationAddressAreTheSame.ToTicketError(
+                        CreatePuri(request, ex.SourceAddressPersistentLocalId)),
                 _ => null
             };
         }
 
-        private string CreatePuri(AddressPersistentLocalId addressPersistentLocalId)
+        private string CreatePuri(ReaddressLambdaRequest request, AddressPersistentLocalId addressPersistentLocalId)
         {
-            return string.Format(DetailUrlFormat, addressPersistentLocalId);
+            return request.Request.HerAdresseer
+                .Select(x => new
+                {
+                    PersistentLocalId = Convert.ToInt32(x.BronAdresId.AsIdentifier().Map(x => x).Value),
+                    Puri = x.BronAdresId
+                })
+                .Single(x => x.PersistentLocalId == addressPersistentLocalId)
+                .Puri;
         }
     }
 }

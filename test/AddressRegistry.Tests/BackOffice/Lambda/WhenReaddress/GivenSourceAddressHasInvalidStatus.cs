@@ -36,13 +36,18 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
         {
             // Arrange
             var ticketing = new Mock<ITicketing>();
+            var addressPersistentLocalId = new AddressPersistentLocalId(1);
+            var puri = $"https://data.vlaanderen.be/id/adres/{addressPersistentLocalId}";
+
+            await _fakeBackOfficeContext.AddIdempotentAddressStreetNameIdRelation(
+                addressPersistentLocalId, Fixture.Create<StreetNamePersistentLocalId>(), CancellationToken.None);
 
             var sut = new ReaddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
                 Mock.Of<IStreetNames>(),
-                MockExceptionIdempotentCommandHandler(() => new AddressHasInvalidStatusException(new AddressPersistentLocalId(1))).Object,
+                MockExceptionIdempotentCommandHandler(() => new AddressHasInvalidStatusException(addressPersistentLocalId)).Object,
                 _fakeBackOfficeContext,
                 Container);
 
@@ -52,7 +57,14 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
                 Request = new ReaddressRequest
                 {
                     DoelStraatnaamId = string.Empty,
-                    HerAdresseer = new List<AddressToReaddressItem>(),
+                    HerAdresseer = new List<AddressToReaddressItem>()
+                    {
+                        new AddressToReaddressItem
+                        {
+                            BronAdresId = puri,
+                            DoelHuisnummer = "100"
+                        }
+                    },
                     OpheffenAdressen = new List<string>()
                 },
                 TicketId = Guid.NewGuid(),
@@ -65,8 +77,8 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
                 x.Error(
                     It.IsAny<Guid>(),
                     new TicketError(
-                        "Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik': http://base/1.",
-                        "BrondAdresIdAfgekeurdGehistoreerd"),
+                        $"Deze actie is enkel toegestaan op adressen met status 'voorgesteld' of 'inGebruik': {puri}.",
+                        "BronAdresIdAfgekeurdGehistoreerd"),
                     CancellationToken.None));
         }
     }

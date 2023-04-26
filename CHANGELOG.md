@@ -1,3 +1,10 @@
+## [3.95.3](https://github.com/informatievlaanderen/address-registry/compare/v3.95.2...v3.95.3) (2023-04-26)
+
+
+### Bug Fixes
+
+* address puri in readdress error messages ([89255df](https://github.com/informatievlaanderen/address-registry/commit/89255dfb6cb49bd01f0747011e5faca993516582))
+
 ## [3.95.2](https://github.com/informatievlaanderen/address-registry/compare/v3.95.1...v3.95.2) (2023-04-26)
 
 

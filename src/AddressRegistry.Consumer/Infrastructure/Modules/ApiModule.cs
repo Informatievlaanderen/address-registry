@@ -36,6 +36,7 @@ namespace AddressRegistry.Consumer.Infrastructure.Modules
                 .RegisterModule(new DataDogModule(_configuration))
                 .RegisterModule<EnvelopeModule>()
                 .RegisterModule(new CommandHandlingModule(_configuration))
+                .RegisterModule(new SequenceModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new ProjectorModule(_configuration));
 
             builder.RegisterSnapshotModule(_configuration);

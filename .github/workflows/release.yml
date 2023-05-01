@@ -527,7 +527,7 @@ jobs:
         aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
     - name: Login to Amazon ECR (Test)
-      uses: aws-actions/amazon-ecr-login@v1.5.3
+      uses: aws-actions/amazon-ecr-login@v1.6.0
 
     - name: Push Lambda functions to S3 Test
       shell: bash
@@ -546,7 +546,7 @@ jobs:
         aws-region: ${{ secrets.VBR_AWS_REGION }}
 
     - name: Login to Amazon ECR (Staging)
-      uses: aws-actions/amazon-ecr-login@v1.5.3
+      uses: aws-actions/amazon-ecr-login@v1.6.0
 
     - name: Push Lambda functions to S3 Staging
       shell: bash
@@ -565,7 +565,7 @@ jobs:
         aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
     - name: Login to Amazon ECR (Production)
-      uses: aws-actions/amazon-ecr-login@v1.5.3
+      uses: aws-actions/amazon-ecr-login@v1.6.0
 
     - name: Push Lambda functions to S3 Production
       shell: bash
@@ -723,7 +723,7 @@ jobs:
           aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
       - name: Login to Amazon ECR (Test)
-        uses: aws-actions/amazon-ecr-login@v1.5.3
+        uses: aws-actions/amazon-ecr-login@v1.6.0
 
       # Download artifact
       - name: Download artifact
@@ -770,7 +770,7 @@ jobs:
           aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
       - name: Login to Amazon ECR (Staging)
-        uses: aws-actions/amazon-ecr-login@v1.5.3
+        uses: aws-actions/amazon-ecr-login@v1.6.0
 
       # Download artifact
       - name: Download artifact
@@ -819,7 +819,7 @@ jobs:
           aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
       - name: Login to Amazon ECR (Production)
-        uses: aws-actions/amazon-ecr-login@v1.5.3
+        uses: aws-actions/amazon-ecr-login@v1.6.0
 
       # Download artifact
       - name: Download artifact

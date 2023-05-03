@@ -1,3 +1,11 @@
+## [3.95.5](https://github.com/informatievlaanderen/address-registry/compare/v3.95.4...v3.95.5) (2023-05-03)
+
+
+### Bug Fixes
+
+* AddressWasProposedBecauseOfReaddress description ([784e625](https://github.com/informatievlaanderen/address-registry/commit/784e6259735eab96b626109586a91b7efbc2df7b))
+* duplication syndication key ([f24cd8a](https://github.com/informatievlaanderen/address-registry/commit/f24cd8a517d2dbddadeabaae674ecc82ea213e08))
+
 ## [3.95.4](https://github.com/informatievlaanderen/address-registry/compare/v3.95.3...v3.95.4) (2023-05-03)
 
 

@@ -254,7 +254,7 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.Responses
     public class AdresMatchItemGemeente
     {
         /// <summary>
-        /// De objectidentificator van de gekoppelde gemeente.
+        /// De objectidentificator van de gekoppelde gemeente.
         /// </summary>
         [DataMember(Name = "ObjectId", Order = 1)]
         [JsonProperty(Required = Required.DisallowNull)]

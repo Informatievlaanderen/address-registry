@@ -123,7 +123,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
                 x.Error(
                     It.IsAny<Guid>(),
                     new TicketError(
-                        "Deze actie is enkel toegestaan op adressen met status 'afgekeurd'.",
+                        "Deze actie is enkel toegestaan op adressen met status 'afgekeurd'.",
                         "AdresInGebruikOfGehistoreerd"),
                     CancellationToken.None));
         }

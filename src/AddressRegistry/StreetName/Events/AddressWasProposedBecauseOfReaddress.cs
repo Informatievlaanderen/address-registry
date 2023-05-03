@@ -8,7 +8,7 @@ namespace AddressRegistry.StreetName.Events
 
     [EventTags(EventTag.For.Sync, EventTag.For.Edit)]
     [EventName(EventName)]
-    [EventDescription("Het adres werd voorgesteld door een heradressering.")]
+    [EventDescription("Het adres werd voorgesteld door heradressering.")]
     public class AddressWasProposedBecauseOfReaddress : IStreetNameEvent, IHasAddressPersistentLocalId
     {
         public const string EventName = "AddressWasProposedBecauseOfReaddress"; // BE CAREFUL CHANGING THIS!!

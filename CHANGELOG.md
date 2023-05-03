@@ -1,3 +1,11 @@
+## [3.95.4](https://github.com/informatievlaanderen/address-registry/compare/v3.95.3...v3.95.4) (2023-05-03)
+
+
+### Bug Fixes
+
+* address status error code when correcting retirment ([3bc1467](https://github.com/informatievlaanderen/address-registry/commit/3bc1467788dbce4fd01c1c7cec48a414533374b9))
+* replace NBSP spaces by normal spaces ([39e1c95](https://github.com/informatievlaanderen/address-registry/commit/39e1c951d4f9c2a2abf95a789545a501db3ae6dc))
+
 ## [3.95.3](https://github.com/informatievlaanderen/address-registry/compare/v3.95.2...v3.95.3) (2023-04-26)
 
 

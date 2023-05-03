@@ -787,22 +787,6 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
 
                 foreach (var readdressedBoxNumber in message.Message.ReaddressedBoxNumbers)
                 {
-                    await context.CreateNewAddressSyndicationItem(
-                        readdressedBoxNumber.DestinationAddressPersistentLocalId,
-                        message,
-                        x =>
-                        {
-                            x.Status = readdressedBoxNumber.SourceStatus;
-                            x.HouseNumber = readdressedBoxNumber.DestinationHouseNumber;
-                            x.BoxNumber = readdressedBoxNumber.SourceBoxNumber;
-                            x.PostalCode = readdressedBoxNumber.SourcePostalCode;
-                            x.IsOfficiallyAssigned = readdressedBoxNumber.SourceIsOfficiallyAssigned;
-                            x.PositionMethod = readdressedBoxNumber.SourceGeometryMethod;
-                            x.PositionSpecification = readdressedBoxNumber.SourceGeometrySpecification;
-                            x.PointPosition = readdressedBoxNumber.SourceExtendedWkbGeometry.ToByteArray();
-                        },
-                        ct);
-
                     await context.UpdateAddressBoxNumberSyndicationHelper(
                         readdressedBoxNumber.DestinationAddressPersistentLocalId,
                         x =>

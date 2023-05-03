@@ -126,7 +126,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRetiremen
                     It.IsAny<Guid>(),
                     new TicketError(
                         "Deze actie is enkel toegestaan op adressen met status 'gehistoreerd'.",
-                        "AdresVoorgesteldOfAfgekeurd"),
+                        "AdresAfgekeurdOfVoorgesteld"),
                     CancellationToken.None));
         }
 

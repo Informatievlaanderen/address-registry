@@ -16,7 +16,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
 
             public static class AddressInvalidStatus
             {
-                public const string Code = "AdresVoorgesteldOfAfgekeurd";
+                public const string Code = "AdresAfgekeurdOfVoorgesteld";
                 public const string Message = "Deze actie is enkel toegestaan op adressen met status 'gehistoreerd'.";
 
                 public static TicketError ToTicketError() => new(Message, Code);

@@ -263,7 +263,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
     public class AdresMatchOsloItemGemeente
     {
         /// <summary>
-        /// De objectidentificator van de gekoppelde gemeente.
+        /// De objectidentificator van de gekoppelde gemeente.
         /// </summary>
         [DataMember(Name = "ObjectId", Order = 1)]
         [JsonProperty(Required = Required.DisallowNull)]

@@ -19,13 +19,13 @@ namespace AddressRegistry.StreetName.Events
         [EventPropertyDescription("Objectidentificator van de straatnaam aan dewelke de adressen zijn toegewezen.")]
         public int StreetNamePersistentLocalId { get; }
 
-        [EventPropertyDescription("Objectidentificator van het adres.")]
+        [EventPropertyDescription("Objectidentificator van het doelHuisnummer.")]
         public int AddressPersistentLocalId { get; }
 
-        [EventPropertyDescription("Het heradresseerde huisnummeradres.")]
+        [EventPropertyDescription("Een lijst van de eigenschappen die het doelHuisnummer van het bronHuisnummer overneemt.")]
         public ReaddressedAddressData ReaddressedHouseNumber { get; }
 
-        [EventPropertyDescription("De heradresseerde busadressen.")]
+        [EventPropertyDescription("Een lijst van de gekoppelde busnummers aan het huisnummer met per busnummer een lijst van de eigenschappen die het doelBusnummer van het bronBusnummer overneemt.")]
         public IReadOnlyList<ReaddressedAddressData> ReaddressedBoxNumbers { get; }
 
         [EventPropertyDescription("Metadata bij het event.")]

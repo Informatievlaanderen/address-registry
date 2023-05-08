@@ -19,7 +19,7 @@ namespace AddressRegistry.StreetName.Events
         [EventPropertyDescription("Objectidentificator van het adres.")]
         public int AddressPersistentLocalId { get; }
 
-        [EventPropertyDescription("Objectidentificator van het bronadres.")]
+        [EventPropertyDescription("Objectidentificator van het bronAdres.")]
         public int SourceAddressPersistentLocalId { get; }
 
         [EventPropertyDescription("Objectidentificator van het huisnummer adres waaraan het busnummer gelinkt is.")]

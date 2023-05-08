@@ -11,7 +11,7 @@ namespace AddressRegistry.StreetName.Events
 
     [EventTags(EventTag.For.Edit, EventTag.For.Sync)]
     [EventName(EventName)]
-    [EventDescription("Het huisnummeradres werd geheradresseerd.")]
+    [EventDescription("Het huisnummer werd geheradresseerd.")]
     public class AddressHouseNumberWasReaddressed : IStreetNameEvent, IHasAddressPersistentLocalId
     {
         public const string EventName = "AddressHouseNumberWasReaddressed"; // BE CAREFUL CHANGING THIS!!

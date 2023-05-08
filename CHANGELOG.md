@@ -1,3 +1,11 @@
+## [3.95.6](https://github.com/informatievlaanderen/address-registry/compare/v3.95.5...v3.95.6) (2023-05-08)
+
+
+### Bug Fixes
+
+* change docs GAWR-3711 ([59d55a6](https://github.com/informatievlaanderen/address-registry/commit/59d55a6d56837a681a9639e2c3829f922f0db2ff))
+* docs events GAWR-4829 GAWR-4824 ([13b059b](https://github.com/informatievlaanderen/address-registry/commit/13b059bc4fa3cc1b647c4c6206fc3ce263f4dc7b))
+
 ## [3.95.5](https://github.com/informatievlaanderen/address-registry/compare/v3.95.4...v3.95.5) (2023-05-03)
 
 

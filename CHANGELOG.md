@@ -1,3 +1,11 @@
+## [3.95.7](https://github.com/informatievlaanderen/address-registry/compare/v3.95.6...v3.95.7) (2023-05-09)
+
+
+### Bug Fixes
+
+* docs events ([84b537c](https://github.com/informatievlaanderen/address-registry/commit/84b537cd0f948c560197025fc51967d2c0ef52fe))
+* retire housenumber event after readdress housenumber event ([3ac3fdd](https://github.com/informatievlaanderen/address-registry/commit/3ac3fdda68066fdc8531b30cf22e07450abc92cb))
+
 ## [3.95.6](https://github.com/informatievlaanderen/address-registry/compare/v3.95.5...v3.95.6) (2023-05-08)
 
 

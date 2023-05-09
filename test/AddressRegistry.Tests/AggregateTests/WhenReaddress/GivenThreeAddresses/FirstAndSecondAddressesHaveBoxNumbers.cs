@@ -170,10 +170,6 @@
                             secondAddressCurrentBoxNumberAddressWasMigrated.GeometrySpecification,
                             new ExtendedWkbGeometry(secondAddressCurrentBoxNumberAddressWasMigrated.ExtendedWkbGeometry))),
                     new Fact(_streamId,
-                        new AddressWasRetiredBecauseOfReaddress(
-                            _streetNamePersistentLocalId,
-                            secondAddressCurrentBoxNumberAddressPersistentLocalId)),
-                    new Fact(_streamId,
                         new AddressWasProposedBecauseOfReaddress(
                             _streetNamePersistentLocalId,
                             expectedThirdAddressProposedBoxNumberAddressPersistentLocalId,
@@ -276,7 +272,11 @@
                                         secondAddressProposedBoxNumberAddressWasMigrated.GeometrySpecification,
                                         new ExtendedWkbGeometry(secondAddressProposedBoxNumberAddressWasMigrated.ExtendedWkbGeometry)),
                                     secondAddressProposedBoxNumberAddressWasMigrated.OfficiallyAssigned)
-                            }))
+                            })),
+                    new Fact(_streamId,
+                    new AddressWasRetiredBecauseOfReaddress(
+                        _streetNamePersistentLocalId,
+                        secondAddressCurrentBoxNumberAddressPersistentLocalId)),
                 }));
 
             command.ExecutionContext.AddressesAdded.Should().HaveCount(4);

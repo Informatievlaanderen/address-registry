@@ -23,8 +23,34 @@ namespace AddressRegistry.StreetName
             var readdressedHouseNumbers = streetNameReaddresser.ReaddressedHouseNumbers.ToList();
             var readdressedBoxNumbers = streetNameReaddresser.ReaddressedBoxNumbers.ToList();
 
-            // Perform all actions gathered by the StreetNameReaddresser.
-            foreach (var (action, addressPersistentLocalId) in streetNameReaddresser.Actions)
+            // Propose Actions
+            var proposeActions = streetNameReaddresser.Actions.Where(x =>
+                x.action == ReaddressAction.ProposeHouseNumber || x.action == ReaddressAction.ProposeBoxNumber);
+
+            foreach (var (action, addressPersistentLocalId) in proposeActions)
+            {
+                HandleAction(
+                    action,
+                    addressPersistentLocalId,
+                    readdressedHouseNumbers,
+                    readdressedBoxNumbers,
+                    executionContext);
+            }
+
+            foreach (var (addressPersistentLocalId, readressedData) in streetNameReaddresser.ReaddressedAddresses)
+            {
+                ApplyChange(new AddressHouseNumberWasReaddressed(
+                    PersistentLocalId,
+                    addressPersistentLocalId,
+                    readressedData.readdressedHouseNumber,
+                    readressedData.readdressedBoxNumbers));
+            }
+
+            // Reject Retire Actions
+            var rejectRetireActions = streetNameReaddresser.Actions.Where(x =>
+                x.action == ReaddressAction.Reject || x.action == ReaddressAction.Retire);
+
+            foreach (var (action, addressPersistentLocalId) in rejectRetireActions)
             {
                 HandleAction(
                     action,
@@ -44,15 +70,6 @@ namespace AddressRegistry.StreetName
                 readdressedHouseNumbers.Select(x => (PersistentLocalId, new AddressPersistentLocalId(x.DestinationAddressPersistentLocalId))));
             executionContext.AddressesUpdated.AddRange(
                 addresssToRejectOrRetireWithinStreetName.Select(x => (PersistentLocalId, x.AddressPersistentLocalId)));
-
-            foreach (var (addressPersistentLocalId, readressedData) in streetNameReaddresser.ReaddressedAddresses)
-            {
-                ApplyChange(new AddressHouseNumberWasReaddressed(
-                    PersistentLocalId,
-                    addressPersistentLocalId,
-                    readressedData.readdressedHouseNumber,
-                    readressedData.readdressedBoxNumbers));
-            }
         }
 
         private void HandleAction(

@@ -16,12 +16,13 @@
     using Xunit;
     using Xunit.Abstractions;
 
-    public class SourceAddressHasNoBoxNumbers_DestinationHasBoxNumbers: AddressRegistryTest
+    public class SourceAddressHasNoBoxNumbers_DestinationHasBoxNumbers : AddressRegistryTest
     {
         private readonly StreetNameStreamId _streamId;
         private readonly StreetNamePersistentLocalId _streetNamePersistentLocalId;
 
-        public SourceAddressHasNoBoxNumbers_DestinationHasBoxNumbers(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public SourceAddressHasNoBoxNumbers_DestinationHasBoxNumbers(ITestOutputHelper testOutputHelper) : base(
+            testOutputHelper)
         {
             Fixture.Customize(new WithFixedStreetNamePersistentLocalId());
 
@@ -61,31 +62,43 @@
                     GeometryHelpers.SecondGmlPointGeometry.ToExtendedWkbGeometry()))
                 .Build();
 
-            var proposedBoxNumberAddressWasMigrated = new AddressWasMigratedToStreetNameBuilder(Fixture, AddressStatus.Proposed)
-                .WithAddressPersistentLocalId(proposedBoxNumberAddressPersistentLocalId)
-                .WithHouseNumber(destinationHouseNumber)
-                .WithBoxNumber(new BoxNumber("A"), destinationAddressPersistentLocalId)
-                .WithAddressGeometry(new AddressGeometry(
-                    GeometryMethod.AppointedByAdministrator,
-                    GeometrySpecification.Entry,
-                    GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry()))
-                .Build();
+            var proposedBoxNumberAddressWasMigrated =
+                new AddressWasMigratedToStreetNameBuilder(Fixture, AddressStatus.Proposed)
+                    .WithAddressPersistentLocalId(proposedBoxNumberAddressPersistentLocalId)
+                    .WithHouseNumber(destinationHouseNumber)
+                    .WithBoxNumber(new BoxNumber("A"), destinationAddressPersistentLocalId)
+                    .WithAddressGeometry(new AddressGeometry(
+                        GeometryMethod.AppointedByAdministrator,
+                        GeometrySpecification.Entry,
+                        GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry()))
+                    .Build();
 
-            var currentBoxNumberAddressWasMigrated = new AddressWasMigratedToStreetNameBuilder(Fixture, AddressStatus.Current)
-                .WithAddressPersistentLocalId(currentBoxNumberAddressAddressPersistentLocalId)
-                .WithHouseNumber(destinationHouseNumber)
-                .WithBoxNumber(new BoxNumber("B"), destinationAddressPersistentLocalId)
-                .WithAddressGeometry(new AddressGeometry(
-                    GeometryMethod.AppointedByAdministrator,
-                    GeometrySpecification.Entry,
-                    GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry()))
-                .Build();
+            var currentBoxNumberAddressWasMigrated =
+                new AddressWasMigratedToStreetNameBuilder(Fixture, AddressStatus.Current)
+                    .WithAddressPersistentLocalId(currentBoxNumberAddressAddressPersistentLocalId)
+                    .WithHouseNumber(destinationHouseNumber)
+                    .WithBoxNumber(new BoxNumber("B"), destinationAddressPersistentLocalId)
+                    .WithAddressGeometry(new AddressGeometry(
+                        GeometryMethod.AppointedByAdministrator,
+                        GeometrySpecification.Entry,
+                        GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry()))
+                    .Build();
 
             var command = new Readdress(
                 _streetNamePersistentLocalId,
-                new List<ReaddressAddressItem> { new ReaddressAddressItem(_streetNamePersistentLocalId, sourceAddressPersistentLocalId , destinationHouseNumber) },
-                new List<RetireAddressItem> { new RetireAddressItem(_streetNamePersistentLocalId, sourceAddressPersistentLocalId) },
+                new List<ReaddressAddressItem>
+                {
+                    new ReaddressAddressItem(_streetNamePersistentLocalId, sourceAddressPersistentLocalId,
+                        destinationHouseNumber)
+                },
+                new List<RetireAddressItem>
+                    { new RetireAddressItem(_streetNamePersistentLocalId, sourceAddressPersistentLocalId) },
                 Fixture.Create<Provenance>());
+
+            Fact rejectHouseNumberEvent() => new Fact(_streamId,
+                new AddressWasRejectedBecauseOfReaddress(
+                    _streetNamePersistentLocalId,
+                    sourceAddressPersistentLocalId));
 
             Assert(new Scenario()
                 .Given(_streamId,
@@ -98,6 +111,24 @@
                 .Then(new[]
                 {
                     new Fact(_streamId,
+                        new AddressHouseNumberWasReaddressed(
+                            _streetNamePersistentLocalId,
+                            destinationAddressPersistentLocalId,
+                            new ReaddressedAddressData(
+                                sourceAddressPersistentLocalId,
+                                destinationAddressPersistentLocalId,
+                                isDestinationNewlyProposed: false,
+                                sourceAddressWasMigrated.Status,
+                                destinationHouseNumber,
+                                boxNumber: null,
+                                new PostalCode(sourceAddressWasMigrated.PostalCode!),
+                                new AddressGeometry(
+                                    sourceAddressWasMigrated.GeometryMethod,
+                                    sourceAddressWasMigrated.GeometrySpecification,
+                                    new ExtendedWkbGeometry(sourceAddressWasMigrated.ExtendedWkbGeometry)),
+                                sourceAddressWasMigrated.OfficiallyAssigned),
+                            readdressedBoxNumbers: new List<ReaddressedAddressData>())),
+                    new Fact(_streamId,
                         new AddressWasRejectedBecauseOfReaddress(
                             _streetNamePersistentLocalId,
                             proposedBoxNumberAddressPersistentLocalId)),
@@ -108,25 +139,7 @@
                     new Fact(_streamId,
                         new AddressWasRejectedBecauseOfReaddress(
                             _streetNamePersistentLocalId,
-                            sourceAddressPersistentLocalId)),
-                    new Fact(_streamId,
-                        new AddressHouseNumberWasReaddressed(
-                            _streetNamePersistentLocalId,
-                            destinationAddressPersistentLocalId,
-                            new ReaddressedAddressData(
-                                    sourceAddressPersistentLocalId,
-                                    destinationAddressPersistentLocalId,
-                                    isDestinationNewlyProposed: false,
-                                    sourceAddressWasMigrated.Status,
-                                    destinationHouseNumber,
-                                    boxNumber: null,
-                                    new PostalCode(sourceAddressWasMigrated.PostalCode!),
-                                    new AddressGeometry(
-                                        sourceAddressWasMigrated.GeometryMethod,
-                                        sourceAddressWasMigrated.GeometrySpecification,
-                                        new ExtendedWkbGeometry(sourceAddressWasMigrated.ExtendedWkbGeometry)),
-                                    sourceAddressWasMigrated.OfficiallyAssigned),
-                            readdressedBoxNumbers: new List<ReaddressedAddressData>()))
+                            sourceAddressPersistentLocalId))
                 }));
 
             command.ExecutionContext.AddressesAdded.Should().BeEmpty();

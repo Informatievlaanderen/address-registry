@@ -132,10 +132,6 @@
                             proposedBoxNumberAddressWasMigrated.GeometrySpecification,
                             new ExtendedWkbGeometry(proposedBoxNumberAddressWasMigrated.ExtendedWkbGeometry))),
                     new Fact(_streamId,
-                        new AddressWasRejectedBecauseOfReaddress(
-                            _streetNamePersistentLocalId,
-                            proposedBoxNumberAddressPersistentLocalId)),
-                    new Fact(_streamId,
                         new AddressWasProposedBecauseOfReaddress(
                             _streetNamePersistentLocalId,
                             expectedCurrentBoxNumberAddressPersistentLocalId,
@@ -147,10 +143,6 @@
                             currentBoxNumberAddressWasMigrated.GeometryMethod,
                             currentBoxNumberAddressWasMigrated.GeometrySpecification,
                             new ExtendedWkbGeometry(currentBoxNumberAddressWasMigrated.ExtendedWkbGeometry))),
-                    new Fact(_streamId,
-                        new AddressWasRetiredBecauseOfReaddress(
-                            _streetNamePersistentLocalId,
-                            currentBoxNumberAddressPersistentLocalId)),
                     new Fact(_streamId,
                         new AddressHouseNumberWasReaddressed(
                             _streetNamePersistentLocalId,
@@ -214,7 +206,15 @@
                                         currentBoxNumberAddressWasMigrated.GeometrySpecification,
                                         new ExtendedWkbGeometry(currentBoxNumberAddressWasMigrated.ExtendedWkbGeometry)),
                                     currentBoxNumberAddressWasMigrated.OfficiallyAssigned)
-                            }))
+                            })),
+                    new Fact(_streamId,
+                        new AddressWasRejectedBecauseOfReaddress(
+                            _streetNamePersistentLocalId,
+                            proposedBoxNumberAddressPersistentLocalId)),
+                    new Fact(_streamId,
+                        new AddressWasRetiredBecauseOfReaddress(
+                            _streetNamePersistentLocalId,
+                            currentBoxNumberAddressPersistentLocalId))
                 }));
 
             command.ExecutionContext.AddressesAdded.Should().HaveCount(3);

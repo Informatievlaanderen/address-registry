@@ -1,3 +1,10 @@
+## [3.95.9](https://github.com/informatievlaanderen/address-registry/compare/v3.95.8...v3.95.9) (2023-05-10)
+
+
+### Bug Fixes
+
+* add savechanges in lambda after readdress ([c3e136f](https://github.com/informatievlaanderen/address-registry/commit/c3e136f24cbb078af4503e492165d571ae797f5f))
+
 ## [3.95.8](https://github.com/informatievlaanderen/address-registry/compare/v3.95.7...v3.95.8) (2023-05-10)
 
 

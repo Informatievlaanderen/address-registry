@@ -72,6 +72,24 @@ namespace AddressRegistry.Tests.ProjectionTests.BackOffice
                     result.Should().BeSameAs(expectedRelation);
                 });
         }
+
+        [Fact]
+        public async Task GivenAddressWasProposedBecauseReaddress_ThenRelationIsAdded()
+        {
+            var @event = _fixture.Create<AddressWasProposedBecauseOfReaddress>();
+
+            await Sut
+                .Given(@event)
+                .Then(async _ =>
+                {
+                    var result = await _fakeBackOfficeContext
+                        .AddressPersistentIdStreetNamePersistentIds
+                        .FindAsync(@event.AddressPersistentLocalId);
+
+                    result.Should().NotBeNull();
+                    result!.StreetNamePersistentLocalId.Should().Be(@event.StreetNamePersistentLocalId);
+                });
+        }
     }
 
     public abstract class BackOfficeProjectionsTest

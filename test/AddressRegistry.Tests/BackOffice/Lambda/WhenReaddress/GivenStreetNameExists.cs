@@ -105,9 +105,10 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
             // Assert
             var destinationAddressPersistentLocalId = new AddressPersistentLocalId(1); // FakePersistentLocalIdGenerator starts always with id 1
 
-            _fakeBackOfficeContext.AddressPersistentIdStreetNamePersistentIds
-                .Find((int)destinationAddressPersistentLocalId)
-                .Should().NotBeNull();
+            var relation = _fakeBackOfficeContext.AddressPersistentIdStreetNamePersistentIds
+                .FirstOrDefault(x => x.AddressPersistentLocalId == destinationAddressPersistentLocalId);
+            relation.Should().NotBeNull();
+
 
             eTagResponses.Count.Should().Be(1);
             var destinationAddressEtagResponse = eTagResponses.FirstOrDefault(x => x.Location == string.Format(ConfigDetailUrl, destinationAddressPersistentLocalId));
@@ -196,10 +197,10 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
             var destinationAddressPersistentLocalId2 = new AddressPersistentLocalId(2);
 
             _fakeBackOfficeContext.AddressPersistentIdStreetNamePersistentIds
-                .Find((int)destinationAddressPersistentLocalId1)
+                .FirstOrDefault(x => x.AddressPersistentLocalId == destinationAddressPersistentLocalId1)
                 .Should().NotBeNull();
             _fakeBackOfficeContext.AddressPersistentIdStreetNamePersistentIds
-               .Find((int)destinationAddressPersistentLocalId2)
+                .FirstOrDefault(x => x.AddressPersistentLocalId == destinationAddressPersistentLocalId2)
                .Should().NotBeNull();
 
             eTagResponses.Count.Should().Be(2);
@@ -396,15 +397,15 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
             var secondDestinationBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(3);
 
             _fakeBackOfficeContext.AddressPersistentIdStreetNamePersistentIds
-                .Find((int)firstDestinationAddressPersistentLocalId)
+                .FirstOrDefault(x => x.AddressPersistentLocalId == firstDestinationAddressPersistentLocalId)
                 .Should().NotBeNull();
 
             _fakeBackOfficeContext.AddressPersistentIdStreetNamePersistentIds
-               .Find((int)secondDestinationAddressPersistentLocalId)
+                .FirstOrDefault(x => x.AddressPersistentLocalId == secondDestinationAddressPersistentLocalId)
                .Should().NotBeNull();
 
             _fakeBackOfficeContext.AddressPersistentIdStreetNamePersistentIds
-               .Find((int)secondDestinationBoxNumberAddressPersistentLocalId)
+                .FirstOrDefault(x => x.AddressPersistentLocalId == secondDestinationBoxNumberAddressPersistentLocalId)
                .Should().NotBeNull();
 
             eTagResponses.Count.Should().Be(4);

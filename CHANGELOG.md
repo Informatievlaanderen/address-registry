@@ -1,3 +1,10 @@
+## [3.95.8](https://github.com/informatievlaanderen/address-registry/compare/v3.95.7...v3.95.8) (2023-05-10)
+
+
+### Bug Fixes
+
+* snapshotmanager with etag comparison ([0f9ec6a](https://github.com/informatievlaanderen/address-registry/commit/0f9ec6ae92e4ee041bf6728fdabc25d4ef2d172c))
+
 ## [3.95.7](https://github.com/informatievlaanderen/address-registry/compare/v3.95.6...v3.95.7) (2023-05-09)
 
 

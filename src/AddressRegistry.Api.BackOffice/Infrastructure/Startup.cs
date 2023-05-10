@@ -5,7 +5,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure
     using System.Reflection;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
-    using Be.Vlaanderen.Basisregisters.AcmIdm;
+    using Be.Vlaanderen.Basisregisters.Auth.AcmIdm;
     using Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;

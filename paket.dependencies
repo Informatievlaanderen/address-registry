@@ -43,7 +43,7 @@ nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit 8.0.0
 
 nuget Be.Vlaanderen.Basisregisters.Api 20.0.0
 
-nuget Be.Vlaanderen.Basisregisters.AcmIdm 1.3.6
+nuget Be.Vlaanderen.Basisregisters.Auth.AcmIdm 1.4.0
 
 nuget Be.Vlaanderen.Basisregisters.Aws.DistributedMutex 3.0.0
 nuget Be.Vlaanderen.Basisregisters.Aws.Lambda 1.2.4
@@ -72,15 +72,15 @@ nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.SqlStreamStore 5.0.3
 nuget Be.Vlaanderen.Basisregisters.Crab 3.0.0
 nuget Be.Vlaanderen.Basisregisters.Crab.Autofac 3.0.0
 
-nuget Be.Vlaanderen.Basisregisters.GrAr.Common 18.9.7
-nuget Be.Vlaanderen.Basisregisters.GrAr.Contracts 18.9.7
-nuget Be.Vlaanderen.Basisregisters.GrAr.Edit 18.9.7
-nuget Be.Vlaanderen.Basisregisters.GrAr.Import 18.9.7
-nuget Be.Vlaanderen.Basisregisters.GrAr.Legacy 18.9.7
-nuget Be.Vlaanderen.Basisregisters.GrAr.Oslo 18.9.7
-nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance 18.9.7
-nuget Be.Vlaanderen.Basisregisters.GrAr.Extracts 18.9.7
-nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance.AcmIdm 18.9.7
+nuget Be.Vlaanderen.Basisregisters.GrAr.Common 19.0.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Contracts 19.0.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Edit 19.0.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Import 19.0.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Legacy 19.0.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Oslo 19.0.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance 19.0.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Extracts 19.0.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance.AcmIdm 19.0.0
 
 nuget Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple 4.8.1
 nuget Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Producer 4.8.1
@@ -98,10 +98,9 @@ nuget Be.Vlaanderen.Basisregisters.TicketingService.Proxy.HttpProxy 1.8.0
 // LAMBDA STUFF
 
 nuget Microsoft.Extensions.Configuration.Binder 6.0.0
-nuget Microsoft.Extensions.Configuration.EnvironmentVariables 6.0.1
-nuget Microsoft.Extensions.Configuration.FileExtensions 6.0.0
 nuget Microsoft.Extensions.Configuration.Json 6.0.0
 nuget Microsoft.Extensions.DependencyInjection 6.0.0
+nuget Microsoft.Extensions.DependencyInjection.Abstractions 7.0.0
 
 // .NET CLASSIC STUFF
 nuget EntityFramework 6.4.4

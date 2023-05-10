@@ -31,6 +31,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             await snapshotManager.FindMatchingSnapshot(
                                 addressPersistentLocalId.ToString(),
                                 message.Message.Provenance.Timestamp,
+                                message.Message.GetHash(),
                                 message.Position,
                                 throwStaleWhenGone: false,
                                 ct),
@@ -47,6 +48,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             await snapshotManager.FindMatchingSnapshot(
                                 addressPersistentLocalId.ToString(),
                                 message.Message.Provenance.Timestamp,
+                                message.Message.GetHash(),
                                 message.Position,
                                 throwStaleWhenGone: false,
                                 ct),
@@ -63,6 +65,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             await snapshotManager.FindMatchingSnapshot(
                                 addressPersistentLocalId.ToString(),
                                 message.Message.Provenance.Timestamp,
+                                message.Message.GetHash(),
                                 message.Position,
                                 throwStaleWhenGone: false,
                                 ct),
@@ -78,6 +81,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.AddressPersistentLocalId.ToString(),
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -91,6 +95,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.AddressPersistentLocalId.ToString(),
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -104,6 +109,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.AddressPersistentLocalId.ToString(),
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -117,6 +123,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.AddressPersistentLocalId.ToString(),
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -130,6 +137,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.AddressPersistentLocalId.ToString(),
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -143,6 +151,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.AddressPersistentLocalId.ToString(),
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -156,6 +165,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.AddressPersistentLocalId.ToString(),
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -169,6 +179,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.AddressPersistentLocalId.ToString(),
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -182,6 +193,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.AddressPersistentLocalId.ToString(),
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -195,6 +207,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.AddressPersistentLocalId.ToString(),
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -209,6 +222,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.AddressPersistentLocalId.ToString(),
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -222,6 +236,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.AddressPersistentLocalId.ToString(),
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -235,6 +250,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.AddressPersistentLocalId.ToString(),
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -248,6 +264,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.AddressPersistentLocalId.ToString(),
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -261,6 +278,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.AddressPersistentLocalId.ToString(),
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -274,6 +292,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.AddressPersistentLocalId.ToString(),
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -286,6 +305,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             await snapshotManager.FindMatchingSnapshot(
                                 boxNumberPersistentLocalId.ToString(),
                                 message.Message.Provenance.Timestamp,
+                                message.Message.GetHash(),
                                 message.Position,
                                 throwStaleWhenGone: false,
                                 ct),
@@ -300,6 +320,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.AddressPersistentLocalId.ToString(),
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -313,6 +334,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.AddressPersistentLocalId.ToString(),
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -325,6 +347,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             await snapshotManager.FindMatchingSnapshot(
                                 boxNumberPersistentLocalId.ToString(),
                                 message.Message.Provenance.Timestamp,
+                                message.Message.GetHash(),
                                 message.Position,
                                 throwStaleWhenGone: false,
                                 ct),
@@ -339,6 +362,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.AddressPersistentLocalId.ToString(),
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -352,6 +376,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.AddressPersistentLocalId.ToString(),
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -365,6 +390,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.AddressPersistentLocalId.ToString(),
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -378,6 +404,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.AddressPersistentLocalId.ToString(),
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -391,6 +418,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.AddressPersistentLocalId.ToString(),
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -404,6 +432,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.AddressPersistentLocalId.ToString(),
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -416,6 +445,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             await snapshotManager.FindMatchingSnapshot(
                                 boxNumberPersistentLocalId.ToString(),
                                 message.Message.Provenance.Timestamp,
+                                message.Message.GetHash(),
                                 message.Position,
                                 throwStaleWhenGone: false,
                                 ct),
@@ -430,6 +460,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.AddressPersistentLocalId.ToString(),
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -443,6 +474,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.AddressPersistentLocalId.ToString(),
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -456,6 +488,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.AddressPersistentLocalId.ToString(),
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -468,6 +501,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                             await snapshotManager.FindMatchingSnapshot(
                                 readdressedBoxNumber.DestinationAddressPersistentLocalId.ToString(),
                                 message.Message.Provenance.Timestamp,
+                                message.Message.GetHash(),
                                 message.Position,
                                 throwStaleWhenGone: false,
                                 ct),
@@ -482,6 +516,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.AddressPersistentLocalId.ToString(),
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -495,6 +530,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.AddressPersistentLocalId.ToString(),
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -508,6 +544,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.AddressPersistentLocalId.ToString(),
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),

@@ -1,7 +1,7 @@
 AspNetCore.HealthChecks.SqlServer
 
 Be.Vlaanderen.Basisregisters.Api
-Be.Vlaanderen.Basisregisters.AcmIdm
+Be.Vlaanderen.Basisregisters.Auth.AcmIdm
 Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency
 Be.Vlaanderen.Basisregisters.GrAr.Edit
 Be.Vlaanderen.Basisregisters.GrAr.Provenance.AcmIdm

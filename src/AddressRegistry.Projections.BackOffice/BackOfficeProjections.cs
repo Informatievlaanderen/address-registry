@@ -16,6 +16,13 @@ namespace AddressRegistry.Projections.BackOffice
                 await backOfficeContext.AddIdempotentAddressStreetNameIdRelation(message.Message.AddressPersistentLocalId, message.Message.StreetNamePersistentLocalId, cancellationToken);
                 await backOfficeContext.SaveChangesAsync(cancellationToken);
             });
+
+            When<Envelope<AddressWasProposedBecauseOfReaddress>>(async (_, message, cancellationToken) =>
+            {
+                await using var backOfficeContext = await backOfficeContextFactory.CreateDbContextAsync(cancellationToken);
+                await backOfficeContext.AddIdempotentAddressStreetNameIdRelation(message.Message.AddressPersistentLocalId, message.Message.StreetNamePersistentLocalId, cancellationToken);
+                await backOfficeContext.SaveChangesAsync(cancellationToken);
+            });
         }
     }
 }

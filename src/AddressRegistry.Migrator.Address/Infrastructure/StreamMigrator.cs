@@ -1,6 +1,7 @@
 namespace AddressRegistry.Migrator.Address.Infrastructure
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -39,7 +40,7 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
             _processedIdsTable = new ProcessedIdsTable(connectionString, loggerFactory);
             _sqlStreamTable = new SqlStreamsTable(connectionString);
 
-            _skipIncomplete = Boolean.Parse(configuration["SkipIncomplete"]);
+            _skipIncomplete = bool.Parse(configuration["SkipIncomplete"]);
         }
 
         public async Task ProcessAsync(CancellationToken ct)
@@ -47,7 +48,7 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
             await _processedIdsTable.CreateTableIfNotExists();
 
             var consumerContext = _lifetimeScope.Resolve<ConsumerContext>();
-            _consumerItems = await consumerContext.StreetNameConsumerItems.ToListAsync(ct);
+            _consumerItems = await consumerContext.StreetNameConsumerItems.AsNoTracking().ToListAsync(ct);
 
             var processedIdsList = await _processedIdsTable.GetProcessedIds();
             _processedIds = new List<(int, bool)>(processedIdsList);
@@ -72,7 +73,7 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
                 try
                 {
                     var processedPageItems = await ProcessStreams(pageOfStreams, ct);
-                    
+
                     if (!processedPageItems.Any())
                     {
                         lastCursorPosition = pageOfStreams.Max(x => x.internalId);
@@ -95,39 +96,52 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
 
         private async Task<List<int>> ProcessStreams(IEnumerable<(int, string)> streamsToProcess, CancellationToken ct)
         {
-            var processedItems = new List<int>();
+            var processedItems = new ConcurrentBag<int>();
+            var streamsToRetry = new List<(int, string)>();
 
-            foreach (var stream in streamsToProcess)
+            await Parallel.ForEachAsync(streamsToProcess, ct, async (stream, innerCt) =>
+            {
+                try
+                {
+                    await ProcessStream(stream, processedItems, innerCt);
+                }
+                catch (ParentAddressNotFoundException)
+                {
+                    _logger.LogWarning($"Parent not found for child '{stream.Item1}'.");
+                    if (_skipIncomplete)
+                    {
+                        return;
+                    }
+
+                    streamsToRetry.Add(stream);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogCritical($"Unexpected exception for migration stream '{stream.Item1}', aggregateId '{stream.Item2}' \n\n {ex.Message}");
+                    throw;
+                }
+            });
+
+            // Retry any streams that failed due to ParentAddressNotFoundException
+            foreach (var stream in streamsToRetry)
             {
                 try
                 {
                     await ProcessStream(stream, processedItems, ct);
                 }
-                catch (ParentAddressNotFoundException)
-                {
-                    _logger.LogWarning($"Parent not found for child '{stream.Item1}'.");
-
-                    if (_skipIncomplete)
-                    {
-                        continue;
-                    }
-
-                    throw;
-                }
                 catch (Exception ex)
                 {
-                    _logger.LogCritical(
-                        $"Unexpected exception for migration stream '{stream.Item1}', aggregateId '{stream.Item2}' \n\n {ex.Message}");
+                    _logger.LogCritical($"Unexpected exception while retrying migration stream '{stream.Item1}', aggregateId '{stream.Item2}' \n\n {ex.Message}");
                     throw;
                 }
             }
-            
-            return processedItems;
+
+            return processedItems.ToList();
         }
 
         private async Task ProcessStream(
             (int, string) stream,
-            List<int> processedItems,
+            ConcurrentBag<int> processedItems,
             CancellationToken token)
         {
             var (internalId, aggregateId) = stream;

@@ -1,3 +1,10 @@
+# [3.96.0](https://github.com/informatievlaanderen/address-registry/compare/v3.95.10...v3.96.0) (2023-05-12)
+
+
+### Features
+
+* add spatial index for wms v2 ([57e034f](https://github.com/informatievlaanderen/address-registry/commit/57e034fe26114b1f324656e37c7cbfa5de2cbfd8))
+
 ## [3.95.10](https://github.com/informatievlaanderen/address-registry/compare/v3.95.9...v3.95.10) (2023-05-12)
 
 

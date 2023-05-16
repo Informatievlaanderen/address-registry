@@ -8,7 +8,9 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddress.GivenDestinationAdd
     using AddressRegistry.StreetName.Events;
     using AddressRegistry.Tests.AggregateTests.Builders;
     using AddressRegistry.Tests.AutoFixture;
+    using Autofac;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentAssertions;
@@ -193,6 +195,184 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddress.GivenDestinationAdd
                 .ContainSingle(x =>
                     x.streetNamePersistentLocalId == _streetNamePersistentLocalId
                     && x.addressPersistentLocalId == destinationAddressPersistentLocalId);
+        }
+
+        [Fact]
+        public void WithIdenticalSourceAndDestinationHouseNumbers_ThenSourceAddressAndItsBoxNumbersWereReaddressed()
+        {
+            var sourceHouseNumber = new HouseNumber("1550");
+            var destinationHouseNumber = new HouseNumber("1550");
+            var sourceBoxNumber1 = new BoxNumber("1");
+            var sourceBoxNumber2 = new BoxNumber("2");
+            var postalCode = Fixture.Create<PostalCode>();
+
+            var sourceStreetNamePersistentLocalId = new StreetNamePersistentLocalId(30587);
+            var sourceAddressPersistentLocalId = new AddressPersistentLocalId(40001044);
+            var firstBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(40001047);
+            var secondBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(40001048);
+
+            var destinationStreetNamePersistentLocalId = new StreetNamePersistentLocalId(30591);
+            var destinationStreetNameStreamId = new StreetNameStreamId(destinationStreetNamePersistentLocalId);
+
+            var sourceAddressWasMigrated = new AddressWasMigratedToStreetNameBuilder(Fixture)
+                .WithStreetNamePersistentLocalId(sourceStreetNamePersistentLocalId)
+                .WithAddressPersistentLocalId(sourceAddressPersistentLocalId)
+                .WithHouseNumber(sourceHouseNumber)
+                .WithPostalCode(postalCode)
+                .WithAddressGeometry(new AddressGeometry(
+                    GeometryMethod.AppointedByAdministrator,
+                    GeometrySpecification.Entry,
+                    GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry()))
+                .Build();
+
+            var sourceAddressFirstBoxNumberWasMigrated = new AddressWasMigratedToStreetNameBuilder(Fixture)
+                .WithStreetNamePersistentLocalId(sourceStreetNamePersistentLocalId)
+                .WithAddressPersistentLocalId(firstBoxNumberAddressPersistentLocalId)
+                .WithBoxNumber(sourceBoxNumber1, sourceAddressPersistentLocalId)
+                .WithHouseNumber(sourceHouseNumber)
+                .WithAddressGeometry(new AddressGeometry(
+                    GeometryMethod.AppointedByAdministrator,
+                    GeometrySpecification.Entry,
+                    GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry()))
+                .Build();
+
+            var sourceAddressSecondBoxNumberWasMigrated = new AddressWasMigratedToStreetNameBuilder(Fixture)
+                .WithStreetNamePersistentLocalId(sourceStreetNamePersistentLocalId)
+                .WithAddressPersistentLocalId(secondBoxNumberAddressPersistentLocalId)
+                .WithBoxNumber(sourceBoxNumber2, sourceAddressPersistentLocalId)
+                .WithHouseNumber(sourceHouseNumber)
+                .WithAddressGeometry(new AddressGeometry(
+                    GeometryMethod.AppointedByAdministrator,
+                    GeometrySpecification.Entry,
+                    GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry()))
+                .Build();
+
+            var sourceStreetName = new StreetNameFactory(NoSnapshotStrategy.Instance).Create();
+            sourceStreetName.Initialize(new List<object>
+            {
+                new StreetNameWasImported(sourceStreetNamePersistentLocalId, Fixture.Create<MunicipalityId>(),
+                    StreetNameStatus.Current),
+                sourceAddressWasMigrated,
+                sourceAddressFirstBoxNumberWasMigrated,
+                sourceAddressSecondBoxNumberWasMigrated
+            });
+
+            var destinationStreetName = new StreetNameFactory(NoSnapshotStrategy.Instance).Create();
+            destinationStreetName.Initialize(new List<object>
+            {
+                new StreetNameWasImported(destinationStreetNamePersistentLocalId, Fixture.Create<MunicipalityId>(),
+                    StreetNameStatus.Current)
+            });
+
+            var streetNames = Container.Resolve<IStreetNames>();
+            streetNames.Add(new StreetNameStreamId(sourceStreetNamePersistentLocalId), sourceStreetName);
+            streetNames.Add(new StreetNameStreamId(destinationStreetNamePersistentLocalId), destinationStreetName);
+
+            var command = new Readdress(
+                destinationStreetNamePersistentLocalId,
+                new List<ReaddressAddressItem>
+                {
+                    new ReaddressAddressItem(sourceStreetNamePersistentLocalId, sourceAddressPersistentLocalId,
+                        destinationHouseNumber)
+                },
+                new List<RetireAddressItem>
+                {
+                    new RetireAddressItem(sourceStreetNamePersistentLocalId, sourceAddressPersistentLocalId)
+                },
+                Fixture.Create<Provenance>());
+
+            var expectedParentPersistentLocalId = new AddressPersistentLocalId(1); // FakePersistentLocalIdGenerator starts with 1
+            var expectedBoxNumber1PersistentLocalId = new AddressPersistentLocalId(2);
+            var expectedBoxNumber2PersistentLocalId  = new AddressPersistentLocalId(3);
+
+            Assert(new Scenario()
+                .Given(destinationStreetNameStreamId)
+                .When(command)
+                 .Then(new[]
+                {
+                    new Fact(destinationStreetNameStreamId,
+                        new AddressWasProposedBecauseOfReaddress(
+                            destinationStreetNamePersistentLocalId,
+                            addressPersistentLocal: expectedParentPersistentLocalId,
+                            sourceAddressPersistentLocalId: sourceAddressPersistentLocalId,
+                            parentPersistentLocalId: null,
+                            postalCode,
+                            destinationHouseNumber,
+                            null,
+                            sourceAddressSecondBoxNumberWasMigrated.GeometryMethod,
+                            sourceAddressSecondBoxNumberWasMigrated.GeometrySpecification,
+                            new ExtendedWkbGeometry(sourceAddressSecondBoxNumberWasMigrated.ExtendedWkbGeometry))),
+                    new Fact(destinationStreetNameStreamId,
+                        new AddressWasProposedBecauseOfReaddress(
+                            destinationStreetNamePersistentLocalId,
+                            addressPersistentLocal: expectedBoxNumber1PersistentLocalId,
+                            sourceAddressPersistentLocalId: firstBoxNumberAddressPersistentLocalId,
+                            parentPersistentLocalId: expectedParentPersistentLocalId,
+                            postalCode,
+                            destinationHouseNumber,
+                            new BoxNumber(sourceAddressFirstBoxNumberWasMigrated.BoxNumber!),
+                            sourceAddressSecondBoxNumberWasMigrated.GeometryMethod,
+                            sourceAddressSecondBoxNumberWasMigrated.GeometrySpecification,
+                            new ExtendedWkbGeometry(sourceAddressSecondBoxNumberWasMigrated.ExtendedWkbGeometry))),
+                    new Fact(destinationStreetNameStreamId,
+                        new AddressWasProposedBecauseOfReaddress(
+                            destinationStreetNamePersistentLocalId,
+                            addressPersistentLocal: expectedBoxNumber2PersistentLocalId,
+                            sourceAddressPersistentLocalId: secondBoxNumberAddressPersistentLocalId,
+                            parentPersistentLocalId: expectedParentPersistentLocalId,
+                            postalCode,
+                            destinationHouseNumber,
+                            new BoxNumber(sourceAddressSecondBoxNumberWasMigrated.BoxNumber!),
+                            sourceAddressSecondBoxNumberWasMigrated.GeometryMethod,
+                            sourceAddressSecondBoxNumberWasMigrated.GeometrySpecification,
+                            new ExtendedWkbGeometry(sourceAddressSecondBoxNumberWasMigrated.ExtendedWkbGeometry))),
+                    new Fact(destinationStreetNameStreamId,
+                        new AddressHouseNumberWasReaddressed(
+                            destinationStreetNamePersistentLocalId,
+                            addressPersistentLocalId: expectedParentPersistentLocalId,
+                            new ReaddressedAddressData(
+                                sourceAddressPersistentLocalId: sourceAddressPersistentLocalId,
+                                destinationAddressPersistentLocalId: expectedParentPersistentLocalId,
+                                isDestinationNewlyProposed: true,
+                                sourceAddressWasMigrated.Status,
+                                destinationHouseNumber,
+                                boxNumber: null,
+                                new PostalCode(sourceAddressWasMigrated.PostalCode!),
+                                new AddressGeometry(
+                                    sourceAddressWasMigrated.GeometryMethod,
+                                    sourceAddressWasMigrated.GeometrySpecification,
+                                    new ExtendedWkbGeometry(sourceAddressWasMigrated.ExtendedWkbGeometry)),
+                                sourceAddressWasMigrated.OfficiallyAssigned),
+                            new List<ReaddressedAddressData>
+                            {
+                                new ReaddressedAddressData(
+                                    firstBoxNumberAddressPersistentLocalId,
+                                    expectedBoxNumber1PersistentLocalId,
+                                    isDestinationNewlyProposed: true,
+                                    sourceAddressFirstBoxNumberWasMigrated.Status,
+                                    destinationHouseNumber,
+                                    new BoxNumber(sourceAddressFirstBoxNumberWasMigrated.BoxNumber!),
+                                    postalCode,
+                                    new AddressGeometry(
+                                        sourceAddressFirstBoxNumberWasMigrated.GeometryMethod,
+                                        sourceAddressFirstBoxNumberWasMigrated.GeometrySpecification,
+                                        new ExtendedWkbGeometry(sourceAddressFirstBoxNumberWasMigrated.ExtendedWkbGeometry)),
+                                    sourceAddressFirstBoxNumberWasMigrated.OfficiallyAssigned),
+                                new ReaddressedAddressData(
+                                    secondBoxNumberAddressPersistentLocalId,
+                                    expectedBoxNumber2PersistentLocalId,
+                                    isDestinationNewlyProposed: true,
+                                    sourceAddressSecondBoxNumberWasMigrated.Status,
+                                    destinationHouseNumber,
+                                    new BoxNumber(sourceAddressSecondBoxNumberWasMigrated.BoxNumber!),
+                                    postalCode,
+                                    new AddressGeometry(
+                                        sourceAddressSecondBoxNumberWasMigrated.GeometryMethod,
+                                        sourceAddressSecondBoxNumberWasMigrated.GeometrySpecification,
+                                        new ExtendedWkbGeometry(sourceAddressSecondBoxNumberWasMigrated.ExtendedWkbGeometry)),
+                                    sourceAddressSecondBoxNumberWasMigrated.OfficiallyAssigned),
+                            }))
+                }));
         }
     }
 }

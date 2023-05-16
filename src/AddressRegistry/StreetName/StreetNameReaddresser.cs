@@ -229,7 +229,7 @@ namespace AddressRegistry.StreetName
 
         private bool IsUsedAsDestinationAddress(StreetNameAddress address)
         {
-            return _addressesToReaddress.Any(x => x.DestinationHouseNumber == address.HouseNumber);
+            return _addressesToReaddress.Any(x => x.DestinationHouseNumber == address.HouseNumber && x.SourceStreetNamePersistentLocalId == _streetName.PersistentLocalId);
         }
 
         private bool HasBeenReaddressed(StreetNameAddress boxNumberAddress)

@@ -1,3 +1,10 @@
+## [3.96.1](https://github.com/informatievlaanderen/address-registry/compare/v3.96.0...v3.96.1) (2023-05-16)
+
+
+### Bug Fixes
+
+* identical source and destination house numbers bug ([2546579](https://github.com/informatievlaanderen/address-registry/commit/2546579442fdebb868b26edaa2c885f7bff58506))
+
 # [3.96.0](https://github.com/informatievlaanderen/address-registry/compare/v3.95.10...v3.96.0) (2023-05-12)
 
 

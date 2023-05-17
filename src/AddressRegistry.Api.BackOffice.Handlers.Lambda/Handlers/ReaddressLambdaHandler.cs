@@ -82,10 +82,12 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
 
                 foreach (var addressToRetirePuri in request.Request.OpheffenAdressen ?? new List<string>())
                 {
+                    var addressId = new AddressPersistentLocalId(
+                        Convert.ToInt32(addressToRetirePuri.AsIdentifier().Map(x => x).Value));
+                    var addressUpdated = readdressCommand.RetireAddressItems.Single(x => x.AddressPersistentLocalId == addressId);
                     addressesUpdated.Add((
-                        readdressCommand.DestinationStreetNamePersistentLocalId,
-                        new AddressPersistentLocalId(
-                            Convert.ToInt32(addressToRetirePuri.AsIdentifier().Map(x => x).Value))));
+                        addressUpdated.StreetNamePersistentLocalId,
+                        addressId));
                 }
             }
 

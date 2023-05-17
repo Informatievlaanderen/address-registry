@@ -1,3 +1,10 @@
+## [3.96.2](https://github.com/informatievlaanderen/address-registry/compare/v3.96.1...v3.96.2) (2023-05-17)
+
+
+### Bug Fixes
+
+* readdress idempotency with addresses to retire GAWR-4853 ([e2045d9](https://github.com/informatievlaanderen/address-registry/commit/e2045d9375598aa725b6d020c99c2618eb8db8c1))
+
 ## [3.96.1](https://github.com/informatievlaanderen/address-registry/compare/v3.96.0...v3.96.1) (2023-05-16)
 
 

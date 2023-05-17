@@ -8,6 +8,7 @@ namespace AddressRegistry.Tests
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
     using global::AutoFixture;
     using Infrastructure.Modules;
     using Microsoft.Extensions.Configuration;

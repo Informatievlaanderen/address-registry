@@ -1,3 +1,11 @@
+## [3.96.3](https://github.com/informatievlaanderen/address-registry/compare/v3.96.2...v3.96.3) (2023-05-19)
+
+
+### Bug Fixes
+
+* return correct etags when retiring addresses from different streetnames during readdress GAWR-4850 ([fe5b187](https://github.com/informatievlaanderen/address-registry/commit/fe5b18731f9896bd228ccc36c12c114f4e2f0f9c))
+* set last event on box number addresses when applying AddressHouseNumberWasReaddressed ([d65594f](https://github.com/informatievlaanderen/address-registry/commit/d65594fb454be0153305d795cc48250966868eb6))
+
 ## [3.96.2](https://github.com/informatievlaanderen/address-registry/compare/v3.96.1...v3.96.2) (2023-05-17)
 
 

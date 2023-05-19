@@ -10,12 +10,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
     using AddressRegistry.Api.BackOffice.Abstractions.SqsRequests;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
-    using AddressRegistry.StreetName;
-    using AddressRegistry.StreetName.Commands;
-    using AddressRegistry.Tests.AutoFixture;
-    using AddressRegistry.Tests.BackOffice.Infrastructure;
-    using AddressRegistry.Tests.BackOffice.Lambda.Infrastructure;
     using Autofac;
+    using AutoFixture;
+    using BackOffice.Infrastructure;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
@@ -23,7 +20,10 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
     using Be.Vlaanderen.Basisregisters.Sqs.Responses;
     using FluentAssertions;
     using global::AutoFixture;
+    using Infrastructure;
     using Microsoft.Extensions.Configuration;
+    using StreetName;
+    using StreetName.Commands;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -419,13 +419,16 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
             var secondRejectedAddressEtagResponse = eTagResponses.FirstOrDefault(x => x.Location == string.Format(ConfigDetailUrl, proposedAddressOfSecondStreetName.AddressPersistentLocalId));
             secondRejectedAddressEtagResponse.Should().NotBeNull();
 
-            var destinationStreetName = await Container.Resolve<IStreetNames>().GetAsync(_streetNameStreamId, CancellationToken.None);
+            var lifeTimeScope = Container.Resolve<ILifetimeScope>();
+            await using var scope = lifeTimeScope.BeginLifetimeScope();
+
+            var destinationStreetName = await scope.Resolve<IStreetNames>().GetAsync(_streetNameStreamId, CancellationToken.None);
             firstDestinationAddressEtagResponse!.ETag.Should().Be(destinationStreetName.GetAddressHash(firstDestinationAddressPersistentLocalId));
             secondDestinationAddressEtagResponse!.ETag.Should().Be(destinationStreetName.GetAddressHash(secondDestinationAddressPersistentLocalId));
 
-            var firstSourceStreetName = await Container.Resolve<IStreetNames>().GetAsync(new StreetNameStreamId(firstOtherStreetNamePersistentLocalId), CancellationToken.None);
+            var firstSourceStreetName = await scope.Resolve<IStreetNames>().GetAsync(new StreetNameStreamId(firstOtherStreetNamePersistentLocalId), CancellationToken.None);
             firstRejectedAddressEtagResponse!.ETag.Should().Be(firstSourceStreetName.GetAddressHash(proposedAddressOfFirstStreetName.AddressPersistentLocalId));
-            var secondSourceStreetName = await Container.Resolve<IStreetNames>().GetAsync(new StreetNameStreamId(secondOtherStreetNamePersistentLocalId), CancellationToken.None);
+            var secondSourceStreetName = await scope.Resolve<IStreetNames>().GetAsync(new StreetNameStreamId(secondOtherStreetNamePersistentLocalId), CancellationToken.None);
             secondRejectedAddressEtagResponse!.ETag.Should().Be(secondSourceStreetName.GetAddressHash(proposedAddressOfSecondStreetName.AddressPersistentLocalId));
         }
 

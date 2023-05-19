@@ -10,12 +10,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
     using AddressRegistry.Api.BackOffice.Abstractions.SqsRequests;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
-    using AddressRegistry.StreetName;
-    using AddressRegistry.StreetName.Commands;
-    using AddressRegistry.Tests.AutoFixture;
-    using AddressRegistry.Tests.BackOffice.Infrastructure;
-    using AddressRegistry.Tests.BackOffice.Lambda.Infrastructure;
     using Autofac;
+    using AutoFixture;
+    using BackOffice.Infrastructure;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
@@ -23,8 +20,10 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
     using Be.Vlaanderen.Basisregisters.Sqs.Responses;
     using FluentAssertions;
     using global::AutoFixture;
+    using Infrastructure;
     using Microsoft.Extensions.Configuration;
-    using Moq;
+    using StreetName;
+    using StreetName.Commands;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -132,7 +131,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
                 sourceStreetNamePersistentLocalId,
                 new NisCode("12345"));
 
-            var destinationStreetNamePersistentLocalId = new StreetNamePersistentLocalId(12345);
+            var destinationStreetNamePersistentLocalId = new StreetNamePersistentLocalId(sourceStreetNamePersistentLocalId + 1);
             var destinationStreamId = new StreetNameStreamId(destinationStreetNamePersistentLocalId);
             ImportMigratedStreetName(
                 new StreetNameId(Guid.NewGuid()),
@@ -142,9 +141,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
             var houseNumber = new HouseNumber("11");
 
             var sourceHouseNumberAddress = await ProposeAddress(new AddressPersistentLocalId(123), houseNumber);
-            var proposeBoxNumberToApprove = await ProposeAddress(new AddressPersistentLocalId(789), houseNumber, new BoxNumber("A1"));
+            var sourceBoxNumberAddress = await ProposeAddress(new AddressPersistentLocalId(456), houseNumber, new BoxNumber("A1"));
             ApproveAddress(_streetNamePersistentLocalId, new AddressPersistentLocalId(sourceHouseNumberAddress.AddressPersistentLocalId));
-            ApproveAddress(_streetNamePersistentLocalId, new AddressPersistentLocalId(proposeBoxNumberToApprove.AddressPersistentLocalId));
+            ApproveAddress(_streetNamePersistentLocalId, new AddressPersistentLocalId(sourceBoxNumberAddress.AddressPersistentLocalId));
 
             var eTagResponses = new List<ETagResponse>();
 
@@ -170,7 +169,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
                             DoelHuisnummer = houseNumber
                         }
                     },
-                    OpheffenAdressen = new List<string>(){AddressPuriFor(sourceHouseNumberAddress.AddressPersistentLocalId)}
+                    OpheffenAdressen = new List<string> { AddressPuriFor(sourceHouseNumberAddress.AddressPersistentLocalId) }
                 },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
@@ -195,10 +194,13 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
             var destinationAddressEtagResponse = eTagResponses.FirstOrDefault(x => x.Location == string.Format(ConfigDetailUrl, destinationAddressPersistentLocalId));
             destinationAddressEtagResponse.Should().NotBeNull();
 
-            var sourceStreetName = await Container.Resolve<IStreetNames>().GetAsync(sourceStreamId, CancellationToken.None);
+            var lifeTimeScope = Container.Resolve<ILifetimeScope>();
+            await using var scope = lifeTimeScope.BeginLifetimeScope();
+
+            var sourceStreetName = await scope.Resolve<IStreetNames>().GetAsync(sourceStreamId, CancellationToken.None);
             sourceAddressEtagResponse.ETag.Should().Be(sourceStreetName.GetAddressHash(sourceHouseNumberAddress.AddressPersistentLocalId));
 
-            var destinationStreetName = await Container.Resolve<IStreetNames>().GetAsync(destinationStreamId, CancellationToken.None);
+            var destinationStreetName = await scope.Resolve<IStreetNames>().GetAsync(destinationStreamId, CancellationToken.None);
             destinationAddressEtagResponse.ETag.Should().Be(destinationStreetName.GetAddressHash(destinationAddressPersistentLocalId));
         }
 

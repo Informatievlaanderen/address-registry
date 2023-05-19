@@ -2,15 +2,16 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddress
 {
     using System.Collections.Generic;
     using System.Linq;
-    using AddressRegistry.Api.BackOffice.Abstractions;
-    using AddressRegistry.StreetName;
-    using AddressRegistry.StreetName.DataStructures;
-    using AddressRegistry.StreetName.Events;
-    using AddressRegistry.Tests.AggregateTests.Builders;
-    using AddressRegistry.Tests.AutoFixture;
+    using Api.BackOffice.Abstractions;
+    using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Builders;
     using FluentAssertions;
     using global::AutoFixture;
+    using StreetName;
+    using StreetName.DataStructures;
+    using StreetName.Events;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -165,6 +166,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddress
                                 new ExtendedWkbGeometry(sourceAddressSecondBoxNumberAddressWasMigrated.ExtendedWkbGeometry)),
                             sourceAddressSecondBoxNumberAddressWasMigrated.OfficiallyAssigned)
                 });
+            ((ISetProvenance)addressHouseNumberWasReaddressed).SetProvenance(Fixture.Create<Provenance>());
 
             var streetName = new StreetNameFactory(NoSnapshotStrategy.Instance).Create();
             streetName.Initialize(new List<object>
@@ -226,6 +228,10 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddress
             destinationAddressSecondBoxNumberAddress.Geometry.Geometry.Should().Be(new ExtendedWkbGeometry(sourceAddressSecondBoxNumberAddressWasMigrated.ExtendedWkbGeometry));
             destinationAddressSecondBoxNumberAddress.PostalCode.Should().Be(new PostalCode(sourceAddressSecondBoxNumberAddressWasMigrated.PostalCode!));
             destinationAddressSecondBoxNumberAddress.IsOfficiallyAssigned.Should().Be(sourceAddressSecondBoxNumberAddressWasMigrated.OfficiallyAssigned);
+
+            destinationAddress.LastEventHash.Should().Be(addressHouseNumberWasReaddressed.GetHash());
+            destinationAddressFirstBoxNumberAddress.LastEventHash.Should().Be(addressHouseNumberWasReaddressed.GetHash());
+            destinationAddressSecondBoxNumberAddress.LastEventHash.Should().Be(addressHouseNumberWasReaddressed.GetHash());
         }
     }
 }

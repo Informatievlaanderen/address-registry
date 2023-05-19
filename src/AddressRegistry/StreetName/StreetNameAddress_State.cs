@@ -384,6 +384,8 @@ namespace AddressRegistry.StreetName
                     readdressedBoxNumber.SourceGeometryMethod,
                     readdressedBoxNumber.SourceGeometrySpecification,
                     new ExtendedWkbGeometry(readdressedBoxNumber.SourceExtendedWkbGeometry));
+
+                boxNumberAddress._lastEvent = @event;
             }
 
             _lastEvent = @event;

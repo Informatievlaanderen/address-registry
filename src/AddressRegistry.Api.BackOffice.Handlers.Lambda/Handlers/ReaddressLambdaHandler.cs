@@ -41,7 +41,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             _lifetimeScope = lifetimeScope;
         }
 
-        protected override async Task<object> InnerHandle(ReaddressLambdaRequest request,
+        protected override async Task<object> InnerHandle(
+            ReaddressLambdaRequest request,
             CancellationToken cancellationToken)
         {
             var addressesToReaddress = await MapReaddressAddressItems(request.Request.HerAdresseer, cancellationToken);
@@ -152,7 +153,14 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             //  we no longer know which destination box number was rejected or retired in the scope of this command or previously.
             foreach (var (streetNamePersistentLocalId, addressPersistentLocalId) in addressesUpdated.Distinct())
             {
-                var lastHash = await GetHash(streetNamePersistentLocalId, addressPersistentLocalId, cancellationToken);
+                // We are using a new IStreetName instance because the class IStreetName instance will have cached the different StreetName aggregates
+                // and will NOT go to the database to fetch the rejected or retired events for addresses which are in different street names than the destination street name.
+                await using var scope = _lifetimeScope.BeginLifetimeScope();
+
+                var streetNames = scope.Resolve<IStreetNames>();
+                var aggregate = await streetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), cancellationToken);
+                var lastHash = aggregate.GetAddressHash(addressPersistentLocalId);
+
                 etagResponses.Add(new ETagResponse(string.Format(DetailUrlFormat, addressPersistentLocalId), lastHash));
             }
 

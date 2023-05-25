@@ -98,8 +98,8 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                     return boxNumberAddresses;
                 }).Create().ToList();
 
-                addresses.AddRange(houseNumbers);
-                addresses.AddRange(boxNumbers);
+                foreach (var streetNameAddress in houseNumbers.Concat(boxNumbers))
+                    addresses.Add(streetNameAddress);
 
                 return addresses;
             });

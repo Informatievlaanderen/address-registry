@@ -1,12 +1,22 @@
 namespace AddressRegistry.StreetName
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using Exceptions;
 
-    public class StreetNameAddresses : List<StreetNameAddress>
+    public class StreetNameAddresses : IEnumerable<StreetNameAddress>
     {
+        private readonly List<StreetNameAddress> _addresses;
+        private readonly Dictionary<AddressPersistentLocalId, StreetNameAddress> _addressesByPersistentLocalId;
+
+        public StreetNameAddresses()
+        {
+            _addresses = new List<StreetNameAddress>();
+            _addressesByPersistentLocalId = new Dictionary<AddressPersistentLocalId, StreetNameAddress>();
+        }
+
         public IEnumerable<StreetNameAddress> ProposedStreetNameAddresses =>
             this.Where(x => !x.IsRemoved && x.Status == AddressStatus.Proposed);
 
@@ -14,14 +24,17 @@ namespace AddressRegistry.StreetName
             this.Where(x => !x.IsRemoved && x.Status == AddressStatus.Current);
 
         public bool HasPersistentLocalId(AddressPersistentLocalId addressPersistentLocalId)
-            => this.Any(x => x.AddressPersistentLocalId == addressPersistentLocalId);
+            => _addressesByPersistentLocalId.ContainsKey(addressPersistentLocalId);
 
         public StreetNameAddress? FindByPersistentLocalId(AddressPersistentLocalId addressPersistentLocalId)
-            => this.SingleOrDefault(x => x.AddressPersistentLocalId == addressPersistentLocalId);
+        {
+            _addressesByPersistentLocalId.TryGetValue(addressPersistentLocalId, out var address);
+            return address;
+        }
 
         public StreetNameAddress GetByPersistentLocalId(AddressPersistentLocalId addressPersistentLocalId)
         {
-            var address = this.SingleOrDefault(x => x.AddressPersistentLocalId == addressPersistentLocalId);
+            _addressesByPersistentLocalId.TryGetValue(addressPersistentLocalId, out var address);
 
             if (address is null)
             {
@@ -69,6 +82,27 @@ namespace AddressRegistry.StreetName
                 && x.AddressPersistentLocalId != addressPersistentLocalId
                 && x.HouseNumber == houseNumber
                 && x.BoxNumber == boxNumber);
+        }
+
+        public void Add(StreetNameAddress address)
+        {
+            _addresses.Add(address);
+            _addressesByPersistentLocalId.Add(address.AddressPersistentLocalId, address);
+        }
+
+        public IReadOnlyCollection<StreetNameAddress> AsReadOnly()
+        {
+            return _addresses.AsReadOnly();
+        }
+
+        public IEnumerator<StreetNameAddress> GetEnumerator()
+        {
+            return _addresses.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

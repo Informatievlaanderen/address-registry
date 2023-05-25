@@ -29,7 +29,7 @@ namespace AddressRegistry.StreetName
         public bool IsRemoved { get; private set; }
 
         public StreetNameAddress? Parent { get; private set; }
-        public IReadOnlyCollection<StreetNameAddress> Children => _children;
+        public IReadOnlyCollection<StreetNameAddress> Children => _children.AsReadOnly();
 
         public AddressId? LegacyAddressId { get; private set; }
 

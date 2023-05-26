@@ -18,6 +18,12 @@ namespace AddressRegistry.Api.Oslo.Infrastructure
     using System;
     using System.Linq;
     using System.Reflection;
+    using Elastic.Apm.AspNetCore;
+    using Elastic.Apm.AspNetCore.DiagnosticListener;
+    using Elastic.Apm.DiagnosticSource;
+    using Elastic.Apm.EntityFrameworkCore;
+    using Elastic.Apm.SqlClient;
+    using ElasticApm.MediatR;
     using FeatureToggles;
     using Microsoft.Extensions.Options;
     using Microsoft.OpenApi.Models;
@@ -145,6 +151,14 @@ namespace AddressRegistry.Api.Oslo.Infrastructure
                         ServiceName = _configuration["DataDog:ServiceName"],
                     }
                 })
+
+                .UseElasticApm(_configuration,
+                    new AspNetCoreDiagnosticSubscriber(),
+                    new AspNetCoreErrorDiagnosticsSubscriber(),
+                    new EfCoreDiagnosticsSubscriber(),
+                    new HttpDiagnosticsSubscriber(),
+                    new SqlClientDiagnosticSubscriber(),
+                    new MediatrDiagnosticsSubscriber())
 
                 .UseDefaultForApi(new StartupUseOptions
                 {

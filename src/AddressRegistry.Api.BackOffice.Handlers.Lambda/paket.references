@@ -14,5 +14,10 @@ Microsoft.Extensions.Configuration.FileExtensions
 Microsoft.Extensions.Configuration.Json
 Microsoft.Extensions.DependencyInjection
 
+Elastic.Apm
+Elastic.Apm.EntityFrameworkCore
+Elastic.Apm.SqlClient
+ElasticApm.MediatR
+
 SourceLink.Embed.AllSourceFiles
 SourceLink.Copy.PdbFiles

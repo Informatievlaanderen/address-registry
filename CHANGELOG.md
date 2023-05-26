@@ -1,3 +1,15 @@
+# [3.97.0](https://github.com/informatievlaanderen/address-registry/compare/v3.96.3...v3.97.0) (2023-05-26)
+
+
+### Features
+
+* add elastic apm ([b9d3ca0](https://github.com/informatievlaanderen/address-registry/commit/b9d3ca08c1babe66e3debc93e22f13bfccbb1757))
+
+
+### Performance Improvements
+
+* encapsulate list and use dictionary lookups for streetnameaddresses ([e6068cf](https://github.com/informatievlaanderen/address-registry/commit/e6068cff5ffa8a1334ac4f0a5580a28ce2eb6268))
+
 ## [3.96.3](https://github.com/informatievlaanderen/address-registry/compare/v3.96.2...v3.96.3) (2023-05-19)
 
 

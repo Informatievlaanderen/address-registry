@@ -16,6 +16,11 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Infrastructure;
     using Consumer.Read.Municipality.Infrastructure.Modules;
+    using Elastic.Apm;
+    using Elastic.Apm.DiagnosticSource;
+    using Elastic.Apm.EntityFrameworkCore;
+    using Elastic.Apm.SqlClient;
+    using ElasticApm.MediatR;
     using Infrastructure;
     using Infrastructure.Modules;
     using MediatR;
@@ -30,9 +35,11 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
     {
         public Function() : base(new List<Assembly> { typeof(ApproveAddressSqsRequest).Assembly })
         {
-            //TODO: run infrastructure migrations helper
-            //TODO: EnsureSnapshot
-            //TODO: EnsureSqlStreamStore
+            Agent.Setup(new AgentComponents());
+            Agent.Subscribe(new SqlClientDiagnosticSubscriber(),
+                new EfCoreDiagnosticsSubscriber(),
+                new HttpDiagnosticsSubscriber(),
+                new MediatrDiagnosticsSubscriber());
         }
 
         protected override IServiceProvider ConfigureServices(IServiceCollection services)

@@ -25,6 +25,11 @@ namespace AddressRegistry.Projector.Infrastructure
     using System.Threading;
     using AddressRegistry.Infrastructure.Modules;
     using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
+    using Elastic.Apm.AspNetCore;
+    using Elastic.Apm.AspNetCore.DiagnosticListener;
+    using Elastic.Apm.DiagnosticSource;
+    using Elastic.Apm.EntityFrameworkCore;
+    using Elastic.Apm.SqlClient;
     using Microsoft.Extensions.Options;
     using Microsoft.OpenApi.Models;
 
@@ -170,6 +175,13 @@ namespace AddressRegistry.Projector.Infrastructure
                         ServiceName = _configuration["DataDog:ServiceName"]
                     }
                 })
+
+                .UseElasticApm(_configuration,
+                    new AspNetCoreDiagnosticSubscriber(),
+                    new AspNetCoreErrorDiagnosticsSubscriber(),
+                    new EfCoreDiagnosticsSubscriber(),
+                    new HttpDiagnosticsSubscriber(),
+                    new SqlClientDiagnosticSubscriber())
 
                 .UseDefaultForApi(new StartupUseOptions
                 {

@@ -106,6 +106,15 @@ nuget Microsoft.Extensions.DependencyInjection.Abstractions 7.0.0
 nuget EntityFramework 6.4.4
 nuget Microsoft.SqlServer.Types 13.0.4001 // Don't update: requires version 13.0.4001 for legacy reasons
 
+// ELASTIC APM STUFF
+nuget Elastic.Apm 1.20.0
+nuget Elastic.Apm.AspNetCore 1.20.0
+nuget Elastic.Apm.EntityFrameworkCore 1.20.0
+nuget Elastic.Apm.Extensions.Hosting 1.20.0
+nuget Elastic.Apm.SqlClient 1.20.0
+nuget Elastic.Apm.StackExchange.Redis 1.20.0
+nuget ElasticApm.MediatR 0.2.0
+
 // DOCS STUFF
 nuget Structurizr.Core 0.9.7
 nuget Structurizr.Client 0.9.7

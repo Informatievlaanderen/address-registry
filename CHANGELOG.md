@@ -1,3 +1,10 @@
+## [3.97.1](https://github.com/informatievlaanderen/address-registry/compare/v3.97.0...v3.97.1) (2023-05-29)
+
+
+### Bug Fixes
+
+* add CI/CD newprd ([8938dde](https://github.com/informatievlaanderen/address-registry/commit/8938ddea43010cac8afe59c403c740beb63a11e0))
+
 # [3.97.0](https://github.com/informatievlaanderen/address-registry/compare/v3.96.3...v3.97.0) (2023-05-26)
 
 

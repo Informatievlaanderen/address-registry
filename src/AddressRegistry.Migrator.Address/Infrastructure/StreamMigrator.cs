@@ -1,6 +1,7 @@
 namespace AddressRegistry.Migrator.Address.Infrastructure
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -16,6 +17,7 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using StreetName;
+    using StreetName.Commands;
     using StreetName.Exceptions;
     using AddressId = AddressRegistry.Address.AddressId;
 
@@ -46,8 +48,10 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
         {
             await _processedIdsTable.CreateTableIfNotExists();
 
-            var consumerContext = _lifetimeScope.Resolve<ConsumerContext>();
-            _consumerItems = await consumerContext.StreetNameConsumerItems.ToListAsync(ct);
+            await using (var consumerContext = _lifetimeScope.Resolve<ConsumerContext>())
+            {
+                _consumerItems = await consumerContext.StreetNameConsumerItems.AsNoTracking().ToListAsync(ct);
+            }
 
             var processedIdsList = await _processedIdsTable.GetProcessedIds();
             _processedIds = new List<(int, bool)>(processedIdsList);
@@ -62,17 +66,12 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
 
             var pageOfStreams = (await _sqlStreamTable.ReadNextAddressStreamPage(lastCursorPosition)).ToList();
 
-            while (pageOfStreams.Any())
+            while (pageOfStreams.Any() && !ct.IsCancellationRequested)
             {
-                if (ct.IsCancellationRequested)
-                {
-                    break;
-                }
-
                 try
                 {
                     var processedPageItems = await ProcessStreams(pageOfStreams, ct);
-                    
+
                     if (!processedPageItems.Any())
                     {
                         lastCursorPosition = pageOfStreams.Max(x => x.internalId);
@@ -95,24 +94,20 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
 
         private async Task<List<int>> ProcessStreams(IEnumerable<(int, string)> streamsToProcess, CancellationToken ct)
         {
-            var processedItems = new List<int>();
+            var processedItems = new ConcurrentBag<int>();
+            var migrateCommands = new ConcurrentDictionary<int, MigrateAddressToStreetName>();
 
-            foreach (var stream in streamsToProcess)
+            var backOfficeContextFactory = _lifetimeScope.Resolve<IDbContextFactory<BackOfficeContext>>();
+
+            await Parallel.ForEachAsync(streamsToProcess, ct, async (stream, innerCt) =>
             {
                 try
                 {
-                    await ProcessStream(stream, processedItems, ct);
-                }
-                catch (ParentAddressNotFoundException)
-                {
-                    _logger.LogWarning($"Parent not found for child '{stream.Item1}'.");
-
-                    if (_skipIncomplete)
+                    var command = await CreateMigrateCommand(stream, innerCt);
+                    if (command is not null)
                     {
-                        continue;
+                        migrateCommands.TryAdd(stream.Item1, command);
                     }
-
-                    throw;
                 }
                 catch (Exception ex)
                 {
@@ -120,27 +115,68 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
                         $"Unexpected exception for migration stream '{stream.Item1}', aggregateId '{stream.Item2}' \n\n {ex.Message}");
                     throw;
                 }
-            }
-            
-            return processedItems;
+            });
+
+            var migrateCommandsByStreetName = migrateCommands.GroupBy(x => x.Value.StreetNamePersistentLocalId);
+
+            await Parallel.ForEachAsync(migrateCommandsByStreetName, ct, async (commands, innerCt) =>
+            {
+                await using var backOfficeContext = await backOfficeContextFactory.CreateDbContextAsync(innerCt);
+
+                foreach (var (internalId, command)  in commands.OrderBy(x => x.Key))
+                {
+                    try
+                    {
+                        await CreateAndDispatchCommand(command, innerCt);
+
+                        await _processedIdsTable.Add(internalId);
+                        processedItems.Add(internalId);
+
+                        await backOfficeContext
+                            .AddressPersistentIdStreetNamePersistentIds
+                            .AddAsync(
+                                new AddressPersistentIdStreetNamePersistentId(command.AddressPersistentLocalId,
+                                    command.StreetNamePersistentLocalId), innerCt);
+                        await backOfficeContext.SaveChangesAsync(innerCt);
+                    }
+                    catch (ParentAddressNotFoundException)
+                    {
+                        _logger.LogWarning($"Parent not found for child '{internalId}'.");
+
+                        if (_skipIncomplete)
+                        {
+                            continue;
+                        }
+
+                        throw;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogCritical(
+                            $"Unexpected exception for migration stream '{internalId}', aggregateId '{command.AddressId}'" + Environment.NewLine + ex.Message);
+                        throw;
+                    }
+                }
+            });
+
+            return processedItems.ToList();
         }
 
-        private async Task ProcessStream(
+        private async Task<MigrateAddressToStreetName?>  CreateMigrateCommand(
             (int, string) stream,
-            List<int> processedItems,
             CancellationToken token)
         {
             var (internalId, aggregateId) = stream;
 
             if (token.IsCancellationRequested)
             {
-                return;
+                return null;
             }
 
             if (_processedIds.Contains((internalId, false)))
             {
                 _logger.LogDebug($"Already migrated '{internalId}', skipping...");
-                return;
+                return null;
             }
 
             await using var streamLifetimeScope = _lifetimeScope.BeginLifetimeScope();
@@ -154,12 +190,12 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
                 if (addressAggregate.IsRemoved)
                 {
                     _logger.LogDebug($"Skipping incomplete & removed Address '{aggregateId}'.");
-                    return;
+                    return null;
                 }
 
                 if (_skipIncomplete)
                 {
-                    return;
+                    return null;
                 }
 
                 throw new InvalidOperationException($"Incomplete but not removed Address '{aggregateId}'.");
@@ -173,27 +209,16 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
                 throw new InvalidOperationException($"StreetName for StreetNameId '{streetNameId}' was not found.");
             }
 
-            await CreateAndDispatchCommand(streetName, addressAggregate, token);
+            var streetNamePersistentLocalId = new StreetNamePersistentLocalId(streetName.PersistentLocalId);
+            var migrateCommand = addressAggregate.CreateMigrateCommand(streetNamePersistentLocalId);
 
-            await _processedIdsTable.Add(internalId);
-            processedItems.Add(internalId);
-
-            await using var backOfficeContext = streamLifetimeScope.Resolve<BackOfficeContext>();
-            await backOfficeContext
-                .AddressPersistentIdStreetNamePersistentIds
-                .AddAsync(
-                    new AddressPersistentIdStreetNamePersistentId(addressAggregate.PersistentLocalId,
-                        streetName.PersistentLocalId), token);
-            await backOfficeContext.SaveChangesAsync(token);
+            return migrateCommand;
         }
 
         private async Task CreateAndDispatchCommand(
-            StreetNameConsumerItem streetName,
-            Address address,
+            MigrateAddressToStreetName migrateCommand,
             CancellationToken ct)
         {
-            var streetNamePersistentLocalId = new StreetNamePersistentLocalId(streetName.PersistentLocalId);
-            var migrateCommand = address.CreateMigrateCommand(streetNamePersistentLocalId);
             var markMigrated = new MarkAddressAsMigrated(
                 new AddressId(migrateCommand.AddressId),
                 migrateCommand.StreetNamePersistentLocalId,

@@ -5,12 +5,15 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
+    using AddressRegistry.Infrastructure;
     using AddressRegistry.Infrastructure.Modules;
+    using Api.BackOffice.Abstractions;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
     using Be.Vlaanderen.Basisregisters.Projector.Modules;
     using Microsoft.Data.SqlClient;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -22,7 +25,7 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
     {
         protected Program()
         { }
-        
+
         public static async Task Main(string[] args)
         {
             var cancellationTokenSource = new CancellationTokenSource();
@@ -115,6 +118,16 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
 
             builder.RegisterModule(new ApiModule(configuration, services, loggerFactory));
             builder.RegisterModule(new ProjectorModule(configuration));
+
+            services
+                .AddDbContextFactory<BackOfficeContext>((_, options) =>
+                options
+                    .UseLoggerFactory(loggerFactory)
+                    .UseSqlServer(configuration.GetConnectionString("BackOffice"), sqlServerOptions =>
+                    {
+                        sqlServerOptions.EnableRetryOnFailure();
+                        sqlServerOptions.MigrationsHistoryTable(MigrationTables.BackOffice, Schema.BackOffice);
+                    }));
 
             builder.Populate(services);
 

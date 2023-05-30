@@ -1,3 +1,10 @@
+# [3.98.0](https://github.com/informatievlaanderen/address-registry/compare/v3.97.1...v3.98.0) (2023-05-30)
+
+
+### Features
+
+* run migrator in parallel ([34d5e1f](https://github.com/informatievlaanderen/address-registry/commit/34d5e1fc65066ab99b2fd58f3e5ed1f02ced4d28))
+
 ## [3.97.1](https://github.com/informatievlaanderen/address-registry/compare/v3.97.0...v3.97.1) (2023-05-29)
 
 

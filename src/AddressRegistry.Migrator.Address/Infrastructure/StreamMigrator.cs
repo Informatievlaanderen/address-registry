@@ -41,7 +41,7 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
             _processedIdsTable = new ProcessedIdsTable(connectionString, loggerFactory);
             _sqlStreamTable = new SqlStreamsTable(connectionString);
 
-            _skipIncomplete = Boolean.Parse(configuration["SkipIncomplete"]);
+            _skipIncomplete = bool.Parse(configuration["SkipIncomplete"]);
         }
 
         public async Task ProcessAsync(CancellationToken ct)

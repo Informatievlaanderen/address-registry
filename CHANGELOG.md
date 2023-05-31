@@ -1,3 +1,10 @@
+## [3.98.4](https://github.com/informatievlaanderen/address-registry/compare/v3.98.3...v3.98.4) (2023-05-31)
+
+
+### Bug Fixes
+
+* nullable postalcode from snapshot ([a9f0ad5](https://github.com/informatievlaanderen/address-registry/commit/a9f0ad551195e0c5cf24b45ea69e46773ed628eb))
+
 ## [3.98.3](https://github.com/informatievlaanderen/address-registry/compare/v3.98.2...v3.98.3) (2023-05-31)
 
 

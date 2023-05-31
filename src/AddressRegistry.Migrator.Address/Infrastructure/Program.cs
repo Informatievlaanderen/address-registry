@@ -1,6 +1,7 @@
 namespace AddressRegistry.Migrator.Address.Infrastructure
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
     using System.Threading;
@@ -12,6 +13,8 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
     using Be.Vlaanderen.Basisregisters.Projector.Modules;
+    using Consumer;
+    using Consumer.StreetName;
     using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -60,10 +63,19 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
             {
                 var watch = Stopwatch.StartNew();
 
+                List<StreetNameConsumerItem> consumerItems;
+
+                var lifetimeScope = container.GetRequiredService<ILifetimeScope>();
+                await using (var consumerContext = lifetimeScope.Resolve<ConsumerContext>())
+                {
+                    consumerItems = await consumerContext.StreetNameConsumerItems.AsNoTracking().ToListAsync(ct);
+                }
+
                 var migrator = new StreamMigrator(
                     container.GetRequiredService<ILoggerFactory>(),
                     configuration,
-                    container.GetRequiredService<ILifetimeScope>());
+                    lifetimeScope,
+                    consumerItems);
 
                 await DistributedLock<Program>.RunAsync(
                     async () =>

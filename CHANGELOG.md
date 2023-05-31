@@ -1,3 +1,10 @@
+## [3.98.2](https://github.com/informatievlaanderen/address-registry/compare/v3.98.1...v3.98.2) (2023-05-31)
+
+
+### Bug Fixes
+
+* consumer items to concurrent bag migrator ([967b168](https://github.com/informatievlaanderen/address-registry/commit/967b16891404d4bf8caed554df0e4761668a9680))
+
 ## [3.98.1](https://github.com/informatievlaanderen/address-registry/compare/v3.98.0...v3.98.1) (2023-05-31)
 
 

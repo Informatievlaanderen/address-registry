@@ -1,3 +1,10 @@
+## [3.98.1](https://github.com/informatievlaanderen/address-registry/compare/v3.98.0...v3.98.1) (2023-05-31)
+
+
+### Bug Fixes
+
+* ioc registration address migratorr ([aafcc67](https://github.com/informatievlaanderen/address-registry/commit/aafcc6740ceb3c3258757eca40754b1c7e99cefc))
+
 # [3.98.0](https://github.com/informatievlaanderen/address-registry/compare/v3.97.1...v3.98.0) (2023-05-30)
 
 

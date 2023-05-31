@@ -1,3 +1,10 @@
+## [3.98.3](https://github.com/informatievlaanderen/address-registry/compare/v3.98.2...v3.98.3) (2023-05-31)
+
+
+### Bug Fixes
+
+* pass StreetNameConsumerItem collection to StreamMigrator instead of querying upon each retry" ([46ec348](https://github.com/informatievlaanderen/address-registry/commit/46ec348c15a03cd3334c2bbcc7f7c51bb2de92cb))
+
 ## [3.98.2](https://github.com/informatievlaanderen/address-registry/compare/v3.98.1...v3.98.2) (2023-05-31)
 
 

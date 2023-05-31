@@ -11,7 +11,6 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
     using Api.BackOffice.Abstractions;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
-    using Consumer;
     using Consumer.StreetName;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -27,15 +26,20 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
         private readonly ILogger _logger;
         private readonly ProcessedIdsTable _processedIdsTable;
         private readonly SqlStreamsTable _sqlStreamTable;
-        private ConcurrentBag<StreetNameConsumerItem> _consumerItems;
+        private readonly IList<StreetNameConsumerItem> _consumerItems;
         private readonly bool _skipIncomplete;
 
         private List<(int processedId, bool isPageCompleted)> _processedIds;
 
-        public StreamMigrator(ILoggerFactory loggerFactory, IConfiguration configuration, ILifetimeScope lifetimeScope)
+        public StreamMigrator(
+            ILoggerFactory loggerFactory,
+            IConfiguration configuration,
+            ILifetimeScope lifetimeScope,
+            IList<StreetNameConsumerItem> consumerItems)
         {
-            _lifetimeScope = lifetimeScope;
             _logger = loggerFactory.CreateLogger("AddressMigrator");
+            _lifetimeScope = lifetimeScope;
+            _consumerItems = consumerItems;
 
             var connectionString = configuration.GetConnectionString("events");
             _processedIdsTable = new ProcessedIdsTable(connectionString, loggerFactory);
@@ -47,11 +51,6 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
         public async Task ProcessAsync(CancellationToken ct)
         {
             await _processedIdsTable.CreateTableIfNotExists();
-
-            await using (var consumerContext = _lifetimeScope.Resolve<ConsumerContext>())
-            {
-                _consumerItems = new ConcurrentBag<StreetNameConsumerItem>(await consumerContext.StreetNameConsumerItems.AsNoTracking().ToListAsync(ct));
-            }
 
             var processedIdsList = await _processedIdsTable.GetProcessedIds();
             _processedIds = new List<(int, bool)>(processedIdsList);

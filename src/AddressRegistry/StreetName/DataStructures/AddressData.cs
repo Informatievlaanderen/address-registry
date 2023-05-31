@@ -10,7 +10,7 @@ namespace AddressRegistry.StreetName.DataStructures
         public AddressStatus Status { get; }
         public string HouseNumber { get; }
         public string? BoxNumber { get; }
-        public string PostalCode { get; }
+        public string? PostalCode { get; }
 
         public GeometryMethod? GeometryMethod { get; }
         public GeometrySpecification? GeometrySpecification { get; }
@@ -44,7 +44,7 @@ namespace AddressRegistry.StreetName.DataStructures
             AddressStatus addressStatus,
             HouseNumber houseNumber,
             BoxNumber? boxNumber,
-            PostalCode postalCode,
+            PostalCode? postalCode,
             AddressGeometry? geometry,
             bool isOfficiallyAssigned,
             bool isRemoved,
@@ -58,7 +58,7 @@ namespace AddressRegistry.StreetName.DataStructures
 
             HouseNumber = houseNumber;
             BoxNumber = boxNumber is null ? (string?)null : boxNumber;
-            PostalCode = postalCode;
+            PostalCode = postalCode is null ? (string?)null : postalCode;
 
             if (geometry is not null)
             {

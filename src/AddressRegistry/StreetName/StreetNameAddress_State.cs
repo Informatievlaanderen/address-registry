@@ -265,7 +265,7 @@ namespace AddressRegistry.StreetName
             Status = addressData.Status;
             HouseNumber = new HouseNumber(addressData.HouseNumber);
             BoxNumber = string.IsNullOrEmpty(addressData.BoxNumber) ? null : new BoxNumber(addressData.BoxNumber);
-            PostalCode = new PostalCode(addressData.PostalCode);
+            PostalCode = string.IsNullOrEmpty(addressData.PostalCode) ? null : new PostalCode(addressData.PostalCode);
             Geometry = new AddressGeometry(
                 addressData.GeometryMethod.Value,
                 addressData.GeometrySpecification.Value,

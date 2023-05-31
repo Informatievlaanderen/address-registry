@@ -27,7 +27,7 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
         private readonly ILogger _logger;
         private readonly ProcessedIdsTable _processedIdsTable;
         private readonly SqlStreamsTable _sqlStreamTable;
-        private List<StreetNameConsumerItem> _consumerItems;
+        private ConcurrentBag<StreetNameConsumerItem> _consumerItems;
         private readonly bool _skipIncomplete;
 
         private List<(int processedId, bool isPageCompleted)> _processedIds;
@@ -50,7 +50,7 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
 
             await using (var consumerContext = _lifetimeScope.Resolve<ConsumerContext>())
             {
-                _consumerItems = await consumerContext.StreetNameConsumerItems.AsNoTracking().ToListAsync(ct);
+                _consumerItems = new ConcurrentBag<StreetNameConsumerItem>(await consumerContext.StreetNameConsumerItems.AsNoTracking().ToListAsync(ct));
             }
 
             var processedIdsList = await _processedIdsTable.GetProcessedIds();
@@ -112,7 +112,8 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
                 catch (Exception ex)
                 {
                     _logger.LogCritical(
-                        $"Unexpected exception for migration stream '{stream.Item1}', aggregateId '{stream.Item2}' \n\n {ex.Message}");
+                        ex,
+                        $"Unexpected exception for creating command stream '{stream.Item1}', aggregateId '{stream.Item2}'");
                     throw;
                 }
             });
@@ -153,7 +154,8 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
                     catch (Exception ex)
                     {
                         _logger.LogCritical(
-                            $"Unexpected exception for migration stream '{internalId}', aggregateId '{command.AddressId}'" + Environment.NewLine + ex.Message);
+                            ex,
+                            $"Unexpected exception for migration stream '{internalId}', aggregateId '{command.AddressId}'");
                         throw;
                     }
                 }

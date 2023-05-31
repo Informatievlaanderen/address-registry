@@ -455,7 +455,7 @@ NUGET
       System.Reflection.TypeExtensions (>= 4.3) - restriction: || (&& (== net472) (< net35)) (== net6.0)
       System.Xml.XmlDocument (>= 4.3) - restriction: || (&& (== net472) (< net35)) (== net6.0)
     CommandLineParser (2.9.1) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
-    CompareNETObjects (4.76) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
+    CompareNETObjects (4.79)
       Microsoft.CSharp (>= 4.7) - restriction: || (&& (== net472) (>= netstandard2.1)) (== net6.0)
     Confluent.Kafka (1.8.2) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
       librdkafka.redist (>= 1.8.2)

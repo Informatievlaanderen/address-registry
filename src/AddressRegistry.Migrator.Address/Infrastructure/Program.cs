@@ -84,7 +84,7 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
                         {
                             await Policy
                                 .Handle<SqlException>()
-                                .WaitAndRetryAsync(10, _ => TimeSpan.FromSeconds(60),
+                                .WaitAndRetryAsync(20, _ => TimeSpan.FromSeconds(60),
                                     (_, timespan) =>
                                         Log.Information($"SqlException occurred retrying after {timespan.Seconds} seconds."))
                                 .ExecuteAsync(async () =>

@@ -557,24 +557,24 @@ jobs:
       env:
         SEMVER: ${{ needs.release.outputs.version }}
 
-    # - name: Configure AWS credentials (New Production)
-    #   uses: aws-actions/configure-aws-credentials@v1-node16
-    #   with:
-    #     aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_NEWPRD }}
-    #     aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_NEWPRD }}
-    #     aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
+    - name: Configure AWS credentials (New Production)
+      uses: aws-actions/configure-aws-credentials@v1-node16
+      with:
+        aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_NEWPRD }}
+        aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_NEWPRD }}
+        aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
-    # - name: Login to Amazon ECR (New Production)
-    #   uses: aws-actions/amazon-ecr-login@v1.5.3
+    - name: Login to Amazon ECR (New Production)
+      uses: aws-actions/amazon-ecr-login@v1.5.3
 
-    # - name: Push Lambda functions to S3 New Production
-    #   shell: bash
-    #   run: |
-    #     echo Push Lambda functions to S3 New Production
-    #     echo aws s3 cp ~/lambda.zip s3://s3-vbr-prd-basisregisters-lam-ar-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
-    #     aws s3 cp ~/lambda.zip s3://s3-vbr-prd-basisregisters-lam-ar-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
-    #   env:
-    #    SEMVER: ${{ needs.release.outputs.version }}
+    - name: Push Lambda functions to S3 New Production
+      shell: bash
+      run: |
+        echo Push Lambda functions to S3 New Production
+        echo aws s3 cp ~/lambda.zip s3://s3-vbr-prd-basisregisters-lam-ar-sqsbackofficefunction/$SEMVER/lambda.zip
+        aws s3 cp ~/lambda.zip s3://s3-vbr-prd-basisregisters-lam-ar-sqsbackofficefunction/$SEMVER/lambda.zip
+      env:
+       SEMVER: ${{ needs.release.outputs.version }}
 
     - name: Configure AWS credentials (Production)
       uses: aws-actions/configure-aws-credentials@v1-node16
@@ -1213,44 +1213,44 @@ jobs:
         echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
         echo ${{ steps.awscurl-polling-action.outputs.final-message }}
 
-  # deploy_lambda_to_newproduction:
-  #   if: github.repository_owner == 'Informatievlaanderen'
-  #   needs: [ deploy_to_newproduction, release ]
-  #   name: Deploy lambda to new production
-  #   runs-on: ubuntu-latest
+  deploy_lambda_to_newproduction:
+    if: github.repository_owner == 'Informatievlaanderen'
+    needs: [ deploy_to_newproduction, release ]
+    name: Deploy lambda to new production
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #   - name: CD Lambda(s) Configure credentials
-  #     uses: aws-actions/configure-aws-credentials@v1-node16
-  #     with:
-  #       aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID }}
-  #       aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY }}
-  #       aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
+    steps:
+    - name: CD Lambda(s) Configure credentials
+      uses: aws-actions/configure-aws-credentials@v1-node16
+      with:
+        aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
-  #   - name: Prepare Lambda(s)
-  #     shell: bash
-  #     run: |
-  #       echo aws s3 cp s3://s3-vbr-stg-basisregisters-lam-ar-sqsbackofficehandlerfunction/$VERSION/lambda.zip s3://s3-vbr-stg-basisregisters-lam-ar-sqsbackofficehandlerfunction/lambda.zip --copy-props none
-  #       aws s3 cp s3://s3-vbr-stg-basisregisters-lam-ar-sqsbackofficehandlerfunction/$VERSION/lambda.zip s3://s3-vbr-stg-basisregisters-lam-ar-sqsbackofficehandlerfunction/lambda.zip --copy-props none
-  #     env:
-  #       VERSION: ${{ needs.release.outputs.version }}
+    - name: Prepare Lambda(s)
+      shell: bash
+      run: |
+        echo aws s3 cp s3://s3-vbr-prd-basisregisters-lam-ar-sqsbackofficefunction/$VERSION/lambda.zip s3://s3-vbr-prd-basisregisters-lam-ar-sqsbackofficefunction/lambda.zip --copy-props none
+        aws s3 cp s3://s3-vbr-prd-basisregisters-lam-ar-sqsbackofficefunction/$VERSION/lambda.zip s3://s3-vbr-prd-basisregisters-lam-ar-sqsbackofficefunction/lambda.zip --copy-props none
+      env:
+        VERSION: ${{ needs.release.outputs.version }}
 
-  #   - name: Promote Lambda(s)
-  #     shell: bash
-  #     run: |
-  #       echo pulling awscurl docker image
-  #       docker pull ghcr.io/okigan/awscurl:latest
-  #       echo docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "functionName": "ar-sqsbackofficehandlerfunction", "project": "basisregisters", "domain": "basisregisters" }' $PROMOTEURL/stg
-  #       docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "functionName": "ar-sqsbackofficehandlerfunction", "project": "basisregisters", "domain": "basisregisters" }' $PROMOTEURL/stg
-  #     env:
-  #       ACCESS_KEY_ID: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_TST }}
-  #       SECRET_ACCESS_KEY_ID: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_TST }}
-  #       REGION: ${{ secrets.VBR_AWS_REGION_PRD }}
-  #       PROMOTEURL: ${{ secrets.VBR_AWS_PROMOTE_LAMBDA_BASEURL }}
+    - name: Promote Lambda(s)
+      shell: bash
+      run: |
+        echo pulling awscurl docker image
+        docker pull ghcr.io/okigan/awscurl:latest
+        echo docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "functionName": "ar-sqsbackofficefunction", "project": "basisregisters", "domain": "basisregisters" }' $PROMOTEURL/acc
+        docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "functionName": "ar-sqsbackofficefunction", "project": "basisregisters", "domain": "basisregisters" }' $PROMOTEURL/acc
+      env:
+        ACCESS_KEY_ID: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_TST }}
+        SECRET_ACCESS_KEY_ID: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_TST }}
+        REGION: ${{ secrets.VBR_AWS_REGION_PRD }}
+        PROMOTEURL: ${{ secrets.VBR_AWS_PROMOTE_LAMBDA_BASEURL }}
 
   deploy_to_newproduction_finish_slack:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ deploy_to_newproduction ] #[ deploy_lambda_to_staging ]
+    needs: [ deploy_lambda_to_newproduction ]
     name: Deploy to new production finished
     runs-on: ubuntu-latest
 

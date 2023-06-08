@@ -70,7 +70,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections
 
     public class StreetNameBosaItemConfiguration : IEntityTypeConfiguration<StreetNameBosaItem>
     {
-        private const string TableName = "BosaItems";
+        public const string TableName = "BosaItems";
 
         public void Configure(EntityTypeBuilder<StreetNameBosaItem> builder)
         {

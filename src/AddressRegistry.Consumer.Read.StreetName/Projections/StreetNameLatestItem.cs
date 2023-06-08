@@ -86,7 +86,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections
 
     public class StreetNameLatestItemConfiguration : IEntityTypeConfiguration<StreetNameLatestItem>
     {
-        private const string TableName = "LatestItems";
+        public const string TableName = "LatestItems";
 
         public void Configure(EntityTypeBuilder<StreetNameLatestItem> builder)
         {
@@ -96,6 +96,8 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections
 
             builder.Property(x => x.PersistentLocalId)
                 .ValueGeneratedNever();
+
+            builder.HasIndex(p => p.VersionTimestampAsDateTimeOffset);
 
             builder.Property(p => p.VersionTimestampAsDateTimeOffset)
                 .HasColumnName("VersionTimestamp");

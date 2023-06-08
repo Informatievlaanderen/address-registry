@@ -4,6 +4,7 @@ using AddressRegistry.Consumer.Read.StreetName;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AddressRegistry.Consumer.Read.StreetName.Migrations
 {
     [DbContext(typeof(StreetNameConsumerContext))]
-    partial class StreetNameConsumerContextModelSnapshot : ModelSnapshot
+    [Migration("20230608141252_AddIndexVersionTimestamp")]
+    partial class AddIndexVersionTimestamp
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

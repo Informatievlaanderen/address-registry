@@ -120,7 +120,7 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
 
     public class MunicipalityItemConfiguration : IEntityTypeConfiguration<MunicipalityLatestItem>
     {
-        private const string TableName = "LatestItems";
+        public const string TableName = "LatestItems";
 
         public void Configure(EntityTypeBuilder<MunicipalityLatestItem> builder)
         {
@@ -130,6 +130,8 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
 
             builder.Property(p => p.VersionTimestampAsDateTimeOffset)
                 .HasColumnName("VersionTimestamp");
+
+            builder.HasIndex(p => p.VersionTimestampAsDateTimeOffset);
 
             builder.Ignore(x => x.VersionTimestamp);
 

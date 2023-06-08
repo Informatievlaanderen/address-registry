@@ -86,7 +86,7 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
 
     public class MunicipalityBosaItemConfiguration : IEntityTypeConfiguration<MunicipalityBosaItem>
     {
-        private const string TableName = "BosaItems";
+        public const string TableName = "BosaItems";
 
         public void Configure(EntityTypeBuilder<MunicipalityBosaItem> builder)
         {

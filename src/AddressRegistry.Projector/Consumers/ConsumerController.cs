@@ -30,25 +30,29 @@
             await using var sqlConnection =
                 new SqlConnection(configuration.GetConnectionString(ConsumerConnectionStringKey));
             var consumerResult =
-                sqlConnection.QueryFirstAsync<ProcessedMessage>(
-                    $"SELECT TOP(1) * FROM [{Schema.Consumer}].[{IdempotentConsumerContext.ProcessedMessageTable}] ORDER BY [{nameof(ProcessedMessage.DateProcessed)}] DESC");
+                sqlConnection.QueryFirstAsync<DateTimeOffset>(
+                    $"SELECT TOP(1) [{nameof(ProcessedMessage.DateProcessed)}] FROM [{Schema.Consumer}].[{IdempotentConsumerContext.ProcessedMessageTable}] ORDER BY [{nameof(ProcessedMessage.DateProcessed)}] DESC");
 
-            await using var sqlConsumerReadMunicipalityConnection =
+            await using var sqlConsumerReadMunicipalityBosaConnection =
                 new SqlConnection(configuration.GetConnectionString(ConsumerReadMunicipalityConnectionStringKey));
             var municipalityBosaResult =
-                sqlConnection.QueryFirstAsync<DateTimeOffset>(
+                sqlConsumerReadMunicipalityBosaConnection.QueryFirstAsync<DateTimeOffset>(
                     $"SELECT TOP(1) [{nameof(MunicipalityBosaItem.VersionTimestamp)}] FROM [{Schema.ConsumerReadMunicipality}].[{MunicipalityBosaItemConfiguration.TableName}] ORDER BY [{nameof(MunicipalityBosaItem.VersionTimestamp)}] DESC");
+            await using var sqlConsumerReadMunicipalityLatestItemConnection =
+                new SqlConnection(configuration.GetConnectionString(ConsumerReadMunicipalityConnectionStringKey));
             var municipalityLatestItemResult =
-                sqlConnection.QueryFirstAsync<DateTimeOffset>(
+                sqlConsumerReadMunicipalityLatestItemConnection.QueryFirstAsync<DateTimeOffset>(
                     $"SELECT TOP(1) [{nameof(MunicipalityLatestItem.VersionTimestamp)}] FROM [{Schema.ConsumerReadMunicipality}].[{MunicipalityItemConfiguration.TableName}] ORDER BY [{nameof(MunicipalityLatestItem.VersionTimestamp)}] DESC");
 
-            await using var sqlConsumerReadStreetNameConnection =
+            await using var sqlConsumerReadStreetNameBosaConnection =
                 new SqlConnection(configuration.GetConnectionString(ConsumerReadStreetNameConnectionStringKey));
              var streetNameBosaResult =
-                sqlConnection.QueryFirstAsync<DateTimeOffset>(
+                 sqlConsumerReadStreetNameBosaConnection.QueryFirstAsync<DateTimeOffset>(
                     $"SELECT TOP(1) [{nameof(StreetNameBosaItem.VersionTimestamp)}] FROM [{Schema.ConsumerReadStreetName}].[{StreetNameBosaItemConfiguration.TableName}] ORDER BY [{nameof(StreetNameBosaItem.VersionTimestamp)}] DESC");
-            var streetNameLatestItemResult =
-                sqlConnection.QueryFirstAsync<DateTimeOffset>(
+             await using var sqlConsumerReadStreetNameLatestItemConnection =
+                 new SqlConnection(configuration.GetConnectionString(ConsumerReadStreetNameConnectionStringKey));
+             var streetNameLatestItemResult =
+                 sqlConsumerReadStreetNameLatestItemConnection.QueryFirstAsync<DateTimeOffset>(
                     $"SELECT TOP(1) [{nameof(StreetNameLatestItem.VersionTimestamp)}] FROM [{Schema.ConsumerReadStreetName}].[{StreetNameLatestItemConfiguration.TableName}] ORDER BY [{nameof(StreetNameLatestItem.VersionTimestamp)}] DESC");
 
 

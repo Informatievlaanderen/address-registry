@@ -1,3 +1,10 @@
+## [3.99.1](https://github.com/informatievlaanderen/address-registry/compare/v3.99.0...v3.99.1) (2023-06-12)
+
+
+### Bug Fixes
+
+* update ci prepare lambda newprd ([467241d](https://github.com/informatievlaanderen/address-registry/commit/467241dd1d6f5c08da89d84a2f46e7d3831a4173))
+
 # [3.99.0](https://github.com/informatievlaanderen/address-registry/compare/v3.98.4...v3.99.0) (2023-06-12)
 
 

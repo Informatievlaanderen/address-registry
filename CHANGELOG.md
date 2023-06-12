@@ -1,3 +1,10 @@
+## [3.99.2](https://github.com/informatievlaanderen/address-registry/compare/v3.99.1...v3.99.2) (2023-06-12)
+
+
+### Bug Fixes
+
+* projector name snapshot oslo ([098673a](https://github.com/informatievlaanderen/address-registry/commit/098673a1c73fc2aa91f9b629f57c29e251ef30c8))
+
 ## [3.99.1](https://github.com/informatievlaanderen/address-registry/compare/v3.99.0...v3.99.1) (2023-06-12)
 
 

@@ -1,3 +1,17 @@
+# [3.99.0](https://github.com/informatievlaanderen/address-registry/compare/v3.98.4...v3.99.0) (2023-06-12)
+
+
+### Bug Fixes
+
+* broken build projector ([21ee11f](https://github.com/informatievlaanderen/address-registry/commit/21ee11f6f32737fe85d97a0037d1925609370473))
+* bump address retries migrator ([eb6a546](https://github.com/informatievlaanderen/address-registry/commit/eb6a54660af7922465c639dbcc85c81e3fcc4ba7))
+* returning only date on status controller consumer ([efceda4](https://github.com/informatievlaanderen/address-registry/commit/efceda48d969c0f903b5077d2410bf33a6cac6bb))
+
+
+### Features
+
+* add ConsumersController ([dbcb839](https://github.com/informatievlaanderen/address-registry/commit/dbcb8391a1cd640ea18ab8466a2b0186206fc729))
+
 ## [3.98.4](https://github.com/informatievlaanderen/address-registry/compare/v3.98.3...v3.98.4) (2023-05-31)
 
 

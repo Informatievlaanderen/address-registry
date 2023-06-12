@@ -10,7 +10,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using StreetName.Events;
 
-    [ConnectedProjectionName("Kafka producer")]
+    [ConnectedProjectionName("Kafka producer snapshot oslo")]
     [ConnectedProjectionDescription("Projectie die berichten naar de kafka broker stuurt.")]
     public sealed class ProducerProjections : ConnectedProjection<ProducerContext>
     {

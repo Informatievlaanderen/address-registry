@@ -38,6 +38,7 @@
             var municipalityBosaResult =
                 sqlConsumerReadMunicipalityBosaConnection.QueryFirstAsync<DateTimeOffset>(
                     $"SELECT TOP(1) [{nameof(MunicipalityBosaItem.VersionTimestamp)}] FROM [{Schema.ConsumerReadMunicipality}].[{MunicipalityBosaItemConfiguration.TableName}] ORDER BY [{nameof(MunicipalityBosaItem.VersionTimestamp)}] DESC");
+
             await using var sqlConsumerReadMunicipalityLatestItemConnection =
                 new SqlConnection(configuration.GetConnectionString(ConsumerReadMunicipalityConnectionStringKey));
             var municipalityLatestItemResult =
@@ -49,6 +50,7 @@
              var streetNameBosaResult =
                  sqlConsumerReadStreetNameBosaConnection.QueryFirstAsync<DateTimeOffset>(
                     $"SELECT TOP(1) [{nameof(StreetNameBosaItem.VersionTimestamp)}] FROM [{Schema.ConsumerReadStreetName}].[{StreetNameBosaItemConfiguration.TableName}] ORDER BY [{nameof(StreetNameBosaItem.VersionTimestamp)}] DESC");
+
              await using var sqlConsumerReadStreetNameLatestItemConnection =
                  new SqlConnection(configuration.GetConnectionString(ConsumerReadStreetNameConnectionStringKey));
              var streetNameLatestItemResult =

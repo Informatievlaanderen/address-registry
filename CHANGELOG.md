@@ -1,3 +1,10 @@
+## [3.99.4](https://github.com/informatievlaanderen/address-registry/compare/v3.99.3...v3.99.4) (2023-06-13)
+
+
+### Bug Fixes
+
+* add idempotent streetname-address relation ([6fbf1f3](https://github.com/informatievlaanderen/address-registry/commit/6fbf1f333e15b3bad6e77404417bd8907bfb3b3f))
+
 ## [3.99.3](https://github.com/informatievlaanderen/address-registry/compare/v3.99.2...v3.99.3) (2023-06-13)
 
 

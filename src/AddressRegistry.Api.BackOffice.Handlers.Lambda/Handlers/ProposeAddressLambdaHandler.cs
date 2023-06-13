@@ -77,8 +77,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 // Idempotent: Do Nothing return last etag
             }
 
-            await _backOfficeContext.AddIdempotentAddressStreetNameIdRelation(request.AddressPersistentLocalId, request.StreetNamePersistentLocalId(), cancellationToken);
-            await _backOfficeContext.SaveChangesAsync(cancellationToken);
+            await _backOfficeContext.AddIdempotentAddressStreetNameIdRelation(
+                request.AddressPersistentLocalId, request.StreetNamePersistentLocalId(), cancellationToken);
 
             var lastHash = await GetHash(request.StreetNamePersistentLocalId(), request.AddressPersistentLocalId, cancellationToken);
             return new ETagResponse(string.Format(DetailUrlFormat, request.AddressPersistentLocalId), lastHash);

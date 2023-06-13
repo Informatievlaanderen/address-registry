@@ -146,8 +146,6 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                     cancellationToken);
             }
 
-            await _backOfficeContext.SaveChangesAsync(cancellationToken);
-
             // Only etags for house number addresses are returned as they were not part of the original request.
             // An additional argument is because in case of an IdempotencyException,
             //  we no longer know which destination box number was rejected or retired in the scope of this command or previously.

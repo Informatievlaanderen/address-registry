@@ -5,6 +5,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions
     using System.Threading;
     using System.Threading.Tasks;
     using Infrastructure;
+    using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Design;
     using Microsoft.Extensions.Configuration;
@@ -25,10 +26,33 @@ namespace AddressRegistry.Api.BackOffice.Abstractions
             CancellationToken cancellationToken)
         {
             var relation = await FindRelationAsync(new AddressPersistentLocalId(addressPersistentLocalId), cancellationToken);
-            if (relation is null)
+            if (relation is not null)
+            {
+                return relation;
+            }
+
+            try
             {
                 relation = new AddressPersistentIdStreetNamePersistentId(addressPersistentLocalId, streetNamePersistentLocalId);
                 await AddressPersistentIdStreetNamePersistentIds.AddAsync(relation, cancellationToken);
+
+                await SaveChangesAsync(cancellationToken);
+            }
+            catch (DbUpdateException exception)
+            {
+                // It can happen that the back office projections were faster adding the relation than the executor (or vice versa).
+                if (exception.InnerException is not SqlException { Number: 2627 })
+                {
+                    throw;
+                }
+
+                relation = await AddressPersistentIdStreetNamePersistentIds.FirstOrDefaultAsync(
+                    x => x.AddressPersistentLocalId == addressPersistentLocalId, cancellationToken);
+
+                if (relation is null)
+                {
+                    throw;
+                }
             }
 
             return relation;
@@ -36,9 +60,10 @@ namespace AddressRegistry.Api.BackOffice.Abstractions
 
         public async Task<AddressPersistentIdStreetNamePersistentId?> FindRelationAsync(AddressPersistentLocalId addressPersistentLocalId, CancellationToken cancellationToken)
         {
-            var relation =
-                await AddressPersistentIdStreetNamePersistentIds.FindAsync(new object?[] { (int)addressPersistentLocalId },
-                    cancellationToken);
+            var relation = await AddressPersistentIdStreetNamePersistentIds.FindAsync(
+                new object?[] { (int)addressPersistentLocalId },
+                cancellationToken);
+            
             return relation;
         }
 

@@ -3,12 +3,5 @@ AspNetCore.HealthChecks.SqlServer
 Be.Vlaanderen.Basisregisters.Api
 Be.Vlaanderen.Basisregisters.GrAr.Extracts
 
-Elastic.Apm
-Elastic.Apm.AspNetCore
-Elastic.Apm.EntityFrameworkCore
-Elastic.Apm.Extensions.Hosting
-Elastic.Apm.SqlClient
-ElasticApm.MediatR
-
 SourceLink.Embed.AllSourceFiles
 SourceLink.Copy.PdbFiles

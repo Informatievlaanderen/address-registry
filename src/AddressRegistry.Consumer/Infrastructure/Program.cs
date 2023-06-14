@@ -26,10 +26,6 @@ namespace AddressRegistry.Consumer.Infrastructure
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
-    using Elastic.Apm.DiagnosticSource;
-    using Elastic.Apm.EntityFrameworkCore;
-    using Elastic.Apm.Extensions.Hosting;
-    using Elastic.Apm.SqlClient;
 
     public sealed class Program
     {
@@ -156,10 +152,6 @@ namespace AddressRegistry.Consumer.Infrastructure
 
                     containerBuilder.Populate(services);
                 })
-                .UseElasticApm(
-                    new EfCoreDiagnosticsSubscriber(),
-                    new HttpDiagnosticsSubscriber(),
-                    new SqlClientDiagnosticSubscriber())
                 .UseConsoleLifetime()
                 .Build();
 

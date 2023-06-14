@@ -27,10 +27,6 @@ namespace AddressRegistry.Projections.BackOffice
     using Serilog.Debugging;
     using Serilog.Extensions.Logging;
     using AddressRegistry.Infrastructure;
-    using Elastic.Apm.DiagnosticSource;
-    using Elastic.Apm.EntityFrameworkCore;
-    using Elastic.Apm.Extensions.Hosting;
-    using Elastic.Apm.SqlClient;
 
     public sealed class ProgramLogger { }
 
@@ -110,10 +106,6 @@ namespace AddressRegistry.Projections.BackOffice
                         c => new BackOfficeProjections(c.Resolve<IDbContextFactory<BackOfficeContext>>()),
                         ConnectedProjectionSettings.Default);
                 })
-                .UseElasticApm(
-                    new EfCoreDiagnosticsSubscriber(),
-                    new HttpDiagnosticsSubscriber(),
-                    new SqlClientDiagnosticSubscriber())
                 .UseConsoleLifetime()
                 .Build();
 

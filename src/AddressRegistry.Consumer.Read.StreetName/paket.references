@@ -30,11 +30,6 @@ Microsoft.Extensions.Configuration.EnvironmentVariables
 Microsoft.Extensions.Configuration.Json
 Microsoft.Extensions.Hosting
 
-Elastic.Apm
-Elastic.Apm.EntityFrameworkCore
-Elastic.Apm.Extensions.Hosting
-Elastic.Apm.SqlClient
-
 SourceLink.Embed.AllSourceFiles
 SourceLink.Copy.PdbFiles
 

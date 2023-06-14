@@ -16,17 +16,12 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer;
     using Destructurama;
-    using Elastic.Apm.DiagnosticSource;
-    using Elastic.Apm.EntityFrameworkCore;
-    using Elastic.Apm.Extensions.Hosting;
-    using Elastic.Apm.SqlClient;
     using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
-    using Polly;
     using Serilog;
     using Serilog.Debugging;
     using Serilog.Extensions.Logging;
@@ -187,10 +182,6 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
 
                     builder.Populate(services);
                 })
-                .UseElasticApm(
-                    new EfCoreDiagnosticsSubscriber(),
-                    new HttpDiagnosticsSubscriber(),
-                    new SqlClientDiagnosticSubscriber())
                 .UseConsoleLifetime()
                 .Build();
 

@@ -11,7 +11,7 @@ namespace AddressRegistry.Producer
     using Extensions;
     using StreetName = StreetName.Events;
 
-    [ConnectedProjectionName("Kafka producer start from migrate")]
+    [ConnectedProjectionName("Kafka producer start vanaf migratie")]
     [ConnectedProjectionDescription("Projectie die berichten naar de kafka broker stuurt startende vanaf migratie.")]
     public class ProducerMigrateProjections : ConnectedProjection<ProducerContext>
     {

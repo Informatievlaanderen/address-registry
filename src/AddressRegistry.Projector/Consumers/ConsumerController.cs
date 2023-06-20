@@ -69,7 +69,7 @@
                 },
                 new
                 {
-                    Name = "Consumer read van gemeente bosa",
+                    Name = "Consumer read van gemeente BOSA",
                     LastProcessedMessage = municipalityBosaResult.Result
                 },
                 new
@@ -79,7 +79,7 @@
                 },
                 new
                 {
-                    Name = "Consumer read van straatnaam bosa",
+                    Name = "Consumer read van straatnaam BOSA",
                     LastProcessedMessage = streetNameBosaResult.Result
                 },
                 new

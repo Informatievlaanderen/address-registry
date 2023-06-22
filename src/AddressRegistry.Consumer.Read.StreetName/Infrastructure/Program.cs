@@ -4,6 +4,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
+    using Address;
     using AddressRegistry.Infrastructure;
     using AddressRegistry.Infrastructure.Modules;
     using Autofac;
@@ -95,6 +96,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
                     var services = new ServiceCollection();
                     var loggerFactory = new SerilogLoggerFactory(Log.Logger);
 
+                    builder.Register(c => new Lazy<IPersistentLocalIdGenerator>(() => throw new NotImplementedException("IPersistentLocalIdGenerator not implemented in consumer streetname.")));
                     builder.Register(c =>
                     {
                         var bootstrapServers = hostContext.Configuration["Kafka:BootstrapServers"];

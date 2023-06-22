@@ -1,3 +1,11 @@
+## [3.99.5](https://github.com/informatievlaanderen/address-registry/compare/v3.99.4...v3.99.5) (2023-06-22)
+
+
+### Bug Fixes
+
+* naming bosa consumer + connected projection name ([ab6248d](https://github.com/informatievlaanderen/address-registry/commit/ab6248dddbc24253c0337ca7a30949dccd803e72))
+* remove elastic npm ([a99ba85](https://github.com/informatievlaanderen/address-registry/commit/a99ba855feb49bffeb4012f0d15af9768bc6d27e))
+
 ## [3.99.4](https://github.com/informatievlaanderen/address-registry/compare/v3.99.3...v3.99.4) (2023-06-13)
 
 

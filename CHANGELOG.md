@@ -1,3 +1,10 @@
+## [3.99.6](https://github.com/informatievlaanderen/address-registry/compare/v3.99.5...v3.99.6) (2023-06-22)
+
+
+### Bug Fixes
+
+* register lazy peristentlocalidgenerator on consumer streetname ([8707054](https://github.com/informatievlaanderen/address-registry/commit/8707054094d6c2dc97d56e6a87cd845aaa1a0920))
+
 ## [3.99.5](https://github.com/informatievlaanderen/address-registry/compare/v3.99.4...v3.99.5) (2023-06-22)
 
 

@@ -1,12 +1,13 @@
-namespace AddressRegistry.Tests.AutoFixture;
-
-using global::AutoFixture;
-
-public class InfrastructureCustomization : ICustomization
+namespace AddressRegistry.Tests.AutoFixture
 {
-    public void Customize(IFixture fixture)
+    using global::AutoFixture;
+
+    public class InfrastructureCustomization : ICustomization
     {
-        fixture.Customize(new NodaTimeCustomization());
-        fixture.Customize(new SetProvenanceImplementationsCallSetProvenance());
+        public void Customize(IFixture fixture)
+        {
+            fixture.Customize(new NodaTimeCustomization());
+            fixture.Customize(new SetProvenanceImplementationsCallSetProvenance());
+        }
     }
 }

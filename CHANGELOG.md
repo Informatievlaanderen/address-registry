@@ -1,3 +1,10 @@
+## [3.99.7](https://github.com/informatievlaanderen/address-registry/compare/v3.99.6...v3.99.7) (2023-08-08)
+
+
+### Bug Fixes
+
+* change how lambda is deployed in test ([e5ab33d](https://github.com/informatievlaanderen/address-registry/commit/e5ab33dc4a05e023cd811d0191bba49462ffbcd9))
+
 ## [3.99.6](https://github.com/informatievlaanderen/address-registry/compare/v3.99.5...v3.99.6) (2023-06-22)
 
 

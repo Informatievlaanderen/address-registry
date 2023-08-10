@@ -571,8 +571,8 @@ jobs:
       shell: bash
       run: |
         echo Push Lambda functions to S3 New Production
-        echo aws s3 cp ~/lambda.zip s3://s3-vbr-prd-basisregisters-lam-ar-sqsbackofficefunction/$SEMVER/lambda.zip
-        aws s3 cp ~/lambda.zip s3://s3-vbr-prd-basisregisters-lam-ar-sqsbackofficefunction/$SEMVER/lambda.zip
+        echo aws s3 cp ~/lambda.zip s3://077849980894-vbr-prd-lam-ar-sqsbackoffice/$SEMVER/lambda.zip
+        aws s3 cp ~/lambda.zip s3://077849980894-vbr-prd-lam-ar-sqsbackoffice/$SEMVER/lambda.zip
       env:
        SEMVER: ${{ needs.release.outputs.version }}
 
@@ -1230,8 +1230,8 @@ jobs:
     - name: Prepare Lambda(s)
       shell: bash
       run: |
-        echo aws s3 cp s3://s3-vbr-prd-basisregisters-lam-ar-sqsbackofficefunction/$VERSION/lambda.zip s3://s3-vbr-prd-basisregisters-lam-ar-sqsbackofficefunction/lambda.zip --copy-props none
-        aws s3 cp s3://s3-vbr-prd-basisregisters-lam-ar-sqsbackofficefunction/$VERSION/lambda.zip s3://s3-vbr-prd-basisregisters-lam-ar-sqsbackofficefunction/lambda.zip --copy-props none
+        echo aws s3 cp s3://077849980894-vbr-prd-lam-ar-sqsbackoffice/$VERSION/lambda.zip s3://077849980894-vbr-prd-lam-ar-sqsbackoffice/lambda.zip --copy-props none
+        aws s3 cp s3://077849980894-vbr-prd-lam-ar-sqsbackoffice/$VERSION/lambda.zip s3://077849980894-vbr-prd-lam-ar-sqsbackoffice/lambda.zip --copy-props none
       env:
         VERSION: ${{ needs.release.outputs.version }}
 

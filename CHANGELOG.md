@@ -1,3 +1,10 @@
+## [3.99.8](https://github.com/informatievlaanderen/address-registry/compare/v3.99.7...v3.99.8) (2023-08-11)
+
+
+### Bug Fixes
+
+* style to trigger build ([e508395](https://github.com/informatievlaanderen/address-registry/commit/e508395c311a602ba4d6d95eabe63bc2d6cf2736))
+
 ## [3.99.7](https://github.com/informatievlaanderen/address-registry/compare/v3.99.6...v3.99.7) (2023-08-08)
 
 

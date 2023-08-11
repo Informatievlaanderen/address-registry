@@ -119,7 +119,6 @@ Target.create "Containerize_CacheWarmer" (fun _ ->
   containerize "AddressRegistry.CacheWarmer" "cache-warmer")
 
 Target.create "SetAssemblyVersions" (fun _ -> setVersions "SolutionInfo.cs")
-
 // --------------------------------------------------------------------------------
 
 Target.create "Build" ignore

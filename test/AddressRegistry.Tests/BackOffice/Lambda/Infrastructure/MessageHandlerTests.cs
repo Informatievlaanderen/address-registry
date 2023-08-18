@@ -40,7 +40,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             await sut.HandleMessage(
                 messageData,
                 messageMetadata,
-                CancellationToken.None);
+                It.IsAny<CancellationToken>());
 
             // Assert
             mediator.VerifyNoOtherCalls();
@@ -64,7 +64,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             var act = async () => await sut.HandleMessage(
                 messageData,
                 messageMetadata,
-                CancellationToken.None);
+                It.IsAny<CancellationToken>());
 
             // Assert
             await act.Should().ThrowAsync<NotImplementedException>();
@@ -88,7 +88,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             await sut.HandleMessage(
                 messageData,
                 messageMetadata,
-                CancellationToken.None);
+                It.IsAny<CancellationToken>());
 
             // Assert
             mediator
@@ -99,7 +99,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
                     && request.IfMatchHeaderValue == messageData.IfMatchHeaderValue
                     && request.Provenance == messageData.ProvenanceData.ToProvenance()
                     && request.Metadata == messageData.Metadata
-                ), CancellationToken.None), Times.Once);
+                ), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -120,7 +120,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             await sut.HandleMessage(
                 messageData,
                 messageMetadata,
-                CancellationToken.None);
+                It.IsAny<CancellationToken>());
 
             // Assert
             mediator
@@ -131,7 +131,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
                     && request.IfMatchHeaderValue == messageData.IfMatchHeaderValue
                     && request.Provenance == messageData.ProvenanceData.ToProvenance()
                     && request.Metadata == messageData.Metadata
-                ), CancellationToken.None), Times.Once);
+                ), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -152,7 +152,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             await sut.HandleMessage(
                 messageData,
                 messageMetadata,
-                CancellationToken.None);
+                It.IsAny<CancellationToken>());
 
             // Assert
             mediator
@@ -164,7 +164,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
                     && request.IfMatchHeaderValue == messageData.IfMatchHeaderValue
                     && request.Provenance == messageData.ProvenanceData.ToProvenance()
                     && request.Metadata == messageData.Metadata
-                ), CancellationToken.None), Times.Once);
+                ), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -185,7 +185,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             await sut.HandleMessage(
                 messageData,
                 messageMetadata,
-                CancellationToken.None);
+                It.IsAny<CancellationToken>());
 
             // Assert
             mediator
@@ -197,7 +197,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
                     && request.IfMatchHeaderValue == messageData.IfMatchHeaderValue
                     && request.Provenance == messageData.ProvenanceData.ToProvenance()
                     && request.Metadata == messageData.Metadata
-                ), CancellationToken.None), Times.Once);
+                ), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -218,7 +218,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             await sut.HandleMessage(
                 messageData,
                 messageMetadata,
-                CancellationToken.None);
+                It.IsAny<CancellationToken>());
 
             // Assert
             mediator
@@ -230,7 +230,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
                     && request.IfMatchHeaderValue == messageData.IfMatchHeaderValue
                     && request.Provenance == messageData.ProvenanceData.ToProvenance()
                     && request.Metadata == messageData.Metadata
-                ), CancellationToken.None), Times.Once);
+                ), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -251,7 +251,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             await sut.HandleMessage(
                 messageData,
                 messageMetadata,
-                CancellationToken.None);
+                It.IsAny<CancellationToken>());
 
             // Assert
             mediator
@@ -263,7 +263,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
                     && request.IfMatchHeaderValue == messageData.IfMatchHeaderValue
                     && request.Provenance == messageData.ProvenanceData.ToProvenance()
                     && request.Metadata == messageData.Metadata
-                ), CancellationToken.None), Times.Once);
+                ), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -284,7 +284,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             await sut.HandleMessage(
                 messageData,
                 messageMetadata,
-                CancellationToken.None);
+                It.IsAny<CancellationToken>());
 
             // Assert
             mediator
@@ -296,7 +296,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
                     && request.IfMatchHeaderValue == messageData.IfMatchHeaderValue
                     && request.Provenance == messageData.ProvenanceData.ToProvenance()
                     && request.Metadata == messageData.Metadata
-                ), CancellationToken.None), Times.Once);
+                ), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -317,7 +317,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             await sut.HandleMessage(
                 messageData,
                 messageMetadata,
-                CancellationToken.None);
+                It.IsAny<CancellationToken>());
 
             // Assert
             mediator
@@ -328,7 +328,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
                     && request.IfMatchHeaderValue == messageData.IfMatchHeaderValue
                     && request.Provenance == messageData.ProvenanceData.ToProvenance()
                     && request.Metadata == messageData.Metadata
-                ), CancellationToken.None), Times.Once);
+                ), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -349,7 +349,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             await sut.HandleMessage(
                 expectedRequest,
                 messageMetadata,
-                CancellationToken.None);
+                It.IsAny<CancellationToken>());
 
             // Assert
             mediator
@@ -360,7 +360,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
                     && actualRequest.IfMatchHeaderValue == null
                     && actualRequest.Provenance == expectedRequest.ProvenanceData.ToProvenance()
                     && actualRequest.Metadata == expectedRequest.Metadata
-                ), CancellationToken.None), Times.Once);
+                ), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -381,7 +381,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             await sut.HandleMessage(
                 messageData,
                 messageMetadata,
-                CancellationToken.None);
+                It.IsAny<CancellationToken>());
 
             // Assert
             mediator
@@ -392,7 +392,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
                     && request.IfMatchHeaderValue == messageData.IfMatchHeaderValue
                     && request.Provenance == messageData.ProvenanceData.ToProvenance()
                     && request.Metadata == messageData.Metadata
-                ), CancellationToken.None), Times.Once);
+                ), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -413,7 +413,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             await sut.HandleMessage(
                 messageData,
                 messageMetadata,
-                CancellationToken.None);
+                It.IsAny<CancellationToken>());
 
             // Assert
             mediator
@@ -424,7 +424,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
                     && request.IfMatchHeaderValue == messageData.IfMatchHeaderValue
                     && request.Provenance == messageData.ProvenanceData.ToProvenance()
                     && request.Metadata == messageData.Metadata
-                ), CancellationToken.None), Times.Once);
+                ), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -445,7 +445,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             await sut.HandleMessage(
                 messageData,
                 messageMetadata,
-                CancellationToken.None);
+                It.IsAny<CancellationToken>());
 
             // Assert
             mediator
@@ -456,7 +456,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
                     && request.IfMatchHeaderValue == messageData.IfMatchHeaderValue
                     && request.Provenance == messageData.ProvenanceData.ToProvenance()
                     && request.Metadata == messageData.Metadata
-                ), CancellationToken.None), Times.Once);
+                ), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -477,7 +477,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             await sut.HandleMessage(
                 messageData,
                 messageMetadata,
-                CancellationToken.None);
+                It.IsAny<CancellationToken>());
 
             // Assert
             mediator
@@ -488,7 +488,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
                     && request.IfMatchHeaderValue == messageData.IfMatchHeaderValue
                     && request.Provenance == messageData.ProvenanceData.ToProvenance()
                     && request.Metadata == messageData.Metadata
-                ), CancellationToken.None), Times.Once);
+                ), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -509,7 +509,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             await sut.HandleMessage(
                 messageData,
                 messageMetadata,
-                CancellationToken.None);
+                It.IsAny<CancellationToken>());
 
             // Assert
             mediator
@@ -520,7 +520,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
                     && request.IfMatchHeaderValue == messageData.IfMatchHeaderValue
                     && request.Provenance == messageData.ProvenanceData.ToProvenance()
                     && request.Metadata == messageData.Metadata
-                ), CancellationToken.None), Times.Once);
+                ), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -541,7 +541,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             await sut.HandleMessage(
                 messageData,
                 messageMetadata,
-                CancellationToken.None);
+                It.IsAny<CancellationToken>());
 
             // Assert
             mediator
@@ -552,7 +552,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
                     && request.IfMatchHeaderValue == messageData.IfMatchHeaderValue
                     && request.Provenance == messageData.ProvenanceData.ToProvenance()
                     && request.Metadata == messageData.Metadata
-                ), CancellationToken.None), Times.Once);
+                ), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -573,7 +573,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             await sut.HandleMessage(
                 messageData,
                 messageMetadata,
-                CancellationToken.None);
+                It.IsAny<CancellationToken>());
 
             // Assert
             mediator
@@ -585,7 +585,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
                     && request.IfMatchHeaderValue == messageData.IfMatchHeaderValue
                     && request.Provenance == messageData.ProvenanceData.ToProvenance()
                     && request.Metadata == messageData.Metadata
-                ), CancellationToken.None), Times.Once);
+                ), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -606,7 +606,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             await sut.HandleMessage(
                 messageData,
                 messageMetadata,
-                CancellationToken.None);
+                It.IsAny<CancellationToken>());
 
             // Assert
             mediator
@@ -618,7 +618,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
                     && request.IfMatchHeaderValue == messageData.IfMatchHeaderValue
                     && request.Provenance == messageData.ProvenanceData.ToProvenance()
                     && request.Metadata == messageData.Metadata
-                ), CancellationToken.None), Times.Once);
+                ), It.IsAny<CancellationToken>()), Times.Once);
         }
 
 
@@ -649,7 +649,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
             await sut.HandleMessage(
                 messageData,
                 messageMetadata,
-                CancellationToken.None);
+                It.IsAny<CancellationToken>());
 
             // Assert
             mediator
@@ -660,7 +660,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
                     && request.Provenance == messageData.ProvenanceData.ToProvenance()
                     && request.Metadata == messageData.Metadata
                     && customAssertions(messageData, request)
-                ), CancellationToken.None), Times.Once);
+                ), It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 

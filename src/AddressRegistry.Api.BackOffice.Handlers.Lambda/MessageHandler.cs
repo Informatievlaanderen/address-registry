@@ -18,7 +18,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
             _container = container;
         }
 
-        public async Task HandleMessage(object? messageData, MessageMetadata messageMetadata, CancellationToken cancellationToken)
+        public async Task HandleMessage(object? messageData, MessageMetadata messageMetadata, CancellationToken _)
         {
             messageMetadata.Logger?.LogInformation($"Handling message {messageData?.GetType().Name}");
 
@@ -30,6 +30,10 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
 
             await using var lifetimeScope = _container.BeginLifetimeScope();
             var mediator = lifetimeScope.Resolve<IMediator>();
+
+            var cancellationTokenSource = new CancellationTokenSource();
+            cancellationTokenSource.CancelAfter(TimeSpan.FromMinutes(5));
+            var cancellationToken = cancellationTokenSource.Token;
 
             switch (sqsRequest)
             {

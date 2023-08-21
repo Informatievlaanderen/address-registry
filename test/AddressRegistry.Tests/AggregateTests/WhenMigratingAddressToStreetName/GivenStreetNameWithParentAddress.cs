@@ -5,6 +5,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
+    using EventExtensions;
     using FluentAssertions;
     using global::AutoFixture;
     using StreetName;
@@ -33,11 +34,12 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
             var parentAddressWasMigratedToStreetName = Fixture.Create<AddressWasMigratedToStreetName>();
 
             var command = Fixture.Create<MigrateAddressToStreetName>()
+                .WithOfficiallyAssigned(true)
                 .WithParentAddressId(new AddressRegistry.Address.AddressId(parentAddressWasMigratedToStreetName.AddressId));
 
             Assert(new Scenario()
                 .Given(_streamId,
-                    Fixture.Create<MigratedStreetNameWasImported>(),
+                    Fixture.Create<MigratedStreetNameWasImported>().WithStatus(StreetNameStatus.Current),
                     parentAddressWasMigratedToStreetName)
                 .When(command)
                 .Then(
@@ -51,7 +53,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
                         command.HouseNumber,
                         command.BoxNumber,
                         command.Geometry,
-                        command.OfficiallyAssigned ?? false,
+                        true,
                         command.PostalCode,
                         command.IsCompleted,
                         command.IsRemoved,
@@ -65,12 +67,13 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
             var parentAddressWasMigratedToStreetName = Fixture.Create<AddressWasMigratedToStreetName>();
 
             var command = Fixture.Create<MigrateAddressToStreetName>()
+                .WithOfficiallyAssigned(true)
                 .WithParentAddressId(new AddressRegistry.Address.AddressId(parentAddressWasMigratedToStreetName.AddressId));
 
             var aggregate = new StreetNameFactory(IntervalStrategy.Default).Create();
             aggregate.Initialize(new List<object>
             {
-                Fixture.Create<MigratedStreetNameWasImported>(),
+                Fixture.Create<MigratedStreetNameWasImported>().WithStatus(StreetNameStatus.Current),
                 parentAddressWasMigratedToStreetName
             });
 
@@ -114,11 +117,12 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
 
             var command = Fixture.Create<MigrateAddressToStreetName>()
                 .WithParentAddressId(new AddressRegistry.Address.AddressId(parentAddressWasMigratedToStreetName.AddressId))
+                .WithOfficiallyAssigned(true)
                 .WithPostalCode(null);
 
             Assert(new Scenario()
                 .Given(_streamId,
-                    Fixture.Create<MigratedStreetNameWasImported>(),
+                    Fixture.Create<MigratedStreetNameWasImported>().WithStatus(StreetNameStatus.Current),
                     parentAddressWasMigratedToStreetName)
                 .When(command)
                 .Then(

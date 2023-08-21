@@ -102,5 +102,27 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
                 command.ParentAddressId is not null ? new AddressId(command.ParentAddressId) : null,
                 command.Provenance);
         }
+
+        public static MigrateAddressToStreetName WithOfficiallyAssigned(this MigrateAddressToStreetName command, bool? officiallyAssigned)
+        {
+            return new MigrateAddressToStreetName(
+                new AddressId(command.AddressId),
+                command.StreetNamePersistentLocalId,
+                new StreetNameId(command.StreetNameId),
+                new PersistentLocalId(command.AddressPersistentLocalId),
+                (AddressStatus)command.Status,
+                new HouseNumber(command.HouseNumber),
+                new BoxNumber(command.BoxNumber),
+                new AddressGeometry(
+                    (GeometryMethod)command.Geometry.GeometryMethod,
+                    (GeometrySpecification)command.Geometry.GeometrySpecification,
+                    new ExtendedWkbGeometry(command.Geometry.Geometry.ToString())),
+                officiallyAssigned,
+                string.IsNullOrEmpty(command.PostalCode) ? null : new PostalCode(command.PostalCode),
+                command.IsCompleted,
+                command.IsRemoved,
+                command.ParentAddressId is not null ? new AddressId(command.ParentAddressId) : null,
+                command.Provenance);
+        }
     }
 }

@@ -64,6 +64,11 @@
                 }
             }
 
+            if ((officiallyAssigned is null || !officiallyAssigned.Value) && migratedAddressStatus == AddressStatus.Proposed)
+            {
+                migratedAddressStatus = AddressStatus.Current;
+            }
+
             ApplyChange(new AddressWasMigratedToStreetName(
                 PersistentLocalId,
                 addressId,

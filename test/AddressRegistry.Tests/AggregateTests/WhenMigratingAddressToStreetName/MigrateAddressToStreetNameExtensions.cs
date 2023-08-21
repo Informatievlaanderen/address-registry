@@ -30,7 +30,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
                     (GeometrySpecification)command.Geometry.GeometrySpecification,
                     new ExtendedWkbGeometry(command.Geometry.Geometry.ToString())),
                 command.OfficiallyAssigned,
-                new PostalCode(command.PostalCode),
+                string.IsNullOrEmpty(command.PostalCode) ? null : new PostalCode(command.PostalCode),
                 command.IsCompleted,
                 command.IsRemoved,
                 null,
@@ -74,10 +74,32 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
                     (GeometrySpecification)command.Geometry.GeometrySpecification,
                     new ExtendedWkbGeometry(command.Geometry.Geometry.ToString())),
                 command.OfficiallyAssigned,
-                new PostalCode(command.PostalCode),
+                string.IsNullOrEmpty(command.PostalCode) ? null : new PostalCode(command.PostalCode),
                 command.IsCompleted,
                 command.IsRemoved,
                 parentId,
+                command.Provenance);
+        }
+
+        public static MigrateAddressToStreetName WithStatus(this MigrateAddressToStreetName command, AddressStatus addressStatus)
+        {
+            return new MigrateAddressToStreetName(
+                new AddressId(command.AddressId),
+                command.StreetNamePersistentLocalId,
+                new StreetNameId(command.StreetNameId),
+                new PersistentLocalId(command.AddressPersistentLocalId),
+                addressStatus,
+                new HouseNumber(command.HouseNumber),
+                new BoxNumber(command.BoxNumber),
+                new AddressGeometry(
+                    (GeometryMethod)command.Geometry.GeometryMethod,
+                    (GeometrySpecification)command.Geometry.GeometrySpecification,
+                    new ExtendedWkbGeometry(command.Geometry.Geometry.ToString())),
+                command.OfficiallyAssigned,
+                string.IsNullOrEmpty(command.PostalCode) ? null : new PostalCode(command.PostalCode),
+                command.IsCompleted,
+                command.IsRemoved,
+                command.ParentAddressId is not null ? new AddressId(command.ParentAddressId) : null,
                 command.Provenance);
         }
     }

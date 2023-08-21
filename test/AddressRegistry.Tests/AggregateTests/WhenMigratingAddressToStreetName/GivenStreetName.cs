@@ -7,6 +7,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using EventExtensions;
     using FluentAssertions;
     using global::AutoFixture;
     using StreetName;
@@ -129,7 +130,6 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
             result.Parent.Should().BeNull();
         }
 
-
         [Fact]
         public void WithoutPostalCode_ThenExpectedAddressWasAddedToStreetName()
         {
@@ -187,6 +187,70 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
                     Fixture.Create<MigratedStreetNameWasImported>())
                 .When(command)
                 .Throws(new ParentAddressNotFoundException(command.StreetNamePersistentLocalId, command.HouseNumber)));
+        }
+
+        [Fact]
+        public void WithProposedAddressAndRetiredStreetName_ThenAddressWasRejected()
+        {
+            var migratedStreetNameWasImported = Fixture.Create<MigratedStreetNameWasImported>()
+                .WithStatus(StreetNameStatus.Retired);
+
+            var command = Fixture.Create<MigrateAddressToStreetName>()
+                .WithoutParentAddressId()
+                .WithStatus(Address.AddressStatus.Proposed);
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    migratedStreetNameWasImported)
+                .When(command)
+                .Then(
+                    new Fact(new StreetNameStreamId(command.StreetNamePersistentLocalId),
+                        new AddressWasMigratedToStreetName(
+                            command.StreetNamePersistentLocalId,
+                            command.AddressId,
+                            command.StreetNameId,
+                            command.AddressPersistentLocalId,
+                            AddressStatus.Rejected,
+                            command.HouseNumber,
+                            command.BoxNumber,
+                            command.Geometry,
+                            command.OfficiallyAssigned ?? false,
+                            command.PostalCode,
+                            command.IsCompleted,
+                            command.IsRemoved,
+                            null))));
+        }
+
+        [Fact]
+        public void WithCurrentAddressAndRetiredStreetName_ThenAddressWasRetired()
+        {
+            var migratedStreetNameWasImported = Fixture.Create<MigratedStreetNameWasImported>()
+                .WithStatus(StreetNameStatus.Retired);
+
+            var command = Fixture.Create<MigrateAddressToStreetName>()
+                .WithoutParentAddressId()
+                .WithStatus(Address.AddressStatus.Current);
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    migratedStreetNameWasImported)
+                .When(command)
+                .Then(
+                    new Fact(new StreetNameStreamId(command.StreetNamePersistentLocalId),
+                        new AddressWasMigratedToStreetName(
+                            command.StreetNamePersistentLocalId,
+                            command.AddressId,
+                            command.StreetNameId,
+                            command.AddressPersistentLocalId,
+                            AddressStatus.Retired,
+                            command.HouseNumber,
+                            command.BoxNumber,
+                            command.Geometry,
+                            command.OfficiallyAssigned ?? false,
+                            command.PostalCode,
+                            command.IsCompleted,
+                            command.IsRemoved,
+                            null))));
         }
     }
 }

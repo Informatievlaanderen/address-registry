@@ -50,12 +50,26 @@
                 parentPostalCode = parent.PostalCode;
             }
 
+            var migratedAddressStatus = addressStatus;
+            if (Status == StreetNameStatus.Retired)
+            {
+                if (addressStatus == AddressStatus.Proposed)
+                {
+                    migratedAddressStatus = AddressStatus.Rejected;
+                }
+
+                if (addressStatus == AddressStatus.Current)
+                {
+                    migratedAddressStatus = AddressStatus.Retired;
+                }
+            }
+
             ApplyChange(new AddressWasMigratedToStreetName(
                 PersistentLocalId,
                 addressId,
                 streetNameId,
                 addressPersistentLocalId,
-                addressStatus,
+                migratedAddressStatus,
                 houseNumber,
                 boxNumber,
                 geometry,
@@ -186,7 +200,8 @@
                 .CorrectPosition(geometryMethod, geometrySpecification, position);
         }
 
-        public void CorrectAddressPostalCode(AddressPersistentLocalId addressPersistentLocalId, PostalCode postalCode, MunicipalityId municipalityIdByPostalCode)
+        public void CorrectAddressPostalCode(AddressPersistentLocalId addressPersistentLocalId, PostalCode postalCode,
+            MunicipalityId municipalityIdByPostalCode)
         {
             GuardStreetNameStatusForChangeAndCorrection();
 

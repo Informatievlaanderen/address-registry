@@ -4,27 +4,16 @@
     using StreetName;
     using StreetName.Events;
 
-    public static class StreetNameWasImportedExtensions
+    public static class MigratedStreetNameWasImportedExtensions
     {
-        public static StreetNameWasImported WithMunicipalityId(this StreetNameWasImported @event, MunicipalityId municipalityId)
+        public static MigratedStreetNameWasImported WithStatus(this MigratedStreetNameWasImported @event, StreetNameStatus status)
         {
-            var newEvent = new StreetNameWasImported(new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId), municipalityId, @event.StreetNameStatus);
-            ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
-
-            return newEvent;
-        }
-
-        public static StreetNameWasImported WithStreetNamePersistentLocalId(this StreetNameWasImported @event, StreetNamePersistentLocalId streetNamePersistentLocalId)
-        {
-            var newEvent = new StreetNameWasImported(streetNamePersistentLocalId, new MunicipalityId(@event.MunicipalityId), @event.StreetNameStatus);
-            ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
-
-            return newEvent;
-        }
-
-        public static StreetNameWasImported WithStatus(this StreetNameWasImported @event, StreetNameStatus status)
-        {
-            var newEvent = new StreetNameWasImported(new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId), new MunicipalityId(@event.MunicipalityId), status);
+            var newEvent = new MigratedStreetNameWasImported(
+                new StreetNameId(@event.StreetNameId),
+                new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId),
+                new MunicipalityId(@event.MunicipalityId),
+                new NisCode(@event.NisCode),
+                status);
             ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
 
             return newEvent;

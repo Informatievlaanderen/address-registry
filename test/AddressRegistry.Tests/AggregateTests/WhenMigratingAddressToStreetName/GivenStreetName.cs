@@ -35,11 +35,12 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
         public void ThenAddressWasMigratedToStreetName()
         {
             var command = Fixture.Create<MigrateAddressToStreetName>()
-                .WithoutParentAddressId();
+                .WithoutParentAddressId()
+                .WithOfficiallyAssigned(true);
 
             Assert(new Scenario()
                 .Given(_streamId,
-                    Fixture.Create<MigratedStreetNameWasImported>())
+                    Fixture.Create<MigratedStreetNameWasImported>().WithStatus(StreetNameStatus.Current))
                 .When(command)
                 .Then(
                     new Fact(new StreetNameStreamId(command.StreetNamePersistentLocalId),
@@ -52,7 +53,36 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
                             command.HouseNumber,
                             command.BoxNumber,
                             command.Geometry,
-                            command.OfficiallyAssigned ?? false,
+                            true,
+                            command.PostalCode,
+                            command.IsCompleted,
+                            command.IsRemoved,
+                            null))));
+        }
+
+        [Fact]
+        public void WithUnknownOfficiallyAssigned_ThenDefaultsToFalse()
+        {
+            var command = Fixture.Create<MigrateAddressToStreetName>()
+                .WithoutParentAddressId()
+                .WithOfficiallyAssigned(null);
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    Fixture.Create<MigratedStreetNameWasImported>().WithStatus(StreetNameStatus.Current))
+                .When(command)
+                .Then(
+                    new Fact(new StreetNameStreamId(command.StreetNamePersistentLocalId),
+                        new AddressWasMigratedToStreetName(
+                            command.StreetNamePersistentLocalId,
+                            command.AddressId,
+                            command.StreetNameId,
+                            command.AddressPersistentLocalId,
+                            command.Status,
+                            command.HouseNumber,
+                            command.BoxNumber,
+                            command.Geometry,
+                            false,
                             command.PostalCode,
                             command.IsCompleted,
                             command.IsRemoved,
@@ -93,11 +123,13 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
         [Fact]
         public void ThenExpectedAddressWasAddedToStreetName()
         {
-            var command = Fixture.Create<MigrateAddressToStreetName>();
+            var command = Fixture.Create<MigrateAddressToStreetName>()
+                .WithOfficiallyAssigned(true);
+
             var aggregate = new StreetNameFactory(IntervalStrategy.Default).Create();
             aggregate.Initialize(new List<object>
             {
-                Fixture.Create<MigratedStreetNameWasImported>()
+                Fixture.Create<MigratedStreetNameWasImported>().WithStatus(StreetNameStatus.Current)
             });
 
             // Act
@@ -139,7 +171,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
             var aggregate = new StreetNameFactory(IntervalStrategy.Default).Create();
             aggregate.Initialize(new List<object>
             {
-                Fixture.Create<MigratedStreetNameWasImported>()
+                Fixture.Create<MigratedStreetNameWasImported>().WithStatus(StreetNameStatus.Current)
             });
 
             // Act
@@ -151,7 +183,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
                 command.HouseNumber,
                 command.BoxNumber,
                 command.Geometry,
-                command.OfficiallyAssigned,
+                true,
                 command.PostalCode,
                 command.IsCompleted,
                 command.IsRemoved,

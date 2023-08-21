@@ -1,3 +1,10 @@
+## [3.99.10](https://github.com/informatievlaanderen/address-registry/compare/v3.99.9...v3.99.10) (2023-08-21)
+
+
+### Bug Fixes
+
+* call cancel on lambda cancellationToken after 5 minutes ([10034fa](https://github.com/informatievlaanderen/address-registry/commit/10034fa675c60e925f65f08daebda4636bd723e2))
+
 ## [3.99.9](https://github.com/informatievlaanderen/address-registry/compare/v3.99.8...v3.99.9) (2023-08-14)
 
 

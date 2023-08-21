@@ -55,7 +55,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
                 string.IsNullOrEmpty(postalCode) ? null : new PostalCode(postalCode),
                 command.IsCompleted,
                 command.IsRemoved,
-                null,
+                command.ParentAddressId is not null ? new AddressId(command.ParentAddressId) : null,
                 command.Provenance);
         }
 

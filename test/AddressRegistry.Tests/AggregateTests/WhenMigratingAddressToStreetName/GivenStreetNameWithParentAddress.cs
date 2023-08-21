@@ -106,5 +106,37 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
 
             parent.Children.Should().Contain(child);
         }
+
+        [Fact]
+        public void BoxNumberWithoutPostalCode_ThenParentPostalCodeIsUsed()
+        {
+            var parentAddressWasMigratedToStreetName = Fixture.Create<AddressWasMigratedToStreetName>();
+
+            var command = Fixture.Create<MigrateAddressToStreetName>()
+                .WithParentAddressId(new AddressRegistry.Address.AddressId(parentAddressWasMigratedToStreetName.AddressId))
+                .WithPostalCode(null);
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    Fixture.Create<MigratedStreetNameWasImported>(),
+                    parentAddressWasMigratedToStreetName)
+                .When(command)
+                .Then(
+                    new Fact(new StreetNameStreamId(command.StreetNamePersistentLocalId),
+                        new AddressWasMigratedToStreetName(
+                            command.StreetNamePersistentLocalId,
+                            command.AddressId,
+                            command.StreetNameId,
+                            command.AddressPersistentLocalId,
+                            command.Status,
+                            command.HouseNumber,
+                            command.BoxNumber,
+                            command.Geometry,
+                            command.OfficiallyAssigned ?? false,
+                            new PostalCode(parentAddressWasMigratedToStreetName.PostalCode),
+                            command.IsCompleted,
+                            command.IsRemoved,
+                            new AddressPersistentLocalId(parentAddressWasMigratedToStreetName.AddressPersistentLocalId)))));
+        }
     }
 }

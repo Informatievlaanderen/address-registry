@@ -252,5 +252,40 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
                             command.IsRemoved,
                             null))));
         }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(null)]
+        public void WithProposedAddressAndNotOfficiallyAssigned_ThenAddressIsCurrent(bool? officiallyAssigned)
+        {
+            var migratedStreetNameWasImported = Fixture.Create<MigratedStreetNameWasImported>()
+                .WithStatus(StreetNameStatus.Current);
+
+            var command = Fixture.Create<MigrateAddressToStreetName>()
+                .WithoutParentAddressId()
+                .WithOfficiallyAssigned(officiallyAssigned)
+                .WithStatus(Address.AddressStatus.Proposed);
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    migratedStreetNameWasImported)
+                .When(command)
+                .Then(
+                    new Fact(new StreetNameStreamId(command.StreetNamePersistentLocalId),
+                        new AddressWasMigratedToStreetName(
+                            command.StreetNamePersistentLocalId,
+                            command.AddressId,
+                            command.StreetNameId,
+                            command.AddressPersistentLocalId,
+                            AddressStatus.Current,
+                            command.HouseNumber,
+                            command.BoxNumber,
+                            command.Geometry,
+                            false,
+                            command.PostalCode,
+                            command.IsCompleted,
+                            command.IsRemoved,
+                            null))));
+        }
     }
 }

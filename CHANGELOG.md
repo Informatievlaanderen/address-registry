@@ -1,3 +1,12 @@
+# [3.100.0](https://github.com/informatievlaanderen/address-registry/compare/v3.99.10...v3.100.0) (2023-08-21)
+
+
+### Features
+
+* migrate inconsistent object - empty postalcode of boxnumber ([4e98da0](https://github.com/informatievlaanderen/address-registry/commit/4e98da094aaac22d621bc2a449221b8e26e72d0d))
+* migrate inconsistent object - not officially assigned ([ed162d0](https://github.com/informatievlaanderen/address-registry/commit/ed162d0120e026a2fce4a7cd174fb84256be2b40))
+* migrate inconsistent object - retired streetname ([3dc63d3](https://github.com/informatievlaanderen/address-registry/commit/3dc63d39772671ecbfc630a2c90e849ad0e65af5))
+
 ## [3.99.10](https://github.com/informatievlaanderen/address-registry/compare/v3.99.9...v3.99.10) (2023-08-21)
 
 

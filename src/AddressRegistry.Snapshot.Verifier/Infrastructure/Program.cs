@@ -10,12 +10,7 @@ namespace AddressRegistry.Snapshot.Verifier.Infrastructure
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
-    using Be.Vlaanderen.Basisregisters.EventHandling;
     using Destructurama;
-    using Elastic.Apm.DiagnosticSource;
-    using Elastic.Apm.EntityFrameworkCore;
-    using Elastic.Apm.Extensions.Hosting;
-    using Elastic.Apm.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -25,7 +20,6 @@ namespace AddressRegistry.Snapshot.Verifier.Infrastructure
     using Serilog;
     using Serilog.Debugging;
     using Serilog.Extensions.Logging;
-    using SqlStreamStore;
     using StreetName;
 
     public sealed class Program
@@ -45,7 +39,7 @@ namespace AddressRegistry.Snapshot.Verifier.Infrastructure
             AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) =>
                 Log.Fatal((Exception)eventArgs.ExceptionObject, "Encountered a fatal exception, exiting program.");
 
-            Log.Information("Initializing AddressRegistry.Consumer");
+            Log.Information("Initializing AddressRegistry.Snapshot.Verifier");
 
             var host = new HostBuilder()
                 .ConfigureAppConfiguration((_, builder) =>
@@ -76,7 +70,7 @@ namespace AddressRegistry.Snapshot.Verifier.Infrastructure
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
-                    services.AddSingleton(new MsSqlSnapshotStoreVerifier(hostContext.Configuration.GetConnectionString("Snapshots"), Schema.Default));
+                    services.AddSingleton(new MsSqlSnapshotStoreVerificationQueries(hostContext.Configuration.GetConnectionString("Snapshots"), Schema.Default));
 
                     services.AddDbContextFactory<SnapshotVerifierContext>((provider, options) => options
                         .UseLoggerFactory(provider.GetRequiredService<ILoggerFactory>())
@@ -86,17 +80,10 @@ namespace AddressRegistry.Snapshot.Verifier.Infrastructure
                                 .MigrationsHistoryTable(MigrationTables.BackOffice, Schema.BackOffice)
                         ));
 
-                    services.AddHostedService(x => new SnapshotVerifier<StreetName, StreetNameStreamId>(
-                        x.GetRequiredService<IHostApplicationLifetime>(),
-                        x.GetRequiredService<MsSqlSnapshotStoreVerifier>(),
-                        x.GetRequiredService<EventDeserializer>(),
-                        x.GetRequiredService<EventMapping>(),
-                        x.GetRequiredService<IReadonlyStreamStore>(),
+                    services.AddHostedSnapshotVerifierService<StreetName, StreetNameStreamId>(
                         () => new StreetNameFactory(NoSnapshotStrategy.Instance).Create(),
-                        (aggregate) => new StreetNameStreamId(aggregate.PersistentLocalId),
-                        new List<string> { nameof(StreetNameAddresses.ProposedStreetNameAddresses), nameof(StreetNameAddresses.CurrentStreetNameAddresses) },
-                        x.GetRequiredService<IDbContextFactory<SnapshotVerifierContext>>(),
-                        x.GetRequiredService<ILoggerFactory>()));
+                        aggregate => new StreetNameStreamId(aggregate.PersistentLocalId),
+                        new List<string> { nameof(StreetNameAddresses.ProposedStreetNameAddresses), nameof(StreetNameAddresses.CurrentStreetNameAddresses) });
                 })
                 .UseServiceProviderFactory(new AutofacServiceProviderFactory())
                 .ConfigureContainer<ContainerBuilder>((hostContext, containerBuilder) =>
@@ -106,10 +93,6 @@ namespace AddressRegistry.Snapshot.Verifier.Infrastructure
 
                     containerBuilder.RegisterModule(new ApiModule(hostContext.Configuration, services, loggerFactory));
                 })
-                .UseElasticApm(
-                    new EfCoreDiagnosticsSubscriber(),
-                    new HttpDiagnosticsSubscriber(),
-                    new SqlClientDiagnosticSubscriber())
                 .UseConsoleLifetime()
                 .Build();
 

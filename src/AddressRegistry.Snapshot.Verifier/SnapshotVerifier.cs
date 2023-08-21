@@ -21,7 +21,7 @@ namespace AddressRegistry.Snapshot.Verifier
     {
         private readonly IHostApplicationLifetime _applicationLifetime;
 
-        private readonly MsSqlSnapshotStoreVerifier _snapshotStoreVerifier;
+        private readonly MsSqlSnapshotStoreVerificationQueries _snapshotStoreVerificationQueries;
         private readonly EventDeserializer _eventDeserializer;
         private readonly EventMapping _eventMapping;
         private readonly IReadonlyStreamStore _streamStore;
@@ -35,7 +35,7 @@ namespace AddressRegistry.Snapshot.Verifier
 
         public SnapshotVerifier(
             IHostApplicationLifetime applicationLifetime,
-            MsSqlSnapshotStoreVerifier snapshotStoreVerifier,
+            MsSqlSnapshotStoreVerificationQueries snapshotStoreVerificationQueries,
             EventDeserializer eventDeserializer,
             EventMapping eventMapping,
             IReadonlyStreamStore streamStore,
@@ -47,7 +47,7 @@ namespace AddressRegistry.Snapshot.Verifier
         {
             _applicationLifetime = applicationLifetime;
 
-            _snapshotStoreVerifier = snapshotStoreVerifier;
+            _snapshotStoreVerificationQueries = snapshotStoreVerificationQueries;
             _eventDeserializer = eventDeserializer;
             _eventMapping = eventMapping;
             _streamStore = streamStore;
@@ -62,7 +62,7 @@ namespace AddressRegistry.Snapshot.Verifier
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            if (!await _snapshotStoreVerifier.DoesTableExist())
+            if (!await _snapshotStoreVerificationQueries.DoesTableExist())
             {
                 _logger.LogError("Snapshot table does not exist");
                 _applicationLifetime.StopApplication();
@@ -78,7 +78,7 @@ namespace AddressRegistry.Snapshot.Verifier
                 }
             }
 
-            var idsToVerify = (await _snapshotStoreVerifier.GetSnapshotIdsToVerify(lastProcessedSnapshotId))?.ToList();
+            var idsToVerify = (await _snapshotStoreVerificationQueries.GetSnapshotIdsToVerify(lastProcessedSnapshotId))?.ToList();
             if (idsToVerify is null || !idsToVerify.Any())
             {
                 _logger.LogInformation("Could not retrieve snapshot ids to verify");
@@ -135,7 +135,7 @@ namespace AddressRegistry.Snapshot.Verifier
 
         private async Task<AggregateWithVersion?> GetAggregateBySnapshot(int idToVerify)
         {
-            var snapshotBlob = await _snapshotStoreVerifier.GetSnapshotBlob(idToVerify);
+            var snapshotBlob = await _snapshotStoreVerificationQueries.GetSnapshotBlob(idToVerify);
             if (snapshotBlob is null)
             {
                 return null;

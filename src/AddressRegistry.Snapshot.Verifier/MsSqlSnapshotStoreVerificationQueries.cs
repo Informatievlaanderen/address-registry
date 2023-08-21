@@ -6,7 +6,7 @@
     using Microsoft.Data.SqlClient;
     using Dapper;
 
-    public sealed class MsSqlSnapshotStoreVerifier
+    public sealed class MsSqlSnapshotStoreVerificationQueries
     {
         private const string TableName = "Snapshots";
 
@@ -15,7 +15,7 @@
 
         private string SchemaWithTableName => $"{_schema}.{TableName}";
 
-        public MsSqlSnapshotStoreVerifier(string snapshotStoreConnectionString, string schema)
+        public MsSqlSnapshotStoreVerificationQueries(string snapshotStoreConnectionString, string schema)
         {
             _snapshotStoreConnectionString = snapshotStoreConnectionString;
             _schema = schema;

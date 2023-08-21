@@ -36,6 +36,7 @@
             }
 
             AddressPersistentLocalId? parentPersistentLocalId = null;
+            PostalCode? parentPostalCode = null;
             if (!EqualityComparer<Guid>.Default.Equals(parentAddressId ?? Guid.Empty, Guid.Empty))
             {
                 var parent = StreetNameAddresses.FindParentByLegacyAddressId(parentAddressId ?? AddressId.Default);
@@ -46,6 +47,7 @@
                 }
 
                 parentPersistentLocalId = parent.AddressPersistentLocalId;
+                parentPostalCode = parent.PostalCode;
             }
 
             ApplyChange(new AddressWasMigratedToStreetName(
@@ -58,7 +60,7 @@
                 boxNumber,
                 geometry,
                 officiallyAssigned ?? false,
-                postalCode,
+                postalCode ?? parentPostalCode,
                 isCompleted,
                 isRemoved,
                 parentPersistentLocalId));

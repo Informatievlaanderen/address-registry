@@ -3,7 +3,6 @@ namespace AddressRegistry.Snapshot.Verifier.Infrastructure
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Infrastructure;
     using Autofac;
@@ -11,7 +10,6 @@ namespace AddressRegistry.Snapshot.Verifier.Infrastructure
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
     using Destructurama;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
@@ -70,16 +68,7 @@ namespace AddressRegistry.Snapshot.Verifier.Infrastructure
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
-                    services.AddSingleton(new MsSqlSnapshotStoreVerificationQueries(hostContext.Configuration.GetConnectionString("Snapshots"), Schema.Default));
-
-                    services.AddDbContextFactory<SnapshotVerifierContext>((provider, options) => options
-                        .UseLoggerFactory(provider.GetRequiredService<ILoggerFactory>())
-                        .UseSqlServer(hostContext.Configuration.GetConnectionString(SnapshotVerifierContextFactory.ConnectionStringName),
-                            sqlServerOptions => sqlServerOptions
-                                .EnableRetryOnFailure()
-                                .MigrationsHistoryTable(MigrationTables.BackOffice, Schema.BackOffice)
-                        ));
-
+                    services.AddSnapshotVerificationServices(hostContext.Configuration.GetConnectionString("Snapshots"), Schema.Default);
                     services.AddHostedSnapshotVerifierService<StreetName, StreetNameStreamId>(
                         () => new StreetNameFactory(NoSnapshotStrategy.Instance).Create(),
                         aggregate => new StreetNameStreamId(aggregate.PersistentLocalId),
@@ -99,7 +88,6 @@ namespace AddressRegistry.Snapshot.Verifier.Infrastructure
             Log.Information("Starting AddressRegistry.Snapshot.Verifier");
 
             var logger = host.Services.GetRequiredService<ILogger<Program>>();
-            var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
             var configuration = host.Services.GetRequiredService<IConfiguration>();
 
             try
@@ -107,11 +95,7 @@ namespace AddressRegistry.Snapshot.Verifier.Infrastructure
                 await DistributedLock<Program>.RunAsync(
                         async () =>
                         {
-                            await MigrationsHelper.RunAsync(
-                                configuration.GetConnectionString(SnapshotVerifierContextFactory.ConnectionStringName),
-                                loggerFactory,
-                                CancellationToken.None);
-
+                            host.Services.GetRequiredService<SnapshotVerificationRepository>().EnsureCreated();
                             await host.RunAsync().ConfigureAwait(false);
                         },
                         DistributedLockOptions.LoadFromConfiguration(configuration),

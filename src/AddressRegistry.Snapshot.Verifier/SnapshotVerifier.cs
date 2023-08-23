@@ -9,7 +9,6 @@ namespace AddressRegistry.Snapshot.Verifier
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using KellermanSoftware.CompareNetObjects;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using SqlStreamStore;
@@ -21,7 +20,7 @@ namespace AddressRegistry.Snapshot.Verifier
     {
         private readonly IHostApplicationLifetime _applicationLifetime;
 
-        private readonly MsSqlSnapshotStoreVerificationQueries _snapshotStoreVerificationQueries;
+        private readonly MsSqlSnapshotStoreQueries _snapshotStoreQueries;
         private readonly EventDeserializer _eventDeserializer;
         private readonly EventMapping _eventMapping;
         private readonly IReadonlyStreamStore _streamStore;
@@ -30,24 +29,24 @@ namespace AddressRegistry.Snapshot.Verifier
         private readonly Func<TAggregateRoot, TStreamId> _streamIdFactory;
 
         private readonly List<string> _membersToIgnore;
-        private readonly IDbContextFactory<SnapshotVerifierContext> _snapshotVerifierContextFactory;
+        private readonly SnapshotVerificationRepository _snapshotVerificationRepository;
         private readonly ILogger<SnapshotVerifier<TAggregateRoot, TStreamId>> _logger;
 
         public SnapshotVerifier(
             IHostApplicationLifetime applicationLifetime,
-            MsSqlSnapshotStoreVerificationQueries snapshotStoreVerificationQueries,
+            MsSqlSnapshotStoreQueries snapshotStoreQueries,
             EventDeserializer eventDeserializer,
             EventMapping eventMapping,
             IReadonlyStreamStore streamStore,
             Func<TAggregateRoot> aggregateRootFactory,
             Func<TAggregateRoot, TStreamId> streamIdFactory,
             List<string> membersToIgnore,
-            IDbContextFactory<SnapshotVerifierContext> snapshotVerifierContextFactory,
+            SnapshotVerificationRepository snapshotVerificationRepository,
             ILoggerFactory loggerFactory)
         {
             _applicationLifetime = applicationLifetime;
 
-            _snapshotStoreVerificationQueries = snapshotStoreVerificationQueries;
+            _snapshotStoreQueries = snapshotStoreQueries;
             _eventDeserializer = eventDeserializer;
             _eventMapping = eventMapping;
             _streamStore = streamStore;
@@ -56,29 +55,22 @@ namespace AddressRegistry.Snapshot.Verifier
             _streamIdFactory = streamIdFactory;
 
             _membersToIgnore = membersToIgnore;
-            _snapshotVerifierContextFactory = snapshotVerifierContextFactory;
+            _snapshotVerificationRepository = snapshotVerificationRepository;
             _logger = loggerFactory.CreateLogger<SnapshotVerifier<TAggregateRoot, TStreamId>>();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            if (!await _snapshotStoreVerificationQueries.DoesTableExist())
+            if (!await _snapshotStoreQueries.DoesTableExist())
             {
                 _logger.LogError("Snapshot table does not exist");
                 _applicationLifetime.StopApplication();
                 return;
             }
 
-            int? lastProcessedSnapshotId = null;
-            await using (var context = await _snapshotVerifierContextFactory.CreateDbContextAsync(stoppingToken))
-            {
-                if (context.VerificationStates.Any())
-                {
-                    lastProcessedSnapshotId = context.VerificationStates.Max(x => x.SnapshotId);
-                }
-            }
+            var lastProcessedSnapshotId = await _snapshotVerificationRepository.MaxSnapshotId(stoppingToken);
 
-            var idsToVerify = (await _snapshotStoreVerificationQueries.GetSnapshotIdsToVerify(lastProcessedSnapshotId))?.ToList();
+            var idsToVerify = (await _snapshotStoreQueries.GetSnapshotIdsToVerify(lastProcessedSnapshotId))?.ToList();
             if (idsToVerify is null || !idsToVerify.Any())
             {
                 _logger.LogInformation("Could not retrieve snapshot ids to verify");
@@ -110,8 +102,8 @@ namespace AddressRegistry.Snapshot.Verifier
                         .Concat(_membersToIgnore).ToList()
                 });
 
-                await using var context = await _snapshotVerifierContextFactory.CreateDbContextAsync(stoppingToken);
-                var verificationState = new SnapshotVerificationState { SnapshotId = idToVerify.SnapshotId };
+
+                var verificationState = new SnapshotVerificationState(idToVerify.SnapshotId);
 
                 var comparisonResult = compareLogic.Compare(aggregateBySnapshot.Aggregate, aggregateByEvents);
                 if (!comparisonResult.AreEqual)
@@ -126,8 +118,7 @@ namespace AddressRegistry.Snapshot.Verifier
                     verificationState.Status = SnapshotStateStatus.Verified;
                 }
 
-                await context.VerificationStates.AddAsync(verificationState, stoppingToken);
-                await context.SaveChangesAsync(stoppingToken);
+                await _snapshotVerificationRepository.AddVerificationState(verificationState, stoppingToken);
             }
 
             _applicationLifetime.StopApplication();
@@ -135,7 +126,7 @@ namespace AddressRegistry.Snapshot.Verifier
 
         private async Task<AggregateWithVersion?> GetAggregateBySnapshot(int idToVerify)
         {
-            var snapshotBlob = await _snapshotStoreVerificationQueries.GetSnapshotBlob(idToVerify);
+            var snapshotBlob = await _snapshotStoreQueries.GetSnapshotBlob(idToVerify);
             if (snapshotBlob is null)
             {
                 return null;

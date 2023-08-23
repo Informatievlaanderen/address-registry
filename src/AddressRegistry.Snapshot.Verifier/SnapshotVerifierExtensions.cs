@@ -32,14 +32,15 @@
         {
             services.AddHostedService(x => new SnapshotVerifier<TAggregate, TAggregateId>(
                 x.GetRequiredService<IHostApplicationLifetime>(),
-                x.GetRequiredService<MsSqlSnapshotStoreQueries>(),
                 x.GetRequiredService<EventDeserializer>(),
                 x.GetRequiredService<EventMapping>(),
                 x.GetRequiredService<IReadonlyStreamStore>(),
                 aggregateFactory,
                 aggregateIdFactory,
-                membersToIgnoreInVerification,
+                x.GetRequiredService<MsSqlSnapshotStoreQueries>(),
                 x.GetRequiredService<SnapshotVerificationRepository>(),
+                membersToIgnoreInVerification,
+                x.GetService<ISnapshotVerificationNotifier>(),
                 x.GetRequiredService<ILoggerFactory>()));
 
             return services;

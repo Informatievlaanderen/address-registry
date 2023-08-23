@@ -30,23 +30,25 @@ namespace AddressRegistry.Snapshot.Verifier
 
         private readonly List<string> _membersToIgnore;
         private readonly SnapshotVerificationRepository _snapshotVerificationRepository;
+
+        private readonly ISnapshotVerificationNotifier? _snapshotVerificationNotifier;
         private readonly ILogger<SnapshotVerifier<TAggregateRoot, TStreamId>> _logger;
 
         public SnapshotVerifier(
             IHostApplicationLifetime applicationLifetime,
-            MsSqlSnapshotStoreQueries snapshotStoreQueries,
             EventDeserializer eventDeserializer,
             EventMapping eventMapping,
             IReadonlyStreamStore streamStore,
             Func<TAggregateRoot> aggregateRootFactory,
             Func<TAggregateRoot, TStreamId> streamIdFactory,
-            List<string> membersToIgnore,
+            MsSqlSnapshotStoreQueries snapshotStoreQueries,
             SnapshotVerificationRepository snapshotVerificationRepository,
+            List<string> membersToIgnore,
+            ISnapshotVerificationNotifier? snapshotVerificationNotifier,
             ILoggerFactory loggerFactory)
         {
             _applicationLifetime = applicationLifetime;
 
-            _snapshotStoreQueries = snapshotStoreQueries;
             _eventDeserializer = eventDeserializer;
             _eventMapping = eventMapping;
             _streamStore = streamStore;
@@ -54,8 +56,12 @@ namespace AddressRegistry.Snapshot.Verifier
             _aggregateRootFactory = aggregateRootFactory;
             _streamIdFactory = streamIdFactory;
 
-            _membersToIgnore = membersToIgnore;
+            _snapshotStoreQueries = snapshotStoreQueries;
             _snapshotVerificationRepository = snapshotVerificationRepository;
+
+            _membersToIgnore = membersToIgnore;
+            _snapshotVerificationNotifier = snapshotVerificationNotifier;
+
             _logger = loggerFactory.CreateLogger<SnapshotVerifier<TAggregateRoot, TStreamId>>();
         }
 
@@ -111,7 +117,7 @@ namespace AddressRegistry.Snapshot.Verifier
                     _logger.LogError("Snapshot {SnapshotId} does not match aggregate from events", idToVerify.SnapshotId);
                     verificationState.Status = SnapshotStateStatus.Failed;
                     verificationState.Differences = comparisonResult.DifferencesString;
-                    //TODO: Notify
+                    _snapshotVerificationNotifier?.NotifyInvalidSnapshot(idToVerify.SnapshotId, comparisonResult.DifferencesString);
                 }
                 else
                 {

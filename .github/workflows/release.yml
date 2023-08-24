@@ -714,16 +714,16 @@ jobs:
           CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
           CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
 
-      - name: Create Jira Release
-        shell: bash
-        run: ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-jira.sh
-        env:
-          CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
-          CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
-          CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
-          JIRA_PREFIX: Address
-          JIRA_PROJECT: GAWR
-          JIRA_VERSION: ${{ needs.release.outputs.version }}
+     # - name: Create Jira Release
+     #   shell: bash
+     #   run: ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-jira.sh
+     #   env:
+     #     CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
+     #     CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
+     #     CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
+     #     JIRA_PREFIX: Address
+     #     JIRA_PROJECT: GAWR
+     #     JIRA_VERSION: ${{ needs.release.outputs.version }}
 
   push_images_to_test:
     if: needs.release.outputs.version != 'none'

@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.App.props" />
+
+  <PropertyGroup>
+    <!-- Error NETSDK1152: https://docs.microsoft.com/en-us/dotnet/core/compatibility/sdk/6.0/duplicate-files-in-output -->
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+    <ServerGarbageCollection>true</ServerGarbageCollection>
+    <EnableDefaultContentItems>false</EnableDefaultContentItems>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Dockerfile" CopyToOutputDirectory="Always" />
+    <Content Include="appsettings.json" CopyToOutputDirectory="Always" />
+    <Content Include="appsettings.*.json" CopyToOutputDirectory="Always" />
+    <Content Include="init.sh" CopyToOutputDirectory="Always" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AddressRegistry.Infrastructure\AddressRegistry.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\SolutionInfo.cs" Link="Properties\SolutionInfo.cs" />
+  </ItemGroup>
+
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>

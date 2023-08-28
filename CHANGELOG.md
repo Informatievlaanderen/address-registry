@@ -1,3 +1,17 @@
+# [3.101.0](https://github.com/informatievlaanderen/address-registry/compare/v3.100.0...v3.101.0) (2023-08-28)
+
+
+### Bug Fixes
+
+* remove elastic apm from appsettings snapshot verifier ([677b8a7](https://github.com/informatievlaanderen/address-registry/commit/677b8a78110628c3521b85f76aa00182aff481ea))
+* test region in migrator to skip address ([40fcef5](https://github.com/informatievlaanderen/address-registry/commit/40fcef552cd9e359966a65d5ec7e9763f0f8fdb9))
+
+
+### Features
+
+* add snapshot verifier ([537f09d](https://github.com/informatievlaanderen/address-registry/commit/537f09dfec57f35590112150e96213df6950aca9))
+* add spatial index wfs v2 ([4de5f0c](https://github.com/informatievlaanderen/address-registry/commit/4de5f0cd91e523e586c7a33bd3bea6c1edd92604))
+
 # [3.100.0](https://github.com/informatievlaanderen/address-registry/compare/v3.99.10...v3.100.0) (2023-08-21)
 
 

@@ -202,7 +202,7 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
                     .Resolve<IStreetNames>()
                     .GetAsync(new StreetNameStreamId(new StreetNamePersistentLocalId(streetName.PersistentLocalId)), token);
 
-                if (_skipIncomplete || RegionFilter.IsFlemishRegion(streetNameAggregate.MigratedNisCode!))
+                if (_skipIncomplete || !RegionFilter.IsFlemishRegion(streetNameAggregate.MigratedNisCode!))
                 {
                     return null;
                 }

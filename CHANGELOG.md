@@ -1,3 +1,10 @@
+## [3.101.2](https://github.com/informatievlaanderen/address-registry/compare/v3.101.1...v3.101.2) (2023-08-28)
+
+
+### Bug Fixes
+
+* **migrator:** incomplete is only when missing geometry and/or status ([d7dd029](https://github.com/informatievlaanderen/address-registry/commit/d7dd02935b237663aabe07c42e24dbf1fa44fc0d))
+
 ## [3.101.1](https://github.com/informatievlaanderen/address-registry/compare/v3.101.0...v3.101.1) (2023-08-28)
 
 

@@ -190,7 +190,7 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
             var streetNameId = (Guid)addressAggregate.StreetNameId;
             var streetName = _consumerItems.SingleOrDefault(x => x.StreetNameId == streetNameId);
 
-            if (!addressAggregate.IsComplete)
+            if (!addressAggregate.IsComplete && (addressAggregate.Geometry is null || addressAggregate.Status is null))
             {
                 if (addressAggregate.IsRemoved)
                 {

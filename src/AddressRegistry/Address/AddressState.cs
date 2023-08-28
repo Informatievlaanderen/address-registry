@@ -32,7 +32,7 @@ namespace AddressRegistry.Address
 
         private AddressId _addressId;
         private BoxNumber _boxNumber;
-        private AddressGeometry _geometry;
+        private AddressGeometry? _geometry;
         private bool? _officiallyAssigned;
         private PostalCode _postalCode;
         private AddressStatus? _previousStatus;
@@ -51,6 +51,8 @@ namespace AddressRegistry.Address
 
         public Modification LastModificationBasedOnCrab { get; private set; }
         public bool IsMigrated { get; private set; }
+        public AddressStatus? Status => _status;
+        public AddressGeometry? Geometry => _geometry;
 
         private Address()
         {

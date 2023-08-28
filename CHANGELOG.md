@@ -1,3 +1,10 @@
+## [3.101.1](https://github.com/informatievlaanderen/address-registry/compare/v3.101.0...v3.101.1) (2023-08-28)
+
+
+### Bug Fixes
+
+* incomplete nonflemish address ([c796b26](https://github.com/informatievlaanderen/address-registry/commit/c796b26dfcf0dc45ce513c4ca2414867c6167f50))
+
 # [3.101.0](https://github.com/informatievlaanderen/address-registry/compare/v3.100.0...v3.101.0) (2023-08-28)
 
 

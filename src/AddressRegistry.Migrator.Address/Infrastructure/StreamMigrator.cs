@@ -11,6 +11,7 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
     using Api.BackOffice.Abstractions;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Consumer.StreetName;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -186,6 +187,9 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
             var addressId = new AddressId(Guid.Parse(aggregateId));
             var addressAggregate = await addressRepo.GetAsync(addressId, token);
 
+            var streetNameId = (Guid)addressAggregate.StreetNameId;
+            var streetName = _consumerItems.SingleOrDefault(x => x.StreetNameId == streetNameId);
+
             if (!addressAggregate.IsComplete)
             {
                 if (addressAggregate.IsRemoved)
@@ -194,16 +198,17 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
                     return null;
                 }
 
-                if (_skipIncomplete)
+                var streetNameAggregate = await streamLifetimeScope
+                    .Resolve<IStreetNames>()
+                    .GetAsync(new StreetNameStreamId(new StreetNamePersistentLocalId(streetName.PersistentLocalId)), token);
+
+                if (_skipIncomplete || RegionFilter.IsFlemishRegion(streetNameAggregate.MigratedNisCode!))
                 {
                     return null;
                 }
 
                 throw new InvalidOperationException($"Incomplete but not removed Address '{aggregateId}'.");
             }
-
-            var streetNameId = (Guid)addressAggregate.StreetNameId;
-            var streetName = _consumerItems.SingleOrDefault(x => x.StreetNameId == streetNameId);
 
             if (streetName == null)
             {

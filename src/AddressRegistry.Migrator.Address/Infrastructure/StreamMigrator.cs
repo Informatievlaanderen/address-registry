@@ -173,7 +173,9 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
                         if (retry)
                             throw;
 
+                        await _processedIdsTable.Add(internalId);
                         await _processedIdsTable.AddRetry(internalId, command.AddressId.ToString());
+                        processedItems.Add(internalId);
                     }
                     catch (Exception ex)
                     {

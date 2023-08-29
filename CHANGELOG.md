@@ -1,3 +1,10 @@
+## [3.101.3](https://github.com/informatievlaanderen/address-registry/compare/v3.101.2...v3.101.3) (2023-08-29)
+
+
+### Bug Fixes
+
+* **migrator:** add retry logic when parent not found ([21ab61b](https://github.com/informatievlaanderen/address-registry/commit/21ab61b9886b7bb697a70dfd8f26f4edc54740f1))
+
 ## [3.101.2](https://github.com/informatievlaanderen/address-registry/compare/v3.101.1...v3.101.2) (2023-08-28)
 
 

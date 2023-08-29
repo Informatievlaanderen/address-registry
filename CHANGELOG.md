@@ -1,3 +1,10 @@
+## [3.101.7](https://github.com/informatievlaanderen/address-registry/compare/v3.101.6...v3.101.7) (2023-08-29)
+
+
+### Bug Fixes
+
+* **migrator:** don't insert twice in processeids when retrying [#2](https://github.com/informatievlaanderen/address-registry/issues/2) ([8acffe5](https://github.com/informatievlaanderen/address-registry/commit/8acffe5d4094ab2e428d9f1ca6f5d577cac2b709))
+
 ## [3.101.6](https://github.com/informatievlaanderen/address-registry/compare/v3.101.5...v3.101.6) (2023-08-29)
 
 

@@ -1,3 +1,10 @@
+## [3.101.5](https://github.com/informatievlaanderen/address-registry/compare/v3.101.4...v3.101.5) (2023-08-29)
+
+
+### Bug Fixes
+
+* **migrator:** no double processing when retrying ([f257ffe](https://github.com/informatievlaanderen/address-registry/commit/f257ffecfe5f36eaaed375295074161482bc04ae))
+
 ## [3.101.4](https://github.com/informatievlaanderen/address-registry/compare/v3.101.3...v3.101.4) (2023-08-29)
 
 

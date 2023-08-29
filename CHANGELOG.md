@@ -1,3 +1,10 @@
+## [3.101.4](https://github.com/informatievlaanderen/address-registry/compare/v3.101.3...v3.101.4) (2023-08-29)
+
+
+### Bug Fixes
+
+* **migrator:** add child to processed items ([ebb2c92](https://github.com/informatievlaanderen/address-registry/commit/ebb2c92decd68828618b185fff27ad8cd1d82c23))
+
 ## [3.101.3](https://github.com/informatievlaanderen/address-registry/compare/v3.101.2...v3.101.3) (2023-08-29)
 
 

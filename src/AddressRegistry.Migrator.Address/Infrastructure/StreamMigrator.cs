@@ -103,9 +103,8 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
 
                 try
                 {
-                    await ProcessStreams(new (int, string)[] { (retryProcessedId.processedId, retryProcessedId.aggregateId) }, ct);
+                    var processedPageItems = await ProcessStreams(new (int, string)[] { (retryProcessedId.processedId, retryProcessedId.aggregateId) }, ct);
 
-                    var processedPageItems = await ProcessStreams(pageOfStreams, ct, true);
                     await _processedIdsTable.CompleteRetryPageAsync(processedPageItems);
                 }
                 catch (OperationCanceledException)

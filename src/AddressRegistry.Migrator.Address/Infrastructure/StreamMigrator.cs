@@ -90,9 +90,32 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
                     _logger.LogWarning("ProcessStreams cancelled.");
                 }
             }
+
+            var retryProcessedIdsList = (await _processedIdsTable.GetRetryProcessedIds()).ToList();
+
+            var retryProcessedIdsToProcess = retryProcessedIdsList
+                .Where(x => !x.isPageCompleted)
+                .ToList();
+
+            foreach (var retryProcessedId in retryProcessedIdsToProcess)
+            {
+                ct.ThrowIfCancellationRequested();
+
+                try
+                {
+                    await ProcessStreams(new (int, string)[] { (retryProcessedId.processedId, retryProcessedId.aggregateId) }, ct);
+
+                    var processedPageItems = await ProcessStreams(pageOfStreams, ct, true);
+                    await _processedIdsTable.CompleteRetryPageAsync(processedPageItems);
+                }
+                catch (OperationCanceledException)
+                {
+                    _logger.LogWarning("ProcessStreams cancelled.");
+                }
+            }
         }
 
-        private async Task<List<int>> ProcessStreams(IEnumerable<(int, string)> streamsToProcess, CancellationToken ct)
+        private async Task<List<int>> ProcessStreams(IEnumerable<(int, string)> streamsToProcess, CancellationToken ct, bool retry = false)
         {
             var processedItems = new ConcurrentBag<int>();
             var migrateCommands = new ConcurrentDictionary<int, MigrateAddressToStreetName>();
@@ -145,11 +168,12 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
                         _logger.LogWarning($"Parent not found for child '{internalId}'.");
 
                         if (_skipIncomplete)
-                        {
                             continue;
-                        }
 
-                        throw;
+                        if (retry)
+                            throw;
+
+                        await _processedIdsTable.AddRetry(internalId, command.AddressId.ToString());
                     }
                     catch (Exception ex)
                     {

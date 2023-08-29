@@ -152,7 +152,9 @@ namespace AddressRegistry.Migrator.Address.Infrastructure
                     {
                         await CreateAndDispatchCommand(command, innerCt);
 
-                        await _processedIdsTable.Add(internalId);
+                        if(!retry)
+                            await _processedIdsTable.Add(internalId);
+
                         processedItems.Add(internalId);
 
                         await backOfficeContext

@@ -46,7 +46,7 @@ nuget Be.Vlaanderen.Basisregisters.Api 20.0.0
 nuget Be.Vlaanderen.Basisregisters.Auth.AcmIdm 1.4.0
 
 nuget Be.Vlaanderen.Basisregisters.Aws.DistributedMutex 3.0.0
-nuget Be.Vlaanderen.Basisregisters.Aws.Lambda 1.2.4
+nuget Be.Vlaanderen.Basisregisters.Aws.Lambda 3.0.1
 
 nuget Be.Vlaanderen.Basisregisters.CommandHandling 8.0.0
 nuget Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency 8.0.0

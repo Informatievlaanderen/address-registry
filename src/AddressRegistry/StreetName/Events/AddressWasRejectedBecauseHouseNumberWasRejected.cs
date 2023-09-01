@@ -10,7 +10,7 @@ namespace AddressRegistry.StreetName.Events
 
     [EventTags(EventTag.For.Edit, EventTag.For.Sync)]
     [EventName(EventName)]
-    [EventDescription("Het busnummer met status voorgesteld werd afgekeurd door historering huisnummer.")]
+    [EventDescription("Het busnummer met status voorgesteld werd afgekeurd door afkeuring huisnummer.")]
     public class AddressWasRejectedBecauseHouseNumberWasRejected : IStreetNameEvent, IHasAddressPersistentLocalId
     {
         public const string EventName = "AddressWasRejectedBecauseHouseNumberWasRejected"; // BE CAREFUL CHANGING THIS!!

@@ -1,3 +1,10 @@
+## [3.101.9](https://github.com/informatievlaanderen/address-registry/compare/v3.101.8...v3.101.9) (2023-09-04)
+
+
+### Bug Fixes
+
+* bump lambda packages ([4da6622](https://github.com/informatievlaanderen/address-registry/commit/4da662214ba0957161bc5a5ab5b7dbef973cff86))
+
 ## [3.101.8](https://github.com/informatievlaanderen/address-registry/compare/v3.101.7...v3.101.8) (2023-09-04)
 
 

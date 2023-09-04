@@ -1,3 +1,11 @@
+## [3.101.8](https://github.com/informatievlaanderen/address-registry/compare/v3.101.7...v3.101.8) (2023-09-04)
+
+
+### Bug Fixes
+
+* bump lambda package ([a3d64a5](https://github.com/informatievlaanderen/address-registry/commit/a3d64a503af1d7a0dbb5bae54353d780f6c13fa1))
+* event description ([097a98c](https://github.com/informatievlaanderen/address-registry/commit/097a98c13bddc4bdf99faa15f3dd68ef25b7e792))
+
 ## [3.101.7](https://github.com/informatievlaanderen/address-registry/compare/v3.101.6...v3.101.7) (2023-08-29)
 
 

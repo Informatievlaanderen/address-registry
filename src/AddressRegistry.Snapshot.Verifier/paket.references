@@ -1,9 +1,6 @@
-Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore
 Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 Be.Vlaanderen.Basisregisters.EntityFrameworkCore.EntityTypeConfiguration
-
-CompareNETObjects
-Dapper
+Be.vlaanderen.basisregisters.snapshotverifier
 
 Serilog
 Serilog.Settings.Configuration
@@ -19,7 +16,6 @@ Microsoft.Extensions.Configuration.CommandLine
 Microsoft.Extensions.Configuration.FileExtensions
 Microsoft.Extensions.Configuration.EnvironmentVariables
 Microsoft.Extensions.Configuration.Json
-Microsoft.Extensions.Hosting
 
 SourceLink.Embed.AllSourceFiles
 SourceLink.Copy.PdbFiles

@@ -9,6 +9,7 @@ namespace AddressRegistry.Snapshot.Verifier.Infrastructure
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
+    using Be.Vlaanderen.Basisregisters.SnapshotVerifier;
     using Destructurama;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;

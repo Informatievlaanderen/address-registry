@@ -104,10 +104,10 @@ namespace AddressRegistry.Snapshot.Verifier
 
                 var compareLogic = new CompareLogic(new ComparisonConfig
                 {
+                    CompareFields = true,
                     MembersToIgnore = new List<string> { "_recorder", "_router", "_applier", "_lastEvent", "Strategy" }
                         .Concat(_membersToIgnore).ToList()
                 });
-
 
                 var verificationState = new SnapshotVerificationState(idToVerify.SnapshotId);
 

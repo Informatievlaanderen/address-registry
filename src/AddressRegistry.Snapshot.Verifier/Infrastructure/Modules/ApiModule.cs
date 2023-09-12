@@ -27,8 +27,7 @@ namespace AddressRegistry.Snapshot.Verifier.Infrastructure.Modules
         protected override void Load(ContainerBuilder builder)
         {
             builder
-                .RegisterModule(new CommandHandlingModule(_configuration))
-                .RegisterModule(new SequenceModule(_configuration, _services, _loggerFactory));
+                .RegisterModule(new CommandHandlingModule(_configuration));
 
             builder.RegisterSnapshotModule(_configuration);
 

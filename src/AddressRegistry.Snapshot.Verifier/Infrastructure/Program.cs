@@ -1,7 +1,6 @@
 namespace AddressRegistry.Snapshot.Verifier.Infrastructure
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.Threading.Tasks;
     using AddressRegistry.Infrastructure;
@@ -9,7 +8,6 @@ namespace AddressRegistry.Snapshot.Verifier.Infrastructure
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
-    using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.SnapshotVerifier;
     using Destructurama;
     using Microsoft.Extensions.Configuration;
@@ -20,7 +18,6 @@ namespace AddressRegistry.Snapshot.Verifier.Infrastructure
     using Serilog;
     using Serilog.Debugging;
     using Serilog.Extensions.Logging;
-    using SqlStreamStore;
     using StreetName;
 
     public sealed class Program
@@ -71,21 +68,21 @@ namespace AddressRegistry.Snapshot.Verifier.Infrastructure
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
+                    var comparisonConfig = DefaultComparisonConfig.Instance;
+                    comparisonConfig.MembersToIgnore.AddRange(new []
+                    {
+                        nameof(StreetNameAddresses.ProposedStreetNameAddresses),
+                        nameof(StreetNameAddresses.CurrentStreetNameAddresses),
+                        "_lastSnapshottedEventHash",
+                        "_lastSnapshottedProvenance"
+                    });
+                    comparisonConfig.CollectionMatchingSpec.Add(typeof(StreetNameAddress), new []{nameof(StreetNameAddress.AddressPersistentLocalId)});
+
                     services.AddSnapshotVerificationServices(hostContext.Configuration.GetConnectionString("Snapshots"), Schema.Default);
                     services.AddHostedSnapshotVerifierService<StreetName, StreetNameStreamId>(
                         () => new StreetNameFactory(NoSnapshotStrategy.Instance).Create(),
                         aggregate => new StreetNameStreamId(aggregate.PersistentLocalId),
-                        new List<string>
-                        {
-                            nameof(StreetNameAddresses.ProposedStreetNameAddresses),
-                            nameof(StreetNameAddresses.CurrentStreetNameAddresses),
-                            "_lastSnapshottedEventHash",
-                            "_lastSnapshottedProvenance"
-                        },
-                        new Dictionary<Type, IEnumerable<string>>
-                        {
-                            {typeof(StreetNameAddress), new []{nameof(StreetNameAddress.AddressPersistentLocalId)}}
-                        });
+                        comparisonConfig);
                 })
                 .UseServiceProviderFactory(new AutofacServiceProviderFactory())
                 .ConfigureContainer<ContainerBuilder>((hostContext, containerBuilder) =>

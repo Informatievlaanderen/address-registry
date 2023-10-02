@@ -115,6 +115,9 @@ namespace AddressRegistry.Api.Legacy.Address.Sync
                 .OrderBy(x => x.Position)
                 .AsNoTracking();
 
+            if (filtering.Filter.Position.HasValue)
+                addressSyndicationItems = addressSyndicationItems.Where(m => m.Position >= filtering.Filter.Position);
+
             return addressSyndicationItems;
         }
     }
@@ -132,6 +135,7 @@ namespace AddressRegistry.Api.Legacy.Address.Sync
     public class AddressSyndicationPersistentLocalIdFilter
     {
         public int? PersistentLocalId { get; set; }
-        public SyncEmbedValue Embed { get; set; }
+        public long? Position { get; set; }
+        public SyncEmbedValue Embed { get; set; } = new SyncEmbedValue();
     }
 }

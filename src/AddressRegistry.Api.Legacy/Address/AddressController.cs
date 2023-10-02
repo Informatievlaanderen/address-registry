@@ -160,12 +160,12 @@ namespace AddressRegistry.Api.Legacy.Address
             [FromRoute] int objectId,
             CancellationToken cancellationToken = default)
         {
-            var embedValue = Request.ExtractFilteringRequest<AddressSyndicationPersistentLocalIdFilter>()?.Filter?.Embed ?? new SyncEmbedValue();
-            var filtering = new FilteringHeader<AddressSyndicationPersistentLocalIdFilter>(new AddressSyndicationPersistentLocalIdFilter
+            var filtering = Request.ExtractFilteringRequest<AddressSyndicationPersistentLocalIdFilter>();
+            if (filtering.Filter is not null)
             {
-                PersistentLocalId = objectId,
-                Embed = embedValue
-            });
+                filtering.Filter.PersistentLocalId = objectId;
+            }
+
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 

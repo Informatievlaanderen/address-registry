@@ -143,6 +143,44 @@ namespace AddressRegistry.Api.Legacy.Address
         }
 
         /// <summary>
+        /// Vraag een lijst met wijzigingen voor een adres op.
+        /// </summary>
+        /// <param name="objectId">De unieke identificator van een adres.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpGet("sync/{objectId}")]
+        [Produces("text/xml")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(AddressSyndicationResponseExamples))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(BadRequestResponseExamples))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
+        public async Task<IActionResult> Sync(
+            [FromRoute] int objectId,
+            CancellationToken cancellationToken = default)
+        {
+            var embedValue = Request.ExtractFilteringRequest<AddressSyndicationPersistentLocalIdFilter>()?.Filter?.Embed ?? new SyncEmbedValue();
+            var filtering = new FilteringHeader<AddressSyndicationPersistentLocalIdFilter>(new AddressSyndicationPersistentLocalIdFilter
+            {
+                PersistentLocalId = objectId,
+                Embed = embedValue
+            });
+            var sorting = Request.ExtractSortingRequest();
+            var pagination = Request.ExtractPaginationRequest();
+
+            var result =
+                await _mediator.Send(new SyndicationByPersistentLocalIdRequest(filtering, sorting, pagination), cancellationToken);
+
+            return new ContentResult
+            {
+                Content = result.Content,
+                ContentType = MediaTypeNames.Text.Xml,
+                StatusCode = StatusCodes.Status200OK
+            };
+        }
+
+        /// <summary>
         /// Vraag een adres op.
         /// </summary>
         /// <param name="request"></param>

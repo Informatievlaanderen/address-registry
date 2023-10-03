@@ -263,6 +263,21 @@ jobs:
       semver: ${{ needs.set-release-version.outputs.version }}
     secrets: inherit
 
+  build-snapshot-verifier:
+    name: Build Snapshot Verifier
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
+    needs: [ set-release-version ]
+    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
+    with:
+      registry: address-registry
+      build-target: Containerize_SnapshotVerifier
+      image-file: ar-snapshot-verifier-image.tar
+      image-name: snapshot-verifier
+      test-project: AddressRegistry.Tests
+      build-project: AddressRegistry.Snapshot.Verifier
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
   build-cache-warmer:
     name: Build Cache warmer
     uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
@@ -388,7 +403,8 @@ jobs:
       build-producer-snapshot-oslo,
       build-migrator-address,
       build-cache-warmer,
-      build-lambda-backoffice ]
+      build-lambda-backoffice,
+      build-snapshot-verifier ]
     outputs:
       version: ${{ steps.set-version.outputs.version }}
     steps:
@@ -732,7 +748,24 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: ['api-backoffice', 'api-legacy', 'api-oslo', 'api-crab-import', 'api-extract', 'projector', 'projections-syndication', 'projections-backoffice', 'consumer', 'consumer-read-municipality', 'consumer-read-streetname', 'producer', 'producer-snapshot-oslo', 'migrator-address', 'cache-warmer']
+        image: [
+          'api-backoffice'
+          , 'api-legacy'
+          , 'api-oslo'
+          , 'api-crab-import'
+          , 'api-extract'
+          , 'projector'
+          , 'projections-syndication'
+          , 'projections-backoffice'
+          , 'consumer'
+          , 'consumer-read-municipality'
+          , 'consumer-read-streetname'
+          , 'producer'
+          , 'producer-snapshot-oslo'
+          , 'migrator-address'
+          , 'cache-warmer'
+          , 'snapshot-verifier'
+        ]
     steps:
       - name: Configure AWS credentials (Test)
         uses: aws-actions/configure-aws-credentials@v1-node16
@@ -779,7 +812,24 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: ['api-backoffice', 'api-legacy', 'api-oslo', 'api-crab-import', 'api-extract', 'projector', 'projections-syndication', 'projections-backoffice', 'consumer', 'consumer-read-municipality', 'consumer-read-streetname', 'producer', 'producer-snapshot-oslo', 'migrator-address', 'cache-warmer']
+        image: [
+          'api-backoffice'
+          , 'api-legacy'
+          , 'api-oslo'
+          , 'api-crab-import'
+          , 'api-extract'
+          , 'projector'
+          , 'projections-syndication'
+          , 'projections-backoffice'
+          , 'consumer'
+          , 'consumer-read-municipality'
+          , 'consumer-read-streetname'
+          , 'producer'
+          , 'producer-snapshot-oslo'
+          , 'migrator-address'
+          , 'cache-warmer'
+          , 'snapshot-verifier'
+        ]
     steps:
       - name: Configure AWS credentials (Staging)
         uses: aws-actions/configure-aws-credentials@v1-node16
@@ -948,7 +998,16 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        services: ['address-registry-api', 'address-registry-import-api', 'address-registry-projections', 'address-registry-producer', 'address-registry-producer-snapshot-oslo', 'address-registry-projections-backoffice', 'address-registry-cache-warmer']
+        services: [
+          'address-registry-api'
+          , 'address-registry-import-api'
+          , 'address-registry-projections'
+          , 'address-registry-producer'
+          , 'address-registry-producer-snapshot-oslo'
+          , 'address-registry-projections-backoffice'
+          , 'address-registry-cache-warmer'
+          , 'address-registry-snapshot-verifier'
+        ]
 
     steps:
     - name: Deploy services
@@ -1069,7 +1128,9 @@ jobs:
           'address-registry-producer-snapshot-oslo',
           'address-registry-projections',
           'address-registry-projections-backoffice',
-          'address-registry-cache-warmer' ]
+          'address-registry-cache-warmer',
+          'address-registry-snapshot-verifier'
+          ]
     steps:
     - name: CD services
       env:
@@ -1189,7 +1250,9 @@ jobs:
           'address-registry-producer-snapshot-oslo',
           'address-registry-projections',
           'address-registry-projections-backoffice',
-          'address-registry-cache-warmer' ]
+          'address-registry-cache-warmer',
+          'address-registry-snapshot-verifier'
+          ]
     steps:
     - name: CD services
       env:

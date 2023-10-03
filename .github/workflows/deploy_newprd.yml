@@ -49,7 +49,9 @@ jobs:
           'address-registry-producer-snapshot-oslo',
           'address-registry-projections',
           'address-registry-projections-backoffice',
-          'address-registry-cache-warmer' ]
+          'address-registry-cache-warmer',
+          'address-registry-snapshot-verifier'
+          ]
 
     steps:
     - name: CD services

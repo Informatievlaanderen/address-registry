@@ -1,3 +1,17 @@
+# [3.102.0](https://github.com/informatievlaanderen/address-registry/compare/v3.101.9...v3.102.0) (2023-10-03)
+
+
+### Bug Fixes
+
+* add snapshot-verifier to release ([08feee8](https://github.com/informatievlaanderen/address-registry/commit/08feee8969a60b05ce4d01209f6da9fc3005c406))
+* remove sequences from snapshot verifier ([5809ce4](https://github.com/informatievlaanderen/address-registry/commit/5809ce45fc5419c85b5d420fcde6290afcefec9b))
+* snapshot verifier ([f62ee89](https://github.com/informatievlaanderen/address-registry/commit/f62ee895078422376b43a11797f67ed8a695bebc))
+
+
+### Features
+
+* add feed endpoint filtering on persistentLocalId ([2cdb061](https://github.com/informatievlaanderen/address-registry/commit/2cdb06114090e56570a7d16de26267d769c6b503))
+
 ## [3.101.9](https://github.com/informatievlaanderen/address-registry/compare/v3.101.8...v3.101.9) (2023-09-04)
 
 

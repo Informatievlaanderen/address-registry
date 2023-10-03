@@ -78,6 +78,7 @@ Target.create "Publish_Solution" (fun _ ->
     "AddressRegistry.Projections.Syndication"
     "AddressRegistry.Projections.Wfs"
     "AddressRegistry.Projections.Wms"
+    "AddressRegistry.Snapshot.Verifier"
   ] |> List.iter publishSource
 
   let dist = (buildDir @@ "AddressRegistry.CacheWarmer" @@ "linux")
@@ -111,6 +112,7 @@ Target.create "Containerize_Producer" (fun _ -> containerize "AddressRegistry.Pr
 Target.create "Containerize_Producer_Snapshot_Oslo" (fun _ -> containerize "AddressRegistry.Producer.Snapshot.Oslo" "producer-snapshot-oslo")
 Target.create "Containerize_ProjectionsSyndication" (fun _ -> containerize "AddressRegistry.Projections.Syndication" "projections-syndication")
 Target.create "Containerize_ProjectionsBackOffice" (fun _ -> containerize "AddressRegistry.Projections.BackOffice" "projections-backoffice")
+Target.create "Containerize_SnapshotVerifier" (fun _ -> containerize "AddressRegistry.Snapshot.Verifier" "snapshot-verifier")
 Target.create "Containerize_CacheWarmer" (fun _ ->
   let dist = (buildDir @@ "AddressRegistry.CacheWarmer" @@ "linux")
   let source = "src" @@ "AddressRegistry.CacheWarmer"

@@ -1,3 +1,10 @@
+## [3.102.1](https://github.com/informatievlaanderen/address-registry/compare/v3.102.0...v3.102.1) (2023-10-04)
+
+
+### Bug Fixes
+
+* push snapshot verifier image to new prd ([efd7cc1](https://github.com/informatievlaanderen/address-registry/commit/efd7cc106647530a778c14c52d855655eb70c29e))
+
 # [3.102.0](https://github.com/informatievlaanderen/address-registry/compare/v3.101.9...v3.102.0) (2023-10-03)
 
 

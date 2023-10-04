@@ -878,7 +878,24 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: ['api-backoffice', 'api-legacy', 'api-oslo', 'api-crab-import', 'api-extract', 'projector', 'projections-syndication', 'projections-backoffice', 'consumer', 'consumer-read-municipality', 'consumer-read-streetname', 'producer', 'producer-snapshot-oslo', 'migrator-address', 'cache-warmer']
+        image: [
+          'api-backoffice'
+          , 'api-legacy'
+          , 'api-oslo'
+          , 'api-crab-import'
+          , 'api-extract'
+          , 'projector'
+          , 'projections-syndication'
+          , 'projections-backoffice'
+          , 'consumer'
+          , 'consumer-read-municipality'
+          , 'consumer-read-streetname'
+          , 'producer'
+          , 'producer-snapshot-oslo'
+          , 'migrator-address'
+          , 'cache-warmer'
+          , 'snapshot-verifier'
+          ]
     steps:
       - name: Configure AWS credentials (New Production)
         uses: aws-actions/configure-aws-credentials@v1-node16

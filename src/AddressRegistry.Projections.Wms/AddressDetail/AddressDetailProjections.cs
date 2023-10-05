@@ -420,8 +420,8 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
                     {
                         item.BoxNumber = message.Message.BoxNumber;
                         item.LabelType = string.IsNullOrWhiteSpace(message.Message.BoxNumber)
-                            ? WmsAddressLabelType.HouseNumber
-                            : WmsAddressLabelType.BusNumber;
+                            ? WmsAddressLabelType.HouseNumberWithoutBoxes
+                            : WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxes;
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);
@@ -435,8 +435,8 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
                     {
                         item.BoxNumber = message.Message.BoxNumber;
                         item.LabelType = string.IsNullOrWhiteSpace(message.Message.BoxNumber)
-                            ? WmsAddressLabelType.HouseNumber
-                            : WmsAddressLabelType.BusNumber;
+                            ? WmsAddressLabelType.HouseNumberWithoutBoxes
+                            : WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxes;
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);
@@ -449,7 +449,7 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
                     item =>
                     {
                         item.BoxNumber = null;
-                        item.LabelType = WmsAddressLabelType.HouseNumber;
+                        item.LabelType = WmsAddressLabelType.HouseNumberWithoutBoxes;
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct,

@@ -34,8 +34,8 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
             HouseNumber = houseNumber;
             BoxNumber = boxNumber;
             LabelType = string.IsNullOrWhiteSpace(boxNumber)
-                ? Address.WmsAddressLabelType.HouseNumber
-                : Address.WmsAddressLabelType.BusNumber;
+                ? WmsAddressLabelType.HouseNumberWithoutBoxes
+                : WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxes;
             Status = status;
             OfficiallyAssigned = officiallyAssigned;
             SetPosition(position);
@@ -51,7 +51,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
         public string HouseNumber { get; set; }
         public string? HouseNumberLabel { get; private set; }
         public int? HouseNumberLabelLength { get; private set; }
-        public Address.WmsAddressLabelType LabelType { get; set; }
+        public WmsAddressLabelType LabelType { get; set; }
 
         public string? BoxNumber { get; set; }
         public string Status { get; set; }

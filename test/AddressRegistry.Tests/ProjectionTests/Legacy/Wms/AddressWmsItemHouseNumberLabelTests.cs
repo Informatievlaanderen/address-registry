@@ -46,6 +46,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
         {
             var @event = _fixture.Create<AddressWasMigratedToStreetName>()
                 .WithAddressPersistentLocalId(addressPersistentLocalId)
+                .WithParentAddressPersistentLocalId(null)
                 .WithHouseNumber(houseNumber)
                 .WithStatus(addressStatus)
                 .WithNotRemoved();
@@ -104,6 +105,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
         {
             var houseNumberOne = _fixture.Create<AddressWasProposedV2>()
                 .WithAddressPersistentLocalId(new AddressPersistentLocalId(1))
+                .WithParentAddressPersistentLocalId(null)
                 .WithHouseNumber(new HouseNumber("1"));
             var houseNumberTwo = CreateAddressWasMigratedToStreetName(
                 new AddressPersistentLocalId(2),
@@ -1007,6 +1009,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
         {
             var houseNumberOne = _fixture.Create<AddressWasProposedBecauseOfReaddress>()
                 .WithAddressPersistentLocalId(new AddressPersistentLocalId(1))
+                .WithParentAddressPersistentLocalId(null)
                 .WithHouseNumber(new HouseNumber("1"));
             var houseNumberTwo = CreateAddressWasMigratedToStreetName(
                 new AddressPersistentLocalId(2),

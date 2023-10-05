@@ -25,6 +25,25 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Extensions
 
             return newEvent;
         }
+        public static AddressWasProposedBecauseOfReaddress WithParentAddressPersistentLocalId(
+            this AddressWasProposedBecauseOfReaddress @event,
+            AddressPersistentLocalId? parentAddressPersistentLocalId)
+        {
+            var newEvent = new AddressWasProposedBecauseOfReaddress(
+                new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId),
+                new AddressPersistentLocalId(@event.AddressPersistentLocalId),
+                new AddressPersistentLocalId(@event.SourceAddressPersistentLocalId),
+                parentAddressPersistentLocalId,
+                new PostalCode(@event.PostalCode),
+                new HouseNumber(@event.HouseNumber),
+                @event.BoxNumber is not null ? new BoxNumber(@event.BoxNumber) : null,
+                @event.GeometryMethod,
+                @event.GeometrySpecification,
+                new ExtendedWkbGeometry(@event.ExtendedWkbGeometry));
+            ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
+
+            return newEvent;
+        }
 
         public static AddressWasProposedBecauseOfReaddress WithHouseNumber(
             this AddressWasProposedBecauseOfReaddress @event,

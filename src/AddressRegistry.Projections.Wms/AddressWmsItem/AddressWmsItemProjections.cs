@@ -1,8 +1,7 @@
 namespace AddressRegistry.Projections.Wms.AddressWmsItem
 {
     using System;
-    using StreetName;
-    using StreetName.Events;
+    using Address;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
@@ -11,6 +10,10 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
     using NetTopologySuite.Geometries;
     using NetTopologySuite.IO;
     using NodaTime;
+    using StreetName.Events;
+    using AddressStatus = StreetName.AddressStatus;
+    using GeometryMethod = StreetName.GeometryMethod;
+    using GeometrySpecification = StreetName.GeometrySpecification;
 
     [ConnectedProjectionName("WMS adressen")]
     [ConnectedProjectionDescription("Projectie die de adressen data voor het WMS adressenregister voorziet.")]
@@ -100,6 +103,19 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                 await context
                     .AddressWmsItems
                     .AddAsync(addressWmsItem, ct);
+
+                if (message.Message.ParentPersistentLocalId.HasValue)
+                {
+                    await context.FindAndUpdateAddressDetail(
+                        message.Message.ParentPersistentLocalId.Value,
+                        address =>
+                        {
+                            address.LabelType = WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxes;
+                        },
+                        ct,
+                        updateHouseNumberLabelsBeforeAddressUpdate: false,
+                        updateHouseNumberLabelsAfterAddressUpdate: false);
+                }
             });
 
             When<Envelope<AddressWasProposedV2>>(async (context, message, ct) =>
@@ -123,6 +139,19 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                 await context
                     .AddressWmsItems
                     .AddAsync(addressWmsItem, ct);
+
+                if (message.Message.ParentPersistentLocalId.HasValue)
+                {
+                    await context.FindAndUpdateAddressDetail(
+                        message.Message.ParentPersistentLocalId.Value,
+                        address =>
+                        {
+                            address.LabelType = WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxes;
+                        },
+                        ct,
+                        updateHouseNumberLabelsBeforeAddressUpdate: false,
+                        updateHouseNumberLabelsAfterAddressUpdate: false);
+                }
             });
 
             When<Envelope<AddressWasApproved>>(async (context, message, ct) =>
@@ -531,6 +560,19 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                 await context
                     .AddressWmsItems
                     .AddAsync(addressWmsItem, ct);
+
+                if (message.Message.ParentPersistentLocalId.HasValue)
+                {
+                    await context.FindAndUpdateAddressDetail(
+                        message.Message.ParentPersistentLocalId.Value,
+                        address =>
+                        {
+                            address.LabelType = WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxes;
+                        },
+                        ct,
+                        updateHouseNumberLabelsBeforeAddressUpdate: false,
+                        updateHouseNumberLabelsAfterAddressUpdate: false);
+                }
             });
 
             When<Envelope<AddressWasRejectedBecauseOfReaddress>>(async (context, message, ct) =>

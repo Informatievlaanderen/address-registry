@@ -1,3 +1,10 @@
+## [3.102.2](https://github.com/informatievlaanderen/address-registry/compare/v3.102.1...v3.102.2) (2023-10-09)
+
+
+### Bug Fixes
+
+* WMS address label type ([110b3ae](https://github.com/informatievlaanderen/address-registry/commit/110b3ae59bf70d0f8201396fa80015c797c36427))
+
 ## [3.102.1](https://github.com/informatievlaanderen/address-registry/compare/v3.102.0...v3.102.1) (2023-10-04)
 
 

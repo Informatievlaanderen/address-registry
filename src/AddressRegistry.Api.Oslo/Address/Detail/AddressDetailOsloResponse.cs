@@ -74,49 +74,55 @@ namespace AddressRegistry.Api.Oslo.Address.Detail
         public string Huisnummer { get; set; }
 
         /// <summary>
+        /// Het huisnummer waaraan het busnummer is gekoppeld.
+        /// </summary>
+        [DataMember(Name = "HuisnummerObject", Order = 8, EmitDefaultValue = false)]
+        [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public AdresDetailHuisnummerObject? HuisnummerObject { get; set; }
+
+        /// <summary>
         /// Het busnummer van het adres.
         /// </summary>
-        [DataMember(Name = "Busnummer", Order = 8, EmitDefaultValue = false)]
+        [DataMember(Name = "Busnummer", Order = 9, EmitDefaultValue = false)]
         [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string Busnummer { get; set; }
 
         /// <summary>
         /// Adresvoorstelling in de eerste officiële taal van de gemeente.
         /// </summary>
-        [DataMember(Name = "VolledigAdres", Order = 9)]
+        [DataMember(Name = "VolledigAdres", Order = 10)]
         [JsonProperty(Required = Required.DisallowNull)]
         public VolledigAdres VolledigAdres { get; set; }
 
         /// <summary>
         /// De geometrie van het object in gml-formaat.
         /// </summary>
-        [DataMember(Name = "AdresPositie", Order = 10)]
+        [DataMember(Name = "AdresPositie", Order = 11)]
         [JsonProperty(Required = Required.DisallowNull)]
         public AddressPosition AdresPositie { get; set; }
 
         /// <summary>
         /// De fase in het leven van het adres.
         /// </summary>
-        [DataMember(Name = "AdresStatus", Order = 11)]
+        [DataMember(Name = "AdresStatus", Order = 12)]
         [JsonProperty(Required = Required.DisallowNull)]
         public AdresStatus AdresStatus { get; set; }
 
         /// <summary>
         /// False wanneer het bestaan van het adres niet geweten is ten tijde van administratieve procedures, maar pas na observatie op het terrein.
         /// </summary>
-        [DataMember(Name = "OfficieelToegekend", Order = 12)]
+        [DataMember(Name = "OfficieelToegekend", Order = 13)]
         [JsonProperty(Required = Required.DisallowNull)]
         public bool OfficieelToegekend { get; set; }
 
-        [IgnoreDataMember]
-        [JsonIgnore]
-        public string? LastEventHash { get; }
+        [IgnoreDataMember] [JsonIgnore] public string? LastEventHash { get; }
 
         public AddressDetailOsloResponse(
             string naamruimte,
             string contextUrlDetail,
             string objectId,
             string huisnummer,
+            AdresDetailHuisnummerObject? huisnummerObject,
             string busnummer,
             AdresDetailGemeente gemeente,
             AdresDetailStraatnaam straatnaam,
@@ -132,6 +138,7 @@ namespace AddressRegistry.Api.Oslo.Address.Detail
             Context = contextUrlDetail;
             Identificator = new AdresIdentificator(naamruimte, objectId, version);
             Huisnummer = huisnummer;
+            HuisnummerObject = huisnummerObject;
             Busnummer = busnummer;
             AdresStatus = status;
             OfficieelToegekend = officieelToegekend ?? false;
@@ -161,9 +168,11 @@ namespace AddressRegistry.Api.Oslo.Address.Detail
 
         public AddressDetailOsloResponse GetExamples()
         {
-            var gml = "<gml:Point srsName=\"https://www.opengis.net/def/crs/EPSG/0/31370\" xmlns:gml=\"http://www.opengis.net/gml/3.2\"><gml:pos>140252.76 198794.27</gml:pos></gml:Point>";
+            var gml =
+                "<gml:Point srsName=\"https://www.opengis.net/def/crs/EPSG/0/31370\" xmlns:gml=\"http://www.opengis.net/gml/3.2\"><gml:pos>140252.76 198794.27</gml:pos></gml:Point>";
             var addressPosition = new AddressPosition(new GmlJsonPoint(gml),
                 PositieGeometrieMethode.AangeduidDoorBeheerder, PositieSpecificatie.Gebouw);
+            var adresDetailHuisnummer = new AdresDetailHuisnummerObject(59, string.Format(_responseOptions.DetailUrl, 59));
             var gemeente = new AdresDetailGemeente("9000", string.Format(_responseOptions.GemeenteDetailUrl, "9000"),
                 new GeografischeNaam("Gent", Taal.NL));
             var straat = new AdresDetailStraatnaam("748", string.Format(_responseOptions.StraatnaamDetailUrl, "748"),
@@ -176,6 +185,7 @@ namespace AddressRegistry.Api.Oslo.Address.Detail
                 _responseOptions.ContextUrlDetail,
                 "60",
                 "42",
+                adresDetailHuisnummer,
                 "5B",
                 gemeente,
                 straat,
@@ -189,7 +199,7 @@ namespace AddressRegistry.Api.Oslo.Address.Detail
         }
     }
 
-       public class AddressNotFoundResponseExamples : IExamplesProvider<ProblemDetails>
+    public class AddressNotFoundResponseExamples : IExamplesProvider<ProblemDetails>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ProblemDetailsHelper _problemDetailsHelper;

@@ -37,7 +37,7 @@ namespace AddressRegistry.Api.Oslo.Address.Detail
         public async Task<AddressDetailOsloResponse> Handle(AddressDetailOsloRequest request, CancellationToken cancellationToken)
         {
             var addressV2 = await _legacyContext
-                .AddressDetailV2
+                .AddressDetailV2WithParent
                 .AsNoTracking()
                 .SingleOrDefaultAsync(item => item.AddressPersistentLocalId == request.PersistentLocalId, cancellationToken);
 
@@ -50,6 +50,12 @@ namespace AddressRegistry.Api.Oslo.Address.Detail
             {
                 throw new ApiException("Onbestaand adres.", StatusCodes.Status404NotFound);
             }
+
+            var adresDetailHuisnummerObject = addressV2.ParentAddressPersistentLocalId.HasValue
+                ? new AdresDetailHuisnummerObject(
+                    addressV2.ParentAddressPersistentLocalId.Value,
+                    string.Format(_responseOptions.Value.DetailUrl, addressV2.ParentAddressPersistentLocalId.Value))
+                : null;
 
             var streetNameV2 =
                 await _streetNameConsumerContext.StreetNameLatestItems.SingleAsync(
@@ -86,6 +92,7 @@ namespace AddressRegistry.Api.Oslo.Address.Detail
                 _responseOptions.Value.ContextUrlDetail,
                 addressV2.AddressPersistentLocalId.ToString(),
                 addressV2.HouseNumber,
+                adresDetailHuisnummerObject,
                 addressV2.BoxNumber,
                 gemeenteV2,
                 straatV2,

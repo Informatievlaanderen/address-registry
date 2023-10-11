@@ -2,6 +2,7 @@ namespace AddressRegistry.Projections.Legacy
 {
     using AddressDetail;
     using AddressDetailV2;
+    using AddressDetailV2WithParent;
     using AddressList;
     using AddressListV2;
     using AddressMatch;
@@ -21,6 +22,7 @@ namespace AddressRegistry.Projections.Legacy
 
         public DbSet<AddressDetailItem> AddressDetail { get; set; }
         public DbSet<AddressDetailItemV2> AddressDetailV2 { get; set; }
+        public DbSet<AddressDetailItemV2WithParent> AddressDetailV2WithParent { get; set; }
 
         public DbSet<AddressListItem> AddressList { get; set; }
         public DbSet<AddressListItemV2> AddressListV2 { get; set; }

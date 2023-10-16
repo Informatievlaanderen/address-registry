@@ -25,6 +25,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
     using AddressStatus = AddressRegistry.StreetName.AddressStatus;
     using BoxNumber = AddressRegistry.StreetName.BoxNumber;
     using Envelope = Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope;
+    using ExtendedWkbGeometry = AddressRegistry.StreetName.ExtendedWkbGeometry;
     using GeometryMethod = AddressRegistry.StreetName.GeometryMethod;
     using GeometrySpecification = AddressRegistry.StreetName.GeometrySpecification;
     using HouseNumber = AddressRegistry.StreetName.HouseNumber;
@@ -80,7 +81,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
         }
 
         [Fact]
-        public async Task WhenAddressWasMigratedToStreetName_HouseNumberWithBoxNumber()
+        public async Task WhenAddressWasMigratedToStreetName_HouseNumberWithBoxNumberOnSamePosition()
         {
             var houseNumberAddressWasMigratedToStreetName = _fixture.Create<AddressWasMigratedToStreetName>()
                 .WithBoxNumber(null)
@@ -99,10 +100,38 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                 {
                     var houseNumberAddressWmsItem = await ct.AddressWmsItems.FindAsync(houseNumberAddressWasMigratedToStreetName.AddressPersistentLocalId);
                     houseNumberAddressWmsItem.Should().NotBeNull();
-                    houseNumberAddressWmsItem!.LabelType.Should().Be(WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxes);
+                    houseNumberAddressWmsItem!.LabelType.Should().Be(WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxesOnSamePosition);
                     var boxNumberAddressWmsItem = await ct.AddressWmsItems.FindAsync(houseNumberAddressWasMigratedToStreetName.AddressPersistentLocalId);
                     boxNumberAddressWmsItem.Should().NotBeNull();
-                    boxNumberAddressWmsItem!.LabelType.Should().Be(WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxes);
+                    boxNumberAddressWmsItem!.LabelType.Should().Be(WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxesOnSamePosition);
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressWasMigratedToStreetName_HouseNumberWithBoxNumberOnDifferentPosition()
+        {
+            var houseNumberAddressWasMigratedToStreetName = _fixture.Create<AddressWasMigratedToStreetName>()
+                .WithBoxNumber(null)
+                .WithParentAddressPersistentLocalId(null)
+                .WithNotRemoved();
+            var boxNumberAddressWasMigratedToStreetName = _fixture.Create<AddressWasMigratedToStreetName>()
+                .WithPosition(new ExtendedWkbGeometry(GeometryHelpers.ExampleExtendedWkb))
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(houseNumberAddressWasMigratedToStreetName.AddressPersistentLocalId + 1))
+                .WithBoxNumber(_fixture.Create<BoxNumber>())
+                .WithParentAddressPersistentLocalId(new AddressPersistentLocalId(houseNumberAddressWasMigratedToStreetName.AddressPersistentLocalId));
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasMigratedToStreetName>(new Envelope(houseNumberAddressWasMigratedToStreetName, new Dictionary<string, object>())),
+                    new Envelope<AddressWasMigratedToStreetName>(new Envelope(boxNumberAddressWasMigratedToStreetName, new Dictionary<string, object>())))
+                .Then(async ct =>
+                {
+                    var houseNumberAddressWmsItem = await ct.AddressWmsItems.FindAsync(houseNumberAddressWasMigratedToStreetName.AddressPersistentLocalId);
+                    houseNumberAddressWmsItem.Should().NotBeNull();
+                    houseNumberAddressWmsItem!.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithoutBoxes);
+                    var boxNumberAddressWmsItem = await ct.AddressWmsItems.FindAsync(houseNumberAddressWasMigratedToStreetName.AddressPersistentLocalId);
+                    boxNumberAddressWmsItem.Should().NotBeNull();
+                    boxNumberAddressWmsItem!.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithoutBoxes);
                 });
         }
 
@@ -120,7 +149,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     addressWmsItem!.StreetNamePersistentLocalId.Should().Be(addressWasProposedV2.StreetNamePersistentLocalId);
                     addressWmsItem.HouseNumber.Should().Be(addressWasProposedV2.HouseNumber);
                     addressWmsItem.BoxNumber.Should().Be(addressWasProposedV2.BoxNumber);
-                    addressWmsItem.LabelType.Should().Be(WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxes);
+                    addressWmsItem.LabelType.Should().Be(WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxesOnSamePosition);
                     addressWmsItem.PostalCode.Should().Be(addressWasProposedV2.PostalCode);
                     addressWmsItem.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Proposed));
                     addressWmsItem.OfficiallyAssigned.Should().BeTrue();
@@ -967,7 +996,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     addressWmsItem!.StreetNamePersistentLocalId.Should().Be(addressWasProposed.StreetNamePersistentLocalId);
                     addressWmsItem.HouseNumber.Should().Be(addressWasProposed.HouseNumber);
                     addressWmsItem.BoxNumber.Should().Be(addressWasProposed.BoxNumber);
-                    addressWmsItem.LabelType.Should().Be(WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxes);
+                    addressWmsItem.LabelType.Should().Be(WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxesOnSamePosition);
                     addressWmsItem.PostalCode.Should().Be(addressWasProposed.PostalCode);
                     addressWmsItem.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Proposed));
                     addressWmsItem.OfficiallyAssigned.Should().BeTrue();

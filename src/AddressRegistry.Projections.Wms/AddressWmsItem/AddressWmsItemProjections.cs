@@ -36,10 +36,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                 {
                     await context.FindAndUpdateAddressDetail(
                         addressPersistentLocalId,
-                        address =>
-                        {
-                            UpdateVersionTimestampIfNewer(address, message.Message.Provenance.Timestamp);
-                        },
+                        address => { UpdateVersionTimestampIfNewer(address, message.Message.Provenance.Timestamp); },
                         ct,
                         updateHouseNumberLabelsBeforeAddressUpdate: false,
                         updateHouseNumberLabelsAfterAddressUpdate: false,
@@ -53,10 +50,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                 {
                     await context.FindAndUpdateAddressDetail(
                         addressPersistentLocalId,
-                        address =>
-                        {
-                            UpdateVersionTimestampIfNewer(address, message.Message.Provenance.Timestamp);
-                        },
+                        address => { UpdateVersionTimestampIfNewer(address, message.Message.Provenance.Timestamp); },
                         ct,
                         updateHouseNumberLabelsBeforeAddressUpdate: false,
                         updateHouseNumberLabelsAfterAddressUpdate: false,
@@ -70,10 +64,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                 {
                     await context.FindAndUpdateAddressDetail(
                         addressPersistentLocalId,
-                        address =>
-                        {
-                            UpdateVersionTimestampIfNewer(address, message.Message.Provenance.Timestamp);
-                        },
+                        address => { UpdateVersionTimestampIfNewer(address, message.Message.Provenance.Timestamp); },
                         ct,
                         updateHouseNumberLabelsBeforeAddressUpdate: false,
                         updateHouseNumberLabelsAfterAddressUpdate: false,
@@ -106,15 +97,16 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
 
                 if (message.Message.ParentPersistentLocalId.HasValue)
                 {
-                    await context.FindAndUpdateAddressDetail(
-                        message.Message.ParentPersistentLocalId.Value,
-                        address =>
-                        {
-                            address.LabelType = WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxes;
-                        },
-                        ct,
-                        updateHouseNumberLabelsBeforeAddressUpdate: false,
-                        updateHouseNumberLabelsAfterAddressUpdate: false);
+                    var parent = await context.FindAddressDetail(message.Message.ParentPersistentLocalId.Value, ct);
+                    if (parent.Position == addressWmsItem.Position)
+                    {
+                        await context.FindAndUpdateAddressDetail(
+                            message.Message.ParentPersistentLocalId.Value,
+                            address => { address.LabelType = WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxesOnSamePosition; },
+                            ct,
+                            updateHouseNumberLabelsBeforeAddressUpdate: false,
+                            updateHouseNumberLabelsAfterAddressUpdate: false);
+                    }
                 }
             });
 
@@ -142,15 +134,16 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
 
                 if (message.Message.ParentPersistentLocalId.HasValue)
                 {
-                    await context.FindAndUpdateAddressDetail(
-                        message.Message.ParentPersistentLocalId.Value,
-                        address =>
-                        {
-                            address.LabelType = WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxes;
-                        },
-                        ct,
-                        updateHouseNumberLabelsBeforeAddressUpdate: false,
-                        updateHouseNumberLabelsAfterAddressUpdate: false);
+                    var parent = await context.FindAddressDetail(message.Message.ParentPersistentLocalId.Value, ct);
+                    if (parent.Position == addressWmsItem.Position)
+                    {
+                        await context.FindAndUpdateAddressDetail(
+                            message.Message.ParentPersistentLocalId.Value,
+                            address => { address.LabelType = WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxesOnSamePosition; },
+                            ct,
+                            updateHouseNumberLabelsBeforeAddressUpdate: false,
+                            updateHouseNumberLabelsAfterAddressUpdate: false);
+                    }
                 }
             });
 
@@ -174,7 +167,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
-                        address.Status =  MapStatus(AddressStatus.Proposed);
+                        address.Status = MapStatus(AddressStatus.Proposed);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
                     ct,
@@ -188,7 +181,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
-                        address.Status =  MapStatus(AddressStatus.Proposed);
+                        address.Status = MapStatus(AddressStatus.Proposed);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
                     ct,
@@ -202,7 +195,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
-                        address.Status =  MapStatus(AddressStatus.Rejected);
+                        address.Status = MapStatus(AddressStatus.Rejected);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
                     ct,
@@ -216,7 +209,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
-                        address.Status =  MapStatus(AddressStatus.Rejected);
+                        address.Status = MapStatus(AddressStatus.Rejected);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
                     ct,
@@ -230,7 +223,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
-                        address.Status =  MapStatus(AddressStatus.Rejected);
+                        address.Status = MapStatus(AddressStatus.Rejected);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
                     ct,
@@ -244,7 +237,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
-                        address.Status =  MapStatus(AddressStatus.Rejected);
+                        address.Status = MapStatus(AddressStatus.Rejected);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
                     ct,
@@ -258,7 +251,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
-                        address.Status =  MapStatus(AddressStatus.Retired);
+                        address.Status = MapStatus(AddressStatus.Retired);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
                     ct,
@@ -272,7 +265,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
-                        address.Status =  MapStatus(AddressStatus.Rejected);
+                        address.Status = MapStatus(AddressStatus.Rejected);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
                     ct,
@@ -301,7 +294,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                     address =>
                     {
                         address.OfficiallyAssigned = false;
-                        address.Status =  MapStatus(AddressStatus.Current);
+                        address.Status = MapStatus(AddressStatus.Current);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
                     ct,
@@ -327,7 +320,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
-                        address.Status =  MapStatus(AddressStatus.Retired);
+                        address.Status = MapStatus(AddressStatus.Retired);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
                     ct,
@@ -341,7 +334,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
-                        address.Status =  MapStatus(AddressStatus.Retired);
+                        address.Status = MapStatus(AddressStatus.Retired);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
                     ct,
@@ -355,7 +348,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
-                        address.Status =  MapStatus(AddressStatus.Retired);
+                        address.Status = MapStatus(AddressStatus.Retired);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
                     ct,
@@ -369,7 +362,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
-                        address.Status =  MapStatus(AddressStatus.Current);
+                        address.Status = MapStatus(AddressStatus.Current);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
                     ct,
@@ -563,15 +556,16 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
 
                 if (message.Message.ParentPersistentLocalId.HasValue)
                 {
-                    await context.FindAndUpdateAddressDetail(
-                        message.Message.ParentPersistentLocalId.Value,
-                        address =>
-                        {
-                            address.LabelType = WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxes;
-                        },
-                        ct,
-                        updateHouseNumberLabelsBeforeAddressUpdate: false,
-                        updateHouseNumberLabelsAfterAddressUpdate: false);
+                    var parent = await context.FindAddressDetail(message.Message.ParentPersistentLocalId.Value, ct);
+                    if (parent.Position == addressWmsItem.Position)
+                    {
+                        await context.FindAndUpdateAddressDetail(
+                            message.Message.ParentPersistentLocalId.Value,
+                            address => { address.LabelType = WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxesOnSamePosition; },
+                            ct,
+                            updateHouseNumberLabelsBeforeAddressUpdate: false,
+                            updateHouseNumberLabelsAfterAddressUpdate: false);
+                    }
                 }
             });
 
@@ -581,7 +575,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
-                        address.Status =  MapStatus(AddressStatus.Rejected);
+                        address.Status = MapStatus(AddressStatus.Rejected);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
                     ct,
@@ -595,7 +589,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
-                        address.Status =  MapStatus(AddressStatus.Retired);
+                        address.Status = MapStatus(AddressStatus.Retired);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
                     ct,
@@ -683,7 +677,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
 
         private static void UpdateVersionTimestampIfNewer(AddressWmsItem addressWmsItem, Instant versionTimestamp)
         {
-            if(versionTimestamp > addressWmsItem.VersionTimestamp)
+            if (versionTimestamp > addressWmsItem.VersionTimestamp)
             {
                 addressWmsItem.VersionTimestamp = versionTimestamp;
             }

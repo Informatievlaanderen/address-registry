@@ -421,7 +421,7 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
                         item.BoxNumber = message.Message.BoxNumber;
                         item.LabelType = string.IsNullOrWhiteSpace(message.Message.BoxNumber)
                             ? WmsAddressLabelType.HouseNumberWithoutBoxes
-                            : WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxes;
+                            : WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxesOnSamePosition;
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);
@@ -436,7 +436,7 @@ namespace AddressRegistry.Projections.Wms.AddressDetail
                         item.BoxNumber = message.Message.BoxNumber;
                         item.LabelType = string.IsNullOrWhiteSpace(message.Message.BoxNumber)
                             ? WmsAddressLabelType.HouseNumberWithoutBoxes
-                            : WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxes;
+                            : WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxesOnSamePosition;
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);

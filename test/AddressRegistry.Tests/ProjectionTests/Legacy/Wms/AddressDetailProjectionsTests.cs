@@ -36,7 +36,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
                         BoxNumber = addressBoxNumberWasChanged.BoxNumber,
-                        LabelType = WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxes,
+                        LabelType = WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxesOnSamePosition,
                         VersionTimestamp = addressBoxNumberWasChanged.Provenance.Timestamp
                     }));
         }
@@ -55,7 +55,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                         StreetNameId = addressWasRegistered.StreetNameId,
                         HouseNumber = addressWasRegistered.HouseNumber,
                         BoxNumber = addressBoxNumberWasCorrected.BoxNumber,
-                        LabelType = WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxes,
+                        LabelType = WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxesOnSamePosition,
                         VersionTimestamp = addressBoxNumberWasCorrected.Provenance.Timestamp
                     }));
         }

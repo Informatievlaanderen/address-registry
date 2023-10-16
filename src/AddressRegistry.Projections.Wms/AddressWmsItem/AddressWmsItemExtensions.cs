@@ -35,7 +35,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
             }
         }
 
-        private static async Task<AddressWmsItem> FindAddressDetail(
+        public static async Task<AddressWmsItem> FindAddressDetail(
             this WmsContext context,
             int addressPersistentLocalId,
             CancellationToken ct,

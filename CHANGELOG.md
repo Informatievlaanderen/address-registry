@@ -1,3 +1,16 @@
+# [3.103.0](https://github.com/informatievlaanderen/address-registry/compare/v3.102.2...v3.103.0) (2023-10-16)
+
+
+### Bug Fixes
+
+* add position to persistentlocalid syndication filter ([7eb8f04](https://github.com/informatievlaanderen/address-registry/commit/7eb8f04501e1119fd348fe7e412d6c04dca6839a))
+* wms change labeltype house-boxnumbers ([1c24890](https://github.com/informatievlaanderen/address-registry/commit/1c24890ed0574e46319eeb262763cec071f8a169))
+
+
+### Features
+
+* add AddressDetailItemV2WithParent ([22c3d04](https://github.com/informatievlaanderen/address-registry/commit/22c3d049b6e9f503d8ee111839e71002811753f5))
+
 ## [3.102.2](https://github.com/informatievlaanderen/address-registry/compare/v3.102.1...v3.102.2) (2023-10-09)
 
 

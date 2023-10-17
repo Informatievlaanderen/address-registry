@@ -37,6 +37,7 @@
 
             AddressPersistentLocalId? parentPersistentLocalId = null;
             PostalCode? parentPostalCode = null;
+            HouseNumber? parentHouseNumber = null;
             if (!EqualityComparer<Guid>.Default.Equals(parentAddressId ?? Guid.Empty, Guid.Empty))
             {
                 var parent = StreetNameAddresses.FindParentByLegacyAddressId(parentAddressId ?? AddressId.Default);
@@ -48,6 +49,7 @@
 
                 parentPersistentLocalId = parent.AddressPersistentLocalId;
                 parentPostalCode = parent.PostalCode;
+                parentHouseNumber = parent.HouseNumber;
             }
 
             var migratedAddressStatus = addressStatus;
@@ -75,7 +77,7 @@
                 streetNameId,
                 addressPersistentLocalId,
                 migratedAddressStatus,
-                houseNumber,
+                parentHouseNumber ?? houseNumber,
                 boxNumber,
                 geometry,
                 officiallyAssigned ?? false,

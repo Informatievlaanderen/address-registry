@@ -1,3 +1,10 @@
+## [3.103.1](https://github.com/informatievlaanderen/address-registry/compare/v3.103.0...v3.103.1) (2023-10-17)
+
+
+### Bug Fixes
+
+* **migrator:** migrate housenumber of parent GAWR-5283 ([0fdc04f](https://github.com/informatievlaanderen/address-registry/commit/0fdc04f0d6457432aea8cde03b9c2a3ca6f5c45f))
+
 # [3.103.0](https://github.com/informatievlaanderen/address-registry/compare/v3.102.2...v3.103.0) (2023-10-16)
 
 

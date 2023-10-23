@@ -132,6 +132,11 @@ The new version 1.2 of the European Union Public Licence (EUPL) is published in 
 * [.NET Topology Suite](https://github.com/NetTopologySuite/NetTopologySuite/blob/develop/License.md) - _A .NET GIS solution that is fast and reliable for the .NET platform._ - [BSD](https://choosealicense.com/licenses/bsd-3-clause/)
 * [Serilog](https://github.com/serilog/serilog/blob/dev/LICENSE) - _Simple .NET logging with fully-structured events._ - [Apache License 2.0](https://choosealicense.com/licenses/apache-2.0/)
 * [CompareNETObjects](https://github.com/GregFinzer/Compare-Net-Objects/wiki/Licensing) - _Perform a deep compare of any two .NET objects using reflection. Shows the differences between the two objects._ [Microsoft Public License (Ms-PL)](https://choosealicense.com/licenses/ms-pl/)
+* [Dapper](https://github.com/DapperLib/Dapper) - _A simple object mapper for .Net._ - [Apache License 2.0](https://choosealicense.com/licenses/apache-2.0/)
+* [AsyncEnumerator](https://github.com/Dasync/AsyncEnumerable) - _Makes asynchronous enumeration as easy as the synchronous counterpart. Such feature is also known as 'Async Streams' in upcoming C# 8.0. The library introduces familiar and easy to use syntax, IAsyncEnumerable, IAsyncEnumerator, ForEachAsync(), ParallelForEachAsync(), and other useful extension methods._ - [MIT](https://choosealicense.com/licenses/mit/)
+* [CsvHelper](https://github.com/JoshClose/CsvHelper) - _A library for reading and writing CSV files. Extremely fast, flexible, and easy to use. Supports reading and writing of custom class objects._ - [Apache License 2.0](https://choosealicense.com/licenses/apache-2.0/)
+* [JsonNet](https://github.com/destructurama/json-net) - _Adds support for logging JSON.NET dynamic types as structured data with Serilog._ - [Apache License 2.0](https://choosealicense.com/licenses/apache-2.0/)
+* [MediatR](https://github.com/jbogard/MediatR) - _Simple, unambitious mediator implementation in .NET._ - [MIT](https://choosealicense.com/licenses/mit/)
 
 ### Tooling
 
@@ -155,6 +160,7 @@ The new version 1.2 of the European Union Public Licence (EUPL) is published in 
 * [Be.Vlaanderen.Basisregisters.Api](https://github.com/Informatievlaanderen/api/blob/master/LICENSE) - _Common API infrastructure and helpers._ - [MIT](https://choosealicense.com/licenses/mit/)
 * [Be.Vlaanderen.Basisregisters.CommandHandling](https://github.com/informatievlaanderen/command-handling/blob/master/LICENSE) - _Lightweight infrastructure for doing command handling and eventsourcing using aggregates._ - [MIT](https://choosealicense.com/licenses/mit/)
 * [Be.Vlaanderen.Basisregisters.EventHandling](https://github.com/Informatievlaanderen/event-handling/blob/master/LICENSE) - _Lightweight event handling infrastructure._ - [MIT](https://choosealicense.com/licenses/mit/)
+* [Be.Vlaanderen.Basisregisters.Projector](https://github.com/Informatievlaanderen/projector) - _Generic projection runner infrastructure._ - [MIT](https://choosealicense.com/licenses/mit/)
 
 ### Flemish Government Libraries
 
@@ -164,3 +170,9 @@ The new version 1.2 of the European Union Public Licence (EUPL) is published in 
 * [Be.Vlaanderen.Basisregisters.Shaperon](https://github.com/Informatievlaanderen/shaperon/blob/master/LICENSE) - _Lightweight dbase and shape record handling._ - [MIT](https://choosealicense.com/licenses/mit/)
 * [Be.Vlaanderen.Basisregisters.Crab](https://github.com/Informatievlaanderen/crab/blob/master/LICENSE) - _Common Crab functionality._ - [EUPL-1.2](https://choosealicense.com/licenses/eupl-1.2/)
 * [Be.Vlaanderen.Basisregisters.GrAr](https://github.com/Informatievlaanderen/grar-common/blob/master/LICENSE) - _Common code for all GR/AR base registries._ - [EUPL-1.2](https://choosealicense.com/licenses/eupl-1.2/)
+* [Be.Vlaanderen.Basisregisters.Sqs](https://github.com/Informatievlaanderen/basisregisters-sqs) - _AWS SQS utilities for C#._ - [MIT](https://choosealicense.com/licenses/mit/)
+* [Be.Vlaanderen.Basisregisters.TicketingService](https://github.com/Informatievlaanderen/ticketing-system) - _A ticketing system that provides Locations to all registries._ - [EUPL-1.2](https://choosealicense.com/licenses/eupl-1.2/)
+* [Be.Vlaanderen.Basisregisters.MessageHandling](https://github.com/Informatievlaanderen/message-handling) - _Lightweight message handling infrastructure._ - [MIT](https://choosealicense.com/licenses/mit/)
+* [Be.Vlaanderen.Basisregisters.Auth.AcmIdm](https://github.com/Informatievlaanderen/basisregisters-acmidm) - _ACM/IDM utilities for C#._ - [MIT](https://choosealicense.com/licenses/mit/)
+* [Be.Vlaanderen.Basisregisters.Aws.Lambda](https://github.com/Informatievlaanderen/basisregisters-aws-lambda) - _AWS Lambda utilities for C#._ - [MIT](https://choosealicense.com/licenses/mit/)
+* [Be.Vlaanderen.Basisregisters.ProjectionHandling](https://github.com/Informatievlaanderen/projection-handling/blob/master/LICENSE) - _Lightweight projection handling infrastructure._ - [MIT](https://choosealicense.com/licenses/mit/)

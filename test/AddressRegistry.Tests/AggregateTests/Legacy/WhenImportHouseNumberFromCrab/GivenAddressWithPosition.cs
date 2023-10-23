@@ -7,6 +7,7 @@ namespace AddressRegistry.Tests.AggregateTests.Legacy.WhenImportHouseNumberFromC
     using Address.Events.Crab;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.Crab;
+    using EventExtensions;
     using global::AutoFixture;
     using NodaTime;
     using Xunit;

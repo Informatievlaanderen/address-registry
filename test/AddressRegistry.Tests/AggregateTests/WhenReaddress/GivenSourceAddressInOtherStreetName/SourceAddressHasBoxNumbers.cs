@@ -1,21 +1,21 @@
 namespace AddressRegistry.Tests.AggregateTests.WhenReaddress.GivenSourceAddressInOtherStreetName
 {
     using System.Collections.Generic;
-    using AddressRegistry.Api.BackOffice.Abstractions;
-    using AddressRegistry.StreetName;
-    using AddressRegistry.StreetName.Commands;
-    using AddressRegistry.StreetName.DataStructures;
-    using AddressRegistry.StreetName.Events;
-    using AddressRegistry.Tests.AggregateTests.Builders;
-    using AddressRegistry.Tests.AggregateTests.EventExtensions;
-    using AddressRegistry.Tests.AutoFixture;
+    using Api.BackOffice.Abstractions;
     using Autofac;
+    using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using EventBuilders;
+    using EventExtensions;
     using FluentAssertions;
     using global::AutoFixture;
+    using StreetName;
+    using StreetName.Commands;
+    using StreetName.DataStructures;
+    using StreetName.Events;
     using Xunit;
     using Xunit.Abstractions;
 

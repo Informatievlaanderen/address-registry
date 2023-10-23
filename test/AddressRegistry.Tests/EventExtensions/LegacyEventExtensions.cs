@@ -1,16 +1,16 @@
-namespace AddressRegistry.Tests
+namespace AddressRegistry.Tests.EventExtensions
 {
     using System;
-    using Address;
-    using Address.Commands.Crab;
-    using Address.Crab;
-    using Address.Events;
-    using Address.Events.Crab;
+    using AddressRegistry.Address;
+    using AddressRegistry.Address.Commands.Crab;
+    using AddressRegistry.Address.Crab;
+    using AddressRegistry.Address.Events;
+    using AddressRegistry.Address.Events.Crab;
     using Be.Vlaanderen.Basisregisters.Crab;
-    using NodaTime;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using NodaTime;
 
-    public static class EventExtensions
+    public static class LegacyEventExtensions
     {
         public static AddressHouseNumberStatusWasImportedFromCrab WithStatus(this AddressHouseNumberStatusWasImportedFromCrab @event, CrabAddressStatus status)
         {

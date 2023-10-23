@@ -1,4 +1,4 @@
-﻿namespace AddressRegistry.Tests.AggregateTests.EventExtensions
+﻿namespace AddressRegistry.Tests.EventExtensions
 {
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using StreetName;

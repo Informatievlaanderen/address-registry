@@ -8,6 +8,7 @@ namespace AddressRegistry.Tests.AggregateTests.Legacy.WhenImportHouseNumberMailC
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.Crab;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using EventExtensions;
     using global::AutoFixture;
     using Xunit;
     using Xunit.Abstractions;

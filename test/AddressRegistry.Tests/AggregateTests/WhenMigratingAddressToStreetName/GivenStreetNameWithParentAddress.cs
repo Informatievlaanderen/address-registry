@@ -13,6 +13,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
     using StreetName.Events;
     using Xunit;
     using Xunit.Abstractions;
+    using AddressId = Address.AddressId;
 
     public class GivenStreetNameWithParentAddress : AddressRegistryTest
     {
@@ -35,7 +36,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
 
             var command = Fixture.Create<MigrateAddressToStreetName>()
                 .WithOfficiallyAssigned(true)
-                .WithParentAddressId(new AddressRegistry.Address.AddressId(parentAddressWasMigratedToStreetName.AddressId));
+                .WithParentAddressId(new AddressId(parentAddressWasMigratedToStreetName.AddressId));
 
             Assert(new Scenario()
                 .Given(_streamId,
@@ -68,7 +69,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
 
             var command = Fixture.Create<MigrateAddressToStreetName>()
                 .WithOfficiallyAssigned(true)
-                .WithParentAddressId(new AddressRegistry.Address.AddressId(parentAddressWasMigratedToStreetName.AddressId));
+                .WithParentAddressId(new AddressId(parentAddressWasMigratedToStreetName.AddressId));
 
             var aggregate = new StreetNameFactory(IntervalStrategy.Default).Create();
             aggregate.Initialize(new List<object>
@@ -116,7 +117,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
             var parentAddressWasMigratedToStreetName = Fixture.Create<AddressWasMigratedToStreetName>();
 
             var command = Fixture.Create<MigrateAddressToStreetName>()
-                .WithParentAddressId(new AddressRegistry.Address.AddressId(parentAddressWasMigratedToStreetName.AddressId))
+                .WithParentAddressId(new AddressId(parentAddressWasMigratedToStreetName.AddressId))
                 .WithOfficiallyAssigned(true)
                 .WithPostalCode(null);
 

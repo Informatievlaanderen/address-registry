@@ -6,7 +6,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddress
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using Builders;
+    using EventBuilders;
     using FluentAssertions;
     using global::AutoFixture;
     using StreetName;

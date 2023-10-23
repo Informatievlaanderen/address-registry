@@ -1,8 +1,8 @@
-namespace AddressRegistry.Tests.ProjectionTests.Legacy.Extensions
+namespace AddressRegistry.Tests.EventExtensions
 {
-    using AddressRegistry.StreetName;
-    using AddressRegistry.StreetName.Events;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using StreetName;
+    using StreetName.Events;
 
     public static class AddressWasProposedBecauseOfReaddressExtensions
     {

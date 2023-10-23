@@ -8,9 +8,9 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRemovingStreetName
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts.StreetNameRegistry;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using EventExtensions;
     using FluentAssertions;
     using global::AutoFixture;
-    using ProjectionTests.Legacy.Extensions;
     using StreetName;
     using StreetName.Commands;
     using StreetName.Events;

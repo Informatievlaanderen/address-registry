@@ -4,7 +4,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingOrRetiringForReaddre
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using Builders;
+    using EventBuilders;
     using global::AutoFixture;
     using StreetName;
     using StreetName.Commands;

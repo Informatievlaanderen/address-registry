@@ -16,6 +16,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
     using StreetName.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
+    using AddressId = Address.AddressId;
+    using AddressStatus = Address.AddressStatus;
 
     public class GivenStreetName : AddressRegistryTest
     {
@@ -212,7 +214,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
             var parentAddressWasMigratedToStreetName = Fixture.Create<AddressWasMigratedToStreetName>();
 
             var command = Fixture.Create<MigrateAddressToStreetName>()
-                .WithParentAddressId(new Address.AddressId(parentAddressWasMigratedToStreetName.AddressId));
+                .WithParentAddressId(new AddressId(parentAddressWasMigratedToStreetName.AddressId));
 
             Assert(new Scenario()
                 .Given(_streamId,
@@ -229,7 +231,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
 
             var command = Fixture.Create<MigrateAddressToStreetName>()
                 .WithoutParentAddressId()
-                .WithStatus(Address.AddressStatus.Proposed);
+                .WithStatus(AddressStatus.Proposed);
 
             Assert(new Scenario()
                 .Given(_streamId,
@@ -242,7 +244,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
                             command.AddressId,
                             command.StreetNameId,
                             command.AddressPersistentLocalId,
-                            AddressStatus.Rejected,
+                            AddressRegistry.StreetName.AddressStatus.Rejected,
                             command.HouseNumber,
                             command.BoxNumber,
                             command.Geometry,
@@ -261,7 +263,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
 
             var command = Fixture.Create<MigrateAddressToStreetName>()
                 .WithoutParentAddressId()
-                .WithStatus(Address.AddressStatus.Current);
+                .WithStatus(AddressStatus.Current);
 
             Assert(new Scenario()
                 .Given(_streamId,
@@ -274,7 +276,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
                             command.AddressId,
                             command.StreetNameId,
                             command.AddressPersistentLocalId,
-                            AddressStatus.Retired,
+                            AddressRegistry.StreetName.AddressStatus.Retired,
                             command.HouseNumber,
                             command.BoxNumber,
                             command.Geometry,
@@ -296,7 +298,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
             var command = Fixture.Create<MigrateAddressToStreetName>()
                 .WithoutParentAddressId()
                 .WithOfficiallyAssigned(officiallyAssigned)
-                .WithStatus(Address.AddressStatus.Proposed);
+                .WithStatus(AddressStatus.Proposed);
 
             Assert(new Scenario()
                 .Given(_streamId,
@@ -309,7 +311,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
                             command.AddressId,
                             command.StreetNameId,
                             command.AddressPersistentLocalId,
-                            AddressStatus.Current,
+                            AddressRegistry.StreetName.AddressStatus.Current,
                             command.HouseNumber,
                             command.BoxNumber,
                             command.Geometry,

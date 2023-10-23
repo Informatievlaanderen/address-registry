@@ -9,6 +9,7 @@ namespace AddressRegistry.Tests.AggregateTests.Legacy.WhenImportHouseNumberStatu
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.Crab;
+    using EventExtensions;
     using NodaTime;
     using WhenImportHousenumberStatusFromCrab;
     using Xunit;

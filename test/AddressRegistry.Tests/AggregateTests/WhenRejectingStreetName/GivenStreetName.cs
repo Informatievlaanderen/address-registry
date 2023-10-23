@@ -9,11 +9,11 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingStreetName
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using EventBuilders;
     using FluentAssertions;
     using global::AutoFixture;
     using Xunit;
     using Xunit.Abstractions;
-    using AddressRegistry.Tests.AggregateTests.Builders;
 
     public class GivenStreetName : AddressRegistryTest
     {

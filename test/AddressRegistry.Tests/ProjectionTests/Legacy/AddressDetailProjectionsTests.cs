@@ -7,6 +7,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
+    using EventExtensions;
     using Microsoft.EntityFrameworkCore;
     using NetTopologySuite.IO;
     using Projections.Legacy;

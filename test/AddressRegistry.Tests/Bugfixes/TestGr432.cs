@@ -9,6 +9,7 @@ namespace AddressRegistry.Tests.Bugfixes
     using System;
     using Address;
     using AggregateTests.Legacy.WhenImportHouseNumberMailCantonFromCrab;
+    using EventExtensions;
     using Xunit;
     using Xunit.Abstractions;
 

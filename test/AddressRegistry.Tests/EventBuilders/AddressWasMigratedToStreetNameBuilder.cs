@@ -1,4 +1,4 @@
-namespace AddressRegistry.Tests.AggregateTests.Builders
+namespace AddressRegistry.Tests.EventBuilders
 {
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using global::AutoFixture;

@@ -1,16 +1,16 @@
-namespace AddressRegistry.Tests.ProjectionTests.Legacy.Extensions
+namespace AddressRegistry.Tests.EventExtensions
 {
-    using AddressRegistry.StreetName;
-    using AddressRegistry.StreetName.Events;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using StreetName;
+    using StreetName.Events;
 
-    public static class AddressWasApprovedExtensions
+    public static class AddressWasDeregulatedExtensions
     {
-        public static AddressWasApproved WithStreetNamePersistentLocalId(
-            this AddressWasApproved @event,
+        public static AddressWasDeregulated WithStreetNamePersistentLocalId(
+            this AddressWasDeregulated @event,
             StreetNamePersistentLocalId streetNamePersistentLocalId)
         {
-            var newEvent = new AddressWasApproved(
+            var newEvent = new AddressWasDeregulated(
                 streetNamePersistentLocalId,
                 new AddressPersistentLocalId(@event.AddressPersistentLocalId));
             ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
@@ -18,11 +18,11 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Extensions
             return newEvent;
         }
 
-        public static AddressWasApproved WithAddressPersistentLocalId(
-            this AddressWasApproved @event,
+        public static AddressWasDeregulated WithAddressPersistentLocalId(
+            this AddressWasDeregulated @event,
             AddressPersistentLocalId addressPersistentLocalId)
         {
-            var newEvent = new AddressWasApproved(
+            var newEvent = new AddressWasDeregulated(
                 new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId),
                 addressPersistentLocalId);
             ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());

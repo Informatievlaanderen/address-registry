@@ -12,7 +12,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
-    using Extensions;
+    using EventExtensions;
     using FluentAssertions;
     using global::AutoFixture;
     using NetTopologySuite.Geometries;

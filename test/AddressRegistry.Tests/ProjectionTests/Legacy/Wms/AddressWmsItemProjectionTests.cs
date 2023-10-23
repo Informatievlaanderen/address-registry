@@ -2,7 +2,6 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Address;
     using AddressRegistry.StreetName;
     using AddressRegistry.StreetName.DataStructures;
     using AddressRegistry.StreetName.Events;
@@ -12,7 +11,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
-    using Extensions;
+    using EventExtensions;
     using FluentAssertions;
     using global::AutoFixture;
     using NetTopologySuite.Geometries;
@@ -21,15 +20,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
     using Projections.Wms;
     using Projections.Wms.AddressWmsItem;
     using Xunit;
-    using AddressGeometry = AddressRegistry.StreetName.AddressGeometry;
-    using AddressStatus = AddressRegistry.StreetName.AddressStatus;
-    using BoxNumber = AddressRegistry.StreetName.BoxNumber;
     using Envelope = Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope;
-    using ExtendedWkbGeometry = AddressRegistry.StreetName.ExtendedWkbGeometry;
-    using GeometryMethod = AddressRegistry.StreetName.GeometryMethod;
-    using GeometrySpecification = AddressRegistry.StreetName.GeometrySpecification;
-    using HouseNumber = AddressRegistry.StreetName.HouseNumber;
-    using PostalCode = AddressRegistry.StreetName.PostalCode;
 
     public class AddressWmsItemProjectionTests : AddressWmsItemProjectionTest
     {

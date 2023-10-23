@@ -5,10 +5,10 @@
     using AddressRegistry.StreetName.Commands;
     using AddressRegistry.StreetName.Events;
     using AddressRegistry.StreetName.Exceptions;
-    using AddressRegistry.Tests.AggregateTests.Builders;
     using AddressRegistry.Tests.AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using EventBuilders;
     using global::AutoFixture;
     using Xunit;
     using Xunit.Abstractions;

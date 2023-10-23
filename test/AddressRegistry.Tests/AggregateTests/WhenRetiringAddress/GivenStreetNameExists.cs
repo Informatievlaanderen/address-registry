@@ -2,10 +2,6 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringAddress
 {
     using System.Linq;
     using Api.BackOffice.Abstractions;
-    using StreetName;
-    using StreetName.Commands;
-    using StreetName.Events;
-    using StreetName.Exceptions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
@@ -13,7 +9,10 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringAddress
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentAssertions;
     using global::AutoFixture;
-    using ProjectionTests.Legacy.Extensions;
+    using StreetName;
+    using StreetName.Commands;
+    using StreetName.Events;
+    using StreetName.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
 

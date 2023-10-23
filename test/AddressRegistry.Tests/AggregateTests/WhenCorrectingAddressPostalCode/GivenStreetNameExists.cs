@@ -3,11 +3,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressPostalCode
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using AddressRegistry.Api.BackOffice.Abstractions;
-    using StreetName;
-    using StreetName.Commands;
-    using StreetName.Events;
-    using StreetName.Exceptions;
+    using Api.BackOffice.Abstractions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
@@ -16,6 +12,10 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressPostalCode
     using EventExtensions;
     using FluentAssertions;
     using global::AutoFixture;
+    using StreetName;
+    using StreetName.Commands;
+    using StreetName.Events;
+    using StreetName.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
 

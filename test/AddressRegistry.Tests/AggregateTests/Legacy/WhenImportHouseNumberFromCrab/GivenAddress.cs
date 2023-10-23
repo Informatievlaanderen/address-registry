@@ -5,6 +5,7 @@ namespace AddressRegistry.Tests.AggregateTests.Legacy.WhenImportHouseNumberFromC
     using Address.Events;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.Crab;
+    using EventExtensions;
     using global::AutoFixture;
     using Xunit;
     using Xunit.Abstractions;

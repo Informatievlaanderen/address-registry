@@ -6,13 +6,13 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddress.GivenDestinationAdd
     using AddressRegistry.StreetName.Commands;
     using AddressRegistry.StreetName.DataStructures;
     using AddressRegistry.StreetName.Events;
-    using AddressRegistry.Tests.AggregateTests.Builders;
     using AddressRegistry.Tests.AutoFixture;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using EventBuilders;
     using FluentAssertions;
     using global::AutoFixture;
     using Xunit;

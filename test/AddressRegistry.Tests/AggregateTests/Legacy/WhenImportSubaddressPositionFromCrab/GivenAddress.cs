@@ -10,6 +10,7 @@ namespace AddressRegistry.Tests.AggregateTests.Legacy.WhenImportSubaddressPositi
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.Crab;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using EventExtensions;
     using global::AutoFixture;
     using NodaTime;
     using Xunit;

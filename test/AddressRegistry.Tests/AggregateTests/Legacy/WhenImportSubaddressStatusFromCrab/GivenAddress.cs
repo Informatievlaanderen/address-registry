@@ -9,6 +9,7 @@ namespace AddressRegistry.Tests.AggregateTests.Legacy.WhenImportSubaddressStatus
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.Crab;
+    using EventExtensions;
     using NodaTime;
     using Xunit;
     using Xunit.Abstractions;

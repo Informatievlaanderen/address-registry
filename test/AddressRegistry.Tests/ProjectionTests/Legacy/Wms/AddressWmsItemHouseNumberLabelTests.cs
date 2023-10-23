@@ -2,20 +2,19 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.StreetName;
     using AddressRegistry.StreetName.DataStructures;
     using AddressRegistry.StreetName.Events;
+    using Api.BackOffice.Abstractions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
-    using Extensions;
+    using EventExtensions;
     using FluentAssertions;
     using global::AutoFixture;
     using NetTopologySuite.IO;
     using Projections.Wms.AddressWmsItem;
     using Xunit;
-    using Envelope = Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope;
 
     public class AddressWmsItemHouseNumberLabelTests : AddressWmsItemProjectionTest
     {

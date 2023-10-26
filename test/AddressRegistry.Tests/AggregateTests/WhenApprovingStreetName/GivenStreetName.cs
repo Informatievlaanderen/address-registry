@@ -36,7 +36,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenApprovingStreetName
                 .When(command)
                 .Then(
                     new Fact(new StreetNameStreamId(command.PersistentLocalId),
-                        new StreetNameWasApproved(command.PersistentLocalId))));
+                    new StreetNameWasApproved(command.PersistentLocalId))));
         }
 
         [Fact]

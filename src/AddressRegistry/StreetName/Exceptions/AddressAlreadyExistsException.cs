@@ -9,7 +9,7 @@ namespace AddressRegistry.StreetName.Exceptions
         public AddressAlreadyExistsException()
         { }
 
-        public AddressAlreadyExistsException(HouseNumber houseNumber, BoxNumber boxNumber)
+        public AddressAlreadyExistsException(HouseNumber houseNumber, BoxNumber? boxNumber)
             : base($"Address with housenumber '{houseNumber}' and boxnumber '{boxNumber}' already exists.")
         { }
 

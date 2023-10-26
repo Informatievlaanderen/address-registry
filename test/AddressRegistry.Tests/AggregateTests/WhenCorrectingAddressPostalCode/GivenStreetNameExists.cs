@@ -3,7 +3,6 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressPostalCode
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Api.BackOffice.Abstractions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
@@ -36,25 +35,9 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressPostalCode
         [Fact]
         public void ThenAddressPostalCodeWasCorrected()
         {
-            var expectedPostalCode = Fixture.Create<PostalCode>();
-            var command = new CorrectAddressPostalCode(
-                Fixture.Create<StreetNamePersistentLocalId>(),
-                Fixture.Create<AddressPersistentLocalId>(),
-                expectedPostalCode,
-                Fixture.Create<MunicipalityId>(),
-                Fixture.Create<Provenance>());
+            var addressWasProposedV2 = Fixture.Create<AddressWasProposedV2>().AsHouseNumberAddress();
 
-            var addressWasProposedV2 = new AddressWasProposedV2(
-                Fixture.Create<StreetNamePersistentLocalId>(),
-                Fixture.Create<AddressPersistentLocalId>(),
-                parentPersistentLocalId: null,
-                Fixture.Create<PostalCode>(),
-                Fixture.Create<HouseNumber>(),
-                boxNumber: null,
-                GeometryMethod.AppointedByAdministrator,
-                GeometrySpecification.Lot,
-                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
-            ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
+            var command = Fixture.Create<CorrectAddressPostalCode>();
 
             Assert(new Scenario()
                 .Given(_streamId,
@@ -66,52 +49,42 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressPostalCode
                         Fixture.Create<StreetNamePersistentLocalId>(),
                         Fixture.Create<AddressPersistentLocalId>(),
                         Array.Empty<AddressPersistentLocalId>(),
-                        expectedPostalCode))));
+                        command.PostalCode))));
         }
 
         [Fact]
         public void WithBoxNumberAddresses_ThenBoxNumberAddressPostalCodesWereAlsoChanged()
         {
-            var parentAddressPersistentLocalId = new AddressPersistentLocalId(1);
-            var childAddressPersistentLocalId = new AddressPersistentLocalId(2);
-            var parentAddressWasMigrated = CreateAddressWasMigratedToStreetName(parentAddressPersistentLocalId);
-            var childAddressWasMigrated = CreateAddressWasMigratedToStreetName(
-                childAddressPersistentLocalId,
-                houseNumber: new HouseNumber(parentAddressWasMigrated.HouseNumber),
-                parentAddressPersistentLocalId: parentAddressPersistentLocalId);
+            var houseNumberAddressWasMigrated = Fixture.Create<AddressWasMigratedToStreetName>()
+                .AsHouseNumberAddress(addressStatus: AddressStatus.Current);
+            var boxNumberAddressWasMigrated = Fixture.Create<AddressWasMigratedToStreetName>()
+                .AsBoxNumberAddress(
+                    new AddressPersistentLocalId(houseNumberAddressWasMigrated.AddressPersistentLocalId))
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(houseNumberAddressWasMigrated.AddressPersistentLocalId + 1))
+                .WithHouseNumber(new HouseNumber(houseNumberAddressWasMigrated.HouseNumber))
+                .WithStatus(AddressStatus.Current);
 
-            var expectedPostalCode = Fixture.Create<PostalCode>();
-            var command = new CorrectAddressPostalCode(
-                Fixture.Create<StreetNamePersistentLocalId>(),
-                parentAddressPersistentLocalId,
-                expectedPostalCode,
-                Fixture.Create<MunicipalityId>(),
-                Fixture.Create<Provenance>());
+            var command = Fixture.Create<CorrectAddressPostalCode>();
 
             Assert(new Scenario()
                 .Given(_streamId,
                     Fixture.Create<StreetNameWasImported>().WithMunicipalityId(Fixture.Create<MunicipalityId>()),
-                    parentAddressWasMigrated,
-                    childAddressWasMigrated)
+                    houseNumberAddressWasMigrated,
+                    boxNumberAddressWasMigrated)
                 .When(command)
                 .Then(new Fact(
                     _streamId,
                     new AddressPostalCodeWasCorrectedV2(
                         Fixture.Create<StreetNamePersistentLocalId>(),
-                        parentAddressPersistentLocalId,
-                        new[] { childAddressPersistentLocalId },
-                        expectedPostalCode))));
+                        new AddressPersistentLocalId(houseNumberAddressWasMigrated.AddressPersistentLocalId),
+                        new[] { new AddressPersistentLocalId(boxNumberAddressWasMigrated.AddressPersistentLocalId) },
+                        command.PostalCode))));
         }
 
         [Fact]
         public void WithoutExistingAddress_ThenThrowsAddressNotFoundException()
         {
-            var command = new CorrectAddressPostalCode(
-                Fixture.Create<StreetNamePersistentLocalId>(),
-                Fixture.Create<AddressPersistentLocalId>(),
-                Fixture.Create<PostalCode>(),
-                Fixture.Create<MunicipalityId>(),
-                Fixture.Create<Provenance>());
+            var command = Fixture.Create<CorrectAddressPostalCode>();
 
             Assert(new Scenario()
                 .Given(_streamId,
@@ -123,19 +96,16 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressPostalCode
         [Fact]
         public void OnRemovedAddress_ThenThrowsAddressIsRemovedException()
         {
-            var migrateRemovedAddressToStreetName = CreateAddressWasMigratedToStreetName(isRemoved: true);
+            var addressWasMigratedToStreetName = Fixture.Create<AddressWasMigratedToStreetName>()
+                .AsHouseNumberAddress()
+                .WithRemoved();
 
-           var command = new CorrectAddressPostalCode(
-               Fixture.Create<StreetNamePersistentLocalId>(),
-               Fixture.Create<AddressPersistentLocalId>(),
-               Fixture.Create<PostalCode>(),
-               Fixture.Create<MunicipalityId>(),
-               Fixture.Create<Provenance>());
+            var command = Fixture.Create<CorrectAddressPostalCode>();
 
             Assert(new Scenario()
                 .Given(_streamId,
                     Fixture.Create<StreetNameWasImported>().WithMunicipalityId(Fixture.Create<MunicipalityId>()),
-                    migrateRemovedAddressToStreetName)
+                    addressWasMigratedToStreetName)
                 .When(command)
                 .Throws(new AddressIsRemovedException(Fixture.Create<AddressPersistentLocalId>())));
         }
@@ -143,17 +113,18 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressPostalCode
         [Fact]
         public void WithAddressHasBoxNumber_ThenThrowsAddresHasBoxNumberException()
         {
-            var parentAddressPersistentLocalId = new AddressPersistentLocalId(1);
-            var childAddressPersistentLocalId = new AddressPersistentLocalId(2);
-            var parentAddressWasMigrated = CreateAddressWasMigratedToStreetName(parentAddressPersistentLocalId);
-            var childAddressWasMigrated = CreateAddressWasMigratedToStreetName(
-                childAddressPersistentLocalId,
-                houseNumber: new HouseNumber(parentAddressWasMigrated.HouseNumber),
-                parentAddressPersistentLocalId: parentAddressPersistentLocalId);
+            var houseNumberAddressWasMigrated = Fixture.Create<AddressWasMigratedToStreetName>()
+                .AsHouseNumberAddress(addressStatus: AddressStatus.Current);
+            var boxNumberAddressWasMigrated = Fixture.Create<AddressWasMigratedToStreetName>()
+                .AsBoxNumberAddress(
+                    new AddressPersistentLocalId(houseNumberAddressWasMigrated.AddressPersistentLocalId))
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(houseNumberAddressWasMigrated.AddressPersistentLocalId + 1))
+                .WithHouseNumber(new HouseNumber(houseNumberAddressWasMigrated.HouseNumber))
+                .WithStatus(AddressStatus.Current);
 
             var command = new CorrectAddressPostalCode(
                 Fixture.Create<StreetNamePersistentLocalId>(),
-                childAddressPersistentLocalId,
+                new AddressPersistentLocalId(boxNumberAddressWasMigrated.AddressPersistentLocalId),
                 Fixture.Create<PostalCode>(),
                 Fixture.Create<MunicipalityId>(),
                 Fixture.Create<Provenance>());
@@ -161,8 +132,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressPostalCode
             Assert(new Scenario()
                 .Given(_streamId,
                     Fixture.Create<StreetNameWasImported>(),
-                    parentAddressWasMigrated,
-                    childAddressWasMigrated)
+                    houseNumberAddressWasMigrated,
+                    boxNumberAddressWasMigrated)
                 .When(command)
                 .Throws(new AddressHasBoxNumberException()));
         }
@@ -172,20 +143,9 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressPostalCode
         [InlineData(StreetNameStatus.Retired)]
         public void OnStreetNameInvalidStatus_ThenThrowsStreetNameHasInvalidStatusException(StreetNameStatus streetNameStatus)
         {
-            var command = new CorrectAddressPostalCode(
-                Fixture.Create<StreetNamePersistentLocalId>(),
-                Fixture.Create<AddressPersistentLocalId>(),
-                Fixture.Create<PostalCode>(),
-                Fixture.Create<MunicipalityId>(),
-                Fixture.Create<Provenance>());
+            var migratedStreetNameWasImported = Fixture.Create<MigratedStreetNameWasImported>().WithStatus(streetNameStatus);
 
-            var migratedStreetNameWasImported = new MigratedStreetNameWasImported(
-                Fixture.Create<StreetNameId>(),
-                Fixture.Create<StreetNamePersistentLocalId>(),
-                Fixture.Create<MunicipalityId>(),
-                Fixture.Create<NisCode>(),
-                streetNameStatus);
-            ((ISetProvenance)migratedStreetNameWasImported).SetProvenance(Fixture.Create<Provenance>());
+            var command = Fixture.Create<CorrectAddressPostalCode>();
 
             Assert(new Scenario()
                 .Given(_streamId,
@@ -201,15 +161,10 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressPostalCode
         [InlineData(AddressStatus.Retired)]
         public void AddressWithInvalidStatuses_ThenThrowsAddressHasInvalidStatusException(AddressStatus addressStatus)
         {
-            var addressWasMigratedToStreetName = CreateAddressWasMigratedToStreetName(addressStatus: addressStatus);
-            ((ISetProvenance)addressWasMigratedToStreetName).SetProvenance(Fixture.Create<Provenance>());
+            var addressWasMigratedToStreetName = Fixture.Create<AddressWasMigratedToStreetName>()
+                .AsHouseNumberAddress(addressStatus: addressStatus);
 
-            var command = new CorrectAddressPostalCode(
-                Fixture.Create<StreetNamePersistentLocalId>(),
-                Fixture.Create<AddressPersistentLocalId>(),
-                Fixture.Create<PostalCode>(),
-                Fixture.Create<MunicipalityId>(),
-                Fixture.Create<Provenance>());
+            var command = Fixture.Create<CorrectAddressPostalCode>();
 
             Assert(new Scenario()
                 .Given(_streamId,
@@ -222,8 +177,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressPostalCode
         [Fact]
         public void WithMunicipalityDifferentFromCommand_ThrowsPostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException()
         {
-            var addressWasMigratedToStreetName = CreateAddressWasMigratedToStreetName();
-            ((ISetProvenance)addressWasMigratedToStreetName).SetProvenance(Fixture.Create<Provenance>());
+            var addressWasMigratedToStreetName = Fixture.Create<AddressWasMigratedToStreetName>()
+                .AsHouseNumberAddress(addressStatus: AddressStatus.Current);
 
             var command = new CorrectAddressPostalCode(
                 Fixture.Create<StreetNamePersistentLocalId>(),
@@ -243,13 +198,13 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressPostalCode
         [Fact]
         public void WithNoChangedPostalCode_ThenNone()
         {
-            var postalCode = Fixture.Create<PostalCode>();
-            var addressWasMigratedToStreetName = CreateAddressWasMigratedToStreetName(postalCode: postalCode);
+            var addressWasMigratedToStreetName = Fixture.Create<AddressWasMigratedToStreetName>()
+                .AsHouseNumberAddress(addressStatus: AddressStatus.Current);
 
             var command = new CorrectAddressPostalCode(
                 Fixture.Create<StreetNamePersistentLocalId>(),
                 Fixture.Create<AddressPersistentLocalId>(),
-                postalCode,
+                new PostalCode(addressWasMigratedToStreetName.PostalCode!),
                 Fixture.Create<MunicipalityId>(),
                 Fixture.Create<Provenance>());
 
@@ -264,34 +219,36 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressPostalCode
         [Fact]
         public void StateCheck()
         {
-            // Arrange
-            var parentAddressPersistentLocalId = new AddressPersistentLocalId(1);
-            var childAddressPersistentLocalId = new AddressPersistentLocalId(2);
-            var parentAddressWasMigrated = CreateAddressWasMigratedToStreetName(parentAddressPersistentLocalId);
-            var childAddressWasMigrated = CreateAddressWasMigratedToStreetName(
-                childAddressPersistentLocalId,
-                houseNumber: new HouseNumber(parentAddressWasMigrated.HouseNumber),
-                parentAddressPersistentLocalId: parentAddressPersistentLocalId);
+            var houseNumberAddressWasMigrated = Fixture.Create<AddressWasMigratedToStreetName>()
+                .AsHouseNumberAddress(addressStatus: AddressStatus.Current);
+            var boxNumberAddressWasMigrated = Fixture.Create<AddressWasMigratedToStreetName>()
+                .AsBoxNumberAddress(
+                    new AddressPersistentLocalId(houseNumberAddressWasMigrated.AddressPersistentLocalId))
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(houseNumberAddressWasMigrated.AddressPersistentLocalId + 1))
+                .WithHouseNumber(new HouseNumber(houseNumberAddressWasMigrated.HouseNumber))
+                .WithStatus(AddressStatus.Current);
 
             var sut = new StreetNameFactory(NoSnapshotStrategy.Instance).Create();
             sut.Initialize(new List<object>
             {
                 Fixture.Create<StreetNameWasImported>().WithMunicipalityId(Fixture.Create<MunicipalityId>()),
-                parentAddressWasMigrated,
-                childAddressWasMigrated
+                houseNumberAddressWasMigrated,
+                boxNumberAddressWasMigrated
             });
 
             var expectedPostalCode = Fixture.Create<PostalCode>();
 
             // Act
             sut.CorrectAddressPostalCode(
-                parentAddressPersistentLocalId,
+                new AddressPersistentLocalId(houseNumberAddressWasMigrated.AddressPersistentLocalId),
                 expectedPostalCode,
                 Fixture.Create<MunicipalityId>());
 
             // Assert
-            var parentAddress = sut.StreetNameAddresses.First(x => x.AddressPersistentLocalId == parentAddressPersistentLocalId);
-            var childAddress = sut.StreetNameAddresses.First(x => x.AddressPersistentLocalId == childAddressPersistentLocalId);
+            var parentAddress = sut.StreetNameAddresses.First(x =>
+                x.AddressPersistentLocalId == new AddressPersistentLocalId(houseNumberAddressWasMigrated.AddressPersistentLocalId));
+            var childAddress = sut.StreetNameAddresses.First(x =>
+                x.AddressPersistentLocalId == new AddressPersistentLocalId(boxNumberAddressWasMigrated.AddressPersistentLocalId));
 
             parentAddress.PostalCode.Should().Be(expectedPostalCode);
             childAddress.PostalCode.Should().Be(expectedPostalCode);

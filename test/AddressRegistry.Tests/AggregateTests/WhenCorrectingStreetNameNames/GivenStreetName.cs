@@ -1,18 +1,17 @@
 namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingStreetNameNames
 {
     using System.Collections.Generic;
-    using Api.BackOffice.Abstractions;
-    using StreetName;
-    using StreetName.Commands;
-    using StreetName.Events;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using EventBuilders;
+    using EventExtensions;
     using FluentAssertions;
     using global::AutoFixture;
+    using StreetName;
+    using StreetName.Commands;
+    using StreetName.Events;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -30,27 +29,11 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingStreetNameNames
         [Fact]
         public void ThenStreetNameNamesWereCorrected()
         {
-            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
+            var streetNameWasImported = Fixture.Create<StreetNameWasImported>().WithStatus(StreetNameStatus.Current);
+
+            var addressWasProposedV2 = Fixture.Create<AddressWasProposedV2>().AsHouseNumberAddress();
 
             var command = Fixture.Create<CorrectStreetNameNames>();
-
-            var streetNameWasImported = new StreetNameWasImported(
-                streetNamePersistentLocalId,
-                Fixture.Create<MunicipalityId>(),
-                StreetNameStatus.Retired);
-            ((ISetProvenance)streetNameWasImported).SetProvenance(Fixture.Create<Provenance>());
-
-            var addressWasProposedV2 = new AddressWasProposedV2(
-                Fixture.Create<StreetNamePersistentLocalId>(),
-                Fixture.Create<AddressPersistentLocalId>(),
-                parentPersistentLocalId: null,
-                Fixture.Create<PostalCode>(),
-                Fixture.Create<HouseNumber>(),
-                boxNumber: null,
-                GeometryMethod.AppointedByAdministrator,
-                GeometrySpecification.Lot,
-                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
-            ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
 
             Assert(new Scenario()
                 .Given(_streamId, streetNameWasImported, addressWasProposedV2)
@@ -58,12 +41,9 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingStreetNameNames
                 .Then(
                     new Fact(new StreetNameStreamId(command.PersistentLocalId),
                         new StreetNameNamesWereCorrected(
-                            streetNamePersistentLocalId,
+                            Fixture.Create<StreetNamePersistentLocalId>(),
                             command.StreetNameNames,
-                            new List<AddressPersistentLocalId>
-                            {
-                                new AddressPersistentLocalId(addressWasProposedV2.AddressPersistentLocalId)
-                            })
+                            new List<AddressPersistentLocalId> { new(addressWasProposedV2.AddressPersistentLocalId) })
                         )
                     ));
         }
@@ -71,65 +51,44 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingStreetNameNames
         [Fact]
         public void WithRemovedAddress_ThenOnlyNonRemovedAddressesAreAffected()
         {
-            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
+            var streetNameWasImported = Fixture.Create<StreetNameWasImported>().WithStatus(StreetNameStatus.Current);
 
             var command = Fixture.Create<CorrectStreetNameNames>();
 
-            var streetNameWasImported = new StreetNameWasImported(
-                streetNamePersistentLocalId,
-                Fixture.Create<MunicipalityId>(),
-                StreetNameStatus.Retired);
-            ((ISetProvenance)streetNameWasImported).SetProvenance(Fixture.Create<Provenance>());
-
-            var addressWasMigrated = new AddressWasMigratedToStreetNameBuilder(Fixture).Build();
-            var removedAddressWasMigrated = new AddressWasMigratedToStreetNameBuilder(Fixture).WithIsRemoved().Build();
+            var addressWasProposedV2 = Fixture.Create<AddressWasProposedV2>()
+                .AsHouseNumberAddress();
+            var removedAddressWasMigrated = Fixture.Create<AddressWasMigratedToStreetName>()
+                .AsHouseNumberAddress()
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(addressWasProposedV2.AddressPersistentLocalId + 1))
+                .WithStatus(AddressStatus.Current)
+                .WithRemoved();
 
             Assert(new Scenario()
                 .Given(_streamId,
                     streetNameWasImported,
-                    addressWasMigrated,
+                    addressWasProposedV2,
                     removedAddressWasMigrated)
                 .When(command)
-                .Then(
-                    new Fact(new StreetNameStreamId(command.PersistentLocalId),
-                        new StreetNameNamesWereCorrected(
-                            streetNamePersistentLocalId,
-                            command.StreetNameNames,
-                            new List<AddressPersistentLocalId> { new AddressPersistentLocalId(addressWasMigrated.AddressPersistentLocalId) }))
+                .Then(new Fact(
+                    new StreetNameStreamId(command.PersistentLocalId),
+                    new StreetNameNamesWereCorrected(
+                        Fixture.Create<StreetNamePersistentLocalId>(),
+                        command.StreetNameNames,
+                        new List<AddressPersistentLocalId> { new (addressWasProposedV2.AddressPersistentLocalId) }))
                 ));
         }
 
         [Fact]
         public void StateCheck()
         {
-            // Arrange
-            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
+            var migratedStreetNameWasImported = Fixture.Create<MigratedStreetNameWasImported>().WithStatus(StreetNameStatus.Current);
 
-            var migratedStreetNameWasImported = new MigratedStreetNameWasImported(
-                Fixture.Create<StreetNameId>(),
-                streetNamePersistentLocalId,
-                Fixture.Create<MunicipalityId>(),
-                Fixture.Create<NisCode>(),
-                StreetNameStatus.Current);
-            ((ISetProvenance)migratedStreetNameWasImported).SetProvenance(Fixture.Create<Provenance>());
-
-            var addressWasProposedV2 = new AddressWasProposedV2(
-                Fixture.Create<StreetNamePersistentLocalId>(),
-                Fixture.Create<AddressPersistentLocalId>(),
-                parentPersistentLocalId: null,
-                Fixture.Create<PostalCode>(),
-                Fixture.Create<HouseNumber>(),
-                boxNumber: null,
-                GeometryMethod.AppointedByAdministrator,
-                GeometrySpecification.Lot,
-                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
-            ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
+            var addressWasProposedV2 = Fixture.Create<AddressWasProposedV2>().AsHouseNumberAddress();
 
             var streetNameNamesWereCorrected = new StreetNameNamesWereCorrected(
-                new StreetNamePersistentLocalId(migratedStreetNameWasImported.StreetNamePersistentLocalId),
+                Fixture.Create<StreetNamePersistentLocalId>(),
                 Fixture.Create<Dictionary<string, string>>(),
-                new List<AddressPersistentLocalId>
-                    { new AddressPersistentLocalId(addressWasProposedV2.AddressPersistentLocalId) });
+                new List<AddressPersistentLocalId> { new(addressWasProposedV2.AddressPersistentLocalId) });
             ((ISetProvenance)streetNameNamesWereCorrected).SetProvenance(Fixture.Create<Provenance>());
 
             var sut = new StreetNameFactory(NoSnapshotStrategy.Instance).Create();

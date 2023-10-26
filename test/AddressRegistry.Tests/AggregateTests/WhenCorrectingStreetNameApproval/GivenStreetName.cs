@@ -1,16 +1,16 @@
 namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingStreetNameApproval
 {
     using System.Collections.Generic;
-    using StreetName;
-    using StreetName.Commands;
-    using StreetName.Events;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
-    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using EventExtensions;
     using FluentAssertions;
     using global::AutoFixture;
+    using StreetName;
+    using StreetName.Commands;
+    using StreetName.Events;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -28,34 +28,24 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingStreetNameApproval
         [Fact]
         public void ThenStreetNameWasCorrectedFromApprovedToProposed()
         {
-            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
+            var streetNameWasImported = Fixture.Create<StreetNameWasImported>().WithStatus(StreetNameStatus.Current);
 
             var command = Fixture.Create<CorrectStreetNameApproval>();
-
-            var streetNameWasImported = new StreetNameWasImported(
-                streetNamePersistentLocalId,
-                Fixture.Create<MunicipalityId>(),
-                StreetNameStatus.Current);
-            ((ISetProvenance)streetNameWasImported).SetProvenance(Fixture.Create<Provenance>());
 
             Assert(new Scenario()
                 .Given(_streamId, streetNameWasImported)
                 .When(command)
-                .Then(
-                    new Fact(new StreetNameStreamId(command.PersistentLocalId),
-                        new StreetNameWasCorrectedFromApprovedToProposed(streetNamePersistentLocalId))));
+                .Then(new Fact(
+                    new StreetNameStreamId(command.PersistentLocalId),
+                    new StreetNameWasCorrectedFromApprovedToProposed(Fixture.Create<StreetNamePersistentLocalId>()))));
         }
 
         [Fact]
         public void WithAlreadyProposedStreetName_ThenNone()
         {
-            var command = Fixture.Create<CorrectStreetNameApproval>();
+            var streetNameWasImported = Fixture.Create<StreetNameWasImported>().WithStatus(StreetNameStatus.Proposed);
 
-            var streetNameWasImported = new StreetNameWasImported(
-                Fixture.Create<StreetNamePersistentLocalId>(),
-                Fixture.Create<MunicipalityId>(),
-                StreetNameStatus.Proposed);
-            ((ISetProvenance)streetNameWasImported).SetProvenance(Fixture.Create<Provenance>());
+            var command = Fixture.Create<CorrectStreetNameApproval>();
 
             Assert(new Scenario()
                 .Given(_streamId,
@@ -67,16 +57,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingStreetNameApproval
         [Fact]
         public void StateCheck()
         {
-            // Arrange
-            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
-
-            var migratedStreetNameWasImported = new MigratedStreetNameWasImported(
-                Fixture.Create<StreetNameId>(),
-                streetNamePersistentLocalId,
-                Fixture.Create<MunicipalityId>(),
-                Fixture.Create<NisCode>(),
-                StreetNameStatus.Current);
-            ((ISetProvenance)migratedStreetNameWasImported).SetProvenance(Fixture.Create<Provenance>());
+            var migratedStreetNameWasImported = Fixture.Create<MigratedStreetNameWasImported>().WithStatus(StreetNameStatus.Current);
 
             var sut = new StreetNameFactory(NoSnapshotStrategy.Instance).Create();
             sut.Initialize(new List<object> { migratedStreetNameWasImported });

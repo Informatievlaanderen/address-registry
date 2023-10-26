@@ -2,16 +2,15 @@ namespace AddressRegistry.Tests.AggregateTests.WhenApprovingAddress
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Api.BackOffice.Abstractions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts.StreetNameRegistry;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using EventExtensions;
     using FluentAssertions;
     using global::AutoFixture;
-    using ProjectionTests.Legacy.Extensions;
     using StreetName;
     using StreetName.Commands;
     using StreetName.Events;
@@ -34,24 +33,9 @@ namespace AddressRegistry.Tests.AggregateTests.WhenApprovingAddress
         [Fact]
         public void WithProposedAddress_ThenAddressWasApproved()
         {
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-            var command = new ApproveAddress(
-                Fixture.Create<StreetNamePersistentLocalId>(),
-                addressPersistentLocalId,
-                Fixture.Create<Provenance>());
+            var command = Fixture.Create<ApproveAddress>();
 
-            var addressWasProposedV2 = new AddressWasProposedV2(
-                Fixture.Create<StreetNamePersistentLocalId>(),
-                addressPersistentLocalId,
-                parentPersistentLocalId: null,
-                Fixture.Create<PostalCode>(),
-                Fixture.Create<HouseNumber>(),
-                boxNumber: null,
-                GeometryMethod.AppointedByAdministrator,
-                GeometrySpecification.Entry,
-                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
-
-            ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
+            var addressWasProposedV2 = Fixture.Create<AddressWasProposedV2>().AsHouseNumberAddress();
 
             Assert(new Scenario()
                 .Given(_streamId,
@@ -61,64 +45,38 @@ namespace AddressRegistry.Tests.AggregateTests.WhenApprovingAddress
                 .Then(new Fact(_streamId,
                     new AddressWasApproved(
                         Fixture.Create<StreetNamePersistentLocalId>(),
-                        addressPersistentLocalId))));
+                        Fixture.Create<AddressPersistentLocalId>()))));
         }
 
         [Fact]
         public void WithoutProposedAddress_ThenThrowsAddressNotFoundException()
         {
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-            var command = new ApproveAddress(
-                Fixture.Create<StreetNamePersistentLocalId>(),
-                addressPersistentLocalId,
-                Fixture.Create<Provenance>());
+            var command = Fixture.Create<ApproveAddress>();
 
             Assert(new Scenario()
                 .Given(_streamId,
                     Fixture.Create<StreetNameWasImported>())
                 .When(command)
-                .Throws(new AddressIsNotFoundException(addressPersistentLocalId)));
+                .Throws(new AddressIsNotFoundException(Fixture.Create<AddressPersistentLocalId>())));
         }
 
         [Fact]
         public void OnRemovedAddress_ThenThrowsAddressIsRemovedException()
         {
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
+            var streetNameWasImported = Fixture.Create<StreetNameWasImported>().WithStatus(StreetNameStatus.Current);
 
-            var streetNameWasImported = new StreetNameWasImported(
-                streetNamePersistentLocalId,
-                Fixture.Create<MunicipalityId>(),
-                StreetNameStatus.Current);
-            ((ISetProvenance)streetNameWasImported).SetProvenance(Fixture.Create<Provenance>());
+            var removedAddressWasMigratedToStreetName = Fixture.Create<AddressWasMigratedToStreetName>()
+                .AsHouseNumberAddress(addressStatus: AddressStatus.Proposed)
+                .WithRemoved();
 
-            var migrateRemovedAddressToStreetName = new AddressWasMigratedToStreetName(
-                streetNamePersistentLocalId,
-                Fixture.Create<AddressId>(),
-                Fixture.Create<AddressStreetNameId>(),
-                addressPersistentLocalId,
-                AddressStatus.Proposed,
-                Fixture.Create<HouseNumber>(),
-                boxNumber: null,
-                Fixture.Create<AddressGeometry>(),
-                officiallyAssigned: true,
-                postalCode: null,
-                isCompleted: false,
-                isRemoved: true,
-                parentPersistentLocalId: null);
-            ((ISetProvenance)migrateRemovedAddressToStreetName).SetProvenance(Fixture.Create<Provenance>());
-
-            var approveAddress = new ApproveAddress(
-                streetNamePersistentLocalId,
-                addressPersistentLocalId,
-                Fixture.Create<Provenance>());
+            var command = Fixture.Create<ApproveAddress>();
 
             Assert(new Scenario()
                 .Given(_streamId,
                     streetNameWasImported,
-                    migrateRemovedAddressToStreetName)
-                .When(approveAddress)
-                .Throws(new AddressIsRemovedException(addressPersistentLocalId)));
+                    removedAddressWasMigratedToStreetName)
+                .When(command)
+                .Throws(new AddressIsRemovedException(Fixture.Create<AddressPersistentLocalId>())));
         }
 
         [Theory]
@@ -126,20 +84,15 @@ namespace AddressRegistry.Tests.AggregateTests.WhenApprovingAddress
         [InlineData(StreetNameStatus.Retired)]
         public void WithStreetNameHasInvalidStatus_ThenThrowsStreetNameHasInvalidStatusException(StreetNameStatus streetNameStatus)
         {
-            var migratedStreetNameWasImported = new MigratedStreetNameWasImported(
-                Fixture.Create<StreetNameId>(),
-                Fixture.Create<StreetNamePersistentLocalId>(),
-                Fixture.Create<MunicipalityId>(), Fixture.Create<NisCode>(),
-                streetNameStatus);
-            ((ISetProvenance)migratedStreetNameWasImported).SetProvenance(Fixture.Create<Provenance>());
+            var migratedStreetNameWasImported = Fixture.Create<MigratedStreetNameWasImported>().WithStatus(streetNameStatus);
 
-            var approveAddress = Fixture.Create<ApproveAddress>();
+            var command = Fixture.Create<ApproveAddress>();
 
             Assert(new Scenario()
                 .Given(_streamId,
                     migratedStreetNameWasImported,
                     Fixture.Create<AddressWasProposedV2>().WithParentAddressPersistentLocalId(null))
-                .When(approveAddress)
+                .When(command)
                 .Throws(new StreetNameHasInvalidStatusException()));
         }
 
@@ -148,128 +101,58 @@ namespace AddressRegistry.Tests.AggregateTests.WhenApprovingAddress
         [InlineData(AddressStatus.Retired)]
         public void AddressWithInvalidStatuses_ThenThrowsAddressHasInvalidStatusException(AddressStatus addressStatus)
         {
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
+            var migratedStreetNameWasImported = Fixture.Create<MigratedStreetNameWasImported>().WithStatus(StreetNameStatus.Current);
 
-            var streetNameWasImported = new StreetNameWasImported(
-                streetNamePersistentLocalId,
-                Fixture.Create<MunicipalityId>(),
-                StreetNameStatus.Current);
-            ((ISetProvenance)streetNameWasImported).SetProvenance(Fixture.Create<Provenance>());
+            var addressWasMigratedToStreetName = Fixture.Create<AddressWasMigratedToStreetName>()
+                .AsHouseNumberAddress(addressStatus: addressStatus);
 
-            var addressWasMigratedToStreetName = new AddressWasMigratedToStreetName(
-                streetNamePersistentLocalId,
-                Fixture.Create<AddressId>(),
-                Fixture.Create<AddressStreetNameId>(),
-                addressPersistentLocalId,
-                addressStatus,
-                Fixture.Create<HouseNumber>(),
-                boxNumber: null,
-                Fixture.Create<AddressGeometry>(),
-                officiallyAssigned: true,
-                postalCode: null,
-                isCompleted: false,
-                isRemoved: false,
-                parentPersistentLocalId: null);
-            ((ISetProvenance)addressWasMigratedToStreetName).SetProvenance(Fixture.Create<Provenance>());
-
-            var approveAddress = new ApproveAddress(
-                streetNamePersistentLocalId,
-                addressPersistentLocalId,
-                Fixture.Create<Provenance>());
+            var command = Fixture.Create<ApproveAddress>();
 
             Assert(new Scenario()
                 .Given(_streamId,
-                    streetNameWasImported,
+                    migratedStreetNameWasImported,
                     addressWasMigratedToStreetName)
-                .When(approveAddress)
+                .When(command)
                 .Throws(new AddressHasInvalidStatusException()));
         }
 
         [Fact]
-        public void WithParentAddressNotInStatusCurrent_ThenThrowsParentAddressHasInvalidStatusException()
+        public void WithHouseNumberAddressNotInStatusCurrent_ThenThrowsParentAddressHasInvalidStatusException()
         {
-            var parentAddressPersistentLocalId = new AddressPersistentLocalId(123);
-            var childAddressPersistentLocalId = new AddressPersistentLocalId(456);
-            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
+            var streetNameWasImported = Fixture.Create<StreetNameWasImported>().WithStatus(StreetNameStatus.Current);
 
-            var streetNameWasImported = new StreetNameWasImported(
-                streetNamePersistentLocalId,
-                Fixture.Create<MunicipalityId>(),
-                StreetNameStatus.Current);
-            ((ISetProvenance)streetNameWasImported).SetProvenance(Fixture.Create<Provenance>());
+            var houseNumberAddressWasMigratedToStreetName = Fixture.Create<AddressWasMigratedToStreetName>()
+                .AsHouseNumberAddress(addressStatus: AddressStatus.Proposed);
 
-            var parentAddressWasMigratedToStreetName = new AddressWasMigratedToStreetName(
-                streetNamePersistentLocalId,
-                Fixture.Create<AddressId>(),
-                Fixture.Create<AddressStreetNameId>(),
-                parentAddressPersistentLocalId,
-                AddressStatus.Proposed,
-                Fixture.Create<HouseNumber>(),
-                boxNumber: null,
-                Fixture.Create<AddressGeometry>(),
-                officiallyAssigned: true,
-                postalCode: null,
-                isCompleted: false,
-                isRemoved: false,
-                parentPersistentLocalId: null);
-            ((ISetProvenance)parentAddressWasMigratedToStreetName).SetProvenance(Fixture.Create<Provenance>());
+            var boxNumberAddressWasMigratedToStreetName = Fixture.Create<AddressWasMigratedToStreetName>()
+                .AsBoxNumberAddress(
+                    new AddressPersistentLocalId(houseNumberAddressWasMigratedToStreetName.AddressPersistentLocalId))
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(houseNumberAddressWasMigratedToStreetName.AddressPersistentLocalId + 1))
+                .WithStatus(AddressStatus.Proposed)
+                .WithHouseNumber(new HouseNumber(houseNumberAddressWasMigratedToStreetName.HouseNumber));
 
-            var childAddressWasMigratedToStreetName = new AddressWasMigratedToStreetName(
-                streetNamePersistentLocalId,
-                Fixture.Create<AddressId>(),
-                Fixture.Create<AddressStreetNameId>(),
-                childAddressPersistentLocalId,
-                AddressStatus.Proposed,
-                Fixture.Create<HouseNumber>(),
-                boxNumber: null,
-                Fixture.Create<AddressGeometry>(),
-                officiallyAssigned: true,
-                postalCode: null,
-                isCompleted: false,
-                isRemoved: false,
-                parentPersistentLocalId: parentAddressPersistentLocalId);
-            ((ISetProvenance)childAddressWasMigratedToStreetName).SetProvenance(Fixture.Create<Provenance>());
-
-            var approveChildAddress = new ApproveAddress(
-                streetNamePersistentLocalId,
-                childAddressPersistentLocalId,
+            var approveBoxNumberAddress = new ApproveAddress(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                new AddressPersistentLocalId(boxNumberAddressWasMigratedToStreetName.AddressPersistentLocalId),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
                 .Given(_streamId,
                     streetNameWasImported,
-                    parentAddressWasMigratedToStreetName,
-                    childAddressWasMigratedToStreetName)
-                .When(approveChildAddress)
+                    houseNumberAddressWasMigratedToStreetName,
+                    boxNumberAddressWasMigratedToStreetName)
+                .When(approveBoxNumberAddress)
                 .Throws(new ParentAddressHasInvalidStatusException()));
         }
 
         [Fact]
         public void WithAlreadyApprovedAddress_ThenNone()
         {
-            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
+            var addressWasProposedV2 = Fixture.Create<AddressWasProposedV2>().AsHouseNumberAddress();
 
-            var command = new ApproveAddress(
-                streetNamePersistentLocalId,
-                addressPersistentLocalId,
-                Fixture.Create<Provenance>());
+            var addressWasApproved = Fixture.Create<AddressWasApproved>();
 
-            var addressWasProposedV2 = new AddressWasProposedV2(
-                streetNamePersistentLocalId,
-                addressPersistentLocalId,
-                parentPersistentLocalId: null,
-                Fixture.Create<PostalCode>(),
-                Fixture.Create<HouseNumber>(),
-                boxNumber: null,
-                GeometryMethod.AppointedByAdministrator,
-                GeometrySpecification.Entry,
-                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
-            ((ISetProvenance)addressWasProposedV2).SetProvenance(Fixture.Create<Provenance>());
-
-            var addressWasApproved = new AddressWasApproved(streetNamePersistentLocalId, addressPersistentLocalId);
-            ((ISetProvenance)addressWasApproved).SetProvenance(Fixture.Create<Provenance>());
+            var command = Fixture.Create<ApproveAddress>();
 
             Assert(new Scenario()
                 .Given(_streamId,
@@ -285,15 +168,16 @@ namespace AddressRegistry.Tests.AggregateTests.WhenApprovingAddress
         {
             var addressWasApproved = Fixture.Create<AddressWasApproved>();
 
-            var sut = new StreetNameFactory(NoSnapshotStrategy.Instance).Create();
-            sut.Initialize(new List<object>
+            var streetName = new StreetNameFactory(NoSnapshotStrategy.Instance).Create();
+            streetName.Initialize(new List<object>
             {
                 Fixture.Create<StreetNameWasProposedV2>(),
                 Fixture.Create<AddressWasProposedV2>().WithParentAddressPersistentLocalId(null),
                 addressWasApproved
             });
 
-            var address = sut.StreetNameAddresses.Single(x => x.AddressPersistentLocalId == Fixture.Create<AddressPersistentLocalId>());
+            var address = streetName.StreetNameAddresses
+                .Single(x => x.AddressPersistentLocalId == Fixture.Create<AddressPersistentLocalId>());
 
             address.Status.Should().Be(AddressStatus.Current);
             address.LastEventHash.Should().Be(addressWasApproved.GetHash());

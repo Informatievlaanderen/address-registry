@@ -1,13 +1,13 @@
 namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressRegularization
 {
-    using StreetName;
-    using StreetName.Commands;
     using AutoFixture;
-    using Api.BackOffice.Abstractions;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using EventExtensions;
     using global::AutoFixture;
+    using StreetName;
+    using StreetName.Commands;
     using StreetName.Events;
     using StreetName.Exceptions;
     using Xunit;
@@ -28,48 +28,23 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressRegularizati
         [Fact]
         public void WhenParentAddressIsProposed()
         {
-            var parentAddressPersistentLocalId = new AddressPersistentLocalId(123);
-            var childAddressPersistentLocalId = new AddressPersistentLocalId(456);
+            var houseNumberAddressWasProposedV2 = Fixture.Create<AddressWasProposedV2>()
+                .AsHouseNumberAddress();
+
+            var boxNumberAddressWasProposedV2 = Fixture.Create<AddressWasProposedV2>()
+                .AsBoxNumberAddress(new AddressPersistentLocalId(houseNumberAddressWasProposedV2.AddressPersistentLocalId))
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(houseNumberAddressWasProposedV2.AddressPersistentLocalId + 1));
 
             var command = new CorrectAddressRegularization(
                 Fixture.Create<StreetNamePersistentLocalId>(),
-                childAddressPersistentLocalId,
+                new AddressPersistentLocalId(boxNumberAddressWasProposedV2.AddressPersistentLocalId),
                 Fixture.Create<Provenance>());
-
-            var parentAddressWasProposed = new AddressWasProposedV2(
-                Fixture.Create<StreetNamePersistentLocalId>(),
-                parentAddressPersistentLocalId,
-                parentPersistentLocalId: null,
-                new PostalCode("2018"),
-                new HouseNumber("11"),
-                boxNumber: null,
-                GeometryMethod.AppointedByAdministrator,
-                GeometrySpecification.Entry,
-                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
-            ((ISetProvenance)parentAddressWasProposed).SetProvenance(Fixture.Create<Provenance>());
-
-            var childAddressWasProposed = new AddressWasProposedV2(
-                Fixture.Create<StreetNamePersistentLocalId>(),
-                childAddressPersistentLocalId,
-                parentPersistentLocalId: parentAddressPersistentLocalId,
-                new PostalCode("2018"),
-                new HouseNumber("11"),
-                new BoxNumber("001"),
-                GeometryMethod.AppointedByAdministrator,
-                GeometrySpecification.Entry,
-                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
-            ((ISetProvenance)childAddressWasProposed).SetProvenance(Fixture.Create<Provenance>());
-
-            var childAddressWasRegularized = new AddressWasRegularized(
-                Fixture.Create<StreetNamePersistentLocalId>(),
-                childAddressPersistentLocalId);
-            ((ISetProvenance)childAddressWasRegularized).SetProvenance(Fixture.Create<Provenance>());
 
             Assert(new Scenario()
                 .Given(_streamId,
                     Fixture.Create<StreetNameWasImported>(),
-                    parentAddressWasProposed,
-                    childAddressWasProposed)
+                    houseNumberAddressWasProposedV2,
+                    boxNumberAddressWasProposedV2)
                 .When(command)
                 .Throws(new ParentAddressHasInvalidStatusException()));
         }
@@ -80,57 +55,29 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressRegularizati
         [InlineData(AddressStatus.Retired)]
         public void WhenParentAddressIsNotProposed(AddressStatus status)
         {
-            var parentAddressPersistentLocalId = new AddressPersistentLocalId(123);
-            var childAddressPersistentLocalId = new AddressPersistentLocalId(456);
+            var houseNumberAddressWasMigratedToStreetName = Fixture.Create<AddressWasMigratedToStreetName>()
+                .AsHouseNumberAddress()
+                .WithStatus(status);
+
+            var boxNumberAddressWasProposedV2 = Fixture.Create<AddressWasProposedV2>()
+                .AsBoxNumberAddress(new AddressPersistentLocalId(houseNumberAddressWasMigratedToStreetName.AddressPersistentLocalId))
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(houseNumberAddressWasMigratedToStreetName.AddressPersistentLocalId + 1));
 
             var command = new CorrectAddressRegularization(
                 Fixture.Create<StreetNamePersistentLocalId>(),
-                childAddressPersistentLocalId,
+                new AddressPersistentLocalId(boxNumberAddressWasProposedV2.AddressPersistentLocalId),
                 Fixture.Create<Provenance>());
-
-            var migrateParentAddress = new AddressWasMigratedToStreetName(
-                Fixture.Create<StreetNamePersistentLocalId>(),
-                Fixture.Create<AddressId>(),
-                Fixture.Create<AddressStreetNameId>(),
-                parentAddressPersistentLocalId,
-                status,
-                new HouseNumber("11"),
-                boxNumber: null,
-                Fixture.Create<AddressGeometry>(),
-                officiallyAssigned: true,
-                postalCode: new PostalCode("2018"),
-                isCompleted: true,
-                isRemoved: true,
-                parentPersistentLocalId: null);
-            ((ISetProvenance)migrateParentAddress).SetProvenance(Fixture.Create<Provenance>());
-
-            var childAddressWasProposed = new AddressWasProposedV2(
-                Fixture.Create<StreetNamePersistentLocalId>(),
-                childAddressPersistentLocalId,
-                parentPersistentLocalId: parentAddressPersistentLocalId,
-                new PostalCode("2018"),
-                new HouseNumber("11"),
-                new BoxNumber("001"),
-                GeometryMethod.AppointedByAdministrator,
-                GeometrySpecification.Entry,
-                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
-            ((ISetProvenance)childAddressWasProposed).SetProvenance(Fixture.Create<Provenance>());
-
-            var childAddressWasRegularized = new AddressWasRegularized(
-                Fixture.Create<StreetNamePersistentLocalId>(),
-                childAddressPersistentLocalId);
-            ((ISetProvenance)childAddressWasRegularized).SetProvenance(Fixture.Create<Provenance>());
 
             Assert(new Scenario()
                 .Given(_streamId,
                     Fixture.Create<StreetNameWasImported>(),
-                    migrateParentAddress,
-                    childAddressWasProposed)
+                    houseNumberAddressWasMigratedToStreetName,
+                    boxNumberAddressWasProposedV2)
                 .When(command)
                 .Then(new Fact(_streamId,
                     new AddressRegularizationWasCorrected(
                         Fixture.Create<StreetNamePersistentLocalId>(),
-                        childAddressPersistentLocalId))));
+                        new AddressPersistentLocalId(boxNumberAddressWasProposedV2.AddressPersistentLocalId)))));
         }
     }
 }

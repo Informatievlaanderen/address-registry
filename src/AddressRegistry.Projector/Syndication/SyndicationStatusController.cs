@@ -27,7 +27,7 @@ namespace AddressRegistry.Projector.Syndication
             {
                 var result =
                     await sqlConnection.QueryAsync<ProjectionStateItem>(
-                        "SELECT * FROM [AddressRegistrySyndication].[ProjectionStates]", cancellationToken);
+                        "SELECT * FROM [AddressRegistrySyndication].[ProjectionStates] WHERE [DesiredState] IS NULL", cancellationToken);
 
                 response = result.Select(x => new SyndicationStatusResponse(x)).ToList();
             }

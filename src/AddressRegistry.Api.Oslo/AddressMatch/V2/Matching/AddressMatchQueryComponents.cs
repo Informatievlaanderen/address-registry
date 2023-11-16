@@ -1,6 +1,6 @@
 namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
 {
-    public class AddressMatchQueryComponents
+    public sealed class AddressMatchQueryComponents
     {
         public string MunicipalityName { get; set; }
         public string NisCode { get; set; }

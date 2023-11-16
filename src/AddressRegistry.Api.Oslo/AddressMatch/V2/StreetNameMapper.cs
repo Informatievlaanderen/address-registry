@@ -1,6 +1,5 @@
 namespace AddressRegistry.Api.Oslo.AddressMatch.V2
 {
-    using System.Linq;
     using AddressRegistry.Consumer.Read.StreetName.Projections;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Gemeente;
@@ -22,7 +21,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
 
         public AddressMatchScoreableItemV2 Map(StreetNameLatestItem source)
         {
-            var municipality = _latestQueries.GetAllLatestMunicipalities().Single(x => x.NisCode == source.NisCode);
+            var municipality = _latestQueries.GetAllLatestMunicipalities()[source.NisCode];
             var name = Address.AddressMapper.GetDefaultStreetNameName(source, municipality.PrimaryLanguage);
             var homonym = Address.AddressMapper.GetDefaultHomonymAddition(source, municipality.PrimaryLanguage);
 

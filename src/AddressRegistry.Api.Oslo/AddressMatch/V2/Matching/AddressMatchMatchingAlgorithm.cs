@@ -9,7 +9,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
     /// Implements an algorithm for matching AdresMatchQueryComponents to Gemeentes, Straatnamen or Adressen and scoring the results.
     /// </summary>
     /// <typeparam name="TResult"></typeparam>
-    public class AddressMatchMatchingAlgorithm<TResult> : MatchingAlgorithm<AddressMatchBuilder, TResult>
+    public sealed class AddressMatchMatchingAlgorithm<TResult> : MatchingAlgorithm<AddressMatchBuilder, TResult>
         where TResult : class, IScoreable
     {
         public AddressMatchMatchingAlgorithm(

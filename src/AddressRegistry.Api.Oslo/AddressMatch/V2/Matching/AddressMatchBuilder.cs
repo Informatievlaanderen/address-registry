@@ -9,9 +9,9 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
     using AddressRegistry.Projections.Legacy.AddressDetailV2;
     using Convertors;
 
-    public class AddressMatchBuilder : IEnumerable<AddressMatchBuilder.MunicipalityWrapper>, IProvidesRepresentationsForScoring
+    public sealed class AddressMatchBuilder : IEnumerable<AddressMatchBuilder.MunicipalityWrapper>, IProvidesRepresentationsForScoring
     {
-        public class StreetNameWrapper : IEnumerable<AddressDetailItemV2>
+        public sealed class StreetNameWrapper : IEnumerable<AddressDetailItemV2>
         {
             private IList<AddressDetailItemV2> _addresses;
 
@@ -36,7 +36,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
                 => GetEnumerator();
         }
 
-        public class MunicipalityWrapper : IEnumerable<StreetNameWrapper>
+        public sealed class MunicipalityWrapper : IEnumerable<StreetNameWrapper>
         {
             private IList<StreetNameWrapper> _streetNames;
 

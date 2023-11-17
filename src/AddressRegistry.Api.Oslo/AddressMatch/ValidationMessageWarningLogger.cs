@@ -3,7 +3,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch
     using System.Collections.Generic;
     using System.Runtime.Serialization;
 
-    internal class ValidationMessageWarningLogger : IWarningLogger
+    internal sealed class ValidationMessageWarningLogger : IWarningLogger
     {
         public List<ValidationOsloMessage> Warnings { get; }
 
@@ -19,7 +19,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch
     /// contains a warning message in dutch and english
     /// </summary>
     [DataContract(Name = "Warning", Namespace = "")]
-    public class ValidationOsloMessage
+    public sealed class ValidationOsloMessage
     {
         /// <summary>
         /// Code van de warning.

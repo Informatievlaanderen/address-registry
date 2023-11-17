@@ -2,7 +2,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch
 {
     using System.Collections.Generic;
 
-    internal class DefaultWarningLogger : IWarningLogger
+    internal sealed class DefaultWarningLogger : IWarningLogger
     {
         public List<string> Warnings { get; } = new List<string>();
 

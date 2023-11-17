@@ -24,8 +24,8 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
 
         public AddressMatchScoreableItemV2 Map(AddressDetailItemV2 source)
         {
-            var streetName = _latestQueries.GetAllLatestStreetNames().Single(x => x.PersistentLocalId == source.StreetNamePersistentLocalId);
-            var municipality = _latestQueries.GetAllLatestMunicipalities().Single(x => x.NisCode == streetName.NisCode);
+            var streetName = _latestQueries.GetAllLatestStreetNamesByPersistentLocalId()[source.StreetNamePersistentLocalId];
+            var municipality = _latestQueries.GetAllLatestMunicipalities()[streetName.NisCode];
             var defaultStreetName = Address.AddressMapper.GetDefaultStreetNameName(streetName, municipality.PrimaryLanguage);
             var homonym = Address.AddressMapper.GetDefaultHomonymAddition(streetName, municipality.PrimaryLanguage);
 

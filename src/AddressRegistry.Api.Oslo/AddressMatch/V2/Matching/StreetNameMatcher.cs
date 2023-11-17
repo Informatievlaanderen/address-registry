@@ -6,7 +6,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
     using AddressRegistry.Consumer.Read.StreetName.Projections;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
 
-    internal class StreetNameMatcher<TResult> : ScoreableObjectMatcherBase<AddressMatchBuilder, TResult>
+    internal sealed class StreetNameMatcher<TResult> : ScoreableObjectMatcherBase<AddressMatchBuilder, TResult>
         where TResult : class, IScoreable
     {
         private readonly ILatestQueries _latestQueries;

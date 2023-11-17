@@ -7,7 +7,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
     using Responses;
 
-    public class AddressMatchScoreableItemV2 : IScoreable
+    public sealed class AddressMatchScoreableItemV2 : IScoreable
     {
         public int AddressPersistentLocalId { get; set; }
         public AdresIdentificator Identificator { get; set; }

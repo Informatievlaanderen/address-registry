@@ -1,6 +1,6 @@
 namespace AddressRegistry.Api.Oslo.AddressMatch
 {
-    public class ManualAddressMatchConfig
+    public sealed class ManualAddressMatchConfig
     {
         public double FuzzyMatchThreshold { get; }
 

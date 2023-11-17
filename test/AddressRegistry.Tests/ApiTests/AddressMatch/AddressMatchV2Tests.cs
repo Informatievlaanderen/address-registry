@@ -96,7 +96,7 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
                         NameDutchSearch = existingGemeentenaam.RemoveDiacritics(),
                         OfficialLanguages = new List<string> { "Dutch" }
                     }
-                });
+                }.ToDictionary(x => x.NisCode));
 
             //Act
             var response = await _handler.Handle(request, CancellationToken.None);
@@ -134,7 +134,7 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
                         NameDutchSearch = "Springfield".RemoveDiacritics(),
                         OfficialLanguages = new List<string> { "Dutch" }
                     }
-                });
+                }.ToDictionary(x => x.NisCode));
 
             //Act
             var response = await _handler.Handle(request, CancellationToken.None);
@@ -421,7 +421,7 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
                 .Returns(new[]
                 {
                     municipalityLatestItem
-                });
+                }.ToDictionary(x => x.NisCode));
 
             return municipalityLatestItem;
         }
@@ -437,7 +437,7 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
                             NameDutch = municipalityName,
                             NameDutchSearch = municipalityName.RemoveDiacritics(),
                             OfficialLanguages = new List<string> { "Dutch" }
-                        })
+                        }).ToDictionary(x => x.NisCode)
                 );
         }
 
@@ -463,6 +463,7 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
 
         private StreetNameLatestItem MockStreetNames(string streetName, int streetNamePersistentLocalId, string nisCode, string municipalityName)
         {
+
             var streetNameLatestItem = new StreetNameLatestItem(streetNamePersistentLocalId, nisCode)
             {
                 NameDutch = streetName,
@@ -472,6 +473,9 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
             _latestQueries
                 .Setup(x => x.GetAllLatestStreetNames())
                 .Returns(new[] { streetNameLatestItem });
+            _latestQueries
+                .Setup(x => x.GetAllLatestStreetNamesByPersistentLocalId())
+                .Returns(new[] { streetNameLatestItem }.ToDictionary(x => x.PersistentLocalId));
             _latestQueries
                 .Setup(x => x.GetLatestStreetNamesBy(municipalityName))
                 .Returns(new[] { streetNameLatestItem });

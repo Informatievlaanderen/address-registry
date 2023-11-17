@@ -4,7 +4,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
     using System.Linq;
     using AddressRegistry.Projections.Legacy.AddressDetailV2;
 
-    internal class AddressMatcher<TResult> : ScoreableObjectMatcherBase<AddressMatchBuilder, TResult>
+    internal sealed class AddressMatcher<TResult> : ScoreableObjectMatcherBase<AddressMatchBuilder, TResult>
         where TResult : class, IScoreable
     {
         private readonly ILatestQueries _latestQueries;

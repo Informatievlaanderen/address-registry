@@ -6,7 +6,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
     using AddressRegistry.Consumer.Read.Municipality.Projections;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
 
-    internal class MunicipalityNameComparer : EqualityComparer<AddressMatchBuilder.MunicipalityWrapper>
+    internal sealed class MunicipalityNameComparer : EqualityComparer<AddressMatchBuilder.MunicipalityWrapper>
     {
         public override bool Equals(
             AddressMatchBuilder.MunicipalityWrapper x,
@@ -19,7 +19,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
                 : obj.Name.GetHashCode();
     }
 
-    internal class MunicipalityMatcher<TResult> : ScoreableObjectMatcherBase<AddressMatchBuilder, TResult>
+    internal sealed class MunicipalityMatcher<TResult> : ScoreableObjectMatcherBase<AddressMatchBuilder, TResult>
         where TResult : class, IScoreable
     {
         private readonly ManualAddressMatchConfig _config;
@@ -43,6 +43,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
         {
             var municipalities = _latestQueries
                 .GetAllLatestMunicipalities()
+                .Values
                 .ToList();
 
             var municipalitiesByName = FilterByName(municipalities, results);

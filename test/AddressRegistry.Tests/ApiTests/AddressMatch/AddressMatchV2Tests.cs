@@ -273,6 +273,11 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
         [InlineData("evergreen terras", "Evergreen Terrace")] // case insensitive
         [InlineData("St-Evergreen Terrace", "Sint-Evergreen Terrace")] // replace abreviations in input
         [InlineData("Onze Lieve Vrouw-Evergreen Terrace", "O.l.v.-Evergreen Terrace")] // replace abreviations in existing straatnaam
+        [InlineData("onze-lieve-vrouwemarkt", "O.-L.-Vrouwemarkt")] // replace abreviations in existing straatnaam
+        [InlineData("onze-lieve-vrouwstraat", "O.-L.-Vrouwstraat")] // replace abreviations in existing straatnaam
+        [InlineData("Heilig Hartlaan", "H.-Hartlaan")] // replace abreviations in existing straatnaam
+        [InlineData("Heilige Hartlaan", "H.-Hartlaan")] // replace abreviations in existing straatnaam
+        [InlineData("k.elisabethlaan", "Koningin Elisabethlaan")] // replace abreviations in existing straatnaam
         [InlineData("Clevergreen Terrace Avenue", "Evergreen")] // containment of existing straatnaam
         [InlineData("Evergreen", "Clevergreen Terrace Avenue")] // containment of input
         [InlineData("Trammesantlei", "Evergreen Terrace", false)] // no match

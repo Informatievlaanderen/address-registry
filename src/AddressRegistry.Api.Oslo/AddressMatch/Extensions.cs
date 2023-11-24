@@ -42,6 +42,9 @@ namespace AddressRegistry.Api.Oslo.AddressMatch
             if (input.Contains("o.l.v."))
                 return input.Replace("o.l.v.", "Onze Lieve Vrouw");
 
+            if (input.Contains("onze-lieve-"))
+                return input.Replace("onze-lieve-", "O.L. ");
+
             if (input.Contains("sint"))
                 return input.Replace("sint", "st.");
 
@@ -77,6 +80,15 @@ namespace AddressRegistry.Api.Oslo.AddressMatch
 
             if (input.EndsWith("str."))
                 return input.Replace("str.", "straat");
+
+            if (input.StartsWith("heilige"))
+                return input.Replace("heilige", "h");
+
+            if (input.StartsWith("heilig"))
+                return input.Replace("heilig", "h");
+
+            if (input.StartsWith("k."))
+                return input.Replace("k.", "koning");
 
             return input;
         }

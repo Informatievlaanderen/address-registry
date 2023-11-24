@@ -9,7 +9,6 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
     using Framework.Generate;
     using Framework.Mocking;
     using Legacy.AddressMatch.Requests;
-    using Microsoft.AspNetCore.Mvc;
     using Projections.Legacy.AddressDetail;
     using Xunit;
     using Xunit.Abstractions;

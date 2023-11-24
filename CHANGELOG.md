@@ -1,3 +1,12 @@
+# [3.104.0](https://github.com/informatievlaanderen/address-registry/compare/v3.103.1...v3.104.0) (2023-11-07)
+
+
+### Features
+
+* disable unused syndication projections ([776fabd](https://github.com/informatievlaanderen/address-registry/commit/776fabd621f4b55c918ddef688e57e5880260018))
+* switch wfs view to new tables GAWR-5211 ([cc55513](https://github.com/informatievlaanderen/address-registry/commit/cc555130aec26de147d599f910a831f0909bc6e2))
+* switch wms view to new tables GAWR-4041 ([d9b7b4f](https://github.com/informatievlaanderen/address-registry/commit/d9b7b4f22e1223c233dae69f6a265e398d8fca93))
+
 ## [3.103.1](https://github.com/informatievlaanderen/address-registry/compare/v3.103.0...v3.103.1) (2023-10-17)
 
 

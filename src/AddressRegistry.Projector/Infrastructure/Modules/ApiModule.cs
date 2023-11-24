@@ -10,6 +10,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using AddressRegistry.Projections.Legacy;
     using AddressRegistry.Projections.Legacy.AddressDetail;
     using AddressRegistry.Projections.Legacy.AddressDetailV2;
+    using AddressRegistry.Projections.Legacy.AddressDetailV2WithParent;
     using AddressRegistry.Projections.Legacy.AddressList;
     using AddressRegistry.Projections.Legacy.AddressListV2;
     using AddressRegistry.Projections.Legacy.AddressSyndication;
@@ -206,6 +207,9 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                     _loggerFactory)
                 .RegisterProjections<AddressDetailProjectionsV2, LegacyContext>(
                     () => new AddressDetailProjectionsV2(),
+                    ConnectedProjectionSettings.Default)
+                .RegisterProjections<AddressDetailProjectionsV2WithParent, LegacyContext>(
+                    () => new AddressDetailProjectionsV2WithParent(),
                     ConnectedProjectionSettings.Default)
                 .RegisterProjections<AddressListProjectionsV2, LegacyContext>(ConnectedProjectionSettings.Default)
                 .RegisterProjections<AddressSyndicationProjections, LegacyContext>(

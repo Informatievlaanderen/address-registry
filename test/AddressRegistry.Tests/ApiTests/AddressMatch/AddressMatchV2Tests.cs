@@ -96,7 +96,7 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
                         NameDutchSearch = existingGemeentenaam.RemoveDiacritics(),
                         OfficialLanguages = new List<string> { "Dutch" }
                     }
-                });
+                }.ToDictionary(x => x.NisCode));
 
             //Act
             var response = await _handler.Handle(request, CancellationToken.None);
@@ -134,7 +134,7 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
                         NameDutchSearch = "Springfield".RemoveDiacritics(),
                         OfficialLanguages = new List<string> { "Dutch" }
                     }
-                });
+                }.ToDictionary(x => x.NisCode));
 
             //Act
             var response = await _handler.Handle(request, CancellationToken.None);
@@ -273,6 +273,11 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
         [InlineData("evergreen terras", "Evergreen Terrace")] // case insensitive
         [InlineData("St-Evergreen Terrace", "Sint-Evergreen Terrace")] // replace abreviations in input
         [InlineData("Onze Lieve Vrouw-Evergreen Terrace", "O.l.v.-Evergreen Terrace")] // replace abreviations in existing straatnaam
+        [InlineData("onze-lieve-vrouwemarkt", "O.-L.-Vrouwemarkt")] // replace abreviations in existing straatnaam
+        [InlineData("onze-lieve-vrouwstraat", "O.-L.-Vrouwstraat")] // replace abreviations in existing straatnaam
+        [InlineData("Heilig Hartlaan", "H.-Hartlaan")] // replace abreviations in existing straatnaam
+        [InlineData("Heilige Hartlaan", "H.-Hartlaan")] // replace abreviations in existing straatnaam
+        [InlineData("k.elisabethlaan", "Koningin Elisabethlaan")] // replace abreviations in existing straatnaam
         [InlineData("Clevergreen Terrace Avenue", "Evergreen")] // containment of existing straatnaam
         [InlineData("Evergreen", "Clevergreen Terrace Avenue")] // containment of input
         [InlineData("Trammesantlei", "Evergreen Terrace", false)] // no match
@@ -421,7 +426,7 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
                 .Returns(new[]
                 {
                     municipalityLatestItem
-                });
+                }.ToDictionary(x => x.NisCode));
 
             return municipalityLatestItem;
         }
@@ -437,7 +442,7 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
                             NameDutch = municipalityName,
                             NameDutchSearch = municipalityName.RemoveDiacritics(),
                             OfficialLanguages = new List<string> { "Dutch" }
-                        })
+                        }).ToDictionary(x => x.NisCode)
                 );
         }
 
@@ -463,6 +468,7 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
 
         private StreetNameLatestItem MockStreetNames(string streetName, int streetNamePersistentLocalId, string nisCode, string municipalityName)
         {
+
             var streetNameLatestItem = new StreetNameLatestItem(streetNamePersistentLocalId, nisCode)
             {
                 NameDutch = streetName,
@@ -472,6 +478,9 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
             _latestQueries
                 .Setup(x => x.GetAllLatestStreetNames())
                 .Returns(new[] { streetNameLatestItem });
+            _latestQueries
+                .Setup(x => x.GetAllLatestStreetNamesByPersistentLocalId())
+                .Returns(new[] { streetNameLatestItem }.ToDictionary(x => x.PersistentLocalId));
             _latestQueries
                 .Setup(x => x.GetLatestStreetNamesBy(municipalityName))
                 .Returns(new[] { streetNameLatestItem });

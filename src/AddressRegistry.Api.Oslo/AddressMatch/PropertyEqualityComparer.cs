@@ -8,7 +8,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TProp"></typeparam>
-    public class PropertyEqualityComparer<T, TProp> : IEqualityComparer<T>
+    public sealed class PropertyEqualityComparer<T, TProp> : IEqualityComparer<T>
     {
         private readonly Func<T, TProp> _propertyGetter;
 

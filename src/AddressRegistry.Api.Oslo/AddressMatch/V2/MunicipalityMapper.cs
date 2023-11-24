@@ -7,7 +7,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
     using Matching;
     using Responses;
 
-    internal class MunicipalityMapper : IMapper<MunicipalityLatestItem, AddressMatchScoreableItemV2>
+    internal sealed class MunicipalityMapper : IMapper<MunicipalityLatestItem, AddressMatchScoreableItemV2>
     {
         private readonly ResponseOptions _responseOptions;
 

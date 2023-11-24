@@ -1,6 +1,6 @@
 namespace AddressRegistry.Api.Oslo.AddressMatch
 {
-    public class HouseNumberWithSubaddress
+    public sealed class HouseNumberWithSubaddress
     {
         public string HouseNumber { get; }
         public string? BoxNumber { get; }

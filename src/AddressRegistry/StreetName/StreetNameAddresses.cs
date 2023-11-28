@@ -18,10 +18,13 @@ namespace AddressRegistry.StreetName
         }
 
         public IEnumerable<StreetNameAddress> ProposedStreetNameAddresses =>
-            this.Where(x => !x.IsRemoved && x.Status == AddressStatus.Proposed);
+            this.Where(x => x is { IsRemoved: false, Status: AddressStatus.Proposed });
 
         public IEnumerable<StreetNameAddress> CurrentStreetNameAddresses =>
-            this.Where(x => !x.IsRemoved && x.Status == AddressStatus.Current);
+            this.Where(x => x is { IsRemoved: false, Status: AddressStatus.Current });
+
+        public IEnumerable<StreetNameAddress> ActiveHouseNumberAddresses =>
+            ProposedStreetNameAddresses.Concat(CurrentStreetNameAddresses).Where(x => x.IsHouseNumberAddress);
 
         public bool HasPersistentLocalId(AddressPersistentLocalId addressPersistentLocalId)
             => _addressesByPersistentLocalId.ContainsKey(addressPersistentLocalId);

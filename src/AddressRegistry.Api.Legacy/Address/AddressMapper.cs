@@ -1,6 +1,7 @@
 namespace AddressRegistry.Api.Legacy.Address
 {
     using System.Collections.Generic;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common.SpatialTools.GeometryCoordinates;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;

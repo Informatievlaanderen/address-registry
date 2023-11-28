@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AddressRegistry.Api.BackOffice.Abstractions\AddressRegistry.Api.BackOffice.Abstractions.csproj" />
     <ProjectReference Include="..\AddressRegistry.Infrastructure\AddressRegistry.Infrastructure.csproj" />
   </ItemGroup>
 

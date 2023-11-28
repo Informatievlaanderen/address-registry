@@ -10,6 +10,7 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using NodaTime.Text;
+    using RegionFilter = Be.Vlaanderen.Basisregisters.GrAr.Common.RegionFilter;
 
     public class MunicipalityBosaItemProjections : ConnectedProjection<MunicipalityConsumerContext>
     {

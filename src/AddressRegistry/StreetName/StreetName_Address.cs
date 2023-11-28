@@ -3,8 +3,10 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Address;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
+    using Commands;
     using Events;
     using Exceptions;
 
@@ -338,6 +340,21 @@
             StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
                 .ChangePostalCode(postalCode);
+        }
+
+        public void Rename(IStreetNames streetNames, StreetNamePersistentLocalId sourceStreetNamePersistentLocalId, IPersistentLocalIdGenerator persistentLocalIdGenerator)
+        {
+            var sourceStreetName = streetNames
+                    .GetAsync(new StreetNameStreamId(sourceStreetNamePersistentLocalId))
+                    .GetAwaiter().GetResult();
+
+            var readdressItem = sourceStreetName.StreetNameAddresses.ActiveHouseNumberAddresses
+                .Select(x => new ReaddressAddressItem(
+                    sourceStreetNamePersistentLocalId,
+                    x.AddressPersistentLocalId,
+                    x.HouseNumber));
+
+            Readdress(streetNames, persistentLocalIdGenerator, readdressItem, new List<RetireAddressItem>(), new ReaddressExecutionContext());
         }
 
         public string GetAddressHash(AddressPersistentLocalId addressPersistentLocalId)

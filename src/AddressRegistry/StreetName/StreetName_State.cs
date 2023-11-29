@@ -29,6 +29,7 @@ namespace AddressRegistry.StreetName
             Register<StreetNameWasApproved>(When);
             Register<StreetNameWasRejected>(When);
             Register<StreetNameWasRetired>(When);
+            Register<StreetNameWasRenamed>(When);
             Register<StreetNameWasRemoved>(When);
             Register<StreetNameNamesWereCorrected>(When);
             Register<StreetNameHomonymAdditionsWereCorrected>(When);
@@ -127,6 +128,11 @@ namespace AddressRegistry.StreetName
         }
 
         private void When(StreetNameWasRetired @event)
+        {
+            Status = StreetNameStatus.Retired;
+        }
+
+        private void When(StreetNameWasRenamed @event)
         {
             Status = StreetNameStatus.Retired;
         }

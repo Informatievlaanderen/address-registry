@@ -200,7 +200,7 @@ namespace AddressRegistry.StreetName
                     var streetNameStreamId = new StreetNameStreamId(message.Command.PersistentLocalId);
                     var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
 
-                    streetName.RetireStreetNameBecauseOfRename();
+                    streetName.RetireStreetNameBecauseOfRename(message.Command.DestinationPersistentLocalId);
                 });
         }
     }

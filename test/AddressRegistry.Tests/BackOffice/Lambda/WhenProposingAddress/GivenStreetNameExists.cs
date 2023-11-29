@@ -16,7 +16,6 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
     using Be.Vlaanderen.Basisregisters.Sqs.Responses;
     using Consumer.Read.Municipality.Projections;
     using FluentAssertions;
@@ -32,6 +31,8 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
     using TicketingService.Abstractions;
     using Xunit;
     using Xunit.Abstractions;
+    using IdempotentCommandHandler = Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers.IdempotentCommandHandler;
+    using IIdempotentCommandHandler = Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers.IIdempotentCommandHandler;
 
     public class GivenStreetNameExists : BackOfficeLambdaTest
     {

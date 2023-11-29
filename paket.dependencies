@@ -32,14 +32,14 @@ nuget GeoJSON.NET 1.2.19
 nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 6.0.5
 nuget Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events 3.0.0 content: true, copy_content_to_output_dir: always, copy_local: true
 
-nuget Be.Vlaanderen.Basisregisters.AggregateSource 8.2.0
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.ExplicitRouting 8.2.0
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore.Autofac 8.2.0
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing 8.2.0
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.CommandHandling 8.2.0
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac 8.2.0
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit 8.2.0
-nuget Be.vlaanderen.basisregisters.snapshotverifier 8.2.0
+nuget Be.Vlaanderen.Basisregisters.AggregateSource 8.3.0
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.ExplicitRouting 8.3.0
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore.Autofac 8.3.0
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing 8.3.0
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.CommandHandling 8.3.0
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac 8.3.0
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit 8.3.0
+nuget Be.vlaanderen.basisregisters.snapshotverifier 8.3.0
 
 nuget Be.Vlaanderen.Basisregisters.Api 20.0.0
 
@@ -48,9 +48,9 @@ nuget Be.Vlaanderen.Basisregisters.Auth.AcmIdm 1.4.0
 nuget Be.Vlaanderen.Basisregisters.Aws.DistributedMutex 3.0.0
 nuget Be.Vlaanderen.Basisregisters.Aws.Lambda 3.0.3
 
-nuget Be.Vlaanderen.Basisregisters.CommandHandling 8.2.0
-nuget Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency 8.2.0
-nuget Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore 8.2.0
+nuget Be.Vlaanderen.Basisregisters.CommandHandling 8.3.0
+nuget Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency 8.3.0
+nuget Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore 8.3.0
 
 nuget Be.Vlaanderen.Basisregisters.EventHandling 4.2.3
 nuget Be.Vlaanderen.Basisregisters.EventHandling.Autofac 4.2.3

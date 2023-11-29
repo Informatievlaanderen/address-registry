@@ -9,29 +9,29 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
     using AddressRegistry.Api.BackOffice.Abstractions.SqsRequests;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
-    using AddressRegistry.Consumer.Read.Municipality.Projections;
-    using Projections.Syndication.PostalInfo;
-    using StreetName;
-    using StreetName.Exceptions;
-    using AutoFixture;
-    using AddressRegistry.Tests.BackOffice.Infrastructure;
-    using Infrastructure;
     using Autofac;
+    using AutoFixture;
+    using BackOffice.Infrastructure;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
-    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
     using Be.Vlaanderen.Basisregisters.Sqs.Responses;
+    using Consumer.Read.Municipality.Projections;
     using FluentAssertions;
     using global::AutoFixture;
+    using Infrastructure;
     using Microsoft.Extensions.Configuration;
     using Moq;
+    using Projections.Syndication.PostalInfo;
     using SqlStreamStore;
     using SqlStreamStore.Streams;
+    using StreetName;
+    using StreetName.Exceptions;
     using TicketingService.Abstractions;
     using Xunit;
     using Xunit.Abstractions;
+    using IdempotencyException = Be.Vlaanderen.Basisregisters.Sqs.Exceptions.IdempotencyException;
+    using IdempotentCommandHandler = Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers.IdempotentCommandHandler;
 
     public class GivenStreetNameExists : BackOfficeLambdaTest
     {

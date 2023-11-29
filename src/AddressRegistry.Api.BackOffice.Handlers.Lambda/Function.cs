@@ -1,6 +1,7 @@
 using Amazon.Lambda.Core;
+using Amazon.Lambda.Serialization.Json;
 
-[assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
+[assembly: LambdaSerializer(typeof(JsonSerializer))]
 
 namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
 {
@@ -13,7 +14,6 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.EventHandling;
-    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Infrastructure;
     using Consumer.Read.Municipality.Infrastructure.Modules;
     using Infrastructure;
@@ -25,6 +25,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
     using Newtonsoft.Json;
     using Projections.Syndication;
     using TicketingService.Proxy.HttpProxy;
+    using IdempotentCommandHandler = Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers.IdempotentCommandHandler;
+    using IIdempotentCommandHandler = Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers.IIdempotentCommandHandler;
 
     public class Function : FunctionBase
     {

@@ -19,7 +19,7 @@ SELECT
   IDENTIFICATOR->ID as "PuriId",
   IDENTIFICATOR->NAAMRUIMTE as "Namespace",
   IDENTIFICATOR->VERSIEID as "VersionString",
-  PARSE_TIMESTAMP("VersionString", 'yyyy-MM-dd''T''HH:mm:ssXXX', 'UTC') as "VersionTimestamp",
+  PARSE_TIMESTAMP(IDENTIFICATOR->VERSIEID, 'yyyy-MM-dd''T''HH:mm:ssXXX', 'UTC') as "VersionTimestamp",
   CASE WHEN IDENTIFICATOR->ID is null THEN TRUE ELSE FALSE END as "IsRemoved"
 
 FROM ADDRESS_SNAPSHOT_OSLO_STREAM

@@ -16,7 +16,6 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
     using Be.Vlaanderen.Basisregisters.Sqs.Responses;
     using FluentAssertions;
     using global::AutoFixture;
@@ -26,6 +25,8 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
     using StreetName.Commands;
     using Xunit;
     using Xunit.Abstractions;
+    using IdempotentCommandHandler = Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers.IdempotentCommandHandler;
+    using IIdempotentCommandHandler = Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers.IIdempotentCommandHandler;
 
     public class GivenStreetNameExists : BackOfficeLambdaTest
     {

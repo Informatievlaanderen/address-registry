@@ -26,6 +26,7 @@ namespace AddressRegistry.Consumer.Infrastructure
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
+    using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
 
     public sealed class Program
     {
@@ -99,6 +100,15 @@ namespace AddressRegistry.Consumer.Infrastructure
                                 sqlServerOptions.EnableRetryOnFailure();
                                 sqlServerOptions.MigrationsHistoryTable(MigrationTables.ConsumerProjections, Schema.ConsumerProjections);
                             }));
+
+                    services.ConfigureIdempotency(
+                        hostContext.Configuration
+                            .GetSection(IdempotencyConfiguration.Section)
+                            .Get<IdempotencyConfiguration>()
+                            .ConnectionString!,
+                        new IdempotencyMigrationsTableInfo(Schema.Import),
+                        new IdempotencyTableInfo(Schema.Import),
+                        loggerFactory);
                 })
                 .UseServiceProviderFactory(new AutofacServiceProviderFactory())
                 .ConfigureContainer<ContainerBuilder>((hostContext, containerBuilder) =>
@@ -132,6 +142,11 @@ namespace AddressRegistry.Consumer.Infrastructure
 
                         return consumerOptions;
                     });
+
+                    containerBuilder.RegisterType<IdempotentCommandHandler>()
+                        .As<IIdempotentCommandHandler>()
+                        .AsSelf()
+                        .InstancePerLifetimeScope();
 
                     containerBuilder
                         .RegisterType<IdempotentConsumer<IdempotentConsumerContext>>()

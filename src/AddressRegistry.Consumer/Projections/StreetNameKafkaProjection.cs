@@ -177,7 +177,11 @@ namespace AddressRegistry.Consumer.Projections
 
                 await commandHandler.Handle(renameStreetName, ct);
 
-                // retire all addresses under old streetname
+                var retireStreetNameBecauseOfRename = new RetireStreetNameBecauseOfRename(
+                    new StreetNamePersistentLocalId(message.PersistentLocalId),
+                    FromProvenance(message.Provenance));
+
+                await commandHandler.Handle(retireStreetNameBecauseOfRename, ct);
             });
 
             When<StreetNameWasCorrectedFromRejectedToProposed>(async (commandHandler, message, ct) =>

@@ -155,20 +155,6 @@ namespace AddressRegistry.StreetName
                 geometryPosition));
         }
 
-        private void RejectAddressBecauseOfReaddress(AddressPersistentLocalId addressPersistentLocalId)
-        {
-            StreetNameAddresses
-                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
-                .RejectBecauseOfReaddress();
-        }
-
-        private void RetireAddressBecauseOfReaddress(AddressPersistentLocalId addressPersistentLocalId)
-        {
-            StreetNameAddresses
-                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
-                .RetireBecauseOfReaddress();
-        }
-
         private void RejectOrRetireAddresses(IEnumerable<RetireAddressItem> addresssToRejectOrRetireWithinStreetName)
         {
             foreach (var (_, addressPersistentLocalId) in addresssToRejectOrRetireWithinStreetName)
@@ -210,6 +196,20 @@ namespace AddressRegistry.StreetName
             {
                 RetireAddressBecauseOfReaddress(addressPersistentLocalId);
             }
+        }
+
+        private void RejectAddressBecauseOfReaddress(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            StreetNameAddresses
+                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
+                .RejectBecauseOfReaddress();
+        }
+
+        private void RetireAddressBecauseOfReaddress(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            StreetNameAddresses
+                .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
+                .RetireBecauseOfReaddress();
         }
     }
 }

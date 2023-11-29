@@ -194,6 +194,16 @@ namespace AddressRegistry.StreetName
             }
         }
 
+        public void RetireStreetNameBecauseOfRename()
+        {
+            foreach (var address in StreetNameAddresses)
+            {
+                RejectOrRetireAddressForReaddress(address.AddressPersistentLocalId);
+            }
+
+            ApplyChange(new StreetNameWasRetired(PersistentLocalId));
+        }
+
         #region Metadata
 
         protected override void BeforeApplyChange(object @event)

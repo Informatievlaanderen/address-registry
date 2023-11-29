@@ -1,9 +1,13 @@
 namespace AddressRegistry.Tests.AggregateTests.WhenRetiringStreetNameBecauseOfRename
 {
+    using System.Collections.Generic;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using EventExtensions;
+    using FluentAssertions;
     using global::AutoFixture;
     using StreetName;
     using StreetName.Commands;
@@ -28,10 +32,13 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringStreetNameBecauseOfRe
         {
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
 
-            var command = Fixture.Create<RetireStreetNameBecauseOfRename>();
+            var command = new RetireStreetNameBecauseOfRename(
+                streetNamePersistentLocalId,
+                new StreetNamePersistentLocalId(streetNamePersistentLocalId + 1),
+                Fixture.Create<Provenance>());
 
             var streetNameWasImported = Fixture.Create<StreetNameWasImported>()
-                    .WithStatus(StreetNameStatus.Current);
+                .WithStatus(StreetNameStatus.Current);
 
             var proposedAddress = Fixture.Create<AddressWasProposedV2>()
                 .AsHouseNumberAddress();
@@ -47,11 +54,13 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringStreetNameBecauseOfRe
                 .When(command)
                 .Then(
                     new Fact(new StreetNameStreamId(command.PersistentLocalId),
-                        new AddressWasRejectedBecauseOfReaddress(streetNamePersistentLocalId, new AddressPersistentLocalId(proposedAddress.AddressPersistentLocalId))),
+                        new AddressWasRejectedBecauseOfReaddress(streetNamePersistentLocalId,
+                            new AddressPersistentLocalId(proposedAddress.AddressPersistentLocalId))),
                     new Fact(new StreetNameStreamId(command.PersistentLocalId),
-                        new AddressWasRetiredBecauseOfReaddress(streetNamePersistentLocalId, new AddressPersistentLocalId(currentAddress.AddressPersistentLocalId))),
+                        new AddressWasRetiredBecauseOfReaddress(streetNamePersistentLocalId,
+                            new AddressPersistentLocalId(currentAddress.AddressPersistentLocalId))),
                     new Fact(new StreetNameStreamId(command.PersistentLocalId),
-                        new StreetNameWasRetired(streetNamePersistentLocalId))));
+                        new StreetNameWasRenamed(streetNamePersistentLocalId, command.DestinationPersistentLocalId))));
         }
 
         [Fact]
@@ -59,10 +68,13 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringStreetNameBecauseOfRe
         {
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
 
-            var command = Fixture.Create<RetireStreetNameBecauseOfRename>();
+            var command = new RetireStreetNameBecauseOfRename(
+                streetNamePersistentLocalId,
+                new StreetNamePersistentLocalId(streetNamePersistentLocalId + 1),
+                Fixture.Create<Provenance>());
 
             var streetNameWasImported = Fixture.Create<StreetNameWasImported>()
-                    .WithStatus(StreetNameStatus.Current);
+                .WithStatus(StreetNameStatus.Current);
 
             var retiredAddress = Fixture.Create<AddressWasMigratedToStreetName>()
                 .AsHouseNumberAddress()
@@ -83,7 +95,30 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringStreetNameBecauseOfRe
                     removedAddress)
                 .When(command)
                 .Then(new Fact(new StreetNameStreamId(command.PersistentLocalId),
-                        new StreetNameWasRetired(streetNamePersistentLocalId))));
+                    new StreetNameWasRenamed(streetNamePersistentLocalId, command.DestinationPersistentLocalId))));
+        }
+
+        [Fact]
+        public void StateCheck()
+        {
+            // Arrange
+            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
+            var destinationStreetNamePersistentLocalId = new StreetNamePersistentLocalId(streetNamePersistentLocalId + 1);
+
+            var migratedStreetNameWasImported = Fixture.Create<MigratedStreetNameWasImported>()
+                .WithStatus(StreetNameStatus.Current);
+
+            var sut = new StreetNameFactory(NoSnapshotStrategy.Instance).Create();
+            sut.Initialize(new List<object>
+            {
+                migratedStreetNameWasImported,
+                new StreetNameWasRenamed(
+                    streetNamePersistentLocalId,
+                    destinationStreetNamePersistentLocalId)
+            });
+
+            // Assert
+            sut.Status.Should().Be(StreetNameStatus.Retired);
         }
     }
 }

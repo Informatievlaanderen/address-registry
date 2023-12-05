@@ -5,6 +5,7 @@ namespace AddressRegistry.Address.Commands
     using System;
     using System.Collections.Generic;
 
+    [Obsolete("This is a legacy command and should not be used anymore.")]
     public class AssignPersistentLocalIdToAddress
     {
         private static readonly Guid Namespace = new Guid("213d9961-c1fc-4e3a-b512-29d0221b34ab");

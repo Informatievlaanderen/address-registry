@@ -1,11 +1,13 @@
 namespace AddressRegistry.Address
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using Newtonsoft.Json;
 
+    [Obsolete("This is a legacy valueobject and should not be used anymore.")]
     public class WkbGeometry : ByteArrayValueObject<WkbGeometry>
     {
         public const int SridLambert72 = 31370;
@@ -20,6 +22,7 @@ namespace AddressRegistry.Address
         protected override IEnumerable<object> Reflect() => Value.Cast<object>();
     }
 
+    [Obsolete("This is a legacy valueobject and should not be used anymore.")]
     public class ExtendedWkbGeometry : ByteArrayValueObject<ExtendedWkbGeometry>
     {
         [JsonConstructor]

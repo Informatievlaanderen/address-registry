@@ -6,6 +6,7 @@ namespace AddressRegistry.Address.Commands.Crab
     using System;
     using System.Collections.Generic;
 
+    [Obsolete("This is a legacy command and should not be used anymore.")]
     public class RequestPersistentLocalIdForCrabHouseNumberId
     {
         private static readonly Guid Namespace = new Guid("e07178dc-249a-425b-84a5-d065af8a84cc");

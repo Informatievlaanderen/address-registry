@@ -3,6 +3,7 @@ namespace AddressRegistry.Address.Exceptions
     using System;
     using System.Runtime.Serialization;
 
+    [Obsolete("This is a legacy class and should not be used anymore.")]
     [Serializable]
     public sealed class AddressRemovedException : AddressRegistryException
     {
@@ -12,7 +13,7 @@ namespace AddressRegistry.Address.Exceptions
         private AddressRemovedException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         { }
-        
+
         public AddressRemovedException(string message)
             : base(message)
         { }

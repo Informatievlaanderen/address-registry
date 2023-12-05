@@ -1,10 +1,20 @@
 namespace AddressRegistry.Projector.Infrastructure
 {
+    using System;
+    using System.Linq;
+    using System.Reflection;
+    using System.Threading;
+    using AddressRegistry.Infrastructure.Modules;
+    using AddressRegistry.Projections.Extract;
+    using AddressRegistry.Projections.Legacy;
+    using AddressRegistry.Projections.Wfs;
+    using AddressRegistry.Projections.Wms;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Microsoft;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
+    using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
     using Configuration;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -12,21 +22,10 @@ namespace AddressRegistry.Projector.Infrastructure
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Diagnostics.HealthChecks;
-    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Hosting;
-    using Modules;
-    using AddressRegistry.Projections.Extract;
-    using AddressRegistry.Projections.Legacy;
-    using AddressRegistry.Projections.Wfs;
-    using AddressRegistry.Projections.Wms;
-    using System;
-    using System.Linq;
-    using System.Reflection;
-    using System.Threading;
-    using AddressRegistry.Infrastructure.Modules;
-    using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
-    using Microsoft.Extensions.Options;
+    using Microsoft.Extensions.Logging;
     using Microsoft.OpenApi.Models;
+    using Modules;
 
     /// <summary>Represents the startup process for the application.</summary>
     public class Startup
@@ -127,9 +126,7 @@ namespace AddressRegistry.Projector.Infrastructure
                         }
                     }
                 })
-                .Configure<ExtractConfig>(_configuration.GetSection("Extract"))
-                .Configure<FeatureToggleOptions>(_configuration.GetSection(FeatureToggleOptions.ConfigurationKey))
-                .AddSingleton(c => new UseProjectionsV2Toggle(c.GetRequiredService<IOptions<FeatureToggleOptions>>().Value.UseProjectionsV2));
+                .Configure<ExtractConfig>(_configuration.GetSection("Extract"));
 
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterModule(new LoggingModule(_configuration, services));

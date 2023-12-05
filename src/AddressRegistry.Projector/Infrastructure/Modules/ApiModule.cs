@@ -1,6 +1,5 @@
 namespace AddressRegistry.Projector.Infrastructure.Modules
 {
-    using System;
     using AddressRegistry.Infrastructure;
     using AddressRegistry.Projections.Extract;
     using AddressRegistry.Projections.Extract.AddressCrabHouseNumberIdExtract;
@@ -16,7 +15,10 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using AddressRegistry.Projections.Legacy.AddressSyndication;
     using AddressRegistry.Projections.Legacy.CrabIdToPersistentLocalId;
     using AddressRegistry.Projections.Wfs;
+    using AddressRegistry.Projections.Wfs.AddressWfs;
     using AddressRegistry.Projections.Wms;
+    using AddressRegistry.Projections.Wms.AddressWmsItem;
+    using AddressRegistry.Projections.Wms.AddressWmsItemV2;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
@@ -37,13 +39,13 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using Microsoft.Extensions.Options;
     using NetTopologySuite.IO;
     using SqlStreamStore;
+    using LastChangedListContextMigrationFactory = AddressRegistry.Projections.LastChangedList.LastChangedListContextMigrationFactory;
 
     public class ApiModule : Module
     {
         private readonly IConfiguration _configuration;
         private readonly IServiceCollection _services;
         private readonly ILoggerFactory _loggerFactory;
-        private readonly bool _useProjectionsV2;
 
         public ApiModule(
             IConfiguration configuration,
@@ -53,7 +55,6 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
             _configuration = configuration;
             _services = services;
             _loggerFactory = loggerFactory;
-            _useProjectionsV2 = Convert.ToBoolean(_configuration.GetSection(FeatureToggleOptions.ConfigurationKey)[nameof(FeatureToggleOptions.UseProjectionsV2)]);
         }
 
         protected override void Load(ContainerBuilder builder)
@@ -83,22 +84,12 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
 
             RegisterLastChangedProjections(builder);
 
-            if (_useProjectionsV2)
-            {
-                RegisterExtractProjectionsV2(builder);
-                RegisterLegacyProjectionsV2(builder);
-                RegisterWfsProjectionsV2(builder);
-                RegisterWmsProjectionsV2(builder);
-                // RegisterWfsProjections(builder); //TODO: Remove when Wfs has been filled in staging
-                // RegisterWmsProjections(builder); //TODO: Remove when Wms has been filled in staging
-            }
-            else
-            {
-                RegisterExtractProjections(builder);
-                RegisterLegacyProjections(builder);
-                RegisterWfsProjections(builder);
-                RegisterWmsProjections(builder);
-            }
+            RegisterExtractProjectionsV2(builder);
+            RegisterLegacyProjectionsV2(builder);
+            RegisterWfsProjectionsV2(builder);
+            RegisterWmsProjectionsV2(builder);
+            // RegisterWfsProjections(builder); //TODO: Remove when Wfs has been filled in staging
+            // RegisterWmsProjections(builder); //TODO: Remove when Wms has been filled in staging
         }
 
         private void RegisterExtractProjections(ContainerBuilder builder)
@@ -114,7 +105,8 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                     _configuration,
                     _loggerFactory)
                 .RegisterProjections<AddressExtractProjection, ExtractContext>(
-                    context => new AddressExtractProjection(context.Resolve<IOptions<ExtractConfig>>(), DbaseCodePage.Western_European_ANSI.ToEncoding(), new WKBReader()),
+                    context => new AddressExtractProjection(context.Resolve<IOptions<ExtractConfig>>(),
+                        DbaseCodePage.Western_European_ANSI.ToEncoding(), new WKBReader()),
                     ConnectedProjectionSettings.Default)
                 .RegisterProjections<AddressCrabHouseNumberIdExtractProjection, ExtractContext>(
                     context => new AddressCrabHouseNumberIdExtractProjection(DbaseCodePage.Western_European_ANSI.ToEncoding()),
@@ -162,7 +154,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                     _loggerFactory));
 
             builder
-                .RegisterProjectionMigrator<AddressRegistry.Projections.LastChangedList.LastChangedListContextMigrationFactory>(
+                .RegisterProjectionMigrator<LastChangedListContextMigrationFactory>(
                     _configuration,
                     _loggerFactory)
                 .RegisterProjectionMigrator<DataMigrationContextMigrationFactory>(
@@ -235,10 +227,9 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .RegisterProjectionMigrator<WfsContextMigrationFactory>(
                     _configuration,
                     _loggerFactory)
-
-            .RegisterProjections<AddressRegistry.Projections.Wfs.AddressDetail.AddressDetailProjections, WfsContext>(() =>
-                    new AddressRegistry.Projections.Wfs.AddressDetail.AddressDetailProjections(WKBReaderFactory.CreateForLegacy()),
-                wfsProjectionSettings);
+                .RegisterProjections<AddressRegistry.Projections.Wfs.AddressDetail.AddressDetailProjections, WfsContext>(() =>
+                        new AddressRegistry.Projections.Wfs.AddressDetail.AddressDetailProjections(WKBReaderFactory.CreateForLegacy()),
+                    wfsProjectionSettings);
         }
 
         private void RegisterWfsProjectionsV2(ContainerBuilder builder)
@@ -258,9 +249,8 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .RegisterProjectionMigrator<WfsContextMigrationFactory>(
                     _configuration,
                     _loggerFactory)
-
-                .RegisterProjections<AddressRegistry.Projections.Wfs.AddressWfs.AddressWfsProjections, WfsContext>(() =>
-                        new AddressRegistry.Projections.Wfs.AddressWfs.AddressWfsProjections(WKBReaderFactory.CreateForLegacy()),
+                .RegisterProjections<AddressWfsProjections, WfsContext>(() =>
+                        new AddressWfsProjections(WKBReaderFactory.CreateForLegacy()),
                     wfsProjectionSettings);
         }
 
@@ -281,10 +271,9 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .RegisterProjectionMigrator<WmsContextMigrationFactory>(
                     _configuration,
                     _loggerFactory)
-
-            .RegisterProjections<AddressRegistry.Projections.Wms.AddressDetail.AddressDetailProjections, WmsContext>(() =>
-                    new AddressRegistry.Projections.Wms.AddressDetail.AddressDetailProjections(WKBReaderFactory.CreateForLegacy()),
-                wmsProjectionSettings);
+                .RegisterProjections<AddressRegistry.Projections.Wms.AddressDetail.AddressDetailProjections, WmsContext>(() =>
+                        new AddressRegistry.Projections.Wms.AddressDetail.AddressDetailProjections(WKBReaderFactory.CreateForLegacy()),
+                    wmsProjectionSettings);
         }
 
         private void RegisterWmsProjectionsV2(ContainerBuilder builder)
@@ -304,12 +293,11 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .RegisterProjectionMigrator<WmsContextMigrationFactory>(
                     _configuration,
                     _loggerFactory)
-
-                .RegisterProjections<AddressRegistry.Projections.Wms.AddressWmsItem.AddressWmsItemProjections, WmsContext>(() =>
-                        new AddressRegistry.Projections.Wms.AddressWmsItem.AddressWmsItemProjections(WKBReaderFactory.CreateForLegacy()),
+                .RegisterProjections<AddressWmsItemProjections, WmsContext>(() =>
+                        new AddressWmsItemProjections(WKBReaderFactory.CreateForLegacy()),
                     wmsProjectionSettings)
-                .RegisterProjections<AddressRegistry.Projections.Wms.AddressWmsItemV2.AddressWmsItemV2Projections, WmsContext>(() =>
-                        new AddressRegistry.Projections.Wms.AddressWmsItemV2.AddressWmsItemV2Projections(WKBReaderFactory.CreateForLegacy()),
+                .RegisterProjections<AddressWmsItemV2Projections, WmsContext>(() =>
+                        new AddressWmsItemV2Projections(WKBReaderFactory.CreateForLegacy()),
                     wmsProjectionSettings);
         }
     }

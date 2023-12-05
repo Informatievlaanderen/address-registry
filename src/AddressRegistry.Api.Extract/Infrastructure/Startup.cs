@@ -1,5 +1,8 @@
 namespace AddressRegistry.Api.Extract.Infrastructure
 {
+    using System;
+    using System.Linq;
+    using System.Reflection;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api;
@@ -11,16 +14,10 @@ namespace AddressRegistry.Api.Extract.Infrastructure
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Diagnostics.HealthChecks;
-    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Hosting;
-    using Modules;
-    using System;
-    using System.Linq;
-    using System.Reflection;
-
-    using FeatureToggles;
-    using Microsoft.Extensions.Options;
+    using Microsoft.Extensions.Logging;
     using Microsoft.OpenApi.Models;
+    using Modules;
 
     /// <summary>Represents the startup process for the application.</summary>
     public class Startup
@@ -97,11 +94,7 @@ namespace AddressRegistry.Api.Extract.Infrastructure
                                     tags: new[] { DatabaseTag, "sql", "sqlserver" });
                         }
                     }
-                })
-                .Configure<FeatureToggleOptions>(_configuration.GetSection(FeatureToggleOptions.ConfigurationKey))
-                .AddSingleton(c =>
-                    new UseExtractV2Toggle(c.GetRequiredService<IOptions<FeatureToggleOptions>>().Value.UseExtractV2));
-
+                });
 
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterModule(new ApiModule(_configuration, services, _loggerFactory));

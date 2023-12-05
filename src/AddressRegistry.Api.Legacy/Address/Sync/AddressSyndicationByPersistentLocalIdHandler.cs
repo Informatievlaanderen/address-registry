@@ -1,6 +1,5 @@
 namespace AddressRegistry.Api.Legacy.Address.Sync
 {
-    using System;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -9,7 +8,6 @@ namespace AddressRegistry.Api.Legacy.Address.Sync
     using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
     using Infrastructure.Options;
     using MediatR;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Options;
     using Projections.Legacy;

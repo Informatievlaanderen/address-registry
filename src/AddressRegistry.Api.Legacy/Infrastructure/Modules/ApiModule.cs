@@ -3,7 +3,6 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
     using System;
     using Address;
     using Address.Bosa;
-    using AddressMatch;
     using AddressMatch.V1;
     using AddressMatch.V1.Matching;
     using AddressMatch.V2;

@@ -17,24 +17,6 @@ namespace AddressRegistry.Api.Legacy.Address
 
     public static class AddressMapper
     {
-        public static VolledigAdres? GetVolledigAdres(AddressListViewItem addressListViewItem)
-        {
-            if (string.IsNullOrEmpty(addressListViewItem.StreetNamePersistentLocalId)
-                || string.IsNullOrEmpty(addressListViewItem.NisCode))
-            {
-                return null;
-            }
-
-            var defaultMunicipalityName = addressListViewItem.DefaultMunicipalityName;
-            return new VolledigAdres(
-                addressListViewItem.DefaultStreetNameName.Value,
-                addressListViewItem.HouseNumber,
-                addressListViewItem.BoxNumber,
-                addressListViewItem.PostalCode,
-                defaultMunicipalityName.Value,
-                defaultMunicipalityName.Key);
-        }
-
         public static VolledigAdres? GetVolledigAdres(AddressListViewItemV2 addressListViewItem)
         {
             if (string.IsNullOrEmpty(addressListViewItem.NisCode))
@@ -78,19 +60,6 @@ namespace AddressRegistry.Api.Legacy.Address
             }
 
             var defaultMunicipalityName = GetDefaultMunicipalityName(municipality);
-            return new VolledigAdres(
-                GetDefaultStreetNameName(streetName, municipality.PrimaryLanguage).Value,
-                houseNumber,
-                boxNumber,
-                postalCode,
-                defaultMunicipalityName.Value,
-                defaultMunicipalityName.Key);
-        }
-
-        public static VolledigAdres GetVolledigAdres(string houseNumber, string boxNumber, string postalCode, StreetNameBosaItem streetName, MunicipalityBosaItem municipality)
-        {
-            var defaultMunicipalityName = GetDefaultMunicipalityName(municipality);
-
             return new VolledigAdres(
                 GetDefaultStreetNameName(streetName, municipality.PrimaryLanguage).Value,
                 houseNumber,
@@ -194,18 +163,6 @@ namespace AddressRegistry.Api.Legacy.Address
             };
         }
 
-        public static AddressStatus? ConvertFromAdresStatus(AdresStatus? status)
-        {
-            return status switch
-            {
-                null => null,
-                AdresStatus.Voorgesteld => AddressStatus.Proposed,
-                AdresStatus.Gehistoreerd => AddressStatus.Retired,
-                AdresStatus.Afgekeurd => AddressStatus.Rejected,
-                _ => AddressStatus.Current
-            };
-        }
-
         public static AddressRegistry.StreetName.AddressStatus? ConvertFromAdresStatusV2(AdresStatus? status)
         {
             return status switch
@@ -240,17 +197,6 @@ namespace AddressRegistry.Api.Legacy.Address
             };
         }
 
-        public static KeyValuePair<Taal, string?> GetDefaultMunicipalityName(MunicipalityBosaItem municipality)
-        {
-            return municipality.PrimaryLanguage switch
-            {
-                Taal.FR => new KeyValuePair<Taal, string?>(Taal.FR, municipality.NameFrench),
-                Taal.DE => new KeyValuePair<Taal, string?>(Taal.DE, municipality.NameGerman),
-                Taal.EN => new KeyValuePair<Taal, string?>(Taal.EN, municipality.NameEnglish),
-                _ => new KeyValuePair<Taal, string?>(Taal.NL, municipality.NameDutch)
-            };
-        }
-
         public static KeyValuePair<Taal, string?> GetDefaultStreetNameName(Projections.Syndication.StreetName.StreetNameLatestItem streetName, Taal? taal)
         {
             return taal switch
@@ -258,17 +204,6 @@ namespace AddressRegistry.Api.Legacy.Address
                 Taal.FR => new KeyValuePair<Taal, string?>(Taal.FR, streetName.NameFrench),
                 Taal.DE => new KeyValuePair<Taal, string?>(Taal.DE, streetName.NameGerman),
                 Taal.EN => new KeyValuePair<Taal, string?>(Taal.EN, streetName.NameEnglish),
-                _ => new KeyValuePair<Taal, string?>(Taal.NL, streetName.NameDutch)
-            };
-        }
-
-        public static KeyValuePair<Taal, string?> GetDefaultStreetNameName(Projections.Syndication.StreetName.StreetNameLatestItem streetName, MunicipalityLanguage municipalityLanguage)
-        {
-            return municipalityLanguage switch
-            {
-                MunicipalityLanguage.French => new KeyValuePair<Taal, string?>(Taal.FR, streetName.NameFrench),
-                MunicipalityLanguage.German => new KeyValuePair<Taal, string?>(Taal.DE, streetName.NameGerman),
-                MunicipalityLanguage.English => new KeyValuePair<Taal, string?>(Taal.EN, streetName.NameEnglish),
                 _ => new KeyValuePair<Taal, string?>(Taal.NL, streetName.NameDutch)
             };
         }
@@ -318,28 +253,6 @@ namespace AddressRegistry.Api.Legacy.Address
                 MunicipalityLanguage.German => new KeyValuePair<Taal, string?>(Taal.DE, streetName.HomonymAdditionGerman),
                 MunicipalityLanguage.English => new KeyValuePair<Taal, string?>(Taal.EN, streetName.HomonymAdditionEnglish),
                 _ => new KeyValuePair<Taal, string?>(Taal.NL, streetName.HomonymAdditionDutch)
-            };
-        }
-
-        public static KeyValuePair<Taal, string?> GetDefaultStreetNameName(StreetNameBosaItem streetName, Taal? taal)
-        {
-            return taal switch
-            {
-                Taal.FR => new KeyValuePair<Taal, string?>(Taal.FR, streetName.NameFrench),
-                Taal.DE => new KeyValuePair<Taal, string?>(Taal.DE, streetName.NameGerman),
-                Taal.EN => new KeyValuePair<Taal, string?>(Taal.EN, streetName.NameEnglish),
-                _ => new KeyValuePair<Taal, string?>(Taal.NL, streetName.NameDutch)
-            };
-        }
-
-        public static KeyValuePair<Taal, string?> GetDefaultStreetNameName(StreetNameBosaItem streetNameBosaItem, MunicipalityLanguage municipalityLanguage)
-        {
-            return municipalityLanguage switch
-            {
-                MunicipalityLanguage.French => new KeyValuePair<Taal, string?>(Taal.FR, streetNameBosaItem.NameFrench),
-                MunicipalityLanguage.German => new KeyValuePair<Taal, string?>(Taal.DE, streetNameBosaItem.NameGerman),
-                MunicipalityLanguage.English => new KeyValuePair<Taal, string?>(Taal.EN, streetNameBosaItem.NameEnglish),
-                _ => new KeyValuePair<Taal, string?>(Taal.NL, streetNameBosaItem.NameDutch)
             };
         }
 

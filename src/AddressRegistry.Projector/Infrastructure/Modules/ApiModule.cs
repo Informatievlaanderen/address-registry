@@ -307,6 +307,9 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
 
                 .RegisterProjections<AddressRegistry.Projections.Wms.AddressWmsItem.AddressWmsItemProjections, WmsContext>(() =>
                         new AddressRegistry.Projections.Wms.AddressWmsItem.AddressWmsItemProjections(WKBReaderFactory.CreateForLegacy()),
+                    wmsProjectionSettings)
+                .RegisterProjections<AddressRegistry.Projections.Wms.AddressWmsItemV2.AddressWmsItemV2Projections, WmsContext>(() =>
+                        new AddressRegistry.Projections.Wms.AddressWmsItemV2.AddressWmsItemV2Projections(WKBReaderFactory.CreateForLegacy()),
                     wmsProjectionSettings);
         }
     }

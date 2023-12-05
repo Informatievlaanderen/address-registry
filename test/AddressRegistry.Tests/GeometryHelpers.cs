@@ -27,6 +27,10 @@ namespace AddressRegistry.Tests
             "<gml:Point srsName=\"https://www.opengis.net/def/crs/EPSG/0/31370\" xmlns:gml=\"http://www.opengis.net/gml/3.2\">" +
             "<gml:pos>103672.37 192046.71</gml:pos></gml:Point>";
 
+        public const string ThirdGmlPointGeometry =
+            "<gml:Point srsName=\"https://www.opengis.net/def/crs/EPSG/0/31370\" xmlns:gml=\"http://www.opengis.net/gml/3.2\">" +
+            "<gml:pos>103673.37 192046.71</gml:pos></gml:Point>";
+
         private static readonly WKBWriter WkbWriter = new WKBWriter { Strict = false, HandleSRID = true };
         public static byte[] ExampleWkb { get; }
         public static byte[] ExampleExtendedWkb { get; }

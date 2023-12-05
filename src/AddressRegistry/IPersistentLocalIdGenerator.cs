@@ -1,4 +1,4 @@
-namespace AddressRegistry.Address
+namespace AddressRegistry
 {
     public interface IPersistentLocalIdGenerator
     {

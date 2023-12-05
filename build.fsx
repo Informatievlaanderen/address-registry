@@ -61,7 +61,6 @@ Target.create "Publish_Solution" (fun _ ->
     "AddressRegistry.Api.Legacy"
     "AddressRegistry.Api.Oslo"
     "AddressRegistry.Api.Extract"
-    "AddressRegistry.Api.CrabImport"
     "AddressRegistry.Api.BackOffice"
     "AddressRegistry.Api.BackOffice.Abstractions"
     "AddressRegistry.Api.BackOffice.Handlers.Lambda"
@@ -93,7 +92,6 @@ Target.create "Pack_Solution" (fun _ ->
     "AddressRegistry.Api.Legacy"
     "AddressRegistry.Api.Oslo"
     "AddressRegistry.Api.Extract"
-    "AddressRegistry.Api.CrabImport"
     "AddressRegistry.Api.BackOffice"
     "AddressRegistry.Api.BackOffice.Abstractions"
   ] |> List.iter pack)
@@ -103,7 +101,6 @@ Target.create "Containerize_ApiLegacy" (fun _ -> containerize "AddressRegistry.A
 Target.create "Containerize_ApiOslo" (fun _ -> containerize "AddressRegistry.Api.Oslo" "api-oslo")
 Target.create "Containerize_ApiExtract" (fun _ -> containerize "AddressRegistry.Api.Extract" "api-extract")
 Target.create "Containerize_ApiBackOffice" (fun _ -> containerize "AddressRegistry.Api.BackOffice" "api-backoffice")
-Target.create "Containerize_ApiCrabImport" (fun _ -> containerize "AddressRegistry.Api.CrabImport" "api-crab-import")
 Target.create "Containerize_Consumer" (fun _ -> containerize "AddressRegistry.Consumer" "consumer")
 Target.create "Containerize_ConsumerMunicipality" (fun _ -> containerize "AddressRegistry.Consumer.Read.Municipality" "consumer-read-municipality")
 Target.create "Containerize_ConsumerStreetName" (fun _ -> containerize "AddressRegistry.Consumer.Read.StreetName" "consumer-read-streetname")
@@ -155,7 +152,6 @@ Target.create "Containerize" ignore
   //==> "Containerize_ApiOslo"
   //==> "Containerize_ApiExtract"
   //==> "Containerize_ApiBackOffice"
-  //==> "Containerize_ApiCrabImport"
   //==> "Containerize_Consumer"
   //==> "Containerize_ConsumerMunicipality"
   //==> "Containerize_ConsumerStreetName"

@@ -98,21 +98,6 @@ jobs:
       semver: ${{ needs.set-release-version.outputs.version }}
     secrets: inherit
 
-  build-api-crab-import:
-    name: Build Api CrabImport
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
-    needs: [ set-release-version ]
-    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
-    with:
-      registry: address-registry
-      build-target: Containerize_ApiCrabImport
-      image-file: ar-api-crab-import-image.tar
-      image-name: api-crab-import
-      test-project: AddressRegistry.Tests
-      build-project: AddressRegistry.Api.CrabImport
-      semver: ${{ needs.set-release-version.outputs.version }}
-    secrets: inherit
-
   build-api-extract:
     name: Build Api Extract
     uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
@@ -353,18 +338,6 @@ jobs:
       semver: ${{ needs.set-release-version.outputs.version }}
     secrets: inherit
 
-  pack-api-crab-import:
-    name: Pack Api CrabImport
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/pack.yml@main
-    needs: [ set-release-version ]
-    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
-    with:
-      pack-file: Be.Vlaanderen.Basisregisters.AddressRegistry.Api.CrabImport
-      test-project: AddressRegistry.Tests
-      build-project: AddressRegistry.Api.CrabImport
-      semver: ${{ needs.set-release-version.outputs.version }}
-    secrets: inherit
-
   build-lambda-backoffice:
     name: Build Lambda
     uses: Informatievlaanderen/build-pipeline/.github/workflows/build-lambda.yml@main
@@ -387,12 +360,10 @@ jobs:
       pack-api-legacy,
       pack-api-oslo,
       pack-api-extract,
-      pack-api-crab-import,
       build-api-backoffice,
       build-api-legacy,
       build-api-oslo,
       build-api-extract,
-      build-api-crab-import,
       build-projector,
       build-projections-backoffice,
       build-projections-syndication,
@@ -490,13 +461,6 @@ jobs:
       continue-on-error: false
       with:
         name: nuget-Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Extract-${{ needs.set-release-version.outputs.version }}
-        path: dist/nuget/
-
-    - name: Download NuGet Api CrabImport
-      uses: actions/download-artifact@v3
-      continue-on-error: false
-      with:
-        name: nuget-Be.Vlaanderen.Basisregisters.AddressRegistry.Api.CrabImport-${{ needs.set-release-version.outputs.version }}
         path: dist/nuget/
 
     - name: Run Semantic Release
@@ -660,12 +624,6 @@ jobs:
         name: nuget-Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Extract-${{ needs.release.outputs.version }}
         path: ~/
 
-    - name: Download NuGet package api-crab-import
-      uses: actions/download-artifact@v3
-      with:
-        name: nuget-Be.Vlaanderen.Basisregisters.AddressRegistry.Api.CrabImport-${{ needs.release.outputs.version }}
-        path: ~/
-
     - name: Publish packages to NuGet
       shell: bash
       run: |
@@ -674,7 +632,6 @@ jobs:
         dotnet nuget push ~/Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Legacy.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
         dotnet nuget push ~/Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Oslo.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
         dotnet nuget push ~/Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Extract.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
-        dotnet nuget push ~/Be.Vlaanderen.Basisregisters.AddressRegistry.Api.CrabImport.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
       env:
         SEMVER: ${{  needs.release.outputs.version }}
         WORKSPACE: ${{ github.workspace }}
@@ -752,7 +709,6 @@ jobs:
           'api-backoffice'
           , 'api-legacy'
           , 'api-oslo'
-          , 'api-crab-import'
           , 'api-extract'
           , 'projector'
           , 'projections-syndication'
@@ -816,7 +772,6 @@ jobs:
           'api-backoffice'
           , 'api-legacy'
           , 'api-oslo'
-          , 'api-crab-import'
           , 'api-extract'
           , 'projector'
           , 'projections-syndication'
@@ -882,7 +837,6 @@ jobs:
           'api-backoffice'
           , 'api-legacy'
           , 'api-oslo'
-          , 'api-crab-import'
           , 'api-extract'
           , 'projector'
           , 'projections-syndication'
@@ -944,7 +898,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: ['api-backoffice', 'api-legacy', 'api-oslo', 'api-crab-import', 'api-extract', 'projector', 'projections-syndication', 'projections-backoffice', 'consumer', 'consumer-read-municipality', 'consumer-read-streetname', 'producer', 'producer-snapshot-oslo', 'migrator-address', 'cache-warmer']
+        image: ['api-backoffice', 'api-legacy', 'api-oslo', 'api-extract', 'projector', 'projections-syndication', 'projections-backoffice', 'consumer', 'consumer-read-municipality', 'consumer-read-streetname', 'producer', 'producer-snapshot-oslo', 'migrator-address', 'cache-warmer']
     steps:
       - name: Configure AWS credentials (Production)
         uses: aws-actions/configure-aws-credentials@v1-node16
@@ -1017,7 +971,6 @@ jobs:
       matrix:
         services: [
           'address-registry-api'
-          , 'address-registry-import-api'
           , 'address-registry-projections'
           , 'address-registry-producer'
           , 'address-registry-producer-snapshot-oslo'

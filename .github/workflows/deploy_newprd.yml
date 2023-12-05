@@ -1,6 +1,6 @@
-name: Manual New Production Deploy
+name: Manual Production Deploy
 
-concurrency: Manual New Production Deploy
+concurrency: Manual Production Deploy
 
 on:
   workflow_dispatch:
@@ -12,8 +12,8 @@ on:
 jobs:
   deploy_to_production_start_slack:
     if: github.repository_owner == 'Informatievlaanderen'
-    name: Deploy to new production started
-    environment: newprd
+    name: Deploy to production started
+    environment: prd
     runs-on: ubuntu-latest
 
     steps:
@@ -25,7 +25,7 @@ jobs:
       uses: slackapi/slack-github-action@v1.23.0
       with:
         channel-id: '#team-dinosaur-dev'
-        slack-message: Deployment of address-registry to new production has started
+        slack-message: Deployment of address-registry to production has started
       env:
         SLACK_BOT_TOKEN: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
         SLACK_CHANNEL: ${{ secrets.VBR_NOTIFIER_CHANNEL_NAME }}
@@ -34,7 +34,7 @@ jobs:
   deploy_to_production:
     if: github.repository_owner == 'Informatievlaanderen'
     needs: [ deploy_to_production_start_slack ]
-    name: Deploy to New Production
+    name: Deploy to Production
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -79,7 +79,7 @@ jobs:
   deploy_lambda_to_production:
     if: github.repository_owner == 'Informatievlaanderen'
     needs: [deploy_to_production]
-    name: Deploy lambda to new production
+    name: Deploy lambda to production
     runs-on: ubuntu-latest
 
     steps:
@@ -114,7 +114,7 @@ jobs:
   deploy_to_production_finish_slack:
     if: github.repository_owner == 'Informatievlaanderen'
     needs: [ deploy_lambda_to_production ]
-    name: Deploy to new production finished
+    name: Deploy to production finished
     runs-on: ubuntu-latest
 
     steps:
@@ -126,7 +126,7 @@ jobs:
       uses: slackapi/slack-github-action@v1.23.0
       with:
         channel-id: '#team-dinosaur-dev'
-        slack-message: Deployment of address-registry to new production has finished
+        slack-message: Deployment of address-registry to production has finished
       env:
         SLACK_BOT_TOKEN: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
         SLACK_CHANNEL: ${{ secrets.VBR_NOTIFIER_CHANNEL_NAME }}

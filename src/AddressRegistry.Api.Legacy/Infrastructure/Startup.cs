@@ -1,5 +1,8 @@
 namespace AddressRegistry.Api.Legacy.Infrastructure
 {
+    using System;
+    using System.Linq;
+    using System.Reflection;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api;
@@ -11,17 +14,11 @@ namespace AddressRegistry.Api.Legacy.Infrastructure
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Diagnostics.HealthChecks;
-    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.OpenApi.Models;
     using Modules;
     using Options;
-    using System;
-    using System.Linq;
-    using System.Reflection;
-
-    using FeatureToggles;
-    using Microsoft.Extensions.Options;
-    using Microsoft.OpenApi.Models;
 
     /// <summary>Represents the startup process for the application.</summary>
     public class Startup
@@ -100,9 +97,6 @@ namespace AddressRegistry.Api.Legacy.Infrastructure
                     }
                 })
                 .Configure<ResponseOptions>(_configuration)
-                .Configure<FeatureToggleOptions>(_configuration.GetSection(FeatureToggleOptions.ConfigurationKey))
-                .AddSingleton(c =>
-                    new UseProjectionsV2Toggle(c.GetService<IOptions<FeatureToggleOptions>>()!.Value.UseProjectionsV2))
                 .AddMemoryCache();
 
             var containerBuilder = new ContainerBuilder();

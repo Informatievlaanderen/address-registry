@@ -133,4 +133,17 @@ namespace AddressRegistry.Api.Legacy.Address.List
         public SortingHeader DefaultSortingHeader { get; } =
             new SortingHeader(nameof(AddressListItemV2.AddressPersistentLocalId), SortOrder.Ascending);
     }
+    
+    public class AddressFilter
+    {
+        public string BoxNumber { get; set; }
+        public string HouseNumber { get; set; }
+        public string PostalCode { get; set; }
+        public string MunicipalityName { get; set; }
+        public string StreetName { get; set; }
+        public string HomonymAddition { get; set; }
+        public string Status { get; set; }
+        public string? NisCode { get; set; }
+        public string? StreetNameId { get; set; }
+    }
 }

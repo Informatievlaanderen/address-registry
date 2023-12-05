@@ -4,16 +4,12 @@ namespace AddressRegistry.Api.Legacy.Address.Sync
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
-    using AddressRegistry.Address;
-    using AddressRegistry.Projections.Legacy;
-    using AddressRegistry.Projections.Legacy.AddressSyndication;
     using Be.Vlaanderen.Basisregisters.Api.Search;
     using Be.Vlaanderen.Basisregisters.Api.Search.Filtering;
     using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
-    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Microsoft.EntityFrameworkCore;
-    using NodaTime;
-    using StreetName;
+    using Projections.Legacy;
+    using Projections.Legacy.AddressSyndication;
 
     public class AddressSyndicationPersistentLocalIdQuery : Query<AddressSyndicationItem, AddressSyndicationPersistentLocalIdFilter, AddressSyndicationQueryResult>
     {

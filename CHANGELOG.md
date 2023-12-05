@@ -1,3 +1,27 @@
+# [3.105.0](https://github.com/informatievlaanderen/address-registry/compare/v3.104.0...v3.105.0) (2023-12-05)
+
+
+### Bug Fixes
+
+* add AddressDetailWithParent projection to projector ([b6b994c](https://github.com/informatievlaanderen/address-registry/commit/b6b994cfe1f167306befa8dfbea7624ba4c01229))
+* add addressmatch extensions ([a5d1030](https://github.com/informatievlaanderen/address-registry/commit/a5d1030216eec244ae1da0a0faf95fb9c618cde8))
+* versiontimestamp parsing in ksql integrationdb stream ([002469a](https://github.com/informatievlaanderen/address-registry/commit/002469aa0c5e2e4d6ddb45502cb3f6c993341bd8))
+* wms labeltype by duplicating projection (V2) ([56ca872](https://github.com/informatievlaanderen/address-registry/commit/56ca872123992bed19582f2f00de6578b81c9a8a))
+
+
+### Features
+
+* add integrationdb ksql scripts ([65064ec](https://github.com/informatievlaanderen/address-registry/commit/65064ecbc1cb1d4ce78f754a9da371120d861682))
+* add StreetNameWasRenamed event ([79cd967](https://github.com/informatievlaanderen/address-registry/commit/79cd967708b1623190f7e99affabde88a22ffbda))
+* consume rename streetname - readdress ([00d4f8e](https://github.com/informatievlaanderen/address-registry/commit/00d4f8e259146d4668268a7ea849be85ecca96ae))
+* consume rename streetname - retire and reject ([ff4f214](https://github.com/informatievlaanderen/address-registry/commit/ff4f214b9a863c6d24f71b06cc901c27e3c2f2a2))
+* use IdempotentCommandHandler in streetname consumer ([9b85e4b](https://github.com/informatievlaanderen/address-registry/commit/9b85e4b9a3d19cdb8be1e3116a37164a3d8e9783))
+
+
+### Performance Improvements
+
+* **adresmatch:** various performance improvements ([6123621](https://github.com/informatievlaanderen/address-registry/commit/61236217a0ae946c4aeca35ec9d205786c396d92))
+
 # [3.104.0](https://github.com/informatievlaanderen/address-registry/compare/v3.103.1...v3.104.0) (2023-11-07)
 
 

@@ -1,8 +1,7 @@
-namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
+namespace AddressRegistry.Tests.ProjectionTests.WmsV2
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Address.Events;
     using AddressRegistry.StreetName;
     using AddressRegistry.StreetName.DataStructures;
     using AddressRegistry.StreetName.Events;
@@ -20,15 +19,16 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
     using NodaTime;
     using Projections.Wms;
     using Projections.Wms.AddressWmsItem;
+    using Projections.Wms.AddressWmsItemV2;
     using Xunit;
     using Envelope = Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope;
 
-    public class AddressWmsItemProjectionTests : AddressWmsItemProjectionTest
+    public class AddressWmsItemV2ProjectionTests : AddressWmsItemV2ProjectionTest
     {
         private readonly Fixture _fixture;
         private readonly WKBReader _wkbReader;
 
-        public AddressWmsItemProjectionTests()
+        public AddressWmsItemV2ProjectionTests()
         {
             _fixture = new Fixture();
             _fixture.Customize(new WithFixedAddressPersistentLocalId());
@@ -41,8 +41,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
             _wkbReader = WKBReaderFactory.Create();
         }
 
-        protected override AddressWmsItemProjections CreateProjection()
-            =>  new AddressWmsItemProjections(_wkbReader);
+        protected override AddressWmsItemV2Projections CreateProjection()
+            =>  new AddressWmsItemV2Projections(_wkbReader);
 
         [Fact]
         public async Task WhenAddressWasMigratedToStreetName_HouseNumber()
@@ -55,9 +55,10 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                 .Given(new Envelope<AddressWasMigratedToStreetName>(new Envelope(addressWasMigratedToStreetName, new Dictionary<string, object>())))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressWasMigratedToStreetName.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasMigratedToStreetName.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
-                    addressWmsItem!.StreetNamePersistentLocalId.Should().Be(addressWasMigratedToStreetName.StreetNamePersistentLocalId);
+                    addressWmsItem!.ParentAddressPersistentLocalId.Should().BeNull();
+                    addressWmsItem.StreetNamePersistentLocalId.Should().Be(addressWasMigratedToStreetName.StreetNamePersistentLocalId);
                     addressWmsItem.HouseNumber.Should().Be(addressWasMigratedToStreetName.HouseNumber);
                     addressWmsItem.BoxNumber.Should().Be(addressWasMigratedToStreetName.BoxNumber);
                     addressWmsItem.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithoutBoxes);
@@ -90,12 +91,14 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressWasMigratedToStreetName>(new Envelope(boxNumberAddressWasMigratedToStreetName, new Dictionary<string, object>())))
                 .Then(async ct =>
                 {
-                    var houseNumberAddressWmsItem = await ct.AddressWmsItems.FindAsync(houseNumberAddressWasMigratedToStreetName.AddressPersistentLocalId);
+                    var houseNumberAddressWmsItem = await ct.AddressWmsItemsV2.FindAsync(houseNumberAddressWasMigratedToStreetName.AddressPersistentLocalId);
                     houseNumberAddressWmsItem.Should().NotBeNull();
                     houseNumberAddressWmsItem!.LabelType.Should().Be(WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxesOnSamePosition);
-                    var boxNumberAddressWmsItem = await ct.AddressWmsItems.FindAsync(houseNumberAddressWasMigratedToStreetName.AddressPersistentLocalId);
+                    var boxNumberAddressWmsItem = await ct.AddressWmsItemsV2.FindAsync(boxNumberAddressWasMigratedToStreetName.AddressPersistentLocalId);
                     boxNumberAddressWmsItem.Should().NotBeNull();
-                    boxNumberAddressWmsItem!.LabelType.Should().Be(WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxesOnSamePosition);
+                    boxNumberAddressWmsItem!.ParentAddressPersistentLocalId.Should()
+                        .Be(houseNumberAddressWasMigratedToStreetName.AddressPersistentLocalId);
+                    boxNumberAddressWmsItem.LabelType.Should().Be(WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxesOnSamePosition);
                 });
         }
 
@@ -118,27 +121,65 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressWasMigratedToStreetName>(new Envelope(boxNumberAddressWasMigratedToStreetName, new Dictionary<string, object>())))
                 .Then(async ct =>
                 {
-                    var houseNumberAddressWmsItem = await ct.AddressWmsItems.FindAsync(houseNumberAddressWasMigratedToStreetName.AddressPersistentLocalId);
+                    var houseNumberAddressWmsItem = await ct.AddressWmsItemsV2.FindAsync(houseNumberAddressWasMigratedToStreetName.AddressPersistentLocalId);
                     houseNumberAddressWmsItem.Should().NotBeNull();
                     houseNumberAddressWmsItem!.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithoutBoxes);
-                    var boxNumberAddressWmsItem = await ct.AddressWmsItems.FindAsync(houseNumberAddressWasMigratedToStreetName.AddressPersistentLocalId);
+                    var boxNumberAddressWmsItem = await ct.AddressWmsItemsV2.FindAsync(boxNumberAddressWasMigratedToStreetName.AddressPersistentLocalId);
                     boxNumberAddressWmsItem.Should().NotBeNull();
-                    boxNumberAddressWmsItem!.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithoutBoxes);
+                    boxNumberAddressWmsItem!.ParentAddressPersistentLocalId.Should()
+                        .Be(houseNumberAddressWasMigratedToStreetName.AddressPersistentLocalId);
+                    boxNumberAddressWmsItem.LabelType.Should().Be(WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxesOnSamePosition);
                 });
         }
 
         [Fact]
-        public async Task WhenAddressWasProposedV2()
+        public async Task WhenHouseNumberAddressWasProposedV2()
         {
-            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
+                .AsHouseNumberAddress();
 
             await Sut
                 .Given(new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, new Dictionary<string, object>())))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressWasProposedV2.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasProposedV2.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.StreetNamePersistentLocalId.Should().Be(addressWasProposedV2.StreetNamePersistentLocalId);
+                    addressWmsItem.ParentAddressPersistentLocalId.Should().BeNull();
+                    addressWmsItem.HouseNumber.Should().Be(addressWasProposedV2.HouseNumber);
+                    addressWmsItem.BoxNumber.Should().BeNull();
+                    addressWmsItem.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithoutBoxes);
+                    addressWmsItem.PostalCode.Should().Be(addressWasProposedV2.PostalCode);
+                    addressWmsItem.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Proposed));
+                    addressWmsItem.OfficiallyAssigned.Should().BeTrue();
+                    addressWmsItem.Position.Should().BeEquivalentTo((Point)_wkbReader.Read(addressWasProposedV2.ExtendedWkbGeometry.ToByteArray()));
+                    addressWmsItem.PositionMethod.Should().Be(AddressWmsItemProjections.ConvertGeometryMethodToString(addressWasProposedV2.GeometryMethod));
+                    addressWmsItem.PositionSpecification.Should().Be(AddressWmsItemProjections.ConvertGeometrySpecificationToString(addressWasProposedV2.GeometrySpecification));
+                    addressWmsItem.Removed.Should().BeFalse();
+                    addressWmsItem.VersionTimestamp.Should().Be(addressWasProposedV2.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
+        public async Task WhenBoxNumberAddressWasProposedV2()
+        {
+            var houseNumberWasMigrated = _fixture.Create<AddressWasMigratedToStreetName>()
+                .AsHouseNumberAddress();
+
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(houseNumberWasMigrated.AddressPersistentLocalId + 1))
+                .AsBoxNumberAddress(new AddressPersistentLocalId(houseNumberWasMigrated.AddressPersistentLocalId));
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasMigratedToStreetName>(new Envelope(houseNumberWasMigrated, new Dictionary<string, object>())),
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, new Dictionary<string, object>())))
+                .Then(async ct =>
+                {
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasProposedV2.AddressPersistentLocalId);
+                    addressWmsItem.Should().NotBeNull();
+                    addressWmsItem!.StreetNamePersistentLocalId.Should().Be(addressWasProposedV2.StreetNamePersistentLocalId);
+                    addressWmsItem.ParentAddressPersistentLocalId.Should().Be(houseNumberWasMigrated.AddressPersistentLocalId);
                     addressWmsItem.HouseNumber.Should().Be(addressWasProposedV2.HouseNumber);
                     addressWmsItem.BoxNumber.Should().Be(addressWasProposedV2.BoxNumber);
                     addressWmsItem.LabelType.Should().Be(WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxesOnSamePosition);
@@ -174,7 +215,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressWasApproved>(new Envelope(addressWasApproved, approvedMetadata)))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressWasApproved.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasApproved.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Current));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasApproved.Provenance.Timestamp);
@@ -209,7 +250,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressWasCorrectedFromApprovedToProposed>(new Envelope(addressApprovalWasCorrected, correctionMetadata)))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressWasApproved.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasApproved.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Proposed));
                     addressWmsItem.VersionTimestamp.Should().Be(addressApprovalWasCorrected.Provenance.Timestamp);
@@ -244,7 +285,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected>(new Envelope(addressApprovalWasCorrected, correctionMetadata)))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressWasApproved.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasApproved.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Proposed));
                     addressWmsItem.VersionTimestamp.Should().Be(addressApprovalWasCorrected.Provenance.Timestamp);
@@ -272,7 +313,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressWasRejected>(new Envelope(addressWasRejected, rejectedMetadata)))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressWasRejected.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasRejected.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Rejected));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
@@ -300,7 +341,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressWasRejectedBecauseHouseNumberWasRejected>(new Envelope(addressWasRejected, rejectedMetadata)))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressWasRejected.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasRejected.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Rejected));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
@@ -328,7 +369,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressWasRejectedBecauseHouseNumberWasRetired>(new Envelope(addressWasRejectedBecauseHouseNumberWasRetired, rejectedMetadata)))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressWasRejectedBecauseHouseNumberWasRetired.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasRejectedBecauseHouseNumberWasRetired.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Rejected));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRejectedBecauseHouseNumberWasRetired.Provenance.Timestamp);
@@ -356,7 +397,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressWasRejectedBecauseStreetNameWasRejected>(new Envelope(addressWasRejected, rejectedMetadata)))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressWasRejected.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasRejected.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Rejected));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
@@ -384,7 +425,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressWasRetiredBecauseStreetNameWasRejected>(new Envelope(addressWasRetired, rejectedMetadata)))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressWasRetired.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasRetired.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Retired));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRetired.Provenance.Timestamp);
@@ -412,7 +453,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressWasRejectedBecauseStreetNameWasRetired>(new Envelope(addressWasRejected, rejectedMetadata)))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressWasRejected.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasRejected.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Rejected));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
@@ -447,7 +488,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressWasCorrectedFromRejectedToProposed>(new Envelope(addressRejectionWasCorrected, correctedMetadata)))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressRejectionWasCorrected.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressRejectionWasCorrected.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Proposed));
                     addressWmsItem.VersionTimestamp.Should().Be(addressRejectionWasCorrected.Provenance.Timestamp);
@@ -475,7 +516,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressWasDeregulated>(new Envelope(addressWasDeregulated, deregulatedMetadata)))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressWasDeregulated.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasDeregulated.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.OfficiallyAssigned.Should().BeFalse();
                     addressWmsItem.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Current));
@@ -511,7 +552,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressWasRetiredV2>(new Envelope(addressWasRetiredV2, retiredMetadata)))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressWasRetiredV2.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasRetiredV2.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Retired));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRetiredV2.Provenance.Timestamp);
@@ -546,7 +587,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressWasRetiredBecauseHouseNumberWasRetired>(new Envelope(addressWasRetiredBecauseHouseNumberWasRetired, retiredMetadata)))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressWasRetiredBecauseHouseNumberWasRetired.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasRetiredBecauseHouseNumberWasRetired.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Retired));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRetiredBecauseHouseNumberWasRetired.Provenance.Timestamp);
@@ -581,7 +622,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressWasRetiredBecauseStreetNameWasRetired>(new Envelope(addressWasRetiredBecauseHouseNumberWasRetired, retiredMetadata)))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressWasRetiredBecauseHouseNumberWasRetired.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasRetiredBecauseHouseNumberWasRetired.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Retired));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRetiredBecauseHouseNumberWasRetired.Provenance.Timestamp);
@@ -623,7 +664,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressWasCorrectedFromRetiredToCurrent>(new Envelope(addressWasCorrectedFromRetiredToCurrent, correctedMetadata)))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressWasRetiredV2.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasRetiredV2.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Current));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasCorrectedFromRetiredToCurrent.Provenance.Timestamp);
@@ -667,12 +708,12 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressPostalCodeWasChangedV2>(new Envelope(addressPostalCodeWasChangedV2, postalCodeWasChangedMetadata)))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressPostalCodeWasChangedV2.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressPostalCodeWasChangedV2.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.PostalCode.Should().Be(addressPostalCodeWasChangedV2.PostalCode);
                     addressWmsItem.VersionTimestamp.Should().Be(addressPostalCodeWasChangedV2.Provenance.Timestamp);
 
-                    var boxNumberAddressWmsItem = await ct.AddressWmsItems.FindAsync(boxNumberAddressWasProposedV2.AddressPersistentLocalId);
+                    var boxNumberAddressWmsItem = await ct.AddressWmsItemsV2.FindAsync(boxNumberAddressWasProposedV2.AddressPersistentLocalId);
                     boxNumberAddressWmsItem.Should().NotBeNull();
                     boxNumberAddressWmsItem!.PostalCode.Should().BeEquivalentTo(addressPostalCodeWasChangedV2.PostalCode);
                     boxNumberAddressWmsItem.VersionTimestamp.Should().Be(addressPostalCodeWasChangedV2.Provenance.Timestamp);
@@ -716,12 +757,12 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressPostalCodeWasCorrectedV2>(new Envelope(addressPostalCodeWasCorrectedV2, postalCodeWasCorrectedMetadata)))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressPostalCodeWasCorrectedV2.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressPostalCodeWasCorrectedV2.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.PostalCode.Should().Be(addressPostalCodeWasCorrectedV2.PostalCode);
                     addressWmsItem.VersionTimestamp.Should().Be(addressPostalCodeWasCorrectedV2.Provenance.Timestamp);
 
-                    var boxNumberAddressWmsItem = await ct.AddressWmsItems.FindAsync(boxNumberAddressWasProposedV2.AddressPersistentLocalId);
+                    var boxNumberAddressWmsItem = await ct.AddressWmsItemsV2.FindAsync(boxNumberAddressWasProposedV2.AddressPersistentLocalId);
                     boxNumberAddressWmsItem.Should().NotBeNull();
                     boxNumberAddressWmsItem!.PostalCode.Should().BeEquivalentTo(addressPostalCodeWasCorrectedV2.PostalCode);
                     boxNumberAddressWmsItem.VersionTimestamp.Should().Be(addressPostalCodeWasCorrectedV2.Provenance.Timestamp);
@@ -765,12 +806,12 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressHouseNumberWasCorrectedV2>(new Envelope(addressHouseNumberWasCorrectedV2, houseNumberWasCorrectedMetadata)))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressHouseNumberWasCorrectedV2.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressHouseNumberWasCorrectedV2.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.HouseNumber.Should().Be(addressHouseNumberWasCorrectedV2.HouseNumber);
                     addressWmsItem.VersionTimestamp.Should().Be(addressHouseNumberWasCorrectedV2.Provenance.Timestamp);
 
-                    var boxNumberAddressWmsItem = await ct.AddressWmsItems.FindAsync(boxNumberAddressWasProposedV2.AddressPersistentLocalId);
+                    var boxNumberAddressWmsItem = await ct.AddressWmsItemsV2.FindAsync(boxNumberAddressWasProposedV2.AddressPersistentLocalId);
                     boxNumberAddressWmsItem.Should().NotBeNull();
                     boxNumberAddressWmsItem!.HouseNumber.Should().BeEquivalentTo(addressHouseNumberWasCorrectedV2.HouseNumber);
                     boxNumberAddressWmsItem.VersionTimestamp.Should().Be(addressHouseNumberWasCorrectedV2.Provenance.Timestamp);
@@ -807,12 +848,12 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressBoxNumberWasCorrectedV2>(new Envelope(addressBoxNumberWasCorrectedV2, boxNumberWasCorrectedMetadata)))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressBoxNumberWasCorrectedV2.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressBoxNumberWasCorrectedV2.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.BoxNumber.Should().Be(addressBoxNumberWasCorrectedV2.BoxNumber);
                     addressWmsItem.VersionTimestamp.Should().Be(addressBoxNumberWasCorrectedV2.Provenance.Timestamp);
 
-                    var boxNumberAddressWmsItem = await ct.AddressWmsItems.FindAsync(addressBoxNumberWasCorrectedV2.AddressPersistentLocalId);
+                    var boxNumberAddressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressBoxNumberWasCorrectedV2.AddressPersistentLocalId);
                     boxNumberAddressWmsItem.Should().NotBeNull();
                     boxNumberAddressWmsItem!.BoxNumber.Should().BeEquivalentTo(addressBoxNumberWasCorrectedV2.BoxNumber);
                     boxNumberAddressWmsItem.VersionTimestamp.Should().Be(addressBoxNumberWasCorrectedV2.Provenance.Timestamp);
@@ -840,12 +881,72 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressPositionWasChanged>(new Envelope(addressPositionWasChanged, positionChangedMetadata)))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressPositionWasChanged.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressPositionWasChanged.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.PositionMethod.Should().Be(AddressWmsItemProjections.ConvertGeometryMethodToString(addressPositionWasChanged.GeometryMethod));
                     addressWmsItem.PositionSpecification.Should().Be(AddressWmsItemProjections.ConvertGeometrySpecificationToString(addressPositionWasChanged.GeometrySpecification));
                     addressWmsItem.Position.Should().Be((Point) _wkbReader.Read(addressPositionWasChanged.ExtendedWkbGeometry.ToByteArray()));
                     addressWmsItem.VersionTimestamp.Should().Be(addressPositionWasChanged.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
+        public async Task WithBoxNumber_WhenAddressPositionWasChanged()
+        {
+            var addressWasMigrated = _fixture.Create<AddressWasMigratedToStreetName>()
+                .AsHouseNumberAddress()
+                .WithPosition(GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
+
+            var boxNumberWasProposed = _fixture.Create<AddressWasProposedV2>()
+                .AsBoxNumberAddress(new AddressPersistentLocalId(addressWasMigrated.AddressPersistentLocalId))
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(addressWasMigrated.AddressPersistentLocalId + 1))
+                .WithExtendedWkbGeometry(GeometryHelpers.SecondGmlPointGeometry.ToExtendedWkbGeometry());
+
+            var houseNumberPositionWasChanged = _fixture.Create<AddressPositionWasChanged>()
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(addressWasMigrated.AddressPersistentLocalId))
+                .WithExtendedWkbGeometry(GeometryHelpers.ThirdGmlPointGeometry.ToExtendedWkbGeometry());
+
+            var boxNumberPositionWasChanged = _fixture.Create<AddressPositionWasChanged>()
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(boxNumberWasProposed.AddressPersistentLocalId))
+                .WithExtendedWkbGeometry(GeometryHelpers.ThirdGmlPointGeometry.ToExtendedWkbGeometry());
+
+            var addressWasMigratedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasMigrated.GetHash() }
+            };
+
+            var boxNumberWasProposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, boxNumberWasProposed.GetHash() }
+            };
+
+            var houseNumberPositionWasChangedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, houseNumberPositionWasChanged.GetHash() }
+            };
+
+            var boxNumberPositionWasChangedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, boxNumberPositionWasChanged.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasMigratedToStreetName>(new Envelope(addressWasMigrated, addressWasMigratedMetadata)),
+                    new Envelope<AddressWasProposedV2>(new Envelope(boxNumberWasProposed, boxNumberWasProposedMetadata)),
+                    new Envelope<AddressPositionWasChanged>(new Envelope(houseNumberPositionWasChanged, houseNumberPositionWasChangedMetadata)),
+                    new Envelope<AddressPositionWasChanged>(new Envelope(boxNumberPositionWasChanged, boxNumberPositionWasChangedMetadata)))
+                .Then(async ct =>
+                {
+                    var houseNumberWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasMigrated.AddressPersistentLocalId);
+                    houseNumberWmsItem.Should().NotBeNull();
+                    houseNumberWmsItem!.Position.Should().Be((Point)_wkbReader.Read(houseNumberPositionWasChanged.ExtendedWkbGeometry.ToByteArray()));
+                    houseNumberWmsItem.LabelType.Should().Be(WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxesOnSamePosition);
+
+                    var boxNumberWmsItem = await ct.AddressWmsItemsV2.FindAsync(boxNumberWasProposed.AddressPersistentLocalId);
+                    boxNumberWmsItem.Should().NotBeNull();
+                    boxNumberWmsItem!.Position.Should().Be(houseNumberWmsItem.Position);
+                    boxNumberWmsItem.LabelType.Should().Be(WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxesOnSamePosition);
                 });
         }
 
@@ -870,12 +971,72 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressPositionWasCorrectedV2>(new Envelope(addressPositionWasCorrectedV2, positionCorrectedMetadata)))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressPositionWasCorrectedV2.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressPositionWasCorrectedV2.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.PositionMethod.Should().Be(AddressWmsItemProjections.ConvertGeometryMethodToString(addressPositionWasCorrectedV2.GeometryMethod));
                     addressWmsItem.PositionSpecification.Should().Be(AddressWmsItemProjections.ConvertGeometrySpecificationToString(addressPositionWasCorrectedV2.GeometrySpecification));
                     addressWmsItem.Position.Should().Be((Point)_wkbReader.Read(addressPositionWasCorrectedV2.ExtendedWkbGeometry.ToByteArray()));
                     addressWmsItem.VersionTimestamp.Should().Be(addressPositionWasCorrectedV2.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
+        public async Task WithBoxNumber_WhenAddressPositionWasCorrectedV2()
+        {
+            var addressWasMigrated = _fixture.Create<AddressWasMigratedToStreetName>()
+                .AsHouseNumberAddress()
+                .WithPosition(GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
+
+            var boxNumberWasProposed = _fixture.Create<AddressWasProposedV2>()
+                .AsBoxNumberAddress(new AddressPersistentLocalId(addressWasMigrated.AddressPersistentLocalId))
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(addressWasMigrated.AddressPersistentLocalId + 1))
+                .WithExtendedWkbGeometry(GeometryHelpers.SecondGmlPointGeometry.ToExtendedWkbGeometry());
+
+            var houseNumberPositionWasCorrected = _fixture.Create<AddressPositionWasCorrectedV2>()
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(addressWasMigrated.AddressPersistentLocalId))
+                .WithExtendedWkbGeometry(GeometryHelpers.ThirdGmlPointGeometry.ToExtendedWkbGeometry());
+
+            var boxNumberPositionWasCorrected = _fixture.Create<AddressPositionWasCorrectedV2>()
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(boxNumberWasProposed.AddressPersistentLocalId))
+                .WithExtendedWkbGeometry(GeometryHelpers.ThirdGmlPointGeometry.ToExtendedWkbGeometry());
+
+            var addressWasMigratedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasMigrated.GetHash() }
+            };
+
+            var boxNumberWasProposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, boxNumberWasProposed.GetHash() }
+            };
+
+            var houseNumberPositionWasChangedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, houseNumberPositionWasCorrected.GetHash() }
+            };
+
+            var boxNumberPositionWasChangedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, boxNumberPositionWasCorrected.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasMigratedToStreetName>(new Envelope(addressWasMigrated, addressWasMigratedMetadata)),
+                    new Envelope<AddressWasProposedV2>(new Envelope(boxNumberWasProposed, boxNumberWasProposedMetadata)),
+                    new Envelope<AddressPositionWasCorrectedV2>(new Envelope(houseNumberPositionWasCorrected, houseNumberPositionWasChangedMetadata)),
+                    new Envelope<AddressPositionWasCorrectedV2>(new Envelope(boxNumberPositionWasCorrected, boxNumberPositionWasChangedMetadata)))
+                .Then(async ct =>
+                {
+                    var houseNumberWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasMigrated.AddressPersistentLocalId);
+                    houseNumberWmsItem.Should().NotBeNull();
+                    houseNumberWmsItem!.Position.Should().Be((Point)_wkbReader.Read(houseNumberPositionWasCorrected.ExtendedWkbGeometry.ToByteArray()));
+                    houseNumberWmsItem.LabelType.Should().Be(WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxesOnSamePosition);
+
+                    var boxNumberWmsItem = await ct.AddressWmsItemsV2.FindAsync(boxNumberWasProposed.AddressPersistentLocalId);
+                    boxNumberWmsItem.Should().NotBeNull();
+                    boxNumberWmsItem!.Position.Should().Be(houseNumberWmsItem.Position);
+                    boxNumberWmsItem.LabelType.Should().Be(WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxesOnSamePosition);
                 });
         }
 
@@ -946,7 +1107,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressHouseNumberWasReaddressed>(new Envelope(addressHouseNumberWasReaddressed, addressHouseNumberWasReaddressedMetadata)))
                 .Then(async ct =>
                 {
-                    var houseNumberItem = await ct.AddressWmsItems.FindAsync((int)addressPersistentLocalId);
+                    var houseNumberItem = await ct.AddressWmsItemsV2.FindAsync((int)addressPersistentLocalId);
                     houseNumberItem.Should().NotBeNull();
 
                     houseNumberItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(readdressedHouseNumber.SourceStatus));
@@ -959,7 +1120,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     houseNumberItem.Position.Should().Be((Point)_wkbReader.Read(readdressedHouseNumber.SourceExtendedWkbGeometry.ToByteArray()));
                     houseNumberItem.VersionTimestamp.Should().Be(addressHouseNumberWasReaddressed.Provenance.Timestamp);
 
-                    var boxNumberItem = await ct.AddressWmsItems.FindAsync((int)boxNumberAddressPersistentLocalId);
+                    var boxNumberItem = await ct.AddressWmsItemsV2.FindAsync((int)boxNumberAddressPersistentLocalId);
                     boxNumberItem.Should().NotBeNull();
 
                     boxNumberItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(readdressedBoxNumber.SourceStatus));
@@ -983,7 +1144,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                 .Given(new Envelope<AddressWasProposedBecauseOfReaddress>(new Envelope(addressWasProposed, new Dictionary<string, object>())))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressWasProposed.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasProposed.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.StreetNamePersistentLocalId.Should().Be(addressWasProposed.StreetNamePersistentLocalId);
                     addressWmsItem.HouseNumber.Should().Be(addressWasProposed.HouseNumber);
@@ -1021,7 +1182,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressWasRejectedBecauseOfReaddress>(new Envelope(addressWasRejected, rejectedMetadata)))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressWasRejected.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasRejected.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Rejected));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
@@ -1056,7 +1217,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressWasRetiredBecauseOfReaddress>(new Envelope(addressWasRetired, retiredMetadata)))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressWasRetired.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasRetired.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Retired));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRetired.Provenance.Timestamp);
@@ -1084,7 +1245,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressWasRemovedV2>(new Envelope(addressWasRemoved, addressWasRemovedMetadata)))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressWasRemoved.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasRemoved.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.Removed.Should().BeTrue();
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRemoved.Provenance.Timestamp);
@@ -1112,7 +1273,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressWasRemovedBecauseStreetNameWasRemoved>(new Envelope(addressWasRemovedBecauseStreetNameWasRemoved, addressWasRemovedMetadata)))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressWasRemovedBecauseStreetNameWasRemoved.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasRemovedBecauseStreetNameWasRemoved.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.Removed.Should().BeTrue();
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRemovedBecauseStreetNameWasRemoved.Provenance.Timestamp);
@@ -1140,7 +1301,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressWasRemovedBecauseHouseNumberWasRemoved>(new Envelope(addressWasRemoved, addressWasRemovedMetadata)))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressWasRemoved.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasRemoved.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.Removed.Should().BeTrue();
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRemoved.Provenance.Timestamp);
@@ -1175,7 +1336,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressRegularizationWasCorrected>(new Envelope(addressRegularizationWasCorrected, addressRegularizationWasCorrectedMetadata)))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressRegularizationWasCorrected.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressRegularizationWasCorrected.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Current));
                     addressWmsItem.OfficiallyAssigned.Should().BeFalse();
@@ -1211,7 +1372,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<AddressDeregulationWasCorrected>(new Envelope(addressDeregulationWasCorrected, addressDeregulationWasCorrectedMetadata)))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(addressDeregulationWasCorrected.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressDeregulationWasCorrected.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem.OfficiallyAssigned.Should().BeTrue();
                     addressWmsItem.VersionTimestamp.Should().Be(addressDeregulationWasCorrected.Provenance.Timestamp);
@@ -1239,7 +1400,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<StreetNameNamesWereCorrected>(new Envelope(streetNameNamesWereCorrected, streetNameNamesWereCorrectedMetadata)))
                 .Then(async ct =>
                 {
-                    var item = (await ct.AddressWmsItems.FindAsync(addressWasProposedV2.AddressPersistentLocalId));
+                    var item = (await ct.AddressWmsItemsV2.FindAsync(addressWasProposedV2.AddressPersistentLocalId));
                     item.Should().NotBeNull();
                     item.VersionTimestamp.Should().Be(streetNameNamesWereCorrected.Provenance.Timestamp);
                 });
@@ -1275,7 +1436,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<StreetNameNamesWereCorrected>(new Envelope(streetNameNamesWereCorrected, streetNameNamesWereCorrectedMetadata)))
                 .Then(async ct =>
                 {
-                    var item = (await ct.AddressWmsItems.FindAsync(addressWasProposedV2.AddressPersistentLocalId));
+                    var item = (await ct.AddressWmsItemsV2.FindAsync(addressWasProposedV2.AddressPersistentLocalId));
                     item.Should().NotBeNull();
                     item.VersionTimestamp.Should().Be(addressWasProposedV2.Provenance.Timestamp);
                 });
@@ -1302,7 +1463,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<StreetNameHomonymAdditionsWereCorrected>(new Envelope(streetNameHomonymAdditionsWereCorrected, streetNameNamesWereCorrectedMetadata)))
                 .Then(async ct =>
                 {
-                    var item = (await ct.AddressWmsItems.FindAsync(addressWasProposedV2.AddressPersistentLocalId));
+                    var item = (await ct.AddressWmsItemsV2.FindAsync(addressWasProposedV2.AddressPersistentLocalId));
                     item.Should().NotBeNull();
                     item.VersionTimestamp.Should().Be(streetNameHomonymAdditionsWereCorrected.Provenance.Timestamp);
                 });
@@ -1329,7 +1490,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     new Envelope<StreetNameHomonymAdditionsWereRemoved>(new Envelope(streetNameHomonymAdditionsWereRemoved, streetNameNamesWereCorrectedMetadata)))
                 .Then(async ct =>
                 {
-                    var item = (await ct.AddressWmsItems.FindAsync(addressWasProposedV2.AddressPersistentLocalId));
+                    var item = (await ct.AddressWmsItemsV2.FindAsync(addressWasProposedV2.AddressPersistentLocalId));
                     item.Should().NotBeNull();
                     item.VersionTimestamp.Should().Be(streetNameHomonymAdditionsWereRemoved.Provenance.Timestamp);
                 });

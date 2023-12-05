@@ -13,6 +13,7 @@ namespace AddressRegistry.Address
     using NodaTime;
     using SqlStreamStore;
 
+    [Obsolete("This is a legacy commandhandler and should not be used anymore.")]
     public sealed class CrabAddressCommandHandlerModule : CommandHandlerModule
     {
         private readonly IPersistentLocalIdGenerator _persistentLocalIdGenerator;

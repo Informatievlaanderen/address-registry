@@ -4,10 +4,11 @@ namespace AddressRegistry.Address
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using NodaTime;
 
+    [Obsolete("This is a legacy class and should not be used anymore.")]
     public class AddressProvenanceFactory : IProvenanceFactory<Address>
     {
         // TODO: Do we introduce an IHasProvenance?
-        public bool CanCreateFrom<TCommand>() => true; 
+        public bool CanCreateFrom<TCommand>() => true;
 
         public Provenance CreateFrom(
             object provenanceHolder,

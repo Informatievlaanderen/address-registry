@@ -5,6 +5,7 @@ namespace AddressRegistry.Address.Commands
     using System;
     using System.Collections.Generic;
 
+    [Obsolete("This is a legacy command and should not be used anymore.")]
     public class RegisterAddress
     {
         private static readonly Guid Namespace = new Guid("67f3e429-515e-47e1-bf44-d6c6970b88e7");

@@ -6,6 +6,7 @@ namespace AddressRegistry.Address.Events
     using Newtonsoft.Json;
     using System;
 
+    [Obsolete("This is a legacy event and should not be used anymore.")]
     [EventTags(EventTag.For.Sync)]
     [EventName("AddressPositionWasCorrected")]
     [EventDescription("De adrespositie werd gecorrigeerd.")]

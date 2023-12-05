@@ -7,6 +7,7 @@ namespace AddressRegistry.Address.Commands.Crab
     using System.Collections.Generic;
     using AddressRegistry.Address.Crab;
 
+    [Obsolete("This is a legacy command and should not be used anymore.")]
     public class ImportSubaddressPositionFromCrab : BaseCrabCommand
     {
         private static readonly Guid Namespace = new Guid("3ce00426-6093-4845-bd56-5c1df125be0c");

@@ -5,6 +5,7 @@ namespace AddressRegistry.Address.Events
     using System;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
 
+    [Obsolete("This is a legacy event and should not be used anymore.")]
     [EventTags(EventTag.For.Sync)]
     [EventName("AddressWasRegistered")]
     [EventDescription("Het adres werd aangemaakt in het register.")]

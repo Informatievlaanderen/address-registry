@@ -96,14 +96,14 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                          .Where(x => x.StreetNamePersistentLocalId != readdressCommand.DestinationStreetNamePersistentLocalId)
                          .GroupBy(x => x.StreetNamePersistentLocalId))
             {
-                await using var scope = _lifetimeScope.BeginLifetimeScope();
-
-                var streetNames = scope.Resolve<IStreetNames>();
-                var streetName = await streetNames.GetAsync(
-                    new StreetNameStreamId(readdressCommand.DestinationStreetNamePersistentLocalId), cancellationToken);
-
                 foreach (var (_, addressPersistentLocalId) in addressesByStreetName)
                 {
+                    await using var scope = _lifetimeScope.BeginLifetimeScope();
+
+                    var streetNames = scope.Resolve<IStreetNames>();
+                    var streetName = await streetNames.GetAsync(
+                        new StreetNameStreamId(readdressCommand.DestinationStreetNamePersistentLocalId), cancellationToken);
+
                     try
                     {
                         var houseNumber = addressesToReaddress
@@ -111,7 +111,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                             .DestinationHouseNumber;
 
                         var destinationAddress = streetName.StreetNameAddresses.FindActiveParentByHouseNumber(HouseNumber.Create(houseNumber));
-                        var destinationBoxNumbers = destinationAddress.Children
+                        var destinationBoxNumbers = destinationAddress!.Children
                             .Where(x => x.IsActive)
                             .Select(x => new BoxNumberAddressPersistentLocalId(x.BoxNumber!, x.AddressPersistentLocalId))
                             .ToList();
@@ -146,7 +146,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                     cancellationToken);
             }
 
-            // Only etags for house number addresses are returned as they were not part of the original request.
+            // Only etags for house number addresses are returned and NOT box number addresses as the latter were not part of the original request.
             // An additional argument is because in case of an IdempotencyException,
             //  we no longer know which destination box number was rejected or retired in the scope of this command or previously.
             foreach (var (streetNamePersistentLocalId, addressPersistentLocalId) in addressesUpdated.Distinct())

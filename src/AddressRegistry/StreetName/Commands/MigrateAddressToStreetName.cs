@@ -2,10 +2,16 @@ namespace AddressRegistry.StreetName.Commands
 {
     using System;
     using System.Collections.Generic;
-    using AddressRegistry.StreetName;
+    using Address;
     using Be.Vlaanderen.Basisregisters.Generators.Guid;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Utilities;
+    using AddressGeometry = AddressRegistry.StreetName.AddressGeometry;
+    using AddressId = AddressRegistry.StreetName.AddressId;
+    using AddressStatus = AddressRegistry.StreetName.AddressStatus;
+    using BoxNumber = AddressRegistry.StreetName.BoxNumber;
+    using HouseNumber = AddressRegistry.StreetName.HouseNumber;
+    using PostalCode = AddressRegistry.StreetName.PostalCode;
 
     public class MigrateAddressToStreetName : IHasCommandProvenance
     {
@@ -27,26 +33,26 @@ namespace AddressRegistry.StreetName.Commands
         public Provenance Provenance { get; }
 
         public MigrateAddressToStreetName(
-            Address.AddressId addressId,
+            AddressRegistry.Address.AddressId addressId,
             StreetNamePersistentLocalId streetNamePersistentLocalId,
-            Address.StreetNameId streetNameId,
-            Address.PersistentLocalId addressPersistentLocalId,
-            Address.AddressStatus status,
-            Address.HouseNumber houseNumber,
-            Address.BoxNumber? boxNumber,
-            Address.AddressGeometry geometry,
+            StreetNameId streetNameId,
+            PersistentLocalId addressPersistentLocalId,
+            AddressRegistry.Address.AddressStatus status,
+            AddressRegistry.Address.HouseNumber houseNumber,
+            AddressRegistry.Address.BoxNumber? boxNumber,
+            AddressRegistry.Address.AddressGeometry geometry,
             bool? officiallyAssigned,
-            Address.PostalCode? postalCode,
+            AddressRegistry.Address.PostalCode? postalCode,
             bool isComplete,
             bool isRemoved,
-            Address.AddressId? parentAddressId,
+            AddressRegistry.Address.AddressId? parentAddressId,
             Provenance provenance)
         {
             AddressId = new AddressId(addressId);
             StreetNamePersistentLocalId = streetNamePersistentLocalId;
             StreetNameId = new AddressStreetNameId(streetNameId);
             AddressPersistentLocalId = new AddressPersistentLocalId(addressPersistentLocalId);
-            Status = Address.AddressStatusHelpers.ToStreetNameAddressStatus(status);
+            Status = AddressStatusHelpers.ToStreetNameAddressStatus(status);
             HouseNumber = new HouseNumber(houseNumber);
             BoxNumber = boxNumber is null ? null : new BoxNumber(boxNumber);
             Geometry = new AddressGeometry(geometry.GeometryMethod, geometry.GeometrySpecification, geometry.Geometry);

@@ -246,27 +246,6 @@ namespace AddressRegistry.Producer.Extensions
                 message.AddressPersistentLocalId,
                 message.Provenance.ToContract());
 
-        public static Contracts.MigratedStreetNameWasImported ToContract(this StreetNameAggregate.MigratedStreetNameWasImported message) =>
-            new Contracts.MigratedStreetNameWasImported(
-                message.StreetNameId.ToString("D"),
-                message.StreetNamePersistentLocalId,
-                message.MunicipalityId.ToString("D"),
-                message.NisCode,
-                message.StreetNameStatus.ToString(),
-                message.Provenance.ToContract());
-
-        public static Contracts.StreetNameWasApproved ToContract(this StreetNameAggregate.StreetNameWasApproved message) =>
-            new Contracts.StreetNameWasApproved(message.StreetNamePersistentLocalId, message.Provenance.ToContract());
-
-        public static Contracts.StreetNameWasRetired ToContract(this StreetNameAggregate.StreetNameWasRetired message) =>
-            new Contracts.StreetNameWasRetired(message.StreetNamePersistentLocalId, message.Provenance.ToContract());
-
-        public static Contracts.StreetNameWasImported ToContract(this StreetNameAggregate.StreetNameWasImported message) =>
-            new Contracts.StreetNameWasImported(message.StreetNamePersistentLocalId, message.MunicipalityId.ToString("D"), message.StreetNameStatus.ToString(), message.Provenance.ToContract());
-
-        public static Contracts.StreetNameWasRemoved ToContract(this StreetNameAggregate.StreetNameWasRemoved message) =>
-            new Contracts.StreetNameWasRemoved(message.StreetNamePersistentLocalId, message.Provenance.ToContract());
-
         public static Contracts.AddressRegularizationWasCorrected ToContract(this StreetNameAggregate.AddressRegularizationWasCorrected message) =>
             new Contracts.AddressRegularizationWasCorrected(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
 

@@ -190,6 +190,18 @@ namespace AddressRegistry.StreetName
 
                     streetName.CorrectStreetNameRetirement();
                 });
+
+            For<RetireStreetNameBecauseOfRename>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<RetireStreetNameBecauseOfRename, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streetNameStreamId = new StreetNameStreamId(message.Command.PersistentLocalId);
+                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+
+                    streetName.RetireStreetNameBecauseOfRename(message.Command.DestinationPersistentLocalId);
+                });
         }
     }
 }

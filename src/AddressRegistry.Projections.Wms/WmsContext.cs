@@ -12,6 +12,8 @@ namespace AddressRegistry.Projections.Wms
         public DbSet<AddressDetailItem> AddressDetail { get; set; }
         public DbSet<AddressWmsItem.AddressWmsItem> AddressWmsItems { get; set; }
 
+        public DbSet<AddressWmsItemV2.AddressWmsItemV2> AddressWmsItemsV2 { get; set; }
+
         public DbSet<T> Get<T>() where T : class, new()
         {
             if (typeof(T) == typeof(AddressDetailItem))

@@ -6,6 +6,7 @@ namespace AddressRegistry.Address.Commands
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Utilities;
 
+    [Obsolete("This is a legacy command and should not be used anymore.")]
     public class MarkAddressAsMigrated : IHasCommandProvenance
     {
         private static readonly Guid Namespace = new Guid("1ac91a48-f860-4fe1-a4cd-10bf2daf8421");

@@ -4,6 +4,7 @@ namespace AddressRegistry.Api.Oslo.Address
     using System.Text;
     using System.Xml;
     using AddressRegistry.Address;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common.SpatialTools.GeometryCoordinates;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
@@ -17,24 +18,6 @@ namespace AddressRegistry.Api.Oslo.Address
 
     public static class AddressMapper
     {
-        public static VolledigAdres? GetVolledigAdres(AddressListViewItem addressListViewItem)
-        {
-            if (string.IsNullOrEmpty(addressListViewItem.StreetNamePersistentLocalId)
-                || string.IsNullOrEmpty(addressListViewItem.NisCode))
-            {
-                return null;
-            }
-
-            var defaultMunicipalityName = addressListViewItem.DefaultMunicipalityName;
-            return new VolledigAdres(
-                addressListViewItem.DefaultStreetNameName.Value,
-                addressListViewItem.HouseNumber,
-                addressListViewItem.BoxNumber,
-                addressListViewItem.PostalCode,
-                defaultMunicipalityName.Value,
-                defaultMunicipalityName.Key);
-        }
-
         public static VolledigAdres? GetVolledigAdres(AddressListViewItemV2 addressListViewItem)
         {
             if (string.IsNullOrEmpty(addressListViewItem.NisCode))

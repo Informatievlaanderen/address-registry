@@ -16,6 +16,7 @@ namespace AddressRegistry.Address
     using Exceptions;
     using StreetName.Commands;
 
+    [Obsolete("This is a legacy class and should not be used anymore.")]
     public partial class Address : AggregateRootEntity
     {
         public static readonly Func<Address> Factory = () => new Address();

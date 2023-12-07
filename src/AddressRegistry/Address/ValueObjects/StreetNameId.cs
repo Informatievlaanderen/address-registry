@@ -6,6 +6,7 @@ namespace AddressRegistry.Address
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo;
     using Newtonsoft.Json;
 
+    [Obsolete("This is a legacy valueobject and should not be used anymore.")]
     public class StreetNameId : GuidValueObject<StreetNameId>
     {
         private const string Prefix = "streetName";

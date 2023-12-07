@@ -1,17 +1,17 @@
 namespace AddressRegistry.Api.Oslo.Address.List
 {
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
-    using Infrastructure.Options;
-    using Microsoft.Extensions.Options;
-    using Swashbuckle.AspNetCore.Filters;
     using System;
     using System.Collections.Generic;
     using System.Runtime.Serialization;
     using Be.Vlaanderen.Basisregisters.Api.Search.Pagination;
     using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
+    using Infrastructure.Options;
+    using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
+    using Swashbuckle.AspNetCore.Filters;
 
     [DataContract(Name = "AdresCollectie", Namespace = "")]
     public class AddressListOsloResponse

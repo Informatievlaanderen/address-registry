@@ -6,6 +6,7 @@ namespace AddressRegistry.Address
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using NodaTime;
 
+    [Obsolete("This is a legacy class and should not be used anymore.")]
     public class AddressPersistentLocalIdentifierProvenanceFactory : IProvenanceFactory<Address>
     {
         private static readonly List<Type> AllowedTypes = new List<Type>

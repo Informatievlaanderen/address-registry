@@ -2,6 +2,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Address.Events;
     using AddressRegistry.StreetName;
     using AddressRegistry.StreetName.DataStructures;
     using AddressRegistry.StreetName.Events;

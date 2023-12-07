@@ -9,8 +9,6 @@ namespace AddressRegistry.Consumer.Projections
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using NodaTime;
     using Contracts = Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common;
-    using Provenance = Be.Vlaanderen.Basisregisters.GrAr.Provenance.Provenance;
-    using StreetNameId = AddressRegistry.StreetName.StreetNameId;
 
     /// <summary>
     /// Here we handle the streetname events which impact the state of the streetname aggregate.
@@ -99,6 +97,16 @@ namespace AddressRegistry.Consumer.Projections
                 );
             }
 
+            if (type == typeof(StreetNameWasRenamed))
+            {
+                var msg = (StreetNameWasRenamed)message;
+                return new RenameStreetName(
+                    new StreetNamePersistentLocalId(msg.PersistentLocalId),
+                    new StreetNamePersistentLocalId(msg.DestinationPersistentLocalId),
+                    FromProvenance(msg.Provenance)
+                );
+            }
+
             if (type == typeof(StreetNameWasCorrectedFromRetiredToCurrent))
             {
                 var msg = (StreetNameWasCorrectedFromRetiredToCurrent)message;
@@ -158,6 +166,23 @@ namespace AddressRegistry.Consumer.Projections
             {
                 var command = GetCommand(message);
                 await commandHandler.Handle(command, ct);
+            });
+
+            When<StreetNameWasRenamed>(async (commandHandler, message, ct) =>
+            {
+                var renameStreetName = new RenameStreetName(
+                    new StreetNamePersistentLocalId(message.PersistentLocalId),
+                    new StreetNamePersistentLocalId(message.DestinationPersistentLocalId),
+                    FromProvenance(message.Provenance));
+
+                await commandHandler.Handle(renameStreetName, ct);
+
+                var retireStreetNameBecauseOfRename = new RetireStreetNameBecauseOfRename(
+                    new StreetNamePersistentLocalId(message.PersistentLocalId),
+                    new StreetNamePersistentLocalId(message.DestinationPersistentLocalId),
+                    FromProvenance(message.Provenance));
+
+                await commandHandler.Handle(retireStreetNameBecauseOfRename, ct);
             });
 
             When<StreetNameWasCorrectedFromRejectedToProposed>(async (commandHandler, message, ct) =>

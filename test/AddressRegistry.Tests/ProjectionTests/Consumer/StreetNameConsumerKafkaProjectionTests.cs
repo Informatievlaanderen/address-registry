@@ -267,6 +267,33 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
         }
 
         [Fact]
+        public async Task GivenStreetNameWasRenamed_ThenRenameAndRetireBecauseOfRenameStreetName()
+        {
+            var @event = new StreetNameWasRenamed(
+                Fixture.Create<MunicipalityId>(),
+                Fixture.Create<PersistentLocalId>(),
+                Fixture.Create<PersistentLocalId>(),
+                new Provenance(
+                    Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
+                    Application.AddressRegistry.ToString(),
+                    Modification.Update.ToString(),
+                    Organisation.Aiv.ToString(),
+                    "test"));
+
+            Given(@event);
+            await Then(async _ =>
+            {
+                _mockCommandHandler.Verify(
+                    x => x.Handle(It.Is<IHasCommandProvenance>(x => x is RenameStreetName), CancellationToken.None),
+                    Times.Once);
+                _mockCommandHandler.Verify(
+                    x => x.Handle(It.Is<IHasCommandProvenance>(x => x is RetireStreetNameBecauseOfRename), CancellationToken.None),
+                    Times.Once);
+                await Task.CompletedTask;
+            });
+        }
+
+        [Fact]
         public async Task GivenStreetNameWasCorrectedFromRetiredToCurrent_ThenCorrectStreetNameRetirement()
         {
             var @event = new StreetNameWasCorrectedFromRetiredToCurrent(

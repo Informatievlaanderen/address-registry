@@ -299,6 +299,23 @@ namespace AddressRegistry.StreetName
                         message.Command.ExecutionContext);
                 });
 
+            For<RenameStreetName>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<RenameStreetName, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var destinationStreetNameStreamId = new StreetNameStreamId(message.Command.DestinationPersistentLocalId);
+
+                    var streetNames = getStreetNames();
+                    var destinationStreetName = await streetNames.GetAsync(destinationStreetNameStreamId, ct);
+
+                    destinationStreetName.Rename(
+                        streetNames,
+                        message.Command.PersistentLocalId,
+                        lazyPersistentLocalIdGenerator.Value);
+                });
+
            For<RejectOrRetireAddressForReaddress>()
                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
                .AddEventHash<RejectOrRetireAddressForReaddress, StreetName>(getUnitOfWork)

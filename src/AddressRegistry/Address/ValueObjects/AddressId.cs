@@ -5,6 +5,7 @@ namespace AddressRegistry.Address
     using Be.Vlaanderen.Basisregisters.Crab;
     using Newtonsoft.Json;
 
+    [Obsolete("This is a legacy valueobject and should not be used anymore.")]
     public class AddressId : GuidValueObject<AddressId>
     {
         public static AddressId CreateFor(CrabHouseNumberId crabHouseNumberId)

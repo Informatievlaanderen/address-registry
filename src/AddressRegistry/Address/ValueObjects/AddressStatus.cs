@@ -2,6 +2,7 @@ namespace AddressRegistry.Address
 {
     using System;
 
+    [Obsolete("This is a legacy valueobject and should not be used anymore.")]
     public enum AddressStatus
     {
         Unknown = 0,

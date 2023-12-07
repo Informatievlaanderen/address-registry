@@ -16,7 +16,6 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
     using Be.Vlaanderen.Basisregisters.Sqs.Responses;
     using FluentAssertions;
     using global::AutoFixture;
@@ -26,6 +25,8 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
     using StreetName.Commands;
     using Xunit;
     using Xunit.Abstractions;
+    using IdempotentCommandHandler = Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers.IdempotentCommandHandler;
+    using IIdempotentCommandHandler = Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers.IIdempotentCommandHandler;
 
     public class GivenStreetNameExists : BackOfficeLambdaTest
     {
@@ -331,8 +332,17 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
                 new HouseNumber("11"),
                 new BoxNumber("A"));
 
+            var anotherProposedAddressOfSecondStreetName = ProposeAddress(
+                secondOtherStreetNamePersistentLocalId,
+                new AddressPersistentLocalId(7892),
+                new PostalCode("2018"),
+                Fixture.Create<MunicipalityId>(),
+                new HouseNumber("9"),
+                null);
+
             var destinationHouseNumber = "13";
             var secondDestinationHouseNumber = "15";
+            var thirdDestinationHouseNumber = "17";
 
             var eTagResponses = new List<ETagResponse>();
 
@@ -360,6 +370,11 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
                 secondOtherStreetNamePersistentLocalId,
                 CancellationToken.None);
 
+            await _fakeBackOfficeContext.AddIdempotentAddressStreetNameIdRelation(
+                anotherProposedAddressOfSecondStreetName.AddressPersistentLocalId,
+                secondOtherStreetNamePersistentLocalId,
+                CancellationToken.None);
+
             // Act
             await sut.Handle(new ReaddressLambdaRequest(_streetNamePersistentLocalId, new ReaddressSqsRequest
             {
@@ -377,12 +392,18 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
                         {
                             BronAdresId = AddressPuriFor(proposedAddressOfSecondStreetName.AddressPersistentLocalId),
                             DoelHuisnummer = secondDestinationHouseNumber
+                        },
+                        new AddressToReaddressItem
+                        {
+                            BronAdresId = AddressPuriFor(anotherProposedAddressOfSecondStreetName.AddressPersistentLocalId),
+                            DoelHuisnummer = thirdDestinationHouseNumber
                         }
                     },
                     OpheffenAdressen = new List<string>()
                     {
                         AddressPuriFor(proposedAddressOfFirstStreetName.AddressPersistentLocalId),
-                        AddressPuriFor(proposedAddressOfSecondStreetName.AddressPersistentLocalId)
+                        AddressPuriFor(proposedAddressOfSecondStreetName.AddressPersistentLocalId),
+                        AddressPuriFor(anotherProposedAddressOfSecondStreetName.AddressPersistentLocalId),
                     }
                 },
                 TicketId = Guid.NewGuid(),
@@ -395,6 +416,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
             var firstDestinationAddressPersistentLocalId = new AddressPersistentLocalId(1); // FakePersistentLocalIdGenerator starts always with id 1
             var secondDestinationAddressPersistentLocalId = new AddressPersistentLocalId(2);
             var secondDestinationBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(3);
+            var thirdDestinationBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(4);
 
             _fakeBackOfficeContext.AddressPersistentIdStreetNamePersistentIds
                 .FirstOrDefault(x => x.AddressPersistentLocalId == firstDestinationAddressPersistentLocalId)
@@ -408,7 +430,11 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
                 .FirstOrDefault(x => x.AddressPersistentLocalId == secondDestinationBoxNumberAddressPersistentLocalId)
                .Should().NotBeNull();
 
-            eTagResponses.Count.Should().Be(4);
+            _fakeBackOfficeContext.AddressPersistentIdStreetNamePersistentIds
+                .FirstOrDefault(x => x.AddressPersistentLocalId == thirdDestinationBoxNumberAddressPersistentLocalId)
+               .Should().NotBeNull();
+
+            eTagResponses.Count.Should().Be(6);
             var firstDestinationAddressEtagResponse = eTagResponses.FirstOrDefault(x => x.Location == string.Format(ConfigDetailUrl, firstDestinationAddressPersistentLocalId));
             firstDestinationAddressEtagResponse.Should().NotBeNull();
             var secondDestinationAddressEtagResponse = eTagResponses.FirstOrDefault(x => x.Location == string.Format(ConfigDetailUrl, secondDestinationAddressPersistentLocalId));

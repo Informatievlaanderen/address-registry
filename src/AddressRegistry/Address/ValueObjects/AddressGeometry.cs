@@ -1,8 +1,10 @@
 namespace AddressRegistry.Address
 {
+    using System;
     using System.Collections.Generic;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
 
+    [Obsolete("This is a legacy valueobject and should not be used anymore.")]
     public class AddressGeometry : ValueObject<AddressGeometry>
     {
         public GeometryMethod GeometryMethod { get; }

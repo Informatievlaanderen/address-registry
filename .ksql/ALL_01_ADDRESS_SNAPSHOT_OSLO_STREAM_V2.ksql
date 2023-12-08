@@ -1,0 +1,16 @@
+CREATE OR REPLACE STREAM IF NOT EXISTS address_snapshot_oslo_stream_v2 (
+  messageKey varchar KEY,
+  headers ARRAY<STRUCT<key STRING, value BYTES>> HEADERS,
+  `@context` varchar,
+  `@type` varchar,
+  identificator STRUCT<id varchar, naamruimte varchar, objectId varchar, versieId varchar>,
+  gemeente STRUCT<objectId varchar, detail varchar, gemeentenaam STRUCT<geografischenaam STRUCT<spelling varchar, taal varchar>>>,
+  postinfo STRUCT<objectId varchar, detail varchar>,
+  straatnaam STRUCT<objectId varchar, detail varchar, straatnaam STRUCT<geografischeNaam STRUCT<spelling varchar, taal varchar>>>,
+  huisnummer varchar,
+  busnummer varchar,
+  volledigAdres STRUCT<geografischeNaam STRUCT<spelling varchar, taal varchar>>,
+  adresPositie STRUCT<geometrie STRUCT<type varchar, gml varchar>, positieGeometrieMethode varchar, positieSpecificatie varchar>,
+  adresStatus varchar,
+  officieelToegekend boolean)
+WITH (KAFKA_TOPIC='address.snapshot.oslo', VALUE_FORMAT='JSON');

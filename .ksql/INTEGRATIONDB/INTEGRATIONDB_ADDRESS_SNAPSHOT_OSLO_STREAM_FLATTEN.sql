@@ -3,7 +3,7 @@ WITH (KAFKA_TOPIC='address.snapshot.oslo.flatten.integrationdb', PARTITIONS=1, V
 AS 
 SELECT
   CAST(REDUCE(SPLIT(URL_EXTRACT_PATH(MESSAGEKEY), '/'), '', (s,x) => x) AS INT) PersistentLocalId,
-  
+
   IFNULL(GEMEENTE->OBJECTID, '') as "NisCode",
   IFNULL(POSTINFO->OBJECTID, '') as "PostalCode",
   CAST(IFNULL(STRAATNAAM->OBJECTID, '') AS INT) as "StreetNamePersistentLocalId",
@@ -20,7 +20,8 @@ SELECT
   IDENTIFICATOR->NAAMRUIMTE as "Namespace",
   IDENTIFICATOR->VERSIEID as "VersionString",
   PARSE_TIMESTAMP(IDENTIFICATOR->VERSIEID, 'yyyy-MM-dd''T''HH:mm:ssXXX', 'UTC') as "VersionTimestamp",
+  CAST(FROM_BYTES(FILTER(headers, (x) => (x->key = 'IdempotenceKey'))[1]->VALUE, 'utf8') AS BIGINT) as "IdempotenceKey",
   CASE WHEN IDENTIFICATOR->ID is null THEN TRUE ELSE FALSE END as "IsRemoved"
 
-FROM ADDRESS_SNAPSHOT_OSLO_STREAM
+FROM ADDRESS_SNAPSHOT_OSLO_STREAM_V2
 PARTITION BY CAST(REDUCE(SPLIT(URL_EXTRACT_PATH(MESSAGEKEY), '/'), '', (s,x) => x) AS INT);

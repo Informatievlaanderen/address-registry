@@ -5,8 +5,8 @@ SELECT
   CAST(REDUCE(SPLIT(URL_EXTRACT_PATH(MESSAGEKEY), '/'), '', (s,x) => x) AS INT) PersistentLocalId,
 
   CAST(GEMEENTE->OBJECTID AS INT) AS "NisCode",
-  IFNULL(POSTINFO->OBJECTID, '') as "PostalCode",
-  CAST(IFNULL(STRAATNAAM->OBJECTID, '') AS INT) as "StreetNamePersistentLocalId",
+  POSTINFO->OBJECTID as "PostalCode",
+  CAST(STRAATNAAM->OBJECTID AS INT) as "StreetNamePersistentLocalId",
   ADRESSTATUS as "Status",
   HUISNUMMER as "HouseNumber",
   BUSNUMMER as "BoxNumber",

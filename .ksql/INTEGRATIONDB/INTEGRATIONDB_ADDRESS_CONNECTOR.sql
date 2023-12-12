@@ -15,7 +15,7 @@ CREATE SINK CONNECTOR `AddressIntegrationDbConnector` with (
     "db.name"= 'postgres',
     "ssl.mode"= 'require',
     "insert.mode"= 'UPSERT',
-    "table.name.format"= 'Integration.Address',
+    "table.name.format"= 'Integration.Addresses',
     "table.types"= 'TABLE',
     "db.timezone"= 'UTC',
     "pk.mode"= 'record_key',

@@ -698,6 +698,71 @@ jobs:
      #     JIRA_PROJECT: GAWR
      #     JIRA_VERSION: ${{ needs.release.outputs.version }}
 
+  push_images:
+    if: needs.release.outputs.version != 'none'
+    needs: [ release ]
+    name: Push images
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: [
+          'api-backoffice'
+          , 'api-legacy'
+          , 'api-oslo'
+          , 'api-extract'
+          , 'projector'
+          , 'projections-syndication'
+          , 'projections-backoffice'
+          , 'consumer'
+          , 'consumer-read-municipality'
+          , 'consumer-read-streetname'
+          , 'producer'
+          , 'producer-snapshot-oslo'
+          , 'migrator-address'
+          , 'cache-warmer'
+          , 'snapshot-verifier'
+        ]
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
+          aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
+          aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1.5.3
+
+      # Download artifact
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        continue-on-error: false
+        with:
+          name: ${{ matrix.image }}-${{ needs.release.outputs.version }}
+          path: ~/
+
+      # Load artifact
+      - name: Load artifact
+        shell: bash
+        run: |
+          echo mr-$IMAGE-image.tar
+          docker image load -i ~/mr-$IMAGE-image.tar
+        env:
+          IMAGE: ${{ matrix.image }}
+
+      - name: Push artifacts to ECR
+        shell: bash
+        run: |
+          echo $IMAGE:$SEMVER
+          docker tag $BUILD_DOCKER_REGISTRY_TST/address-registry/$IMAGE:$SEMVER $BUILD_DOCKER_REGISTRY/address-registry/$IMAGE:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY/address-registry/$IMAGE:$SEMVER
+        env:
+          BUILD_DOCKER_REGISTRY_TST: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
+          BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_DEVOPS_DOCKER_REGISTRY }}
+          IMAGE: ${{ matrix.image }}
+          SEMVER: ${{ needs.release.outputs.version }}
+          WORKSPACE: ${{ github.workspace }}
+
   push_images_to_test:
     if: needs.release.outputs.version != 'none'
     needs: [ release ]

@@ -49,8 +49,8 @@
   },
   "release": {
     "branches": [
-      "master",
-      "main"
+      {"name": "main"},
+      {"name": "3.104.x", "range": "3.104.x", "channel": "3.104.x"}
     ],
     "verifyConditions": [
       "@semantic-release/changelog",

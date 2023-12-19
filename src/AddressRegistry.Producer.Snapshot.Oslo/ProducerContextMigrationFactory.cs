@@ -3,8 +3,9 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
     using Microsoft.EntityFrameworkCore;
     using AddressRegistry.Infrastructure;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer;
 
-    public class ProducerContextMigrationFactory : RunnerDbContextMigrationFactory<ProducerContext>
+    public class ProducerContextMigrationFactory : SqlServerRunnerDbContextMigrationFactory<ProducerContext>
     {
         public ProducerContextMigrationFactory()
             : base("ProducerProjectionsAdmin", HistoryConfiguration) { }

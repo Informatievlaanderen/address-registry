@@ -3,7 +3,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
     using System;
     using StreetName;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer.MigrationExtensions;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -112,7 +112,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                 item.Status = addressBoxNumberSyndicationHelper.Status;
                 item.IsComplete = addressBoxNumberSyndicationHelper.IsComplete;
                 item.IsOfficiallyAssigned = addressBoxNumberSyndicationHelper.IsOfficiallyAssigned;
-                
+
                 applyEventInfoOn(item);
             });
 

@@ -1,10 +1,10 @@
 namespace AddressRegistry.Projections.Legacy
 {
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
 
-    public class LegacyContextMigrationFactory : RunnerDbContextMigrationFactory<LegacyContext>
+    public class LegacyContextMigrationFactory : SqlServerRunnerDbContextMigrationFactory<LegacyContext>
     {
         public LegacyContextMigrationFactory()
             : base("LegacyProjectionsAdmin", HistoryConfiguration) { }

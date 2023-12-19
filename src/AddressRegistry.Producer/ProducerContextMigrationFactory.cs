@@ -1,10 +1,10 @@
 namespace AddressRegistry.Producer
 {
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
-    using Microsoft.EntityFrameworkCore;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer;
     using AddressRegistry.Infrastructure;
+    using Microsoft.EntityFrameworkCore;
 
-    public class ProducerContextMigrationFactory : RunnerDbContextMigrationFactory<ProducerContext>
+    public class ProducerContextMigrationFactory : SqlServerRunnerDbContextMigrationFactory<ProducerContext>
     {
         public ProducerContextMigrationFactory()
             : base("ProducerProjectionsAdmin", HistoryConfiguration) { }

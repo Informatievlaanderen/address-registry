@@ -1,10 +1,10 @@
 namespace AddressRegistry.Projections.Extract
 {
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
 
-    public class ExtractContextMigrationFactory : RunnerDbContextMigrationFactory<ExtractContext>
+    public class ExtractContextMigrationFactory : SqlServerRunnerDbContextMigrationFactory<ExtractContext>
     {
         public ExtractContextMigrationFactory() :
             base("ExtractProjectionsAdmin", HistoryConfiguration)

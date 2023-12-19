@@ -1,6 +1,7 @@
 Be.Vlaanderen.Basisregisters.EventHandling
 Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList
 Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore
+Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer
 
 SourceLink.Embed.AllSourceFiles
 SourceLink.Copy.PdbFiles

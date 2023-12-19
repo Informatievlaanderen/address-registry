@@ -4,7 +4,7 @@ namespace AddressRegistry.Consumer
     using AddressRegistry.Infrastructure;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer;
     using Microsoft.EntityFrameworkCore.Design;
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer.MigrationExtensions;
     using Microsoft.Extensions.Configuration;
     using System.IO;
     using System;

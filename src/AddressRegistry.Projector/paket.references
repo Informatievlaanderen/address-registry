@@ -1,6 +1,7 @@
 Be.Vlaanderen.Basisregisters.Api
 Be.Vlaanderen.Basisregisters.EventHandling.Autofac
 Be.Vlaanderen.Basisregisters.Projector
+Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer
 
 AspNetCore.HealthChecks.SqlServer
 Dapper

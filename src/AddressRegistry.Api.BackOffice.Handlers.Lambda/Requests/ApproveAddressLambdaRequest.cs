@@ -7,7 +7,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
     using StreetName.Commands;
 
     public sealed record ApproveAddressLambdaRequest :
-        SqsLambdaRequest,
+        AddressLambdaRequest,
         IHasBackOfficeRequest<ApproveAddressRequest>,
         Abstractions.IHasAddressPersistentLocalId
     {
@@ -32,7 +32,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
         /// <returns>ApproveAddress.</returns>
         public ApproveAddress ToCommand()
         {
-            return new ApproveAddress(this.StreetNamePersistentLocalId(), new AddressPersistentLocalId(AddressPersistentLocalId), Provenance);
+            return new ApproveAddress(this.StreetNamePersistentLocalId(), new AddressPersistentLocalId(AddressPersistentLocalId), CommandProvenance);
         }
     }
 }

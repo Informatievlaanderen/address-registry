@@ -7,7 +7,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
     using StreetName.Commands;
 
     public sealed record RetireAddressLambdaRequest :
-        SqsLambdaRequest,
+        AddressLambdaRequest,
         IHasBackOfficeRequest<RetireAddressRequest>,
         Abstractions.IHasAddressPersistentLocalId
     {
@@ -35,7 +35,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
             return new RetireAddress(
                 this.StreetNamePersistentLocalId(),
                 new AddressPersistentLocalId(AddressPersistentLocalId),
-                Provenance);
+                CommandProvenance);
         }
     }
 }

@@ -8,7 +8,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
     using StreetName.Commands;
 
     public sealed record ChangeAddressPostalCodeLambdaRequest :
-        SqsLambdaRequest,
+        AddressLambdaRequest,
         IHasBackOfficeRequest<ChangeAddressPostalCodeRequest>,
         Abstractions.IHasAddressPersistentLocalId
     {
@@ -43,7 +43,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
                 this.StreetNamePersistentLocalId(),
                 new AddressPersistentLocalId(AddressPersistentLocalId),
                 postalCode,
-                Provenance);
+                CommandProvenance);
         }
     }
 }

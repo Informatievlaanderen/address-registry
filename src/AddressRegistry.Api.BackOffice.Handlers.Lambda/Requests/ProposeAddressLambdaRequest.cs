@@ -9,7 +9,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
     using StreetName.Commands;
 
     public sealed record ProposeAddressLambdaRequest :
-        SqsLambdaRequest,
+        AddressLambdaRequest,
         IHasBackOfficeRequest<ProposeAddressRequest>
     {
         public ProposeAddressLambdaRequest(string groupId, ProposeAddressSqsRequest sqsRequest)
@@ -46,7 +46,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
                 Request.PositieGeometrieMethode.Map(),
                 Request.PositieSpecificatie.Map(),
                 Request.Positie.ToExtendedWkbGeometry(),
-                Provenance);
+                CommandProvenance);
         }
     }
 }

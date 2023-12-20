@@ -6,7 +6,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
     using StreetName.Commands;
 
     public sealed record ReaddressLambdaRequest :
-        SqsLambdaRequest,
+        AddressLambdaRequest,
         IHasBackOfficeRequest<ReaddressRequest>
     {
         public ReaddressLambdaRequest(string groupId, ReaddressSqsRequest sqsRequest)
@@ -32,7 +32,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
                 this.StreetNamePersistentLocalId(),
                 readdressAddressItems,
                 retireAddressItems,
-                Provenance);
+                CommandProvenance);
         }
     }
 }

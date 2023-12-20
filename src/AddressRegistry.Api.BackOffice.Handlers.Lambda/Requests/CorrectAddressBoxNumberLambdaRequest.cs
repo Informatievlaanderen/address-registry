@@ -7,7 +7,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
     using StreetName.Commands;
 
     public sealed record CorrectAddressBoxNumberLambdaRequest :
-        SqsLambdaRequest,
+        AddressLambdaRequest,
         IHasBackOfficeRequest<CorrectAddressBoxNumberRequest>,
         Abstractions.IHasAddressPersistentLocalId
     {
@@ -37,7 +37,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
                 this.StreetNamePersistentLocalId(),
                 new AddressPersistentLocalId(AddressPersistentLocalId),
                 BoxNumber.Create(Request.Busnummer),
-                Provenance);
+                CommandProvenance);
         }
     }
 }

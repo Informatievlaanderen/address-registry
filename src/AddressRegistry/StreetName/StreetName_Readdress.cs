@@ -3,7 +3,6 @@ namespace AddressRegistry.StreetName
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Address;
     using Commands;
     using DataStructures;
     using Events;
@@ -46,11 +45,11 @@ namespace AddressRegistry.StreetName
                     readressedData.readdressedBoxNumbers));
             }
 
-            // Reject Retire Actions
-            var rejectRetireActions = streetNameReaddresser.Actions.Where(x =>
-                x.action == ReaddressAction.Reject || x.action == ReaddressAction.Retire);
+            // Reject or Retire BoxNumber Actions
+            var rejectRetireBoxNumberActions = streetNameReaddresser.Actions.Where(x =>
+                x.action is ReaddressAction.RejectBoxNumber or ReaddressAction.RetireBoxNumber);
 
-            foreach (var (action, addressPersistentLocalId) in rejectRetireActions)
+            foreach (var (action, addressPersistentLocalId) in rejectRetireBoxNumberActions)
             {
                 HandleAction(
                     action,
@@ -117,11 +116,11 @@ namespace AddressRegistry.StreetName
                     executionContext.AddressesAdded.Add((PersistentLocalId, addressPersistentLocalId));
                     break;
 
-                case ReaddressAction.Reject:
+                case ReaddressAction.RejectBoxNumber:
                     RejectAddressBecauseOfReaddress(addressPersistentLocalId);
                     break;
 
-                case ReaddressAction.Retire:
+                case ReaddressAction.RetireBoxNumber:
                     RetireAddressBecauseOfReaddress(addressPersistentLocalId);
                     break;
 

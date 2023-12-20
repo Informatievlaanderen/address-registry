@@ -3,7 +3,6 @@ namespace AddressRegistry.StreetName
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Address;
     using Commands;
     using DataStructures;
     using Exceptions;
@@ -15,6 +14,10 @@ namespace AddressRegistry.StreetName
         private readonly IEnumerable<ReaddressAddressItem> _addressesToReaddress;
         private readonly StreetName _streetName;
 
+
+        private readonly IDictionary<StreetNameAddress, List<StreetNameAddress>> _sourceAddressesWithBoxNumbers =
+            new Dictionary<StreetNameAddress, List<StreetNameAddress>>();
+
         public IEnumerable<ReaddressedAddressData> ReaddressedHouseNumbers
             => ReaddressedAddresses.Select(x => x.Value.readdressedHouseNumber);
 
@@ -25,9 +28,7 @@ namespace AddressRegistry.StreetName
             AddressPersistentLocalId,
             (
                 ReaddressedAddressData readdressedHouseNumber,
-                List<ReaddressedAddressData> readdressedBoxNumbers,
-                List<AddressPersistentLocalId> rejectedBoxNumberPersistentLocalIds,
-                List<AddressPersistentLocalId> retiredBoxNumberPersistentLocalIds
+                List<ReaddressedAddressData> readdressedBoxNumbers
             )> ReaddressedAddresses { get; }
 
         public List<(ReaddressAction action, AddressPersistentLocalId addressPersistentLocalId)> Actions { get; }
@@ -44,10 +45,7 @@ namespace AddressRegistry.StreetName
             _streetName = streetName;
 
             ReaddressedAddresses =
-                new Dictionary<AddressPersistentLocalId, (ReaddressedAddressData readdressedHouseNumber,
-                    List<ReaddressedAddressData> readdressedBoxNumbers, List<AddressPersistentLocalId>
-                    rejectedBoxNumberPersistentLocalIds, List<AddressPersistentLocalId>
-                    retiredBoxNumberPersistentLocalIds)>();
+                new Dictionary<AddressPersistentLocalId, (ReaddressedAddressData readdressedHouseNumber, List<ReaddressedAddressData> readdressedBoxNumbers)>();
             Actions = new List<(ReaddressAction, AddressPersistentLocalId)>();
 
             Readdress();
@@ -79,9 +77,7 @@ namespace AddressRegistry.StreetName
                             sourceAddress.Geometry,
                             sourceAddress.IsOfficiallyAssigned
                         ),
-                        new List<ReaddressedAddressData>(),
-                        new List<AddressPersistentLocalId>(),
-                        new List<AddressPersistentLocalId>()
+                        new List<ReaddressedAddressData>()
                     ));
 
                 ReaddressBoxNumbers(
@@ -93,6 +89,25 @@ namespace AddressRegistry.StreetName
                 if (destinationAddress is not null)
                 {
                     RejectOrRetireDestinationAddressBoxNumbers(destinationAddress);
+                }
+            }
+
+            foreach (var sourceAddressWithBoxNumbers in _sourceAddressesWithBoxNumbers)
+            {
+                var sourceHouseNumberAddress = sourceAddressWithBoxNumbers.Key;
+                foreach (var sourceBoxNumberAddress in sourceAddressWithBoxNumbers.Value)
+                {
+                    // 11   ->  13   ->   15
+                    // 11A      13A1
+                    // 11B      13B
+                    // Given the above,
+                    // When house number 11 is the current sourceAddress, it is never used as a destination address, so we should keep all of its box numbers.
+                    // When house number 13 is the current sourceAddress, then ReaddressedAddresses will contain boxNumberAddress 13B and we should keep it.
+                    if (IsUsedAsDestinationAddress(sourceHouseNumberAddress) &&
+                        !HasBeenReaddressed(sourceBoxNumberAddress))
+                    {
+                        RejectOrRetireBoxNumberAddress(sourceBoxNumberAddress);
+                    }
                 }
             }
         }
@@ -165,15 +180,13 @@ namespace AddressRegistry.StreetName
                         sourceBoxNumberAddress.IsOfficiallyAssigned
                     ));
 
-                // 11   ->  13   ->   15
-                // 11A      13A1
-                // 11B      13B
-                // Given the above,
-                // When house number 11 is the current sourceAddress, it is never used as a destination address, so we should keep all of its box numbers.
-                // When house number 13 is the current sourceAddress, then ReaddressedAddresses will contain boxNumberAddress 13B and we should keep it.
-                if (IsUsedAsDestinationAddress(sourceAddress) && !HasBeenReaddressed(sourceBoxNumberAddress))
+                if (_sourceAddressesWithBoxNumbers.ContainsKey(sourceAddress))
                 {
-                    RejectOrRetireBoxNumberAddress(sourceBoxNumberAddress);
+                    _sourceAddressesWithBoxNumbers[sourceAddress].Add(sourceBoxNumberAddress);
+                }
+                else
+                {
+                    _sourceAddressesWithBoxNumbers.Add(sourceAddress, new List<StreetNameAddress> { sourceBoxNumberAddress });
                 }
             }
         }
@@ -206,15 +219,11 @@ namespace AddressRegistry.StreetName
             switch (boxNumberAddress.Status)
             {
                 case AddressStatus.Proposed:
-                    Actions.Add((ReaddressAction.Reject, boxNumberAddress.AddressPersistentLocalId));
-                    ReaddressedAddresses[boxNumberAddress.Parent!.AddressPersistentLocalId]
-                        .rejectedBoxNumberPersistentLocalIds.Add(boxNumberAddress.AddressPersistentLocalId);
+                    Actions.Add((ReaddressAction.RejectBoxNumber, boxNumberAddress.AddressPersistentLocalId));
                     break;
 
                 case AddressStatus.Current:
-                    Actions.Add((ReaddressAction.Retire, boxNumberAddress.AddressPersistentLocalId));
-                    ReaddressedAddresses[boxNumberAddress.Parent!.AddressPersistentLocalId]
-                        .retiredBoxNumberPersistentLocalIds.Add(boxNumberAddress.AddressPersistentLocalId);
+                    Actions.Add((ReaddressAction.RetireBoxNumber, boxNumberAddress.AddressPersistentLocalId));
                     break;
 
                 default:
@@ -242,7 +251,7 @@ namespace AddressRegistry.StreetName
     {
         ProposeHouseNumber,
         ProposeBoxNumber,
-        Reject,
-        Retire,
+        RejectBoxNumber,
+        RetireBoxNumber,
     }
 }

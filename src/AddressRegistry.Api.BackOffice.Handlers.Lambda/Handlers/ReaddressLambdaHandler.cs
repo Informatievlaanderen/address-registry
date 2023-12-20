@@ -122,7 +122,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                             addressPersistentLocalId,
                             destinationAddress.AddressPersistentLocalId,
                             destinationBoxNumbers,
-                            request.Provenance);
+                            request.CommandProvenance);
 
                         await scope.Resolve<IIdempotentCommandHandler>().Dispatch(
                             rejectOrRetireAddresses.CreateCommandId(),

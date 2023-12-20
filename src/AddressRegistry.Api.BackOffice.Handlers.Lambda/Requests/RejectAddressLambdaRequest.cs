@@ -7,7 +7,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
     using StreetName.Commands;
 
     public sealed record RejectAddressLambdaRequest :
-        SqsLambdaRequest,
+        AddressLambdaRequest,
         IHasBackOfficeRequest<RejectAddressRequest>,
         Abstractions.IHasAddressPersistentLocalId
     {
@@ -35,7 +35,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
             return new RejectAddress(
                 this.StreetNamePersistentLocalId(),
                 new AddressPersistentLocalId(AddressPersistentLocalId),
-                Provenance);
+                CommandProvenance);
         }
     }
 }

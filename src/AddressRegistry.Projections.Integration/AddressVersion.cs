@@ -16,22 +16,17 @@
         public long Position { get; set; }
 
         public int PersistentLocalId { get; set; }
-        public int? NisCode { get; set; }
+        public string? NisCode { get; set; }
         public string? PostalCode { get; set; }
         public int? StreetNamePersistentLocalId { get; set; }
         public string? Status { get; set; }
         public string? HouseNumber { get; set; }
         public string? BoxNumber { get; set; }
-
-        public string? FullName { get; set; }
-
         public Geometry? Geometry { get; set; }
         public string? PositionMethod { get; set; }
         public string? PositionSpecification { get; set; }
         public bool? OfficiallyAssigned { get; set; }
         public bool Removed { get; set; }
-
-
         public string? PuriId { get; set; }
         public string? Namespace { get; set; }
         public string VersionAsString { get; set; }
@@ -67,7 +62,6 @@
                 Status = Status,
                 HouseNumber = HouseNumber,
                 BoxNumber = BoxNumber,
-                FullName = FullName,
                 Geometry = Geometry,
                 PositionMethod = PositionMethod,
                 PositionSpecification = PositionSpecification,
@@ -108,7 +102,6 @@
             builder.Property(x => x.Status).HasColumnName("status");
             builder.Property(x => x.HouseNumber).HasColumnName("house_number");
             builder.Property(x => x.BoxNumber).HasColumnName("box_number");
-            builder.Property(x => x.FullName).HasColumnName("full_name");
 
             builder.Property(x => x.Geometry).HasColumnName("geometry");
             builder.Property(x => x.Geometry)

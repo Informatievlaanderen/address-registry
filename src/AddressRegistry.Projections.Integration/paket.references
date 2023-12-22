@@ -5,6 +5,7 @@ Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.Npgsql
 Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac
 
 Npgsql.EntityFrameworkCore.PostgreSQL.Design
+Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite
 
 Be.Vlaanderen.Basisregisters.GrAr.Common
 Be.Vlaanderen.Basisregisters.GrAr.Legacy

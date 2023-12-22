@@ -52,6 +52,7 @@ namespace AddressRegistry.Projections.Integration.Infrastructure
                     {
                         sqlServerOptions.EnableRetryOnFailure();
                         sqlServerOptions.MigrationsHistoryTable(MigrationTables.Integration, Schema.Integration);
+                        sqlServerOptions.UseNetTopologySuite();
                     }));
         }
 

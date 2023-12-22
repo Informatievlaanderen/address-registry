@@ -45,9 +45,9 @@
         { }
     }
 
-    public sealed class AddressLatestItemConfiguration : IEntityTypeConfiguration<AddressVersion>
+    public sealed class AddressLatestItemConfiguration : IEntityTypeConfiguration<AddressLatestItem>
     {
-        public void Configure(EntityTypeBuilder<AddressVersion> builder)
+        public void Configure(EntityTypeBuilder<AddressLatestItem> builder)
         {
             const string geomFromGmlComputedQuery = "ST_GeomFromGML(REPLACE(\"GeometryGml\",'https://www.opengis.net/def/crs/EPSG/0/', 'EPSG:')) ";
 
@@ -55,11 +55,10 @@
 
             builder
                 .ToTable(tableName, Schema.Integration) // to schema per type
-                .HasKey(x => x.Position);
+                .HasKey(x => x.PersistentLocalId);
 
-            builder.Property(x => x.Position).ValueGeneratedNever();
+            builder.Property(x => x.PersistentLocalId).ValueGeneratedNever();
 
-            builder.Property(x => x.Position).HasColumnName("position");
             builder.Property(x => x.PersistentLocalId).HasColumnName("persistent_local_id");
             builder.Property(x => x.NisCode).HasColumnName("nis_code")
                 .HasMaxLength(5)

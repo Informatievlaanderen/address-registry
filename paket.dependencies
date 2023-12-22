@@ -24,7 +24,9 @@ nuget MediatR.Contracts 2.0.1
 
 nuget Npgsql.EntityFrameworkCore.PostgreSQL 6.0.3
 nuget Npgsql.EntityFrameworkCore.PostgreSQL.Design 2.0.0-preview1
+nuget Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite 6.0.3
 nuget Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite 6.0.3
+
 nuget NetTopologySuite 2.4.0
 
 nuget NodaTime 3.1.6
@@ -108,7 +110,7 @@ nuget Be.Vlaanderen.Basisregisters.TicketingService.Proxy.HttpProxy 1.8.0
 nuget Microsoft.Extensions.Configuration.Binder 6.0.0
 nuget Microsoft.Extensions.Configuration.Json 6.0.0
 nuget Microsoft.Extensions.DependencyInjection 6.0.0
-nuget Microsoft.Extensions.DependencyInjection.Abstractions 6.0.0 strategy:min
+nuget Microsoft.Extensions.DependencyInjection.Abstractions 7.0.0
 
 // .NET CLASSIC STUFF
 nuget EntityFramework 6.4.4

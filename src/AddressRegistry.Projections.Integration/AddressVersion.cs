@@ -88,7 +88,7 @@
 
             builder
                 .ToTable(tableName, Schema.Integration) // to schema per type
-                .HasKey(x => x.Position);
+                .HasKey(x => new { x.Position, x.PersistentLocalId});
 
             builder.Property(x => x.Position).ValueGeneratedNever();
 

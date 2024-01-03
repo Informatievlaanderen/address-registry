@@ -5,6 +5,8 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using AddressRegistry.Projections.Extract.AddressCrabHouseNumberIdExtract;
     using AddressRegistry.Projections.Extract.AddressCrabSubaddressIdExtract;
     using AddressRegistry.Projections.Extract.AddressExtract;
+    using AddressRegistry.Projections.Integration;
+    using AddressRegistry.Projections.Integration.Infrastructure;
     using AddressRegistry.Projections.LastChangedList;
     using AddressRegistry.Projections.Legacy;
     using AddressRegistry.Projections.Legacy.AddressDetail;
@@ -32,6 +34,8 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
     using Be.Vlaanderen.Basisregisters.Projector.Modules;
     using Be.Vlaanderen.Basisregisters.Shaperon;
+    using Consumer.Read.Municipality.Projections;
+    using Consumer.Read.StreetName;
     using Microsoft.Data.SqlClient;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -90,6 +94,25 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
             RegisterWmsProjectionsV2(builder);
             // RegisterWfsProjections(builder); //TODO: Remove when Wfs has been filled in staging
             // RegisterWmsProjections(builder); //TODO: Remove when Wms has been filled in staging
+        }
+
+        private void RegisterIntegrationProjections(ContainerBuilder builder)
+        {
+            builder
+                .RegisterModule(
+                    new IntegrationModule(
+                        _configuration,
+                        _services,
+                        _loggerFactory));
+
+            builder
+                .RegisterProjectionMigrator<IntegrationContextMigrationFactory>(
+                    _configuration,
+                    _loggerFactory)
+                .RegisterProjections<AddressVersionProjections, IntegrationContext>(
+                    context => new AddressVersionProjections(context.Resolve<StreetNameConsumerContext>(), context.Resolve<IOptions<IntegrationOptions>>()), ConnectedProjectionSettings.Default)
+                .RegisterProjections<AddressLatestItemProjections, IntegrationContext>(
+                    context => new AddressLatestItemProjections(context.Resolve<StreetNameConsumerContext>(), context.Resolve<IOptions<IntegrationOptions>>()), ConnectedProjectionSettings.Default);
         }
 
         private void RegisterExtractProjections(ContainerBuilder builder)

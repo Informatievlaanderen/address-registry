@@ -3,8 +3,12 @@ Be.Vlaanderen.Basisregisters.EventHandling.Autofac
 Be.Vlaanderen.Basisregisters.Projector
 Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer
 
+NodaTime
+
+Npgsql.EntityFrameworkCore.PostgreSQL
+
 AspNetCore.HealthChecks.SqlServer
-Dapper
+AspNetCore.HealthChecks.NpgSql
 
 SourceLink.Embed.AllSourceFiles
 SourceLink.Copy.PdbFiles

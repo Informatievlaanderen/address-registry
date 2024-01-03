@@ -94,15 +94,22 @@ namespace AddressRegistry.Projector.Infrastructure
                         {
                             var connectionStrings = _configuration
                                 .GetSection("ConnectionStrings")
-                                .GetChildren();
+                                .GetChildren()
+                                .ToList();
 
-                            foreach (var connectionString in connectionStrings)
+                            foreach (var connectionString in connectionStrings.Where(x => !x.Value.Contains("host", StringComparison.OrdinalIgnoreCase)))
                             {
                                 health.AddSqlServer(
                                     connectionString.Value,
                                     name: $"sqlserver-{connectionString.Key.ToLowerInvariant()}",
                                     tags: new[] {DatabaseTag, "sql", "sqlserver"});
                             }
+
+                            foreach (var connectionString in connectionStrings.Where(x => x.Value.Contains("host", StringComparison.OrdinalIgnoreCase)))
+                                health.AddNpgSql(
+                                    connectionString.Value,
+                                    name: $"npgsql-{connectionString.Key.ToLowerInvariant()}",
+                                    tags: new[] {DatabaseTag, "sql", "npgsql"});
 
                             health.AddDbContextCheck<ExtractContext>(
                                 $"dbcontext-{nameof(ExtractContext).ToLowerInvariant()}",

@@ -59,6 +59,17 @@ namespace AddressRegistry.Projections.Integration.Convertors
             };
         }
 
+        public static string ToPositieGeometrieMethode(this Address.GeometryMethod method)
+        {
+            return method switch
+            {
+                Address.GeometryMethod.DerivedFromObject => PositieGeometrieMethode.AfgeleidVanObject.ToString(),
+                Address.GeometryMethod.Interpolated => PositieGeometrieMethode.Geinterpoleerd.ToString(),
+                Address.GeometryMethod.AppointedByAdministrator => PositieGeometrieMethode.AangeduidDoorBeheerder.ToString(),
+                _ => PositieGeometrieMethode.AangeduidDoorBeheerder.ToString()
+            };
+        }
+
         public static string ToPositieSpecificatie(this GeometrySpecification specification)
         {
             return specification switch
@@ -73,6 +84,24 @@ namespace AddressRegistry.Projections.Integration.Convertors
                 GeometrySpecification.Entry => PositieSpecificatie.Ingang.ToString(),
                 GeometrySpecification.RoadSegment => PositieSpecificatie.Wegsegment.ToString(),
                 GeometrySpecification.Municipality => PositieSpecificatie.Gemeente.ToString(),
+                _ => PositieSpecificatie.Gemeente.ToString()
+            };
+        }
+
+        public static string ToPositieSpecificatie(this Address.GeometrySpecification specification)
+        {
+            return specification switch
+            {
+                Address.GeometrySpecification.Street => PositieSpecificatie.Straat.ToString(),
+                Address.GeometrySpecification.Parcel => PositieSpecificatie.Perceel.ToString(),
+                Address.GeometrySpecification.Lot => PositieSpecificatie.Lot.ToString(),
+                Address.GeometrySpecification.Stand => PositieSpecificatie.Standplaats.ToString(),
+                Address.GeometrySpecification.Berth => PositieSpecificatie.Ligplaats.ToString(),
+                Address.GeometrySpecification.Building => PositieSpecificatie.Gebouw.ToString(),
+                Address.GeometrySpecification.BuildingUnit => PositieSpecificatie.Gebouweenheid.ToString(),
+                Address.GeometrySpecification.Entry => PositieSpecificatie.Ingang.ToString(),
+                Address.GeometrySpecification.RoadSegment => PositieSpecificatie.Wegsegment.ToString(),
+                Address.GeometrySpecification.Municipality => PositieSpecificatie.Gemeente.ToString(),
                 _ => PositieSpecificatie.Gemeente.ToString()
             };
         }

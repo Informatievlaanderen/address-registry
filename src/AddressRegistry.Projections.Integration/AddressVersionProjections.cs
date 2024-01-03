@@ -1,11 +1,14 @@
 ﻿namespace AddressRegistry.Projections.Integration
 {
+    using Address.Events;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using Consumer.Read.StreetName;
     using Convertors;
+    using Dapper;
     using Infrastructure;
+    using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Options;
     using StreetName;
@@ -585,6 +588,710 @@
                     },
                     ct);
             });
+
+            #region Legacy
+
+            When<Envelope<AddressWasRegistered>>(async (context, message, ct) =>
+            {
+                //TODO: get the streetnamePersistentLocalId?
+                int addressPersistentLocalId;
+                using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
+                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
+                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
+                    where IdOriginal = '{message.Message.AddressId}'";
+
+                    addressPersistentLocalId = connection.QuerySingle<int>(sql);
+                }
+
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(addressPersistentLocalId),
+                    message,
+                    item =>
+                    {
+                        item.HouseNumber = message.Message.HouseNumber;
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressBecameComplete>>(async (context, message, ct) =>
+            {
+                int addressPersistentLocalId;
+                using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
+                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
+                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
+                    where IdOriginal = '{message.Message.AddressId}'";
+
+                    addressPersistentLocalId = connection.QuerySingle<int>(sql);
+                }
+
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(addressPersistentLocalId),
+                    message,
+                    _ => { },
+                    ct);
+            });
+
+            When<Envelope<AddressBecameCurrent>>(async (context, message, ct) =>
+            {
+                int addressPersistentLocalId;
+                using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
+                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
+                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
+                    where IdOriginal = '{message.Message.AddressId}'";
+
+                    addressPersistentLocalId = connection.QuerySingle<int>(sql);
+                }
+
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(addressPersistentLocalId),
+                    message,
+                    item =>
+                    {
+                        item.Status = AddressStatus.Current.Map();
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressBecameIncomplete>>(async (context, message, ct) =>
+            {
+                int addressPersistentLocalId;
+                using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
+                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
+                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
+                    where IdOriginal = '{message.Message.AddressId}'";
+
+                    addressPersistentLocalId = connection.QuerySingle<int>(sql);
+                }
+
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(addressPersistentLocalId),
+                    message,
+                    _ => { },
+                    ct);
+            });
+
+            When<Envelope<AddressBecameNotOfficiallyAssigned>>(async (context, message, ct) =>
+            {
+                int addressPersistentLocalId;
+                using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
+                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
+                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
+                    where IdOriginal = '{message.Message.AddressId}'";
+
+                    addressPersistentLocalId = connection.QuerySingle<int>(sql);
+                }
+
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(addressPersistentLocalId),
+                    message,
+                    item =>
+                    {
+                        item.OfficiallyAssigned = false;
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressHouseNumberWasChanged>>(async (context, message, ct) =>
+            {
+                int addressPersistentLocalId;
+                using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
+                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
+                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
+                    where IdOriginal = '{message.Message.AddressId}'";
+
+                    addressPersistentLocalId = connection.QuerySingle<int>(sql);
+                }
+
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(addressPersistentLocalId),
+                    message,
+                    item =>
+                    {
+                        item.HouseNumber = message.Message.HouseNumber;
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressHouseNumberWasCorrected>>(async (context, message, ct) =>
+            {
+                int addressPersistentLocalId;
+                using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
+                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
+                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
+                    where IdOriginal = '{message.Message.AddressId}'";
+
+                    addressPersistentLocalId = connection.QuerySingle<int>(sql);
+                }
+
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(addressPersistentLocalId),
+                    message,
+                    item =>
+                    {
+                        item.HouseNumber = message.Message.HouseNumber;
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressOfficialAssignmentWasRemoved>>(async (context, message, ct) =>
+            {
+                int addressPersistentLocalId;
+                using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
+                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
+                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
+                    where IdOriginal = '{message.Message.AddressId}'";
+
+                    addressPersistentLocalId = connection.QuerySingle<int>(sql);
+                }
+
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(addressPersistentLocalId),
+                    message,
+                    item =>
+                    {
+                        item.OfficiallyAssigned = null;
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressPersistentLocalIdWasAssigned>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(message.Message.PersistentLocalId),
+                    message,
+                    _ => { },
+                    ct);
+            });
+
+            When<Envelope<AddressPositionWasCorrected>>(async (context, message, ct) =>
+            {
+                int addressPersistentLocalId;
+                using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
+                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
+                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
+                    where IdOriginal = '{message.Message.AddressId}'";
+
+                    addressPersistentLocalId = connection.QuerySingle<int>(sql);
+                }
+
+                var geometry = WKBReaderFactory.CreateForLegacy()
+                    .Read(message.Message.ExtendedWkbGeometry.ToByteArray());
+
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(addressPersistentLocalId),
+                    message,
+                    item =>
+                    {
+                        item.PositionMethod = message.Message.GeometryMethod.ToPositieGeometrieMethode();
+                        item.PositionSpecification =  message.Message.GeometrySpecification.ToPositieSpecificatie();
+                        item.Geometry = geometry;
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressPositionWasRemoved>>(async (context, message, ct) =>
+            {
+                int addressPersistentLocalId;
+                using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
+                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
+                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
+                    where IdOriginal = '{message.Message.AddressId}'";
+
+                    addressPersistentLocalId = connection.QuerySingle<int>(sql);
+                }
+
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(addressPersistentLocalId),
+                    message,
+                    item =>
+                    {
+                        item.Geometry = null;
+                        item.PositionMethod = null;
+                        item.PositionSpecification = null;
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressPostalCodeWasChanged>>(async (context, message, ct) =>
+            {
+                int addressPersistentLocalId;
+                using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
+                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
+                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
+                    where IdOriginal = '{message.Message.AddressId}'";
+
+                    addressPersistentLocalId = connection.QuerySingle<int>(sql);
+                }
+
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(addressPersistentLocalId),
+                    message,
+                    item =>
+                    {
+                        item.PostalCode = message.Message.PostalCode;
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressPostalCodeWasCorrected>>(async (context, message, ct) =>
+            {
+                int addressPersistentLocalId;
+                using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
+                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
+                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
+                    where IdOriginal = '{message.Message.AddressId}'";
+
+                    addressPersistentLocalId = connection.QuerySingle<int>(sql);
+                }
+
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(addressPersistentLocalId),
+                    message,
+                    item =>
+                    {
+                        item.PostalCode = message.Message.PostalCode;
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressPostalCodeWasRemoved>>(async (context, message, ct) =>
+            {
+                int addressPersistentLocalId;
+                using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
+                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
+                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
+                    where IdOriginal = '{message.Message.AddressId}'";
+
+                    addressPersistentLocalId = connection.QuerySingle<int>(sql);
+                }
+
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(addressPersistentLocalId),
+                    message,
+                    item =>
+                    {
+                        item.PostalCode = null;
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressStatusWasCorrectedToRemoved>>(async (context, message, ct) =>
+            {
+                int addressPersistentLocalId;
+                using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
+                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
+                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
+                    where IdOriginal = '{message.Message.AddressId}'";
+
+                    addressPersistentLocalId = connection.QuerySingle<int>(sql);
+                }
+
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(addressPersistentLocalId),
+                    message,
+                    item =>
+                    {
+                        item.Status = null;
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressStatusWasRemoved>>(async (context, message, ct) =>
+            {
+                int addressPersistentLocalId;
+                using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
+                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
+                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
+                    where IdOriginal = '{message.Message.AddressId}'";
+
+                    addressPersistentLocalId = connection.QuerySingle<int>(sql);
+                }
+
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(addressPersistentLocalId),
+                    message,
+                    item =>
+                    {
+                        item.Status = null;
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressStreetNameWasChanged>>(async (context, message, ct) =>
+            {
+                //TODO: get the streetnamePersistentLocalId?
+                int addressPersistentLocalId;
+                using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
+                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
+                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
+                    where IdOriginal = '{message.Message.AddressId}'";
+
+                    addressPersistentLocalId = connection.QuerySingle<int>(sql);
+                }
+
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(addressPersistentLocalId),
+                    message,
+                    _ => { },
+                    ct);
+            });
+
+            When<Envelope<AddressStreetNameWasCorrected>>(async (context, message, ct) =>
+            {
+                //TODO: get the streetnamePersistentLocalId?
+                int addressPersistentLocalId;
+                using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
+                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
+                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
+                    where IdOriginal = '{message.Message.AddressId}'";
+
+                    addressPersistentLocalId = connection.QuerySingle<int>(sql);
+                }
+
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(addressPersistentLocalId),
+                    message,
+                    _ => { },
+                    ct);
+            });
+
+            When<Envelope<AddressWasCorrectedToCurrent>>(async (context, message, ct) =>
+            {
+                int addressPersistentLocalId;
+                using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
+                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
+                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
+                    where IdOriginal = '{message.Message.AddressId}'";
+
+                    addressPersistentLocalId = connection.QuerySingle<int>(sql);
+                }
+
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(addressPersistentLocalId),
+                    message,
+                    item =>
+                    {
+                        item.Status = AddressStatus.Current.Map();
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasCorrectedToNotOfficiallyAssigned>>(async (context, message, ct) =>
+            {
+                int addressPersistentLocalId;
+                using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
+                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
+                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
+                    where IdOriginal = '{message.Message.AddressId}'";
+
+                    addressPersistentLocalId = connection.QuerySingle<int>(sql);
+                }
+
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(addressPersistentLocalId),
+                    message,
+                    item =>
+                    {
+                        item.OfficiallyAssigned = false;
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasCorrectedToOfficiallyAssigned>>(async (context, message, ct) =>
+            {
+                int addressPersistentLocalId;
+                using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
+                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
+                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
+                    where IdOriginal = '{message.Message.AddressId}'";
+
+                    addressPersistentLocalId = connection.QuerySingle<int>(sql);
+                }
+
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(addressPersistentLocalId),
+                    message,
+                    item =>
+                    {
+                        item.OfficiallyAssigned = true;
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasCorrectedToProposed>>(async (context, message, ct) =>
+            {
+                int addressPersistentLocalId;
+                using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
+                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
+                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
+                    where IdOriginal = '{message.Message.AddressId}'";
+
+                    addressPersistentLocalId = connection.QuerySingle<int>(sql);
+                }
+
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(addressPersistentLocalId),
+                    message,
+                    item =>
+                    {
+                        item.Status = AddressStatus.Proposed.Map();
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasCorrectedToRetired>>(async (context, message, ct) =>
+            {
+                int addressPersistentLocalId;
+                using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
+                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
+                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
+                    where IdOriginal = '{message.Message.AddressId}'";
+
+                    addressPersistentLocalId = connection.QuerySingle<int>(sql);
+                }
+
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(addressPersistentLocalId),
+                    message,
+                    item =>
+                    {
+                        item.Status = AddressStatus.Retired.Map();
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasOfficiallyAssigned>>(async (context, message, ct) =>
+            {
+                int addressPersistentLocalId;
+                using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
+                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
+                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
+                    where IdOriginal = '{message.Message.AddressId}'";
+
+                    addressPersistentLocalId = connection.QuerySingle<int>(sql);
+                }
+
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(addressPersistentLocalId),
+                    message,
+                    item =>
+                    {
+                        item.OfficiallyAssigned = true;
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasPositioned>>(async (context, message, ct) =>
+            {
+                int addressPersistentLocalId;
+                using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
+                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
+                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
+                    where IdOriginal = '{message.Message.AddressId}'";
+
+                    addressPersistentLocalId = connection.QuerySingle<int>(sql);
+                }
+
+                var geometry = WKBReaderFactory.CreateForLegacy()
+                    .Read(message.Message.ExtendedWkbGeometry.ToByteArray());
+
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(addressPersistentLocalId),
+                    message,
+                    item =>
+                    {
+                        item.PositionMethod = message.Message.GeometryMethod.ToPositieGeometrieMethode();
+                        item.PositionSpecification =  message.Message.GeometrySpecification.ToPositieSpecificatie();
+                        item.Geometry = geometry;
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasProposed>>(async (context, message, ct) =>
+            {
+                int addressPersistentLocalId;
+                using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
+                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
+                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
+                    where IdOriginal = '{message.Message.AddressId}'";
+
+                    addressPersistentLocalId = connection.QuerySingle<int>(sql);
+                }
+
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(addressPersistentLocalId),
+                    message,
+                    item =>
+                    {
+                        item.PostalCode = AddressStatus.Proposed.Map();
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasRemoved>>(async (context, message, ct) =>
+            {
+                int addressPersistentLocalId;
+                using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
+                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
+                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
+                    where IdOriginal = '{message.Message.AddressId}'";
+
+                    addressPersistentLocalId = connection.QuerySingle<int>(sql);
+                }
+
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(addressPersistentLocalId),
+                    message,
+                    item =>
+                    {
+                        item.Removed = true;
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasRetired>>(async (context, message, ct) =>
+            {
+                int addressPersistentLocalId;
+                using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
+                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
+                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
+                    where IdOriginal = '{message.Message.AddressId}'";
+
+                    addressPersistentLocalId = connection.QuerySingle<int>(sql);
+                }
+
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(addressPersistentLocalId),
+                    message,
+                    item =>
+                    {
+                        item.Status = AddressStatus.Retired.Map();
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressBoxNumberWasChanged>>(async (context, message, ct) =>
+            {
+                int addressPersistentLocalId;
+                using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
+                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
+                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
+                    where IdOriginal = '{message.Message.AddressId}'";
+
+                    addressPersistentLocalId = connection.QuerySingle<int>(sql);
+                }
+
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(addressPersistentLocalId),
+                    message,
+                    item =>
+                    {
+                        item.BoxNumber = message.Message.BoxNumber;
+                    },
+                    ct);
+            });
+            When<Envelope<AddressBoxNumberWasCorrected>>(async (context, message, ct) =>
+            {
+                int addressPersistentLocalId;
+                using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
+                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
+                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
+                    where IdOriginal = '{message.Message.AddressId}'";
+
+                    addressPersistentLocalId = connection.QuerySingle<int>(sql);
+                }
+
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(addressPersistentLocalId),
+                    message,
+                    item =>
+                    {
+                        item.BoxNumber = message.Message.BoxNumber;
+                    },
+                    ct);
+            });
+            When<Envelope<AddressBoxNumberWasRemoved>>(async (context, message, ct) =>
+            {
+                int addressPersistentLocalId;
+                using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
+                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
+                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
+                    where IdOriginal = '{message.Message.AddressId}'";
+
+                    addressPersistentLocalId = connection.QuerySingle<int>(sql);
+                }
+
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(addressPersistentLocalId),
+                    message,
+                    item =>
+                    {
+                        item.BoxNumber = null;
+                    },
+                    ct);
+            });
+
+            #endregion
         }
     }
 }

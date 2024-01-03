@@ -28,6 +28,7 @@
         public string? PuriId { get; set; }
         public string? Namespace { get; set; }
         public string VersionAsString { get; set; }
+        public long IdempotenceKey { get; set; }
 
         private DateTimeOffset VersionTimestampAsDateTimeOffset { get; set; }
 
@@ -83,6 +84,8 @@
             builder.Property(AddressVersion.VersionTimestampBackingPropertyName).HasColumnName("version_timestamp");
 
             builder.Ignore(x => x.VersionTimestamp);
+
+            builder.Property(x => x.IdempotenceKey).HasColumnName("idempotence_key");
 
             builder.Property(x => x.PersistentLocalId).IsRequired();
             builder.HasIndex(x => x.PersistentLocalId);

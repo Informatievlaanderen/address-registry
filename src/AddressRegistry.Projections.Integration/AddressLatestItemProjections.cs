@@ -27,10 +27,8 @@
                 {
                     await context.FindAndUpdateAddressLatestItem(
                         addressPersistentLocalId,
-                        item =>
-                        {
-                            UpdateVersionTimestampIfNewer(item, message.Message.Provenance.Timestamp);
-                        },
+                        message.Position,
+                        item => { UpdateVersionTimestampIfNewer(item, message.Message.Provenance.Timestamp); },
                         ct);
                 }
             });
@@ -41,10 +39,8 @@
                 {
                     await context.FindAndUpdateAddressLatestItem(
                         addressPersistentLocalId,
-                        item =>
-                        {
-                            UpdateVersionTimestampIfNewer(item, message.Message.Provenance.Timestamp);
-                        },
+                        message.Position,
+                        item => { UpdateVersionTimestampIfNewer(item, message.Message.Provenance.Timestamp); },
                         ct);
                 }
             });
@@ -55,10 +51,8 @@
                 {
                     await context.FindAndUpdateAddressLatestItem(
                         addressPersistentLocalId,
-                        item =>
-                        {
-                            UpdateVersionTimestampIfNewer(item, message.Message.Provenance.Timestamp);
-                        },
+                        message.Position,
+                        item => { UpdateVersionTimestampIfNewer(item, message.Message.Provenance.Timestamp); },
                         ct);
                 }
             });
@@ -88,6 +82,7 @@
                     VersionTimestamp = message.Message.Provenance.Timestamp,
                     Namespace = options.Value.Namespace,
                     PuriId = $"{options.Value.Namespace}/{message.Message.AddressPersistentLocalId}",
+                    IdempotenceKey = message.Position
                 };
 
                 await context
@@ -108,7 +103,7 @@
                     NisCode = streetName.NisCode,
                     PostalCode = message.Message.PostalCode,
                     StreetNamePersistentLocalId = message.Message.StreetNamePersistentLocalId,
-                    Status = AddressStatus.Proposed.ToString(),
+                    Status = AddressStatus.Proposed.Map(),
                     HouseNumber = message.Message.HouseNumber,
                     BoxNumber = message.Message.BoxNumber,
                     Geometry = geometry,
@@ -119,6 +114,7 @@
                     VersionTimestamp = message.Message.Provenance.Timestamp,
                     Namespace = options.Value.Namespace,
                     PuriId = $"{options.Value.Namespace}/{message.Message.AddressPersistentLocalId}",
+                    IdempotenceKey = message.Position
                 };
 
                 await context
@@ -130,9 +126,10 @@
             {
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
+                    message.Position,
                     item =>
                     {
-                        item.Status = AddressStatus.Current.ToString();
+                        item.Status = AddressStatus.Current.Map();
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);
@@ -142,9 +139,10 @@
             {
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
+                    message.Position,
                     item =>
                     {
-                        item.Status = AddressStatus.Proposed.ToString();
+                        item.Status = AddressStatus.Proposed.Map();
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);
@@ -154,9 +152,10 @@
             {
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
+                    message.Position,
                     item =>
                     {
-                        item.Status = AddressStatus.Proposed.ToString();
+                        item.Status = AddressStatus.Proposed.Map();
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);
@@ -166,9 +165,10 @@
             {
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
+                    message.Position,
                     item =>
                     {
-                        item.Status = AddressStatus.Rejected.ToString();
+                        item.Status = AddressStatus.Rejected.Map();
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);
@@ -178,9 +178,10 @@
             {
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
+                    message.Position,
                     item =>
                     {
-                        item.Status = AddressStatus.Rejected.ToString();
+                        item.Status = AddressStatus.Rejected.Map();
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);
@@ -190,9 +191,10 @@
             {
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
+                    message.Position,
                     item =>
                     {
-                        item.Status = AddressStatus.Rejected.ToString();
+                        item.Status = AddressStatus.Rejected.Map();
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);
@@ -202,9 +204,10 @@
             {
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
+                    message.Position,
                     item =>
                     {
-                        item.Status = AddressStatus.Rejected.ToString();
+                        item.Status = AddressStatus.Rejected.Map();
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);
@@ -214,9 +217,10 @@
             {
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
+                    message.Position,
                     item =>
                     {
-                        item.Status = AddressStatus.Retired.ToString();
+                        item.Status = AddressStatus.Retired.Map();
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);
@@ -226,9 +230,10 @@
             {
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
+                    message.Position,
                     item =>
                     {
-                        item.Status = AddressStatus.Rejected.ToString();
+                        item.Status = AddressStatus.Rejected.Map();
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);
@@ -238,10 +243,11 @@
             {
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
+                    message.Position,
                     item =>
                     {
                         item.OfficiallyAssigned = false;
-                        item.Status = AddressStatus.Current.ToString();
+                        item.Status = AddressStatus.Current.Map();
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);
@@ -251,6 +257,7 @@
             {
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
+                    message.Position,
                     item =>
                     {
                         item.OfficiallyAssigned = true;
@@ -263,9 +270,10 @@
             {
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
+                    message.Position,
                     item =>
                     {
-                        item.Status = AddressStatus.Retired.ToString();
+                        item.Status = AddressStatus.Retired.Map();
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);
@@ -275,9 +283,10 @@
             {
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
+                    message.Position,
                     item =>
                     {
-                        item.Status = AddressStatus.Retired.ToString();
+                        item.Status = AddressStatus.Retired.Map();
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);
@@ -287,9 +296,10 @@
             {
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
+                    message.Position,
                     item =>
                     {
-                        item.Status = AddressStatus.Retired.ToString();
+                        item.Status = AddressStatus.Retired.Map();
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);
@@ -299,9 +309,10 @@
             {
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
+                    message.Position,
                     item =>
                     {
-                        item.Status = AddressStatus.Current.ToString();
+                        item.Status = AddressStatus.Current.Map();
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);
@@ -311,6 +322,7 @@
             {
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
+                    message.Position,
                     item =>
                     {
                         item.PostalCode = message.Message.PostalCode;
@@ -322,6 +334,7 @@
                 {
                     await context.FindAndUpdateAddressLatestItem(
                         boxNumberPersistentLocalId,
+                        message.Position,
                         boxNumberItem =>
                         {
                             boxNumberItem.PostalCode = message.Message.PostalCode;
@@ -335,6 +348,7 @@
             {
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
+                    message.Position,
                     item =>
                     {
                         item.PostalCode = message.Message.PostalCode;
@@ -346,6 +360,7 @@
                 {
                     await context.FindAndUpdateAddressLatestItem(
                         boxNumberPersistentLocalId,
+                        message.Position,
                         boxNumberItem =>
                         {
                             boxNumberItem.PostalCode = message.Message.PostalCode;
@@ -359,6 +374,7 @@
             {
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
+                    message.Position,
                     item =>
                     {
                         item.HouseNumber = message.Message.HouseNumber;
@@ -370,6 +386,7 @@
                 {
                     await context.FindAndUpdateAddressLatestItem(
                         boxNumberPersistentLocalId,
+                        message.Position,
                         boxNumberItem =>
                         {
                             boxNumberItem.HouseNumber = message.Message.HouseNumber;
@@ -383,6 +400,7 @@
             {
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
+                    message.Position,
                     item =>
                     {
                         item.BoxNumber = message.Message.BoxNumber;
@@ -397,6 +415,7 @@
 
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
+                    message.Position,
                     item =>
                     {
                         item.PositionMethod = message.Message.GeometryMethod.ToPositieGeometrieMethode();
@@ -414,6 +433,7 @@
 
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
+                    message.Position,
                     item =>
                     {
                         item.PositionMethod = message.Message.GeometryMethod.ToPositieGeometrieMethode();
@@ -427,10 +447,12 @@
 
             When<Envelope<AddressHouseNumberWasReaddressed>>(async (context, message, ct) =>
             {
-                var geometry = WKBReaderFactory.CreateForLegacy().Read(message.Message.ReaddressedHouseNumber.SourceExtendedWkbGeometry.ToByteArray());
+                var geometry = WKBReaderFactory.CreateForLegacy()
+                    .Read(message.Message.ReaddressedHouseNumber.SourceExtendedWkbGeometry.ToByteArray());
 
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
+                    message.Position,
                     item =>
                     {
                         item.Status = message.Message.ReaddressedHouseNumber.SourceStatus.Map();
@@ -447,10 +469,12 @@
 
                 foreach (var readdressedBoxNumber in message.Message.ReaddressedBoxNumbers)
                 {
-                    var boxNumberGeometry = WKBReaderFactory.CreateForLegacy().Read(message.Message.ReaddressedHouseNumber.SourceExtendedWkbGeometry.ToByteArray());
+                    var boxNumberGeometry = WKBReaderFactory.CreateForLegacy()
+                        .Read(message.Message.ReaddressedHouseNumber.SourceExtendedWkbGeometry.ToByteArray());
 
                     await context.FindAndUpdateAddressLatestItem(
                         readdressedBoxNumber.DestinationAddressPersistentLocalId,
+                        message.Position,
                         item =>
                         {
                             item.Status = readdressedBoxNumber.SourceStatus.Map();
@@ -492,6 +516,7 @@
                     VersionTimestamp = message.Message.Provenance.Timestamp,
                     Namespace = options.Value.Namespace,
                     PuriId = $"{options.Value.Namespace}/{message.Message.AddressPersistentLocalId}",
+                    IdempotenceKey = message.Position
                 };
 
                 await context
@@ -503,6 +528,7 @@
             {
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
+                    message.Position,
                     item =>
                     {
                         item.Status = AddressStatus.Rejected.Map();
@@ -515,6 +541,7 @@
             {
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
+                    message.Position,
                     item =>
                     {
                         item.Status = AddressStatus.Retired.Map();
@@ -527,6 +554,7 @@
             {
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
+                    message.Position,
                     item =>
                     {
                         item.Removed = true;
@@ -539,6 +567,7 @@
             {
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
+                    message.Position,
                     item =>
                     {
                         item.Removed = true;
@@ -551,6 +580,7 @@
             {
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
+                    message.Position,
                     item =>
                     {
                         item.Removed = true;
@@ -563,6 +593,7 @@
             {
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
+                    message.Position,
                     item =>
                     {
                         item.Status = AddressStatus.Proposed.Map();
@@ -575,6 +606,7 @@
             {
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
+                    message.Position,
                     item =>
                     {
                         item.OfficiallyAssigned = false;
@@ -588,6 +620,7 @@
             {
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,
+                    message.Position,
                     item =>
                     {
                         item.OfficiallyAssigned = true;

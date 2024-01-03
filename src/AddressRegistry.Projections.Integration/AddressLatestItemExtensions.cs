@@ -9,6 +9,7 @@
     {
             public static async Task<AddressLatestItem> FindAndUpdateAddressLatestItem(this IntegrationContext context,
                 int persistentLocalId,
+                long position,
                 Action<AddressLatestItem> updateFunc,
                 CancellationToken ct)
             {
@@ -18,6 +19,8 @@
 
                 if (addressLatestItem == null)
                     throw DatabaseItemNotFound(new PersistentLocalId(persistentLocalId));
+
+                addressLatestItem.IdempotenceKey = position;
 
                 updateFunc(addressLatestItem);
 

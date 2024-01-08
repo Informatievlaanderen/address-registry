@@ -5,16 +5,13 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
     using AddressRegistry.Infrastructure.Modules;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
-    using Be.Vlaanderen.Basisregisters.Auth.AcmIdm;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
+    using Be.Vlaanderen.Basisregisters.Auth.AcmIdm;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Microsoft;
     using Be.Vlaanderen.Basisregisters.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance.AcmIdm;
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac;
-    using Consumer.Infrastructure.Modules;
-    using Consumer.Read.Municipality.Infrastructure.Modules;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -56,6 +53,10 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
                 .As<IProvenanceFactory>()
                 .InstancePerLifetimeScope()
                 .AsSelf();
+
+            builder.RegisterType<HouseNumberValidator>()
+                .AsSelf()
+                .InstancePerLifetimeScope();
 
             builder
                 .RegisterType<StreetNameExistsValidator>()

@@ -7,8 +7,7 @@ namespace AddressRegistry.StreetName
 
     public class HouseNumber : StringValueObject<HouseNumber>
     {
-        private static readonly Regex FormatRegex =
-            new("^[1-9]([0-9]{0,8}([A-H]|[K-N]|[P]|[R-T]|[V-Z]){0,1}|[0-9]{0,9})$", RegexOptions.Compiled);
+        private static readonly Regex FormatRegex = new("^[1-9]([0-9]{0,8}([A-Z]){0,1}|[0-9]{0,9})$", RegexOptions.Compiled);
 
         internal HouseNumber(string houseNumber) : base(houseNumber.RemoveUnicodeControlCharacters()) { }
 

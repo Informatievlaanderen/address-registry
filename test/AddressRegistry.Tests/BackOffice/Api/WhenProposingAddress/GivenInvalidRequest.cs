@@ -5,7 +5,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Address;
     using AddressRegistry.Api.BackOffice;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Abstractions.SqsRequests;
@@ -283,7 +282,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
             syndicationContext.SaveChanges();
 
             return async () => await _controller.Propose(
-                new ProposeAddressRequestValidator(new StreetNameExistsValidator(_streamStore.Object), syndicationContext),
+                new ProposeAddressRequestValidator(
+                    new StreetNameExistsValidator(_streamStore.Object),
+                    syndicationContext,
+                    FakeHouseNumberValidator.Instance),
                 new ProposeAddressSqsRequestFactory(Mock.Of<IPersistentLocalIdGenerator>()),
                 request,
                 CancellationToken.None);

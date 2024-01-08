@@ -7,13 +7,13 @@
     using Abstractions.Validation;
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Validators;
     using FluentValidation;
-    using StreetName;
 
     public class ReaddressRequestValidator : AbstractValidator<ReaddressRequest>
     {
         public ReaddressRequestValidator(
             StreetNameExistsValidator streetNameExistsValidator,
-            BackOfficeContext backOfficeContext)
+            BackOfficeContext backOfficeContext,
+            HouseNumberValidator houseNumberValidator)
         {
             RuleFor(x => x.DoelStraatnaamId)
                 .MustAsync(async (straatNaamId, ct) =>
@@ -46,7 +46,7 @@
                 .WithErrorCode(ValidationErrors.Readdress.AddressNotFound.Code);
 
             RuleForEach(x => x.HerAdresseer)
-                .Must(x => HouseNumber.HasValidFormat(x.DoelHuisnummer))
+                .Must(x => houseNumberValidator.Validate(x.DoelHuisnummer))
                 .WithMessage((_, x) => ValidationErrors.Readdress.HouseNumberInvalidFormat.Message(x.DoelHuisnummer))
                 .WithErrorCode(ValidationErrors.Readdress.HouseNumberInvalidFormat.Code);
 

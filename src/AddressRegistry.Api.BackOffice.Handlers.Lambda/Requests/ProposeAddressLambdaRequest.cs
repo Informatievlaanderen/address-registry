@@ -42,7 +42,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
                 postalCodeMunicipalityId,
                 AddressPersistentLocalId,
                 HouseNumber.Create(Request.Huisnummer),
-                string.IsNullOrWhiteSpace(Request.Busnummer) ? null : new BoxNumber(Request.Busnummer),
+                string.IsNullOrWhiteSpace(Request.Busnummer) ? null : BoxNumber.Create(Request.Busnummer),
                 Request.PositieGeometrieMethode.Map(),
                 Request.PositieSpecificatie.Map(),
                 Request.Positie.ToExtendedWkbGeometry(),

@@ -21,7 +21,8 @@ namespace AddressRegistry.Tests.BackOffice.Validators
             _streamStore = new Mock<IStreamStore>();
             _sut = new ProposeAddressRequestValidator(
                 new StreetNameExistsValidator(_streamStore.Object),
-                new TestSyndicationContext());
+                new TestSyndicationContext(),
+                FakeHouseNumberValidator.Instance);
         }
 
         private void WithStreamExists()

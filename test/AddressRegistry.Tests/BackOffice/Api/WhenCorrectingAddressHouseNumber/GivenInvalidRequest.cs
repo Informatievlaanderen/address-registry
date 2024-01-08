@@ -8,6 +8,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressHouseNumber
     using FluentAssertions;
     using FluentValidation;
     using global::AutoFixture;
+    using Infrastructure;
     using StreetName;
     using Xunit;
     using Xunit.Abstractions;
@@ -25,7 +26,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenCorrectingAddressHouseNumber
         public async Task WithInvalidHouseNumberFormat()
         {
             var act = async () => await _controller.CorrectHouseNumber(
-                new CorrectAddressHouseNumberRequestValidator(),
+                new CorrectAddressHouseNumberRequestValidator(FakeHouseNumberValidator.Instance),
                 MockIfMatchValidator(true),
                 Fixture.Create<AddressPersistentLocalId>(),
                 new CorrectAddressHouseNumberRequest { Huisnummer = "INVALID"},

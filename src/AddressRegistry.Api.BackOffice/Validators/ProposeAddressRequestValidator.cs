@@ -1,5 +1,6 @@
 namespace AddressRegistry.Api.BackOffice.Validators
 {
+    using System.Text.RegularExpressions;
     using Abstractions;
     using Abstractions.Requests;
     using Abstractions.Validation;
@@ -11,9 +12,13 @@ namespace AddressRegistry.Api.BackOffice.Validators
 
     public class ProposeAddressRequestValidator : AbstractValidator<ProposeAddressRequest>
     {
+        internal static readonly Regex DecentraleBijwerkerHouseNumberFormatRegex =
+            new("^[1-9]([0-9]{0,8}([A-H]|[K-N]|[P]|[R-T]|[V-Z]){0,1}|[0-9]{0,9})$", RegexOptions.Compiled);
+
         public ProposeAddressRequestValidator(
             StreetNameExistsValidator streetNameExistsValidator,
-            SyndicationContext syndicationContext)
+            SyndicationContext syndicationContext,
+            HouseNumberValidator houseNumberValidator)
         {
             RuleFor(x => x.StraatNaamId)
                 .MustAsync(async (straatNaamId, ct) =>
@@ -28,7 +33,7 @@ namespace AddressRegistry.Api.BackOffice.Validators
                 .WithErrorCode(ValidationErrors.Common.PostalCode.DoesNotExist.Code);
 
             RuleFor(x => x.Huisnummer)
-                .Must(HouseNumber.HasValidFormat)
+                .Must(houseNumberValidator.Validate)
                 .WithMessage(ValidationErrors.Common.HouseNumberInvalidFormat.Message)
                 .WithErrorCode(ValidationErrors.Common.HouseNumberInvalidFormat.Code);
 

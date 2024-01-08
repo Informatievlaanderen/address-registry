@@ -12,7 +12,9 @@
         [InlineData("12345678901")]
         [InlineData("1234567890A")]
         [InlineData("1AB")]
-        [InlineData("123Q")]
+        [InlineData("1.AB")]
+        [InlineData("1/AB")]
+        [InlineData("A")]
         public void OnInvalidHouseNumber_ThenThrowsHouseNumberHasInvalidFormatException(string houseNumber)
         {
             Assert.Throws<HouseNumberHasInvalidFormatException>(() => HouseNumber.Create(houseNumber));

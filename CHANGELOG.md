@@ -1,3 +1,19 @@
+# [3.106.0](https://github.com/informatievlaanderen/address-registry/compare/v3.105.0...v3.106.0) (2024-01-08)
+
+
+### Bug Fixes
+
+* cast niscode to int in integrationdb stream ([379ca96](https://github.com/informatievlaanderen/address-registry/commit/379ca96765b05a0eec157e807ba326fd7d3ebd3f))
+* readdress addresses box number bug ([2673b5e](https://github.com/informatievlaanderen/address-registry/commit/2673b5ef44dd63ac5e36b73b1dec7aa5d46f313c))
+* use different scope for each address to retire in other streetname ([0c3e139](https://github.com/informatievlaanderen/address-registry/commit/0c3e139fd4a06e29e79e37b970971469c732e7f4))
+
+
+### Features
+
+* add idempotencekey to ksql ([b812b58](https://github.com/informatievlaanderen/address-registry/commit/b812b58f00afdd2a4f1e02d82ff158d1f33f7fad))
+* loosen box number regex format ([3ab0139](https://github.com/informatievlaanderen/address-registry/commit/3ab0139ce5be2f63a7aebfa8ca4425fb88f87a31))
+* loosen house number regex format for interne bijwerker ([bfac095](https://github.com/informatievlaanderen/address-registry/commit/bfac0958893dbd7e76580baff9ef45b5d28a1667))
+
 # [3.105.0](https://github.com/informatievlaanderen/address-registry/compare/v3.104.0...v3.105.0) (2023-12-05)
 
 

@@ -1,3 +1,11 @@
+## [3.106.1](https://github.com/informatievlaanderen/address-registry/compare/v3.106.0...v3.106.1) (2024-01-09)
+
+
+### Bug Fixes
+
+* command provenance should be set after idempotency check ([6e2f232](https://github.com/informatievlaanderen/address-registry/commit/6e2f2323b2ecd86b8ccc33c6890f761216674da4))
+* event timestamp ([cafbbeb](https://github.com/informatievlaanderen/address-registry/commit/cafbbeb7a1b94be35bb2a35b3704455e316cc1c0))
+
 # [3.106.0](https://github.com/informatievlaanderen/address-registry/compare/v3.105.0...v3.106.0) (2024-01-08)
 
 

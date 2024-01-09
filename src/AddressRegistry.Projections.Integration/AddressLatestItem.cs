@@ -50,9 +50,7 @@
     {
         public void Configure(EntityTypeBuilder<AddressLatestItem> builder)
         {
-            const string geomFromGmlComputedQuery = "ST_GeomFromGML(REPLACE(\"GeometryGml\",'https://www.opengis.net/def/crs/EPSG/0/', 'EPSG:')) ";
-
-            const string tableName = "municipality_versions";
+            const string tableName = "address_latest_items";
 
             builder
                 .ToTable(tableName, Schema.Integration) // to schema per type
@@ -71,8 +69,6 @@
             builder.Property(x => x.BoxNumber).HasColumnName("box_number");
 
             builder.Property(x => x.Geometry).HasColumnName("geometry");
-            builder.Property(x => x.Geometry)
-                .HasComputedColumnSql(geomFromGmlComputedQuery, stored: true);
 
             builder.Property(x => x.PositionMethod).HasColumnName("position_method");
             builder.Property(x => x.PositionSpecification).HasColumnName("position_specification");
@@ -81,7 +77,7 @@
             builder.Property(x => x.PuriId).HasColumnName("puri_id");
             builder.Property(x => x.Namespace).HasColumnName("namespace");
             builder.Property(x => x.VersionAsString).HasColumnName("version_as_string");
-            builder.Property(AddressVersion.VersionTimestampBackingPropertyName).HasColumnName("version_timestamp");
+            builder.Property(AddressLatestItem.VersionTimestampBackingPropertyName).HasColumnName("version_timestamp");
 
             builder.Ignore(x => x.VersionTimestamp);
 

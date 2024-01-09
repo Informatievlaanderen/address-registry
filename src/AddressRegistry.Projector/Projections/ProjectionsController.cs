@@ -18,10 +18,11 @@ namespace AddressRegistry.Projector.Projections
                 connectedProjectionsManager,
                 configuration.GetValue<string>("BaseUrl"))
         {
-            RegisterConnectionString(Schema.Legacy, configuration.GetConnectionString("LegacyProjections"));
-            RegisterConnectionString(Schema.Extract, configuration.GetConnectionString("ExtractProjections"));
-            RegisterConnectionString(Schema.Wfs, configuration.GetConnectionString("WfsProjections"));
-            RegisterConnectionString(Schema.Wms, configuration.GetConnectionString("WmsProjections"));
+            // RegisterConnectionString(Schema.Legacy, configuration.GetConnectionString("LegacyProjections"));
+            // RegisterConnectionString(Schema.Extract, configuration.GetConnectionString("ExtractProjections"));
+            // RegisterConnectionString(Schema.Wfs, configuration.GetConnectionString("WfsProjections"));
+            // RegisterConnectionString(Schema.Wms, configuration.GetConnectionString("WmsProjections"));
+            RegisterConnectionString(Schema.Integration, configuration.GetConnectionString("IntegrationProjections"));
         }
     }
 }

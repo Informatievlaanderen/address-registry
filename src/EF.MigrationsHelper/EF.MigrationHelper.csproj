@@ -34,7 +34,6 @@
     <ProjectReference Include="..\AddressRegistry.Projections.BackOffice\AddressRegistry.Projections.BackOffice.csproj" />
     <ProjectReference Include="..\AddressRegistry.Projections.Integration\AddressRegistry.Projections.Integration.csproj" />
 	  <ProjectReference Include="..\AddressRegistry.Consumer\AddressRegistry.Consumer.csproj" />
-    <ProjectReference Include="..\AddressRegistry.Api.CrabImport\AddressRegistry.Api.CrabImport.csproj" />
     <ProjectReference Include="..\AddressRegistry.Producer\AddressRegistry.Producer.csproj" />
     <ProjectReference Include="..\AddressRegistry.Producer.Snapshot.Oslo\AddressRegistry.Producer.Snapshot.Oslo.csproj" />
 	  <ProjectReference Include="..\AddressRegistry.Api.Backoffice.Abstractions\AddressRegistry.Api.Backoffice.Abstractions.csproj" />

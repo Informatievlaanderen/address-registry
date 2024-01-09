@@ -1,16 +1,17 @@
 ﻿namespace AddressRegistry.Projections.Integration
 {
+    using System.Threading;
+    using System.Threading.Tasks;
     using Address.Events;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
-    using Consumer.Read.StreetName;
     using Convertors;
     using Dapper;
     using Infrastructure;
     using Microsoft.Data.SqlClient;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Options;
+    using NetTopologySuite.Geometries;
     using StreetName;
     using StreetName.Events;
 
@@ -18,9 +19,7 @@
     [ConnectedProjectionDescription("Projectie die de laatste adres data voor de integratie database bijhoudt.")]
     public sealed class AddressVersionProjections : ConnectedProjection<IntegrationContext>
     {
-        public AddressVersionProjections(
-            StreetNameConsumerContext streetNameConsumerContext,
-            IOptions<IntegrationOptions> options)
+        public AddressVersionProjections(IOptions<IntegrationOptions> options)
         {
             // StreetName
             When<Envelope<StreetNameNamesWereCorrected>>(async (context, message, ct) =>
@@ -63,15 +62,13 @@
             When<Envelope<AddressWasMigratedToStreetName>>(async (context, message, ct) =>
             {
                 var geometry = WKBReaderFactory.CreateForLegacy().Read(message.Message.ExtendedWkbGeometry.ToByteArray());
-                var streetName =
-                    await streetNameConsumerContext.StreetNameLatestItems.SingleAsync(
-                        x => x.PersistentLocalId == message.Message.StreetNamePersistentLocalId, ct);
+                var nisCode = await FindNisCode(geometry, ct);
 
                 var addressVersion = new AddressVersion()
                 {
                     Position = message.Position,
                     PersistentLocalId = message.Message.AddressPersistentLocalId,
-                    NisCode = streetName.NisCode,
+                    NisCode = nisCode,
                     PostalCode = message.Message.PostalCode,
                     StreetNamePersistentLocalId = message.Message.StreetNamePersistentLocalId,
                     Status = message.Message.Status.Map(),
@@ -93,15 +90,13 @@
             When<Envelope<AddressWasProposedV2>>(async (context, message, ct) =>
             {
                 var geometry = WKBReaderFactory.CreateForLegacy().Read(message.Message.ExtendedWkbGeometry.ToByteArray());
-                var streetName =
-                    await streetNameConsumerContext.StreetNameLatestItems.SingleAsync(
-                        x => x.PersistentLocalId == message.Message.StreetNamePersistentLocalId, ct);
+                var nisCode = await FindNisCode(geometry, ct);
 
                 var addressVersion = new AddressVersion()
                 {
                     Position = message.Position,
                     PersistentLocalId = message.Message.AddressPersistentLocalId,
-                    NisCode = streetName.NisCode,
+                    NisCode = nisCode,
                     PostalCode = message.Message.PostalCode,
                     StreetNamePersistentLocalId = message.Message.StreetNamePersistentLocalId,
                     Status = AddressStatus.Proposed.Map(),
@@ -463,15 +458,13 @@
             When<Envelope<AddressWasProposedBecauseOfReaddress>>(async (context, message, ct) =>
             {
                 var geometry = WKBReaderFactory.CreateForLegacy().Read(message.Message.ExtendedWkbGeometry.ToByteArray());
-                var streetName =
-                    await streetNameConsumerContext.StreetNameLatestItems.SingleAsync(
-                        x => x.PersistentLocalId == message.Message.StreetNamePersistentLocalId, ct);
+                var nisCode = await FindNisCode(geometry, ct);
 
                 var addressDetailItemV2 = new AddressVersion
                 {
                     Position = message.Position,
                     PersistentLocalId = new PersistentLocalId(message.Message.AddressPersistentLocalId),
-                    NisCode = streetName.NisCode,
+                    NisCode = nisCode,
                     PostalCode = message.Message.PostalCode,
                     StreetNamePersistentLocalId = message.Message.StreetNamePersistentLocalId,
                     Status = AddressStatus.Proposed.Map(),
@@ -1292,6 +1285,25 @@
             });
 
             #endregion
+
+            async Task<string?> FindNisCode(Geometry geometry, CancellationToken ct)
+            {
+                string nisCode;
+                await using (var connection = new SqlConnection(options.Value.EventsConnectionString))
+                {
+                    var sql = @$"SELECT nis_code
+                                FROM integration_municipality.municipality_geometries
+                                WHERE ST_Within(
+                                    ${geometry},
+                                    integration_municipality.municipality_geometries.geometry
+                                )
+                                LIMIT 1;";
+
+                    nisCode = connection.QuerySingle<string>(sql);
+                }
+
+                return nisCode;
+            }
         }
     }
 }

@@ -78,13 +78,11 @@
         }
     }
 
-    public sealed class AddressLatestEventConfiguration : IEntityTypeConfiguration<AddressVersion>
+    public sealed class AddressVersionConfiguration : IEntityTypeConfiguration<AddressVersion>
     {
         public void Configure(EntityTypeBuilder<AddressVersion> builder)
         {
-            const string geomFromGmlComputedQuery = "ST_GeomFromGML(REPLACE(\"GeometryGml\",'https://www.opengis.net/def/crs/EPSG/0/', 'EPSG:')) ";
-
-            const string tableName = "municipality_versions";
+            const string tableName = "address_versions";
 
             builder
                 .ToTable(tableName, Schema.Integration) // to schema per type
@@ -104,8 +102,6 @@
             builder.Property(x => x.BoxNumber).HasColumnName("box_number");
 
             builder.Property(x => x.Geometry).HasColumnName("geometry");
-            builder.Property(x => x.Geometry)
-                .HasComputedColumnSql(geomFromGmlComputedQuery, stored: true);
 
             builder.Property(x => x.PositionMethod).HasColumnName("position_method");
             builder.Property(x => x.PositionSpecification).HasColumnName("position_specification");

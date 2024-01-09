@@ -22,7 +22,7 @@ namespace AddressRegistry.Projections.Integration.Infrastructure
 
             var hasConnectionString = !string.IsNullOrWhiteSpace(connectionString);
             if (hasConnectionString)
-                RunOnNpgSqlServer(configuration, services, loggerFactory, connectionString);
+                RunOnNpgSqlServer(services, connectionString);
             else
                 RunInMemoryDb(services, loggerFactory, logger);
 
@@ -36,24 +36,16 @@ namespace AddressRegistry.Projections.Integration.Infrastructure
         }
 
         private static void RunOnNpgSqlServer(
-            IConfiguration configuration,
             IServiceCollection services,
-            ILoggerFactory loggerFactory,
             string backofficeProjectionsConnectionString)
         {
             services
-                .AddNpgsql<IntegrationContext>(backofficeProjectionsConnectionString)
-                .AddScoped(_ => new TraceDbConnection<IntegrationContext>(
-                    new NpgsqlConnection(backofficeProjectionsConnectionString),
-                    configuration["DataDog:ServiceName"]))
-                .AddDbContext<IntegrationContext>((provider, options) => options
-                    .UseLoggerFactory(loggerFactory)
-                    .UseNpgsql(provider.GetRequiredService<TraceDbConnection<IntegrationContext>>(), sqlServerOptions =>
-                    {
-                        sqlServerOptions.EnableRetryOnFailure();
-                        sqlServerOptions.MigrationsHistoryTable(MigrationTables.Integration, Schema.Integration);
-                        sqlServerOptions.UseNetTopologySuite();
-                    }));
+                .AddNpgsql<IntegrationContext>(backofficeProjectionsConnectionString, sqlServerOptions =>
+                {
+                    sqlServerOptions.EnableRetryOnFailure();
+                    sqlServerOptions.MigrationsHistoryTable(MigrationTables.Integration, Schema.Integration);
+                    sqlServerOptions.UseNetTopologySuite();
+                });
         }
 
         private static void RunInMemoryDb(

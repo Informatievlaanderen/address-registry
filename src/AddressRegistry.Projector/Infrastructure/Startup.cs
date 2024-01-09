@@ -6,14 +6,11 @@ namespace AddressRegistry.Projector.Infrastructure
     using System.Threading;
     using AddressRegistry.Infrastructure.Modules;
     using AddressRegistry.Projections.Extract;
-    using AddressRegistry.Projections.Legacy;
-    using AddressRegistry.Projections.Wfs;
-    using AddressRegistry.Projections.Wms;
+    using AddressRegistry.Projections.Integration.Infrastructure;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Microsoft;
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
     using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
     using Configuration;
     using Microsoft.AspNetCore.Builder;
@@ -97,13 +94,13 @@ namespace AddressRegistry.Projector.Infrastructure
                                 .GetChildren()
                                 .ToList();
 
-                            foreach (var connectionString in connectionStrings.Where(x => !x.Value.Contains("host", StringComparison.OrdinalIgnoreCase)))
-                            {
-                                health.AddSqlServer(
-                                    connectionString.Value,
-                                    name: $"sqlserver-{connectionString.Key.ToLowerInvariant()}",
-                                    tags: new[] {DatabaseTag, "sql", "sqlserver"});
-                            }
+                            // foreach (var connectionString in connectionStrings.Where(x => !x.Value.Contains("host", StringComparison.OrdinalIgnoreCase)))
+                            // {
+                            //     health.AddSqlServer(
+                            //         connectionString.Value,
+                            //         name: $"sqlserver-{connectionString.Key.ToLowerInvariant()}",
+                            //         tags: new[] {DatabaseTag, "sql", "sqlserver"});
+                            // }
 
                             foreach (var connectionString in connectionStrings.Where(x => x.Value.Contains("host", StringComparison.OrdinalIgnoreCase)))
                                 health.AddNpgSql(
@@ -111,29 +108,30 @@ namespace AddressRegistry.Projector.Infrastructure
                                     name: $"npgsql-{connectionString.Key.ToLowerInvariant()}",
                                     tags: new[] {DatabaseTag, "sql", "npgsql"});
 
-                            health.AddDbContextCheck<ExtractContext>(
-                                $"dbcontext-{nameof(ExtractContext).ToLowerInvariant()}",
-                                tags: new[] {DatabaseTag, "sql", "sqlserver"});
-
-                            health.AddDbContextCheck<LegacyContext>(
-                                $"dbcontext-{nameof(LegacyContext).ToLowerInvariant()}",
-                                tags: new[] {DatabaseTag, "sql", "sqlserver"});
-
-                            health.AddDbContextCheck<LastChangedListContext>(
-                                $"dbcontext-{nameof(LastChangedListContext).ToLowerInvariant()}",
-                                tags: new[] {DatabaseTag, "sql", "sqlserver"});
-
-                            health.AddDbContextCheck<WfsContext>(
-                                $"dbcontext-{nameof(WfsContext).ToLowerInvariant()}",
-                                tags: new[] {DatabaseTag, "sql", "sqlserver"});
-
-                            health.AddDbContextCheck<WmsContext>(
-                                $"dbcontext-{nameof(WmsContext).ToLowerInvariant()}",
-                                tags: new[] {DatabaseTag, "sql", "sqlserver"});
+                            // health.AddDbContextCheck<ExtractContext>(
+                            //     $"dbcontext-{nameof(ExtractContext).ToLowerInvariant()}",
+                            //     tags: new[] {DatabaseTag, "sql", "sqlserver"});
+                            //
+                            // health.AddDbContextCheck<LegacyContext>(
+                            //     $"dbcontext-{nameof(LegacyContext).ToLowerInvariant()}",
+                            //     tags: new[] {DatabaseTag, "sql", "sqlserver"});
+                            //
+                            // health.AddDbContextCheck<LastChangedListContext>(
+                            //     $"dbcontext-{nameof(LastChangedListContext).ToLowerInvariant()}",
+                            //     tags: new[] {DatabaseTag, "sql", "sqlserver"});
+                            //
+                            // health.AddDbContextCheck<WfsContext>(
+                            //     $"dbcontext-{nameof(WfsContext).ToLowerInvariant()}",
+                            //     tags: new[] {DatabaseTag, "sql", "sqlserver"});
+                            //
+                            // health.AddDbContextCheck<WmsContext>(
+                            //     $"dbcontext-{nameof(WmsContext).ToLowerInvariant()}",
+                            //     tags: new[] {DatabaseTag, "sql", "sqlserver"});
                         }
                     }
                 })
-                .Configure<ExtractConfig>(_configuration.GetSection("Extract"));
+                .Configure<ExtractConfig>(_configuration.GetSection("Extract"))
+                .Configure<IntegrationOptions>(_configuration.GetSection("Integration"));
 
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterModule(new LoggingModule(_configuration, services));

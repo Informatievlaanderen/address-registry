@@ -4,7 +4,7 @@ Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql
 Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.Npgsql
 Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac
 
-Npgsql.EntityFrameworkCore.PostgreSQL.Design
+Microsoft.EntityFrameworkCore.Design
 Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite
 
 Dapper

@@ -19,7 +19,7 @@ namespace AddressRegistry.Infrastructure
         public const string Wms = "wms.address";
         public const string Producer = "AddressRegistryProducer";
         public const string ProducerSnapshotOslo = "AddressRegistryProducerSnapshotOslo";
-        public const string Integration = "integration";
+        public const string Integration = "integration_address";
     }
 
     public static class MigrationTables
@@ -39,7 +39,7 @@ namespace AddressRegistry.Infrastructure
         public const string Wms = "__EFMigrationsHistoryWmsAddress";
         public const string Producer = "__EFMigrationsHistoryProducer";
         public const string ProducerSnapshotOslo = "__EFMigrationsHistoryProducerSnapshotOslo";
-        public const string Integration = "__EFMigrationsHistoryIntegrationMunicipality";
+        public const string Integration = "__EFMigrationsHistory";
     }
 }
 

@@ -1,3 +1,10 @@
+## [3.106.2](https://github.com/informatievlaanderen/address-registry/compare/v3.106.1...v3.106.2) (2024-01-09)
+
+
+### Bug Fixes
+
+* Add AddressWmsItemV2 EF migration ([a8deefb](https://github.com/informatievlaanderen/address-registry/commit/a8deefb602f12ef7f8d86e4d0ae4d51479a81a14))
+
 ## [3.106.1](https://github.com/informatievlaanderen/address-registry/compare/v3.106.0...v3.106.1) (2024-01-09)
 
 

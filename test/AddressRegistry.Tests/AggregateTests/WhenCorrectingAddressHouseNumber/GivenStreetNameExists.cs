@@ -68,7 +68,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressHouseNumber
         public void WithBoxNumberAddresses_ThenBoxNumberAddressHouseNumbersWereAlsoChanged()
         {
             var houseNumberAddressWasProposedV2 = Fixture.Create<AddressWasProposedV2>()
-                .AsHouseNumberAddress();
+                .AsHouseNumberAddress(new HouseNumber("99"));
 
             var boxNumberAddressWasProposedV2 = Fixture.Create<AddressWasProposedV2>()
                 .AsBoxNumberAddress(new AddressPersistentLocalId(houseNumberAddressWasProposedV2.AddressPersistentLocalId))

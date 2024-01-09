@@ -4,14 +4,14 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
     using Abstractions.Converters;
     using Abstractions.Requests;
     using Abstractions.SqsRequests;
-    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Requests;
     using StreetName;
     using StreetName.Commands;
+    using IHasAddressPersistentLocalId = Abstractions.IHasAddressPersistentLocalId;
 
     public sealed record CorrectAddressPositionLambdaRequest :
         AddressLambdaRequest,
         IHasBackOfficeRequest<CorrectAddressPositionRequest>,
-        Abstractions.IHasAddressPersistentLocalId
+        IHasAddressPersistentLocalId
     {
         public CorrectAddressPositionLambdaRequest(string groupId, CorrectAddressPositionSqsRequest sqsRequest)
             : base(
@@ -41,7 +41,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
                 Request.PositieGeometrieMethode.Map(),
                 Request.PositieSpecificatie.Map(),
                 Request.Positie.ToExtendedWkbGeometry(),
-                CommandProvenance);
+                Provenance);
         }
     }
 }

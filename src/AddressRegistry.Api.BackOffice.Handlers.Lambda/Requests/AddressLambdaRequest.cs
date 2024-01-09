@@ -14,13 +14,5 @@
             IDictionary<string, object?> metadata)
             : base(messageGroupId, ticketId, ifMatchHeaderValue, provenance, metadata)
         { }
-
-        internal Provenance CommandProvenance => new Provenance(
-            SystemClock.Instance.GetCurrentInstant(),
-            Provenance.Application,
-            Provenance.Reason,
-            Provenance.Operator,
-            Provenance.Modification,
-            Provenance.Organisation);
     }
 }

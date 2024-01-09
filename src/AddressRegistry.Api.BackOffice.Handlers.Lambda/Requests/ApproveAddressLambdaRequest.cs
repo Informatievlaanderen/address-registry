@@ -2,14 +2,14 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
 {
     using Abstractions.Requests;
     using Abstractions.SqsRequests;
-    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Requests;
     using StreetName;
     using StreetName.Commands;
+    using IHasAddressPersistentLocalId = Abstractions.IHasAddressPersistentLocalId;
 
     public sealed record ApproveAddressLambdaRequest :
         AddressLambdaRequest,
         IHasBackOfficeRequest<ApproveAddressRequest>,
-        Abstractions.IHasAddressPersistentLocalId
+        IHasAddressPersistentLocalId
     {
         public ApproveAddressLambdaRequest(string groupId, ApproveAddressSqsRequest sqsRequest)
             : base(
@@ -32,7 +32,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
         /// <returns>ApproveAddress.</returns>
         public ApproveAddress ToCommand()
         {
-            return new ApproveAddress(this.StreetNamePersistentLocalId(), new AddressPersistentLocalId(AddressPersistentLocalId), CommandProvenance);
+            return new ApproveAddress(this.StreetNamePersistentLocalId(), new AddressPersistentLocalId(AddressPersistentLocalId), Provenance);
         }
     }
 }

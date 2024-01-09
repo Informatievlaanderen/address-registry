@@ -4,14 +4,14 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
     using Abstractions.Converters;
     using Abstractions.Requests;
     using Abstractions.SqsRequests;
-    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Requests;
     using StreetName;
     using StreetName.Commands;
+    using IHasAddressPersistentLocalId = Abstractions.IHasAddressPersistentLocalId;
 
     public sealed record ChangeAddressPositionLambdaRequest :
         AddressLambdaRequest,
         IHasBackOfficeRequest<ChangeAddressPositionRequest>,
-        Abstractions.IHasAddressPersistentLocalId
+        IHasAddressPersistentLocalId
     {
         public ChangeAddressPositionLambdaRequest(
             string groupId,
@@ -43,7 +43,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
                 Request.PositieGeometrieMethode.Map(),
                 Request.PositieSpecificatie.Map(),
                 Request.Positie.ToExtendedWkbGeometry(),
-                CommandProvenance);
+                Provenance);
         }
     }
 }

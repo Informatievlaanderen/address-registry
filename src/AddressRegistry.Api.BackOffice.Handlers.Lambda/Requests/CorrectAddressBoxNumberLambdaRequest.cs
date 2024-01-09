@@ -2,14 +2,14 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
 {
     using Abstractions.Requests;
     using Abstractions.SqsRequests;
-    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Requests;
     using StreetName;
     using StreetName.Commands;
+    using IHasAddressPersistentLocalId = Abstractions.IHasAddressPersistentLocalId;
 
     public sealed record CorrectAddressBoxNumberLambdaRequest :
         AddressLambdaRequest,
         IHasBackOfficeRequest<CorrectAddressBoxNumberRequest>,
-        Abstractions.IHasAddressPersistentLocalId
+        IHasAddressPersistentLocalId
     {
         public CorrectAddressBoxNumberLambdaRequest(string groupId, CorrectAddressBoxNumberSqsRequest sqsRequest)
             : base(
@@ -37,7 +37,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
                 this.StreetNamePersistentLocalId(),
                 new AddressPersistentLocalId(AddressPersistentLocalId),
                 BoxNumber.Create(Request.Busnummer),
-                CommandProvenance);
+                Provenance);
         }
     }
 }

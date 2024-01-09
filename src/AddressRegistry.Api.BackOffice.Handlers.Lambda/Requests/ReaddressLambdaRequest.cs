@@ -2,7 +2,6 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
 {
     using Abstractions.Requests;
     using Abstractions.SqsRequests;
-    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Requests;
     using StreetName.Commands;
 
     public sealed record ReaddressLambdaRequest :
@@ -32,7 +31,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
                 this.StreetNamePersistentLocalId(),
                 readdressAddressItems,
                 retireAddressItems,
-                CommandProvenance);
+                Provenance);
         }
     }
 }

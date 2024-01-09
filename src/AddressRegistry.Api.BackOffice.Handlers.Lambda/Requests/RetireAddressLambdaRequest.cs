@@ -2,14 +2,14 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
 {
     using Abstractions.Requests;
     using Abstractions.SqsRequests;
-    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Requests;
     using StreetName;
     using StreetName.Commands;
+    using IHasAddressPersistentLocalId = Abstractions.IHasAddressPersistentLocalId;
 
     public sealed record RetireAddressLambdaRequest :
         AddressLambdaRequest,
         IHasBackOfficeRequest<RetireAddressRequest>,
-        Abstractions.IHasAddressPersistentLocalId
+        IHasAddressPersistentLocalId
     {
         public RetireAddressLambdaRequest(string groupId, RetireAddressSqsRequest sqsRequest)
             : base(
@@ -35,7 +35,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
             return new RetireAddress(
                 this.StreetNamePersistentLocalId(),
                 new AddressPersistentLocalId(AddressPersistentLocalId),
-                CommandProvenance);
+                Provenance);
         }
     }
 }

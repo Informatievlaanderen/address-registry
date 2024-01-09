@@ -3,14 +3,14 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
     using Abstractions.Requests;
     using Abstractions.SqsRequests;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Oslo.Extensions;
-    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Requests;
     using StreetName;
     using StreetName.Commands;
+    using IHasAddressPersistentLocalId = Abstractions.IHasAddressPersistentLocalId;
 
     public sealed record CorrectAddressPostalCodeLambdaRequest :
         AddressLambdaRequest,
         IHasBackOfficeRequest<CorrectAddressPostalCodeRequest>,
-        Abstractions.IHasAddressPersistentLocalId
+        IHasAddressPersistentLocalId
     {
         public CorrectAddressPostalCodeLambdaRequest(string groupId, CorrectAddressPostalCodeSqsRequest sqsRequest)
             : base(
@@ -44,7 +44,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests
                 new AddressPersistentLocalId(AddressPersistentLocalId),
                 postalCode,
                 municipalityId,
-                CommandProvenance);
+                Provenance);
         }
     }
 }

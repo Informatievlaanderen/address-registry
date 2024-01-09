@@ -11,6 +11,8 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentAssertions;
     using global::AutoFixture;
+    using Newtonsoft.Json;
+    using NodaTime;
     using StreetName;
     using StreetName.Commands;
     using StreetName.Events;
@@ -41,6 +43,8 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
             var postalCode = Fixture.Create<PostalCode>();
             var provenance = Fixture.Create<Provenance>();
+
+            var migratedStreetNameWasImported = Fixture.Create<MigratedStreetNameWasImported>();
 
             var parentAddressWasProposed = new AddressWasProposedV2(
                 streetNamePersistentLocalId,
@@ -78,7 +82,13 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)addressWasProposedV2).SetProvenance(provenance);
 
-            var migratedStreetNameWasImported = Fixture.Create<MigratedStreetNameWasImported>();
+            Assert(new Scenario()
+                .Given(_streamId,
+                    migratedStreetNameWasImported,
+                    parentAddressWasProposed)
+                .When(proposeChildAddress)
+                .Then(new Fact(_streamId, addressWasProposedV2)));
+
             var expectedSnapshot = SnapshotBuilder.CreateDefaultSnapshot(streetNamePersistentLocalId)
                 .WithMunicipalityId(Fixture.Create<MunicipalityId>())
                 .WithMigratedNisCode(migratedStreetNameWasImported.NisCode)
@@ -103,20 +113,20 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                     GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                     new AddressPersistentLocalId(parentAddressWasProposed.AddressPersistentLocalId),
                     addressWasProposedV2.GetHash(),
-                    new ProvenanceData(provenance))
-                .Build(2, EventSerializerSettings);
-
-            Assert(new Scenario()
-                .Given(_streamId,
-                    migratedStreetNameWasImported,
-                    parentAddressWasProposed)
-                .When(proposeChildAddress)
-                .Then(new Fact(_streamId, addressWasProposedV2)));
+                    new ProvenanceData(provenance));
 
             var snapshotStore = (ISnapshotStore)Container.Resolve(typeof(ISnapshotStore));
             var latestSnapshot = await snapshotStore.FindLatestSnapshotAsync(_streamId, CancellationToken.None);
 
-            latestSnapshot.Should().BeEquivalentTo(expectedSnapshot);
+            latestSnapshot.Should().NotBeNull();
+            var snapshot = JsonConvert.DeserializeObject<StreetNameSnapshot>(latestSnapshot!.Data, EventSerializerSettings);
+
+            snapshot.Should().BeEquivalentTo(expectedSnapshot, options =>
+            {
+                options.Excluding(x => x.Path.EndsWith("LastEventHash"));
+                options.Excluding(x => x.Type == typeof(Instant));
+                return options;
+            });
         }
     }
 }

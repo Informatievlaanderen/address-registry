@@ -104,6 +104,12 @@ namespace AddressRegistry.Projector.Infrastructure
                                     tags: new[] {DatabaseTag, "sql", "sqlserver"});
                             }
 
+                            foreach (var connectionString in connectionStrings.Where(x => x.Value.Contains("host", StringComparison.OrdinalIgnoreCase)))
+                                health.AddNpgSql(
+                                    connectionString.Value,
+                                    name: $"npgsql-{connectionString.Key.ToLowerInvariant()}",
+                                    tags: new[] {DatabaseTag, "sql", "npgsql"});
+
                             health.AddDbContextCheck<ExtractContext>(
                                 $"dbcontext-{nameof(ExtractContext).ToLowerInvariant()}",
                                 tags: new[] {DatabaseTag, "sql", "sqlserver"});

@@ -26,6 +26,7 @@ nuget NetTopologySuite 2.4.0
 
 nuget Microsoft.EntityFrameworkCore.Design 6.0.3
 
+nuget Npgsql 6.0.3
 nuget Npgsql.EntityFrameworkCore.PostgreSQL 6.0.3
 nuget Npgsql.EntityFrameworkCore.PostgreSQL.Design 2.0.0-preview1
 nuget Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite 6.0.3

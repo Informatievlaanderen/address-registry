@@ -8,6 +8,7 @@ namespace AddressRegistry.Consumer
     using Microsoft.Extensions.Configuration;
     using System.IO;
     using System;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer.MigrationExtensions;
 
     public class IdempotentConsumerContext : SqlServerConsumerDbContext<IdempotentConsumerContext>
     {

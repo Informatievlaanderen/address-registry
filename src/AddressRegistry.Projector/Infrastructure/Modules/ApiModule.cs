@@ -103,15 +103,17 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                         _configuration,
                         _services,
                         _loggerFactory));
-
             builder
                 .RegisterProjectionMigrator<IntegrationContextMigrationFactory>(
                     _configuration,
-                    _loggerFactory);
-            // .RegisterProjections<AddressVersionProjections, IntegrationContext>(
-            //     context => new AddressVersionProjections(context.Resolve<IOptions<IntegrationOptions>>()), ConnectedProjectionSettings.Default);
-            // .RegisterProjections<AddressLatestItemProjections, IntegrationContext>(
-            //     context => new AddressLatestItemProjections(context.Resolve<IOptions<IntegrationOptions>>()), ConnectedProjectionSettings.Default);
+                    _loggerFactory)
+                .RegisterProjections<AddressVersionProjections, IntegrationContext>(
+                    context => new AddressVersionProjections(context.Resolve<IOptions<IntegrationOptions>>(),
+                        _configuration.GetConnectionString("Events")),
+                    ConnectedProjectionSettings.Default)
+                .RegisterProjections<AddressLatestItemProjections, IntegrationContext>(
+                    context => new AddressLatestItemProjections(context.Resolve<IOptions<IntegrationOptions>>()),
+                    ConnectedProjectionSettings.Default);
         }
 
         private void RegisterExtractProjections(ContainerBuilder builder)

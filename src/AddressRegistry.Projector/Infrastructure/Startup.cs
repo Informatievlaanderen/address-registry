@@ -6,6 +6,7 @@ namespace AddressRegistry.Projector.Infrastructure
     using System.Threading;
     using AddressRegistry.Infrastructure.Modules;
     using AddressRegistry.Projections.Extract;
+    using AddressRegistry.Projections.Integration.Infrastructure;
     using AddressRegistry.Projections.Legacy;
     using AddressRegistry.Projections.Wfs;
     using AddressRegistry.Projections.Wms;
@@ -96,7 +97,7 @@ namespace AddressRegistry.Projector.Infrastructure
                                 .GetSection("ConnectionStrings")
                                 .GetChildren();
 
-                            foreach (var connectionString in connectionStrings)
+                            foreach (var connectionString in connectionStrings.Where(x => !x.Value.Contains("host", StringComparison.OrdinalIgnoreCase)))
                             {
                                 health.AddSqlServer(
                                     connectionString.Value,
@@ -132,7 +133,8 @@ namespace AddressRegistry.Projector.Infrastructure
                         }
                     }
                 })
-                .Configure<ExtractConfig>(_configuration.GetSection("Extract"));
+                .Configure<ExtractConfig>(_configuration.GetSection("Extract"))
+                .Configure<IntegrationOptions>(_configuration.GetSection("Integration"));
 
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterModule(new LoggingModule(_configuration, services));

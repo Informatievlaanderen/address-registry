@@ -1,16 +1,14 @@
 ﻿namespace AddressRegistry.Projections.Integration
 {
     using System;
-    using System.Threading.Tasks;
     using Address.Events;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using Convertors;
-    using Dapper;
     using Infrastructure;
-    using Microsoft.Data.SqlClient;
     using Microsoft.Extensions.Options;
+    using NetTopologySuite.Index.HPRtree;
     using StreetName;
     using StreetName.Events;
 
@@ -18,7 +16,7 @@
     [ConnectedProjectionDescription("Projectie die de laatste adres data voor de integratie database bijhoudt.")]
     public sealed class AddressVersionProjections : ConnectedProjection<IntegrationContext>
     {
-        public AddressVersionProjections(IOptions<IntegrationOptions> options, string eventsConnectionString)
+        public AddressVersionProjections(IOptions<IntegrationOptions> options, IEventsRepository eventsRepository)
         {
             // Address
             When<Envelope<AddressWasMigratedToStreetName>>(async (context, message, ct) =>
@@ -89,7 +87,7 @@
                     item =>
                     {
                         item.Status = AddressStatus.Current;
-                        item.OsloStatus = AddressStatus.Current.ToString();
+                        item.OsloStatus = AddressStatus.Current.Map();
                     },
                     ct);
             });
@@ -102,7 +100,7 @@
                     item =>
                     {
                         item.Status = AddressStatus.Proposed;
-                        item.OsloStatus = AddressStatus.Proposed.ToString();
+                        item.OsloStatus = AddressStatus.Proposed.Map();
                     },
                     ct);
             });
@@ -115,7 +113,7 @@
                     item =>
                     {
                         item.Status = AddressStatus.Proposed;
-                        item.OsloStatus = AddressStatus.Proposed.ToString();
+                        item.OsloStatus = AddressStatus.Proposed.Map();
                     },
                     ct);
             });
@@ -128,7 +126,7 @@
                     item =>
                     {
                         item.Status = AddressStatus.Rejected;
-                        item.OsloStatus = AddressStatus.Rejected.ToString();
+                        item.OsloStatus = AddressStatus.Rejected.Map();
                     },
                     ct);
             });
@@ -141,7 +139,7 @@
                     item =>
                     {
                         item.Status = AddressStatus.Rejected;
-                        item.OsloStatus = AddressStatus.Rejected.ToString();
+                        item.OsloStatus = AddressStatus.Rejected.Map();
                     },
                     ct);
             });
@@ -154,7 +152,7 @@
                     item =>
                     {
                         item.Status = AddressStatus.Rejected;
-                        item.OsloStatus = AddressStatus.Rejected.ToString();
+                        item.OsloStatus = AddressStatus.Rejected.Map();
                     },
                     ct);
             });
@@ -167,7 +165,7 @@
                     item =>
                     {
                         item.Status = AddressStatus.Rejected;
-                        item.OsloStatus = AddressStatus.Rejected.ToString();
+                        item.OsloStatus = AddressStatus.Rejected.Map();
                     },
                     ct);
             });
@@ -180,7 +178,7 @@
                     item =>
                     {
                         item.Status = AddressStatus.Retired;
-                        item.OsloStatus = AddressStatus.Retired.ToString();
+                        item.OsloStatus = AddressStatus.Retired.Map();
                     },
                     ct);
             });
@@ -193,7 +191,7 @@
                     item =>
                     {
                         item.Status = AddressStatus.Rejected;
-                        item.OsloStatus = AddressStatus.Rejected.ToString();
+                        item.OsloStatus = AddressStatus.Rejected.Map();
                     },
                     ct);
             });
@@ -207,7 +205,7 @@
                     {
                         item.OfficiallyAssigned = false;
                         item.Status = AddressStatus.Current;
-                        item.OsloStatus = AddressStatus.Current.ToString();
+                        item.OsloStatus = AddressStatus.Current.Map();
                     },
                     ct);
             });
@@ -229,7 +227,7 @@
                     item =>
                     {
                         item.Status = AddressStatus.Retired;
-                        item.OsloStatus = AddressStatus.Retired.ToString();
+                        item.OsloStatus = AddressStatus.Retired.Map();
                     },
                     ct);
             });
@@ -242,7 +240,7 @@
                     item =>
                     {
                         item.Status = AddressStatus.Retired;
-                        item.OsloStatus = AddressStatus.Retired.ToString();
+                        item.OsloStatus = AddressStatus.Retired.Map();
                     },
                     ct);
             });
@@ -255,7 +253,7 @@
                     item =>
                     {
                         item.Status = AddressStatus.Retired;
-                        item.OsloStatus = AddressStatus.Retired.ToString();
+                        item.OsloStatus = AddressStatus.Retired.Map();
                     },
                     ct);
             });
@@ -268,7 +266,7 @@
                     item =>
                     {
                         item.Status = AddressStatus.Current;
-                        item.OsloStatus = AddressStatus.Current.ToString();
+                        item.OsloStatus = AddressStatus.Current.Map();
                     },
                     ct);
             });
@@ -546,13 +544,21 @@
 
             When<Envelope<AddressWasRegistered>>(async (context, message, ct) =>
             {
-                var addressPersistentLocalId = await GetAddressPersistentLocalId(message.Message.AddressId);
+                var addressPersistentLocalId = await eventsRepository.GetAddressPersistentLocalId(message.Message.AddressId);
 
-                var address = new AddressVersion()
+                if (!addressPersistentLocalId.HasValue)
                 {
-                    PersistentLocalId = addressPersistentLocalId,
+                    throw new InvalidOperationException($"No persistent local id found for {message.Message.AddressId}");
+                }
+
+                var address = new AddressVersion
+                {
+                    PersistentLocalId = addressPersistentLocalId.Value,
                     AddressId = message.Message.AddressId,
+                    StreetNameId = message.Message.StreetNameId,
                     HouseNumber = message.Message.HouseNumber,
+                    PuriId = $"{options.Value.Namespace}/{addressPersistentLocalId}",
+                    Namespace = options.Value.Namespace,
                     VersionTimestamp = message.Message.Provenance.Timestamp,
                     CreatedOnTimestamp = message.Message.Provenance.Timestamp,
                 };
@@ -630,10 +636,12 @@
             When<Envelope<AddressPersistentLocalIdWasAssigned>>(async (context, message, ct) =>
             {
                 await context.CreateNewAddressVersion(
-                    new PersistentLocalId(message.Message.PersistentLocalId),
+                    message.Message.AddressId,
                     message,
-                    _ =>
-                    { },
+                    item =>
+                    {
+                        item.PersistentLocalId = message.Message.PersistentLocalId;
+                    },
                     ct);
             });
 
@@ -665,7 +673,9 @@
                     {
                         item.Geometry = null;
                         item.PositionMethod = null;
+                        item.OsloPositionMethod = null;
                         item.PositionSpecification = null;
+                        item.OsloPositionSpecification = null;
                     },
                     ct);
             });
@@ -879,17 +889,6 @@
             });
 
             #endregion
-
-            async Task<int> GetAddressPersistentLocalId(Guid addressId)
-            {
-                await using var connection = new SqlConnection(eventsConnectionString);
-                var sql = @$"SELECT Json_Value(JsonData, '$.persistentLocalId') AS ""AddressPersistentLocalId""
-                    FROM [address-registry-events].[AddressRegistry].[Streams] as s
-                    inner join [address-registry-events].[AddressRegistry].[Messages] as m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'AddressPersistentLocalIdentifierWasAssigned'
-                    where IdOriginal = '{addressId}'";
-
-                return connection.QuerySingle<int>(sql);
-            }
         }
     }
 }

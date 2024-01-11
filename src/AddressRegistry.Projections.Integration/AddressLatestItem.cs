@@ -13,7 +13,6 @@
     public sealed class AddressLatestItem
     {
         public const string VersionTimestampBackingPropertyName = nameof(VersionTimestampAsDateTimeOffset);
-        public const string CreatedTimestampBackingPropertyName = nameof(CreatedOnTimestampAsDateTimeOffset);
 
         public int PersistentLocalId { get; set; }
         public string? PostalCode { get; set; }
@@ -32,7 +31,6 @@
         public string? PuriId { get; set; }
         public string? Namespace { get; set; }
         public string VersionAsString { get; set; }
-        public long IdempotenceKey { get; set; }
 
         private DateTimeOffset VersionTimestampAsDateTimeOffset { get; set; }
 
@@ -43,19 +41,6 @@
             {
                 VersionTimestampAsDateTimeOffset = value.ToDateTimeOffset();
                 VersionAsString = new Rfc3339SerializableDateTimeOffset(value.ToBelgianDateTimeOffset()).ToString();
-            }
-        }
-
-        public string CreatedOnAsString { get; set; }
-        private DateTimeOffset CreatedOnTimestampAsDateTimeOffset { get; set; }
-
-        public Instant CreatedOnTimestamp
-        {
-            get => Instant.FromDateTimeOffset(CreatedOnTimestampAsDateTimeOffset);
-            set
-            {
-                CreatedOnTimestampAsDateTimeOffset = value.ToDateTimeOffset();
-                CreatedOnAsString = new Rfc3339SerializableDateTimeOffset(value.ToBelgianDateTimeOffset()).ToString();
             }
         }
 
@@ -95,13 +80,8 @@
             builder.Property(x => x.Namespace).HasColumnName("namespace");
             builder.Property(x => x.VersionAsString).HasColumnName("version_as_string");
             builder.Property(AddressLatestItem.VersionTimestampBackingPropertyName).HasColumnName("version_timestamp");
-            builder.Property(x => x.CreatedOnAsString).HasColumnName("created_on_as_string");
-            builder.Property(AddressVersion.CreatedTimestampBackingPropertyName).HasColumnName("created_on_timestamp");
 
             builder.Ignore(x => x.VersionTimestamp);
-            builder.Ignore(x => x.CreatedOnTimestamp);
-
-            builder.Property(x => x.IdempotenceKey).HasColumnName("idempotence_key");
 
             builder.Property(x => x.PersistentLocalId).IsRequired();
             builder.HasIndex(x => x.PersistentLocalId);

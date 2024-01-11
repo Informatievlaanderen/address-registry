@@ -75,10 +75,8 @@
                     OfficiallyAssigned = message.Message.OfficiallyAssigned,
                     Removed = message.Message.IsRemoved,
                     VersionTimestamp = message.Message.Provenance.Timestamp,
-                    CreatedOnTimestamp = message.Message.Provenance.Timestamp,
                     Namespace = options.Value.Namespace,
                     PuriId = $"{options.Value.Namespace}/{message.Message.AddressPersistentLocalId}",
-                    IdempotenceKey = message.Position
                 };
 
                 await context
@@ -107,10 +105,8 @@
                     OfficiallyAssigned = true,
                     Removed = false,
                     VersionTimestamp = message.Message.Provenance.Timestamp,
-                    CreatedOnTimestamp = message.Message.Provenance.Timestamp,
                     Namespace = options.Value.Namespace,
                     PuriId = $"{options.Value.Namespace}/{message.Message.AddressPersistentLocalId}",
-                    IdempotenceKey = message.Position
                 };
 
                 await context
@@ -533,10 +529,8 @@
                     OfficiallyAssigned = true,
                     Removed = false,
                     VersionTimestamp = message.Message.Provenance.Timestamp,
-                    CreatedOnTimestamp = message.Message.Provenance.Timestamp,
                     Namespace = options.Value.Namespace,
                     PuriId = $"{options.Value.Namespace}/{message.Message.AddressPersistentLocalId}",
-                    IdempotenceKey = message.Position
                 };
 
                 await context

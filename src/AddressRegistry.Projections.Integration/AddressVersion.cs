@@ -13,14 +13,15 @@
     public sealed class AddressVersion
     {
         public const string VersionTimestampBackingPropertyName = nameof(VersionTimestampAsDateTimeOffset);
-        public const string CreatedTimestampBackingPropertyName = nameof(CreatedOnTimestampAsDateTimeOffset);
+        public const string CreatedOnTimestampBackingPropertyName = nameof(CreatedOnTimestampAsDateTimeOffset);
 
         public long Position { get; set; }
 
         public int PersistentLocalId { get; set; }
-        public Guid AddressId { get; set; }
+        public Guid? AddressId { get; set; }
         public string? PostalCode { get; set; }
         public int? StreetNamePersistentLocalId { get; set; }
+        public Guid? StreetNameId { get; set; }
         public AddressStatus? Status { get; set; }
         public string? OsloStatus { get; set; }
         public string? HouseNumber { get; set; }
@@ -77,6 +78,7 @@
                 AddressId = AddressId,
                 PostalCode = PostalCode,
                 StreetNamePersistentLocalId = StreetNamePersistentLocalId,
+                StreetNameId = StreetNameId,
                 Status = Status,
                 OsloStatus = OsloStatus,
                 HouseNumber = HouseNumber,
@@ -115,6 +117,7 @@
             builder.Property(x => x.PersistentLocalId).HasColumnName("persistent_local_id");
             builder.Property(x => x.PostalCode).HasColumnName("postal_code");
             builder.Property(x => x.StreetNamePersistentLocalId).HasColumnName("street_name_persistent_local_id");
+            builder.Property(x => x.StreetNameId).HasColumnName("street_name_id");
             builder.Property(x => x.Status).HasColumnName("status");
             builder.Property(x => x.OsloStatus).HasColumnName("oslo_status");
             builder.Property(x => x.HouseNumber).HasColumnName("house_number");
@@ -131,13 +134,14 @@
             builder.Property(x => x.PuriId).HasColumnName("puri_id");
             builder.Property(x => x.Namespace).HasColumnName("namespace");
             builder.Property(x => x.VersionAsString).HasColumnName("version_as_string");
-            builder.Property(AddressVersion.VersionTimestampBackingPropertyName).HasColumnName("version_timestamp");
-
             builder.Property(x => x.CreatedOnAsString).HasColumnName("created_on_as_string");
-            builder.Property(AddressVersion.CreatedTimestampBackingPropertyName).HasColumnName("created_on_timestamp");
 
             builder.Ignore(x => x.VersionTimestamp);
+            builder.Property(AddressVersion.VersionTimestampBackingPropertyName).HasColumnName("version_timestamp");
+
             builder.Ignore(x => x.CreatedOnTimestamp);
+            builder.Property(AddressVersion.CreatedOnTimestampBackingPropertyName).HasColumnName("created_on_timestamp");
+
 
             builder.Property(x => x.PersistentLocalId).IsRequired();
             builder.HasIndex(x => x.PersistentLocalId);
@@ -145,6 +149,7 @@
             builder.HasIndex(x => x.Geometry).HasMethod("GIST");
 
             builder.HasIndex(x => x.StreetNamePersistentLocalId);
+            builder.HasIndex(x => x.StreetNameId);
             builder.HasIndex(x => x.AddressId);
             builder.HasIndex(x => x.Status);
             builder.HasIndex(x => x.OsloStatus);
@@ -152,7 +157,7 @@
             builder.HasIndex(x => x.HouseNumber);
             builder.HasIndex(x => x.BoxNumber);
             builder.HasIndex(x => x.Removed);
-
+            builder.HasIndex(AddressVersion.VersionTimestampBackingPropertyName);
         }
     }
 }

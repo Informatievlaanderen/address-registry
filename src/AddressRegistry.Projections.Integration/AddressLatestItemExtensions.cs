@@ -20,8 +20,6 @@
                 if (addressLatestItem == null)
                     throw DatabaseItemNotFound(new PersistentLocalId(persistentLocalId));
 
-                addressLatestItem.IdempotenceKey = position;
-
                 updateFunc(addressLatestItem);
 
                 return addressLatestItem;

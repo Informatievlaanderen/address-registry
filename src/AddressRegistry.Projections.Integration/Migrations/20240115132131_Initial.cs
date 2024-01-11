@@ -35,10 +35,7 @@ namespace AddressRegistry.Projections.Integration.Migrations
                     puri_id = table.Column<string>(type: "text", nullable: true),
                     @namespace = table.Column<string>(name: "namespace", type: "text", nullable: true),
                     version_as_string = table.Column<string>(type: "text", nullable: false),
-                    idempotence_key = table.Column<long>(type: "bigint", nullable: false),
-                    version_timestamp = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    created_on_as_string = table.Column<string>(type: "text", nullable: false),
-                    created_on_timestamp = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                    version_timestamp = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -52,9 +49,10 @@ namespace AddressRegistry.Projections.Integration.Migrations
                 {
                     position = table.Column<long>(type: "bigint", nullable: false),
                     persistent_local_id = table.Column<int>(type: "integer", nullable: false),
-                    address_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    address_id = table.Column<Guid>(type: "uuid", nullable: true),
                     postal_code = table.Column<string>(type: "text", nullable: true),
                     street_name_persistent_local_id = table.Column<int>(type: "integer", nullable: true),
+                    street_name_id = table.Column<Guid>(type: "uuid", nullable: true),
                     status = table.Column<int>(type: "integer", nullable: true),
                     oslo_status = table.Column<string>(type: "text", nullable: true),
                     house_number = table.Column<string>(type: "text", nullable: true),
@@ -205,10 +203,22 @@ namespace AddressRegistry.Projections.Integration.Migrations
                 column: "status");
 
             migrationBuilder.CreateIndex(
+                name: "IX_address_versions_street_name_id",
+                schema: "integration_address",
+                table: "address_versions",
+                column: "street_name_id");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_address_versions_street_name_persistent_local_id",
                 schema: "integration_address",
                 table: "address_versions",
                 column: "street_name_persistent_local_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_address_versions_version_timestamp",
+                schema: "integration_address",
+                table: "address_versions",
+                column: "version_timestamp");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

@@ -16,11 +16,12 @@ namespace AddressRegistry.Projections.Integration.Infrastructure
             ILoggerFactory loggerFactory)
         {
             var logger = loggerFactory.CreateLogger<IntegrationModule>();
+            services.AddScoped<IEventsRepository>(_ => new EventsRepository(configuration.GetConnectionString("events")));
             var connectionString = configuration.GetConnectionString("IntegrationProjections");
 
             var hasConnectionString = !string.IsNullOrWhiteSpace(connectionString);
             if (hasConnectionString)
-                RunOnNpgSqlServer(configuration, services, loggerFactory, connectionString);
+                RunOnNpgSqlServer(services, connectionString);
             else
                 RunInMemoryDb(services, loggerFactory, logger);
 
@@ -34,9 +35,7 @@ namespace AddressRegistry.Projections.Integration.Infrastructure
         }
 
         private static void RunOnNpgSqlServer(
-            IConfiguration configuration,
             IServiceCollection services,
-            ILoggerFactory loggerFactory,
             string backofficeProjectionsConnectionString)
         {
             services

@@ -33,15 +33,6 @@ namespace AddressRegistry.Projections.Integration.Migrations
                         .HasColumnType("text")
                         .HasColumnName("box_number");
 
-                    b.Property<string>("CreatedOnAsString")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("created_on_as_string");
-
-                    b.Property<DateTimeOffset>("CreatedOnTimestampAsDateTimeOffset")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_on_timestamp");
-
                     b.Property<Geometry>("Geometry")
                         .HasColumnType("geometry")
                         .HasColumnName("geometry");
@@ -49,10 +40,6 @@ namespace AddressRegistry.Projections.Integration.Migrations
                     b.Property<string>("HouseNumber")
                         .HasColumnType("text")
                         .HasColumnName("house_number");
-
-                    b.Property<long>("IdempotenceKey")
-                        .HasColumnType("bigint")
-                        .HasColumnName("idempotence_key");
 
                     b.Property<string>("Namespace")
                         .HasColumnType("text")
@@ -146,7 +133,7 @@ namespace AddressRegistry.Projections.Integration.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("persistent_local_id");
 
-                    b.Property<Guid>("AddressId")
+                    b.Property<Guid?>("AddressId")
                         .HasColumnType("uuid")
                         .HasColumnName("address_id");
 
@@ -215,6 +202,10 @@ namespace AddressRegistry.Projections.Integration.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("status");
 
+                    b.Property<Guid?>("StreetNameId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("street_name_id");
+
                     b.Property<int?>("StreetNamePersistentLocalId")
                         .HasColumnType("integer")
                         .HasColumnName("street_name_persistent_local_id");
@@ -250,7 +241,11 @@ namespace AddressRegistry.Projections.Integration.Migrations
 
                     b.HasIndex("Status");
 
+                    b.HasIndex("StreetNameId");
+
                     b.HasIndex("StreetNamePersistentLocalId");
+
+                    b.HasIndex("VersionTimestampAsDateTimeOffset");
 
                     b.ToTable("address_versions", "integration_address");
                 });

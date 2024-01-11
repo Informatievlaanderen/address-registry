@@ -92,7 +92,8 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
             RegisterWmsProjectionsV2(builder);
             // RegisterWfsProjections(builder); //TODO: Remove when Wfs has been filled in staging
             // RegisterWmsProjections(builder); //TODO: Remove when Wms has been filled in staging
-            RegisterIntegrationProjections(builder);
+            if(_configuration.GetSection("Integration").GetValue("Enabled", false))
+                RegisterIntegrationProjections(builder);
         }
 
         private void RegisterIntegrationProjections(ContainerBuilder builder)
@@ -109,7 +110,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                     _loggerFactory)
                 .RegisterProjections<AddressVersionProjections, IntegrationContext>(
                     context => new AddressVersionProjections(context.Resolve<IOptions<IntegrationOptions>>(),
-                        _configuration.GetConnectionString("Events")),
+                        context.Resolve<IEventsRepository>()),
                     ConnectedProjectionSettings.Default)
                 .RegisterProjections<AddressLatestItemProjections, IntegrationContext>(
                     context => new AddressLatestItemProjections(context.Resolve<IOptions<IntegrationOptions>>()),

@@ -25,29 +25,6 @@
             }
         }
 
-        private static string GetGml(Geometry geometry)
-        {
-            var builder = new StringBuilder();
-            var settings = new XmlWriterSettings { Indent = false, OmitXmlDeclaration = true };
-            using (var xmlwriter = XmlWriter.Create(builder, settings))
-            {
-                xmlwriter.WriteStartElement("gml", "Point", "http://www.opengis.net/gml/3.2");
-                xmlwriter.WriteAttributeString("srsName", "https://www.opengis.net/def/crs/EPSG/0/31370");
-                Write(geometry.Coordinate, xmlwriter);
-                xmlwriter.WriteEndElement();
-            }
-
-            return builder.ToString();
-        }
-
-        private static void Write(Coordinate coordinate, XmlWriter writer)
-        {
-            writer.WriteStartElement("gml", "pos", "http://www.opengis.net/gml/3.2");
-            writer.WriteValue(string.Format(Global.GetNfi(), "{0} {1}", coordinate.X.ToPointGeometryCoordinateValueFormat(),
-                coordinate.Y.ToPointGeometryCoordinateValueFormat()));
-            writer.WriteEndElement();
-        }
-
         public static string ToPositieGeometrieMethode(this GeometryMethod method)
         {
             return method switch

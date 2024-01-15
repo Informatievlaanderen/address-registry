@@ -21,7 +21,7 @@ Microsoft.EntityFrameworkCore.Design
 Microsoft.SyndicationFeed.ReaderWriter
 
 Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql
-Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner
+Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer
 Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication
 Be.Vlaanderen.Basisregisters.Shaperon
 

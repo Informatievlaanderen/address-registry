@@ -3,6 +3,7 @@ namespace AddressRegistry.Projections.BackOffice
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
     using Microsoft.EntityFrameworkCore;
     using AddressRegistry.Infrastructure;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer;
 
     public class BackOfficeProjectionsContext : RunnerDbContext<BackOfficeProjectionsContext>
     {
@@ -16,7 +17,7 @@ namespace AddressRegistry.Projections.BackOffice
             : base(options) { }
     }
 
-    public sealed class BackOfficeProjectionsContextMigrationFactory : RunnerDbContextMigrationFactory<BackOfficeProjectionsContext>
+    public sealed class BackOfficeProjectionsContextMigrationFactory : SqlServerRunnerDbContextMigrationFactory<BackOfficeProjectionsContext>
     {
         public BackOfficeProjectionsContextMigrationFactory()
             : base("BackOfficeProjectionsAdmin", HistoryConfiguration) { }

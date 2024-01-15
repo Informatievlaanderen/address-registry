@@ -10,6 +10,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using AddressRegistry.Infrastructure;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer.MigrationExtensions;
 
     public class ProducerModule : Module
     {

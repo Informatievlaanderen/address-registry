@@ -4,6 +4,7 @@ namespace AddressRegistry.Consumer
     using Microsoft.EntityFrameworkCore;
     using StreetName;
     using AddressRegistry.Infrastructure;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer;
 
     public class ConsumerContext : RunnerDbContext<ConsumerContext>
     {
@@ -21,7 +22,7 @@ namespace AddressRegistry.Consumer
         public override string ProjectionStateSchema => Schema.ConsumerProjections;
     }
 
-    public class ConsumerContextFactory : RunnerDbContextMigrationFactory<ConsumerContext>
+    public class ConsumerContextFactory : SqlServerRunnerDbContextMigrationFactory<ConsumerContext>
     {
         public ConsumerContextFactory()
             : this("ConsumerAdmin")

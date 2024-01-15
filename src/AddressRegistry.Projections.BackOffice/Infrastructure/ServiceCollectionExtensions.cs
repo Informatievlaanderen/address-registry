@@ -9,6 +9,7 @@ namespace AddressRegistry.Projections.BackOffice.Infrastructure
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using AddressRegistry.Infrastructure;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer.MigrationExtensions;
 
     public static class ServiceCollectionExtensions
     {

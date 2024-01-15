@@ -11,6 +11,7 @@ nuget Microsoft.Extensions.Http.Polly 6.0.3
 
 // For more healtchecks, look at https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks
 nuget AspNetCore.HealthChecks.SqlServer 6.0.2
+nuget AspNetCore.HealthChecks.NpgSql 6.0.2
 
 nuget AsyncEnumerator 4.0.2
 nuget Dapper 2.0.123
@@ -24,6 +25,11 @@ nuget Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite 6.0.3
 nuget NetTopologySuite 2.4.0
 
 nuget Microsoft.EntityFrameworkCore.Design 6.0.3
+
+nuget Npgsql 6.0.3
+nuget Npgsql.EntityFrameworkCore.PostgreSQL 6.0.3
+nuget Npgsql.EntityFrameworkCore.PostgreSQL.Design 2.0.0-preview1
+nuget Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite 6.0.3
 
 nuget RestSharp 107.3.0
 nuget GeoJSON.NET 1.2.19
@@ -55,15 +61,17 @@ nuget Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore 8.3.0
 nuget Be.Vlaanderen.Basisregisters.EventHandling 4.2.3
 nuget Be.Vlaanderen.Basisregisters.EventHandling.Autofac 4.2.3
 
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList 11.0.7
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore 11.0.7
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac 11.0.7
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner 11.0.7
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing 11.0.7
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit 11.0.7
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication 11.0.7
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList 12.0.1
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore 12.0.1
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac 12.0.1
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner 12.0.1
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer 12.0.1
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.Npgsql 12.0.1
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing 12.0.1
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit 12.0.1
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication 12.0.1
 
-nuget Be.Vlaanderen.Basisregisters.Projector 13.0.10
+nuget Be.Vlaanderen.Basisregisters.Projector 13.1.0
 
 nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac 5.0.3
 nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.AspNetCore 5.0.3

@@ -2,7 +2,7 @@ Microsoft.SyndicationFeed.ReaderWriter
 
 Be.Vlaanderen.Basisregisters.EventHandling.Autofac
 Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql
-Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner
+Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer
 Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac
 Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication
 

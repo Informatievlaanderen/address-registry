@@ -12,7 +12,7 @@ Be.Vlaanderen.Basisregisters.GrAr.Contracts
 Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer
 
 Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector
-Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner
+Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer
 
 Serilog
 Serilog.Settings.Configuration

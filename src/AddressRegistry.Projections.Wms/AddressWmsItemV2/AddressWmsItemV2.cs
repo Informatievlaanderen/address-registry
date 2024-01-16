@@ -129,6 +129,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 
             b.HasIndex(p => p.ParentAddressPersistentLocalId);
             b.HasIndex(p => p.Status);
+            b
+                .HasIndex(p => new { p.Removed, p.Status })
+                .IncludeProperties(x => new { x.StreetNamePersistentLocalId, x.Position });
             b.HasIndex(p => p.StreetNamePersistentLocalId);
 
             b.HasIndex(p => new { p.PositionX, p.PositionY, p.Removed, p.Status })

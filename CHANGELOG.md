@@ -1,3 +1,21 @@
+# [3.107.0](https://github.com/informatievlaanderen/address-registry/compare/v3.106.2...v3.107.0) (2024-01-19)
+
+
+### Bug Fixes
+
+* integration ksql niscode to int ([fb8fdca](https://github.com/informatievlaanderen/address-registry/commit/fb8fdca0de162c13be0a72c96c00dd3b9a771488))
+* wms address housenumberlabel ([b5496c4](https://github.com/informatievlaanderen/address-registry/commit/b5496c4d3ac3181bf0a5e69b892d9c2e48e7cca7))
+
+
+### Features
+
+* add integration projections GAWR-4535 ([ccd35e1](https://github.com/informatievlaanderen/address-registry/commit/ccd35e1129f14cd298bd96684e3be24998e20b06))
+
+
+### Performance Improvements
+
+* add wms index ([aecbc6e](https://github.com/informatievlaanderen/address-registry/commit/aecbc6ec2c27d1562f31390678fcca77b97975b5))
+
 ## [3.106.2](https://github.com/informatievlaanderen/address-registry/compare/v3.106.1...v3.106.2) (2024-01-09)
 
 

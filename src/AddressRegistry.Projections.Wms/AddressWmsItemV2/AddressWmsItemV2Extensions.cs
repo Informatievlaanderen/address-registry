@@ -89,7 +89,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
             string? status,
             CancellationToken ct)
         {
-            var localItems = context
+            var localFilteredItems = context
                 .AddressWmsItemsV2
                 .Local
                 .Where(i => i.PositionX == position.X
@@ -98,6 +98,8 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
                             && i.Status == status
                             && !i.Removed)
                 .ToList();
+
+            var localItems = context.AddressWmsItemsV2.Local.ToList();
 
             var dbItems = await context.AddressWmsItemsV2
                 .Where(i => i.PositionX == position.X
@@ -118,12 +120,12 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
             var verifiedDbItems = new List<AddressWmsItemV2>();
             foreach (var dbItem in dbItems)
             {
-                if (localItems.Any(x => x.AddressPersistentLocalId == dbItem.AddressPersistentLocalId))
+                if (localFilteredItems.Any(x => x.AddressPersistentLocalId == dbItem.AddressPersistentLocalId))
                 {
                     continue;
                 }
 
-                if (context.AddressWmsItemsV2.Local.Any(x =>
+                if (localItems.Any(x =>
                         x.AddressPersistentLocalId == dbItem.AddressPersistentLocalId))
                 {
                     continue;
@@ -132,7 +134,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
                 verifiedDbItems.Add(dbItem);
             }
 
-            var union = localItems
+            var union = localFilteredItems
                 .Union(verifiedDbItems)
                 .ToList();
 

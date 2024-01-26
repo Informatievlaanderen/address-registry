@@ -554,17 +554,17 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
 
             When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasRemovedBecauseHouseNumberWasRemoved>>(async (_, message, ct) =>
             {
-                await Produce($"{osloNamespace}/{message.Message.AddressPersistentLocalId}", "{}", message.Position, ct);
+                await Produce($"{osloNamespace}/{message.Message.AddressPersistentLocalId}", message.Message.AddressPersistentLocalId.ToString(), "{}", message.Position, ct);
             });
 
             When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasRemovedV2>>(async (_, message, ct) =>
             {
-                await Produce($"{osloNamespace}/{message.Message.AddressPersistentLocalId}", "{}", message.Position, ct);
+                await Produce($"{osloNamespace}/{message.Message.AddressPersistentLocalId}", message.Message.AddressPersistentLocalId.ToString(), "{}", message.Position, ct);
             });
 
             When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasRemovedBecauseStreetNameWasRemoved>>(async (_, message, ct) =>
             {
-                await Produce($"{osloNamespace}/{message.Message.AddressPersistentLocalId}", "{}", message.Position, ct);
+                await Produce($"{osloNamespace}/{message.Message.AddressPersistentLocalId}", message.Message.AddressPersistentLocalId.ToString(), "{}", message.Position, ct);
             });
         }
 
@@ -574,16 +574,16 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
 
             if (result != null)
             {
-                await Produce(result.Identificator.Id, result.JsonContent, storePosition, ct);
+                await Produce(result.Identificator.Id, result.Identificator.ObjectId, result.JsonContent, storePosition, ct);
             }
         }
 
-        private async Task Produce(string objectId, string jsonContent, long storePosition, CancellationToken cancellationToken = default)
+        private async Task Produce(string puri, string objectId, string jsonContent, long storePosition, CancellationToken cancellationToken = default)
         {
             var result = await _producer.Produce(
-                new MessageKey(objectId),
+                new MessageKey(puri),
                 jsonContent,
-                new List<MessageHeader> { new MessageHeader(MessageHeader.IdempotenceKey, storePosition.ToString()) },
+                new List<MessageHeader> { new MessageHeader(MessageHeader.IdempotenceKey, $"{objectId}-{storePosition.ToString()}") },
                 cancellationToken);
 
             if (!result.IsSuccess)

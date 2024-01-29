@@ -1,3 +1,15 @@
+# [3.108.0](https://github.com/informatievlaanderen/address-registry/compare/v3.107.0...v3.108.0) (2024-01-29)
+
+
+### Bug Fixes
+
+* add objectid to idempotencekey snapshot oslo ([da89e72](https://github.com/informatievlaanderen/address-registry/commit/da89e72725750f622e33450757e3285fd1adaefe))
+
+
+### Features
+
+* add address id persistentlocalid relation projections integrationdb ([b5bfcfb](https://github.com/informatievlaanderen/address-registry/commit/b5bfcfbb88f4f34c0f5e826cfee41b5ea14c1a22))
+
 # [3.107.0](https://github.com/informatievlaanderen/address-registry/compare/v3.106.2...v3.107.0) (2024-01-19)
 
 

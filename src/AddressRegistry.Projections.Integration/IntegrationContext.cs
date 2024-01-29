@@ -10,6 +10,7 @@ namespace AddressRegistry.Projections.Integration
 
         public DbSet<AddressLatestItem> AddressLatestItems => Set<AddressLatestItem>();
         public DbSet<AddressVersion> AddressVersions => Set<AddressVersion>();
+        public DbSet<AddressIdAddressPersistentLocalIdRelation> AddressIdAddressPersistentLocalIds => Set<AddressIdAddressPersistentLocalIdRelation>();
 
         // This needs to be here to please EF
         public IntegrationContext() { }

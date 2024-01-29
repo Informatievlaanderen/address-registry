@@ -114,6 +114,9 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                     ConnectedProjectionSettings.Default)
                 .RegisterProjections<AddressLatestItemProjections, IntegrationContext>(
                     context => new AddressLatestItemProjections(context.Resolve<IOptions<IntegrationOptions>>()),
+                    ConnectedProjectionSettings.Default)
+                .RegisterProjections<AddressIdAddressPersistentLocalIdRelationProjections, IntegrationContext>(
+                    _ => new AddressIdAddressPersistentLocalIdRelationProjections(),
                     ConnectedProjectionSettings.Default);
         }
 

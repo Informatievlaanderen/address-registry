@@ -3,6 +3,9 @@
     using System.Runtime.Serialization;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// Het huisnummer waaraan het busnummer is gekoppeld.
+    /// </summary>
     [DataContract(Name = "AdresDetailHuisnummerObject", Namespace = "")]
     public class AdresDetailHuisnummerObject
     {

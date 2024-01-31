@@ -3,6 +3,7 @@
     using System.Runtime.Serialization;
     using Newtonsoft.Json;
 
+    [DataContract(Name = "AdresDetailHuisnummerObject", Namespace = "")]
     public class AdresDetailHuisnummerObject
     {
         /// <summary>

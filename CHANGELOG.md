@@ -1,3 +1,10 @@
+## [3.109.1](https://github.com/informatievlaanderen/address-registry/compare/v3.109.0...v3.109.1) (2024-01-31)
+
+
+### Bug Fixes
+
+* add datacontract on AdresDetailHuisnummerObject ([28a0ee9](https://github.com/informatievlaanderen/address-registry/commit/28a0ee93c743f80073f35cf96cdd2d00bde5a176))
+
 # [3.109.0](https://github.com/informatievlaanderen/address-registry/compare/v3.108.0...v3.109.0) (2024-01-31)
 
 

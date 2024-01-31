@@ -1,3 +1,10 @@
+## [3.109.2](https://github.com/informatievlaanderen/address-registry/compare/v3.109.1...v3.109.2) (2024-01-31)
+
+
+### Bug Fixes
+
+* docs AdresDetailHuisnummerObject ([aa57e0d](https://github.com/informatievlaanderen/address-registry/commit/aa57e0dd4e8ce30fc6fe9525f942e33a49400a9f))
+
 ## [3.109.1](https://github.com/informatievlaanderen/address-registry/compare/v3.109.0...v3.109.1) (2024-01-31)
 
 

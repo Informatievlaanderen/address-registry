@@ -1,3 +1,10 @@
+# [3.109.0](https://github.com/informatievlaanderen/address-registry/compare/v3.108.0...v3.109.0) (2024-01-31)
+
+
+### Features
+
+* add AddressDetailHuisnummer GAWR-3809 ([32f0ffc](https://github.com/informatievlaanderen/address-registry/commit/32f0ffc6f3f3918800ee9a440a930b43933e5f38))
+
 # [3.108.0](https://github.com/informatievlaanderen/address-registry/compare/v3.107.0...v3.108.0) (2024-01-29)
 
 

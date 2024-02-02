@@ -1,3 +1,15 @@
+# [3.110.0](https://github.com/informatievlaanderen/address-registry/compare/v3.109.2...v3.110.0) (2024-02-02)
+
+
+### Bug Fixes
+
+* add spatial index on AddressWmsV2 ([c1b209f](https://github.com/informatievlaanderen/address-registry/commit/c1b209f5af5781bb2ca65f21b3a5432412c63788))
+
+
+### Features
+
+* add cachevalidator lastchangedlist GAWR-5407 ([5be734b](https://github.com/informatievlaanderen/address-registry/commit/5be734b0fb7720535e8cb3374ebaaca4d2551e5c))
+
 ## [3.109.2](https://github.com/informatievlaanderen/address-registry/compare/v3.109.1...v3.109.2) (2024-01-31)
 
 

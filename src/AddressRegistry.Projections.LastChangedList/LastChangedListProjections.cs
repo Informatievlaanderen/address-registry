@@ -17,8 +17,8 @@ namespace AddressRegistry.Projections.LastChangedList
     {
         private static readonly AcceptType[] SupportedAcceptTypes = { AcceptType.Json, AcceptType.Xml, AcceptType.JsonLd };
 
-        public LastChangedListProjections()
-            : base(SupportedAcceptTypes)
+        public LastChangedListProjections(ICacheValidator cacheValidator)
+            : base(SupportedAcceptTypes, cacheValidator)
         {
             #region Legacy Events
             When<Envelope<AddressPersistentLocalIdWasAssigned>>(async (context, message, ct) =>

@@ -1,3 +1,10 @@
+## [3.110.1](https://github.com/informatievlaanderen/address-registry/compare/v3.110.0...v3.110.1) (2024-02-06)
+
+
+### Bug Fixes
+
+* bump projection handling ([b0e0eb0](https://github.com/informatievlaanderen/address-registry/commit/b0e0eb0a7065522a4ebfa4ab2215f8f18158e132))
+
 # [3.110.0](https://github.com/informatievlaanderen/address-registry/compare/v3.109.2...v3.110.0) (2024-02-02)
 
 

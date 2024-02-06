@@ -1591,6 +1591,7 @@
                     var expectedVersion =
                         await ct.AddressVersions.FirstAsync(x => x.AddressId == addressWasRegistered.AddressId);
                     expectedVersion.Should().NotBeNull();
+                    expectedVersion.Position.Should().Be(position);
                     expectedVersion.PersistentLocalId.Should().Be(addressPersistentLocalId);
                     expectedVersion.StreetNameId.Should().Be(addressWasRegistered.StreetNameId);
                     expectedVersion.HouseNumber.Should().Be(addressWasRegistered.HouseNumber);
@@ -1855,7 +1856,7 @@
                         await ct.AddressVersions.FirstAsync(x => x.AddressId == addressWasRegistered.AddressId & x.Position == position +1);
                     expectedVersion.Should().NotBeNull();
                     expectedVersion.Position.Should().Be(position + 1);
-                    expectedVersion.OfficiallyAssigned.Should().BeNull();
+                    expectedVersion.OfficiallyAssigned.Should().BeFalse();
                 });
         }
 
@@ -2202,6 +2203,7 @@
                         await ct.AddressVersions.FirstAsync(x => x.AddressId == addressWasRegistered.AddressId & x.Position == position +1);
                     expectedVersion.Should().NotBeNull();
                     expectedVersion.Position.Should().Be(position + 1);
+                    expectedVersion.StreetNameId.Should().Be(addressStreetNameWasChanged.StreetNameId);
                 });
         }
 
@@ -2238,6 +2240,7 @@
                         await ct.AddressVersions.FirstAsync(x => x.AddressId == addressWasRegistered.AddressId & x.Position == position +1);
                     expectedVersion.Should().NotBeNull();
                     expectedVersion.Position.Should().Be(position + 1);
+                    expectedVersion.StreetNameId.Should().Be(addressStreetNameWasCorrected.StreetNameId);
                 });
         }
 

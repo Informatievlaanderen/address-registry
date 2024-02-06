@@ -553,6 +553,7 @@
 
                 var address = new AddressVersion
                 {
+                    Position = message.Position,
                     PersistentLocalId = addressPersistentLocalId.Value,
                     AddressId = message.Message.AddressId,
                     StreetNameId = message.Message.StreetNameId,
@@ -629,7 +630,7 @@
                 await context.CreateNewAddressVersion(
                     message.Message.AddressId,
                     message,
-                    item => { item.OfficiallyAssigned = null; },
+                    item => { item.OfficiallyAssigned = false; },
                     ct);
             });
 
@@ -730,7 +731,10 @@
                 await context.CreateNewAddressVersion(
                     message.Message.AddressId,
                     message,
-                    _ => { },
+                    item =>
+                    {
+                        item.StreetNameId = message.Message.StreetNameId;
+                    },
                     ct);
             });
 
@@ -739,7 +743,10 @@
                 await context.CreateNewAddressVersion(
                     message.Message.AddressId,
                     message,
-                    _ => { },
+                    item =>
+                    {
+                        item.StreetNameId = message.Message.StreetNameId;
+                    },
                     ct);
             });
 

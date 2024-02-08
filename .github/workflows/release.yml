@@ -763,69 +763,6 @@ jobs:
           SEMVER: ${{ needs.release.outputs.version }}
           WORKSPACE: ${{ github.workspace }}
 
-  push_images_to_test:
-    if: needs.release.outputs.version != 'none'
-    needs: [ release ]
-    name: Push images to Test
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        image: [
-          'api-backoffice'
-          , 'api-legacy'
-          , 'api-oslo'
-          , 'api-extract'
-          , 'projector'
-          , 'projections-syndication'
-          , 'projections-backoffice'
-          , 'consumer'
-          , 'consumer-read-municipality'
-          , 'consumer-read-streetname'
-          , 'producer'
-          , 'producer-snapshot-oslo'
-          , 'migrator-address'
-          , 'cache-warmer'
-          , 'snapshot-verifier'
-        ]
-    steps:
-      - name: Configure AWS credentials (Test)
-        uses: aws-actions/configure-aws-credentials@v1-node16
-        with:
-          aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_TST }}
-          aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_TST }}
-          aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
-
-      - name: Login to Amazon ECR (Test)
-        uses: aws-actions/amazon-ecr-login@v1.5.3
-
-      # Download artifact
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        continue-on-error: false
-        with:
-          name: ${{ matrix.image }}-${{ needs.release.outputs.version }}
-          path: ~/
-
-      # Load artifact
-      - name: Load artifact
-        shell: bash
-        run: |
-          echo ar-$IMAGE-image.tar
-          docker image load -i ~/ar-$IMAGE-image.tar
-        env:
-          IMAGE: ${{ matrix.image }}
-
-      - name: Push artifacts to ECR Test
-        shell: bash
-        run: |
-          echo $IMAGE:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/address-registry/$IMAGE:$SEMVER
-        env:
-          BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
-          IMAGE: ${{ matrix.image }}
-          SEMVER: ${{ needs.release.outputs.version }}
-          WORKSPACE: ${{ github.workspace }}
-
   push_images_to_staging:
     if: needs.release.outputs.version != 'none'
     needs: [ release ]
@@ -956,58 +893,9 @@ jobs:
           SEMVER: ${{ needs.release.outputs.version }}
           WORKSPACE: ${{ github.workspace }}
 
-  push_images_to_production:
-    if: needs.release.outputs.version != 'none'
-    needs: [ release ]
-    name: Push images to Production
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        image: ['api-backoffice', 'api-legacy', 'api-oslo', 'api-extract', 'projector', 'projections-syndication', 'projections-backoffice', 'consumer', 'consumer-read-municipality', 'consumer-read-streetname', 'producer', 'producer-snapshot-oslo', 'migrator-address', 'cache-warmer']
-    steps:
-      - name: Configure AWS credentials (Production)
-        uses: aws-actions/configure-aws-credentials@v1-node16
-        with:
-          aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_PRD }}
-          aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_PRD }}
-          aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
-
-      - name: Login to Amazon ECR (Production)
-        uses: aws-actions/amazon-ecr-login@v1.5.3
-
-      # Download artifact
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        continue-on-error: false
-        with:
-          name: ${{ matrix.image }}-${{ needs.release.outputs.version }}
-          path: ~/
-
-      # Load artifact
-      - name: Load artifact
-        shell: bash
-        run: |
-          echo ar-$IMAGE-image.tar
-          docker image load -i ~/ar-$IMAGE-image.tar
-        env:
-          IMAGE: ${{ matrix.image }}
-
-      - name: Push artifacts to ECR Production
-        shell: bash
-        run: |
-          echo $IMAGE:$SEMVER
-          docker tag $BUILD_DOCKER_REGISTRY_TST/address-registry/$IMAGE:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/address-registry/$IMAGE:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/address-registry/$IMAGE:$SEMVER
-        env:
-          BUILD_DOCKER_REGISTRY_TST: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
-          BUILD_DOCKER_REGISTRY_PRD: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_PRD }}
-          IMAGE: ${{ matrix.image }}
-          SEMVER: ${{ needs.release.outputs.version }}
-          WORKSPACE: ${{ github.workspace }}
-
   deploy_to_test_start_slack:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ push_images_to_test ]
+    needs: [ push_images ]
     name: Deploy to test started
     environment: test
     runs-on: ubuntu-latest
@@ -1027,38 +915,42 @@ jobs:
         SLACK_CHANNEL: ${{ secrets.VBR_NOTIFIER_CHANNEL_NAME }}
         REPOSITORY_NAME: ${{ env.REPOSITORY_NAME }}
 
-  deploy_to_test:
+  deploy_services_to_test:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ push_images_to_test, release ]
-    name: Deploy to test
+    needs: [ deploy_to_test_start_slack, release ]
+    name: Deploy services to test
     runs-on: ubuntu-latest
     strategy:
       matrix:
         services: [
-          'address-registry-api'
-          , 'address-registry-projections'
-          , 'address-registry-producer'
-          , 'address-registry-producer-snapshot-oslo'
-          , 'address-registry-projections-backoffice'
-          , 'address-registry-cache-warmer'
-          , 'address-registry-snapshot-verifier'
+          'address-api',
+          'address-backoffice-api',
+          'address-consumer',
+          'address-consumer-municipality',
+          'address-consumer-streetname',
+          'address-producer',
+          'address-producer-snapshot-oslo',
+          'address-projections',
+          'address-projections-backoffice'
         ]
 
     steps:
     - name: Deploy services
       env:
-        BUILD_URL: ${{ secrets.VBR_AWS_BUILD_API }}/${{matrix.services}}
-        STATUS_URL: ${{ secrets.VBR_AWS_BUILD_STATUS_API }}/${{matrix.services}}
+        BUILD_URL: ${{ vars.VBR_AWS_BUILD_API_DEVOPS }}/${{matrix.services}}
+        STATUS_URL: ${{ vars.VBR_AWS_BUILD_STATUS_API_DEVOPS }}/${{matrix.services}}
       uses: informatievlaanderen/awscurl-polling-action/polling-action@main
       with:
-          environment: test
+          environment: tst
           version: ${{ needs.release.outputs.version }}
           status-url: $STATUS_URL
           deploy-url: $BUILD_URL
-          access-key: ${{ secrets.VBR_AWS_BUILD_USER_ACCESS_KEY_ID }}
-          secret-key: ${{ secrets.VBR_AWS_BUILD_USER_SECRET_ACCESS_KEY }}
-          region: eu-west-1
+          access-key: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
+          secret-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
+          deploy-target: 'agb_ecs_service'
           interval: 2
+          domain: 'basisregisters'
+          project: 'basisregisters'
 
     - name: Deploy services output
       shell: bash
@@ -1067,9 +959,46 @@ jobs:
         echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
         echo ${{ steps.awscurl-polling-action.outputs.final-message }}
 
+  deploy_tasks_to_test:
+    if: github.repository_owner == 'Informatievlaanderen'
+    needs: [ deploy_to_test_start_slack, release ]
+    name: Deploy to tasks test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        services: [
+          'address-cache-warmer',
+          'address-snapshot-verifier'
+          ]
+
+    steps:
+    - name: Deploy tasks
+      env:
+        BUILD_URL: ${{ vars.VBR_AWS_BUILD_API_DEVOPS }}/${{matrix.services}}
+        STATUS_URL: ${{ vars.VBR_AWS_BUILD_STATUS_API_DEVOPS  }}/${{matrix.services}}
+      uses: informatievlaanderen/awscurl-polling-action/polling-action@main
+      with:
+          environment: tst
+          version: ${{ needs.release.outputs.version }}
+          status-url: $STATUS_URL
+          deploy-url: $BUILD_URL
+          access-key: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS  }}
+          secret-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS  }}
+          deploy-target: 'ecs_scheduled_task'
+          interval: 2
+          domain: 'basisregisters'
+          project: 'basisregisters'
+
+    - name: Deploy tasks output
+      shell: bash
+      run: |
+        echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
+        echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
+        echo ${{ steps.awscurl-polling-action.outputs.final-message }}
+
   deploy_lambda_to_test:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ deploy_to_test, release ]
+    needs: [ deploy_to_test_start_slack, release ]
     name: Deploy lambda to test
     runs-on: ubuntu-latest
 
@@ -1104,7 +1033,7 @@ jobs:
 
   deploy_to_test_finish_slack:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ deploy_lambda_to_test ]
+    needs: [ deploy_lambda_to_test, deploy_services_to_test, deploy_tasks_to_test ]
     name: Deploy to test finished
     runs-on: ubuntu-latest
 

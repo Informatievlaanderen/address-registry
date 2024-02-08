@@ -1,3 +1,10 @@
+## [3.111.1](https://github.com/informatievlaanderen/address-registry/compare/v3.111.0...v3.111.1) (2024-02-08)
+
+
+### Bug Fixes
+
+* **bump:** ci correct push images ([2e41e98](https://github.com/informatievlaanderen/address-registry/commit/2e41e9879c596c583a42c98144f2b28357993c18))
+
 # [3.111.0](https://github.com/informatievlaanderen/address-registry/compare/v3.110.1...v3.111.0) (2024-02-08)
 
 

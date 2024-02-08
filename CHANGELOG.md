@@ -1,3 +1,16 @@
+# [3.111.0](https://github.com/informatievlaanderen/address-registry/compare/v3.110.1...v3.111.0) (2024-02-08)
+
+
+### Bug Fixes
+
+* integration projections ([7ff8cb1](https://github.com/informatievlaanderen/address-registry/commit/7ff8cb10d23be988770661887fcdf47b4917e71a))
+* push images to new ECR ([49310fb](https://github.com/informatievlaanderen/address-registry/commit/49310fbf449de55fda6001ec24a3426ba07207c2))
+
+
+### Features
+
+* add status for backoffice projections ([502488e](https://github.com/informatievlaanderen/address-registry/commit/502488e6f9ec14f02d3247d45449151dc52beffc))
+
 ## [3.110.1](https://github.com/informatievlaanderen/address-registry/compare/v3.110.0...v3.110.1) (2024-02-06)
 
 

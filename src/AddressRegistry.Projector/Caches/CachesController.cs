@@ -1,9 +1,11 @@
 namespace AddressRegistry.Projector.Caches
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using AddressRegistry.Projections.LastChangedList;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
     using Microsoft.AspNetCore.Mvc;
@@ -14,6 +16,11 @@ namespace AddressRegistry.Projector.Caches
     [ApiRoute("caches")]
     public class CachesController : ApiController
     {
+        private static Dictionary<string, string> _projectionNameMapper = new Dictionary<string, string>()
+        {
+            {"BuildingRegistry.Projections.LastChangedList.BuildingUnitProjections", LastChangedListProjections.ProjectionName}
+        };
+
         [HttpGet]
         public async Task<IActionResult> Get(
             [FromServices] IConfiguration configuration,

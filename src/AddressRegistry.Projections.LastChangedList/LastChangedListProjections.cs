@@ -11,10 +11,11 @@ namespace AddressRegistry.Projections.LastChangedList
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using StreetName.Events;
 
-    [ConnectedProjectionName("Cache markering adressen")]
+    [ConnectedProjectionName(ProjectionName)]
     [ConnectedProjectionDescription("Projectie die markeert voor hoeveel adressen de gecachte data nog geüpdated moeten worden.")]
     public class LastChangedListProjections : LastChangedListConnectedProjection
     {
+        public const string ProjectionName = "Cache markering adressen";
         private static readonly AcceptType[] SupportedAcceptTypes = { AcceptType.Json, AcceptType.Xml, AcceptType.JsonLd };
 
         public LastChangedListProjections(ICacheValidator cacheValidator)

@@ -68,13 +68,6 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .RegisterType<ProblemDetailsHelper>()
                 .AsSelf();
 
-            builder.Register(c =>
-                    new LastChangedListCacheValidator(
-                        c.Resolve<LegacyContext>(),
-                        typeof(AddressDetailProjectionsV2WithParent).FullName))
-                .AsSelf()
-                .AsImplementedInterfaces();
-
             builder.Populate(_services);
         }
 
@@ -161,17 +154,6 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                     _configuration["DataDog:ServiceName"],
                     _services,
                     _loggerFactory));
-
-            builder
-                .RegisterProjectionMigrator<LastChangedListContextMigrationFactory>(
-                    _configuration,
-                    _loggerFactory)
-                .RegisterProjectionMigrator<DataMigrationContextMigrationFactory>(
-                    _configuration,
-                    _loggerFactory)
-                .RegisterProjections<LastChangedListProjections, LastChangedListContext>(
-                    context => new LastChangedListProjections(context.Resolve<ICacheValidator>()),
-                    ConnectedProjectionSettings.Default);
         }
 
         private void RegisterLegacyProjectionsV2(ContainerBuilder builder)

@@ -128,6 +128,21 @@ jobs:
       semver: ${{ needs.set-release-version.outputs.version }}
     secrets: inherit
 
+  build-projections-last-changed-list:
+    name: Build projections last changed list
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
+    needs: [ set-release-version ]
+    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
+    with:
+      registry: address-registry
+      build-target: Containerize_ProjectionsLastChangedList
+      image-file: ar-projections-last-changed-list-console-image.tar
+      image-name: projections-last-changed-list-console
+      test-project: AddressRegistry.Tests
+      build-project: AddressRegistry.Projections.LastChangedList.Console
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
   build-projections-backoffice:
     name: Build Projections BackOffice
     uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
@@ -367,6 +382,7 @@ jobs:
       build-projector,
       build-projections-backoffice,
       build-projections-syndication,
+      build-projections-last-changed-list,
       build-consumer,
       build-consumer-read-municipality,
       build-consumer-read-streetname,
@@ -713,6 +729,7 @@ jobs:
           , 'projector'
           , 'projections-syndication'
           , 'projections-backoffice'
+          , 'projections-last-changed-list-console',
           , 'consumer'
           , 'consumer-read-municipality'
           , 'consumer-read-streetname'
@@ -778,6 +795,7 @@ jobs:
           , 'projector'
           , 'projections-syndication'
           , 'projections-backoffice'
+          , 'projections-last-changed-list-console'
           , 'consumer'
           , 'consumer-read-municipality'
           , 'consumer-read-streetname'
@@ -843,6 +861,7 @@ jobs:
           , 'projector'
           , 'projections-syndication'
           , 'projections-backoffice'
+          , 'projections-last-changed-list-console'
           , 'consumer'
           , 'consumer-read-municipality'
           , 'consumer-read-streetname'
@@ -1091,7 +1110,7 @@ jobs:
           'address-registry-producer',
           'address-registry-producer-snapshot-oslo',
           'address-registry-projections',
-          'address-registry-projections-backoffice',
+          'address-registry-projections-backoffice',          
           'address-registry-cache-warmer',
           'address-registry-snapshot-verifier'
           ]

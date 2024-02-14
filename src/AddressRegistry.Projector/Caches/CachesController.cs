@@ -11,12 +11,13 @@ namespace AddressRegistry.Projector.Caches
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
+    using SqlStreamStore;
 
     [ApiVersion("1.0")]
     [ApiRoute("caches")]
     public class CachesController : ApiController
     {
-        private static Dictionary<string, string> _projectionNameMapper = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> ProjectionNameMapper = new()
         {
             {"AddressRegistry.Projections.LastChangedList.LastChangedListProjections", LastChangedListProjections.ProjectionName}
         };
@@ -25,6 +26,7 @@ namespace AddressRegistry.Projector.Caches
         public async Task<IActionResult> Get(
             [FromServices] IConfiguration configuration,
             [FromServices] LastChangedListContext lastChangedListContext,
+            [FromServices] IReadonlyStreamStore streamStore,
             CancellationToken cancellationToken)
         {
             var maxErrorTimeInSeconds = configuration.GetValue<int?>("Caches:LastChangedList:MaxErrorTimeInSeconds") ?? 60;
@@ -36,13 +38,28 @@ namespace AddressRegistry.Projector.Caches
                 .Where(r => r.ToBeIndexed && (r.LastError == null || r.LastError < maxErrorTime))
                 .CountAsync(cancellationToken);
 
-            return Ok(new[]
+            var positions = await lastChangedListContext.ProjectionStates.ToListAsync(cancellationToken);
+            var streamPosition = await streamStore.ReadHeadPosition(cancellationToken);
+
+            var response = new List<dynamic>
             {
-                new {
+                new
+                {
                     name = "Cache detail adressen",
                     numberOfRecordsToProcess = numberOfRecords
                 }
-            });
+            };
+
+            foreach (var position in positions)
+            {
+                response.Add(new
+                {
+                    name = ProjectionNameMapper.ContainsKey(position.Name) ? ProjectionNameMapper[position.Name] : position.Name,
+                    numberOfRecordsToProcess = streamPosition - position.Position
+                });
+            }
+
+            return Ok(response);
         }
     }
 }

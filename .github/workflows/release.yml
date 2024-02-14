@@ -1110,8 +1110,7 @@ jobs:
           'address-registry-producer',
           'address-registry-producer-snapshot-oslo',
           'address-registry-projections',
-          'address-registry-projections-backoffice',
-          'projections-last-changed-list-console',
+          'address-registry-projections-backoffice',          
           'address-registry-cache-warmer',
           'address-registry-snapshot-verifier'
           ]

@@ -1,3 +1,15 @@
+# [3.112.0](https://github.com/informatievlaanderen/address-registry/compare/v3.111.1...v3.112.0) (2024-02-14)
+
+
+### Bug Fixes
+
+* cache controller ([2508e9d](https://github.com/informatievlaanderen/address-registry/commit/2508e9da983a396c40320e0971ffedb5625738bf))
+
+
+### Features
+
+* add projections lastchangedlist console ([8b29da1](https://github.com/informatievlaanderen/address-registry/commit/8b29da1fc94010168ca5d2b664cec96dbbb1a0f2))
+
 ## [3.111.1](https://github.com/informatievlaanderen/address-registry/compare/v3.111.0...v3.111.1) (2024-02-08)
 
 

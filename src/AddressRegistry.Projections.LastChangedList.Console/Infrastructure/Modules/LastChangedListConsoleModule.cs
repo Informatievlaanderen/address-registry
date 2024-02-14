@@ -80,7 +80,7 @@ namespace AddressRegistry.Projections.LastChangedList.Console.Infrastructure.Mod
             builder.Register(c =>
                     new LastChangedListAddressCacheValidator(
                         _configuration.GetConnectionString("LegacyProjections"),
-                        "AddressRegistry.Projections.Legacy.AddressDetailV2.AddressDetailProjectionsV2"))
+                        "AddressRegistry.Projections.Legacy.AddressDetailV2WithParent.AddressDetailProjectionsV2WithParent"))
                 .AsSelf();
 
             builder

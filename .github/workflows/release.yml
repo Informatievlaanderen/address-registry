@@ -136,7 +136,7 @@ jobs:
     with:
       registry: address-registry
       build-target: Containerize_ProjectionsLastChangedList
-      image-file: br-projections-last-changed-list-console-image.tar
+      image-file: ar-projections-last-changed-list-console-image.tar
       image-name: projections-last-changed-list-console
       test-project: AddressRegistry.Tests
       build-project: AddressRegistry.Projections.LastChangedList.Console

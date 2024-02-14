@@ -729,7 +729,7 @@ jobs:
           , 'projector'
           , 'projections-syndication'
           , 'projections-backoffice'
-          , 'projections-last-changed-list-console',
+          , 'projections-last-changed-list-console'
           , 'consumer'
           , 'consumer-read-municipality'
           , 'consumer-read-streetname'

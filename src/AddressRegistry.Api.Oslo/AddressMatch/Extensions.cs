@@ -73,13 +73,13 @@ namespace AddressRegistry.Api.Oslo.AddressMatch
                 return input.Replace("burg.", "Burgemeester");
 
             if (input.Contains("burgemeester"))
-                return input.Replace("Burgemeester", "burg.");
-
-            if (input.EndsWith("str"))
-                return input.Replace("str", "straat");
+                return input.Replace("burgemeester", "burg.");
 
             if (input.EndsWith("str."))
                 return input.Replace("str.", "straat");
+
+            if (input.EndsWith("str"))
+                return input.Replace("str", "straat");
 
             if (input.StartsWith("heilige"))
                 return input.Replace("heilige", "h");

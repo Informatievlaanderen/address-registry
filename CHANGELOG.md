@@ -1,3 +1,16 @@
+# [3.113.0](https://github.com/informatievlaanderen/address-registry/compare/v3.112.0...v3.113.0) (2024-02-19)
+
+
+### Bug Fixes
+
+* add consumer offset option ([4f03ad2](https://github.com/informatievlaanderen/address-registry/commit/4f03ad21897e380356c49dd837d69266db428b43))
+* correct address match streetname abbreviations ([336c031](https://github.com/informatievlaanderen/address-registry/commit/336c0314591344828dec5492a45d70fae8e6dfab))
+
+
+### Features
+
+* shutdown backoffice projections service when projection is stopped ([9e01417](https://github.com/informatievlaanderen/address-registry/commit/9e01417d83c51910c8c5b080c12bb0bd8565ea53))
+
 # [3.112.0](https://github.com/informatievlaanderen/address-registry/compare/v3.111.1...v3.112.0) (2024-02-14)
 
 

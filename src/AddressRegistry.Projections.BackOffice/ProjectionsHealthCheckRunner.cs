@@ -28,15 +28,15 @@
             _logger = logger.CreateLogger<ProjectionsHealthCheckRunner>();
         }
 
-        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            await Task.Delay(1000 * 60 * 5, stoppingToken).ConfigureAwait(false);
+
             _logger.LogInformation("Projections health check starting");
 
             _timer = new Timer(RunHealthCheck, null, TimeSpan.Zero, Interval);
 
             _logger.LogInformation("Projections health check started");
-
-            return Task.CompletedTask;
         }
 
         private void RunHealthCheck(object? state)

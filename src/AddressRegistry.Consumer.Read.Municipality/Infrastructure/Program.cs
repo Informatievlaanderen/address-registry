@@ -108,6 +108,13 @@ namespace AddressRegistry.Consumer.Read.Municipality.Infrastructure
                                 hostContext.Configuration["Kafka:SaslUserName"],
                                 hostContext.Configuration["Kafka:SaslPassword"]));
 
+                            var offset = hostContext.Configuration["ConsumerOffset"];
+
+                            if (!string.IsNullOrWhiteSpace(offset) && long.TryParse(offset, out var result))
+                            {
+                                consumerOptions.ConfigureOffset(new Offset(result));
+                            }
+
                             return new Consumer(consumerOptions, c.Resolve<ILoggerFactory>());
                         })
                         .Keyed<IConsumer>(nameof(MunicipalityBosaItemConsumer))
@@ -130,6 +137,13 @@ namespace AddressRegistry.Consumer.Read.Municipality.Infrastructure
                             consumerOptions.ConfigureSaslAuthentication(new SaslAuthentication(
                                 hostContext.Configuration["Kafka:SaslUserName"],
                                 hostContext.Configuration["Kafka:SaslPassword"]));
+
+                            var offset = hostContext.Configuration["ConsumerOffset"];
+
+                            if (!string.IsNullOrWhiteSpace(offset) && long.TryParse(offset, out var result))
+                            {
+                                consumerOptions.ConfigureOffset(new Offset(result));
+                            }
 
                             return new Consumer(consumerOptions, c.Resolve<ILoggerFactory>());
                         })

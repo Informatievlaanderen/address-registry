@@ -87,7 +87,8 @@ namespace AddressRegistry.Projections.BackOffice
                                 .EnableRetryOnFailure()
                                 .MigrationsHistoryTable(MigrationTables.BackOffice, Schema.BackOffice)
                             ))
-                        .AddHostedService<ProjectorRunner>();
+                        .AddHostedService<ProjectorRunner>()
+                        .AddHostedService<ProjectionsHealthCheckRunner>();
                 })
                 .UseServiceProviderFactory(new AutofacServiceProviderFactory())
                 .ConfigureContainer<ContainerBuilder>((hostContext, builder) =>

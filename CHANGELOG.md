@@ -1,3 +1,10 @@
+## [3.113.1](https://github.com/informatievlaanderen/address-registry/compare/v3.113.0...v3.113.1) (2024-02-19)
+
+
+### Bug Fixes
+
+* add delay to start backofficeprojection health check ([ad1b511](https://github.com/informatievlaanderen/address-registry/commit/ad1b511c839fc8c104b0cd0a76c4d298d5098a7e))
+
 # [3.113.0](https://github.com/informatievlaanderen/address-registry/compare/v3.112.0...v3.113.0) (2024-02-19)
 
 

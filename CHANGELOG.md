@@ -1,3 +1,10 @@
+# [3.114.0](https://github.com/informatievlaanderen/address-registry/compare/v3.113.1...v3.114.0) (2024-02-20)
+
+
+### Features
+
+* add ignore data check when set offset ([0c8a055](https://github.com/informatievlaanderen/address-registry/commit/0c8a05540b62f015eef70b5f9ae65ed4ae99e65a))
+
 ## [3.113.1](https://github.com/informatievlaanderen/address-registry/compare/v3.113.0...v3.113.1) (2024-02-19)
 
 

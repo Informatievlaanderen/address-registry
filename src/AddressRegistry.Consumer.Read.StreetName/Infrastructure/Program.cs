@@ -2,6 +2,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
 {
     using System;
     using System.IO;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Address;
@@ -176,6 +177,19 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
 
                             if (!string.IsNullOrWhiteSpace(offset) && long.TryParse(offset, out var result))
                             {
+                                var ignoreDataCheck = hostContext.Configuration.GetValue<bool>("IgnoreConsumerOffsetDataCheck", false);
+
+                                if (!ignoreDataCheck)
+                                {
+                                    using var ctx = c.Resolve<StreetNameConsumerContext>();
+
+                                    if (ctx.StreetNameLatestItems.Any())
+                                    {
+                                        throw new InvalidOperationException(
+                                            $"Cannot set Kafka offset to {offset} because {nameof(ctx.StreetNameLatestItems)} has data.");
+                                    }
+                                }
+
                                 consumerOptions.ConfigureOffset(new Offset(result));
                             }
 

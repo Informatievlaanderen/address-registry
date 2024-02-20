@@ -24,6 +24,7 @@ namespace AddressRegistry.Consumer.Infrastructure
     using SqlStreamStore;
     using System;
     using System.IO;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
@@ -116,7 +117,7 @@ namespace AddressRegistry.Consumer.Infrastructure
                     var services = new ServiceCollection();
                     var loggerFactory = new SerilogLoggerFactory(Log.Logger); //NOSONAR logging configuration is safe
 
-                    containerBuilder.Register(_ =>
+                    containerBuilder.Register(c =>
                     {
                         var bootstrapServers = hostContext.Configuration["Kafka:BootstrapServers"];
                         var topic = $"{hostContext.Configuration["StreetNameTopic"]}" ?? throw new ArgumentException("Configuration has no StreetNameTopic.");
@@ -137,6 +138,19 @@ namespace AddressRegistry.Consumer.Infrastructure
 
                         if (!string.IsNullOrWhiteSpace(offset) && long.TryParse(offset, out var result))
                         {
+                            var ignoreDataCheck = hostContext.Configuration.GetValue<bool>("IgnoreStreetNameTopicOffsetDataCheck", false);
+
+                            if (!ignoreDataCheck)
+                            {
+                                using var ctx = c.Resolve<ConsumerContext>();
+
+                                if (ctx.StreetNameConsumerItems.Any())
+                                {
+                                    throw new InvalidOperationException(
+                                        $"Cannot set Kafka offset to {offset} because {nameof(ctx.StreetNameConsumerItems)} has data.");
+                                }
+                            }
+
                             consumerOptions.ConfigureOffset(new Offset(result));
                         }
 

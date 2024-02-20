@@ -2,6 +2,7 @@ namespace AddressRegistry.Consumer.Read.Municipality.Infrastructure
 {
     using System;
     using System.IO;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Infrastructure;
@@ -142,6 +143,19 @@ namespace AddressRegistry.Consumer.Read.Municipality.Infrastructure
 
                             if (!string.IsNullOrWhiteSpace(offset) && long.TryParse(offset, out var result))
                             {
+                                var ignoreDataCheck = hostContext.Configuration.GetValue<bool>("IgnoreConsumerOffsetDataCheck", false);
+
+                                if (!ignoreDataCheck)
+                                {
+                                    using var ctx = c.Resolve<MunicipalityConsumerContext>();
+
+                                    if (ctx.MunicipalityLatestItems.Any())
+                                    {
+                                        throw new InvalidOperationException(
+                                            $"Cannot set Kafka offset to {offset} because {nameof(ctx.MunicipalityLatestItems)} has data.");
+                                    }
+                                }
+
                                 consumerOptions.ConfigureOffset(new Offset(result));
                             }
 

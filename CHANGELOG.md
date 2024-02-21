@@ -1,3 +1,10 @@
+## [3.114.1](https://github.com/informatievlaanderen/address-registry/compare/v3.114.0...v3.114.1) (2024-02-21)
+
+
+### Bug Fixes
+
+* **bump:** use new lambda pipeline ([dd92290](https://github.com/informatievlaanderen/address-registry/commit/dd922908acf2e3d997ad06e532b84e44a5235640))
+
 # [3.114.0](https://github.com/informatievlaanderen/address-registry/compare/v3.113.1...v3.114.0) (2024-02-20)
 
 

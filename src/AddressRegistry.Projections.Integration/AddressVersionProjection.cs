@@ -44,6 +44,7 @@
                     CreatedOnTimestamp = message.Message.Provenance.Timestamp,
                     Namespace = options.Value.Namespace,
                     PuriId = $"{options.Value.Namespace}/{message.Message.AddressPersistentLocalId}",
+                    Type = message.EventName
                 };
 
                 await context.AddressVersions.AddAsync(addressVersion, ct);
@@ -74,6 +75,7 @@
                     CreatedOnTimestamp = message.Message.Provenance.Timestamp,
                     Namespace = options.Value.Namespace,
                     PuriId = $"{options.Value.Namespace}/{message.Message.AddressPersistentLocalId}",
+                    Type = message.EventName
                 };
 
                 await context.AddressVersions.AddAsync(addressVersion, ct);
@@ -444,6 +446,7 @@
                     CreatedOnTimestamp = message.Message.Provenance.Timestamp,
                     Namespace = options.Value.Namespace,
                     PuriId = $"{options.Value.Namespace}/{message.Message.AddressPersistentLocalId}",
+                    Type = message.EventName
                 };
 
                 await context
@@ -562,6 +565,7 @@
                     Namespace = options.Value.Namespace,
                     VersionTimestamp = message.Message.Provenance.Timestamp,
                     CreatedOnTimestamp = message.Message.Provenance.Timestamp,
+                    Type = message.EventName
                 };
 
                 await context.AddressVersions.AddAsync(address, ct);

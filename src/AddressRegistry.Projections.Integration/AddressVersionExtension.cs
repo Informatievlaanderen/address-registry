@@ -30,6 +30,7 @@
 
             var newAddressVersion = addressVersion.CloneAndApplyEventInfo(
                 message.Position,
+                message.EventName,
                 provenance.Timestamp,
                 applyEventInfoOn);
 
@@ -56,6 +57,7 @@
 
             var newAddressVersion = addressVersion.CloneAndApplyEventInfo(
                 message.Position,
+                message.EventName,
                 provenance.Timestamp,
                 applyEventInfoOn);
 

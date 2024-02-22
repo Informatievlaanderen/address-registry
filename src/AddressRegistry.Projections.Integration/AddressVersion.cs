@@ -26,6 +26,7 @@
         public string? OsloStatus { get; set; }
         public string? HouseNumber { get; set; }
         public string? BoxNumber { get; set; }
+        public string Type { get; set; }
         public Geometry? Geometry { get; set; }
         public GeometryMethod? PositionMethod { get; set; }
         public string? OsloPositionMethod { get; set; }
@@ -66,8 +67,8 @@
         public AddressVersion()
         { }
 
-        public AddressVersion CloneAndApplyEventInfo(
-            long newPosition,
+        public AddressVersion CloneAndApplyEventInfo(long newPosition,
+            string eventName,
             Instant lastChangedOn,
             Action<AddressVersion> editFunc)
         {
@@ -83,6 +84,7 @@
                 OsloStatus = OsloStatus,
                 HouseNumber = HouseNumber,
                 BoxNumber = BoxNumber,
+                Type = eventName,
                 Geometry = Geometry,
                 PositionMethod = PositionMethod,
                 PositionSpecification = PositionSpecification,
@@ -122,6 +124,7 @@
             builder.Property(x => x.OsloStatus).HasColumnName("oslo_status");
             builder.Property(x => x.HouseNumber).HasColumnName("house_number");
             builder.Property(x => x.BoxNumber).HasColumnName("box_number");
+            builder.Property(x => x.Type).HasColumnName("type");
 
             builder.Property(x => x.Geometry).HasColumnName("geometry");
 
@@ -153,6 +156,7 @@
             builder.HasIndex(x => x.AddressId);
             builder.HasIndex(x => x.Status);
             builder.HasIndex(x => x.OsloStatus);
+            builder.HasIndex(x => x.Type);
             builder.HasIndex(x => x.PostalCode);
             builder.HasIndex(x => x.HouseNumber);
             builder.HasIndex(x => x.BoxNumber);

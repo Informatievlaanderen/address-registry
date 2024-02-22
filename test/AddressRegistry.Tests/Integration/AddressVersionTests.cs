@@ -52,7 +52,8 @@
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -80,6 +81,7 @@
                     addressVersion.VersionTimestamp.Should().Be(addressWasMigratedToStreetName.Provenance.Timestamp);
                     addressVersion.CreatedOnTimestamp.Should().Be(addressWasMigratedToStreetName.Provenance.Timestamp);
                     addressVersion.Geometry.Should().BeEquivalentTo(geometry);
+                    addressVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -95,7 +97,8 @@
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -122,6 +125,7 @@
                     expectedVersion.VersionTimestamp.Should().Be(addressWasProposedV2.Provenance.Timestamp);
                     expectedVersion.CreatedOnTimestamp.Should().Be(addressWasProposedV2.Provenance.Timestamp);
                     expectedVersion.Geometry.Should().BeEquivalentTo(geometry);
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -137,12 +141,14 @@
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1},
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -163,6 +169,7 @@
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasApproved.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasApproved.Provenance.Timestamp);
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -178,12 +185,14 @@
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1},
+                { Envelope.EventNameMetadataKey, "EventName"},
             };
 
             await Sut
@@ -205,6 +214,7 @@
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasCorrectedFromApprovedToProposed.AddressPersistentLocalId}");
 
                     expectedVersion.VersionTimestamp.Should().Be(addressWasCorrectedFromApprovedToProposed.Provenance.Timestamp);
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -221,12 +231,14 @@
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1},
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -252,6 +264,7 @@
                         .Be($"{Namespace}/{addressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should()
                         .Be(addressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected.Provenance.Timestamp);
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -267,12 +280,14 @@
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -293,6 +308,7 @@
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRejected.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -308,12 +324,14 @@
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -336,6 +354,7 @@
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRejectedBecauseHouseNumberWasRejected.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRejectedBecauseHouseNumberWasRejected.Provenance.Timestamp);
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -351,12 +370,14 @@
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -379,6 +400,7 @@
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRejectedBecauseHouseNumberWasRetired.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRejectedBecauseHouseNumberWasRetired.Provenance.Timestamp);
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -394,12 +416,14 @@
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -421,6 +445,7 @@
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRejectedBecauseStreetNameWasRejected.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRejectedBecauseStreetNameWasRejected.Provenance.Timestamp);
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -436,12 +461,14 @@
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -464,6 +491,7 @@
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRetiredBecauseStreetNameWasRejected.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRetiredBecauseStreetNameWasRejected.Provenance.Timestamp);
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -479,12 +507,14 @@
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -507,6 +537,7 @@
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRejectedBecauseStreetNameWasRetired.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRejectedBecauseStreetNameWasRetired.Provenance.Timestamp);
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -522,12 +553,14 @@
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -550,6 +583,7 @@
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasDeregulated.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasDeregulated.Provenance.Timestamp);
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -565,12 +599,14 @@
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -593,6 +629,7 @@
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRegularized.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRegularized.Provenance.Timestamp);
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -608,12 +645,14 @@
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -636,6 +675,7 @@
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRetiredV2.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRetiredV2.Provenance.Timestamp);
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -651,12 +691,14 @@
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -679,6 +721,7 @@
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRetiredBecauseHouseNumberWasRetired.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRetiredBecauseHouseNumberWasRetired.Provenance.Timestamp);
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -694,12 +737,14 @@
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -722,6 +767,7 @@
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRetiredBecauseStreetNameWasRetired.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRetiredBecauseStreetNameWasRetired.Provenance.Timestamp);
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -737,12 +783,14 @@
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -765,6 +813,7 @@
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasCorrectedFromRetiredToCurrent.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasCorrectedFromRetiredToCurrent.Provenance.Timestamp);
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -785,12 +834,14 @@
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             var boxNumberWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
@@ -798,7 +849,8 @@
             var boxNumberMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             await Sut
@@ -816,10 +868,22 @@
                         .Be(addressPostalCodeWasChangedV2.StreetNamePersistentLocalId);
                     expectedVersion.Removed.Should().BeFalse();
                     expectedVersion.PostalCode.Should().Be(addressPostalCodeWasChangedV2.PostalCode);
-
+                    expectedVersion.Type.Should().Be("EventName");
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressPostalCodeWasChangedV2.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressPostalCodeWasChangedV2.Provenance.Timestamp);
+
+                    var expectedBoxNumberVersion =
+                        await ct.AddressVersions.FindAsync(position + 1, (int)boxNumberPersistentLocalId);
+                    expectedBoxNumberVersion.Should().NotBeNull();
+                    expectedBoxNumberVersion!.StreetNamePersistentLocalId.Should()
+                        .Be(addressPostalCodeWasChangedV2.StreetNamePersistentLocalId);
+                    expectedBoxNumberVersion.Removed.Should().BeFalse();
+                    expectedBoxNumberVersion.PostalCode.Should().Be(addressPostalCodeWasChangedV2.PostalCode);
+                    expectedBoxNumberVersion.Type.Should().Be("EventName");
+                    expectedBoxNumberVersion.Namespace.Should().Be(Namespace);
+                    expectedBoxNumberVersion.PuriId.Should().Be($"{Namespace}/{boxNumberPersistentLocalId}");
+                    expectedBoxNumberVersion.VersionTimestamp.Should().Be(addressPostalCodeWasChangedV2.Provenance.Timestamp);
                 });
         }
 
@@ -840,12 +904,14 @@
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             var boxNumberWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
@@ -853,7 +919,8 @@
             var boxNumberMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             await Sut
@@ -871,10 +938,22 @@
                         .Be(addressPostalCodeWasCorrectedV2.StreetNamePersistentLocalId);
                     expectedVersion.Removed.Should().BeFalse();
                     expectedVersion.PostalCode.Should().Be(addressPostalCodeWasCorrectedV2.PostalCode);
-
+                    expectedVersion.Type.Should().Be("EventName");
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressPostalCodeWasCorrectedV2.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressPostalCodeWasCorrectedV2.Provenance.Timestamp);
+
+                    var expectedBoxNumberVersion =
+                        await ct.AddressVersions.FindAsync(position + 1, (int)boxNumberPersistentLocalId);
+                    expectedBoxNumberVersion.Should().NotBeNull();
+                    expectedBoxNumberVersion!.StreetNamePersistentLocalId.Should()
+                        .Be(addressPostalCodeWasCorrectedV2.StreetNamePersistentLocalId);
+                    expectedBoxNumberVersion.Removed.Should().BeFalse();
+                    expectedBoxNumberVersion.PostalCode.Should().Be(addressPostalCodeWasCorrectedV2.PostalCode);
+                    expectedBoxNumberVersion.Type.Should().Be("EventName");
+                    expectedBoxNumberVersion.Namespace.Should().Be(Namespace);
+                    expectedBoxNumberVersion.PuriId.Should().Be($"{Namespace}/{boxNumberPersistentLocalId}");
+                    expectedBoxNumberVersion.VersionTimestamp.Should().Be(addressPostalCodeWasCorrectedV2.Provenance.Timestamp);
                 });
         }
 
@@ -899,17 +978,20 @@
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var proposedBoxNumberMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, boxNumberWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 2 }
+                { Envelope.PositionMetadataKey, position + 2 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -927,7 +1009,7 @@
                         .Be(addressHouseNumberWasCorrectedV2.StreetNamePersistentLocalId);
                     expectedVersion.Removed.Should().BeFalse();
                     expectedVersion.HouseNumber.Should().Be(addressHouseNumberWasCorrectedV2.HouseNumber);
-
+                    expectedVersion.Type.Should().Be("EventName");
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressHouseNumberWasCorrectedV2.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressHouseNumberWasCorrectedV2.Provenance.Timestamp);
@@ -946,12 +1028,14 @@
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -968,7 +1052,7 @@
                         .Be(addressBoxNumberWasCorrectedV2.StreetNamePersistentLocalId);
                     expectedVersion.Removed.Should().BeFalse();
                     expectedVersion.BoxNumber.Should().Be(addressBoxNumberWasCorrectedV2.BoxNumber);
-
+                    expectedVersion.Type.Should().Be("EventName");
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressBoxNumberWasCorrectedV2.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressBoxNumberWasCorrectedV2.Provenance.Timestamp);
@@ -991,12 +1075,14 @@
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -1020,7 +1106,7 @@
                         .Be(addressPositionWasChanged.GeometrySpecification.ToPositieSpecificatie());
                     var geometry = WKBReaderFactory.CreateForLegacy().Read(addressPositionWasChanged.ExtendedWkbGeometry.ToByteArray());
                     expectedVersion.Geometry.Should().BeEquivalentTo(geometry);
-
+                    expectedVersion.Type.Should().Be("EventName");
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressPositionWasChanged.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressPositionWasChanged.Provenance.Timestamp);
@@ -1043,12 +1129,14 @@
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -1072,6 +1160,7 @@
                         .Be(addressPositionWasCorrectedV2.GeometrySpecification.ToPositieSpecificatie());
                     var geometry = WKBReaderFactory.CreateForLegacy().Read(addressPositionWasCorrectedV2.ExtendedWkbGeometry.ToByteArray());
                     expectedVersion.Geometry.Should().BeEquivalentTo(geometry);
+                    expectedVersion.Type.Should().Be("EventName");
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressPositionWasCorrectedV2.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressPositionWasCorrectedV2.Provenance.Timestamp);
@@ -1091,7 +1180,8 @@
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var addressBoxNumberWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
@@ -1099,7 +1189,8 @@
             var proposedBoxNumberMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressBoxNumberWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var readdressedHouseNumber = new ReaddressedAddressData(
@@ -1140,7 +1231,8 @@
             var addressHouseNumberWasReaddressedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressHouseNumberWasReaddressed.GetHash() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -1168,7 +1260,7 @@
                     houseNumberItem.PositionSpecification.Should().Be(readdressedHouseNumber.SourceGeometrySpecification);
                     houseNumberItem.OsloPositionSpecification.Should().Be(readdressedHouseNumber.SourceGeometrySpecification.ToPositieSpecificatie());
                     houseNumberItem.VersionTimestamp.Should().Be(addressHouseNumberWasReaddressed.Provenance.Timestamp);
-
+                    houseNumberItem.Type.Should().Be("EventName");
                     houseNumberItem.Namespace.Should().Be(Namespace);
                     houseNumberItem.PuriId.Should().Be($"{Namespace}/{addressHouseNumberWasReaddressed.AddressPersistentLocalId}");
                     houseNumberItem.VersionTimestamp.Should().Be(addressHouseNumberWasReaddressed.Provenance.Timestamp);
@@ -1189,7 +1281,7 @@
                     boxNumberItem.PositionSpecification.Should().Be(readdressedBoxNumber.SourceGeometrySpecification);
                     boxNumberItem.OsloPositionSpecification.Should().Be(readdressedBoxNumber.SourceGeometrySpecification.ToPositieSpecificatie());
                     boxNumberItem.VersionTimestamp.Should().Be(addressHouseNumberWasReaddressed.Provenance.Timestamp);
-
+                    boxNumberItem.Type.Should().Be("EventName");
                     boxNumberItem.Namespace.Should().Be(Namespace);
                     boxNumberItem.PuriId.Should().Be($"{Namespace}/{readdressedBoxNumber.DestinationAddressPersistentLocalId}");
                     boxNumberItem.VersionTimestamp.Should().Be(addressHouseNumberWasReaddressed.Provenance.Timestamp);
@@ -1205,8 +1297,9 @@
 
             var metadata = new Dictionary<string, object>
             {
-                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedBecauseOfReaddress.GetHash() },
+                { Envelope.PositionMetadataKey, position},
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -1230,7 +1323,7 @@
                     expectedVersion.OsloPositionSpecification.Should()
                         .Be(addressWasProposedBecauseOfReaddress.GeometrySpecification.ToPositieSpecificatie());
                     expectedVersion.Removed.Should().BeFalse();
-
+                    expectedVersion.Type.Should().Be("EventName");
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasProposedBecauseOfReaddress.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasProposedBecauseOfReaddress.Provenance.Timestamp);
@@ -1252,12 +1345,14 @@
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -1274,7 +1369,7 @@
                     expectedVersion.OsloStatus.Should().Be(AddressStatus.Rejected.Map());
                     expectedVersion.OfficiallyAssigned.Should().BeTrue();
                     expectedVersion.Removed.Should().BeFalse();
-
+                    expectedVersion.Type.Should().Be("EventName");
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRejectedBecauseOfReaddress.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRejectedBecauseOfReaddress.Provenance.Timestamp);
@@ -1293,12 +1388,14 @@
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -1315,7 +1412,7 @@
                     expectedVersion.OsloStatus.Should().Be(AddressStatus.Retired.Map());
                     expectedVersion.OfficiallyAssigned.Should().BeTrue();
                     expectedVersion.Removed.Should().BeFalse();
-
+                    expectedVersion.Type.Should().Be("EventName");
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRetiredBecauseOfReaddress.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRetiredBecauseOfReaddress.Provenance.Timestamp);
@@ -1334,12 +1431,14 @@
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -1354,6 +1453,7 @@
                     expectedVersion!.StreetNamePersistentLocalId.Should().Be(addressWasRemovedV2.StreetNamePersistentLocalId);
                     expectedVersion.Removed.Should().BeTrue();
 
+                    expectedVersion.Type.Should().Be("EventName");
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRemovedV2.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRemovedV2.Provenance.Timestamp);
@@ -1372,12 +1472,14 @@
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -1393,6 +1495,7 @@
                         .Be(addressWasRemovedBecauseStreetNameWasRemoved.StreetNamePersistentLocalId);
                     expectedVersion.Removed.Should().BeTrue();
 
+                    expectedVersion.Type.Should().Be("EventName");
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRemovedBecauseStreetNameWasRemoved.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRemovedBecauseStreetNameWasRemoved.Provenance.Timestamp);
@@ -1411,12 +1514,14 @@
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -1433,6 +1538,7 @@
                         .Be(addressWasRemovedBecauseHouseNumberWasRemoved.StreetNamePersistentLocalId);
                     expectedVersion.Removed.Should().BeTrue();
 
+                    expectedVersion.Type.Should().Be("EventName");
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRemovedBecauseHouseNumberWasRemoved.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRemovedBecauseHouseNumberWasRemoved.Provenance.Timestamp);
@@ -1452,12 +1558,14 @@
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -1475,6 +1583,7 @@
                     expectedVersion.OsloStatus.Should().Be(AddressStatus.Proposed.Map());
                     expectedVersion.Removed.Should().BeFalse();
 
+                    expectedVersion.Type.Should().Be("EventName");
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasCorrectedFromRejectedToProposed.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasCorrectedFromRejectedToProposed.Provenance.Timestamp);
@@ -1496,12 +1605,14 @@
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasMigratedToStreetName.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -1519,6 +1630,7 @@
                     expectedVersion.Status.Should().Be(AddressStatus.Current);
                     expectedVersion.OsloStatus.Should().Be(AddressStatus.Current.Map());
 
+                    expectedVersion.Type.Should().Be("EventName");
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressRegularizationWasCorrected.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressRegularizationWasCorrected.Provenance.Timestamp);
@@ -1539,12 +1651,14 @@
             var proposedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasMigratedToStreetName.GetHash() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -1560,6 +1674,7 @@
                         .Be(addressDeregulationWasCorrected.StreetNamePersistentLocalId);
                     expectedVersion.OfficiallyAssigned.Should().BeTrue();
 
+                    expectedVersion.Type.Should().Be("EventName");
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressDeregulationWasCorrected.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressDeregulationWasCorrected.Provenance.Timestamp);
@@ -1581,7 +1696,8 @@
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -1595,6 +1711,8 @@
                     expectedVersion.PersistentLocalId.Should().Be(addressPersistentLocalId);
                     expectedVersion.StreetNameId.Should().Be(addressWasRegistered.StreetNameId);
                     expectedVersion.HouseNumber.Should().Be(addressWasRegistered.HouseNumber);
+
+                    expectedVersion.Type.Should().Be("EventName");
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRegistered.Provenance.Timestamp);
@@ -1616,13 +1734,15 @@
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var addressBecameCompleteMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -1634,6 +1754,7 @@
                     var expectedVersion =
                         await ct.AddressVersions.FirstAsync(x => x.AddressId == addressWasRegistered.AddressId & x.Position == position +1);
                     expectedVersion.Should().NotBeNull();
+                    expectedVersion.Type.Should().Be("EventName");
                     expectedVersion.Position.Should().Be(position + 1);
                 });
         }
@@ -1652,13 +1773,15 @@
             var firstEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var secondEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -1670,6 +1793,7 @@
                     var expectedVersion =
                         await ct.AddressVersions.FirstAsync(x => x.AddressId == addressWasRegistered.AddressId & x.Position == position +1);
                     expectedVersion.Should().NotBeNull();
+                    expectedVersion.Type.Should().Be("EventName");
                     expectedVersion.Position.Should().Be(position + 1);
                     expectedVersion.Status.Should().Be(AddressStatus.Current);
                     expectedVersion.OsloStatus.Should().Be(AddressStatus.Current.Map());
@@ -1690,13 +1814,15 @@
             var firstEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var secondEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -1708,6 +1834,7 @@
                     var expectedVersion =
                         await ct.AddressVersions.FirstAsync(x => x.AddressId == addressWasRegistered.AddressId & x.Position == position +1);
                     expectedVersion.Should().NotBeNull();
+                    expectedVersion.Type.Should().Be("EventName");
                     expectedVersion.Position.Should().Be(position + 1);
                 });
         }
@@ -1726,13 +1853,15 @@
             var firstEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var secondEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -1745,6 +1874,7 @@
                         await ct.AddressVersions.FirstAsync(x => x.AddressId == addressWasRegistered.AddressId & x.Position == position +1);
                     expectedVersion.Should().NotBeNull();
                     expectedVersion.Position.Should().Be(position + 1);
+                    expectedVersion.Type.Should().Be("EventName");
                     expectedVersion.OfficiallyAssigned.Should().BeFalse();
                 });
         }
@@ -1763,13 +1893,15 @@
             var firstEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var secondEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -1782,6 +1914,7 @@
                         await ct.AddressVersions.FirstAsync(x => x.AddressId == addressWasRegistered.AddressId & x.Position == position +1);
                     expectedVersion.Should().NotBeNull();
                     expectedVersion.Position.Should().Be(position + 1);
+                    expectedVersion.Type.Should().Be("EventName");
                     expectedVersion.HouseNumber.Should().Be(addressHouseNumberWasChanged.HouseNumber);
                 });
         }
@@ -1800,13 +1933,15 @@
             var firstEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var secondEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -1819,6 +1954,7 @@
                         await ct.AddressVersions.FirstAsync(x => x.AddressId == addressWasRegistered.AddressId & x.Position == position +1);
                     expectedVersion.Should().NotBeNull();
                     expectedVersion.Position.Should().Be(position + 1);
+                    expectedVersion.Type.Should().Be("EventName");
                     expectedVersion.HouseNumber.Should().Be(addressHouseNumberWasCorrected.HouseNumber);
                 });
         }
@@ -1837,13 +1973,15 @@
             var firstEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var secondEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -1856,6 +1994,7 @@
                         await ct.AddressVersions.FirstAsync(x => x.AddressId == addressWasRegistered.AddressId & x.Position == position +1);
                     expectedVersion.Should().NotBeNull();
                     expectedVersion.Position.Should().Be(position + 1);
+                    expectedVersion.Type.Should().Be("EventName");
                     expectedVersion.OfficiallyAssigned.Should().BeFalse();
                 });
         }
@@ -1874,13 +2013,15 @@
             var firstEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var secondEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -1893,6 +2034,7 @@
                         await ct.AddressVersions.FirstAsync(x => x.AddressId == addressWasRegistered.AddressId & x.Position == position +1);
                     expectedVersion.Should().NotBeNull();
                     expectedVersion.Position.Should().Be(position + 1);
+                    expectedVersion.Type.Should().Be("EventName");
                     expectedVersion.PersistentLocalId.Should().Be(addressPersistentLocalIdWasAssigned.PersistentLocalId);
                 });
         }
@@ -1916,13 +2058,15 @@
             var firstEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var secondEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -1940,6 +2084,7 @@
                     expectedVersion.PositionSpecification.Should().Be(addressPositionWasCorrected.GeometrySpecification.ToGeometrySpecification());
                     expectedVersion.OsloPositionSpecification.Should().Be(addressPositionWasCorrected.GeometrySpecification.ToPositieSpecificatie());
                     expectedVersion.Geometry.Should().Be(geometry);
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -1957,13 +2102,15 @@
             var firstEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var secondEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -1980,6 +2127,7 @@
                     expectedVersion.OsloPositionMethod.Should().BeNull();
                     expectedVersion.PositionSpecification.Should().BeNull();
                     expectedVersion.OsloPositionSpecification.Should().BeNull();
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -1997,13 +2145,15 @@
             var firstEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var secondEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -2017,6 +2167,7 @@
                     expectedVersion.Should().NotBeNull();
                     expectedVersion.Position.Should().Be(position + 1);
                     expectedVersion.PostalCode.Should().Be(addressPostalCodeWasChanged.PostalCode);
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -2034,13 +2185,15 @@
             var firstEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var secondEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -2054,6 +2207,7 @@
                     expectedVersion.Should().NotBeNull();
                     expectedVersion.Position.Should().Be(position + 1);
                     expectedVersion.PostalCode.Should().Be(addressPostalCodeWasCorrected.PostalCode);
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -2071,13 +2225,15 @@
             var firstEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var secondEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -2091,6 +2247,7 @@
                     expectedVersion.Should().NotBeNull();
                     expectedVersion.Position.Should().Be(position + 1);
                     expectedVersion.PostalCode.Should().BeNull();
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -2108,13 +2265,15 @@
             var firstEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var secondEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -2129,6 +2288,7 @@
                     expectedVersion.Position.Should().Be(position + 1);
                     expectedVersion.Status.Should().BeNull();
                     expectedVersion.OsloStatus.Should().BeNull();
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -2146,13 +2306,15 @@
             var firstEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var secondEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -2167,6 +2329,7 @@
                     expectedVersion.Position.Should().Be(position + 1);
                     expectedVersion.Status.Should().BeNull();
                     expectedVersion.OsloStatus.Should().BeNull();
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -2184,13 +2347,15 @@
             var firstEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var secondEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -2204,6 +2369,7 @@
                     expectedVersion.Should().NotBeNull();
                     expectedVersion.Position.Should().Be(position + 1);
                     expectedVersion.StreetNameId.Should().Be(addressStreetNameWasChanged.StreetNameId);
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -2221,13 +2387,15 @@
             var firstEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var secondEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -2241,6 +2409,7 @@
                     expectedVersion.Should().NotBeNull();
                     expectedVersion.Position.Should().Be(position + 1);
                     expectedVersion.StreetNameId.Should().Be(addressStreetNameWasCorrected.StreetNameId);
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -2258,13 +2427,15 @@
             var firstEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var secondEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -2279,6 +2450,7 @@
                     expectedVersion.Position.Should().Be(position + 1);
                     expectedVersion.Status.Should().Be(AddressStatus.Current);
                     expectedVersion.OsloStatus.Should().Be(AddressStatus.Current.Map());
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -2296,13 +2468,15 @@
             var firstEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var secondEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -2316,6 +2490,7 @@
                     expectedVersion.Should().NotBeNull();
                     expectedVersion.Position.Should().Be(position + 1);
                     expectedVersion.OfficiallyAssigned.Should().BeFalse();
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -2333,13 +2508,15 @@
             var firstEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var secondEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -2353,6 +2530,7 @@
                     expectedVersion.Should().NotBeNull();
                     expectedVersion.Position.Should().Be(position + 1);
                     expectedVersion.OfficiallyAssigned.Should().BeTrue();
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -2370,13 +2548,15 @@
             var firstEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var secondEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -2391,6 +2571,7 @@
                     expectedVersion.Position.Should().Be(position + 1);
                     expectedVersion.Status.Should().Be(AddressStatus.Proposed);
                     expectedVersion.OsloStatus.Should().Be(AddressStatus.Proposed.Map());
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -2408,13 +2589,15 @@
             var firstEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var secondEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -2429,6 +2612,7 @@
                     expectedVersion.Position.Should().Be(position + 1);
                     expectedVersion.Status.Should().Be(AddressStatus.Retired);
                     expectedVersion.OsloStatus.Should().Be(AddressStatus.Retired.Map());
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -2446,13 +2630,15 @@
             var firstEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var secondEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -2466,6 +2652,7 @@
                     expectedVersion.Should().NotBeNull();
                     expectedVersion.Position.Should().Be(position + 1);
                     expectedVersion.OfficiallyAssigned.Should().BeTrue();
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -2489,13 +2676,15 @@
             var firstEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var secondEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -2513,6 +2702,7 @@
                     expectedVersion.PositionSpecification.Should().Be(addressPositionWasCorrected.GeometrySpecification.ToGeometrySpecification());
                     expectedVersion.OsloPositionSpecification.Should().Be(addressPositionWasCorrected.GeometrySpecification.ToPositieSpecificatie());
                     expectedVersion.Geometry.Should().Be(geometry);
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -2530,13 +2720,15 @@
             var firstEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var secondEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -2551,6 +2743,7 @@
                     expectedVersion.Position.Should().Be(position + 1);
                     expectedVersion.Status.Should().Be(AddressStatus.Proposed);
                     expectedVersion.OsloStatus.Should().Be(AddressStatus.Proposed.Map());
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -2568,13 +2761,15 @@
             var firstEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var secondEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -2588,6 +2783,7 @@
                     expectedVersion.Should().NotBeNull();
                     expectedVersion.Position.Should().Be(position + 1);
                     expectedVersion.Removed.Should().BeTrue();
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -2605,13 +2801,15 @@
             var firstEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var secondEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -2626,6 +2824,7 @@
                     expectedVersion.Position.Should().Be(position + 1);
                     expectedVersion.Status.Should().Be(AddressStatus.Retired);
                     expectedVersion.OsloStatus.Should().Be(AddressStatus.Retired.Map());
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -2643,13 +2842,15 @@
             var firstEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var secondEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -2663,6 +2864,7 @@
                     expectedVersion.Should().NotBeNull();
                     expectedVersion.Position.Should().Be(position + 1);
                     expectedVersion.BoxNumber.Should().Be(addressBoxNumberWasChanged.BoxNumber);
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -2680,13 +2882,15 @@
             var firstEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var secondEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -2700,6 +2904,7 @@
                     expectedVersion.Should().NotBeNull();
                     expectedVersion.Position.Should().Be(position + 1);
                     expectedVersion.BoxNumber.Should().Be(addressBoxNumberWasCorrected.BoxNumber);
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
 
@@ -2717,13 +2922,15 @@
             var firstEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var secondEventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -2737,6 +2944,7 @@
                     expectedVersion.Should().NotBeNull();
                     expectedVersion.Position.Should().Be(position + 1);
                     expectedVersion.BoxNumber.Should().BeNull();
+                    expectedVersion.Type.Should().Be("EventName");
                 });
         }
         #endregion

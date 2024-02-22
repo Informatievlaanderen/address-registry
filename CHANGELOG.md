@@ -1,3 +1,10 @@
+# [3.115.0](https://github.com/informatievlaanderen/address-registry/compare/v3.114.1...v3.115.0) (2024-02-22)
+
+
+### Features
+
+* add type to latest versions integration ([0a0a792](https://github.com/informatievlaanderen/address-registry/commit/0a0a792396e6014c87cf9bc9c67ed35ab732ab33))
+
 ## [3.114.1](https://github.com/informatievlaanderen/address-registry/compare/v3.114.0...v3.114.1) (2024-02-21)
 
 

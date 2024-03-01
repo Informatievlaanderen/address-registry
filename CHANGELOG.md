@@ -1,3 +1,10 @@
+# [3.116.0](https://github.com/informatievlaanderen/address-registry/compare/v3.115.0...v3.116.0) (2024-03-01)
+
+
+### Features
+
+* remove bosa functionality ([a2c70d8](https://github.com/informatievlaanderen/address-registry/commit/a2c70d82c9faf778e7fb5463420872ab11224257))
+
 # [3.115.0](https://github.com/informatievlaanderen/address-registry/compare/v3.114.1...v3.115.0) (2024-02-22)
 
 

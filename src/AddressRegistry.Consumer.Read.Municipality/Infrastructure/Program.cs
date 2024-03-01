@@ -97,36 +97,6 @@ namespace AddressRegistry.Consumer.Read.Municipality.Infrastructure
                             var bootstrapServers = hostContext.Configuration["Kafka:BootstrapServers"];
                             var topic = $"{hostContext.Configuration["Topic"]}" ?? throw new ArgumentException("Configuration has no municipality Topic.");
                             var suffix = hostContext.Configuration["ConsumerGroupSuffix"];
-                            var consumerGroupId = $"AddressRegistry.MunicipalityBosaItemConsumer.{topic}{suffix}";
-
-                            var consumerOptions = new ConsumerOptions(
-                                new BootstrapServers(bootstrapServers),
-                                new Topic(topic),
-                                new ConsumerGroupId(consumerGroupId),
-                                EventsJsonSerializerSettingsProvider.CreateSerializerSettings());
-
-                            consumerOptions.ConfigureSaslAuthentication(new SaslAuthentication(
-                                hostContext.Configuration["Kafka:SaslUserName"],
-                                hostContext.Configuration["Kafka:SaslPassword"]));
-
-                            var offset = hostContext.Configuration["ConsumerOffset"];
-
-                            if (!string.IsNullOrWhiteSpace(offset) && long.TryParse(offset, out var result))
-                            {
-                                consumerOptions.ConfigureOffset(new Offset(result));
-                            }
-
-                            return new Consumer(consumerOptions, c.Resolve<ILoggerFactory>());
-                        })
-                        .Keyed<IConsumer>(nameof(MunicipalityBosaItemConsumer))
-                        .SingleInstance();
-
-                    builder
-                        .Register(c =>
-                        {
-                            var bootstrapServers = hostContext.Configuration["Kafka:BootstrapServers"];
-                            var topic = $"{hostContext.Configuration["Topic"]}" ?? throw new ArgumentException("Configuration has no municipality Topic.");
-                            var suffix = hostContext.Configuration["ConsumerGroupSuffix"];
                             var consumerGroupId = $"AddressRegistry.MunicipalityLatestItemConsumer.{topic}{suffix}";
 
                             var consumerOptions = new ConsumerOptions(
@@ -165,12 +135,6 @@ namespace AddressRegistry.Consumer.Read.Municipality.Infrastructure
                         .SingleInstance();
 
                     builder.RegisterModule(new DataDogModule(hostContext.Configuration));
-
-                    builder
-                        .RegisterType<MunicipalityBosaItemConsumer>()
-                        .As<IHostedService>()
-                        .WithAttributeFiltering()
-                        .SingleInstance();
 
                     builder
                         .RegisterType<MunicipalityLatestItemConsumer>()

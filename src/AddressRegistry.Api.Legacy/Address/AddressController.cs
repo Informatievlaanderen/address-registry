@@ -10,8 +10,6 @@ namespace AddressRegistry.Api.Legacy.Address
     using Be.Vlaanderen.Basisregisters.Api.Search.Pagination;
     using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
-    using Bosa;
-    using BosaRepresentation;
     using Count;
     using Detail;
     using List;
@@ -178,68 +176,6 @@ namespace AddressRegistry.Api.Legacy.Address
                 ContentType = MediaTypeNames.Text.Xml,
                 StatusCode = StatusCodes.Status200OK
             };
-        }
-
-        /// <summary>
-        /// Vraag een adres op.
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="cancellationToken"></param>
-        /// <response code="200">Als het adres gevonden is.</response>
-        /// <response code="400">Als het adres niet gevonden kan worden.</response>
-        /// <response code="500">Als er een interne fout is opgetreden.</response>
-        [HttpPost("bosa")]
-        [ProducesResponseType(typeof(AddressBosaResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-        [SwaggerRequestExample(typeof(AddressBosaRequest), typeof(BosaAddressRequestExamples))]
-        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(AddressBosaResponseExamples))]
-        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(BadRequestResponseExamples))]
-        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
-        public async Task<IActionResult> Post(
-            [FromBody] AddressBosaRequest? request,
-            CancellationToken cancellationToken = default)
-        {
-            if (Request.ContentLength.HasValue && Request.ContentLength > 0 && request == null)
-            {
-                return Ok(new AddressBosaResponse());
-            }
-
-            var result = await _mediator.Send(request ?? new AddressBosaRequest(), cancellationToken);
-
-            return Ok(result);
-        }
-
-        /// <summary>
-        /// Vraag een adres op.
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="cancellationToken"></param>
-        /// <response code="200">Als het adres gevonden is.</response>
-        /// <response code="400">Als het adres niet gevonden kan worden.</response>
-        /// <response code="500">Als er een interne fout is opgetreden.</response>
-        [HttpPost("bosa/adresvoorstellingen")]
-        [ProducesResponseType(typeof(AddressRepresentationBosaResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-        [SwaggerRequestExample(typeof(AddressRepresentationBosaRequest), typeof(AddressRepresentationBosaRequestExamples))]
-        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(AddressRepresentationBosaResponseExamples))]
-        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(BadRequestResponseExamples))]
-        [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(AddressNotFoundResponseExamples))]
-        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
-        public async Task<IActionResult> PostBosaAddressRepresentations(
-            [FromBody] AddressRepresentationBosaRequest request,
-            CancellationToken cancellationToken = default)
-        {
-            if (Request.ContentLength.HasValue && Request.ContentLength > 0 && request == null)
-            {
-                return Ok(new AddressRepresentationBosaResponse());
-            }
-
-            var result = await _mediator.Send(request, cancellationToken);
-
-            return Ok(result);
         }
     }
 }

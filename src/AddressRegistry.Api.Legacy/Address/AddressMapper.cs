@@ -7,13 +7,10 @@ namespace AddressRegistry.Api.Legacy.Address
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
     using Consumer.Read.Municipality.Projections;
     using Consumer.Read.StreetName.Projections;
-    using Projections.Legacy.AddressList;
     using Projections.Legacy.AddressListV2;
     using StreetName;
     using AddressStatus = AddressRegistry.Address.AddressStatus;
-    using MunicipalityBosaItem = Projections.Syndication.Municipality.MunicipalityBosaItem;
     using MunicipalityLanguage = Consumer.Read.Municipality.Projections.MunicipalityLanguage;
-    using StreetNameBosaItem = Projections.Syndication.StreetName.StreetNameBosaItem;
 
     public static class AddressMapper
     {
@@ -60,24 +57,6 @@ namespace AddressRegistry.Api.Legacy.Address
             }
 
             var defaultMunicipalityName = GetDefaultMunicipalityName(municipality);
-            return new VolledigAdres(
-                GetDefaultStreetNameName(streetName, municipality.PrimaryLanguage).Value,
-                houseNumber,
-                boxNumber,
-                postalCode,
-                defaultMunicipalityName.Value,
-                defaultMunicipalityName.Key);
-        }
-
-        public static VolledigAdres GetVolledigAdres(
-            string houseNumber,
-            string? boxNumber,
-            string? postalCode,
-            Consumer.Read.StreetName.Projections.StreetNameBosaItem streetName,
-            MunicipalityLatestItem municipality)
-        {
-            var defaultMunicipalityName = GetDefaultMunicipalityName(municipality);
-
             return new VolledigAdres(
                 GetDefaultStreetNameName(streetName, municipality.PrimaryLanguage).Value,
                 houseNumber,
@@ -163,18 +142,6 @@ namespace AddressRegistry.Api.Legacy.Address
             };
         }
 
-        public static AddressRegistry.StreetName.AddressStatus? ConvertFromAdresStatusV2(AdresStatus? status)
-        {
-            return status switch
-            {
-                null => null,
-                AdresStatus.Voorgesteld => AddressRegistry.StreetName.AddressStatus.Proposed,
-                AdresStatus.Gehistoreerd => AddressRegistry.StreetName.AddressStatus.Retired,
-                AdresStatus.Afgekeurd => AddressRegistry.StreetName.AddressStatus.Rejected,
-                _ => AddressRegistry.StreetName.AddressStatus.Current
-            };
-        }
-
         public static KeyValuePair<Taal, string?> GetDefaultMunicipalityName(MunicipalityLatestItem municipality)
         {
             return municipality.PrimaryLanguage switch
@@ -253,19 +220,6 @@ namespace AddressRegistry.Api.Legacy.Address
                 MunicipalityLanguage.German => new KeyValuePair<Taal, string?>(Taal.DE, streetName.HomonymAdditionGerman),
                 MunicipalityLanguage.English => new KeyValuePair<Taal, string?>(Taal.EN, streetName.HomonymAdditionEnglish),
                 _ => new KeyValuePair<Taal, string?>(Taal.NL, streetName.HomonymAdditionDutch)
-            };
-        }
-
-        public static KeyValuePair<Taal, string?> GetDefaultStreetNameName(
-            Consumer.Read.StreetName.Projections.StreetNameBosaItem streetName,
-            MunicipalityLanguage? municipalityLanguage)
-        {
-            return municipalityLanguage switch
-            {
-                MunicipalityLanguage.French => new KeyValuePair<Taal, string?>(Taal.FR, streetName.NameFrench),
-                MunicipalityLanguage.German => new KeyValuePair<Taal, string?>(Taal.DE, streetName.NameGerman),
-                MunicipalityLanguage.English => new KeyValuePair<Taal, string?>(Taal.EN, streetName.NameEnglish),
-                _ => new KeyValuePair<Taal, string?>(Taal.NL, streetName.NameDutch)
             };
         }
     }

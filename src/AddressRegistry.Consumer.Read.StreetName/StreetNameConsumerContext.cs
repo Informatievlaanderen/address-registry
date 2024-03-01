@@ -19,7 +19,6 @@ namespace AddressRegistry.Consumer.Read.StreetName
     public class StreetNameConsumerContext : SqlServerConsumerDbContext<StreetNameConsumerContext>
     {
         public DbSet<StreetNameLatestItem> StreetNameLatestItems { get; set; }
-        public DbSet<StreetNameBosaItem> StreetNameBosaItems { get; set; }
 
         // This needs to be here to please EF
         public StreetNameConsumerContext()
@@ -82,24 +81,6 @@ namespace AddressRegistry.Consumer.Read.StreetName
         {
             var latestItem = await context
                 .StreetNameLatestItems
-                .FindAsync(streetNamePersistentLocalId, cancellationToken: ct);
-
-            if (latestItem == null)
-                throw DatabaseItemNotFound(streetNamePersistentLocalId);
-
-            updateFunc(latestItem);
-
-            return latestItem;
-        }
-
-        public static async Task<StreetNameBosaItem> FindAndUpdateBosaItem(
-            this StreetNameConsumerContext context,
-            int streetNamePersistentLocalId,
-            Action<StreetNameBosaItem> updateFunc,
-            CancellationToken ct)
-        {
-            var latestItem = await context
-                .StreetNameBosaItems
                 .FindAsync(streetNamePersistentLocalId, cancellationToken: ct);
 
             if (latestItem == null)

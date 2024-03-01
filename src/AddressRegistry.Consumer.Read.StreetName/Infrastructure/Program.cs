@@ -5,7 +5,6 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Address;
     using AddressRegistry.Infrastructure;
     using AddressRegistry.Infrastructure.Modules;
     using Autofac;
@@ -131,36 +130,6 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
                             var bootstrapServers = hostContext.Configuration["Kafka:BootstrapServers"];
                             var topic = $"{hostContext.Configuration["Topic"]}" ?? throw new ArgumentException("Configuration has no AddressTopic.");
                             var suffix = hostContext.Configuration["ConsumerGroupSuffix"];
-                            var consumerGroupId = $"AddressRegistry.StreetNameBosaItemConsumer.{topic}{suffix}";
-
-                            var consumerOptions = new ConsumerOptions(
-                                new BootstrapServers(bootstrapServers),
-                                new Topic(topic),
-                                new ConsumerGroupId(consumerGroupId),
-                                EventsJsonSerializerSettingsProvider.CreateSerializerSettings());
-
-                            consumerOptions.ConfigureSaslAuthentication(new SaslAuthentication(
-                                hostContext.Configuration["Kafka:SaslUserName"],
-                                hostContext.Configuration["Kafka:SaslPassword"]));
-
-                            var offset = hostContext.Configuration["ConsumerOffset"];
-
-                            if (!string.IsNullOrWhiteSpace(offset) && long.TryParse(offset, out var result))
-                            {
-                                consumerOptions.ConfigureOffset(new Offset(result));
-                            }
-
-                            return new Consumer(consumerOptions, c.Resolve<ILoggerFactory>());
-                        })
-                        .As<IConsumer>()
-                        .SingleInstance();
-
-                    builder
-                        .Register(c =>
-                        {
-                            var bootstrapServers = hostContext.Configuration["Kafka:BootstrapServers"];
-                            var topic = $"{hostContext.Configuration["Topic"]}" ?? throw new ArgumentException("Configuration has no AddressTopic.");
-                            var suffix = hostContext.Configuration["ConsumerGroupSuffix"];
                             var consumerGroupId = $"AddressRegistry.StreetNameLatestItemConsumer.{topic}{suffix}";
 
                             var consumerOptions = new ConsumerOptions(
@@ -206,11 +175,6 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
                         .RegisterModule(new CommandHandlingModule(hostContext.Configuration));
 
                     builder.RegisterSnapshotModule(hostContext.Configuration);
-
-                    builder
-                        .RegisterType<StreetNameBosaItemConsumer>()
-                        .As<IHostedService>()
-                        .SingleInstance();
 
                     builder
                         .RegisterType<StreetNameLatestItemConsumer>()

@@ -1,8 +1,6 @@
 namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
 {
     using Address;
-    using Address.Bosa;
-    using Address.BosaRepresentation;
     using Address.Count;
     using Address.Detail;
     using Address.List;
@@ -67,18 +65,6 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
                 new AddressCountHandlerV2(
                     c.Resolve<LegacyContext>(),
                     c.Resolve<AddressQueryContext>())).InstancePerLifetimeScope();
-
-            builder.Register(c => (IRequestHandler<AddressBosaRequest, AddressBosaResponse>)
-                new AddressBosaHandlerV2(
-                    c.Resolve<AddressBosaContext>(),
-                    c.Resolve<IOptions<ResponseOptions>>())).InstancePerLifetimeScope();
-
-            builder.Register(c => (IRequestHandler<AddressRepresentationBosaRequest, AddressRepresentationBosaResponse>)
-                new AddressRepresentationBosaHandlerV2(
-                    c.Resolve<LegacyContext>(),
-                    c.Resolve<MunicipalityConsumerContext>(),
-                    c.Resolve<StreetNameConsumerContext>(),
-                    c.Resolve<IOptions<ResponseOptions>>())).InstancePerLifetimeScope();
 
             builder.Register(c =>
             {

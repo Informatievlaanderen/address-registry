@@ -17,7 +17,6 @@ namespace AddressRegistry.Consumer.Read.Municipality
     public class MunicipalityConsumerContext : RunnerDbContext<MunicipalityConsumerContext>
     {
         public DbSet<MunicipalityLatestItem> MunicipalityLatestItems { get; set; }
-        public DbSet<MunicipalityBosaItem> MunicipalityBosaItems { get; set; }
 
         // This needs to be here to please EF
         public MunicipalityConsumerContext()
@@ -72,24 +71,6 @@ namespace AddressRegistry.Consumer.Read.Municipality
         {
             var municipality = await context
                 .MunicipalityLatestItems
-                .FindAsync(municipalityId, cancellationToken: ct);
-
-            if (municipality == null)
-                throw DatabaseItemNotFound(municipalityId);
-
-            updateFunc(municipality);
-
-            return municipality;
-        }
-
-        public static async Task<MunicipalityBosaItem> FindAndUpdate(
-            this MunicipalityConsumerContext context,
-            Guid municipalityId,
-            Action<MunicipalityBosaItem> updateFunc,
-            CancellationToken ct)
-        {
-            var municipality = await context
-                .MunicipalityBosaItems
                 .FindAsync(municipalityId, cancellationToken: ct);
 
             if (municipality == null)

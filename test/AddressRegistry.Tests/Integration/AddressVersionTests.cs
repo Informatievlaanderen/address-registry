@@ -64,6 +64,7 @@
                         await ct.AddressVersions.FindAsync(position, addressWasMigratedToStreetName.AddressPersistentLocalId);
                     addressVersion.Should().NotBeNull();
                     addressVersion!.StreetNamePersistentLocalId.Should().Be(addressWasMigratedToStreetName.StreetNamePersistentLocalId);
+                    addressVersion.ParentPersistentLocalId.Should().Be(addressWasMigratedToStreetName.ParentPersistentLocalId);
                     addressVersion.HouseNumber.Should().Be(addressWasMigratedToStreetName.HouseNumber);
                     addressVersion.BoxNumber.Should().Be(addressWasMigratedToStreetName.BoxNumber);
                     addressVersion.PostalCode.Should().Be(addressWasMigratedToStreetName.PostalCode);
@@ -109,6 +110,7 @@
                         await ct.AddressVersions.FindAsync(position, addressWasProposedV2.AddressPersistentLocalId);
                     expectedVersion.Should().NotBeNull();
                     expectedVersion!.StreetNamePersistentLocalId.Should().Be(addressWasProposedV2.StreetNamePersistentLocalId);
+                    expectedVersion.ParentPersistentLocalId.Should().Be(addressWasProposedV2.ParentPersistentLocalId);
                     expectedVersion.HouseNumber.Should().Be(addressWasProposedV2.HouseNumber);
                     expectedVersion.BoxNumber.Should().Be(addressWasProposedV2.BoxNumber);
                     expectedVersion.PostalCode.Should().Be(addressWasProposedV2.PostalCode);
@@ -161,6 +163,7 @@
                         await ct.AddressVersions.FindAsync(position + 1, addressWasApproved.AddressPersistentLocalId);
                     expectedVersion.Should().NotBeNull();
                     expectedVersion!.StreetNamePersistentLocalId.Should().Be(addressWasApproved.StreetNamePersistentLocalId);
+                    expectedVersion.ParentPersistentLocalId.Should().Be(addressWasProposedV2.ParentPersistentLocalId);
                     expectedVersion.Status.Should().Be(AddressStatus.Current);
                     expectedVersion.OsloStatus.Should().Be(AddressStatus.Current.Map());
                     expectedVersion.OfficiallyAssigned.Should().BeTrue();
@@ -1310,6 +1313,7 @@
                         await ct.AddressVersions.FindAsync(position, addressWasProposedBecauseOfReaddress.AddressPersistentLocalId);
                     expectedVersion.Should().NotBeNull();
                     expectedVersion!.StreetNamePersistentLocalId.Should().Be(addressWasProposedBecauseOfReaddress.StreetNamePersistentLocalId);
+                    expectedVersion.ParentPersistentLocalId.Should().Be(addressWasProposedBecauseOfReaddress.ParentPersistentLocalId);
                     expectedVersion.HouseNumber.Should().Be(addressWasProposedBecauseOfReaddress.HouseNumber);
                     expectedVersion.BoxNumber.Should().Be(addressWasProposedBecauseOfReaddress.BoxNumber);
                     expectedVersion.PostalCode.Should().Be(addressWasProposedBecauseOfReaddress.PostalCode);

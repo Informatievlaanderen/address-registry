@@ -1,3 +1,10 @@
+## [3.116.1](https://github.com/informatievlaanderen/address-registry/compare/v3.116.0...v3.116.1) (2024-03-04)
+
+
+### Bug Fixes
+
+* add parentpersistentlocalid to integration ([e533f17](https://github.com/informatievlaanderen/address-registry/commit/e533f178d89e517ab4bc755d05abd6a7cdd08bac))
+
 # [3.116.0](https://github.com/informatievlaanderen/address-registry/compare/v3.115.0...v3.116.0) (2024-03-01)
 
 

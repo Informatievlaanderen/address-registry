@@ -17,6 +17,7 @@
         public int PersistentLocalId { get; set; }
         public string? PostalCode { get; set; }
         public int? StreetNamePersistentLocalId { get; set; }
+        public int? ParentPersistentLocalId { get; set; }
         public AddressStatus Status { get; set; }
         public string? OsloStatus { get; set; }
         public string? HouseNumber { get; set; }
@@ -63,6 +64,7 @@
             builder.Property(x => x.PersistentLocalId).HasColumnName("persistent_local_id");
             builder.Property(x => x.PostalCode).HasColumnName("postal_code");
             builder.Property(x => x.StreetNamePersistentLocalId).HasColumnName("street_name_persistent_local_id");
+            builder.Property(x => x.ParentPersistentLocalId).HasColumnName("parent_persistent_local_id");
             builder.Property(x => x.Status).HasColumnName("status");
             builder.Property(x => x.OsloStatus).HasColumnName("oslo_status");
             builder.Property(x => x.HouseNumber).HasColumnName("house_number");
@@ -89,6 +91,7 @@
             builder.HasIndex(x => x.Geometry).HasMethod("GIST");
 
             builder.HasIndex(x => x.StreetNamePersistentLocalId);
+            builder.HasIndex(x => x.ParentPersistentLocalId);
             builder.HasIndex(x => x.Status);
             builder.HasIndex(x => x.OsloStatus);
             builder.HasIndex(x => x.PostalCode);

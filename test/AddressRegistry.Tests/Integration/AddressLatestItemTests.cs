@@ -58,6 +58,7 @@
                         await ct.AddressLatestItems.FindAsync(addressWasMigratedToStreetName.AddressPersistentLocalId);
                     expectedLatestItem.Should().NotBeNull();
                     expectedLatestItem!.StreetNamePersistentLocalId.Should().Be(addressWasMigratedToStreetName.StreetNamePersistentLocalId);
+                    expectedLatestItem.ParentPersistentLocalId.Should().Be(addressWasMigratedToStreetName.ParentPersistentLocalId);
                     expectedLatestItem.HouseNumber.Should().Be(addressWasMigratedToStreetName.HouseNumber);
                     expectedLatestItem.BoxNumber.Should().Be(addressWasMigratedToStreetName.BoxNumber);
                     expectedLatestItem.PostalCode.Should().Be(addressWasMigratedToStreetName.PostalCode);
@@ -100,6 +101,7 @@
                         await ct.AddressLatestItems.FindAsync(addressWasProposedV2.AddressPersistentLocalId);
                     expectedLatestItem.Should().NotBeNull();
                     expectedLatestItem!.StreetNamePersistentLocalId.Should().Be(addressWasProposedV2.StreetNamePersistentLocalId);
+                    expectedLatestItem.ParentPersistentLocalId.Should().Be(addressWasProposedV2.ParentPersistentLocalId);
                     expectedLatestItem.HouseNumber.Should().Be(addressWasProposedV2.HouseNumber);
                     expectedLatestItem.BoxNumber.Should().Be(addressWasProposedV2.BoxNumber);
                     expectedLatestItem.PostalCode.Should().Be(addressWasProposedV2.PostalCode);
@@ -1147,6 +1149,7 @@
                         await ct.AddressLatestItems.FindAsync(addressWasProposedBecauseOfReaddress.AddressPersistentLocalId);
                     expectedLatestItem.Should().NotBeNull();
                     expectedLatestItem!.StreetNamePersistentLocalId.Should().Be(addressWasProposedBecauseOfReaddress.StreetNamePersistentLocalId);
+                    expectedLatestItem.ParentPersistentLocalId.Should().Be(addressWasProposedBecauseOfReaddress.ParentPersistentLocalId);
                     expectedLatestItem.HouseNumber.Should().Be(addressWasProposedBecauseOfReaddress.HouseNumber);
                     expectedLatestItem.BoxNumber.Should().Be(addressWasProposedBecauseOfReaddress.BoxNumber);
                     expectedLatestItem.PostalCode.Should().Be(addressWasProposedBecauseOfReaddress.PostalCode);

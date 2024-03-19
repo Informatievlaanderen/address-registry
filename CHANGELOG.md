@@ -1,3 +1,10 @@
+## [3.116.2](https://github.com/informatievlaanderen/address-registry/compare/v3.116.1...v3.116.2) (2024-03-19)
+
+
+### Bug Fixes
+
+* limit addressmatch range to 100 ([da65684](https://github.com/informatievlaanderen/address-registry/commit/da656840a49d4a9f0ba4e0ad6af35470165c7f9d))
+
 ## [3.116.1](https://github.com/informatievlaanderen/address-registry/compare/v3.116.0...v3.116.1) (2024-03-04)
 
 

@@ -124,7 +124,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch
             var potentialRange = MatchHouseNumberRanges(streetName, houseNumber, formattedRrIndex);
             if (potentialRange.Any())
             {
-                return potentialRange;
+                return potentialRange.Take(100).ToList();
             }
 
             // last fallback

@@ -19,8 +19,10 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
             var request = new AddressMatchRequest().WithGemeenteAndStraatnaam();
             request.Postcode = "NAN";
 
+            var result = _validator.TestValidate(request);
+
             //Act & Assert
-            _validator.ShouldHaveValidationErrorFor(r => r.Postcode, request);
+            result.ShouldHaveValidationErrorFor(r => r.Postcode);
         }
 
         [Fact]
@@ -32,8 +34,10 @@ namespace AddressRegistry.Api.Legacy.Tests.AddressMatch
             request.Busnummer = "C2";
             request.Index = "verd2";
 
+            var result = _validator.TestValidate(request);
+
             //Act & Assert
-            _validator.ShouldHaveValidationErrorFor(r => "Busnummer, Index", request);
+            result.ShouldHaveValidationErrorFor(r => "Busnummer, Index");
         }
     }
 }

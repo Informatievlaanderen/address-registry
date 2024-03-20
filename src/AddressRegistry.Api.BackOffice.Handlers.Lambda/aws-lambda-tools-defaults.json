@@ -8,7 +8,7 @@
   "profile": "vbr-test-bastion",
   "region": "eu-west-1",
   "configuration": "Release",
-  "function-runtime": "dotnet6",
+  "function-runtime": "dotnet8",
   "function-memory-size": 256,
   "function-timeout": 30,
   "function-handler": "AddressRegistry.Api.BackOffice.Handlers.Lambda::AddressRegistry.Api.BackOffice.Handlers.Lambda.Function::Handler"

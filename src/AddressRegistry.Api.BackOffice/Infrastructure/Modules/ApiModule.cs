@@ -8,8 +8,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.Auth.AcmIdm;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Microsoft;
-    using Be.Vlaanderen.Basisregisters.DependencyInjection;
+    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance.AcmIdm;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -38,7 +37,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
 
         protected override void Load(ContainerBuilder builder)
         {
-            _services.RegisterModule(new DataDogModule(_configuration));
+            builder.RegisterModule(new DataDogModule(_configuration));
 
             builder
                 .RegisterType<ProblemDetailsHelper>()
@@ -79,6 +78,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
             builder.RegisterModule(new AggregateSourceModule(_configuration));
             builder.RegisterModule(new SequenceModule(_configuration, _services, _loggerFactory));
             builder.RegisterModule(new MediatRModule());
+            builder.RegisterModule(new FluentValidationModule());
             builder.RegisterModule(new SqsHandlersModule(_configuration[SqsQueueUrlConfigKey]));
             builder.RegisterModule(new TicketingModule(_configuration, _services));
 

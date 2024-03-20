@@ -2,20 +2,14 @@
   "version": 1,
   "isRoot": true,
   "tools": {
-    "fake-cli": {
-      "version": "5.22.0",
-      "commands": [
-        "fake"
-      ]
-    },
     "paket": {
-      "version": "7.0.2",
+      "version": "8.0.3",
       "commands": [
         "paket"
       ]
     },
     "dotnet-ef": {
-      "version": "6.0.3",
+      "version": "8.0.3",
       "commands": [
         "dotnet-ef"
       ]

@@ -3,6 +3,7 @@ namespace AddressRegistry.Api.Legacy.CrabHouseNumber
     using System.Threading;
     using System.Threading.Tasks;
     using Address.Count;
+    using Asp.Versioning;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.Api.Search.Filtering;

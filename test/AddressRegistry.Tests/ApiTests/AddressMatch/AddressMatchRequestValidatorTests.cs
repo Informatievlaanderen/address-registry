@@ -18,8 +18,10 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
             var request = new AddressMatchRequest().WithGemeenteAndStraatnaam();
             request.Postcode = "NAN";
 
+            var result = _validator.TestValidate(request);
+
             //Act & Assert
-            _validator.ShouldHaveValidationErrorFor(r => r.Postcode, request);
+            result.ShouldHaveValidationErrorFor(r => r.Postcode);
         }
     }
 }

@@ -4,6 +4,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Infrastructure;
+    using Asp.Versioning;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer;
     using Consumer;

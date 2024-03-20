@@ -3,6 +3,7 @@ namespace AddressRegistry.Api.Extract.Infrastructure
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Net.Http.Headers;
     using System.Reflection;
+    using Asp.Versioning;
     using Be.Vlaanderen.Basisregisters.Api;
 
     [ApiVersionNeutral]

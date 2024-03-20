@@ -28,7 +28,6 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressHouseNumb
     using TicketingService.Abstractions;
     using Xunit;
     using Xunit.Abstractions;
-    using IdempotentCommandHandler = Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers.IdempotentCommandHandler;
 
     public class GivenStreetNameExists : BackOfficeLambdaTest
     {

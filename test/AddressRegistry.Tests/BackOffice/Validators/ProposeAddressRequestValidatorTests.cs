@@ -1,6 +1,7 @@
 namespace AddressRegistry.Tests.BackOffice.Validators
 {
     using System.Threading;
+    using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Validators;
     using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
@@ -33,11 +34,11 @@ namespace AddressRegistry.Tests.BackOffice.Validators
         }
 
         [Fact]
-        public void GivenNoSpecificationPosition_ThenReturnsExpectedFailure()
+        public async Task GivenNoSpecificationPosition_ThenReturnsExpectedFailure()
         {
             WithStreamExists();
 
-            var result = _sut.TestValidate(new ProposeAddressRequest
+            var result = await _sut.TestValidateAsync(new ProposeAddressRequest
             {
                 PostInfoId = "12",
                 StraatNaamId = "34",
@@ -57,11 +58,11 @@ namespace AddressRegistry.Tests.BackOffice.Validators
         [InlineData(PositieSpecificatie.Lot)]
         [InlineData(PositieSpecificatie.Standplaats)]
         [InlineData(PositieSpecificatie.Ligplaats)]
-        public void GivenInvalidPositionSpecificationForPositionGeometryMethodDerivedFromObject_ThenReturnsExpectedFailure(PositieSpecificatie specificatie)
+        public async Task GivenInvalidPositionSpecificationForPositionGeometryMethodDerivedFromObject_ThenReturnsExpectedFailure(PositieSpecificatie specificatie)
         {
             WithStreamExists();
 
-            var result = _sut.TestValidate(new ProposeAddressRequest
+            var result = await _sut.TestValidateAsync(new ProposeAddressRequest
             {
                 PostInfoId = "12",
                 StraatNaamId = "34",
@@ -76,11 +77,11 @@ namespace AddressRegistry.Tests.BackOffice.Validators
         }
 
         [Fact]
-        public void GivenNoPosition_ThenReturnsExpectedFailure()
+        public async Task GivenNoPosition_ThenReturnsExpectedFailure()
         {
             WithStreamExists();
 
-            var result = _sut.TestValidate(new ProposeAddressRequest
+            var result = await _sut.TestValidateAsync(new ProposeAddressRequest
             {
                 PostInfoId = "12",
                 StraatNaamId = "34",
@@ -101,11 +102,11 @@ namespace AddressRegistry.Tests.BackOffice.Validators
                     "<gml:pos>140285.15277253836 186725.74131567031</gml:pos></gml:Point>")]
         [InlineData("<gml:Point srsName=\"https://www.opengis.net/def/crs/EPSG/0/31370\" xmlns:gml=\"http://www.opengis.net/gml/3.2\">" +
                     "<gml:missingPositionAttribute>140285.15277253836 186725.74131567031</gml:pos></gml:Point>")]
-        public void GivenInvalidPosition_ThenReturnsExpectedFailure(string position)
+        public async Task GivenInvalidPosition_ThenReturnsExpectedFailure(string position)
         {
             WithStreamExists();
 
-            var result = _sut.TestValidate(new ProposeAddressRequest
+            var result = await _sut.TestValidateAsync(new ProposeAddressRequest
             {
                 PostInfoId = "12",
                 StraatNaamId = "34",

@@ -6,6 +6,7 @@ namespace AddressRegistry.Projector.Caches
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Projections.LastChangedList;
+    using Asp.Versioning;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
     using Microsoft.AspNetCore.Mvc;

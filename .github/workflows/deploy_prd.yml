@@ -22,7 +22,7 @@ jobs:
       shell: bash
 
     - name: Notify deployment started
-      uses: slackapi/slack-github-action@v1.23.0
+      uses: slackapi/slack-github-action@v1.25.0
       with:
         channel-id: '#team-dinosaur-dev'
         slack-message: Deployment of address-registry to production has started
@@ -121,7 +121,7 @@ jobs:
 
     steps:
     - name: CD Lambda(s) Configure credentials
-      uses: aws-actions/configure-aws-credentials@v1-node16
+      uses: aws-actions/configure-aws-credentials@v4.0.2
       with:
         aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_NEWPRD }}
         aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_NEWPRD }}
@@ -160,7 +160,7 @@ jobs:
       shell: bash
 
     - name: Notify deployment finished
-      uses: slackapi/slack-github-action@v1.23.0
+      uses: slackapi/slack-github-action@v1.25.0
       with:
         channel-id: '#team-dinosaur-dev'
         slack-message: Deployment of address-registry to production has finished

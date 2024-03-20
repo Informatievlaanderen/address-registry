@@ -28,8 +28,6 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenRemovingAddress
     using TicketingService.Abstractions;
     using Xunit;
     using Xunit.Abstractions;
-    using IdempotencyException = Be.Vlaanderen.Basisregisters.Sqs.Exceptions.IdempotencyException;
-    using IdempotentCommandHandler = Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers.IdempotentCommandHandler;
 
     public class GivenStreetNameExists : BackOfficeLambdaTest
     {

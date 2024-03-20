@@ -14,10 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\SolutionInfo.cs" Link="Properties\SolutionInfo.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\AddressRegistry.Infrastructure\AddressRegistry.Infrastructure.csproj" />
     <ProjectReference Include="..\AddressRegistry.Projections.LastChangedList\AddressRegistry.Projections.LastChangedList.csproj" />
   </ItemGroup>

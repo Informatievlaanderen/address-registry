@@ -2,6 +2,7 @@ namespace AddressRegistry.Api.Extract.Extracts
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using Asp.Versioning;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.Api.Extract;

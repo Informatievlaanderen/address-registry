@@ -25,8 +25,6 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
     using Newtonsoft.Json;
     using Projections.Syndication;
     using TicketingService.Proxy.HttpProxy;
-    using IdempotentCommandHandler = Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers.IdempotentCommandHandler;
-    using IIdempotentCommandHandler = Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers.IIdempotentCommandHandler;
 
     public class Function : FunctionBase
     {

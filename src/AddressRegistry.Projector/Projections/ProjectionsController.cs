@@ -1,6 +1,7 @@
 namespace AddressRegistry.Projector.Projections
 {
     using AddressRegistry.Infrastructure;
+    using Asp.Versioning;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
     using Be.Vlaanderen.Basisregisters.Projector.Controllers;

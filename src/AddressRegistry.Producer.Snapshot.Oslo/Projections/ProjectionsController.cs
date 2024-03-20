@@ -6,6 +6,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo.Projections
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using AddressRegistry.Infrastructure;
+    using Asp.Versioning;
 
     [ApiVersion("1.0")]
     [ApiRoute("projections")]

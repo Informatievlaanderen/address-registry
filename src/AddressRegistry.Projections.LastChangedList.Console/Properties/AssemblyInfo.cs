@@ -1,6 +1,9 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 
+[assembly: AssemblyProduct("Basisregisters Vlaanderen")]
+[assembly: AssemblyCopyright("Copyright (c) Vlaamse overheid")]
+[assembly: AssemblyCompany("Vlaamse overheid")]
 [assembly: AssemblyDescription("AddressRegistry Projections LastChangedList Console")]
 
 [assembly: ComVisible(false)]

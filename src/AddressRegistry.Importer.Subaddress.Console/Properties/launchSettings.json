@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "AddressRegistry.Importer.Subaddress.Console": {
-      "commandName": "Project",
-      "commandLineArgs": "init -c"
-    }
-  }
-}

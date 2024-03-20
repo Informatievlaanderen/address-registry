@@ -15,12 +15,14 @@ jobs:
 
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
           persist-credentials: false
 
     - name: Setup Node.js
-      uses: actions/setup-node@v3.5.1
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
 
     - name: Node version
       shell: bash
@@ -55,247 +57,232 @@ jobs:
 
   build-api-backoffice:
     name: Build Api BackOffice
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@v6.2.9
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
-      registry: address-registry
-      build-target: Containerize_ApiBackOffice
+      registry: ${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/address-registry
       image-file: ar-api-backoffice-image.tar
       image-name: api-backoffice
       test-project: AddressRegistry.Tests
       build-project: AddressRegistry.Api.BackOffice
       semver: ${{ needs.set-release-version.outputs.version }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
     secrets: inherit
 
   build-api-legacy:
     name: Build Api Legacy
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@v6.2.9
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
-      registry: address-registry
-      build-target: Containerize_ApiLegacy
+      registry: ${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/address-registry
       image-file: ar-api-legacy-image.tar
       image-name: api-legacy
       test-project: AddressRegistry.Tests
       build-project: AddressRegistry.Api.Legacy
       semver: ${{ needs.set-release-version.outputs.version }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
     secrets: inherit
 
   build-api-oslo:
     name: Build Api Oslo
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@v6.2.9
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
-      registry: address-registry
-      build-target: Containerize_ApiOslo
+      registry: ${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/address-registry
       image-file: ar-api-oslo-image.tar
       image-name: api-oslo
       test-project: AddressRegistry.Tests
       build-project: AddressRegistry.Api.Oslo
       semver: ${{ needs.set-release-version.outputs.version }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
     secrets: inherit
 
   build-api-extract:
     name: Build Api Extract
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@v6.2.9
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
-      registry: address-registry
-      build-target: Containerize_ApiExtract
+      registry: ${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/address-registry
       image-file: ar-api-extract-image.tar
       image-name: api-extract
       test-project: AddressRegistry.Tests
       build-project: AddressRegistry.Api.Extract
       semver: ${{ needs.set-release-version.outputs.version }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
     secrets: inherit
 
   build-projector:
     name: Build Projector
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@v6.2.9
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
-      registry: address-registry
-      build-target: Containerize_Projector
+      registry: ${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/address-registry
       image-file: ar-projector-image.tar
       image-name: projector
       test-project: AddressRegistry.Tests
       build-project: AddressRegistry.Projector
       semver: ${{ needs.set-release-version.outputs.version }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
     secrets: inherit
 
   build-projections-last-changed-list:
     name: Build projections last changed list
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@v6.2.9
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
-      registry: address-registry
-      build-target: Containerize_ProjectionsLastChangedList
+      registry: ${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/address-registry
       image-file: ar-projections-last-changed-list-console-image.tar
       image-name: projections-last-changed-list-console
       test-project: AddressRegistry.Tests
       build-project: AddressRegistry.Projections.LastChangedList.Console
       semver: ${{ needs.set-release-version.outputs.version }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
     secrets: inherit
 
   build-projections-backoffice:
     name: Build Projections BackOffice
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@v6.2.9
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
-      registry: address-registry
-      build-target: Containerize_ProjectionsBackOffice
+      registry: ${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/address-registry
       image-file: ar-projections-backoffice-image.tar
       image-name: projections-backoffice
       test-project: AddressRegistry.Tests
       build-project: AddressRegistry.Projections.BackOffice
       semver: ${{ needs.set-release-version.outputs.version }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
     secrets: inherit
 
   build-projections-syndication:
     name: Build Projections Syndication
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@v6.2.9
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
-      registry: address-registry
-      build-target: Containerize_ProjectionsSyndication
+      registry: ${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/address-registry
       image-file: ar-projections-syndication-image.tar
       image-name: projections-syndication
       test-project: AddressRegistry.Tests
       build-project: AddressRegistry.Projections.Syndication
       semver: ${{ needs.set-release-version.outputs.version }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
     secrets: inherit
 
   build-consumer:
     name: Build Consumer
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@v6.2.9
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
-      registry: address-registry
-      build-target: Containerize_Consumer
+      registry: ${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/address-registry
       image-file: ar-consumer-image.tar
       image-name: consumer
       test-project: AddressRegistry.Tests
       build-project: AddressRegistry.Consumer
       semver: ${{ needs.set-release-version.outputs.version }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
     secrets: inherit
 
   build-consumer-read-municipality:
     name: Build Consumer Municipality
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@v6.2.9
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
-      registry: address-registry
-      build-target: Containerize_ConsumerMunicipality
+      registry: ${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/address-registry
       image-file: ar-consumer-read-municipality-image.tar
       image-name: consumer-read-municipality
       test-project: AddressRegistry.Tests
       build-project: AddressRegistry.Consumer.Read.Municipality
       semver: ${{ needs.set-release-version.outputs.version }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
     secrets: inherit
 
   build-consumer-read-streetname:
     name: Build Consumer StreetName
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@v6.2.9
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
-      registry: address-registry
-      build-target: Containerize_ConsumerStreetName
+      registry: ${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/address-registry
       image-file: ar-consumer-read-streetname-image.tar
       image-name: consumer-read-streetname
       test-project: AddressRegistry.Tests
       build-project: AddressRegistry.Consumer.Read.StreetName
       semver: ${{ needs.set-release-version.outputs.version }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
     secrets: inherit
 
   build-producer:
     name: Build Producer
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@v6.2.9
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
-      registry: address-registry
-      build-target: Containerize_Producer
+      registry: ${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/address-registry
       image-file: ar-producer-image.tar
       image-name: producer
       test-project: AddressRegistry.Tests
       build-project: AddressRegistry.Producer
       semver: ${{ needs.set-release-version.outputs.version }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
     secrets: inherit
 
   build-producer-snapshot-oslo:
     name: Build Producer Snapshot Oslo
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@v6.2.9
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
-      registry: address-registry
-      build-target: Containerize_Producer_Snapshot_Oslo
+      registry: ${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/address-registry
       image-file: ar-producer-snapshot-oslo-image.tar
       image-name: producer-snapshot-oslo
       test-project: AddressRegistry.Tests
       build-project: AddressRegistry.Producer.Snapshot.Oslo
       semver: ${{ needs.set-release-version.outputs.version }}
-    secrets: inherit
-
-  build-migrator-address:
-    name: Build Migrator Address
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@v6.2.9
-    needs: [ set-release-version ]
-    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
-    with:
-      registry: address-registry
-      build-target: Containerize_Migrator_Address
-      image-file: ar-migrator-address-image.tar
-      image-name: migrator-address
-      test-project: AddressRegistry.Tests
-      build-project: AddressRegistry.Migrator.Address
-      semver: ${{ needs.set-release-version.outputs.version }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
     secrets: inherit
 
   build-snapshot-verifier:
     name: Build Snapshot Verifier
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@v6.2.9
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
-      registry: address-registry
-      build-target: Containerize_SnapshotVerifier
+      registry: ${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/address-registry
       image-file: ar-snapshot-verifier-image.tar
       image-name: snapshot-verifier
       test-project: AddressRegistry.Tests
       build-project: AddressRegistry.Snapshot.Verifier
       semver: ${{ needs.set-release-version.outputs.version }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
     secrets: inherit
 
   build-cache-warmer:
     name: Build Cache warmer
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@v6.2.9
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
-      registry: address-registry
-      build-target: Containerize_CacheWarmer
+      registry: ${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/address-registry
       image-file: ar-cache-warmer-image.tar
       image-name: cache-warmer
       test-project: AddressRegistry.Tests
       build-project: AddressRegistry.Api.Legacy #need to select one, will be ignored
       semver: ${{ needs.set-release-version.outputs.version }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
     secrets: inherit
 
   pack-api-backoffice:
     name: Pack Api BackOffice
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/pack.yml@v6.2.9
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/pack.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
@@ -303,11 +290,12 @@ jobs:
       test-project: AddressRegistry.Tests
       build-project: AddressRegistry.Api.BackOffice
       semver: ${{ needs.set-release-version.outputs.version }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
     secrets: inherit
 
   pack-api-backoffice-abstractions:
     name: Pack Api BackOffice Abstractions
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/pack.yml@v6.2.9
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/pack.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
@@ -315,11 +303,12 @@ jobs:
       test-project: AddressRegistry.Tests
       build-project: AddressRegistry.Api.BackOffice.Abstractions
       semver: ${{ needs.set-release-version.outputs.version }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
     secrets: inherit
 
   pack-api-legacy:
     name: Pack Api Legacy
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/pack.yml@v6.2.9
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/pack.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
@@ -327,11 +316,12 @@ jobs:
       test-project: AddressRegistry.Tests
       build-project: AddressRegistry.Api.Legacy
       semver: ${{ needs.set-release-version.outputs.version }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
     secrets: inherit
 
   pack-api-oslo:
     name: Pack Api Oslo
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/pack.yml@v6.2.9
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/pack.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
@@ -339,11 +329,12 @@ jobs:
       test-project: AddressRegistry.Tests
       build-project: AddressRegistry.Api.Oslo
       semver: ${{ needs.set-release-version.outputs.version }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
     secrets: inherit
 
   pack-api-extract:
     name: Pack Api Extract
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/pack.yml@v6.2.9
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/pack.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
@@ -351,11 +342,12 @@ jobs:
       test-project: AddressRegistry.Tests
       build-project: AddressRegistry.Api.Extract
       semver: ${{ needs.set-release-version.outputs.version }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
     secrets: inherit
 
   build-lambda-backoffice:
     name: Build Lambda
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-lambda.yml@v6.2.9
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-lambda.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
@@ -363,6 +355,7 @@ jobs:
       test-project: AddressRegistry.Tests
       build-project: AddressRegistry.Api.BackOffice.Handlers.Lambda
       semver: ${{ needs.set-release-version.outputs.version }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
     secrets: inherit
 
   release:
@@ -388,7 +381,6 @@ jobs:
       build-consumer-read-streetname,
       build-producer,
       build-producer-snapshot-oslo,
-      build-migrator-address,
       build-cache-warmer,
       build-lambda-backoffice,
       build-snapshot-verifier ]
@@ -396,12 +388,12 @@ jobs:
       version: ${{ steps.set-version.outputs.version }}
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
           persist-credentials: false
 
     - name: Cache NPM
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       env:
         cache-name: cache-npm
       with:
@@ -415,10 +407,12 @@ jobs:
       shell: bash
 
     - name: Setup Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
 
     - name: Setup Python
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v5
       with:
         python-version: '3.x'
 
@@ -436,7 +430,7 @@ jobs:
 
     - name: Install NPM dependencies
       shell: bash
-      run: npm install --legacy-peer-deps
+      run: npm ci
 
     - name: Install Python dependencies
       shell: bash
@@ -445,35 +439,35 @@ jobs:
         pip install requests markdown argparse
 
     - name: Download NuGet Api BackOffice
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       continue-on-error: false
       with:
         name: nuget-Be.Vlaanderen.Basisregisters.AddressRegistry.Api.BackOffice-${{ needs.set-release-version.outputs.version }}
         path: dist/nuget/
 
     - name: Download NuGet Api BackOffice Abstractions
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       continue-on-error: false
       with:
         name: nuget-Be.Vlaanderen.Basisregisters.AddressRegistry.Api.BackOffice.Abstractions-${{ needs.set-release-version.outputs.version }}
         path: dist/nuget/
 
     - name: Download NuGet Api Legacy
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       continue-on-error: false
       with:
         name: nuget-Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Legacy-${{ needs.set-release-version.outputs.version }}
         path: dist/nuget/
 
     - name: Download NuGet Api Oslo
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       continue-on-error: false
       with:
         name: nuget-Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Oslo-${{ needs.set-release-version.outputs.version }}
         path: dist/nuget/
 
     - name: Download NuGet Api Extract
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       continue-on-error: false
       with:
         name: nuget-Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Extract-${{ needs.set-release-version.outputs.version }}
@@ -509,21 +503,21 @@ jobs:
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.release.outputs.version != 'none') }}
     steps:
     - name: Download Lambda
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       continue-on-error: false
       with:
         name: lambda-backoffice-${{ needs.release.outputs.version }}
         path: ~/
 
     - name: Configure AWS credentials (New Test)
-      uses: aws-actions/configure-aws-credentials@v1-node16
+      uses: aws-actions/configure-aws-credentials@v4.0.2
       with:
         aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
         aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
         aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
     - name: Login to Amazon ECR (New Test)
-      uses: aws-actions/amazon-ecr-login@v1.5.3
+      uses: aws-actions/amazon-ecr-login@v2
 
     - name: Push Lambda functions to S3 Test
       shell: bash
@@ -535,14 +529,14 @@ jobs:
         SEMVER: ${{ needs.release.outputs.version }}
 
     - name: Configure AWS credentials (Staging)
-      uses: aws-actions/configure-aws-credentials@v1-node16
+      uses: aws-actions/configure-aws-credentials@v4.0.2
       with:
         aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.VBR_AWS_REGION }}
 
     - name: Login to Amazon ECR (Staging)
-      uses: aws-actions/amazon-ecr-login@v1.5.3
+      uses: aws-actions/amazon-ecr-login@v2
 
     - name: Push Lambda functions to S3 Staging
       shell: bash
@@ -554,14 +548,14 @@ jobs:
         SEMVER: ${{ needs.release.outputs.version }}
 
     - name: Configure AWS credentials (New Production)
-      uses: aws-actions/configure-aws-credentials@v1-node16
+      uses: aws-actions/configure-aws-credentials@v4.02
       with:
         aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_NEWPRD }}
         aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_NEWPRD }}
         aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
     - name: Login to Amazon ECR (New Production)
-      uses: aws-actions/amazon-ecr-login@v1.5.3
+      uses: aws-actions/amazon-ecr-login@v2
 
     - name: Push Lambda functions to S3 New Production
       shell: bash
@@ -580,43 +574,43 @@ jobs:
 
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v2
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: ${{ secrets.VBR_DOTNET_VERSION }}
+        dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
 
     - name: .NET version
       shell: bash
       run: dotnet --info
 
     - name: Download NuGet package api-backoffice
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: nuget-Be.Vlaanderen.Basisregisters.AddressRegistry.Api.BackOffice-${{ needs.release.outputs.version }}
         path: ~/
 
     - name: Download NuGet package api-backoffice-abstractions
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: nuget-Be.Vlaanderen.Basisregisters.AddressRegistry.Api.BackOffice.Abstractions-${{ needs.release.outputs.version }}
         path: ~/
 
     - name: Download NuGet package api-legacy
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: nuget-Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Legacy-${{ needs.release.outputs.version }}
         path: ~/
 
     - name: Download NuGet package api-oslo
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: nuget-Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Oslo-${{ needs.release.outputs.version }}
         path: ~/
 
     - name: Download NuGet package api-extract
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: nuget-Be.Vlaanderen.Basisregisters.AddressRegistry.Api.Extract-${{ needs.release.outputs.version }}
         path: ~/
@@ -641,14 +635,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Parse repository name
         run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
         shell: bash
 
       - name: Cache Paket
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-paket
         with:
@@ -658,7 +652,7 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
       - name: Cache Python
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-pip
         with:
@@ -666,7 +660,7 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}
 
       - name: Setup Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5
         with:
           python-version: '3.x'
 
@@ -716,24 +710,23 @@ jobs:
           , 'consumer-read-streetname'
           , 'producer'
           , 'producer-snapshot-oslo'
-          , 'migrator-address'
           , 'cache-warmer'
           , 'snapshot-verifier'
         ]
     steps:
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1-node16
+        uses: aws-actions/configure-aws-credentials@v4.0.2
         with:
           aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
           aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
           aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
       - name: Login to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v1.5.3
+        uses: aws-actions/amazon-ecr-login@v2
 
       # Download artifact
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         continue-on-error: false
         with:
           name: ${{ matrix.image }}-${{ needs.release.outputs.version }}
@@ -752,10 +745,8 @@ jobs:
         shell: bash
         run: |
           echo $IMAGE:$SEMVER
-          docker tag $BUILD_DOCKER_REGISTRY_TST/address-registry/$IMAGE:$SEMVER $BUILD_DOCKER_REGISTRY/address-registry/$IMAGE:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY/address-registry/$IMAGE:$SEMVER
         env:
-          BUILD_DOCKER_REGISTRY_TST: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
           BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_DEVOPS_DOCKER_REGISTRY }}
           IMAGE: ${{ matrix.image }}
           SEMVER: ${{ needs.release.outputs.version }}
@@ -782,24 +773,23 @@ jobs:
           , 'consumer-read-streetname'
           , 'producer'
           , 'producer-snapshot-oslo'
-          , 'migrator-address'
           , 'cache-warmer'
           , 'snapshot-verifier'
         ]
     steps:
       - name: Configure AWS credentials (Staging)
-        uses: aws-actions/configure-aws-credentials@v1-node16
+        uses: aws-actions/configure-aws-credentials@v4.0.2
         with:
           aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
       - name: Login to Amazon ECR (Staging)
-        uses: aws-actions/amazon-ecr-login@v1.5.3
+        uses: aws-actions/amazon-ecr-login@v4
 
       # Download artifact
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         continue-on-error: false
         with:
           name: ${{ matrix.image }}-${{ needs.release.outputs.version }}
@@ -821,7 +811,7 @@ jobs:
           docker tag $BUILD_DOCKER_REGISTRY_TST/address-registry/$IMAGE:$SEMVER $BUILD_DOCKER_REGISTRY/address-registry/$IMAGE:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY/address-registry/$IMAGE:$SEMVER
         env:
-          BUILD_DOCKER_REGISTRY_TST: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
+          BUILD_DOCKER_REGISTRY_TST: ${{ secrets.VBR_DEVOPS_DOCKER_REGISTRY }}
           BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
           IMAGE: ${{ matrix.image }}
           SEMVER: ${{ needs.release.outputs.version }}
@@ -847,24 +837,23 @@ jobs:
           , 'consumer-read-streetname'
           , 'producer'
           , 'producer-snapshot-oslo'
-          , 'migrator-address'
           , 'cache-warmer'
           , 'snapshot-verifier'
           ]
     steps:
       - name: Configure AWS credentials (New Production)
-        uses: aws-actions/configure-aws-credentials@v1-node16
+        uses: aws-actions/configure-aws-credentials@v4.0.2
         with:
           aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_NEWPRD }}
           aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_NEWPRD }}
           aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
       - name: Login to Amazon ECR (New Production)
-        uses: aws-actions/amazon-ecr-login@v1.5.3
+        uses: aws-actions/amazon-ecr-login@v2
 
       # Download artifact
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         continue-on-error: false
         with:
           name: ${{ matrix.image }}-${{ needs.release.outputs.version }}
@@ -886,7 +875,7 @@ jobs:
           docker tag $BUILD_DOCKER_REGISTRY_TST/address-registry/$IMAGE:$SEMVER $BUILD_DOCKER_REGISTRY_NEWPRD/address-registry/$IMAGE:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY_NEWPRD/address-registry/$IMAGE:$SEMVER
         env:
-          BUILD_DOCKER_REGISTRY_TST: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
+          BUILD_DOCKER_REGISTRY_TST: ${{ secrets.VBR_DEVOPS_DOCKER_REGISTRY }}
           BUILD_DOCKER_REGISTRY_NEWPRD: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_NEWPRD }}
           IMAGE: ${{ matrix.image }}
           SEMVER: ${{ needs.release.outputs.version }}
@@ -905,7 +894,7 @@ jobs:
       shell: bash
 
     - name: Notify deployment started
-      uses: slackapi/slack-github-action@v1.23.0
+      uses: slackapi/slack-github-action@v1.25.0
       with:
         channel-id: '#team-dinosaur-dev'
         slack-message: Deployment of address-registry to test has started
@@ -1003,7 +992,7 @@ jobs:
 
     steps:
     - name: CD Lambda(s) Configure credentials
-      uses: aws-actions/configure-aws-credentials@v1-node16
+      uses: aws-actions/configure-aws-credentials@v4.0.2
       with:
         aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
         aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
@@ -1042,7 +1031,7 @@ jobs:
       shell: bash
 
     - name: Notify deployment finished
-      uses: slackapi/slack-github-action@v1.23.0
+      uses: slackapi/slack-github-action@v1.25.0
       with:
         channel-id: '#team-dinosaur-dev'
         slack-message: Deployment of address-registry to test has finished
@@ -1064,7 +1053,7 @@ jobs:
       shell: bash
 
     - name: Notify deployment started
-      uses: slackapi/slack-github-action@v1.23.0
+      uses: slackapi/slack-github-action@v1.25.0
       with:
         channel-id: '#team-dinosaur-dev'
         slack-message: Deployment of address-registry to staging has started
@@ -1086,7 +1075,6 @@ jobs:
           'address-registry-consumer',
           'address-registry-consumer-municipality',
           'address-registry-consumer-streetname',
-          'address-registry-migrator-address',
           'address-registry-producer',
           'address-registry-producer-snapshot-oslo',
           'address-registry-projections',
@@ -1164,7 +1152,7 @@ jobs:
       shell: bash
 
     - name: Notify deployment finished
-      uses: slackapi/slack-github-action@v1.23.0
+      uses: slackapi/slack-github-action@v1.25.0
       with:
         channel-id: '#team-dinosaur-dev'
         slack-message: Deployment of address-registry to staging has finished

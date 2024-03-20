@@ -21,7 +21,13 @@ updates:
   rebase-strategy: "disabled"
 
 - package-ecosystem: docker
-  directory: "/src/AddressRegistry.Api.CrabImport"
+  directory: "/src/AddressRegistry.Api.Oslo"
+  schedule:
+    interval: weekly
+  rebase-strategy: "disabled"
+
+- package-ecosystem: docker
+  directory: "/src/AddressRegistry.Api.BackOffice"
   schedule:
     interval: weekly
   rebase-strategy: "disabled"

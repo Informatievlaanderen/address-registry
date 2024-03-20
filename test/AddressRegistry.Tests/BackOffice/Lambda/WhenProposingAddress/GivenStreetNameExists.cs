@@ -31,8 +31,6 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
     using TicketingService.Abstractions;
     using Xunit;
     using Xunit.Abstractions;
-    using IdempotentCommandHandler = Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers.IdempotentCommandHandler;
-    using IIdempotentCommandHandler = Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers.IIdempotentCommandHandler;
 
     public class GivenStreetNameExists : BackOfficeLambdaTest
     {

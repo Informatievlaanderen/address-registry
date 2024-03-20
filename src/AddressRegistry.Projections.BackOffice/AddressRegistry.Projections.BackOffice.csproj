@@ -25,9 +25,5 @@
     <ProjectReference Include="..\AddressRegistry.Api.BackOffice.Abstractions\AddressRegistry.Api.BackOffice.Abstractions.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Include="..\..\SolutionInfo.cs" Link="Properties\SolutionInfo.cs" />
-  </ItemGroup>
-
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

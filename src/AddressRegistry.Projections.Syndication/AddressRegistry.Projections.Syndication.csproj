@@ -17,15 +17,5 @@
     <ProjectReference Include="..\AddressRegistry.Infrastructure\AddressRegistry.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Include="..\..\SolutionInfo.cs" Link="Properties\SolutionInfo.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Destructurama.JsonNet">
-      <HintPath>..\..\packages\Be.Vlaanderen.Basisregisters.Api\lib\net6.0\Destructurama.JsonNet.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

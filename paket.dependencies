@@ -1,118 +1,99 @@
-framework: net6.0, net472
+framework: net8.0
 source https://api.nuget.org/v3/index.json
 
-// PRODUCTION STUFF
-nuget Microsoft.Extensions.Configuration 6.0.1
-nuget Microsoft.Extensions.Configuration.CommandLine 6.0.0
-nuget Microsoft.Extensions.Configuration.FileExtensions 6.0.0
-nuget Microsoft.Extensions.Configuration.EnvironmentVariables 6.0.1
-
-nuget Microsoft.Extensions.Http.Polly 6.0.3
+nuget Microsoft.Extensions.Http.Polly 8.0.3
 
 // For more healtchecks, look at https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks
-nuget AspNetCore.HealthChecks.SqlServer 6.0.2
-nuget AspNetCore.HealthChecks.NpgSql 6.0.2
+nuget AspNetCore.HealthChecks.SqlServer 8.0.0
+nuget AspNetCore.HealthChecks.NpgSql 8.0.0
 
 nuget AsyncEnumerator 4.0.2
-nuget Dapper 2.0.123
-nuget CsvHelper 27.2.1
+nuget Dapper 2.1.35
 
-nuget Destructurama.JsonNet 2.0.0
+nuget Destructurama.JsonNet 3.0.0
 
-nuget MediatR 12.0.1
+nuget MediatR 12.2.0
 nuget MediatR.Contracts 2.0.1
-nuget Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite 6.0.3
-nuget NetTopologySuite 2.4.0
+nuget Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite 8.0.3
+nuget NetTopologySuite 2.5.0
 
-nuget Microsoft.EntityFrameworkCore.Design 6.0.3
+nuget Microsoft.EntityFrameworkCore.Design 8.0.3
 
-nuget Npgsql 6.0.3
-nuget Npgsql.EntityFrameworkCore.PostgreSQL 6.0.3
+nuget Npgsql 8.0.2
+nuget Npgsql.EntityFrameworkCore.PostgreSQL 8.0.2
 nuget Npgsql.EntityFrameworkCore.PostgreSQL.Design 2.0.0-preview1
-nuget Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite 6.0.3
-
-nuget RestSharp 107.3.0
-nuget GeoJSON.NET 1.2.19
+nuget Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite 8.0.2
 
 // VBR STUFF
-nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 6.0.5
-nuget Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events 3.0.0 content: true, copy_content_to_output_dir: always, copy_local: true
+nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 7.2.1
+nuget Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events 4.0.0 content: true, copy_content_to_output_dir: always, copy_local: true
 
-nuget Be.Vlaanderen.Basisregisters.AggregateSource 8.3.0
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.ExplicitRouting 8.3.0
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore.Autofac 8.3.0
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing 8.3.0
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.CommandHandling 8.3.0
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac 8.3.0
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit 8.3.0
-nuget Be.vlaanderen.basisregisters.snapshotverifier 8.3.0
+nuget Be.Vlaanderen.Basisregisters.AggregateSource 9.0.1
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.ExplicitRouting 9.0.1
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore.Autofac 9.0.1
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing 9.0.1
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.CommandHandling 9.0.1
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac 9.0.1
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit 9.0.1
+nuget Be.vlaanderen.basisregisters.snapshotverifier 9.0.1
 
-nuget Be.Vlaanderen.Basisregisters.Api 20.0.0
+nuget Be.Vlaanderen.Basisregisters.Api 21.1.0
 
-nuget Be.Vlaanderen.Basisregisters.Auth.AcmIdm 1.5.0
+nuget Be.Vlaanderen.Basisregisters.Auth.AcmIdm 2.0.0
 
-nuget Be.Vlaanderen.Basisregisters.Aws.DistributedMutex 3.0.0
-nuget Be.Vlaanderen.Basisregisters.Aws.Lambda 3.0.3
+nuget Be.Vlaanderen.Basisregisters.Aws.DistributedMutex 4.0.1
+nuget Be.Vlaanderen.Basisregisters.Aws.Lambda 4.0.0
 
-nuget Be.Vlaanderen.Basisregisters.CommandHandling 8.3.0
-nuget Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency 8.3.0
-nuget Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore 8.3.0
+nuget Be.Vlaanderen.Basisregisters.CommandHandling 9.0.1
+nuget Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency 9.0.1
+nuget Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore 9.0.1
 
-nuget Be.Vlaanderen.Basisregisters.EventHandling 4.2.3
-nuget Be.Vlaanderen.Basisregisters.EventHandling.Autofac 4.2.3
+nuget Be.Vlaanderen.Basisregisters.EventHandling 5.0.0
+nuget Be.Vlaanderen.Basisregisters.EventHandling.Autofac 5.0.0
 
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList 12.1.1
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore 12.1.1
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac 12.1.1
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner 12.1.1
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer 12.1.1
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.Npgsql 12.1.1
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing 12.1.1
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit 12.1.1
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication 12.1.1
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList 13.0.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore 13.0.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac 13.0.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner 13.0.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer 13.0.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.Npgsql 13.0.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing 13.0.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit 13.0.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication 13.0.0
 
-nuget Be.Vlaanderen.Basisregisters.Projector 13.1.0
+nuget Be.Vlaanderen.Basisregisters.Projector 14.0.0
 
-nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac 5.0.3
-nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.AspNetCore 5.0.3
-nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.SqlStreamStore 5.0.3
+nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac 6.0.0
+nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.AspNetCore 6.0.0
+nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.SqlStreamStore 6.0.0
 
-nuget Be.Vlaanderen.Basisregisters.Crab 3.0.0
-nuget Be.Vlaanderen.Basisregisters.Crab.Autofac 3.0.0
+nuget Be.Vlaanderen.Basisregisters.EntityFrameworkCore.EntityTypeConfiguration 3.0.0
 
-nuget Be.Vlaanderen.Basisregisters.GrAr.Common 20.6.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Contracts 20.6.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Edit 20.6.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Import 20.6.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Legacy 20.6.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Oslo 20.6.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance 20.6.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Extracts 20.6.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance.AcmIdm 20.6.0
+nuget Be.Vlaanderen.Basisregisters.Crab 4.0.0
+nuget Be.Vlaanderen.Basisregisters.Crab.Autofac 4.0.0
 
-nuget Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple 4.8.3
-nuget Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Producer 4.8.3
-nuget Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer 4.8.3
-nuget Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer 4.8.3
+nuget Be.Vlaanderen.Basisregisters.GrAr.Common 21.1.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Contracts 21.1.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Edit 21.1.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Import 21.1.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Legacy 21.1.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Oslo 21.1.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance 21.1.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Extracts 21.1.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance.AcmIdm 21.1.0
 
-nuget Be.Vlaanderen.Basisregisters.Shaperon 9.0.1
+nuget Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple 5.0.1
+nuget Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Producer 5.0.1
+nuget Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer 5.0.1
+nuget Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer 5.0.1
 
-nuget Be.Vlaanderen.Basisregisters.Sqs 2.0.2
-nuget Be.Vlaanderen.Basisregisters.Sqs.Lambda 2.0.2
+nuget Be.Vlaanderen.Basisregisters.Shaperon 10.0.2
 
-nuget Be.Vlaanderen.Basisregisters.TicketingService.Abstractions 1.8.0
-nuget Be.Vlaanderen.Basisregisters.TicketingService.Proxy.HttpProxy 1.8.0
+nuget Be.Vlaanderen.Basisregisters.Sqs 3.0.0
+nuget Be.Vlaanderen.Basisregisters.Sqs.Lambda 3.0.0
 
-// LAMBDA STUFF
-
-nuget Microsoft.Extensions.Configuration.Binder 6.0.0
-nuget Microsoft.Extensions.Configuration.Json 6.0.0
-nuget Microsoft.Extensions.DependencyInjection 6.0.0
-nuget Microsoft.Extensions.DependencyInjection.Abstractions 7.0.0
-
-// .NET CLASSIC STUFF
-nuget EntityFramework 6.4.4
-nuget Microsoft.SqlServer.Types 13.0.4001 // Don't update: requires version 13.0.4001 for legacy reasons
+nuget Be.Vlaanderen.Basisregisters.TicketingService.Abstractions 2.0.1
+nuget Be.Vlaanderen.Basisregisters.TicketingService.Proxy.HttpProxy 2.0.1
 
 // DOCS STUFF
 nuget Structurizr.Core 0.9.7
@@ -120,17 +101,16 @@ nuget Structurizr.Client 0.9.7
 nuget Structurizr.AdrTools 0.9.3
 
 // TEST STUFF
-nuget Microsoft.AspNetCore.Mvc.Testing 6.0.4
-nuget Microsoft.NET.Test.Sdk 17.1.0
-nuget Microsoft.EntityFrameworkCore.InMemory 6.0.3
-nuget xunit 2.4.1
-nuget xunit.runner.visualstudio 2.4.3
-nuget xunit.categories 2.0.6
-nuget FluentAssertions 6.5.1
-nuget Moq 4.17.2
-nuget AutoFixture.Xunit2 4.17.0
-nuget Serilog.Sinks.XUnit 3.0.3
-nuget Be.Vlaanderen.Basisregisters.DockerUtilities 1.0.1
+nuget Microsoft.AspNetCore.Mvc.Testing 8.0.3
+nuget Microsoft.NET.Test.Sdk 17.9.0
+nuget Microsoft.EntityFrameworkCore.InMemory 8.0.3
+nuget xunit 2.7.0
+nuget xunit.runner.visualstudio 2.5.7
+nuget FluentAssertions 6.12.0
+nuget Moq 4.20.70
+nuget AutoFixture.Xunit2 4.18.1
+nuget Serilog.Sinks.XUnit 3.0.5
+nuget Be.Vlaanderen.Basisregisters.DockerUtilities 2.0.0
 
 // BUILD STUFF
 nuget SourceLink.Embed.AllSourceFiles 2.8.3 copy_local: true

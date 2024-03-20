@@ -13,10 +13,10 @@ jobs:
 
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Cache Paket
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       env:
         cache-name: cache-paket
       with:
@@ -25,9 +25,9 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-build-${{ env.cache-name }}-
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v2
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: ${{ secrets.VBR_DOTNET_VERSION }}
+        dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
 
     - name: .NET version
       shell: bash

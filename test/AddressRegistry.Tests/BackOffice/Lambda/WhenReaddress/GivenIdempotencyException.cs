@@ -25,8 +25,6 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenReaddress
     using StreetName.Commands;
     using Xunit;
     using Xunit.Abstractions;
-    using IdempotentCommandHandler = Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers.IdempotentCommandHandler;
-    using IIdempotentCommandHandler = Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers.IIdempotentCommandHandler;
 
     public class GivenIdempotencyException : BackOfficeLambdaTest
     {

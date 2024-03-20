@@ -1,9 +1,7 @@
 namespace AddressRegistry.Producer.Snapshot.Oslo
 {
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
     using Microsoft.EntityFrameworkCore;
     using AddressRegistry.Infrastructure;
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.Microsoft;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer;
 
     public class ProducerContextMigrationFactory : SqlServerRunnerDbContextMigrationFactory<ProducerContext>

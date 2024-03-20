@@ -1,6 +1,7 @@
 namespace AddressRegistry.Api.BackOffice.Infrastructure
 {
     using System.Reflection;
+    using Asp.Versioning;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Net.Http.Headers;
     using Be.Vlaanderen.Basisregisters.Api;

@@ -4,8 +4,6 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V1.Matching
     using Address;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
-    using Legacy.Infrastructure;
     using Responses;
 
     public class AdresMatchScorableItem : IScoreable

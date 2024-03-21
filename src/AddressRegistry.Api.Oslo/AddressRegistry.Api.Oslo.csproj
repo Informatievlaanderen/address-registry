@@ -31,7 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AddressRegistry.Api.Legacy\AddressRegistry.Api.Legacy.csproj" />
     <ProjectReference Include="..\AddressRegistry.Consumer.Read.Municipality\AddressRegistry.Consumer.Read.Municipality.csproj" />
     <ProjectReference Include="..\AddressRegistry.Consumer.Read.StreetName\AddressRegistry.Consumer.Read.StreetName.csproj" />
     <ProjectReference Include="..\AddressRegistry.Projections.Legacy\AddressRegistry.Projections.Legacy.csproj" />

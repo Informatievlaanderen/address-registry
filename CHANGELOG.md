@@ -1,3 +1,15 @@
+# [4.0.0](https://github.com/informatievlaanderen/address-registry/compare/v3.116.2...v4.0.0) (2024-03-21)
+
+
+### Features
+
+* move to dotnet 8.0.2 ([e104c83](https://github.com/informatievlaanderen/address-registry/commit/e104c839b680a155c66b35768e1a168a7dc003ff))
+
+
+### BREAKING CHANGES
+
+* move to dotnet 8.0.2
+
 ## [3.116.2](https://github.com/informatievlaanderen/address-registry/compare/v3.116.1...v3.116.2) (2024-03-19)
 
 

@@ -785,7 +785,7 @@ jobs:
           aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
       - name: Login to Amazon ECR (Staging)
-        uses: aws-actions/amazon-ecr-login@v4
+        uses: aws-actions/amazon-ecr-login@v2
 
       # Download artifact
       - name: Download artifact

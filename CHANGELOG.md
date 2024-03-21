@@ -1,3 +1,11 @@
+## [4.0.1](https://github.com/informatievlaanderen/address-registry/compare/v4.0.0...v4.0.1) (2024-03-21)
+
+
+### Bug Fixes
+
+* AmbiguousActionException ([ae42ef7](https://github.com/informatievlaanderen/address-registry/commit/ae42ef73109fe2b05844430f1785a1756864c2a5))
+* **ci:** correct version ecr-login ([1b9bcd4](https://github.com/informatievlaanderen/address-registry/commit/1b9bcd4599846b6125aec66b5cd3ae0ea05931cc))
+
 # [4.0.0](https://github.com/informatievlaanderen/address-registry/compare/v3.116.2...v4.0.0) (2024-03-21)
 
 

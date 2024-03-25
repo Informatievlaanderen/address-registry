@@ -1,3 +1,10 @@
+## [4.0.3](https://github.com/informatievlaanderen/address-registry/compare/v4.0.2...v4.0.3) (2024-03-25)
+
+
+### Bug Fixes
+
+* bump to trigger build ([ed9c1d7](https://github.com/informatievlaanderen/address-registry/commit/ed9c1d71cb8bc92892f8a3d560898ec94366f876))
+
 ## [4.0.2](https://github.com/informatievlaanderen/address-registry/compare/v4.0.1...v4.0.2) (2024-03-25)
 
 ## [4.0.1](https://github.com/informatievlaanderen/address-registry/compare/v4.0.0...v4.0.1) (2024-03-21)

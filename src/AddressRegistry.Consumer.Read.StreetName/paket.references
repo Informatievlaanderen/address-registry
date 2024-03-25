@@ -5,7 +5,6 @@ Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore
 Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac
 Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql
-Be.Vlaanderen.Basisregisters.EntityFrameworkCore.EntityTypeConfiguration
 
 Be.Vlaanderen.Basisregisters.GrAr.Contracts
 

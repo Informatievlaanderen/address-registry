@@ -9,7 +9,6 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
     using AddressRegistry.Projections.Legacy.AddressDetailV2;
     using AddressRegistry.Projections.Syndication;
     using AddressRegistry.Projections.Syndication.PostalInfo;
-    using Be.Vlaanderen.Basisregisters.EntityFrameworkCore.EntityTypeConfiguration;
     using Microsoft.EntityFrameworkCore;
 
     public class AddressMatchContextV2 : DbContext
@@ -34,10 +33,10 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.AddEntityConfigurationsFromAssembly(typeof(LegacyContext).GetTypeInfo().Assembly);
-            modelBuilder.AddEntityConfigurationsFromAssembly(typeof(SyndicationContext).GetTypeInfo().Assembly);
-            modelBuilder.AddEntityConfigurationsFromAssembly(typeof(MunicipalityConsumerContext).GetTypeInfo().Assembly);
-            modelBuilder.AddEntityConfigurationsFromAssembly(typeof(StreetNameConsumerContext).GetTypeInfo().Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(LegacyContext).GetTypeInfo().Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(SyndicationContext).GetTypeInfo().Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(MunicipalityConsumerContext).GetTypeInfo().Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(StreetNameConsumerContext).GetTypeInfo().Assembly);
         }
     }
 }

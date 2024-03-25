@@ -12,7 +12,6 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.V1
     using AddressRegistry.Projections.Syndication.Parcel;
     using AddressRegistry.Projections.Syndication.PostalInfo;
     using AddressRegistry.Projections.Syndication.StreetName;
-    using Be.Vlaanderen.Basisregisters.EntityFrameworkCore.EntityTypeConfiguration;
     using Microsoft.EntityFrameworkCore;
 
     public class AddressMatchContext : DbContext
@@ -44,8 +43,8 @@ namespace AddressRegistry.Api.Legacy.AddressMatch.V1
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.AddEntityConfigurationsFromAssembly(typeof(LegacyContext).GetTypeInfo().Assembly);
-            modelBuilder.AddEntityConfigurationsFromAssembly(typeof(SyndicationContext).GetTypeInfo().Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(LegacyContext).GetTypeInfo().Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(SyndicationContext).GetTypeInfo().Assembly);
 
             modelBuilder
                 .Entity<RRStreetName>()

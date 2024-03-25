@@ -2,7 +2,6 @@
 {
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Requests;
-    using NodaTime;
 
     public abstract record AddressLambdaRequest : SqsLambdaRequest
     {

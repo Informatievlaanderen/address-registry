@@ -1,5 +1,4 @@
 Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
-Be.Vlaanderen.Basisregisters.EntityFrameworkCore.EntityTypeConfiguration
 Be.vlaanderen.basisregisters.snapshotverifier
 
 Serilog

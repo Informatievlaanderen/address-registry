@@ -87,7 +87,7 @@ nuget Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer 5.0.
 
 nuget Be.Vlaanderen.Basisregisters.Shaperon 10.0.2
 
-nuget Be.Vlaanderen.Basisregisters.Sqs 3.0.0
+nuget Be.Vlaanderen.Basisregisters.Sqs 3.0.1
 nuget Be.Vlaanderen.Basisregisters.Sqs.Lambda 3.0.1
 
 nuget Be.Vlaanderen.Basisregisters.TicketingService.Abstractions 2.0.1

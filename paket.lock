@@ -420,7 +420,7 @@ NUGET
       CompareNETObjects (>= 4.83)
       Dapper (>= 2.1.35)
       Microsoft.Extensions.Hosting (>= 8.0)
-    Be.Vlaanderen.Basisregisters.Sqs (3.0)
+    Be.Vlaanderen.Basisregisters.Sqs (3.0.1)
       MediatR (>= 12.2)
     Be.Vlaanderen.Basisregisters.Sqs.Lambda (3.0.1)
       Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency (>= 9.0.1)

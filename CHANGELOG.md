@@ -1,3 +1,10 @@
+## [4.0.4](https://github.com/informatievlaanderen/address-registry/compare/v4.0.3...v4.0.4) (2024-03-25)
+
+
+### Bug Fixes
+
+* bump sqs package ([7093048](https://github.com/informatievlaanderen/address-registry/commit/7093048fddd350e3f628604e8f568f6e28cbe749))
+
 ## [4.0.3](https://github.com/informatievlaanderen/address-registry/compare/v4.0.2...v4.0.3) (2024-03-25)
 
 

@@ -1,3 +1,10 @@
+## [4.0.6](https://github.com/informatievlaanderen/address-registry/compare/v4.0.5...v4.0.6) (2024-03-29)
+
+
+### Bug Fixes
+
+* postinfo nullability dont emit ([1e07b1f](https://github.com/informatievlaanderen/address-registry/commit/1e07b1fe1fe2a477fedc752d5b6067a1a5965fb6))
+
 ## [4.0.5](https://github.com/informatievlaanderen/address-registry/compare/v4.0.4...v4.0.5) (2024-03-29)
 
 

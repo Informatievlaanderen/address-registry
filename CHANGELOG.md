@@ -1,3 +1,10 @@
+## [4.0.5](https://github.com/informatievlaanderen/address-registry/compare/v4.0.4...v4.0.5) (2024-03-29)
+
+
+### Bug Fixes
+
+* oslo detail contract postinfo allownull ([f903b11](https://github.com/informatievlaanderen/address-registry/commit/f903b117b35545a9f5386c25575581581c321001))
+
 ## [4.0.4](https://github.com/informatievlaanderen/address-registry/compare/v4.0.3...v4.0.4) (2024-03-25)
 
 

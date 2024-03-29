@@ -49,7 +49,7 @@ namespace AddressRegistry.Api.Oslo.Address.Detail
         /// De postinfo die deel uitmaakt van het adres.
         /// </summary>
         [DataMember(Name = "Postinfo", Order = 4)]
-        [JsonProperty(Required = Required.Default)]
+        [JsonProperty(Required = Required.AllowNull)]
         public AdresDetailPostinfo Postinfo { get; set; }
 
         /// <summary>

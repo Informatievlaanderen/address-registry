@@ -48,8 +48,8 @@ namespace AddressRegistry.Api.Oslo.Address.Detail
         /// <summary>
         /// De postinfo die deel uitmaakt van het adres.
         /// </summary>
-        [DataMember(Name = "Postinfo", Order = 4)]
-        [JsonProperty(Required = Required.AllowNull)]
+        [DataMember(Name = "Postinfo", Order = 4, EmitDefaultValue = false)]
+        [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Ignore)]
         public AdresDetailPostinfo Postinfo { get; set; }
 
         /// <summary>

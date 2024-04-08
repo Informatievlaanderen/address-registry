@@ -1,7 +1,5 @@
 namespace AddressRegistry.Api.Oslo.AddressMatch.V2
 {
-    using System.Linq;
-    using AddressRegistry.Projections.Legacy.AddressDetailV2;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Gemeente;
@@ -9,9 +7,10 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
     using Convertors;
     using Infrastructure.Options;
     using Matching;
+    using Projections.Legacy.AddressDetailV2WithParent;
     using Responses;
 
-    internal class AddressMapper : IMapper<AddressDetailItemV2, AddressMatchScoreableItemV2>
+    internal class AddressMapper : IMapper<AddressDetailItemV2WithParent, AddressMatchScoreableItemV2>
     {
         private readonly ResponseOptions _responseOptions;
         private readonly ILatestQueries _latestQueries;
@@ -22,7 +21,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
             _latestQueries = latestQueries;
         }
 
-        public AddressMatchScoreableItemV2 Map(AddressDetailItemV2 source)
+        public AddressMatchScoreableItemV2 Map(AddressDetailItemV2WithParent source)
         {
             var streetName = _latestQueries.GetAllLatestStreetNamesByPersistentLocalId()[source.StreetNamePersistentLocalId];
             var municipality = _latestQueries.GetAllLatestMunicipalities()[streetName.NisCode];

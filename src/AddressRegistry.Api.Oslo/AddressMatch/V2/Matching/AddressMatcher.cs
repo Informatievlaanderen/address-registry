@@ -2,18 +2,18 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
 {
     using System.Collections.Generic;
     using System.Linq;
-    using AddressRegistry.Projections.Legacy.AddressDetailV2;
+    using Projections.Legacy.AddressDetailV2WithParent;
 
     internal sealed class AddressMatcher<TResult> : ScoreableObjectMatcherBase<AddressMatchBuilder, TResult>
         where TResult : class, IScoreable
     {
         private readonly ILatestQueries _latestQueries;
-        private readonly IMapper<AddressDetailItemV2, TResult> _mapper;
+        private readonly IMapper<AddressDetailItemV2WithParent, TResult> _mapper;
         private readonly Sanitizer _sanitizer;
 
         public AddressMatcher(
             ILatestQueries latestQueries,
-            IMapper<AddressDetailItemV2, TResult> mapper,
+            IMapper<AddressDetailItemV2WithParent, TResult> mapper,
             IWarningLogger warnings)
         {
             _latestQueries = latestQueries;

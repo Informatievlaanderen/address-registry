@@ -10,10 +10,11 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
     using AddressRegistry.Projections.Syndication;
     using AddressRegistry.Projections.Syndication.PostalInfo;
     using Microsoft.EntityFrameworkCore;
+    using Projections.Legacy.AddressDetailV2WithParent;
 
     public class AddressMatchContextV2 : DbContext
     {
-        public DbSet<AddressDetailItemV2> AddressDetailV2 { get; set; }
+        public DbSet<AddressDetailItemV2WithParent> AddressDetailV2WithParent { get; set; }
         public DbSet<MunicipalityLatestItem> MunicipalityLatestItems { get; set; }
         public DbSet<StreetNameLatestItem> StreetNameLatestItems { get; set; }
         public DbSet<PostalInfoLatestItem> PostalInfoLatestItems { get; set; }

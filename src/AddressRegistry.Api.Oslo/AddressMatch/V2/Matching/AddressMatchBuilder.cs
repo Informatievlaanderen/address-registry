@@ -4,32 +4,32 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using AddressRegistry.Consumer.Read.Municipality.Projections;
-    using AddressRegistry.Consumer.Read.StreetName.Projections;
-    using AddressRegistry.Projections.Legacy.AddressDetailV2;
+    using Consumer.Read.Municipality.Projections;
+    using Consumer.Read.StreetName.Projections;
     using Convertors;
+    using Projections.Legacy.AddressDetailV2WithParent;
 
     public sealed class AddressMatchBuilder : IEnumerable<AddressMatchBuilder.MunicipalityWrapper>, IProvidesRepresentationsForScoring
     {
-        public sealed class StreetNameWrapper : IEnumerable<AddressDetailItemV2>
+        public sealed class StreetNameWrapper : IEnumerable<AddressDetailItemV2WithParent>
         {
-            private IList<AddressDetailItemV2> _addresses;
+            private IList<AddressDetailItemV2WithParent> _addresses;
 
             public static readonly IEqualityComparer<StreetNameWrapper> Comparer = new PropertyEqualityComparer<StreetNameWrapper, int>(s => s.StreetName.PersistentLocalId);
-            public static readonly IEqualityComparer<AddressDetailItemV2> AddressComparer = new PropertyEqualityComparer<AddressDetailItemV2, int>(a => a.AddressPersistentLocalId);
+            public static readonly IEqualityComparer<AddressDetailItemV2WithParent> AddressComparer = new PropertyEqualityComparer<AddressDetailItemV2WithParent, int>(a => a.AddressPersistentLocalId);
 
             public StreetNameWrapper()
-                => _addresses = new List<AddressDetailItemV2>();
+                => _addresses = new List<AddressDetailItemV2WithParent>();
 
             public StreetNameLatestItem StreetName { get; set; }
 
-            public void AddAddresses(IEnumerable<AddressDetailItemV2> addresses)
+            public void AddAddresses(IEnumerable<AddressDetailItemV2WithParent> addresses)
                 => _addresses = _addresses
                     .Concat(addresses)
                     .Distinct(AddressComparer)
                     .ToList();
 
-            public IEnumerator<AddressDetailItemV2> GetEnumerator()
+            public IEnumerator<AddressDetailItemV2WithParent> GetEnumerator()
                 => _addresses.GetEnumerator();
 
             IEnumerator IEnumerable.GetEnumerator()
@@ -74,7 +74,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
         }
 
         private readonly Dictionary<string, MunicipalityWrapper> _municipalities;
-        private readonly List<AddressDetailItemV2> _rrAddresses;
+        private readonly List<AddressDetailItemV2WithParent> _rrAddresses;
         private readonly Sanitizer _sanitizer;
 
         public AddressMatchQueryComponents Query { get; }
@@ -83,7 +83,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
         {
             Query = query;
             _municipalities = new Dictionary<string, MunicipalityWrapper>();
-            _rrAddresses = new List<AddressDetailItemV2>();
+            _rrAddresses = new List<AddressDetailItemV2WithParent>();
             _sanitizer = new Sanitizer();
         }
 
@@ -131,7 +131,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
         public IEnumerable<StreetNameWrapper> AllStreetNames()
             => this.SelectMany(municipalityWrapper => municipalityWrapper).Distinct(StreetNameWrapper.Comparer);
 
-        public IEnumerable<AddressDetailItemV2> AllAddresses()
+        public IEnumerable<AddressDetailItemV2WithParent> AllAddresses()
             => AllStreetNames()
                 .SelectMany(s => s)
                 .Union(_rrAddresses)

@@ -2,9 +2,8 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
 {
     using System;
     using Address;
-    using AddressMatch.V1;
-    using AddressMatch.V1.Matching;
     using AddressMatch.V2;
+    using AddressMatch.V2.Matching;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
@@ -78,10 +77,6 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
                     .UseLoggerFactory(loggerFactory)
                     .UseSqlServer(syndicationConnectionString,
                         sqlServerOptions => { sqlServerOptions.EnableRetryOnFailure(); }))
-                .AddDbContext<AddressMatchContext>((_, options) => options
-                    .UseLoggerFactory(loggerFactory)
-                    .UseSqlServer(syndicationConnectionString,
-                        sqlServerOptions => { sqlServerOptions.EnableRetryOnFailure(); }))
                 .AddDbContext<AddressMatchContextV2>((_, options) => options
                     .UseLoggerFactory(loggerFactory)
                     .UseSqlServer(syndicationConnectionString,
@@ -95,9 +90,6 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
         {
             services
                 .AddDbContext<AddressQueryContext>(options => options
-                    .UseLoggerFactory(loggerFactory)
-                    .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { }))
-                .AddDbContext<AddressMatchContext>(options => options
                     .UseLoggerFactory(loggerFactory)
                     .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { }))
                 .AddDbContext<AddressMatchContextV2>(options => options

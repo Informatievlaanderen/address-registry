@@ -2,6 +2,8 @@ AspNetCore.HealthChecks.SqlServer
 
 Be.Vlaanderen.Basisregisters.Api
 
+DataDog.Trace.Bundle
+
 MediatR
 MediatR.Contracts
 

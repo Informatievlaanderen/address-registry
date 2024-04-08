@@ -5,7 +5,6 @@ namespace AddressRegistry.Migrator.Address.Infrastructure.Modules
     using Api.BackOffice.Abstractions;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac;
     using Consumer.Infrastructure.Modules;
     using Microsoft.EntityFrameworkCore;
@@ -41,7 +40,6 @@ namespace AddressRegistry.Migrator.Address.Infrastructure.Modules
                     , ServiceLifetime.Transient);
 
             builder
-                .RegisterModule(new DataDogModule(_configuration))
                 .RegisterModule<EnvelopeModule>()
                 .RegisterModule(new ConsumerModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new SequenceModule(_configuration, _services, _loggerFactory))

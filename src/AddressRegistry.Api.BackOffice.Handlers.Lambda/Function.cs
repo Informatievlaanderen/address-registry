@@ -12,7 +12,6 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Aws.Lambda;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Infrastructure;
     using Consumer.Read.Municipality.Infrastructure.Modules;
@@ -75,7 +74,6 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
             JsonConvert.DefaultSettings = EventsJsonSerializerSettingsProvider.CreateSerializerSettings;
 
             builder
-                .RegisterModule(new DataDogModule(configuration))
                 .RegisterModule(new CommandHandlingModule(configuration))
                 .RegisterModule(new SequenceModule(configuration, services, loggerFactory))
                 .RegisterModule(new BackOfficeModule(configuration, services, loggerFactory))

@@ -8,11 +8,8 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
     using Consumer.Read.Municipality.Infrastructure.Modules;
     using Consumer.Read.StreetName.Infrastructure.Modules;
-    using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -56,8 +53,6 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
 
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterModule(new DataDogModule(_configuration));
-
             builder
                 .RegisterModule(new LegacyModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new SyndicationModule(_configuration, _services, _loggerFactory))
@@ -79,38 +74,26 @@ namespace AddressRegistry.Api.Legacy.Infrastructure.Modules
             IConfiguration configuration,
             IServiceCollection services,
             ILoggerFactory loggerFactory,
-            string backofficeProjectionsConnectionString,
+            string syndicationConnectionString,
             string buildingProjectionsConnectionString)
         {
             services
-                .AddScoped(s => new TraceDbConnection<AddressQueryContext>(
-                    new SqlConnection(backofficeProjectionsConnectionString),
-                    configuration["DataDog:ServiceName"]))
-                .AddDbContext<AddressQueryContext>((provider, options) => options
+                .AddDbContext<AddressQueryContext>((_, options) => options
                     .EnableSensitiveDataLogging()
                     .UseLoggerFactory(loggerFactory)
-                    .UseSqlServer(provider.GetRequiredService<TraceDbConnection<AddressQueryContext>>(),
+                    .UseSqlServer(syndicationConnectionString,
                         sqlServerOptions => { sqlServerOptions.EnableRetryOnFailure(); }))
-                .AddScoped(s => new TraceDbConnection<AddressMatchContext>(
-                    new SqlConnection(backofficeProjectionsConnectionString),
-                    configuration["DataDog:ServiceName"]))
-                .AddDbContext<AddressMatchContext>((provider, options) => options
+                .AddDbContext<AddressMatchContext>((_, options) => options
                     .UseLoggerFactory(loggerFactory)
-                    .UseSqlServer(provider.GetRequiredService<TraceDbConnection<AddressMatchContext>>(),
+                    .UseSqlServer(syndicationConnectionString,
                         sqlServerOptions => { sqlServerOptions.EnableRetryOnFailure(); }))
-                .AddScoped(s => new TraceDbConnection<BuildingContext>(
-                    new SqlConnection(buildingProjectionsConnectionString),
-                    configuration["DataDog:ServiceName"]))
-                .AddDbContext<BuildingContext>((provider, options) => options
+                .AddDbContext<BuildingContext>((_, options) => options
                     .UseLoggerFactory(loggerFactory)
-                    .UseSqlServer(provider.GetRequiredService<TraceDbConnection<BuildingContext>>(),
+                    .UseSqlServer(buildingProjectionsConnectionString,
                         sqlServerOptions => { sqlServerOptions.EnableRetryOnFailure(); }))
-                .AddScoped(s => new TraceDbConnection<AddressMatchContextV2>(
-                    new SqlConnection(backofficeProjectionsConnectionString),
-                    configuration["DataDog:ServiceName"]))
-                .AddDbContext<AddressMatchContextV2>((provider, options) => options
+                .AddDbContext<AddressMatchContextV2>((_, options) => options
                     .UseLoggerFactory(loggerFactory)
-                    .UseSqlServer(provider.GetRequiredService<TraceDbConnection<AddressMatchContextV2>>(),
+                    .UseSqlServer(syndicationConnectionString,
                         sqlServerOptions => { sqlServerOptions.EnableRetryOnFailure(); }));
         }
 

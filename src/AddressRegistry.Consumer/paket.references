@@ -3,8 +3,6 @@ Destructurama.JsonNet
 
 Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore
 Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
-Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac
-Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql
 Be.Vlaanderen.Basisregisters.GrAr.Contracts
 Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector
 Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer
@@ -12,6 +10,8 @@ Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac
 Be.Vlaanderen.Basisregisters.Projector
 
 Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer
+
+Datadog.Trace.Bundle
 
 Serilog
 Serilog.Settings.Configuration
@@ -22,11 +22,6 @@ Serilog.Enrichers.Thread
 Serilog.Enrichers.Environment
 Serilog.Formatting.Compact
 
-Microsoft.Extensions.Configuration
-Microsoft.Extensions.Configuration.CommandLine
-Microsoft.Extensions.Configuration.FileExtensions
-Microsoft.Extensions.Configuration.EnvironmentVariables
-Microsoft.Extensions.Configuration.Json
 Microsoft.Extensions.Hosting
 
 SourceLink.Embed.AllSourceFiles

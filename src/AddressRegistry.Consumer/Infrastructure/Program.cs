@@ -1,17 +1,21 @@
 namespace AddressRegistry.Consumer.Infrastructure
 {
+    using System;
+    using System.IO;
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using AddressRegistry.Infrastructure;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
+    using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer;
     using Be.Vlaanderen.Basisregisters.Projector.Modules;
     using Destructurama;
-    using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -22,12 +26,7 @@ namespace AddressRegistry.Consumer.Infrastructure
     using Serilog.Debugging;
     using Serilog.Extensions.Logging;
     using SqlStreamStore;
-    using System;
-    using System.IO;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
+    using Consumer = AddressRegistry.Consumer.Consumer;
 
     public sealed class Program
     {
@@ -78,25 +77,20 @@ namespace AddressRegistry.Consumer.Infrastructure
                 {
                     var loggerFactory = new SerilogLoggerFactory(Log.Logger); //NOSONAR logging configuration is safe
 
+                    var connectionString = hostContext.Configuration.GetConnectionString("Consumer");
                     services
-                        .AddScoped(s => new TraceDbConnection<IdempotentConsumerContext>(
-                            new SqlConnection(hostContext.Configuration.GetConnectionString("Consumer")),
-                            hostContext.Configuration["DataDog:ServiceName"]))
-                        .AddDbContextFactory<IdempotentConsumerContext>((provider, options) => options
+                        .AddDbContextFactory<IdempotentConsumerContext>((_, options) => options
                             .UseLoggerFactory(loggerFactory)
-                            .UseSqlServer(provider.GetRequiredService<TraceDbConnection<IdempotentConsumerContext>>(),
+                            .UseSqlServer(connectionString,
                                 sqlServerOptions =>
                                 {
                                     sqlServerOptions.EnableRetryOnFailure();
                                     sqlServerOptions.MigrationsHistoryTable(MigrationTables.Consumer, Schema.Consumer);
                                 }));
                     services
-                        .AddScoped(s => new TraceDbConnection<ConsumerContext>(
-                            new SqlConnection(hostContext.Configuration.GetConnectionString("Consumer")),
-                            hostContext.Configuration["DataDog:ServiceName"]))
-                        .AddDbContext<ConsumerContext>((provider, options) => options
+                        .AddDbContext<ConsumerContext>((_, options) => options
                             .UseLoggerFactory(loggerFactory)
-                            .UseSqlServer(provider.GetRequiredService<TraceDbConnection<ConsumerContext>>(), sqlServerOptions =>
+                            .UseSqlServer(connectionString, sqlServerOptions =>
                             {
                                 sqlServerOptions.EnableRetryOnFailure();
                                 sqlServerOptions.MigrationsHistoryTable(MigrationTables.ConsumerProjections, Schema.ConsumerProjections);
@@ -168,7 +162,7 @@ namespace AddressRegistry.Consumer.Infrastructure
                         .SingleInstance();
 
                     containerBuilder
-                        .RegisterType<AddressRegistry.Consumer.Consumer>()
+                        .RegisterType<Consumer>()
                         .As<IHostedService>()
                         .SingleInstance();
 

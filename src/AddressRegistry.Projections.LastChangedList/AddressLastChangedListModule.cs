@@ -1,12 +1,9 @@
 namespace AddressRegistry.Projections.LastChangedList
 {
     using System;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer.MigrationExtensions;
     using Infrastructure;
-    using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -15,17 +12,16 @@ namespace AddressRegistry.Projections.LastChangedList
     {
         public AddressLastChangedListModule(
             string connectionString,
-            string datadogServiceName,
             IServiceCollection services,
             ILoggerFactory loggerFactory)
-            : base(connectionString, datadogServiceName, services, loggerFactory)
+            : base(connectionString, services, loggerFactory)
         {
             var logger = loggerFactory.CreateLogger<AddressLastChangedListModule>();
 
             var hasConnectionString = !string.IsNullOrWhiteSpace(connectionString);
             if (hasConnectionString)
             {
-                RunOnSqlServer(datadogServiceName, services, loggerFactory, connectionString);
+                RunOnSqlServer(services, loggerFactory, connectionString);
             }
             else
             {
@@ -34,18 +30,14 @@ namespace AddressRegistry.Projections.LastChangedList
         }
 
         private static void RunOnSqlServer(
-            string datadogServiceName,
             IServiceCollection services,
             ILoggerFactory loggerFactory,
             string connectionString)
         {
             services
-                .AddScoped(s => new TraceDbConnection<DataMigrationsContext>(
-                    new SqlConnection(connectionString),
-                    datadogServiceName))
-                .AddDbContext<DataMigrationsContext>((provider, options) => options
+                .AddDbContext<DataMigrationsContext>((_, options) => options
                     .UseLoggerFactory(loggerFactory)
-                    .UseSqlServer(provider.GetRequiredService<TraceDbConnection<DataMigrationsContext>>(), sqlServerOptions =>
+                    .UseSqlServer(connectionString, sqlServerOptions =>
                     {
                         sqlServerOptions.EnableRetryOnFailure();
                         sqlServerOptions.MigrationsHistoryTable(MigrationTables.RedisDataMigration, LastChangedListContext.Schema);

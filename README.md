@@ -137,6 +137,7 @@ The new version 1.2 of the European Union Public Licence (EUPL) is published in 
 * [CsvHelper](https://github.com/JoshClose/CsvHelper) - _A library for reading and writing CSV files. Extremely fast, flexible, and easy to use. Supports reading and writing of custom class objects._ - [Apache License 2.0](https://choosealicense.com/licenses/apache-2.0/)
 * [JsonNet](https://github.com/destructurama/json-net) - _Adds support for logging JSON.NET dynamic types as structured data with Serilog._ - [Apache License 2.0](https://choosealicense.com/licenses/apache-2.0/)
 * [MediatR](https://github.com/jbogard/MediatR) - _Simple, unambitious mediator implementation in .NET._ - [MIT](https://choosealicense.com/licenses/mit/)
+* [DataDog](https://github.com/DataDog/dd-trace-dotnet) - _.NET Client Library for Datadog APM_ - [Apache License 2.0](https://choosealicense.com/licenses/apache-2.0/)
 
 ### Tooling
 
@@ -166,7 +167,6 @@ The new version 1.2 of the European Union Public Licence (EUPL) is published in 
 
 * [Be.Vlaanderen.Basisregisters.Build.Pipeline](https://github.com/informatievlaanderen/build-pipeline/blob/master/LICENSE) - _Contains generic files for all Basisregisters Vlaanderen pipelines._ - [MIT](https://choosealicense.com/licenses/mit/)
 * [Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events](https://github.com/informatievlaanderen/infrastructure-tests/blob/master/LICENSE) - _Infrastructure unit-tests to validate assemblies._ - [MIT](https://choosealicense.com/licenses/mit/)
-* [Be.Vlaanderen.Basisregisters.DataDog](https://github.com/Informatievlaanderen/datadog-tracing/blob/master/LICENSE) - _A C# Implementation of Data Dog Tracing._ - [MIT](https://choosealicense.com/licenses/mit/)
 * [Be.Vlaanderen.Basisregisters.Shaperon](https://github.com/Informatievlaanderen/shaperon/blob/master/LICENSE) - _Lightweight dbase and shape record handling._ - [MIT](https://choosealicense.com/licenses/mit/)
 * [Be.Vlaanderen.Basisregisters.Crab](https://github.com/Informatievlaanderen/crab/blob/master/LICENSE) - _Common Crab functionality._ - [EUPL-1.2](https://choosealicense.com/licenses/eupl-1.2/)
 * [Be.Vlaanderen.Basisregisters.GrAr](https://github.com/Informatievlaanderen/grar-common/blob/master/LICENSE) - _Common code for all GR/AR base registries._ - [EUPL-1.2](https://choosealicense.com/licenses/eupl-1.2/)

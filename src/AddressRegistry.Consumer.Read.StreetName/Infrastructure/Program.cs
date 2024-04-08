@@ -11,13 +11,10 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer;
     using Destructurama;
-    using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -77,12 +74,9 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
                     var loggerFactory = new SerilogLoggerFactory(Log.Logger);
 
                     services
-                        .AddTransient(s => new TraceDbConnection<StreetNameConsumerContext>(
-                            new SqlConnection(hostContext.Configuration.GetConnectionString("ConsumerStreetName")),
-                            hostContext.Configuration["DataDog:ServiceName"]))
                         .AddDbContextFactory<StreetNameConsumerContext>((provider, options) => options
                             .UseLoggerFactory(loggerFactory)
-                            .UseSqlServer(provider.GetRequiredService<TraceDbConnection<StreetNameConsumerContext>>(),
+                            .UseSqlServer(hostContext.Configuration.GetConnectionString("ConsumerStreetName"),
                                 sqlServerOptions =>
                                 {
                                     sqlServerOptions.EnableRetryOnFailure();
@@ -171,7 +165,6 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
                         .SingleInstance();
 
                     builder
-                        .RegisterModule(new DataDogModule(hostContext.Configuration))
                         .RegisterModule(new CommandHandlingModule(hostContext.Configuration));
 
                     builder.RegisterSnapshotModule(hostContext.Configuration);

@@ -8,7 +8,6 @@ namespace AddressRegistry.Projections.BackOffice
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac;
@@ -78,12 +77,9 @@ namespace AddressRegistry.Projections.BackOffice
 
                     services
                         .ConfigureBackOfficeProjectionsContext(hostContext.Configuration, loggerFactory)
-                        .AddTransient(_ => new TraceDbConnection<BackOfficeContext>(
-                            new SqlConnection(hostContext.Configuration.GetConnectionString("BackOffice")),
-                            hostContext.Configuration["DataDog:ServiceName"]))
-                        .AddDbContextFactory<BackOfficeContext>((provider, options) => options
+                        .AddDbContextFactory<BackOfficeContext>((_, options) => options
                             .UseLoggerFactory(loggerFactory)
-                            .UseSqlServer(provider.GetRequiredService<TraceDbConnection<BackOfficeContext>>(), sqlServerOptions => sqlServerOptions
+                            .UseSqlServer(hostContext.Configuration.GetConnectionString("BackOffice"), sqlServerOptions => sqlServerOptions
                                 .EnableRetryOnFailure()
                                 .MigrationsHistoryTable(MigrationTables.BackOffice, Schema.BackOffice)
                             ))

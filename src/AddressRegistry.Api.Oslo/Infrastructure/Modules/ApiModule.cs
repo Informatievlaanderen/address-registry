@@ -5,12 +5,9 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
     using AddressMatch.V1;
     using AddressMatch.V1.Matching;
     using AddressMatch.V2;
-    using Microsoft.Data.SqlClient;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
     using Consumer.Read.Municipality.Infrastructure.Modules;
     using Consumer.Read.StreetName.Infrastructure.Modules;
     using Microsoft.EntityFrameworkCore;
@@ -41,7 +38,7 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
             var hasConnectionString = !string.IsNullOrWhiteSpace(connectionString);
             if (hasConnectionString)
             {
-                RunOnSqlServer(configuration, services, loggerFactory, connectionString);
+                RunOnSqlServer(services, loggerFactory, connectionString);
             }
             else
             {
@@ -53,8 +50,6 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
 
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterModule(new DataDogModule(_configuration));
-
             builder
                 .RegisterModule(new LegacyModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new SyndicationModule(_configuration, _services, _loggerFactory))
@@ -73,33 +68,23 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
         }
 
         private static void RunOnSqlServer(
-            IConfiguration configuration,
             IServiceCollection services,
             ILoggerFactory loggerFactory,
-            string backofficeProjectionsConnectionString)
+            string syndicationConnectionString)
         {
             services
-                .AddScoped(s => new TraceDbConnection<AddressQueryContext>(
-                    new SqlConnection(backofficeProjectionsConnectionString),
-                    configuration["DataDog:ServiceName"]))
-                .AddDbContext<AddressQueryContext>((provider, options) => options
+                .AddDbContext<AddressQueryContext>((_, options) => options
                     .EnableSensitiveDataLogging()
                     .UseLoggerFactory(loggerFactory)
-                    .UseSqlServer(provider.GetRequiredService<TraceDbConnection<AddressQueryContext>>(),
+                    .UseSqlServer(syndicationConnectionString,
                         sqlServerOptions => { sqlServerOptions.EnableRetryOnFailure(); }))
-                .AddScoped(s => new TraceDbConnection<AddressMatchContext>(
-                    new SqlConnection(backofficeProjectionsConnectionString),
-                    configuration["DataDog:ServiceName"]))
-                .AddDbContext<AddressMatchContext>((provider, options) => options
+                .AddDbContext<AddressMatchContext>((_, options) => options
                     .UseLoggerFactory(loggerFactory)
-                    .UseSqlServer(provider.GetRequiredService<TraceDbConnection<AddressMatchContext>>(),
+                    .UseSqlServer(syndicationConnectionString,
                         sqlServerOptions => { sqlServerOptions.EnableRetryOnFailure(); }))
-                .AddScoped(s => new TraceDbConnection<AddressMatchContextV2>(
-                    new SqlConnection(backofficeProjectionsConnectionString),
-                    configuration["DataDog:ServiceName"]))
-                .AddDbContext<AddressMatchContextV2>((provider, options) => options
+                .AddDbContext<AddressMatchContextV2>((_, options) => options
                     .UseLoggerFactory(loggerFactory)
-                    .UseSqlServer(provider.GetRequiredService<TraceDbConnection<AddressMatchContextV2>>(),
+                    .UseSqlServer(syndicationConnectionString,
                         sqlServerOptions => { sqlServerOptions.EnableRetryOnFailure(); }));
         }
 

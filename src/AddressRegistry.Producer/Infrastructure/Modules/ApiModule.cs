@@ -14,7 +14,6 @@ namespace AddressRegistry.Producer.Infrastructure.Modules
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using AddressRegistry.Infrastructure;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Producer;
 
@@ -36,8 +35,6 @@ namespace AddressRegistry.Producer.Infrastructure.Modules
 
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterModule(new DataDogModule(_configuration));
-
             RegisterProjectionSetup(builder);
 
             builder

@@ -3,7 +3,6 @@ namespace AddressRegistry.Api.Extract.Infrastructure.Modules
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Consumer.Read.Municipality.Infrastructure.Modules;
     using Consumer.Read.StreetName.Infrastructure.Modules;
     using Microsoft.Extensions.Configuration;
@@ -30,8 +29,6 @@ namespace AddressRegistry.Api.Extract.Infrastructure.Modules
 
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterModule(new DataDogModule(_configuration));
-
             builder
                 .RegisterModule(new ExtractModule(_configuration, _services, _loggerFactory, false))
                 .RegisterModule(new SyndicationModule(_configuration, _services, _loggerFactory))

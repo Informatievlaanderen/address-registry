@@ -3,8 +3,6 @@ namespace AddressRegistry.Consumer.Read.Municipality.Infrastructure.Modules
     using System;
     using AddressRegistry.Infrastructure;
     using Autofac;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
-    using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -24,7 +22,7 @@ namespace AddressRegistry.Consumer.Read.Municipality.Infrastructure.Modules
             var hasConnectionString = !string.IsNullOrWhiteSpace(connectionString);
             if (hasConnectionString)
             {
-                RunOnSqlServer(configuration, services, loggerFactory, connectionString, serviceLifetime);
+                RunOnSqlServer(services, loggerFactory, connectionString, serviceLifetime);
             }
             else
             {
@@ -33,21 +31,14 @@ namespace AddressRegistry.Consumer.Read.Municipality.Infrastructure.Modules
         }
 
         private static void RunOnSqlServer(
-            IConfiguration configuration,
             IServiceCollection services,
             ILoggerFactory loggerFactory,
-            string backofficeProjectionsConnectionString,
+            string consumerConnectionString,
             ServiceLifetime serviceLifetime)
         {
-            services
-                .Add(new ServiceDescriptor(
-                    typeof(TraceDbConnection<MunicipalityConsumerContext>),
-                    _ => new TraceDbConnection<MunicipalityConsumerContext>(new SqlConnection(backofficeProjectionsConnectionString), configuration["DataDog:ServiceName"]),
-                    serviceLifetime));
-
-            services.AddDbContext<MunicipalityConsumerContext>((provider, options) => options
+            services.AddDbContext<MunicipalityConsumerContext>((_, options) => options
                 .UseLoggerFactory(loggerFactory)
-                .UseSqlServer(provider.GetRequiredService<TraceDbConnection<MunicipalityConsumerContext>>(),
+                .UseSqlServer(consumerConnectionString,
                     sqlServerOptions =>
                     {
                         sqlServerOptions.EnableRetryOnFailure();

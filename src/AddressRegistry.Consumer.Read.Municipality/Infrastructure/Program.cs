@@ -10,13 +10,10 @@ namespace AddressRegistry.Consumer.Read.Municipality.Infrastructure
     using Autofac.Extensions.DependencyInjection;
     using Autofac.Features.AttributeFilters;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer;
     using Destructurama;
-    using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -74,12 +71,9 @@ namespace AddressRegistry.Consumer.Read.Municipality.Infrastructure
                     var loggerFactory = new SerilogLoggerFactory(Log.Logger); //NOSONAR logging configuration is safe
 
                     services
-                        .AddTransient(s => new TraceDbConnection<MunicipalityConsumerContext>(
-                            new SqlConnection(hostContext.Configuration.GetConnectionString("ConsumerMunicipality")),
-                            hostContext.Configuration["DataDog:ServiceName"]))
                         .AddDbContextFactory<MunicipalityConsumerContext>((provider, options) => options
                             .UseLoggerFactory(loggerFactory)
-                            .UseSqlServer(provider.GetRequiredService<TraceDbConnection<MunicipalityConsumerContext>>(),
+                            .UseSqlServer(hostContext.Configuration.GetConnectionString("ConsumerMunicipality"),
                                 sqlServerOptions =>
                                 {
                                     sqlServerOptions.EnableRetryOnFailure();
@@ -133,8 +127,6 @@ namespace AddressRegistry.Consumer.Read.Municipality.Infrastructure
                         })
                         .Keyed<IConsumer>(nameof(MunicipalityLatestItemConsumer))
                         .SingleInstance();
-
-                    builder.RegisterModule(new DataDogModule(hostContext.Configuration));
 
                     builder
                         .RegisterType<MunicipalityLatestItemConsumer>()

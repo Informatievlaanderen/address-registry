@@ -5,7 +5,6 @@ namespace AddressRegistry.Projections.LastChangedList.Console.Infrastructure.Mod
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
@@ -16,7 +15,7 @@ namespace AddressRegistry.Projections.LastChangedList.Console.Infrastructure.Mod
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using LastChangedListContextMigrationFactory = LastChangedList.LastChangedListContextMigrationFactory;
+    using LastChangedListContextMigrationFactory = LastChangedListContextMigrationFactory;
 
     public class LastChangedListConsoleModule : Module
     {
@@ -36,8 +35,6 @@ namespace AddressRegistry.Projections.LastChangedList.Console.Infrastructure.Mod
 
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterModule(new DataDogModule(_configuration));
-
             RegisterProjectionSetup(builder);
 
             builder
@@ -66,7 +63,7 @@ namespace AddressRegistry.Projections.LastChangedList.Console.Infrastructure.Mod
             var logger = _loggerFactory.CreateLogger<LastChangedListConsoleModule>();
             var connectionString = _configuration.GetConnectionString("LastChangedList");
 
-            builder.RegisterModule(new LastChangedListModule(connectionString, _configuration["DataDog:ServiceName"], _services, _loggerFactory));
+            builder.RegisterModule(new LastChangedListModule(connectionString, _services, _loggerFactory));
 
             logger.LogInformation(
                 "Added {Context} to services:" +

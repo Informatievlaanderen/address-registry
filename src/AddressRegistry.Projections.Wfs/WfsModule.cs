@@ -3,8 +3,6 @@ namespace AddressRegistry.Projections.Wfs
     using System;
     using Microsoft.Data.SqlClient;
     using Autofac;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer.MigrationExtensions;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication;
     using Infrastructure;
@@ -25,7 +23,7 @@ namespace AddressRegistry.Projections.Wfs
 
             var hasConnectionString = !string.IsNullOrWhiteSpace(connectionString);
             if (hasConnectionString)
-                RunOnSqlServer(configuration, services, loggerFactory, connectionString);
+                RunOnSqlServer(services, loggerFactory, connectionString);
             else
                 RunInMemoryDb(services, loggerFactory, logger);
 
@@ -39,18 +37,14 @@ namespace AddressRegistry.Projections.Wfs
         }
 
         private static void RunOnSqlServer(
-            IConfiguration configuration,
             IServiceCollection services,
             ILoggerFactory loggerFactory,
-            string backofficeProjectionsConnectionString)
+            string wfsConnectionString)
         {
             services
-                .AddScoped(s => new TraceDbConnection<WfsContext>(
-                    new SqlConnection(backofficeProjectionsConnectionString),
-                    configuration["DataDog:ServiceName"]))
-                .AddDbContext<WfsContext>((provider, options) => options
+                .AddDbContext<WfsContext>((_, options) => options
                     .UseLoggerFactory(loggerFactory)
-                    .UseSqlServer(provider.GetRequiredService<TraceDbConnection<WfsContext>>(), sqlServerOptions =>
+                    .UseSqlServer(wfsConnectionString, sqlServerOptions =>
                     {
                         sqlServerOptions.EnableRetryOnFailure();
                         sqlServerOptions.MigrationsHistoryTable(MigrationTables.Wfs, Schema.Wfs);

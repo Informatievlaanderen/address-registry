@@ -27,7 +27,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
 		AddressRegistry.sln.DotSettings = AddressRegistry.sln.DotSettings
-		build.fsx = build.fsx
 		global.json = global.json
 		package.json = package.json
 		paket.dependencies = paket.dependencies

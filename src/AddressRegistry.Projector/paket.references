@@ -11,5 +11,7 @@ AspNetCore.HealthChecks.NpgSql
 
 Dapper
 
+Datadog.Trace.Bundle
+
 SourceLink.Embed.AllSourceFiles
 SourceLink.Copy.PdbFiles

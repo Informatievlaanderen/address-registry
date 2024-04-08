@@ -5,7 +5,6 @@ namespace AddressRegistry.Producer.Snapshot.Oslo.Infrastructure.Modules
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
     using Be.Vlaanderen.Basisregisters.GrAr.Oslo.SnapshotProducer;
@@ -37,8 +36,6 @@ namespace AddressRegistry.Producer.Snapshot.Oslo.Infrastructure.Modules
 
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterModule(new DataDogModule(_configuration));
-
             RegisterProjectionSetup(builder);
 
             builder

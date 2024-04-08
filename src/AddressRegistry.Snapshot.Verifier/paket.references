@@ -16,5 +16,7 @@ Microsoft.Extensions.Configuration.FileExtensions
 Microsoft.Extensions.Configuration.EnvironmentVariables
 Microsoft.Extensions.Configuration.Json
 
+Datadog.Trace.Bundle
+
 SourceLink.Embed.AllSourceFiles
 SourceLink.Copy.PdbFiles

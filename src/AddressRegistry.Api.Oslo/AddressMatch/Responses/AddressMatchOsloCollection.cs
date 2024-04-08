@@ -17,7 +17,6 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
     using Swashbuckle.AspNetCore.Filters;
-    using V1.Matching;
     using V2.Matching;
 
     [DataContract(Name = "AdresMatchCollectie", Namespace = "")]
@@ -188,38 +187,6 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.Responses
                 Rel = rel;
                 Type = type;
             }
-        }
-
-        public static AdresMatchOsloItem Create(AdresMatchScorableItem scorableItem, ResponseOptions responseOptions)
-        {
-            return new AdresMatchOsloItem
-            {
-                Identificator = scorableItem.Identificator,
-                Detail = scorableItem.Detail,
-                Gemeente = scorableItem.Gemeente,
-                Straatnaam = scorableItem.Straatnaam,
-                AdresStatus = scorableItem.AdresStatus,
-                Postinfo = scorableItem.Postinfo,
-                HomoniemToevoeging = scorableItem.HomoniemToevoeging,
-                Huisnummer = scorableItem.Huisnummer,
-                Busnummer = scorableItem.Busnummer,
-                AdresPositie = scorableItem.AdresPositie,
-                VolledigAdres = scorableItem.VolledigAdres,
-                OfficieelToegekend = scorableItem.OfficieelToegekend,
-                Score = scorableItem.Score,
-
-                Links = scorableItem.Identificator?.ObjectId is not null
-                    ? new List<HateoasLink>
-                    {
-                        new HateoasLink(
-                            new Uri(string.Format(responseOptions.AddressMatchParcelLink,
-                                scorableItem.Identificator.ObjectId)), "percelen", HttpMethods.Get),
-                        new HateoasLink(
-                            new Uri(string.Format(responseOptions.AddressMatchBuildingUnitLink,
-                                scorableItem.Identificator.ObjectId)), "gebouweenheden", HttpMethods.Get),
-                    }
-                    : new List<HateoasLink>()
-            };
         }
 
         public static AdresMatchOsloItem Create(AddressMatchScoreableItemV2 scoreableItem,

@@ -5,8 +5,8 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
     using System.Linq;
     using AddressRegistry.Consumer.Read.Municipality.Projections;
     using AddressRegistry.Consumer.Read.StreetName.Projections;
-    using AddressRegistry.Projections.Legacy.AddressDetailV2;
-    using AddressRegistry.Projections.Syndication.PostalInfo;
+    using Projections.Legacy.AddressDetailV2WithParent;
+    using Projections.Syndication.PostalInfo;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Caching.Memory;
@@ -18,7 +18,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
         IDictionary<int, StreetNameLatestItem> GetAllLatestStreetNamesByPersistentLocalId();
         IEnumerable<StreetNameLatestItem> GetLatestStreetNamesBy(params string[] municipalityNames);
         StreetNameLatestItem? FindLatestStreetNameById(int streetNamePersistentLocalId);
-        IEnumerable<AddressDetailItemV2> GetLatestAddressesBy(int streetNamePersistentLocalId, string? houseNumber, string? boxNumber);
+        IEnumerable<AddressDetailItemV2WithParent> GetLatestAddressesBy(int streetNamePersistentLocalId, string? houseNumber, string? boxNumber);
         IEnumerable<PostalInfoLatestItem> GetAllPostalInfo();
     }
 
@@ -84,13 +84,13 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
                 () => GetLatestStreetNameItems().FirstOrDefault(
                     x => x.PersistentLocalId == streetNamePersistentLocalId));
 
-        public IEnumerable<AddressDetailItemV2> GetLatestAddressesBy(int streetNamePersistentLocalId, string? houseNumber, string? boxNumber)
+        public IEnumerable<AddressDetailItemV2WithParent> GetLatestAddressesBy(int streetNamePersistentLocalId, string? houseNumber, string? boxNumber)
         {
             var streetName = FindLatestStreetNameById(streetNamePersistentLocalId);
 
             // no caching for addresses
             var query = _context
-                .AddressDetailV2
+                .AddressDetailV2WithParent
                 .Where(x => !x.Removed)
                 .Where(x => x.StreetNamePersistentLocalId == streetName.PersistentLocalId);
 

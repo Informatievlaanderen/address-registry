@@ -20,6 +20,7 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
     using NetTopologySuite.Geometries;
     using NodaTime;
     using Projections.Legacy.AddressDetailV2;
+    using Projections.Legacy.AddressDetailV2WithParent;
     using Projections.Syndication.PostalInfo;
     using StreetName;
     using Xunit;
@@ -497,7 +498,7 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
                 .Setup(x => x.GetLatestAddressesBy(streetNamePersistentLocalId, huisnummer, busnummer))
                 .Returns(new[]
                 {
-                    new AddressDetailItemV2(2, streetNamePersistentLocalId, postcode, huisnummer, busnummer,
+                    new AddressDetailItemV2WithParent(2, streetNamePersistentLocalId, null, postcode, huisnummer, busnummer,
                         AddressStatus.Current, true, new Point(120, 45).AsBinary(), GeometryMethod.DerivedFromObject,
                         GeometrySpecification.Entry, false, SystemClock.Instance.GetCurrentInstant())
                 });

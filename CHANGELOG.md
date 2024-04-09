@@ -1,3 +1,11 @@
+## [4.0.8](https://github.com/informatievlaanderen/address-registry/compare/v4.0.7...v4.0.8) (2024-04-09)
+
+
+### Bug Fixes
+
+* build cachewarmer ([f56cd52](https://github.com/informatievlaanderen/address-registry/commit/f56cd52ad87793120b6a0646bfb07c22b8712c9d))
+* change adresmatch V2 to with parent ([d344709](https://github.com/informatievlaanderen/address-registry/commit/d344709a3bed6af50a364a03653cafe3197b375a))
+
 ## [4.0.7](https://github.com/informatievlaanderen/address-registry/compare/v4.0.6...v4.0.7) (2024-04-08)
 
 ## [4.0.6](https://github.com/informatievlaanderen/address-registry/compare/v4.0.5...v4.0.6) (2024-03-29)

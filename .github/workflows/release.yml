@@ -266,19 +266,38 @@ jobs:
     secrets: inherit
 
   build-cache-warmer:
-    name: Build Cache warmer
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
+    runs-on: ubuntu-latest
     needs: [ set-release-version ]
-    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
-    with:
-      registry: ${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/address-registry
-      image-file: ar-cache-warmer-image.tar
-      image-name: cache-warmer
-      test-project: AddressRegistry.Tests
-      build-project: AddressRegistry.Api.Legacy #need to select one, will be ignored
-      semver: ${{ needs.set-release-version.outputs.version }}
-      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
-    secrets: inherit
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      with:
+          persist-credentials: false
+
+    - name: Containerize
+      shell: bash
+      run: docker build . --no-cache --tag $TAG --build-arg BUILD_NUMBER=$SEMVER
+      working-directory: src/AddressRegistry.CacheWarmer
+      env:
+        TAG: ${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/address-registry/cache-warmer:${{ needs.set-release-version.outputs.version }}
+        SEMVER: ${{ needs.set-release-version.outputs.version }}
+
+    - name: Show images
+      shell: bash
+      run: docker images
+
+    - name: Save Image
+      if: ${{ needs.set-release-version.outputs.version }} != 'none'
+      shell: bash
+      run: docker image save ${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/address-registry/cache-warmer:${{ needs.set-release-version.outputs.version }} -o ~/ar-cache-warmer-image.tar
+
+    - name: Upload image
+      if: ${{ needs.set-release-version.outputs.version }} != 'none'
+      uses: actions/upload-artifact@v4
+      with:
+        name: cache-warmer-${{ needs.set-release-version.outputs.version }}
+        path: ~/ar-cache-warmer-image.tar
 
   pack-api-backoffice:
     name: Pack Api BackOffice

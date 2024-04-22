@@ -9,8 +9,7 @@ namespace AddressRegistry.Api.Extract.Infrastructure.Modules
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Projections.Extract;
-    using Projections.Syndication;
-
+    
     public class ApiModule : Module
     {
         private readonly IConfiguration _configuration;

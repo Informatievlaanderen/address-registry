@@ -1,3 +1,11 @@
+# [4.1.0](https://github.com/informatievlaanderen/address-registry/compare/v4.0.8...v4.1.0) (2024-04-22)
+
+
+### Features
+
+* GAWR-5509 add endpoint to get postalcode-streetname links ([e1e7aa7](https://github.com/informatievlaanderen/address-registry/commit/e1e7aa78e9f57b3bb93d6824a732029eeb3482fb))
+* remove crab from extract GAWR-4677 ([1be57cd](https://github.com/informatievlaanderen/address-registry/commit/1be57cdc1352b2d713d66f8e9b3645ef990083cb))
+
 ## [4.0.8](https://github.com/informatievlaanderen/address-registry/compare/v4.0.7...v4.0.8) (2024-04-09)
 
 

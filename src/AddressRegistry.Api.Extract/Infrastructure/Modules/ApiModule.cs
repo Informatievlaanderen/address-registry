@@ -9,8 +9,7 @@ namespace AddressRegistry.Api.Extract.Infrastructure.Modules
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Projections.Extract;
-    using Projections.Syndication;
-
+    
     public class ApiModule : Module
     {
         private readonly IConfiguration _configuration;
@@ -31,7 +30,6 @@ namespace AddressRegistry.Api.Extract.Infrastructure.Modules
         {
             builder
                 .RegisterModule(new ExtractModule(_configuration, _services, _loggerFactory, false))
-                .RegisterModule(new SyndicationModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new MunicipalityConsumerModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new StreetNameConsumerModule(_configuration, _services, _loggerFactory));
 

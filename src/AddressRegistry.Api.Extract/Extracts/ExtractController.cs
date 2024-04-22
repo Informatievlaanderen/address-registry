@@ -12,7 +12,6 @@ namespace AddressRegistry.Api.Extract.Extracts
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Projections.Extract;
-    using Projections.Syndication;
     using Responses;
     using Swashbuckle.AspNetCore.Filters;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
@@ -27,7 +26,6 @@ namespace AddressRegistry.Api.Extract.Extracts
         /// Vraag een dump van het volledige register op.
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="syndicationContext"></param>
         /// <param name="municipalityConsumerContext"></param>
         /// <param name="streetNameConsumerContext"></param>
         /// <param name="cancellationToken"></param>
@@ -40,7 +38,6 @@ namespace AddressRegistry.Api.Extract.Extracts
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
         public async Task<IActionResult> Get(
             [FromServices] ExtractContext context,
-            [FromServices] SyndicationContext syndicationContext,
             [FromServices] MunicipalityConsumerContext municipalityConsumerContext,
             [FromServices] StreetNameConsumerContext streetNameConsumerContext,
             CancellationToken cancellationToken = default)
@@ -51,31 +48,28 @@ namespace AddressRegistry.Api.Extract.Extracts
                 }
                 .CreateFileCallbackResult(cancellationToken);
         }
-
+        
         /// <summary>
-        /// Vraag een dump van alle adreskoppelingen op.
+        /// Vraag een dump van alle postcode-straatnaam koppelingen op.
         /// </summary>
         /// <param name="configuration"></param>
-        /// <param name="syndicationContext"></param>
         /// <param name="cancellationToken"></param>
-        /// <response code="200">Als adreskoppelingen kan gedownload worden.</response>
+        /// <response code="200">Als postcode-straatnaam koppelingen kan gedownload worden.</response>
         /// <response code="500">Als er een interne fout is opgetreden.</response>
-        [HttpGet("addresslinks")]
+        [HttpGet("postcode-straatnamen")]
         [ProducesResponseType(typeof(FileStreamResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(AddressRegistryResponseExample))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
-        public async Task<IActionResult> GetAddressLinks(
+        public async Task<IActionResult> GetPostalCodeStreetNameLinks(
             [FromServices] IConfiguration configuration,
-            [FromServices] SyndicationContext syndicationContext,
             CancellationToken cancellationToken = default)
         {
-            var extractBuilder = new LinkedAddressExtractBuilder(syndicationContext, configuration.GetConnectionString("SyndicationProjections"));
+            var extractBuilder = new PostalCodeStreetNameExtractBuilder(configuration.GetConnectionString("ExtractProjections"));
 
-            return new ExtractArchive(ExtractFileNames.GetAddressLinksZip())
+            return new ExtractArchive(ExtractFileNames.GetPostalCodeStreetNameLinksZip())
                 {
-                    extractBuilder.CreateLinkedBuildingUnitAddressFiles(),
-                    await extractBuilder.CreateLinkedParcelAddressFiles(cancellationToken)
+                    await extractBuilder.CreateLinkedPostalCodeStreetNameFile(cancellationToken)
                 }
                 .CreateFileCallbackResult(cancellationToken);
         }

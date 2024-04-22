@@ -79,5 +79,30 @@ namespace AddressRegistry.Api.Extract.Extracts
                 }
                 .CreateFileCallbackResult(cancellationToken);
         }
+
+        /// <summary>
+        /// Vraag een dump van alle postcode-straatnaam koppelingen op.
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <param name="cancellationToken"></param>
+        /// <response code="200">Als postcode-straatnaam koppelingen kan gedownload worden.</response>
+        /// <response code="500">Als er een interne fout is opgetreden.</response>
+        [HttpGet("postcode-straatnamen")]
+        [ProducesResponseType(typeof(FileStreamResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(AddressRegistryResponseExample))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
+        public async Task<IActionResult> GetPostalCodeStreetNameLinks(
+            [FromServices] IConfiguration configuration,
+            CancellationToken cancellationToken = default)
+        {
+            var extractBuilder = new PostalCodeStreetNameExtractBuilder(configuration.GetConnectionString("ExtractProjections"));
+
+            return new ExtractArchive(ExtractFileNames.GetPostalCodeStreetNameLinksZip())
+                {
+                    await extractBuilder.CreateLinkedPostalCodeStreetNameFile(cancellationToken)
+                }
+                .CreateFileCallbackResult(cancellationToken);
+        }
     }
 }

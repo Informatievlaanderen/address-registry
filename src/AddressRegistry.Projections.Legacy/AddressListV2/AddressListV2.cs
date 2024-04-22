@@ -65,7 +65,7 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
 
     public class AddressListItemV2Configuration : IEntityTypeConfiguration<AddressListItemV2>
     {
-        internal const string TableName = "AddressListV2";
+        public const string TableName = "AddressListV2";
 
         public void Configure(EntityTypeBuilder<AddressListItemV2> b)
         {

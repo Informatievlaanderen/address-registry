@@ -31,7 +31,6 @@ namespace AddressRegistry.Api.Extract.Infrastructure.Modules
         {
             builder
                 .RegisterModule(new ExtractModule(_configuration, _services, _loggerFactory, false))
-                .RegisterModule(new SyndicationModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new MunicipalityConsumerModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new StreetNameConsumerModule(_configuration, _services, _loggerFactory));
 

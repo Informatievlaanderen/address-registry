@@ -25,8 +25,8 @@
     <Content Include="Dockerfile" CopyToOutputDirectory="Always" />
     <Content Include="init.sh" CopyToOutputDirectory="Always" />
     <Content Include="appsettings.json" CopyToOutputDirectory="Always" />
-    <Content Include="paket.template" CopyToOutputDirectory="Always" />
     <Content Include="appsettings.*.json" CopyToOutputDirectory="Always" />
+    <Content Include="paket.template" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,7 +34,6 @@
     <ProjectReference Include="..\AddressRegistry.Consumer.Read.StreetName\AddressRegistry.Consumer.Read.StreetName.csproj" />
     <ProjectReference Include="..\AddressRegistry.Projections.Extract\AddressRegistry.Projections.Extract.csproj" />
     <ProjectReference Include="..\AddressRegistry.Projections.Legacy\AddressRegistry.Projections.Legacy.csproj" />
-    <ProjectReference Include="..\AddressRegistry.Projections.Syndication\AddressRegistry.Projections.Syndication.csproj" />
   </ItemGroup>
   
   <Import Project="..\..\.paket\Paket.Restore.targets" />

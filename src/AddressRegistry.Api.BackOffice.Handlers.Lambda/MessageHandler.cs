@@ -61,6 +61,9 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
                 case CorrectAddressRejectionSqsRequest request:
                     await mediator.Send(new CorrectAddressRejectionLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
+                case CorrectAddressRemovalSqsRequest request:
+                    await mediator.Send(new CorrectAddressRemovalLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
+                    break;
                 case DeregulateAddressSqsRequest request:
                     await mediator.Send(new DeregulateAddressLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;

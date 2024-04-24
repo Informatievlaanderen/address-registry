@@ -1,4 +1,4 @@
-﻿namespace AddressRegistry.StreetName
+namespace AddressRegistry.StreetName
 {
     using System;
     using System.Collections.Generic;
@@ -321,8 +321,8 @@
 
         public void CorrectAddressRemoval(AddressPersistentLocalId addressPersistentLocalId)
         {
-            GuardStreetNameStatusForChangeAndCorrection();
-
+            GuardActiveStreetName();
+            
             var addressToCorrect = StreetNameAddresses.GetByPersistentLocalId(addressPersistentLocalId);
 
             if (addressToCorrect.IsBoxNumberAddress)

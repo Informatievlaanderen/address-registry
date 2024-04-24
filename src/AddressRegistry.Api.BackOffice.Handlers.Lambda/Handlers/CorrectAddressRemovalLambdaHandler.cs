@@ -55,15 +55,14 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
         {
             return exception switch
             {
+                StreetNameIsRemovedException => ValidationErrors.Common.StreetNameIsRemoved.ToTicketError(),
                 StreetNameHasInvalidStatusException => ValidationErrors.Common.StreetNameStatusInvalidForAction.ToTicketError(),
 
                 ParentAddressIsRemovedException => ValidationErrors.Common.ParentAddressRemoved.ToTicketError(),
-
                 ParentAddressHasInvalidStatusException => ValidationErrors.CorrectRemoval.ParentInvalidStatus.ToTicketError(),
                 
                 BoxNumberHouseNumberDoesNotMatchParentHouseNumberException =>
                     ValidationErrors.Common.AddressInconsistentHouseNumber.ToTicketError(),
-
                 BoxNumberPostalCodeDoesNotMatchHouseNumberPostalCodeException =>
                     ValidationErrors.Common.AddressInconsistentPostalCode.ToTicketError(),
 

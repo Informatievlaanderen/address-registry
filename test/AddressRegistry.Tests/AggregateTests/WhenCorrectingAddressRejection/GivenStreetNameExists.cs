@@ -1,20 +1,20 @@
-namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRejection
+namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressRejection
 {
     using System.Collections.Generic;
     using System.Linq;
-    using AutoFixture;
+    using AddressRegistry.StreetName;
+    using AddressRegistry.StreetName.Commands;
+    using AddressRegistry.StreetName.Events;
+    using AddressRegistry.StreetName.Exceptions;
+    using AddressRegistry.Tests.AutoFixture;
+    using AddressRegistry.Tests.EventExtensions;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts.StreetNameRegistry;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using EventExtensions;
     using FluentAssertions;
     using global::AutoFixture;
-    using StreetName;
-    using StreetName.Commands;
-    using StreetName.Events;
-    using StreetName.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
 

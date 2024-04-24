@@ -1,19 +1,19 @@
-namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRemoval
+namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressRemoval
 {
     using System.Linq;
-    using AutoFixture;
+    using AddressRegistry.StreetName;
+    using AddressRegistry.StreetName.Commands;
+    using AddressRegistry.StreetName.Events;
+    using AddressRegistry.StreetName.Exceptions;
+    using AddressRegistry.Tests.AutoFixture;
+    using AddressRegistry.Tests.EventExtensions;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
-    using EventExtensions;
     using FluentAssertions;
     using global::AutoFixture;
-    using StreetName;
-    using StreetName.Commands;
-    using StreetName.Events;
-    using StreetName.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
 

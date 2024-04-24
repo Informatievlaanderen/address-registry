@@ -22,25 +22,26 @@ namespace AddressRegistry.Api.BackOffice
     public partial class AddressController
     {
         /// <summary>
-        /// Corrigeer de opheffing van een adres.
+        /// Corrigeer de verwijdering van een adres.
         /// </summary>
         /// <param name="ifMatchHeaderValidator"></param>
         /// <param name="request"></param>
         /// <param name="ifMatchHeaderValue"></param>
         /// <param name="cancellationToken"></param>
-        /// <response code="202">Aanvraag tot correctie adres opheffing wordt reeds verwerkt.</response>
+        /// <response code="202">Aanvraag tot correctie adres verwijdering wordt reeds verwerkt.</response>
         /// <response code="412">Als de If-Match header niet overeenkomt met de laatste ETag.</response>
         /// <returns></returns>
-        [HttpPost("{persistentLocalId}/acties/corrigeren/opheffing")]
+        [HttpPost("{persistentLocalId}/acties/corrigeren/verwijdering")]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status412PreconditionFailed)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.Adres.DecentraleBijwerker)]
-        public async Task<IActionResult> CorrectRetirement(
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = PolicyNames.Adres.InterneBijwerker)]
+        public async Task<IActionResult> CorrectRemoval(
             [FromServices] IIfMatchHeaderValidator ifMatchHeaderValidator,
-            [FromRoute] CorrectAddressRetirementRequest request,
+            [FromRoute] CorrectAddressRemovalRequest request,
             [FromHeader(Name = "If-Match")] string? ifMatchHeaderValue,
             CancellationToken cancellationToken = default)
         {
@@ -52,7 +53,7 @@ namespace AddressRegistry.Api.BackOffice
                     return new PreconditionFailedResult();
                 }
 
-                var sqsRequest = new CorrectAddressRetirementSqsRequest
+                var sqsRequest = new CorrectAddressRemovalSqsRequest
                 {
                     Request = request,
                     IfMatchHeaderValue = ifMatchHeaderValue,

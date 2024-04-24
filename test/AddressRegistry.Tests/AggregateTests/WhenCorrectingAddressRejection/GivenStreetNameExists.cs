@@ -225,6 +225,32 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressRejection
                 .When(correctChildAddressRejection)
                 .Throws(new ParentAddressHasInvalidStatusException()));
         }
+        
+        [Fact]
+        public void WithRemovedParentAddress_ThenThrowsParentAddressIsRemovedException()
+        {
+            var houseNumberAddressWasMigrated = Fixture.Create<AddressWasMigratedToStreetName>()
+                .AsHouseNumberAddress()
+                .WithRemoved();
+
+            var boxNumberAddressPersistentLocalId = new AddressPersistentLocalId(houseNumberAddressWasMigrated.AddressPersistentLocalId + 1);
+            var boxNumberAddressWasMigrated = Fixture.Create<AddressWasMigratedToStreetName>()
+                .AsBoxNumberAddress(new AddressPersistentLocalId(houseNumberAddressWasMigrated.AddressPersistentLocalId))
+                .WithAddressPersistentLocalId(boxNumberAddressPersistentLocalId);
+
+            var command = new CorrectAddressRejection(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                boxNumberAddressPersistentLocalId,
+                Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    Fixture.Create<StreetNameWasImported>(),
+                    houseNumberAddressWasMigrated,
+                    boxNumberAddressWasMigrated)
+                .When(command)
+                .Throws(new ParentAddressIsRemovedException(Fixture.Create<StreetNamePersistentLocalId>(), Fixture.Create<HouseNumber>())));
+        }
 
         [Fact]
         public void StateCheck()

@@ -30,6 +30,30 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
                 public static TicketError ToTicketError() => new(Message, Code);
             }
 
+            public static class AddressInconsistentHouseNumber
+            {
+                public const string Code = "AdresBusnummerHuisnummerInconsistent";
+                public const string Message = "Deze actie is niet toegestaan op een busnummer wegens een inconsistent huisnummer.";
+
+                public static TicketError ToTicketError() => new(Message, Code);
+            }
+
+            public static class AddressInconsistentPostalCode
+            {
+                public const string Code = "AdresBusnummerPostcodeInconsistent";
+                public const string Message = "Deze actie is niet toegestaan op een busnummer wegens een inconsistente postcode.";
+
+                public static TicketError ToTicketError() => new(Message, Code);
+            }
+
+            public static class ParentAddressRemoved
+            {
+                public const string Code = "VerwijderdHuisnummerAdres";
+                public const string Message = "Verwijderd huisnummeradres.";
+
+                public static TicketError ToTicketError() => new(Message, Code);
+            }
+
             public static class StreetNameInvalid
             {
                 public const string Code = "AdresStraatnaamNietGekendValidatie";

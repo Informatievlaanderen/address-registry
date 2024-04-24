@@ -130,10 +130,37 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressRetirement
                 .Throws(new BoxNumberPostalCodeDoesNotMatchHouseNumberPostalCodeException()));
         }
 
+        [Fact]
+        public void WithRemovedParentAddress_ThenThrowsParentAddressIsRemovedException()
+        {
+            var houseNumberAddressWasMigrated = Fixture.Create<AddressWasMigratedToStreetName>()
+                .AsHouseNumberAddress()
+                .WithRemoved();
+
+            var boxNumberAddressPersistentLocalId = new AddressPersistentLocalId(houseNumberAddressWasMigrated.AddressPersistentLocalId + 1);
+            var boxNumberAddressWasMigrated = Fixture.Create<AddressWasMigratedToStreetName>()
+                .AsBoxNumberAddress(new AddressPersistentLocalId(houseNumberAddressWasMigrated.AddressPersistentLocalId))
+                .WithAddressPersistentLocalId(boxNumberAddressPersistentLocalId)
+                .WithStatus(AddressStatus.Retired);
+
+            var command = new CorrectAddressRetirement(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                new AddressPersistentLocalId(boxNumberAddressWasMigrated.AddressPersistentLocalId),
+                Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    Fixture.Create<StreetNameWasImported>(),
+                    houseNumberAddressWasMigrated,
+                    boxNumberAddressWasMigrated)
+                .When(command)
+                .Throws(new ParentAddressIsRemovedException(Fixture.Create<StreetNamePersistentLocalId>(), Fixture.Create<HouseNumber>())));
+        }
+
         [Theory]
         [InlineData(StreetNameStatus.Rejected)]
         [InlineData(StreetNameStatus.Retired)]
-        public void OnStreetNameInvalidStatus_ThenThrowsStreetNameHasInvalidStatusException(StreetNameStatus streetNameStatus)
+        public void WithStreetNameInvalidStatus_ThenThrowsStreetNameHasInvalidStatusException(StreetNameStatus streetNameStatus)
         {
             var migratedStreetNameWasImported = Fixture.Create<MigratedStreetNameWasImported>().WithStatus(streetNameStatus);
 

@@ -148,7 +148,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressRemoval
         }
 
         [Fact]
-        public void WithRemovedParentAddress_ThenThrowsParentAddressNotFoundException()
+        public void WithRemovedParentAddress_ThenThrowsParentAddressIsRemovedException()
         {
             var houseNumberAddressWasMigrated = Fixture.Create<AddressWasMigratedToStreetName>()
                 .AsHouseNumberAddress()
@@ -171,7 +171,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressRemoval
                     houseNumberAddressWasMigrated,
                     boxNumberAddressWasMigrated)
                 .When(command)
-                .Throws(new ParentAddressNotFoundException(Fixture.Create<StreetNamePersistentLocalId>(), Fixture.Create<HouseNumber>())));
+                .Throws(new ParentAddressIsRemovedException(Fixture.Create<StreetNamePersistentLocalId>(), Fixture.Create<HouseNumber>())));
         }
 
         [Theory]

@@ -62,10 +62,12 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 AddressAlreadyExistsException => ValidationErrors.Common.AddressAlreadyExists.ToTicketError(),
 
                 BoxNumberHouseNumberDoesNotMatchParentHouseNumberException =>
-                    ValidationErrors.CorrectRejection.InconsistentHouseNumber.ToTicketError(),
+                    ValidationErrors.Common.AddressInconsistentHouseNumber.ToTicketError(),
 
                 BoxNumberPostalCodeDoesNotMatchHouseNumberPostalCodeException =>
-                    ValidationErrors.CorrectRejection.InconsistentPostalCode.ToTicketError(),
+                    ValidationErrors.Common.AddressInconsistentPostalCode.ToTicketError(),
+
+                ParentAddressIsRemovedException => ValidationErrors.Common.ParentAddressRemoved.ToTicketError(),
 
                 ParentAddressHasInvalidStatusException => ValidationErrors.CorrectRejection.ParentInvalidStatus.ToTicketError(),
 

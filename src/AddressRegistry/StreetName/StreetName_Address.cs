@@ -260,9 +260,9 @@
             {
                 var parent = addressToCorrect.Parent;
 
-                if (parent == null || parent.IsRemoved)
+                if (parent!.IsRemoved)
                 {
-                    throw new ParentAddressNotFoundException(PersistentLocalId, addressToCorrect.HouseNumber);
+                    throw new ParentAddressIsRemovedException(PersistentLocalId, addressToCorrect.HouseNumber);
                 }
 
                 if (parent.Status is AddressStatus.Rejected or AddressStatus.Retired)
@@ -288,9 +288,9 @@
             {
                 var parent = addressToCorrect.Parent;
 
-                if (parent == null || parent.IsRemoved)
+                if (parent!.IsRemoved)
                 {
-                    throw new ParentAddressNotFoundException(PersistentLocalId, addressToCorrect.HouseNumber);
+                    throw new ParentAddressIsRemovedException(PersistentLocalId, addressToCorrect.HouseNumber);
                 }
 
                 if (parent.Status is AddressStatus.Proposed or AddressStatus.Rejected or AddressStatus.Retired)
@@ -328,14 +328,15 @@
             if (addressToCorrect.IsBoxNumberAddress)
             {
                 var parent = addressToCorrect.Parent;
-
-                if (parent == null || parent.IsRemoved)
+                
+                if (parent!.IsRemoved)
                 {
-                    throw new ParentAddressNotFoundException(PersistentLocalId, addressToCorrect.HouseNumber);
+                    throw new ParentAddressIsRemovedException(PersistentLocalId, addressToCorrect.HouseNumber);
                 }
-
+                
                 if ((addressToCorrect.Status == AddressStatus.Current && parent.Status == AddressStatus.Proposed)
-                    || (addressToCorrect.Status == AddressStatus.Retired && parent.Status != AddressStatus.Current && parent.Status != AddressStatus.Retired)) // Todo: valideren met business
+                    ||
+                    (addressToCorrect.Status == AddressStatus.Retired && parent.Status is AddressStatus.Proposed or AddressStatus.Rejected)) // Todo: valideren met business
                 {
                     throw new ParentAddressHasInvalidStatusException();
                 }

@@ -13,9 +13,9 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
     using StreetName.Exceptions;
     using TicketingService.Abstractions;
 
-    public sealed class CorrectAddressRetirementLambdaHandler : SqsLambdaHandler<CorrectAddressRetirementLambdaRequest>
+    public sealed class CorrectAddressRemovalLambdaHandler : SqsLambdaHandler<CorrectAddressRemovalLambdaRequest>
     {
-        public CorrectAddressRetirementLambdaHandler(
+        public CorrectAddressRemovalLambdaHandler(
              IConfiguration configuration,
              ICustomRetryPolicy retryPolicy,
              ITicketing ticketing,
@@ -29,7 +29,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                  idempotentCommandHandler)
         { }
 
-        protected override async Task<object> InnerHandle(CorrectAddressRetirementLambdaRequest request, CancellationToken cancellationToken)
+        protected override async Task<object> InnerHandle(CorrectAddressRemovalLambdaRequest request, CancellationToken cancellationToken)
         {
             var addressPersistentLocalId = new AddressPersistentLocalId(request.Request.PersistentLocalId);
             var cmd = request.ToCommand();
@@ -51,25 +51,23 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             return new ETagResponse(string.Format(DetailUrlFormat, addressPersistentLocalId), lastHash);
         }
 
-        protected override TicketError? InnerMapDomainException(DomainException exception, CorrectAddressRetirementLambdaRequest request)
+        protected override TicketError? InnerMapDomainException(DomainException exception, CorrectAddressRemovalLambdaRequest request)
         {
             return exception switch
             {
                 StreetNameHasInvalidStatusException => ValidationErrors.Common.StreetNameStatusInvalidForAction.ToTicketError(),
 
-                AddressHasInvalidStatusException => ValidationErrors.CorrectRetirement.AddressInvalidStatus.ToTicketError(),
+                ParentAddressIsRemovedException => ValidationErrors.Common.ParentAddressRemoved.ToTicketError(),
 
-                AddressAlreadyExistsException => ValidationErrors.Common.AddressAlreadyExists.ToTicketError(),
-
+                ParentAddressHasInvalidStatusException => ValidationErrors.CorrectRemoval.ParentInvalidStatus.ToTicketError(),
+                
                 BoxNumberHouseNumberDoesNotMatchParentHouseNumberException =>
                     ValidationErrors.Common.AddressInconsistentHouseNumber.ToTicketError(),
 
                 BoxNumberPostalCodeDoesNotMatchHouseNumberPostalCodeException =>
                     ValidationErrors.Common.AddressInconsistentPostalCode.ToTicketError(),
 
-                ParentAddressIsRemovedException => ValidationErrors.Common.ParentAddressRemoved.ToTicketError(),
-
-                ParentAddressHasInvalidStatusException => ValidationErrors.CorrectRetirement.ParentInvalidStatus.ToTicketError(),
+                AddressAlreadyExistsException => ValidationErrors.Common.AddressAlreadyExists.ToTicketError(),
 
                 _ => null
             };

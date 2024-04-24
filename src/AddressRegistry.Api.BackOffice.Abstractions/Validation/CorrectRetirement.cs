@@ -21,22 +21,6 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
 
                 public static TicketError ToTicketError() => new(Message, Code);
             }
-
-            public static class InconsistentHouseNumber
-            {
-                public const string Code = "AdresBusnummerHuisnummerInconsistent";
-                public const string Message = "Deze actie is niet toegestaan op een busnummer wegens een inconsistent huisnummer.";
-
-                public static TicketError ToTicketError() => new(Message, Code);
-            }
-
-            public static class InconsistentPostalCode
-            {
-                public const string Code = "AdresBusnummerPostcodeInconsistent";
-                public const string Message = "Deze actie is niet toegestaan op een busnummer wegens een inconsistente postcode.";
-
-                public static TicketError ToTicketError() => new(Message, Code);
-            }
         }
     }
 }

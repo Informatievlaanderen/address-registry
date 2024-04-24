@@ -1,4 +1,4 @@
-namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
+namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRemoval
 {
     using System;
     using System.Collections.Generic;
@@ -24,7 +24,6 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
     using SqlStreamStore;
     using SqlStreamStore.Streams;
     using StreetName;
-    using StreetName.Commands;
     using StreetName.Exceptions;
     using TicketingService.Abstractions;
     using Xunit;
@@ -38,6 +37,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
         public GivenStreetNameExists(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             Fixture.Customize(new WithFixedMunicipalityId());
+            Fixture.Customize(new WithFixedStreetNamePersistentLocalId());
+            Fixture.Customize(new WithFixedAddressPersistentLocalId());
+            Fixture.Customize(new WithValidHouseNumber());
 
             _idempotencyContext = new FakeIdempotencyContextFactory().CreateDbContext();
             _streetNames = Container.Resolve<IStreetNames>();
@@ -46,33 +48,28 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
         [Fact]
         public async Task GivenRequest_ThenPersistentLocalIdETagResponse()
         {
-            var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
-            var addressPersistentLocalId = new AddressPersistentLocalId(456);
-            var nisCode = new NisCode("12345");
-            var postalCode = new PostalCode("2018");
-            var houseNumber = new HouseNumber("11");
+            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
+            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
 
             ImportMigratedStreetName(
                 new StreetNameId(Guid.NewGuid()),
                 streetNamePersistentLocalId,
-                nisCode);
+                Fixture.Create<NisCode>());
 
             ProposeAddress(
                 streetNamePersistentLocalId,
                 addressPersistentLocalId,
-                postalCode,
+                Fixture.Create<PostalCode>(),
                 Fixture.Create<MunicipalityId>(),
-                houseNumber,
+                Fixture.Create<HouseNumber>(),
                 null);
-
-            var rejectAddress = new RejectAddress(
+            
+            RemoveAddress(
                 streetNamePersistentLocalId,
-                addressPersistentLocalId,
-                Fixture.Create<Provenance>());
-            DispatchArrangeCommand(rejectAddress);
-
+                addressPersistentLocalId);
+            
             var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var sut = new CorrectAddressRejectionLambdaHandler(
+            var sut = new CorrectAddressRemovalLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 MockTicketing(result => { eTagResponse = result; }).Object,
@@ -80,13 +77,14 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext));
 
             // Act
-            await sut.Handle(new CorrectAddressRejectionLambdaRequest(streetNamePersistentLocalId, new CorrectAddressRejectionSqsRequest
+            await sut.Handle(new CorrectAddressRemovalLambdaRequest(streetNamePersistentLocalId, new CorrectAddressRemovalSqsRequest
                 {
-                    Request = new CorrectAddressRejectionRequest { PersistentLocalId = addressPersistentLocalId },
+                    Request = new CorrectAddressRemovalRequest { PersistentLocalId = addressPersistentLocalId },
                     TicketId = Guid.NewGuid(),
                     Metadata = new Dictionary<string, object?>(),
                     ProvenanceData = Fixture.Create<ProvenanceData>()
-                }), CancellationToken.None);
+                }),
+            CancellationToken.None);
 
             // Assert
             var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(
@@ -95,12 +93,45 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
         }
 
         [Fact]
+        public async Task WhenStreetNameIsRemoved_ThenTicketingErrorIsExpected()
+        {
+            // Arrange
+            var ticketing = new Mock<ITicketing>();
+
+            var sut = new CorrectAddressRemovalLambdaHandler(
+                Container.Resolve<IConfiguration>(),
+                new FakeRetryPolicy(),
+                ticketing.Object,
+                Mock.Of<IStreetNames>(),
+                MockExceptionIdempotentCommandHandler<StreetNameIsRemovedException>().Object);
+
+            // Act
+            var request = new CorrectAddressRemovalLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressRemovalSqsRequest
+            {
+                Request = new CorrectAddressRemovalRequest(),
+                TicketId = Guid.NewGuid(),
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            });
+            await sut.Handle(request, CancellationToken.None);
+
+            //Assert
+            ticketing.Verify(x =>
+                x.Error(
+                    It.IsAny<Guid>(),
+                    new TicketError(
+                        "Verwijderde straatnaam.",
+                        "VerwijderdeStraatnaam"),
+                    CancellationToken.None));
+        }
+
+        [Fact]
         public async Task WhenStreetNameHasInvalidStatus_ThenTicketingErrorIsExpected()
         {
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new CorrectAddressRejectionLambdaHandler(
+            var sut = new CorrectAddressRemovalLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -108,14 +139,13 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
                 MockExceptionIdempotentCommandHandler<StreetNameHasInvalidStatusException>().Object);
 
             // Act
-            var request = new CorrectAddressRejectionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressRejectionSqsRequest()
+            var request = new CorrectAddressRemovalLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressRemovalSqsRequest()
             {
-                Request = new CorrectAddressRejectionRequest(),
+                Request = new CorrectAddressRemovalRequest(),
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
             });
-
             await sut.Handle(request, CancellationToken.None);
 
             //Assert
@@ -129,108 +159,12 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
         }
 
         [Fact]
-        public async Task WhenAddressHasInvalidStatusException_ThenTicketingErrorIsExpected()
-        {
-            // Arrange
-            var ticketing = new Mock<ITicketing>();
-
-            var sut = new CorrectAddressRejectionLambdaHandler(
-                Container.Resolve<IConfiguration>(),
-                new FakeRetryPolicy(),
-                ticketing.Object,
-                Mock.Of<IStreetNames>(),
-                MockExceptionIdempotentCommandHandler<AddressHasInvalidStatusException>().Object);
-
-            // Act
-            await sut.Handle(new CorrectAddressRejectionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressRejectionSqsRequest
-            {
-                Request = new CorrectAddressRejectionRequest { PersistentLocalId = 1 },
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object?>(),
-                ProvenanceData = Fixture.Create<ProvenanceData>()
-            }), CancellationToken.None);
-
-            //Assert
-            ticketing.Verify(x =>
-                x.Error(
-                    It.IsAny<Guid>(),
-                    new TicketError(
-                        "Deze actie is enkel toegestaan op adressen met status 'afgekeurd'.",
-                        "AdresInGebruikOfGehistoreerd"),
-                    CancellationToken.None));
-        }
-
-        [Fact]
-        public async Task WhenAddressAlreadyExistsException_ThenTicketingErrorIsExpected()
-        {
-            // Arrange
-            var ticketing = new Mock<ITicketing>();
-
-            var sut = new CorrectAddressRejectionLambdaHandler(
-                Container.Resolve<IConfiguration>(),
-                new FakeRetryPolicy(),
-                ticketing.Object,
-                Mock.Of<IStreetNames>(),
-                MockExceptionIdempotentCommandHandler<AddressAlreadyExistsException>().Object);
-
-            // Act
-            await sut.Handle(new CorrectAddressRejectionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressRejectionSqsRequest
-            {
-                Request = new CorrectAddressRejectionRequest { PersistentLocalId = 1 },
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object?>(),
-                ProvenanceData = Fixture.Create<ProvenanceData>()
-            }), CancellationToken.None);
-
-            //Assert
-            ticketing.Verify(x =>
-                x.Error(
-                    It.IsAny<Guid>(),
-                    new TicketError(
-                        "Deze combinatie huisnummer-busnummer bestaat reeds voor de opgegeven straatnaam.",
-                        "AdresBestaandeHuisnummerBusnummerCombinatie"),
-                    CancellationToken.None));
-        }
-
-        [Fact]
-        public async Task WhenParentAddressHasInvalidStatusException_ThenTicketingErrorIsExpected()
-        {
-            // Arrange
-            var ticketing = new Mock<ITicketing>();
-
-            var sut = new CorrectAddressRejectionLambdaHandler(
-                Container.Resolve<IConfiguration>(),
-                new FakeRetryPolicy(),
-                ticketing.Object,
-                Mock.Of<IStreetNames>(),
-                MockExceptionIdempotentCommandHandler<ParentAddressHasInvalidStatusException>().Object);
-
-            // Act
-            await sut.Handle(new CorrectAddressRejectionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressRejectionSqsRequest
-            {
-                Request = new CorrectAddressRejectionRequest { PersistentLocalId = 1 },
-                TicketId = Guid.NewGuid(),
-                Metadata = new Dictionary<string, object?>(),
-                ProvenanceData = Fixture.Create<ProvenanceData>()
-            }), CancellationToken.None);
-
-            //Assert
-            ticketing.Verify(x =>
-                x.Error(
-                    It.IsAny<Guid>(),
-                    new TicketError(
-                        "Deze actie is enkel toegestaan op adressen waarbij het huisnummer de status 'voorgesteld' of 'inGebruik' heeft.",
-                        "AdresHuisnummerAfgekeurdOfGehistoreerd"),
-                    CancellationToken.None));
-        }
-
-        [Fact]
         public async Task WhenAddressBoxNumberHasInconsistentHouseNumberException_ThenTicketingErrorIsExpected()
         {
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new CorrectAddressRejectionLambdaHandler(
+            var sut = new CorrectAddressRemovalLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -238,9 +172,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
                 MockExceptionIdempotentCommandHandler<BoxNumberHouseNumberDoesNotMatchParentHouseNumberException>().Object);
 
             // Act
-            await sut.Handle(new CorrectAddressRejectionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressRejectionSqsRequest
+            await sut.Handle(new CorrectAddressRemovalLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressRemovalSqsRequest()
             {
-                Request = new CorrectAddressRejectionRequest { PersistentLocalId = 1 },
+                Request = new CorrectAddressRemovalRequest { PersistentLocalId = Fixture.Create<AddressPersistentLocalId>() },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -257,12 +191,111 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
         }
 
         [Fact]
+        public async Task WhenAddressAlreadyExistsException_ThenTicketingErrorIsExpected()
+        {
+            // Arrange
+            var ticketing = new Mock<ITicketing>();
+
+            var sut = new CorrectAddressRemovalLambdaHandler(
+                Container.Resolve<IConfiguration>(),
+                new FakeRetryPolicy(),
+                ticketing.Object,
+                Mock.Of<IStreetNames>(),
+                MockExceptionIdempotentCommandHandler<AddressAlreadyExistsException>().Object);
+
+            // Act
+            await sut.Handle(
+                new CorrectAddressRemovalLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressRemovalSqsRequest()
+                {
+                    Request = new CorrectAddressRemovalRequest{ PersistentLocalId = Fixture.Create<int>() },
+                    TicketId = Guid.NewGuid(),
+                    Metadata = new Dictionary<string, object?>(),
+                    ProvenanceData = Fixture.Create<ProvenanceData>()
+                }), CancellationToken.None);
+
+            //Assert
+            ticketing.Verify(x =>
+                x.Error(
+                    It.IsAny<Guid>(),
+                    new TicketError(
+                        "Deze combinatie huisnummer-busnummer bestaat reeds voor de opgegeven straatnaam.",
+                        "AdresBestaandeHuisnummerBusnummerCombinatie"),
+                    CancellationToken.None));
+        }
+
+        [Fact]
+        public async Task WhenParentAddressIsRemovedException_ThenTicketingErrorIsExpected()
+        {
+            Fixture.Customize(new WithFixedValidHouseNumber());
+
+            // Arrange
+            var ticketing = new Mock<ITicketing>();
+
+            var sut = new CorrectAddressRemovalLambdaHandler(
+                Container.Resolve<IConfiguration>(),
+                new FakeRetryPolicy(),
+                ticketing.Object,
+                Mock.Of<IStreetNames>(),
+                MockExceptionIdempotentCommandHandler(() => Fixture.Create<ParentAddressIsRemovedException>()).Object);
+
+            // Act
+            await sut.Handle(new CorrectAddressRemovalLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressRemovalSqsRequest
+            {
+                Request = new CorrectAddressRemovalRequest { PersistentLocalId = Fixture.Create<int>() },
+                TicketId = Guid.NewGuid(),
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            }), CancellationToken.None);
+
+            //Assert
+            ticketing.Verify(x =>
+                x.Error(
+                    It.IsAny<Guid>(),
+                    new TicketError(
+                        "Verwijderd huisnummeradres.",
+                        "VerwijderdHuisnummerAdres"),
+                    CancellationToken.None));
+        }
+
+        [Fact]
+        public async Task WhenParentAddressHasInvalidStatusException_ThenTicketingErrorIsExpected()
+        {
+            // Arrange
+            var ticketing = new Mock<ITicketing>();
+
+            var sut = new CorrectAddressRemovalLambdaHandler(
+                Container.Resolve<IConfiguration>(),
+                new FakeRetryPolicy(),
+                ticketing.Object,
+                Mock.Of<IStreetNames>(),
+                MockExceptionIdempotentCommandHandler<ParentAddressHasInvalidStatusException>().Object);
+
+            // Act
+            await sut.Handle(new CorrectAddressRemovalLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressRemovalSqsRequest
+            {
+                Request = new CorrectAddressRemovalRequest { PersistentLocalId = Fixture.Create<int>() },
+                TicketId = Guid.NewGuid(),
+                Metadata = new Dictionary<string, object?>(),
+                ProvenanceData = Fixture.Create<ProvenanceData>()
+            }), CancellationToken.None);
+
+            //Assert
+            ticketing.Verify(x =>
+                x.Error(
+                    It.IsAny<Guid>(),
+                    new TicketError(
+                        "TODO",
+                        "AdresHuisnummerTODO"),
+                    CancellationToken.None));
+        }
+
+        [Fact]
         public async Task WhenAddressBoxNumberHasInconsistentPostalCodeException_ThenTicketingErrorIsExpected()
         {
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var sut = new CorrectAddressRejectionLambdaHandler(
+            var sut = new CorrectAddressRemovalLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -270,9 +303,9 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
                 MockExceptionIdempotentCommandHandler<BoxNumberPostalCodeDoesNotMatchHouseNumberPostalCodeException>().Object);
 
             // Act
-            await sut.Handle(new CorrectAddressRejectionLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressRejectionSqsRequest
+            await sut.Handle(new CorrectAddressRemovalLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressRemovalSqsRequest
             {
-                Request = new CorrectAddressRejectionRequest { PersistentLocalId = 1 },
+                Request = new CorrectAddressRemovalRequest { PersistentLocalId = Fixture.Create<int>() },
                 TicketId = Guid.NewGuid(),
                 Metadata = new Dictionary<string, object?>(),
                 ProvenanceData = Fixture.Create<ProvenanceData>()
@@ -294,32 +327,26 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var streetNamePersistentLocalId = new StreetNamePersistentLocalId(123);
-            var addressPersistentLocalId = new AddressPersistentLocalId(456);
-            var nisCode = new NisCode("12345");
-            var postalCode = new PostalCode("2018");
-            var houseNumber = new HouseNumber("11");
-
             ImportMigratedStreetName(
                 new StreetNameId(Guid.NewGuid()),
-                streetNamePersistentLocalId,
-                nisCode);
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<NisCode>());
 
             ProposeAddress(
-                streetNamePersistentLocalId,
-                addressPersistentLocalId,
-                postalCode,
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<AddressPersistentLocalId>(),
+                Fixture.Create<PostalCode>(),
                 Fixture.Create<MunicipalityId>(),
-                houseNumber,
+                Fixture.Create<HouseNumber>(),
                 null);
 
-            var regularizeAddress = new CorrectAddressRejection(
-                streetNamePersistentLocalId,
-                addressPersistentLocalId,
-                Fixture.Create<Provenance>());
-            DispatchArrangeCommand(regularizeAddress);
+            ApproveAddress(Fixture.Create<StreetNamePersistentLocalId>(), Fixture.Create<AddressPersistentLocalId>());
 
-            var sut = new CorrectAddressRejectionLambdaHandler(
+            RetireAddress(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<AddressPersistentLocalId>());
+
+            var sut = new CorrectAddressRemovalLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -327,19 +354,19 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
                 MockExceptionIdempotentCommandHandler(() => new IdempotencyException(string.Empty)).Object);
 
             var streetName =
-                await _streetNames.GetAsync(new StreetNameStreamId(streetNamePersistentLocalId), CancellationToken.None);
+                await _streetNames.GetAsync(new StreetNameStreamId(Fixture.Create<StreetNamePersistentLocalId>()), CancellationToken.None);
 
             // Act
-            await sut.Handle(new CorrectAddressRejectionLambdaRequest(streetNamePersistentLocalId, new CorrectAddressRejectionSqsRequest
-                {
-                    Request = new CorrectAddressRejectionRequest { PersistentLocalId = addressPersistentLocalId },
-                    TicketId = Guid.NewGuid(),
-                    Metadata = new Dictionary<string, object?>(),
-                    ProvenanceData = Fixture.Create<ProvenanceData>()
-                }),
+            await sut.Handle(new CorrectAddressRemovalLambdaRequest(
+                    Fixture.Create<StreetNamePersistentLocalId>(),
+                        new CorrectAddressRemovalSqsRequest
+                        {
+                            Request = new CorrectAddressRemovalRequest{ PersistentLocalId = Fixture.Create<AddressPersistentLocalId>() },
+                            TicketId = Guid.NewGuid(),
+                            Metadata = new Dictionary<string, object?>(),
+                            ProvenanceData = Fixture.Create<ProvenanceData>()
+                        }),
             CancellationToken.None);
-
-
 
             //Assert
             ticketing.Verify(x =>
@@ -347,8 +374,8 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressRejection
                     It.IsAny<Guid>(),
                     new TicketResult(
                         new ETagResponse(
-                            string.Format(ConfigDetailUrl, addressPersistentLocalId),
-                            streetName.GetAddressHash(addressPersistentLocalId))),
+                            string.Format(ConfigDetailUrl, Fixture.Create<AddressPersistentLocalId>()),
+                            streetName.GetAddressHash(Fixture.Create<AddressPersistentLocalId>()))),
                     CancellationToken.None));
         }
     }

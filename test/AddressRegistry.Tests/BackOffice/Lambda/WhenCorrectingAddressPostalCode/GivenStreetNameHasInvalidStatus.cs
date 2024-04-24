@@ -38,7 +38,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
         }
 
         [Fact]
-        public async Task WhenStreetNameIsRemoved_ThenTicketingErrorIsExpected()
+        public async Task WhenStreetNameHasInvalidStatus_ThenTicketingErrorIsExpected()
         {
             // Arrange
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();

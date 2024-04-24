@@ -533,7 +533,18 @@ namespace AddressRegistry.StreetName
 
             guardAddressIsUnique();
 
-            Apply(new AddressRemovalWasCorrected(_streetNamePersistentLocalId, AddressPersistentLocalId));
+            Apply(new AddressRemovalWasCorrected(
+                _streetNamePersistentLocalId,
+                AddressPersistentLocalId,
+                Status,
+                PostalCode,
+                HouseNumber,
+                BoxNumber,
+                Geometry.GeometryMethod,
+                Geometry.GeometrySpecification,
+                Geometry.Geometry,
+                IsOfficiallyAssigned,
+                Parent?.AddressPersistentLocalId));
         }
 
         public void ChangePosition(

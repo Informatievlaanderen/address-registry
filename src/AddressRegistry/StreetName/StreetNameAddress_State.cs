@@ -65,6 +65,7 @@ namespace AddressRegistry.StreetName
             Register<AddressBoxNumberWasCorrectedV2>(When);
             Register<AddressRegularizationWasCorrected>(When);
             Register<AddressDeregulationWasCorrected>(When);
+            Register<AddressRemovalWasCorrected>(When);
             Register<AddressPositionWasChanged>(When);
             Register<AddressPostalCodeWasChangedV2>(When);
             Register<AddressWasRemovedBecauseStreetNameWasRemoved>(When);
@@ -254,6 +255,13 @@ namespace AddressRegistry.StreetName
         private void When(AddressDeregulationWasCorrected @event)
         {
             IsOfficiallyAssigned = true;
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressRemovalWasCorrected @event)
+        {
+            IsRemoved = false;
 
             _lastEvent = @event;
         }

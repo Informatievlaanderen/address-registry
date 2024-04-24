@@ -514,6 +514,28 @@ namespace AddressRegistry.StreetName
             Apply(new AddressDeregulationWasCorrected(_streetNamePersistentLocalId, AddressPersistentLocalId));
         }
 
+        public void CorrectRemoval(Action guardAddressIsUnique)
+        {
+            if (Parent is not null && Parent.HouseNumber != HouseNumber)
+            {
+                throw new BoxNumberHouseNumberDoesNotMatchParentHouseNumberException();
+            }
+
+            if (Parent is not null && Parent.PostalCode != PostalCode)
+            {
+                throw new BoxNumberPostalCodeDoesNotMatchHouseNumberPostalCodeException();
+            }
+
+            if (!IsRemoved)
+            {
+                return;
+            }
+
+            guardAddressIsUnique();
+
+            Apply(new AddressRemovalWasCorrected(_streetNamePersistentLocalId, AddressPersistentLocalId));
+        }
+
         public void ChangePosition(
             GeometryMethod geometryMethod,
             GeometrySpecification geometrySpecification,

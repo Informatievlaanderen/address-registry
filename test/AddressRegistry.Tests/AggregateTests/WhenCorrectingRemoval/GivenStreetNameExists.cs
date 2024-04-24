@@ -6,6 +6,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRemoval
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using EventExtensions;
     using FluentAssertions;
     using global::AutoFixture;
@@ -31,7 +32,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRemoval
         }
 
         [Fact]
-        public void WithRemovedAddress_ThenAddressWasCorrected()
+        public void WithRemovedAddress_ThenAddressRemovalWasCorrected()
         {
             var addressWasMigrated = Fixture.Create<AddressWasMigratedToStreetName>()
                 .AsHouseNumberAddress()
@@ -44,7 +45,21 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRemoval
                     Fixture.Create<StreetNameWasImported>(),
                     addressWasMigrated)
                 .When(command)
-                .Then(new Fact(_streamId, Fixture.Create<AddressRemovalWasCorrected>())));
+                .Then(new Fact(
+                    _streamId,
+                    new AddressRemovalWasCorrected(
+                        command.StreetNamePersistentLocalId,
+                        command.AddressPersistentLocalId,
+                        addressWasMigrated.Status,
+                        !string.IsNullOrEmpty(addressWasMigrated.PostalCode) ? new PostalCode(addressWasMigrated.PostalCode) : null,
+                        new HouseNumber(addressWasMigrated.HouseNumber),
+                        !string.IsNullOrEmpty(addressWasMigrated.BoxNumber) ? new BoxNumber(addressWasMigrated.BoxNumber) : null,
+                        addressWasMigrated.GeometryMethod,
+                        addressWasMigrated.GeometrySpecification,
+                        new ExtendedWkbGeometry(addressWasMigrated.ExtendedWkbGeometry.ToByteArray()),
+                        addressWasMigrated.OfficiallyAssigned,
+                        addressWasMigrated.ParentPersistentLocalId.HasValue ? new AddressPersistentLocalId(addressWasMigrated.ParentPersistentLocalId.Value) : null
+                        ))));
         }
 
         [Fact]
@@ -260,6 +275,15 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingRemoval
                 .First(x => x.AddressPersistentLocalId == Fixture.Create<AddressPersistentLocalId>());
 
             address.IsRemoved.Should().BeFalse();
+            address.Status.Should().Be(addressRemovalWasCorrected.Status);
+            address.PostalCode.Should().Be(!string.IsNullOrEmpty(addressRemovalWasCorrected.PostalCode) ? new PostalCode(addressRemovalWasCorrected.PostalCode) : null);
+            address.HouseNumber.Should().Be(new HouseNumber(addressRemovalWasCorrected.HouseNumber));
+            address.BoxNumber.Should().Be(!string.IsNullOrEmpty(addressRemovalWasCorrected.BoxNumber) ? new BoxNumber(addressRemovalWasCorrected.BoxNumber) : null);
+            address.Geometry.Should().Be(new AddressGeometry(
+                addressRemovalWasCorrected.GeometryMethod,
+                addressRemovalWasCorrected.GeometrySpecification,
+                new ExtendedWkbGeometry(addressRemovalWasCorrected.ExtendedWkbGeometry)));
+            address.IsOfficiallyAssigned.Should().Be(addressRemovalWasCorrected.OfficiallyAssigned);
         }
     }
 }

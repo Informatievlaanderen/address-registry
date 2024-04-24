@@ -261,6 +261,15 @@ namespace AddressRegistry.StreetName
 
         private void When(AddressRemovalWasCorrected @event)
         {
+            Status = @event.Status;
+            PostalCode = string.IsNullOrEmpty(@event.PostalCode) ? null : new PostalCode(@event.PostalCode);
+            HouseNumber = new HouseNumber(@event.HouseNumber);
+            BoxNumber = string.IsNullOrEmpty(@event.BoxNumber) ? null : new BoxNumber(@event.BoxNumber);
+            Geometry = new AddressGeometry(
+                @event.GeometryMethod,
+                @event.GeometrySpecification,
+                new ExtendedWkbGeometry(@event.ExtendedWkbGeometry));
+            IsOfficiallyAssigned = @event.OfficiallyAssigned;
             IsRemoved = false;
 
             _lastEvent = @event;
@@ -275,17 +284,9 @@ namespace AddressRegistry.StreetName
             BoxNumber = string.IsNullOrEmpty(addressData.BoxNumber) ? null : new BoxNumber(addressData.BoxNumber);
             PostalCode = string.IsNullOrEmpty(addressData.PostalCode) ? null : new PostalCode(addressData.PostalCode);
             Geometry = new AddressGeometry(
-                addressData.GeometryMethod.Value,
-                addressData.GeometrySpecification.Value,
-                new ExtendedWkbGeometry(addressData.ExtendedWkbGeometry));
-
-            if (!string.IsNullOrEmpty(addressData.ExtendedWkbGeometry))
-            {
-                Geometry = new AddressGeometry(
-                    addressData.GeometryMethod!.Value,
-                    addressData.GeometrySpecification!.Value,
-                    new ExtendedWkbGeometry(addressData.ExtendedWkbGeometry));
-            }
+                addressData.GeometryMethod!.Value,
+                addressData.GeometrySpecification!.Value,
+                new ExtendedWkbGeometry(addressData.ExtendedWkbGeometry!));
 
             IsOfficiallyAssigned = addressData.IsOfficiallyAssigned;
             IsRemoved = addressData.IsRemoved;

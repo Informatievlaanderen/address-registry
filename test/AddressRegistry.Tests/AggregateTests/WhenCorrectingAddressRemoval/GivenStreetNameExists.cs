@@ -79,7 +79,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressRemoval
         }
 
         [Fact]
-        public void WithUnexistingAddress_ThenThrowsAddressNotFoundException()
+        public void WithNonExistingAddress_ThenThrowsAddressNotFoundException()
         {
             var command = Fixture.Create<CorrectAddressRemoval>();
 
@@ -119,7 +119,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressRemoval
         }
 
         [Fact]
-        public void WhenDifferentPostalCodeFromParentAddress_ThenThrowsBoxNumberPostalCodeDoesNotMatchHouseNumberPostalCodeException()
+        public void WithDifferentPostalCodeFromParentAddress_ThenThrowsBoxNumberPostalCodeDoesNotMatchHouseNumberPostalCodeException()
         {
             var houseNumberAddressWasMigrated = Fixture.Create<AddressWasMigratedToStreetName>()
                 .AsHouseNumberAddress()
@@ -148,7 +148,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressRemoval
         }
 
         [Fact]
-        public void WhenRemovedParentAddress_ThenThrowsParentAddressNotFoundException()
+        public void WithRemovedParentAddress_ThenThrowsParentAddressNotFoundException()
         {
             var houseNumberAddressWasMigrated = Fixture.Create<AddressWasMigratedToStreetName>()
                 .AsHouseNumberAddress()
@@ -177,7 +177,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressRemoval
         [Theory]
         [InlineData(StreetNameStatus.Rejected)]
         [InlineData(StreetNameStatus.Retired)]
-        public void OnStreetNameInvalidStatus_ThenThrowsStreetNameHasInvalidStatusException(StreetNameStatus streetNameStatus)
+        public void WithStreetNameInvalidStatus_ThenThrowsStreetNameHasInvalidStatusException(StreetNameStatus streetNameStatus)
         {
             var migratedStreetNameWasImported = Fixture.Create<MigratedStreetNameWasImported>().WithStatus(streetNameStatus);
 

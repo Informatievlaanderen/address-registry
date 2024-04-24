@@ -62,6 +62,7 @@ namespace AddressRegistry.StreetName
             Register<AddressWasCorrectedFromRetiredToCurrent>(When);
             Register<AddressRegularizationWasCorrected>(When);
             Register<AddressDeregulationWasCorrected>(When);
+            Register<AddressRemovalWasCorrected>(When);
             Register<AddressPositionWasChanged>(When);
             Register<AddressPostalCodeWasChangedV2>(When);
             Register<AddressWasRemovedBecauseStreetNameWasRemoved>(When);
@@ -263,6 +264,8 @@ namespace AddressRegistry.StreetName
         private void When(AddressRegularizationWasCorrected @event) => RouteToAddress(@event);
 
         private void When(AddressDeregulationWasCorrected @event) => RouteToAddress(@event);
+
+        private void When(AddressRemovalWasCorrected @event) => RouteToAddress(@event);
 
         private void When(AddressPositionWasChanged @event) => RouteToAddress(@event);
 

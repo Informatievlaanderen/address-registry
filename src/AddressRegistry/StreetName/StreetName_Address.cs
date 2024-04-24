@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Address;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Commands;
@@ -318,6 +317,34 @@
             StreetNameAddresses
                 .GetNotRemovedByPersistentLocalId(addressPersistentLocalId)
                 .CorrectDeregulation();
+        }
+
+        public void CorrectAddressRemoval(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            GuardStreetNameStatusForChangeAndCorrection();
+
+            var addressToCorrect = StreetNameAddresses.GetByPersistentLocalId(addressPersistentLocalId);
+
+            if (addressToCorrect.IsBoxNumberAddress)
+            {
+                var parent = addressToCorrect.Parent;
+
+                if (parent == null || parent.IsRemoved)
+                {
+                    throw new ParentAddressNotFoundException(PersistentLocalId, addressToCorrect.HouseNumber);
+                }
+
+                if ((addressToCorrect.Status == AddressStatus.Current && parent.Status == AddressStatus.Proposed)
+                    || (addressToCorrect.Status == AddressStatus.Retired && parent.Status != AddressStatus.Current && parent.Status != AddressStatus.Retired)) // Todo: valideren met business
+                {
+                    throw new ParentAddressHasInvalidStatusException();
+                }
+            }
+
+            addressToCorrect.CorrectRemoval(() => GuardAddressIsUnique(
+                addressToCorrect.AddressPersistentLocalId,
+                addressToCorrect.HouseNumber,
+                addressToCorrect.BoxNumber));
         }
 
         public void ChangeAddressPosition(

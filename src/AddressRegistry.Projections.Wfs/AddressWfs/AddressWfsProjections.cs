@@ -1,7 +1,6 @@
 namespace AddressRegistry.Projections.Wfs.AddressWfs
 {
     using System;
-    using StreetName;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
@@ -10,6 +9,7 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
     using NetTopologySuite.Geometries;
     using NetTopologySuite.IO;
     using NodaTime;
+    using StreetName;
     using StreetName.Events;
 
     [ConnectedProjectionName("WFS adressen")]
@@ -504,6 +504,27 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
                     item =>
                     {
                         item.OfficiallyAssigned = true;
+                    },
+                    ct);
+
+                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+            });
+
+            When<Envelope<AddressRemovalWasCorrected>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    item =>
+                    {
+                        item.PostalCode = message.Message.PostalCode;
+                        item.HouseNumber = message.Message.HouseNumber;
+                        item.BoxNumber = message.Message.BoxNumber;
+                        item.Status = MapStatus(message.Message.Status);
+                        item.OfficiallyAssigned = message.Message.OfficiallyAssigned;
+                        item.Position = ParsePosition(message.Message.ExtendedWkbGeometry);
+                        item.PositionMethod = ConvertGeometryMethodToString(message.Message.GeometryMethod)!;
+                        item.PositionSpecification = ConvertGeometrySpecificationToString(message.Message.GeometrySpecification)!;
+                        item.Removed = false;
                     },
                     ct);
 

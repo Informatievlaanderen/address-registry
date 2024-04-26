@@ -1,7 +1,6 @@
 namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 {
     using System;
-    using AddressRegistry.StreetName.Events;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
@@ -10,6 +9,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
     using NetTopologySuite.Geometries;
     using NetTopologySuite.IO;
     using NodaTime;
+    using StreetName.Events;
     using AddressStatus = StreetName.AddressStatus;
     using GeometryMethod = StreetName.GeometryMethod;
     using GeometrySpecification = StreetName.GeometrySpecification;
@@ -702,6 +702,29 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
                     },
                     ct,
                     updateHouseNumberLabelsBeforeAddressUpdate: false, // TODO: review
+                    allowUpdateRemovedAddress: true);
+            });
+
+            When<Envelope<AddressRemovalWasCorrected>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateAddressDetailV2(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.PostalCode = message.Message.PostalCode;
+                        address.HouseNumber = message.Message.HouseNumber;
+                        address.BoxNumber = message.Message.BoxNumber;
+                        address.Status = MapStatus(message.Message.Status);
+                        address.OfficiallyAssigned = message.Message.OfficiallyAssigned;
+                        address.SetPosition(ParsePosition(message.Message.ExtendedWkbGeometry));
+                        address.PositionMethod = ConvertGeometryMethodToString(message.Message.GeometryMethod)!;
+                        address.PositionSpecification = ConvertGeometrySpecificationToString(message.Message.GeometrySpecification)!;
+                        address.Removed = false;
+
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    ct,
+                    updateHouseNumberLabelsAfterAddressUpdate: true,
                     allowUpdateRemovedAddress: true);
             });
         }

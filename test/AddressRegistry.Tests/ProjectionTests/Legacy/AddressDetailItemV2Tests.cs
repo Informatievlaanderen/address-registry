@@ -1170,24 +1170,63 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                 { AddEventHashPipe.HashMetadataKey, addressWasDeregulated.GetHash() }
             };
 
-            var addressDeregulationWasCorrected = _fixture.Create<AddressDeregulationWasCorrected>();
+            var @event = _fixture.Create<AddressDeregulationWasCorrected>();
             var correctedFromRegularizedMetaData = new Dictionary<string, object>
             {
-                { AddEventHashPipe.HashMetadataKey, addressDeregulationWasCorrected.GetHash() }
+                { AddEventHashPipe.HashMetadataKey, @event.GetHash() }
             };
 
             await Sut
                 .Given(
                     new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
                     new Envelope<AddressWasDeregulated>(new Envelope(addressWasDeregulated, regularizedMetadata)),
-                    new Envelope<AddressDeregulationWasCorrected>(new Envelope(addressDeregulationWasCorrected, correctedFromRegularizedMetaData)))
+                    new Envelope<AddressDeregulationWasCorrected>(new Envelope(@event, correctedFromRegularizedMetaData)))
                 .Then(async ct =>
                 {
-                    var addressDetailItemV2 = (await ct.AddressDetailV2.FindAsync(addressDeregulationWasCorrected.AddressPersistentLocalId));
+                    var addressDetailItemV2 = (await ct.AddressDetailV2.FindAsync(@event.AddressPersistentLocalId));
                     addressDetailItemV2.Should().NotBeNull();
                     addressDetailItemV2.OfficiallyAssigned.Should().BeTrue();
-                    addressDetailItemV2.VersionTimestamp.Should().Be(addressDeregulationWasCorrected.Provenance.Timestamp);
-                    addressDetailItemV2.LastEventHash.Should().Be(addressDeregulationWasCorrected.GetHash());
+                    addressDetailItemV2.VersionTimestamp.Should().Be(@event.Provenance.Timestamp);
+                    addressDetailItemV2.LastEventHash.Should().Be(@event.GetHash());
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressRemovalWasCorrected()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var @event = _fixture.Create<AddressRemovalWasCorrected>();
+            var eventMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, @event.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressRemovalWasCorrected>(new Envelope(@event, eventMetadata)))
+                .Then(async ct =>
+                {
+                    var addressDetailItemV2 = await ct.AddressDetailV2.FindAsync(@event.AddressPersistentLocalId);
+                    addressDetailItemV2.Should().NotBeNull();
+
+                    addressDetailItemV2!.Status.Should().Be(@event.Status);
+                    addressDetailItemV2.PostalCode.Should().Be(@event.PostalCode);
+                    addressDetailItemV2.HouseNumber.Should().Be(@event.HouseNumber);
+                    addressDetailItemV2.BoxNumber.Should().Be(@event.BoxNumber);
+                    addressDetailItemV2.Position.Should().BeEquivalentTo(@event.ExtendedWkbGeometry.ToByteArray());
+                    addressDetailItemV2.PositionMethod.Should().Be(@event.GeometryMethod);
+                    addressDetailItemV2.PositionSpecification.Should().Be(@event.GeometrySpecification);
+                    addressDetailItemV2.OfficiallyAssigned.Should().Be(@event.OfficiallyAssigned);
+                    addressDetailItemV2.Removed.Should().BeFalse();
+
+                    addressDetailItemV2.VersionTimestamp.Should().Be(@event.Provenance.Timestamp);
+                    addressDetailItemV2.LastEventHash.Should().Be(@event.GetHash());
                 });
         }
 

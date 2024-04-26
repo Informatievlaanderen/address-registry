@@ -1,7 +1,6 @@
 namespace AddressRegistry.Projections.Wms.AddressWmsItem
 {
     using System;
-    using Address;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
@@ -664,6 +663,29 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItem
                     address =>
                     {
                         address.OfficiallyAssigned = true;
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    ct,
+                    updateHouseNumberLabelsBeforeAddressUpdate: false, // TODO: review
+                    allowUpdateRemovedAddress: true);
+            });
+
+            When<Envelope<AddressRemovalWasCorrected>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.PostalCode = message.Message.PostalCode;
+                        address.HouseNumber = message.Message.HouseNumber;
+                        address.BoxNumber = message.Message.BoxNumber;
+                        address.Status = MapStatus(message.Message.Status);
+                        address.OfficiallyAssigned = message.Message.OfficiallyAssigned;
+                        address.SetPosition(ParsePosition(message.Message.ExtendedWkbGeometry));
+                        address.PositionMethod = ConvertGeometryMethodToString(message.Message.GeometryMethod)!;
+                        address.PositionSpecification = ConvertGeometrySpecificationToString(message.Message.GeometrySpecification)!;
+                        address.Removed = false;
+
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
                     ct,

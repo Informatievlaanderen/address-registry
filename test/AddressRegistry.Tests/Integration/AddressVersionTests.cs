@@ -1685,6 +1685,64 @@
                 });
         }
 
+        [Fact]
+        public async Task WhenAddressRemovalWasCorrected()
+        {
+            var @event = _fixture.Create<AddressRemovalWasCorrected>()
+                .WithStatus(AddressStatus.Current);
+
+            var position = _fixture.Create<long>();
+
+            var addressWasMigratedToStreetName = _fixture.Create<AddressWasMigratedToStreetName>()
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(@event.AddressPersistentLocalId))
+                .WithStatus(AddressStatus.Proposed);
+
+            var addressWasMigratedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasMigratedToStreetName.GetHash() },
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
+            };
+            var eventMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, ++position },
+                { Envelope.EventNameMetadataKey, "AddressRemovalWasCorrected"}
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasMigratedToStreetName>(new Envelope(addressWasMigratedToStreetName, addressWasMigratedMetadata)),
+                    new Envelope<AddressRemovalWasCorrected>(new Envelope(@event, eventMetadata)))
+                .Then(async ct =>
+                {
+                    var expectedGeometry = WKBReaderFactory.CreateForLegacy().Read(addressWasMigratedToStreetName.ExtendedWkbGeometry.ToByteArray());
+
+                    var expectedVersion = await ct.AddressVersions.FindAsync(position, @event.AddressPersistentLocalId);
+                    expectedVersion.Should().NotBeNull();
+                    expectedVersion!.StreetNamePersistentLocalId.Should().Be(@event.StreetNamePersistentLocalId);
+
+                    expectedVersion.ParentPersistentLocalId.Should().Be(@event.ParentPersistentLocalId);
+                    expectedVersion.Status.Should().Be(@event.Status);
+                    expectedVersion.OsloStatus.Should().Be(@event.Status.Map());
+                    expectedVersion.PostalCode.Should().Be(@event.PostalCode);
+                    expectedVersion.HouseNumber.Should().Be(@event.HouseNumber);
+                    expectedVersion.BoxNumber.Should().Be(@event.BoxNumber);
+                    expectedVersion.Geometry.Should().Be(expectedGeometry);
+                    expectedVersion.PositionMethod.Should().Be(@event.GeometryMethod);
+                    expectedVersion.OsloPositionMethod.Should().Be(@event.GeometryMethod.ToPositieGeometrieMethode());
+                    expectedVersion.PositionSpecification.Should().Be(@event.GeometrySpecification);
+                    expectedVersion.OsloPositionSpecification.Should().Be(@event.GeometrySpecification.ToPositieSpecificatie());
+                    expectedVersion.OfficiallyAssigned.Should().Be(@event.OfficiallyAssigned);
+                    expectedVersion.Removed.Should().BeFalse();
+
+                    expectedVersion.Type.Should().Be("AddressRemovalWasCorrected");
+                    expectedVersion.Namespace.Should().Be(Namespace);
+                    expectedVersion.PuriId.Should().Be($"{Namespace}/{@event.AddressPersistentLocalId}");
+                    expectedVersion.VersionTimestamp.Should().Be(@event.Provenance.Timestamp);
+                });
+        }
+
         #region Legacy
 
         [Fact]

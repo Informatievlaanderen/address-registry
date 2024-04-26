@@ -1253,5 +1253,54 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
                     three.HouseNumberLabelLength.Should().Be(3);
                 });
         }
+
+        [Fact]
+        public async Task WhenAddressRemovalWasCorrected()
+        {
+            var houseNumberOne = new HouseNumber("1");
+            var houseNumberOneWasProposed = _fixture.Create<AddressWasProposedV2>()
+                .WithHouseNumber(houseNumberOne);
+            var houseNumberOneWasRemoved = _fixture.Create<AddressWasRemovedV2>();
+            var houseNumberTwo = CreateAddressWasMigratedToStreetName(
+                new AddressPersistentLocalId(houseNumberOneWasProposed.AddressPersistentLocalId + 1),
+                new HouseNumber("2"),
+                AddressStatus.Proposed,
+                new ExtendedWkbGeometry(houseNumberOneWasProposed.ExtendedWkbGeometry));
+            var houseNumberThree = CreateAddressWasMigratedToStreetName(
+                new AddressPersistentLocalId(houseNumberTwo.AddressPersistentLocalId + 1),
+                new HouseNumber("3"),
+                AddressStatus.Proposed,
+                new ExtendedWkbGeometry(houseNumberOneWasProposed.ExtendedWkbGeometry));
+            var houseNumberOneRemovalWasCorrected = _fixture.Create<AddressRemovalWasCorrected>()
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(houseNumberOneWasProposed.AddressPersistentLocalId))
+                .WithHouseNumber(houseNumberOne)
+                .WithStatus(AddressStatus.Proposed)
+                .WithGeometry(new ExtendedWkbGeometry(houseNumberOneWasProposed.ExtendedWkbGeometry));
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(houseNumberOneWasProposed, new Dictionary<string, object>())),
+                    new Envelope<AddressWasMigratedToStreetName>(new Envelope(houseNumberThree, new Dictionary<string, object>())),
+                    new Envelope<AddressWasMigratedToStreetName>(new Envelope(houseNumberTwo, new Dictionary<string, object>())),
+                    new Envelope<AddressWasRemovedV2>(new Envelope(houseNumberOneWasRemoved, new Dictionary<string, object>())),
+                    new Envelope<AddressRemovalWasCorrected>(new Envelope(houseNumberOneRemovalWasCorrected, new Dictionary<string, object>())))
+                .Then(async ct =>
+                {
+                    var one = await ct.AddressWmsItemsV2.FindAsync(houseNumberOneWasProposed.AddressPersistentLocalId);
+                    one.Should().NotBeNull();
+                    var two = await ct.AddressWmsItemsV2.FindAsync(houseNumberTwo.AddressPersistentLocalId);
+                    one.Should().NotBeNull();
+                    var three = await ct.AddressWmsItemsV2.FindAsync(houseNumberThree.AddressPersistentLocalId);
+                    one.Should().NotBeNull();
+
+                    one!.HouseNumberLabel.Should().Be("1-3");
+                    two!.HouseNumberLabel.Should().Be("1-3");
+                    three!.HouseNumberLabel.Should().Be("1-3");
+
+                    one.HouseNumberLabelLength.Should().Be(3);
+                    two.HouseNumberLabelLength.Should().Be(3);
+                    three.HouseNumberLabelLength.Should().Be(3);
+                });
+        }
     }
 }

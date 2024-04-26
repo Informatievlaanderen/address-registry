@@ -637,6 +637,29 @@ namespace AddressRegistry.Projections.Legacy.AddressDetailV2WithParent
 
                 UpdateHash(item, message);
             });
+
+            When<Envelope<AddressRemovalWasCorrected>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressDetailV2(
+                    message.Message.AddressPersistentLocalId,
+                    item =>
+                    {
+                        item.Status =  message.Message.Status;
+                        item.PostalCode = message.Message.PostalCode;
+                        item.HouseNumber = message.Message.HouseNumber;
+                        item.BoxNumber = message.Message.BoxNumber;
+                        item.Position = message.Message.ExtendedWkbGeometry.ToByteArray();
+                        item.PositionMethod = message.Message.GeometryMethod;
+                        item.PositionSpecification = message.Message.GeometrySpecification;
+                        item.OfficiallyAssigned = message.Message.OfficiallyAssigned;
+                        item.Removed = false;
+
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+
+                UpdateHash(item, message);
+            });
         }
 
         private static void UpdateHash<T>(AddressDetailItemV2WithParent entity, Envelope<T> wrappedEvent) where T : IHaveHash, IMessage

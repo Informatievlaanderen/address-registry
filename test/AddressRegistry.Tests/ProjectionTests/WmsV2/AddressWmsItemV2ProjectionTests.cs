@@ -1380,6 +1380,51 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
         }
 
         [Fact]
+        public async Task WhenAddressRemovalWasCorrected()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var @event = _fixture.Create<AddressRemovalWasCorrected>();
+            var eventMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, @event.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressRemovalWasCorrected>(new Envelope(@event, eventMetadata)))
+                .Then(async ct =>
+                {
+                    var expectedGeometry = (Point)_wkbReader.Read(@event.ExtendedWkbGeometry.ToByteArray());
+
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(@event.AddressPersistentLocalId);
+                    addressWmsItem.Should().NotBeNull();
+
+                    addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(@event.Status));
+                    addressWmsItem.PostalCode.Should().Be(@event.PostalCode);
+                    addressWmsItem.HouseNumber.Should().Be(@event.HouseNumber);
+                    addressWmsItem.BoxNumber.Should().Be(@event.BoxNumber);
+                    addressWmsItem.Position.Should().BeEquivalentTo(expectedGeometry);
+                    addressWmsItem.PositionX.Should().Be(expectedGeometry.X);
+                    addressWmsItem.PositionY.Should().Be(expectedGeometry.Y);
+                    addressWmsItem.PositionMethod.Should().Be(
+                        AddressWmsItemProjections.ConvertGeometryMethodToString(@event.GeometryMethod));
+                    addressWmsItem.PositionSpecification.Should().Be(
+                        AddressWmsItemProjections.ConvertGeometrySpecificationToString(@event.GeometrySpecification));
+                    addressWmsItem.OfficiallyAssigned.Should().Be(@event.OfficiallyAssigned);
+                    addressWmsItem.Removed.Should().BeFalse();
+                    addressWmsItem.ParentAddressPersistentLocalId.Should().Be(@event.ParentPersistentLocalId);
+
+                    addressWmsItem.VersionTimestamp.Should().Be(@event.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
         public async Task WhenStreetNameNamesWereCorrected()
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();

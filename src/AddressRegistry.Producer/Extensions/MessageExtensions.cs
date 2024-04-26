@@ -252,6 +252,21 @@ namespace AddressRegistry.Producer.Extensions
         public static Contracts.AddressDeregulationWasCorrected ToContract(this StreetNameAggregate.AddressDeregulationWasCorrected message) =>
             new Contracts.AddressDeregulationWasCorrected(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
 
+        public static Contracts.AddressRemovalWasCorrected ToContract(this StreetNameAggregate.AddressRemovalWasCorrected message) =>
+            new Contracts.AddressRemovalWasCorrected(
+                message.StreetNamePersistentLocalId,
+                message.AddressPersistentLocalId,
+                message.Status.ToString(),
+                message.HouseNumber,
+                message.BoxNumber,
+                message.GeometryMethod.ToString(),
+                message.GeometrySpecification.ToString(),
+                message.ExtendedWkbGeometry,
+                message.OfficiallyAssigned,
+                message.PostalCode,
+                message.ParentPersistentLocalId,
+                message.Provenance.ToContract());
+
         public static Contracts.AddressWasRemovedBecauseStreetNameWasRemoved ToContract(this StreetNameAggregate.AddressWasRemovedBecauseStreetNameWasRemoved message) =>
             new Contracts.AddressWasRemovedBecauseStreetNameWasRemoved(message.StreetNamePersistentLocalId, message.AddressPersistentLocalId, message.Provenance.ToContract());
 

@@ -2,7 +2,6 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Address.Events;
     using AddressRegistry.StreetName;
     using AddressRegistry.StreetName.DataStructures;
     using AddressRegistry.StreetName.Events;
@@ -1215,6 +1214,50 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy.Wms
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem.OfficiallyAssigned.Should().BeTrue();
                     addressWmsItem.VersionTimestamp.Should().Be(addressDeregulationWasCorrected.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressRemovalWasCorrected()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var addressWasProposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var @event = _fixture.Create<AddressRemovalWasCorrected>();
+            var eventMetData = new Dictionary<string, object>()
+            {
+                { AddEventHashPipe.HashMetadataKey, @event.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, addressWasProposedMetadata)),
+                    new Envelope<AddressRemovalWasCorrected>(new Envelope(@event, eventMetData)))
+                .Then(async ct =>
+                {
+                    var addressWmsItem = await ct.AddressWmsItems.FindAsync(@event.AddressPersistentLocalId);
+                    addressWmsItem.Should().NotBeNull();
+
+                    var expectedGeometry = (Point)_wkbReader.Read(@event.ExtendedWkbGeometry.ToByteArray());
+
+                    addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(@event.Status));
+                    addressWmsItem.PostalCode.Should().Be(@event.PostalCode);
+                    addressWmsItem.HouseNumber.Should().Be(@event.HouseNumber);
+                    addressWmsItem.BoxNumber.Should().Be(@event.BoxNumber);
+                    addressWmsItem.Position.Should().Be( expectedGeometry);
+                    addressWmsItem.PositionX.Should().Be(expectedGeometry.X);
+                    addressWmsItem.PositionY.Should().Be(expectedGeometry.Y);
+                    addressWmsItem.PositionMethod.Should().Be(
+                        AddressWmsItemProjections.ConvertGeometryMethodToString(@event.GeometryMethod));
+                    addressWmsItem.PositionSpecification.Should().Be(
+                        AddressWmsItemProjections.ConvertGeometrySpecificationToString(@event.GeometrySpecification));
+                    addressWmsItem.OfficiallyAssigned.Should().Be(@event.OfficiallyAssigned);
+                    addressWmsItem.Removed.Should().BeFalse();
+
+                    addressWmsItem.VersionTimestamp.Should().Be(@event.Provenance.Timestamp);
                 });
         }
 

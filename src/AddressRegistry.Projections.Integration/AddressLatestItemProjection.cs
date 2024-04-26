@@ -649,6 +649,33 @@
                     },
                     ct);
             });
+
+            When<Envelope<AddressRemovalWasCorrected>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateAddressLatestItem(
+                    message.Message.AddressPersistentLocalId,
+                    message.Position,
+                    item =>
+                    {
+                        var geometry = WKBReaderFactory.CreateForLegacy().Read(message.Message.ExtendedWkbGeometry.ToByteArray());
+
+                        item.Status = message.Message.Status;
+                        item.OsloStatus = message.Message.Status.Map();
+                        item.PostalCode = message.Message.PostalCode;
+                        item.HouseNumber = message.Message.HouseNumber;
+                        item.BoxNumber = message.Message.BoxNumber;
+                        item.Geometry = geometry;
+                        item.PositionMethod = message.Message.GeometryMethod;
+                        item.OsloPositionMethod = message.Message.GeometryMethod.ToPositieGeometrieMethode();
+                        item.PositionSpecification = message.Message.GeometrySpecification;
+                        item.OsloPositionSpecification = message.Message.GeometrySpecification.ToPositieSpecificatie();
+                        item.OfficiallyAssigned = message.Message.OfficiallyAssigned;
+                        item.Removed = false;
+
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+            });
         }
 
         private static void UpdateVersionTimestampIfNewer(AddressLatestItem addressLatestItem, Instant versionTimestamp)

@@ -1491,6 +1491,60 @@
                 });
         }
 
+        [Fact]
+        public async Task WhenAddressRemovalWasCorrected()
+        {
+            var @event = _fixture.Create<AddressRemovalWasCorrected>()
+                .WithStatus(AddressStatus.Current);
+
+            var position = _fixture.Create<long>();
+
+            var addressWasMigratedToStreetName = _fixture.Create<AddressWasMigratedToStreetName>()
+                .WithStatus(AddressStatus.Proposed);
+            var addressWasMigratedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasMigratedToStreetName.GetHash() },
+                { Envelope.PositionMetadataKey, position }
+            };
+            var eventMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, ++position }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasMigratedToStreetName>(new Envelope(addressWasMigratedToStreetName, addressWasMigratedMetadata)),
+                    new Envelope<AddressRemovalWasCorrected>(new Envelope(@event, eventMetadata)))
+                .Then(async ct =>
+                {
+                    var expectedGeometry = WKBReaderFactory.CreateForLegacy().Read(addressWasMigratedToStreetName.ExtendedWkbGeometry.ToByteArray());
+
+                    var expectedLatestItem =
+                        await ct.AddressLatestItems.FindAsync(@event.AddressPersistentLocalId);
+                    expectedLatestItem.Should().NotBeNull();
+                    expectedLatestItem!.StreetNamePersistentLocalId.Should().Be(@event.StreetNamePersistentLocalId);
+
+                    expectedLatestItem.ParentPersistentLocalId.Should().Be(@event.ParentPersistentLocalId);
+                    expectedLatestItem.Status.Should().Be(@event.Status);
+                    expectedLatestItem.OsloStatus.Should().Be(@event.Status.Map());
+                    expectedLatestItem.PostalCode.Should().Be(@event.PostalCode);
+                    expectedLatestItem.HouseNumber.Should().Be(@event.HouseNumber);
+                    expectedLatestItem.BoxNumber.Should().Be(@event.BoxNumber);
+                    expectedLatestItem.Geometry.Should().Be(expectedGeometry);
+                    expectedLatestItem.PositionMethod.Should().Be(@event.GeometryMethod);
+                    expectedLatestItem.OsloPositionMethod.Should().Be(@event.GeometryMethod.ToPositieGeometrieMethode());
+                    expectedLatestItem.PositionSpecification.Should().Be(@event.GeometrySpecification);
+                    expectedLatestItem.OsloPositionSpecification.Should().Be(@event.GeometrySpecification.ToPositieSpecificatie());
+                    expectedLatestItem.OfficiallyAssigned.Should().Be(@event.OfficiallyAssigned);
+                    expectedLatestItem.Removed.Should().BeFalse();
+
+                    expectedLatestItem.Namespace.Should().Be(Namespace);
+                    expectedLatestItem.PuriId.Should().Be($"{Namespace}/{@event.AddressPersistentLocalId}");
+                    expectedLatestItem.VersionTimestamp.Should().Be(@event.Provenance.Timestamp);
+                });
+        }
+
         protected override AddressLatestItemProjections CreateProjection()
             => new AddressLatestItemProjections(
                 new OptionsWrapper<IntegrationOptions>(new IntegrationOptions { Namespace = Namespace }));

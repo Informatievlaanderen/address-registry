@@ -1191,6 +1191,44 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
         }
 
         [Fact]
+        public async Task WhenAddressRemovalWasCorrected()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var @event = _fixture.Create<AddressRemovalWasCorrected>();
+            var eventMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, @event.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressRemovalWasCorrected>(new Envelope(@event, eventMetadata)))
+                .Then(async ct =>
+                {
+                    var item = (await ct.AddressWfsItems.FindAsync(@event.AddressPersistentLocalId));
+                    item.Should().NotBeNull();
+
+                    item!.Status.Should().Be(AddressWfsProjections.MapStatus(@event.Status));
+                    item.PostalCode.Should().Be(@event.PostalCode);
+                    item.HouseNumber.Should().Be(@event.HouseNumber);
+                    item.BoxNumber.Should().Be(@event.BoxNumber);
+                    item.Position.Should().BeEquivalentTo((Point)_wkbReader.Read(@event.ExtendedWkbGeometry.ToByteArray()));
+                    item.PositionMethod.Should().Be(AddressWfsProjections.ConvertGeometryMethodToString(@event.GeometryMethod));
+                    item.PositionSpecification.Should().Be(AddressWfsProjections.ConvertGeometrySpecificationToString(@event.GeometrySpecification));
+                    item.OfficiallyAssigned.Should().Be(@event.OfficiallyAssigned);
+                    item.Removed.Should().BeFalse();
+
+                    item.VersionTimestamp.Should().Be(@event.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
         public async Task WhenStreetNameNamesWereCorrected()
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();

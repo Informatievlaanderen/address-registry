@@ -1195,6 +1195,46 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
         }
 
         [Fact]
+        public async Task WhenAddressRemovalWasCorrected()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var @event = _fixture.Create<AddressRemovalWasCorrected>();
+            var eventMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, @event.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressRemovalWasCorrected>(new Envelope(@event, eventMetadata)))
+                .Then(async ct =>
+                {
+                    var addressDetailItemV2 = await ct.AddressDetailV2WithParent.FindAsync(@event.AddressPersistentLocalId);
+                    addressDetailItemV2.Should().NotBeNull();
+
+                    addressDetailItemV2!.ParentAddressPersistentLocalId.Should().Be(@event.ParentPersistentLocalId);
+                    addressDetailItemV2.Status.Should().Be(@event.Status);
+                    addressDetailItemV2.PostalCode.Should().Be(@event.PostalCode);
+                    addressDetailItemV2.HouseNumber.Should().Be(@event.HouseNumber);
+                    addressDetailItemV2.BoxNumber.Should().Be(@event.BoxNumber);
+                    addressDetailItemV2.Position.Should().BeEquivalentTo(@event.ExtendedWkbGeometry.ToByteArray());
+                    addressDetailItemV2.PositionMethod.Should().Be(@event.GeometryMethod);
+                    addressDetailItemV2.PositionSpecification.Should().Be(@event.GeometrySpecification);
+                    addressDetailItemV2.OfficiallyAssigned.Should().Be(@event.OfficiallyAssigned);
+                    addressDetailItemV2.Removed.Should().BeFalse();
+
+                    addressDetailItemV2.VersionTimestamp.Should().Be(@event.Provenance.Timestamp);
+                    addressDetailItemV2.LastEventHash.Should().Be(@event.GetHash());
+                });
+        }
+
+        [Fact]
         public async Task WhenStreetNameNamesWereCorrected()
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();

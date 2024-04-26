@@ -2,12 +2,12 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
 {
     using System;
     using System.Threading.Tasks;
-    using StreetName;
     using Address.Events;
     using Address.Events.Crab;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
+    using StreetName;
     using StreetName.Events;
 
     [ConnectedProjectionName("Feed endpoint adressen")]
@@ -947,6 +947,25 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     x =>
                     {
                         x.IsOfficiallyAssigned = true;
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressRemovalWasCorrected>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressPersistentLocalId,
+                    message,
+                    x =>
+                    {
+                        x.Status = message.Message.Status;
+                        x.PostalCode = message.Message.PostalCode;
+                        x.HouseNumber = message.Message.HouseNumber;
+                        x.BoxNumber = message.Message.BoxNumber;
+                        x.PointPosition = message.Message.ExtendedWkbGeometry.ToByteArray();
+                        x.PositionMethod = message.Message.GeometryMethod;
+                        x.PositionSpecification = message.Message.GeometrySpecification;
+                        x.IsOfficiallyAssigned = message.Message.OfficiallyAssigned;
                     },
                     ct);
             });

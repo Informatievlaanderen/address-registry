@@ -98,6 +98,7 @@
             builder.HasIndex(x => x.HouseNumber);
             builder.HasIndex(x => x.BoxNumber);
             builder.HasIndex(x => x.Removed);
+            builder.HasIndex(x => new { x.Removed, x.Status });
         }
     }
 }

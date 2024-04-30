@@ -1,3 +1,10 @@
+# [4.3.0](https://github.com/informatievlaanderen/address-registry/compare/v4.2.0...v4.3.0) (2024-04-30)
+
+
+### Features
+
+* revert remove crab from extract GAWR-4677 ([d249220](https://github.com/informatievlaanderen/address-registry/commit/d249220f912a22a3b233bbb3c2f840a577faf450))
+
 # [4.2.0](https://github.com/informatievlaanderen/address-registry/compare/v4.1.0...v4.2.0) (2024-04-29)
 
 

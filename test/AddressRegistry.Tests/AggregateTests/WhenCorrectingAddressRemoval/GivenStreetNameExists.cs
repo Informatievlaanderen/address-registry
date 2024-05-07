@@ -199,7 +199,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressRemoval
         [InlineData(AddressStatus.Proposed, AddressStatus.Current)]
         [InlineData(AddressStatus.Proposed, AddressStatus.Retired)]
         [InlineData(AddressStatus.Rejected, AddressStatus.Retired)]
-        public void WithHouseNumberAddressHasInvalidStatus_ThenThrowsParentAddressHasInvalidStatusException(
+        public void WithHouseNumberAddressHasInvalidStatus_ThenAddressRemovalWasCorrectedUsingHouseNumberAddressStatus(
             AddressStatus houseNumberAddressStatus,
             AddressStatus boxNumberAddressStatus)
         {
@@ -212,6 +212,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressRemoval
                 .AsBoxNumberAddress(new AddressPersistentLocalId(houseNumberAddressWasMigrated.AddressPersistentLocalId))
                 .WithAddressPersistentLocalId(boxNumberAddressPersistentLocalId)
                 .WithStatus(boxNumberAddressStatus)
+                .WithPostalCode(new PostalCode(houseNumberAddressWasMigrated.PostalCode!))
                 .WithRemoved();
 
             var command = new CorrectAddressRemoval(
@@ -225,7 +226,21 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressRemoval
                     houseNumberAddressWasMigrated,
                     boxNumberAddressWasMigrated)
                 .When(command)
-                .Throws(new ParentAddressHasInvalidStatusException()));
+                .Then(new Fact(
+                    _streamId,
+                    new AddressRemovalWasCorrected(
+                        command.StreetNamePersistentLocalId,
+                        command.AddressPersistentLocalId,
+                        houseNumberAddressStatus,
+                        !string.IsNullOrEmpty(boxNumberAddressWasMigrated.PostalCode) ? new PostalCode(boxNumberAddressWasMigrated.PostalCode) : null,
+                        new HouseNumber(boxNumberAddressWasMigrated.HouseNumber),
+                        new BoxNumber(boxNumberAddressWasMigrated.BoxNumber!),
+                        boxNumberAddressWasMigrated.GeometryMethod,
+                        boxNumberAddressWasMigrated.GeometrySpecification,
+                        new ExtendedWkbGeometry(boxNumberAddressWasMigrated.ExtendedWkbGeometry.ToByteArray()),
+                        boxNumberAddressWasMigrated.OfficiallyAssigned,
+                        boxNumberAddressWasMigrated.ParentPersistentLocalId.HasValue ? new AddressPersistentLocalId(boxNumberAddressWasMigrated.ParentPersistentLocalId.Value) : null
+                    ))));
         }
 
         [Fact]

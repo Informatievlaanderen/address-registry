@@ -333,13 +333,6 @@ namespace AddressRegistry.StreetName
                 {
                     throw new ParentAddressIsRemovedException(PersistentLocalId, addressToCorrect.HouseNumber);
                 }
-                
-                if ((addressToCorrect.Status == AddressStatus.Current && parent.Status == AddressStatus.Proposed)
-                    ||
-                    (addressToCorrect.Status == AddressStatus.Retired && parent.Status is AddressStatus.Proposed or AddressStatus.Rejected)) // Todo: valideren met business
-                {
-                    throw new ParentAddressHasInvalidStatusException();
-                }
             }
 
             addressToCorrect.CorrectRemoval(() => GuardAddressIsUnique(

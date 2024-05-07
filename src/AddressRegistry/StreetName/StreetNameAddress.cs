@@ -531,12 +531,24 @@ namespace AddressRegistry.StreetName
                 return;
             }
 
+            var status = Status;
+
+            if (IsBoxNumberAddress)
+            {
+                if ((Status == AddressStatus.Current && Parent!.Status == AddressStatus.Proposed)
+                    ||
+                    (Status == AddressStatus.Retired && Parent!.Status is AddressStatus.Proposed or AddressStatus.Rejected))
+                {
+                    status = Parent.Status;
+                }
+            }
+
             guardAddressIsUnique();
 
             Apply(new AddressRemovalWasCorrected(
                 _streetNamePersistentLocalId,
                 AddressPersistentLocalId,
-                Status,
+                status,
                 PostalCode,
                 HouseNumber,
                 BoxNumber,

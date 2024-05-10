@@ -1,3 +1,18 @@
+# [4.4.0](https://github.com/informatievlaanderen/address-registry/compare/v4.3.0...v4.4.0) (2024-05-10)
+
+
+### Bug Fixes
+
+* AddressRemovalWasCorrected should contain all address properties ([14cad3c](https://github.com/informatievlaanderen/address-registry/commit/14cad3c9cfffe64b39f41c12f59169246a2a5252))
+* use HouseNumberAddress status when invalid ([03fb7e3](https://github.com/informatievlaanderen/address-registry/commit/03fb7e3b117d227733ca9c834928a328b5ce72a0))
+
+
+### Features
+
+* add AddressRemovalWasCorrected projections + producers ([a609322](https://github.com/informatievlaanderen/address-registry/commit/a609322d38cec1e0a272fe7fdea4b4a2a77b6c07))
+* add correct address removal domain ([2b6c24f](https://github.com/informatievlaanderen/address-registry/commit/2b6c24f13d9e5106fa9fdd22429bb14f0521ad32))
+* add correct address removal event + command ([e552dbb](https://github.com/informatievlaanderen/address-registry/commit/e552dbb473d2b226150d74bbdb636e5b82200bba))
+
 # [4.3.0](https://github.com/informatievlaanderen/address-registry/compare/v4.2.0...v4.3.0) (2024-04-30)
 
 

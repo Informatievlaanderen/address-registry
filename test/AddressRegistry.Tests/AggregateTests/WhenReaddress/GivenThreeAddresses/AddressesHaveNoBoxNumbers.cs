@@ -73,6 +73,42 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddress.GivenThreeAddresses
 
             var thirdAddressPersistentLocalId = new AddressPersistentLocalId(1); // FakePersistentLocalIdGenerator starts with 1
 
+            var expectedAddressHouseNumberWasReaddressed = new AddressHouseNumberWasReaddressed(
+                _streetNamePersistentLocalId,
+                secondAddressPersistentLocalId,
+                readdressedHouseNumber: new ReaddressedAddressData(
+                    firstAddressPersistentLocalId,
+                    secondAddressPersistentLocalId,
+                    isDestinationNewlyProposed: false,
+                    firstAddressWasMigrated.Status,
+                    secondHouseNumber,
+                    boxNumber: null,
+                    new PostalCode(firstAddressWasMigrated.PostalCode!),
+                    new AddressGeometry(
+                        firstAddressWasMigrated.GeometryMethod,
+                        firstAddressWasMigrated.GeometrySpecification,
+                        new ExtendedWkbGeometry(firstAddressWasMigrated.ExtendedWkbGeometry)),
+                    firstAddressWasMigrated.OfficiallyAssigned),
+                readdressedBoxNumbers: new List<ReaddressedAddressData>());
+
+            var expectedAddressHouseNumberWasReaddressed2 = new AddressHouseNumberWasReaddressed(
+                _streetNamePersistentLocalId,
+                thirdAddressPersistentLocalId,
+                readdressedHouseNumber: new ReaddressedAddressData(
+                    secondAddressPersistentLocalId,
+                    thirdAddressPersistentLocalId,
+                    isDestinationNewlyProposed: true,
+                    secondAddressWasMigrated.Status,
+                    thirdHouseNumber,
+                    boxNumber: null,
+                    new PostalCode(secondAddressWasMigrated.PostalCode!),
+                    new AddressGeometry(
+                        secondAddressWasMigrated.GeometryMethod,
+                        secondAddressWasMigrated.GeometrySpecification,
+                        new ExtendedWkbGeometry(secondAddressWasMigrated.ExtendedWkbGeometry)),
+                    secondAddressWasMigrated.OfficiallyAssigned),
+                readdressedBoxNumbers: new List<ReaddressedAddressData>());
+
             Assert(new Scenario()
                 .Given(_streamId,
                     Fixture.Create<StreetNameWasImported>(),
@@ -93,42 +129,11 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddress.GivenThreeAddresses
                             secondAddressWasMigrated.GeometryMethod,
                             secondAddressWasMigrated.GeometrySpecification,
                             new ExtendedWkbGeometry(secondAddressWasMigrated.ExtendedWkbGeometry))),
+                    new Fact(_streamId, expectedAddressHouseNumberWasReaddressed),
                     new Fact(_streamId,
-                        new AddressHouseNumberWasReaddressed(
-                            _streetNamePersistentLocalId,
-                            secondAddressPersistentLocalId,
-                            readdressedHouseNumber: new ReaddressedAddressData(
-                                firstAddressPersistentLocalId,
-                                secondAddressPersistentLocalId,
-                                isDestinationNewlyProposed: false,
-                                firstAddressWasMigrated.Status,
-                                secondHouseNumber,
-                                boxNumber: null,
-                                new PostalCode(firstAddressWasMigrated.PostalCode!),
-                                new AddressGeometry(
-                                    firstAddressWasMigrated.GeometryMethod,
-                                    firstAddressWasMigrated.GeometrySpecification,
-                                    new ExtendedWkbGeometry(firstAddressWasMigrated.ExtendedWkbGeometry)),
-                                firstAddressWasMigrated.OfficiallyAssigned),
-                            readdressedBoxNumbers: new List<ReaddressedAddressData>())),
-                    new Fact(_streamId,
-                        new AddressHouseNumberWasReaddressed(
-                            _streetNamePersistentLocalId,
-                            thirdAddressPersistentLocalId,
-                            readdressedHouseNumber: new ReaddressedAddressData(
-                                secondAddressPersistentLocalId,
-                                thirdAddressPersistentLocalId,
-                                isDestinationNewlyProposed: true,
-                                secondAddressWasMigrated.Status,
-                                thirdHouseNumber,
-                                boxNumber: null,
-                                new PostalCode(secondAddressWasMigrated.PostalCode!),
-                                new AddressGeometry(
-                                    secondAddressWasMigrated.GeometryMethod,
-                                    secondAddressWasMigrated.GeometrySpecification,
-                                    new ExtendedWkbGeometry(secondAddressWasMigrated.ExtendedWkbGeometry)),
-                                secondAddressWasMigrated.OfficiallyAssigned),
-                            readdressedBoxNumbers: new List<ReaddressedAddressData>()))
+                        expectedAddressHouseNumberWasReaddressed2),
+                    new Fact(_streamId, new StreetNameWasReaddressed(_streetNamePersistentLocalId,
+                        new List<AddressHouseNumberWasReaddressed>{ expectedAddressHouseNumberWasReaddressed, expectedAddressHouseNumberWasReaddressed2 }))
                 }));
 
             command.ExecutionContext.AddressesAdded.Should().ContainSingle();

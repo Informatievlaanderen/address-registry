@@ -24,7 +24,7 @@ namespace AddressRegistry.StreetName
 
             // Propose Actions
             var proposeActions = streetNameReaddresser.Actions.Where(x =>
-                x.action == ReaddressAction.ProposeHouseNumber || x.action == ReaddressAction.ProposeBoxNumber);
+                x.action is ReaddressAction.ProposeHouseNumber or ReaddressAction.ProposeBoxNumber);
 
             foreach (var (action, addressPersistentLocalId) in proposeActions)
             {
@@ -36,14 +36,20 @@ namespace AddressRegistry.StreetName
                     executionContext);
             }
 
-            foreach (var (addressPersistentLocalId, readressedData) in streetNameReaddresser.ReaddressedAddresses)
+            var readdressedEvents = new List<AddressHouseNumberWasReaddressed>();
+            foreach (var (addressPersistentLocalId, readdressedData) in streetNameReaddresser.ReaddressedAddresses)
             {
-                ApplyChange(new AddressHouseNumberWasReaddressed(
+                var addressHouseNumberWasReaddressed = new AddressHouseNumberWasReaddressed(
                     PersistentLocalId,
                     addressPersistentLocalId,
-                    readressedData.readdressedHouseNumber,
-                    readressedData.readdressedBoxNumbers));
+                    readdressedData.readdressedHouseNumber,
+                    readdressedData.readdressedBoxNumbers);
+
+                readdressedEvents.Add(addressHouseNumberWasReaddressed);
+                ApplyChange(addressHouseNumberWasReaddressed);
             }
+
+            ApplyChange(new StreetNameWasReaddressed(PersistentLocalId, readdressedEvents));
 
             // Reject or Retire BoxNumber Actions
             var rejectRetireBoxNumberActions = streetNameReaddresser.Actions.Where(x =>

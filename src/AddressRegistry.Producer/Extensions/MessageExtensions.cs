@@ -3,6 +3,7 @@ namespace AddressRegistry.Producer.Extensions
     using System.Collections.Generic;
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using StreetName.DataStructures;
     using Contracts = Be.Vlaanderen.Basisregisters.GrAr.Contracts.AddressRegistry;
     using AddressAggregate = Address.Events;
     using StreetNameAggregate = StreetName.Events;
@@ -274,32 +275,9 @@ namespace AddressRegistry.Producer.Extensions
             new Contracts.AddressHouseNumberWasReaddressed(
                 message.StreetNamePersistentLocalId,
                 message.AddressPersistentLocalId,
-                new Contracts.ReaddressedAddressData(
-                    message.ReaddressedHouseNumber.SourceAddressPersistentLocalId,
-                    message.ReaddressedHouseNumber.DestinationAddressPersistentLocalId,
-                    message.ReaddressedHouseNumber.IsDestinationNewlyProposed,
-                    message.ReaddressedHouseNumber.SourceStatus.ToString(),
-                    message.ReaddressedHouseNumber.DestinationHouseNumber,
-                    message.ReaddressedHouseNumber.SourceBoxNumber,
-                    message.ReaddressedHouseNumber.SourcePostalCode,
-                    message.ReaddressedHouseNumber.SourceGeometryMethod.ToString(),
-                    message.ReaddressedHouseNumber.SourceGeometrySpecification.ToString(),
-                    message.ReaddressedHouseNumber.SourceExtendedWkbGeometry,
-                    message.ReaddressedHouseNumber.SourceIsOfficiallyAssigned),
+                message.ReaddressedHouseNumber.ToContract(),
                 message.ReaddressedBoxNumbers
-                    .Select(x =>
-                        new Contracts.ReaddressedAddressData(
-                            x.SourceAddressPersistentLocalId,
-                            x.DestinationAddressPersistentLocalId,
-                            x.IsDestinationNewlyProposed,
-                            x.SourceStatus.ToString(),
-                            x.DestinationHouseNumber,
-                            x.SourceBoxNumber,
-                            x.SourcePostalCode,
-                            x.SourceGeometryMethod.ToString(),
-                            x.SourceGeometrySpecification.ToString(),
-                            x.SourceExtendedWkbGeometry,
-                            x.SourceIsOfficiallyAssigned))
+                    .Select(x => x.ToContract())
                     .ToList(),
                 message.Provenance.ToContract());
 
@@ -328,6 +306,33 @@ namespace AddressRegistry.Producer.Extensions
                 message.StreetNamePersistentLocalId,
                 message.AddressPersistentLocalId,
                 message.Provenance.ToContract());
+
+        public static Contracts.StreetNameWasReaddressed ToContract(this StreetNameAggregate.StreetNameWasReaddressed message) =>
+            new(
+                message.StreetNamePersistentLocalId,
+                message.ReaddressedHouseNumbers.Select(x => x.ToContract()).ToList(),
+                message.Provenance.ToContract()
+            );
+
+        private static Contracts.AddressHouseNumberReaddressedData ToContract(this AddressHouseNumberReaddressedData readdressedHouseNumber) =>
+            new(
+                readdressedHouseNumber.AddressPersistentLocalId,
+                readdressedHouseNumber.ReaddressedHouseNumber.ToContract(),
+                readdressedHouseNumber.ReaddressedBoxNumbers.Select(x => x.ToContract()).ToList());
+
+        private static Contracts.ReaddressedAddressData ToContract(this ReaddressedAddressData readdressedAddressData) =>
+            new(
+                readdressedAddressData.SourceAddressPersistentLocalId,
+                readdressedAddressData.DestinationAddressPersistentLocalId,
+                readdressedAddressData.IsDestinationNewlyProposed,
+                readdressedAddressData.SourceStatus.ToString(),
+                readdressedAddressData.DestinationHouseNumber,
+                readdressedAddressData.SourceBoxNumber,
+                readdressedAddressData.SourcePostalCode,
+                readdressedAddressData.SourceGeometryMethod.ToString(),
+                readdressedAddressData.SourceGeometrySpecification.ToString(),
+                readdressedAddressData.SourceExtendedWkbGeometry,
+                readdressedAddressData.SourceIsOfficiallyAssigned);
 
         private static Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common.Provenance ToContract(this ProvenanceData provenance)
             => new Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common.Provenance(

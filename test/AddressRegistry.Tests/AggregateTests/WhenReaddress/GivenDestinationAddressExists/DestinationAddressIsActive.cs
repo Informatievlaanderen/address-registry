@@ -62,6 +62,24 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddress.GivenDestinationAdd
                 new List<RetireAddressItem>(),
                 Fixture.Create<Provenance>());
 
+            var expectedAddressHouseNumberWasReaddressed = new AddressHouseNumberWasReaddressed(
+                _streetNamePersistentLocalId,
+                destinationAddressPersistentLocalId,
+                readdressedHouseNumber: new ReaddressedAddressData(
+                    sourceAddressPersistentLocalId,
+                    destinationAddressPersistentLocalId,
+                    isDestinationNewlyProposed: false,
+                    sourceAddressWasMigrated.Status,
+                    destinationHouseNumber,
+                    boxNumber: null,
+                    new PostalCode(sourceAddressWasMigrated.PostalCode!),
+                    new AddressGeometry(
+                        sourceAddressWasMigrated.GeometryMethod,
+                        sourceAddressWasMigrated.GeometrySpecification,
+                        new ExtendedWkbGeometry(sourceAddressWasMigrated.ExtendedWkbGeometry)),
+                    sourceAddressWasMigrated.OfficiallyAssigned),
+                readdressedBoxNumbers: new List<ReaddressedAddressData>());
+
             Assert(new Scenario()
                 .Given(_streamId,
                     Fixture.Create<StreetNameWasImported>(),
@@ -71,23 +89,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenReaddress.GivenDestinationAdd
                 .Then(new[]
                 {
                     new Fact(_streamId,
-                        new AddressHouseNumberWasReaddressed(
-                            _streetNamePersistentLocalId,
-                            destinationAddressPersistentLocalId,
-                            readdressedHouseNumber: new ReaddressedAddressData(
-                                sourceAddressPersistentLocalId,
-                                destinationAddressPersistentLocalId,
-                                isDestinationNewlyProposed: false,
-                                sourceAddressWasMigrated.Status,
-                                destinationHouseNumber,
-                                boxNumber: null,
-                                new PostalCode(sourceAddressWasMigrated.PostalCode!),
-                                new AddressGeometry(
-                                    sourceAddressWasMigrated.GeometryMethod,
-                                    sourceAddressWasMigrated.GeometrySpecification,
-                                    new ExtendedWkbGeometry(sourceAddressWasMigrated.ExtendedWkbGeometry)),
-                                sourceAddressWasMigrated.OfficiallyAssigned),
-                            readdressedBoxNumbers: new List<ReaddressedAddressData>()))
+                        expectedAddressHouseNumberWasReaddressed),
+                    new Fact(_streamId, new StreetNameWasReaddressed(_streetNamePersistentLocalId, new List<AddressHouseNumberWasReaddressed>{ expectedAddressHouseNumberWasReaddressed }))
                 }));
 
             command.ExecutionContext.AddressesAdded.Should().BeEmpty();

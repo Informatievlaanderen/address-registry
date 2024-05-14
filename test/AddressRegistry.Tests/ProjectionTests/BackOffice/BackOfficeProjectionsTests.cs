@@ -1,6 +1,7 @@
 namespace AddressRegistry.Tests.ProjectionTests.BackOffice
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Abstractions;
@@ -10,7 +11,9 @@ namespace AddressRegistry.Tests.ProjectionTests.BackOffice
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing;
     using FluentAssertions;
     using global::AutoFixture;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
     using Moq;
     using Projections.BackOffice;
     using Xunit;
@@ -38,9 +41,13 @@ namespace AddressRegistry.Tests.ProjectionTests.BackOffice
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
 
             await Sut
-                .Given(addressWasProposedV2)
+                .Given(new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, new Dictionary<string, object>
+                {
+                    { Envelope.CreatedUtcMetadataKey, DateTime.UtcNow }
+                })))
                 .Then(async _ =>
                 {
+                    await Task.Delay(TimeSpan.FromSeconds(DelayInSeconds + 1));
                     var result = await _fakeBackOfficeContext
                         .AddressPersistentIdStreetNamePersistentIds
                         .FindAsync(addressWasProposedV2.AddressPersistentLocalId);
@@ -61,9 +68,14 @@ namespace AddressRegistry.Tests.ProjectionTests.BackOffice
                 CancellationToken.None);
 
             await Sut
-                .Given(addressWasProposedV2)
+                .Given(new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, new Dictionary<string, object>
+                {
+                    { Envelope.CreatedUtcMetadataKey, DateTime.UtcNow }
+                })))
                 .Then(async _ =>
                 {
+                    await Task.Delay(TimeSpan.FromSeconds(DelayInSeconds + 1));
+
                     var result = await _fakeBackOfficeContext
                         .AddressPersistentIdStreetNamePersistentIds
                         .FindAsync(addressWasProposedV2.AddressPersistentLocalId);
@@ -79,7 +91,10 @@ namespace AddressRegistry.Tests.ProjectionTests.BackOffice
             var @event = _fixture.Create<AddressWasProposedBecauseOfReaddress>();
 
             await Sut
-                .Given(@event)
+                .Given(new Envelope<AddressWasProposedBecauseOfReaddress>(new Envelope(@event, new Dictionary<string, object>
+                {
+                    { Envelope.CreatedUtcMetadataKey, DateTime.UtcNow }
+                })))
                 .Then(async _ =>
                 {
                     var result = await _fakeBackOfficeContext
@@ -94,15 +109,25 @@ namespace AddressRegistry.Tests.ProjectionTests.BackOffice
 
     public abstract class BackOfficeProjectionsTest
     {
+        protected const int DelayInSeconds = 1;
         protected ConnectedProjectionTest<BackOfficeProjectionsContext, BackOfficeProjections> Sut { get; }
         protected Mock<IDbContextFactory<BackOfficeContext>> BackOfficeContextMock { get; }
 
         protected BackOfficeProjectionsTest()
         {
+            var inMemorySettings = new Dictionary<string, string> {
+                {nameof(DelayInSeconds), DelayInSeconds.ToString()}
+            };
+
+            IConfiguration configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(inMemorySettings)
+                .Build();
+
+
             BackOfficeContextMock = new Mock<IDbContextFactory<BackOfficeContext>>();
             Sut = new ConnectedProjectionTest<BackOfficeProjectionsContext, BackOfficeProjections>(
                 CreateContext,
-                () => new BackOfficeProjections(BackOfficeContextMock.Object));
+                () => new BackOfficeProjections(BackOfficeContextMock.Object, configuration));
         }
 
         protected virtual BackOfficeProjectionsContext CreateContext()

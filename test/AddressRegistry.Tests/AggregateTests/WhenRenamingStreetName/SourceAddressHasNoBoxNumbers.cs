@@ -60,6 +60,15 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRenamingStreetName
                 _destinationStreetNamePersistentLocalId,
                 Fixture.Create<Provenance>());
 
+            var expectedAddressHouseNumberWasReaddressed = new AddressHouseNumberWasReaddressed(
+                _destinationStreetNamePersistentLocalId,
+                new AddressPersistentLocalId(1),
+                CreateReaddressedDataFrom(
+                    houseNumberWasMigrated,
+                    new AddressPersistentLocalId(1),
+                    true),
+                []);
+
             Assert(new Scenario()
                 .Given(_destinationStreetNameStreamId,
                     Fixture.Create<StreetNameWasImported>().WithStreetNamePersistentLocalId(_destinationStreetNamePersistentLocalId))
@@ -71,14 +80,9 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRenamingStreetName
                             houseNumberWasMigrated, new AddressPersistentLocalId(1))),
                     new Fact(
                         _destinationStreetNameStreamId,
-                        new AddressHouseNumberWasReaddressed(
-                            _destinationStreetNamePersistentLocalId,
-                            new AddressPersistentLocalId(1),
-                            CreateReaddressedDataFrom(
-                                houseNumberWasMigrated,
-                                new AddressPersistentLocalId(1),
-                                true),
-                            new List<ReaddressedAddressData>()))
+                        expectedAddressHouseNumberWasReaddressed),
+                    new Fact(_destinationStreetNameStreamId, new StreetNameWasReaddressed(_destinationStreetNamePersistentLocalId,
+                        new List<AddressHouseNumberWasReaddressed>{ expectedAddressHouseNumberWasReaddressed }))
                 }));
         }
 
@@ -109,6 +113,15 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRenamingStreetName
                 .AsHouseNumberAddress()
                 .WithStreetNamePersistentLocalId(_destinationStreetNamePersistentLocalId);
 
+            var expectedAddressHouseNumberWasReaddressed = new AddressHouseNumberWasReaddressed(
+                _destinationStreetNamePersistentLocalId,
+                new AddressPersistentLocalId(destinationHouseNumberWasMigrated.AddressPersistentLocalId),
+                CreateReaddressedDataFrom(
+                    houseNumberWasMigrated,
+                    new AddressPersistentLocalId(destinationHouseNumberWasMigrated.AddressPersistentLocalId),
+                    false),
+                []);
+
             Assert(new Scenario()
                 .Given(_destinationStreetNameStreamId,
                     Fixture.Create<StreetNameWasImported>().WithStreetNamePersistentLocalId(_destinationStreetNamePersistentLocalId),
@@ -118,14 +131,9 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRenamingStreetName
                 {
                     new Fact(
                         _destinationStreetNameStreamId,
-                        new AddressHouseNumberWasReaddressed(
-                            _destinationStreetNamePersistentLocalId,
-                            new AddressPersistentLocalId(destinationHouseNumberWasMigrated.AddressPersistentLocalId),
-                            CreateReaddressedDataFrom(
-                                houseNumberWasMigrated,
-                                new AddressPersistentLocalId(destinationHouseNumberWasMigrated.AddressPersistentLocalId),
-                                false),
-                            new List<ReaddressedAddressData>()))
+                        expectedAddressHouseNumberWasReaddressed),
+                    new Fact(_destinationStreetNameStreamId, new StreetNameWasReaddressed(_destinationStreetNamePersistentLocalId,
+                        new List<AddressHouseNumberWasReaddressed>{ expectedAddressHouseNumberWasReaddressed }))
                 }));
         }
 
@@ -160,6 +168,15 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRenamingStreetName
                     .AsBoxNumberAddress(new AddressPersistentLocalId(destinationHouseNumberWasMigrated.AddressPersistentLocalId))
                     .WithStreetNamePersistentLocalId(_destinationStreetNamePersistentLocalId);
 
+            var expectedAddressHouseNumberWasReaddressed = new AddressHouseNumberWasReaddressed(
+                _destinationStreetNamePersistentLocalId,
+                new AddressPersistentLocalId(destinationHouseNumberWasMigrated.AddressPersistentLocalId),
+                CreateReaddressedDataFrom(
+                    houseNumberWasMigrated,
+                    new AddressPersistentLocalId(destinationHouseNumberWasMigrated.AddressPersistentLocalId),
+                    false),
+                []);
+
             Assert(new Scenario()
                 .Given(_destinationStreetNameStreamId,
                     Fixture.Create<StreetNameWasImported>()
@@ -171,14 +188,9 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRenamingStreetName
                 {
                     new Fact(
                         _destinationStreetNameStreamId,
-                        new AddressHouseNumberWasReaddressed(
-                            _destinationStreetNamePersistentLocalId,
-                            new AddressPersistentLocalId(destinationHouseNumberWasMigrated.AddressPersistentLocalId),
-                            CreateReaddressedDataFrom(
-                                houseNumberWasMigrated,
-                                new AddressPersistentLocalId(destinationHouseNumberWasMigrated.AddressPersistentLocalId),
-                                false),
-                            new List<ReaddressedAddressData>())),
+                        expectedAddressHouseNumberWasReaddressed),
+                    new Fact(_destinationStreetNameStreamId, new StreetNameWasReaddressed(_destinationStreetNamePersistentLocalId,
+                        new List<AddressHouseNumberWasReaddressed>{ expectedAddressHouseNumberWasReaddressed })),
                     new Fact(
                         _destinationStreetNameStreamId,
                         new AddressWasRetiredBecauseOfReaddress(

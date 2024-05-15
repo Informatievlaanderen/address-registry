@@ -1,5 +1,5 @@
 name: Manual Production Deploy
-
+run-name: 'Manual Production Deploy: ${{ github.event.inputs.version }}'
 concurrency: Manual Production Deploy
 
 on:

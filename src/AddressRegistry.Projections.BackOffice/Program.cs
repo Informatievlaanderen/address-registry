@@ -100,7 +100,7 @@ namespace AddressRegistry.Projections.BackOffice
                     builder.RegisterModule(new ProjectorModule(hostContext.Configuration));
 
                     builder.RegisterProjections<BackOfficeProjections, BackOfficeProjectionsContext>(
-                        c => new BackOfficeProjections(c.Resolve<IDbContextFactory<BackOfficeContext>>()),
+                        c => new BackOfficeProjections(c.Resolve<IDbContextFactory<BackOfficeContext>>(), c.Resolve<IConfiguration>()),
                         ConnectedProjectionSettings.Default);
                 })
                 .UseConsoleLifetime()

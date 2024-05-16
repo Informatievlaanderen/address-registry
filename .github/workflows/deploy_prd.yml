@@ -83,7 +83,6 @@ jobs:
     strategy:
       matrix:
         services: [
-          #'address-migrator-address',
           'address-cache-warmer',
           'address-snapshot-verifier'
         ]

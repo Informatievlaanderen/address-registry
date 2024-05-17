@@ -1,3 +1,15 @@
+# [4.5.0](https://github.com/informatievlaanderen/address-registry/compare/v4.4.1...v4.5.0) (2024-05-17)
+
+
+### Bug Fixes
+
+* add delay to backoffice projections to avoid conflict with lambda handler ([1575b6e](https://github.com/informatievlaanderen/address-registry/commit/1575b6e4a59998da284f9240dd0748e5a13c4e7c))
+
+
+### Features
+
+* add new StreetnameWasReaddressed ([1b69ab3](https://github.com/informatievlaanderen/address-registry/commit/1b69ab3da2a36c9a375a41f873a3134d4e89a193))
+
 ## [4.4.1](https://github.com/informatievlaanderen/address-registry/compare/v4.4.0...v4.4.1) (2024-05-17)
 
 

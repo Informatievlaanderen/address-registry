@@ -1,3 +1,10 @@
+## [4.4.1](https://github.com/informatievlaanderen/address-registry/compare/v4.4.0...v4.4.1) (2024-05-17)
+
+
+### Bug Fixes
+
+* **ci:** add newstg pipeline + add version to prd ([83cb6cb](https://github.com/informatievlaanderen/address-registry/commit/83cb6cb6a7c77a9b7c6841a00a3324d18318e148))
+
 # [4.4.0](https://github.com/informatievlaanderen/address-registry/compare/v4.3.0...v4.4.0) (2024-05-10)
 
 

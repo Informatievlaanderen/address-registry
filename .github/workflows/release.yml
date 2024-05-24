@@ -547,6 +547,15 @@ jobs:
       env:
         SEMVER: ${{ needs.release.outputs.version }}
 
+    - name: Push Lambda functions to S3 New Staging
+      shell: bash
+      run: |
+        echo Push Lambda functions to S3 New Staging
+        echo aws s3 cp ~/lambda.zip s3://s3-vbr-stg-basisregisters-lam-ar-sqsbackofficefunction/$SEMVER/lambda.zip
+        aws s3 cp ~/lambda.zip s3://s3-vbr-stg-basisregisters-lam-ar-sqsbackofficefunction/$SEMVER/lambda.zip
+      env:
+        SEMVER: ${{ needs.release.outputs.version }}
+
     - name: Configure AWS credentials (Staging)
       uses: aws-actions/configure-aws-credentials@v4.0.2
       with:

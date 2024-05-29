@@ -9,17 +9,13 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using AddressRegistry.Projections.Integration.Infrastructure;
     using AddressRegistry.Projections.LastChangedList;
     using AddressRegistry.Projections.Legacy;
-    using AddressRegistry.Projections.Legacy.AddressDetail;
-    using AddressRegistry.Projections.Legacy.AddressDetailV2;
     using AddressRegistry.Projections.Legacy.AddressDetailV2WithParent;
-    using AddressRegistry.Projections.Legacy.AddressList;
     using AddressRegistry.Projections.Legacy.AddressListV2;
     using AddressRegistry.Projections.Legacy.AddressSyndication;
     using AddressRegistry.Projections.Legacy.CrabIdToPersistentLocalId;
     using AddressRegistry.Projections.Wfs;
     using AddressRegistry.Projections.Wfs.AddressWfs;
     using AddressRegistry.Projections.Wms;
-    using AddressRegistry.Projections.Wms.AddressWmsItem;
     using AddressRegistry.Projections.Wms.AddressWmsItemV2;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
@@ -214,9 +210,6 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .RegisterProjectionMigrator<WmsContextMigrationFactory>(
                     _configuration,
                     _loggerFactory)
-                .RegisterProjections<AddressWmsItemProjections, WmsContext>(() =>
-                        new AddressWmsItemProjections(WKBReaderFactory.CreateForLegacy()),
-                    wmsProjectionSettings)
                 .RegisterProjections<AddressWmsItemV2Projections, WmsContext>(() =>
                         new AddressWmsItemV2Projections(WKBReaderFactory.CreateForLegacy()),
                     wmsProjectionSettings);

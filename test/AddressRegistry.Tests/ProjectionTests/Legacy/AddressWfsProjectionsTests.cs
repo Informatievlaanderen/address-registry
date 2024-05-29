@@ -19,7 +19,6 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
     using NetTopologySuite.IO;
     using NodaTime;
     using Projections.Wfs.AddressWfs;
-    using Projections.Wms.AddressWmsItem;
     using Xunit;
     using Envelope = Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope;
 
@@ -892,8 +891,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                     houseNumberItem.BoxNumber.Should().Be(null);
                     houseNumberItem.PostalCode.Should().Be(readdressedHouseNumber.SourcePostalCode);
                     houseNumberItem.OfficiallyAssigned.Should().Be(readdressedHouseNumber.SourceIsOfficiallyAssigned);
-                    houseNumberItem.PositionMethod.Should().Be(AddressWmsItemProjections.ConvertGeometryMethodToString(readdressedHouseNumber.SourceGeometryMethod));
-                    houseNumberItem.PositionSpecification.Should().Be(AddressWmsItemProjections.ConvertGeometrySpecificationToString(readdressedHouseNumber.SourceGeometrySpecification));
+                    houseNumberItem.PositionMethod.Should().Be(AddressWfsProjections.ConvertGeometryMethodToString(readdressedHouseNumber.SourceGeometryMethod));
+                    houseNumberItem.PositionSpecification.Should().Be(AddressWfsProjections.ConvertGeometrySpecificationToString(readdressedHouseNumber.SourceGeometrySpecification));
                     houseNumberItem.Position.Should().Be((Point)_wkbReader.Read(readdressedHouseNumber.SourceExtendedWkbGeometry.ToByteArray()));
                     houseNumberItem.VersionTimestamp.Should().Be(addressHouseNumberWasReaddressed.Provenance.Timestamp);
 
@@ -905,8 +904,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                     boxNumberItem.BoxNumber.Should().Be(readdressedBoxNumber.SourceBoxNumber);
                     boxNumberItem.PostalCode.Should().Be(readdressedBoxNumber.SourcePostalCode);
                     boxNumberItem.OfficiallyAssigned.Should().Be(readdressedBoxNumber.SourceIsOfficiallyAssigned);
-                    boxNumberItem.PositionMethod.Should().Be(AddressWmsItemProjections.ConvertGeometryMethodToString(readdressedBoxNumber.SourceGeometryMethod));
-                    boxNumberItem.PositionSpecification.Should().Be(AddressWmsItemProjections.ConvertGeometrySpecificationToString(readdressedBoxNumber.SourceGeometrySpecification));
+                    boxNumberItem.PositionMethod.Should().Be(AddressWfsProjections.ConvertGeometryMethodToString(readdressedBoxNumber.SourceGeometryMethod));
+                    boxNumberItem.PositionSpecification.Should().Be(AddressWfsProjections.ConvertGeometrySpecificationToString(readdressedBoxNumber.SourceGeometrySpecification));
                     boxNumberItem.Position.Should().Be((Point)_wkbReader.Read(readdressedBoxNumber.SourceExtendedWkbGeometry.ToByteArray()));
                     boxNumberItem.VersionTimestamp.Should().Be(addressHouseNumberWasReaddressed.Provenance.Timestamp);
                 });

@@ -18,7 +18,6 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
     using NetTopologySuite.IO;
     using NodaTime;
     using Projections.Wms;
-    using Projections.Wms.AddressWmsItem;
     using Projections.Wms.AddressWmsItemV2;
     using Xunit;
     using Envelope = Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope;
@@ -63,11 +62,11 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
                     addressWmsItem.BoxNumber.Should().Be(addressWasMigratedToStreetName.BoxNumber);
                     addressWmsItem.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithoutBoxes);
                     addressWmsItem.PostalCode.Should().Be(addressWasMigratedToStreetName.PostalCode);
-                    addressWmsItem.Status.Should().Be(AddressWmsItemProjections.MapStatus(addressWasMigratedToStreetName.Status));
+                    addressWmsItem.Status.Should().Be(AddressWmsItemV2Projections.MapStatus(addressWasMigratedToStreetName.Status));
                     addressWmsItem.OfficiallyAssigned.Should().Be(addressWasMigratedToStreetName.OfficiallyAssigned);
                     addressWmsItem.Position.Should().BeEquivalentTo((Point)_wkbReader.Read(addressWasMigratedToStreetName.ExtendedWkbGeometry.ToByteArray()));
-                    addressWmsItem.PositionMethod.Should().Be(AddressWmsItemProjections.ConvertGeometryMethodToString(addressWasMigratedToStreetName.GeometryMethod));
-                    addressWmsItem.PositionSpecification.Should().Be(AddressWmsItemProjections.ConvertGeometrySpecificationToString(addressWasMigratedToStreetName.GeometrySpecification));
+                    addressWmsItem.PositionMethod.Should().Be(AddressWmsItemV2Projections.ConvertGeometryMethodToString(addressWasMigratedToStreetName.GeometryMethod));
+                    addressWmsItem.PositionSpecification.Should().Be(AddressWmsItemV2Projections.ConvertGeometrySpecificationToString(addressWasMigratedToStreetName.GeometrySpecification));
                     addressWmsItem.Removed.Should().Be(addressWasMigratedToStreetName.IsRemoved);
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasMigratedToStreetName.Provenance.Timestamp);
                 });
@@ -150,11 +149,11 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
                     addressWmsItem.BoxNumber.Should().BeNull();
                     addressWmsItem.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithoutBoxes);
                     addressWmsItem.PostalCode.Should().Be(addressWasProposedV2.PostalCode);
-                    addressWmsItem.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Proposed));
+                    addressWmsItem.Status.Should().Be(AddressWmsItemV2Projections.MapStatus(AddressStatus.Proposed));
                     addressWmsItem.OfficiallyAssigned.Should().BeTrue();
                     addressWmsItem.Position.Should().BeEquivalentTo((Point)_wkbReader.Read(addressWasProposedV2.ExtendedWkbGeometry.ToByteArray()));
-                    addressWmsItem.PositionMethod.Should().Be(AddressWmsItemProjections.ConvertGeometryMethodToString(addressWasProposedV2.GeometryMethod));
-                    addressWmsItem.PositionSpecification.Should().Be(AddressWmsItemProjections.ConvertGeometrySpecificationToString(addressWasProposedV2.GeometrySpecification));
+                    addressWmsItem.PositionMethod.Should().Be(AddressWmsItemV2Projections.ConvertGeometryMethodToString(addressWasProposedV2.GeometryMethod));
+                    addressWmsItem.PositionSpecification.Should().Be(AddressWmsItemV2Projections.ConvertGeometrySpecificationToString(addressWasProposedV2.GeometrySpecification));
                     addressWmsItem.Removed.Should().BeFalse();
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasProposedV2.Provenance.Timestamp);
                 });
@@ -184,11 +183,11 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
                     addressWmsItem.BoxNumber.Should().Be(addressWasProposedV2.BoxNumber);
                     addressWmsItem.LabelType.Should().Be(WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxesOnSamePosition);
                     addressWmsItem.PostalCode.Should().Be(addressWasProposedV2.PostalCode);
-                    addressWmsItem.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Proposed));
+                    addressWmsItem.Status.Should().Be(AddressWmsItemV2Projections.MapStatus(AddressStatus.Proposed));
                     addressWmsItem.OfficiallyAssigned.Should().BeTrue();
                     addressWmsItem.Position.Should().BeEquivalentTo((Point)_wkbReader.Read(addressWasProposedV2.ExtendedWkbGeometry.ToByteArray()));
-                    addressWmsItem.PositionMethod.Should().Be(AddressWmsItemProjections.ConvertGeometryMethodToString(addressWasProposedV2.GeometryMethod));
-                    addressWmsItem.PositionSpecification.Should().Be(AddressWmsItemProjections.ConvertGeometrySpecificationToString(addressWasProposedV2.GeometrySpecification));
+                    addressWmsItem.PositionMethod.Should().Be(AddressWmsItemV2Projections.ConvertGeometryMethodToString(addressWasProposedV2.GeometryMethod));
+                    addressWmsItem.PositionSpecification.Should().Be(AddressWmsItemV2Projections.ConvertGeometrySpecificationToString(addressWasProposedV2.GeometrySpecification));
                     addressWmsItem.Removed.Should().BeFalse();
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasProposedV2.Provenance.Timestamp);
                 });
@@ -217,7 +216,7 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
                 {
                     var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasApproved.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
-                    addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Current));
+                    addressWmsItem!.Status.Should().Be(AddressWmsItemV2Projections.MapStatus(AddressStatus.Current));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasApproved.Provenance.Timestamp);
                 });
         }
@@ -252,7 +251,7 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
                 {
                     var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasApproved.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
-                    addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Proposed));
+                    addressWmsItem!.Status.Should().Be(AddressWmsItemV2Projections.MapStatus(AddressStatus.Proposed));
                     addressWmsItem.VersionTimestamp.Should().Be(addressApprovalWasCorrected.Provenance.Timestamp);
                 });
         }
@@ -287,7 +286,7 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
                 {
                     var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasApproved.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
-                    addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Proposed));
+                    addressWmsItem!.Status.Should().Be(AddressWmsItemV2Projections.MapStatus(AddressStatus.Proposed));
                     addressWmsItem.VersionTimestamp.Should().Be(addressApprovalWasCorrected.Provenance.Timestamp);
                 });
         }
@@ -315,7 +314,7 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
                 {
                     var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasRejected.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
-                    addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Rejected));
+                    addressWmsItem!.Status.Should().Be(AddressWmsItemV2Projections.MapStatus(AddressStatus.Rejected));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
                 });
         }
@@ -343,7 +342,7 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
                 {
                     var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasRejected.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
-                    addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Rejected));
+                    addressWmsItem!.Status.Should().Be(AddressWmsItemV2Projections.MapStatus(AddressStatus.Rejected));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
                 });
         }
@@ -371,7 +370,7 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
                 {
                     var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasRejectedBecauseHouseNumberWasRetired.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
-                    addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Rejected));
+                    addressWmsItem!.Status.Should().Be(AddressWmsItemV2Projections.MapStatus(AddressStatus.Rejected));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRejectedBecauseHouseNumberWasRetired.Provenance.Timestamp);
                 });
         }
@@ -399,7 +398,7 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
                 {
                     var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasRejected.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
-                    addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Rejected));
+                    addressWmsItem!.Status.Should().Be(AddressWmsItemV2Projections.MapStatus(AddressStatus.Rejected));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
                 });
         }
@@ -427,7 +426,7 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
                 {
                     var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasRetired.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
-                    addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Retired));
+                    addressWmsItem!.Status.Should().Be(AddressWmsItemV2Projections.MapStatus(AddressStatus.Retired));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRetired.Provenance.Timestamp);
                 });
         }
@@ -455,7 +454,7 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
                 {
                     var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasRejected.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
-                    addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Rejected));
+                    addressWmsItem!.Status.Should().Be(AddressWmsItemV2Projections.MapStatus(AddressStatus.Rejected));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
                 });
         }
@@ -490,7 +489,7 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
                 {
                     var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressRejectionWasCorrected.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
-                    addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Proposed));
+                    addressWmsItem!.Status.Should().Be(AddressWmsItemV2Projections.MapStatus(AddressStatus.Proposed));
                     addressWmsItem.VersionTimestamp.Should().Be(addressRejectionWasCorrected.Provenance.Timestamp);
                 });
         }
@@ -519,7 +518,7 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
                     var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasDeregulated.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.OfficiallyAssigned.Should().BeFalse();
-                    addressWmsItem.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Current));
+                    addressWmsItem.Status.Should().Be(AddressWmsItemV2Projections.MapStatus(AddressStatus.Current));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasDeregulated.Provenance.Timestamp);
                 });
         }
@@ -554,7 +553,7 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
                 {
                     var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasRetiredV2.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
-                    addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Retired));
+                    addressWmsItem!.Status.Should().Be(AddressWmsItemV2Projections.MapStatus(AddressStatus.Retired));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRetiredV2.Provenance.Timestamp);
                 });
         }
@@ -589,7 +588,7 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
                 {
                     var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasRetiredBecauseHouseNumberWasRetired.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
-                    addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Retired));
+                    addressWmsItem!.Status.Should().Be(AddressWmsItemV2Projections.MapStatus(AddressStatus.Retired));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRetiredBecauseHouseNumberWasRetired.Provenance.Timestamp);
                 });
         }
@@ -624,7 +623,7 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
                 {
                     var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasRetiredBecauseHouseNumberWasRetired.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
-                    addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Retired));
+                    addressWmsItem!.Status.Should().Be(AddressWmsItemV2Projections.MapStatus(AddressStatus.Retired));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRetiredBecauseHouseNumberWasRetired.Provenance.Timestamp);
                 });
         }
@@ -666,7 +665,7 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
                 {
                     var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasRetiredV2.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
-                    addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Current));
+                    addressWmsItem!.Status.Should().Be(AddressWmsItemV2Projections.MapStatus(AddressStatus.Current));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasCorrectedFromRetiredToCurrent.Provenance.Timestamp);
                 });
         }
@@ -883,8 +882,8 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
                 {
                     var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressPositionWasChanged.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
-                    addressWmsItem!.PositionMethod.Should().Be(AddressWmsItemProjections.ConvertGeometryMethodToString(addressPositionWasChanged.GeometryMethod));
-                    addressWmsItem.PositionSpecification.Should().Be(AddressWmsItemProjections.ConvertGeometrySpecificationToString(addressPositionWasChanged.GeometrySpecification));
+                    addressWmsItem!.PositionMethod.Should().Be(AddressWmsItemV2Projections.ConvertGeometryMethodToString(addressPositionWasChanged.GeometryMethod));
+                    addressWmsItem.PositionSpecification.Should().Be(AddressWmsItemV2Projections.ConvertGeometrySpecificationToString(addressPositionWasChanged.GeometrySpecification));
                     addressWmsItem.Position.Should().Be((Point) _wkbReader.Read(addressPositionWasChanged.ExtendedWkbGeometry.ToByteArray()));
                     addressWmsItem.VersionTimestamp.Should().Be(addressPositionWasChanged.Provenance.Timestamp);
                 });
@@ -973,8 +972,8 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
                 {
                     var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressPositionWasCorrectedV2.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
-                    addressWmsItem!.PositionMethod.Should().Be(AddressWmsItemProjections.ConvertGeometryMethodToString(addressPositionWasCorrectedV2.GeometryMethod));
-                    addressWmsItem.PositionSpecification.Should().Be(AddressWmsItemProjections.ConvertGeometrySpecificationToString(addressPositionWasCorrectedV2.GeometrySpecification));
+                    addressWmsItem!.PositionMethod.Should().Be(AddressWmsItemV2Projections.ConvertGeometryMethodToString(addressPositionWasCorrectedV2.GeometryMethod));
+                    addressWmsItem.PositionSpecification.Should().Be(AddressWmsItemV2Projections.ConvertGeometrySpecificationToString(addressPositionWasCorrectedV2.GeometrySpecification));
                     addressWmsItem.Position.Should().Be((Point)_wkbReader.Read(addressPositionWasCorrectedV2.ExtendedWkbGeometry.ToByteArray()));
                     addressWmsItem.VersionTimestamp.Should().Be(addressPositionWasCorrectedV2.Provenance.Timestamp);
                 });
@@ -1110,26 +1109,26 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
                     var houseNumberItem = await ct.AddressWmsItemsV2.FindAsync((int)addressPersistentLocalId);
                     houseNumberItem.Should().NotBeNull();
 
-                    houseNumberItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(readdressedHouseNumber.SourceStatus));
+                    houseNumberItem!.Status.Should().Be(AddressWmsItemV2Projections.MapStatus(readdressedHouseNumber.SourceStatus));
                     houseNumberItem.HouseNumber.Should().Be(readdressedHouseNumber.DestinationHouseNumber);
                     houseNumberItem.BoxNumber.Should().Be(null);
                     houseNumberItem.PostalCode.Should().Be(readdressedHouseNumber.SourcePostalCode);
                     houseNumberItem.OfficiallyAssigned.Should().Be(readdressedHouseNumber.SourceIsOfficiallyAssigned);
-                    houseNumberItem.PositionMethod.Should().Be(AddressWmsItemProjections.ConvertGeometryMethodToString(readdressedHouseNumber.SourceGeometryMethod));
-                    houseNumberItem.PositionSpecification.Should().Be(AddressWmsItemProjections.ConvertGeometrySpecificationToString(readdressedHouseNumber.SourceGeometrySpecification));
+                    houseNumberItem.PositionMethod.Should().Be(AddressWmsItemV2Projections.ConvertGeometryMethodToString(readdressedHouseNumber.SourceGeometryMethod));
+                    houseNumberItem.PositionSpecification.Should().Be(AddressWmsItemV2Projections.ConvertGeometrySpecificationToString(readdressedHouseNumber.SourceGeometrySpecification));
                     houseNumberItem.Position.Should().Be((Point)_wkbReader.Read(readdressedHouseNumber.SourceExtendedWkbGeometry.ToByteArray()));
                     houseNumberItem.VersionTimestamp.Should().Be(addressHouseNumberWasReaddressed.Provenance.Timestamp);
 
                     var boxNumberItem = await ct.AddressWmsItemsV2.FindAsync((int)boxNumberAddressPersistentLocalId);
                     boxNumberItem.Should().NotBeNull();
 
-                    boxNumberItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(readdressedBoxNumber.SourceStatus));
+                    boxNumberItem!.Status.Should().Be(AddressWmsItemV2Projections.MapStatus(readdressedBoxNumber.SourceStatus));
                     boxNumberItem.HouseNumber.Should().Be(readdressedBoxNumber.DestinationHouseNumber);
                     boxNumberItem.BoxNumber.Should().Be(readdressedBoxNumber.SourceBoxNumber);
                     boxNumberItem.PostalCode.Should().Be(readdressedBoxNumber.SourcePostalCode);
                     boxNumberItem.OfficiallyAssigned.Should().Be(readdressedBoxNumber.SourceIsOfficiallyAssigned);
-                    boxNumberItem.PositionMethod.Should().Be(AddressWmsItemProjections.ConvertGeometryMethodToString(readdressedBoxNumber.SourceGeometryMethod));
-                    boxNumberItem.PositionSpecification.Should().Be(AddressWmsItemProjections.ConvertGeometrySpecificationToString(readdressedBoxNumber.SourceGeometrySpecification));
+                    boxNumberItem.PositionMethod.Should().Be(AddressWmsItemV2Projections.ConvertGeometryMethodToString(readdressedBoxNumber.SourceGeometryMethod));
+                    boxNumberItem.PositionSpecification.Should().Be(AddressWmsItemV2Projections.ConvertGeometrySpecificationToString(readdressedBoxNumber.SourceGeometrySpecification));
                     boxNumberItem.Position.Should().Be((Point)_wkbReader.Read(readdressedBoxNumber.SourceExtendedWkbGeometry.ToByteArray()));
                     boxNumberItem.VersionTimestamp.Should().Be(addressHouseNumberWasReaddressed.Provenance.Timestamp);
                 });
@@ -1151,11 +1150,11 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
                     addressWmsItem.BoxNumber.Should().Be(addressWasProposed.BoxNumber);
                     addressWmsItem.LabelType.Should().Be(WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxesOnSamePosition);
                     addressWmsItem.PostalCode.Should().Be(addressWasProposed.PostalCode);
-                    addressWmsItem.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Proposed));
+                    addressWmsItem.Status.Should().Be(AddressWmsItemV2Projections.MapStatus(AddressStatus.Proposed));
                     addressWmsItem.OfficiallyAssigned.Should().BeTrue();
                     addressWmsItem.Position.Should().BeEquivalentTo((Point)_wkbReader.Read(addressWasProposed.ExtendedWkbGeometry.ToByteArray()));
-                    addressWmsItem.PositionMethod.Should().Be(AddressWmsItemProjections.ConvertGeometryMethodToString(addressWasProposed.GeometryMethod));
-                    addressWmsItem.PositionSpecification.Should().Be(AddressWmsItemProjections.ConvertGeometrySpecificationToString(addressWasProposed.GeometrySpecification));
+                    addressWmsItem.PositionMethod.Should().Be(AddressWmsItemV2Projections.ConvertGeometryMethodToString(addressWasProposed.GeometryMethod));
+                    addressWmsItem.PositionSpecification.Should().Be(AddressWmsItemV2Projections.ConvertGeometrySpecificationToString(addressWasProposed.GeometrySpecification));
                     addressWmsItem.Removed.Should().BeFalse();
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasProposed.Provenance.Timestamp);
                 });
@@ -1184,7 +1183,7 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
                 {
                     var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasRejected.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
-                    addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Rejected));
+                    addressWmsItem!.Status.Should().Be(AddressWmsItemV2Projections.MapStatus(AddressStatus.Rejected));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
                 });
         }
@@ -1219,7 +1218,7 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
                 {
                     var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasRetired.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
-                    addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Retired));
+                    addressWmsItem!.Status.Should().Be(AddressWmsItemV2Projections.MapStatus(AddressStatus.Retired));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRetired.Provenance.Timestamp);
                 });
         }
@@ -1338,7 +1337,7 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
                 {
                     var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressRegularizationWasCorrected.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
-                    addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(AddressStatus.Current));
+                    addressWmsItem!.Status.Should().Be(AddressWmsItemV2Projections.MapStatus(AddressStatus.Current));
                     addressWmsItem.OfficiallyAssigned.Should().BeFalse();
                     addressWmsItem.VersionTimestamp.Should().Be(addressRegularizationWasCorrected.Provenance.Timestamp);
                 });
@@ -1405,7 +1404,7 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
                     var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(@event.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
 
-                    addressWmsItem!.Status.Should().Be(AddressWmsItemProjections.MapStatus(@event.Status));
+                    addressWmsItem!.Status.Should().Be(AddressWmsItemV2Projections.MapStatus(@event.Status));
                     addressWmsItem.PostalCode.Should().Be(@event.PostalCode);
                     addressWmsItem.HouseNumber.Should().Be(@event.HouseNumber);
                     addressWmsItem.BoxNumber.Should().Be(@event.BoxNumber);
@@ -1413,9 +1412,9 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
                     addressWmsItem.PositionX.Should().Be(expectedGeometry.X);
                     addressWmsItem.PositionY.Should().Be(expectedGeometry.Y);
                     addressWmsItem.PositionMethod.Should().Be(
-                        AddressWmsItemProjections.ConvertGeometryMethodToString(@event.GeometryMethod));
+                        AddressWmsItemV2Projections.ConvertGeometryMethodToString(@event.GeometryMethod));
                     addressWmsItem.PositionSpecification.Should().Be(
-                        AddressWmsItemProjections.ConvertGeometrySpecificationToString(@event.GeometrySpecification));
+                        AddressWmsItemV2Projections.ConvertGeometrySpecificationToString(@event.GeometrySpecification));
                     addressWmsItem.OfficiallyAssigned.Should().Be(@event.OfficiallyAssigned);
                     addressWmsItem.Removed.Should().BeFalse();
                     addressWmsItem.ParentAddressPersistentLocalId.Should().Be(@event.ParentPersistentLocalId);

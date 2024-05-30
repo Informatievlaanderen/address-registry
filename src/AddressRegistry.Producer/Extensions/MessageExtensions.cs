@@ -320,7 +320,7 @@ namespace AddressRegistry.Producer.Extensions
                 readdressedHouseNumber.ReaddressedHouseNumber.ToContract(),
                 readdressedHouseNumber.ReaddressedBoxNumbers.Select(x => x.ToContract()).ToList());
 
-        private static Contracts.ReaddressedAddressData ToContract(this ReaddressedAddressData readdressedAddressData) =>
+        public static Contracts.ReaddressedAddressData ToContract(this ReaddressedAddressData readdressedAddressData) =>
             new(
                 readdressedAddressData.SourceAddressPersistentLocalId,
                 readdressedAddressData.DestinationAddressPersistentLocalId,
@@ -334,7 +334,7 @@ namespace AddressRegistry.Producer.Extensions
                 readdressedAddressData.SourceExtendedWkbGeometry,
                 readdressedAddressData.SourceIsOfficiallyAssigned);
 
-        private static Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common.Provenance ToContract(this ProvenanceData provenance)
+        public static Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common.Provenance ToContract(this ProvenanceData provenance)
             => new Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common.Provenance(
                 provenance.Timestamp.ToString(),
                 provenance.Application.ToString(),

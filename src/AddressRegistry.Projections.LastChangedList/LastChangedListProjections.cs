@@ -16,7 +16,7 @@ namespace AddressRegistry.Projections.LastChangedList
     public class LastChangedListProjections : LastChangedListConnectedProjection
     {
         public const string ProjectionName = "Cache markering adressen";
-        private static readonly AcceptType[] SupportedAcceptTypes = { AcceptType.Json, AcceptType.Xml, AcceptType.JsonLd };
+        private static readonly AcceptType[] SupportedAcceptTypes = { AcceptType.JsonLd };
 
         public LastChangedListProjections(ICacheValidator cacheValidator)
             : base(SupportedAcceptTypes, cacheValidator)

@@ -284,10 +284,14 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
             await Then(async _ =>
             {
                 _mockCommandHandler.Verify(
-                    x => x.Handle(It.Is<IHasCommandProvenance>(x => x is RenameStreetName), CancellationToken.None),
+                    x => x.Handle(It.Is<IHasCommandProvenance>(cmd =>
+                        cmd is RenameStreetName
+                            && ((RenameStreetName)cmd).Provenance.Timestamp.ToString() == @event.Provenance.Timestamp), CancellationToken.None),
                     Times.Once);
                 _mockCommandHandler.Verify(
-                    x => x.Handle(It.Is<IHasCommandProvenance>(x => x is RetireStreetNameBecauseOfRename), CancellationToken.None),
+                    x => x.Handle(It.Is<IHasCommandProvenance>(cmd =>
+                        cmd is RetireStreetNameBecauseOfRename
+                        && ((RetireStreetNameBecauseOfRename)cmd).Provenance.Timestamp.ToString() == @event.Provenance.Timestamp), CancellationToken.None),
                     Times.Once);
                 await Task.CompletedTask;
             });

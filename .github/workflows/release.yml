@@ -556,25 +556,6 @@ jobs:
       env:
         SEMVER: ${{ needs.release.outputs.version }}
 
-    - name: Configure AWS credentials (Staging)
-      uses: aws-actions/configure-aws-credentials@v4.0.2
-      with:
-        aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ secrets.VBR_AWS_REGION }}
-
-    - name: Login to Amazon ECR (Staging)
-      uses: aws-actions/amazon-ecr-login@v2
-
-    - name: Push Lambda functions to S3 Staging
-      shell: bash
-      run: |
-        echo Push Lambda functions to S3 Staging
-        echo aws s3 cp ~/lambda.zip s3://s3-vbr-stg-basisregisters-lam-ar-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
-        aws s3 cp ~/lambda.zip s3://s3-vbr-stg-basisregisters-lam-ar-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
-      env:
-        SEMVER: ${{ needs.release.outputs.version }}
-
     - name: Configure AWS credentials (New Production)
       uses: aws-actions/configure-aws-credentials@v4.0.2
       with:
@@ -776,71 +757,6 @@ jobs:
           docker push $BUILD_DOCKER_REGISTRY/address-registry/$IMAGE:$SEMVER
         env:
           BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_DEVOPS_DOCKER_REGISTRY }}
-          IMAGE: ${{ matrix.image }}
-          SEMVER: ${{ needs.release.outputs.version }}
-          WORKSPACE: ${{ github.workspace }}
-
-  push_images_to_staging:
-    if: needs.release.outputs.version != 'none'
-    needs: [ release ]
-    name: Push images to Staging
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        image: [
-          'api-backoffice'
-          , 'api-legacy'
-          , 'api-oslo'
-          , 'api-extract'
-          , 'projector'
-          , 'projections-syndication'
-          , 'projections-backoffice'
-          , 'projections-last-changed-list-console'
-          , 'consumer'
-          , 'consumer-read-municipality'
-          , 'consumer-read-streetname'
-          , 'producer'
-          , 'producer-snapshot-oslo'
-          , 'cache-warmer'
-          , 'snapshot-verifier'
-        ]
-    steps:
-      - name: Configure AWS credentials (Staging)
-        uses: aws-actions/configure-aws-credentials@v4.0.2
-        with:
-          aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
-
-      - name: Login to Amazon ECR (Staging)
-        uses: aws-actions/amazon-ecr-login@v2
-
-      # Download artifact
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        continue-on-error: false
-        with:
-          name: ${{ matrix.image }}-${{ needs.release.outputs.version }}
-          path: ~/
-
-      # Load artifact
-      - name: Load artifact
-        shell: bash
-        run: |
-          echo ar-$IMAGE-image.tar
-          docker image load -i ~/ar-$IMAGE-image.tar
-        env:
-          IMAGE: ${{ matrix.image }}
-
-      - name: Push artifacts to ECR Staging
-        shell: bash
-        run: |
-          echo $IMAGE:$SEMVER
-          docker tag $BUILD_DOCKER_REGISTRY_TST/address-registry/$IMAGE:$SEMVER $BUILD_DOCKER_REGISTRY/address-registry/$IMAGE:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/address-registry/$IMAGE:$SEMVER
-        env:
-          BUILD_DOCKER_REGISTRY_TST: ${{ secrets.VBR_DEVOPS_DOCKER_REGISTRY }}
-          BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
           IMAGE: ${{ matrix.image }}
           SEMVER: ${{ needs.release.outputs.version }}
           WORKSPACE: ${{ github.workspace }}

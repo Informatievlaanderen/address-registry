@@ -1,3 +1,12 @@
+## [4.5.1](https://github.com/informatievlaanderen/address-registry/compare/v4.5.0...v4.5.1) (2024-06-03)
+
+
+### Bug Fixes
+
+* keep event provenance timestamp for new commands ([01ef222](https://github.com/informatievlaanderen/address-registry/commit/01ef222ed6f1e8d9dd062b523605e662bfaf1baa))
+* no longer cache v1 endpoints ([75a12b8](https://github.com/informatievlaanderen/address-registry/commit/75a12b8114dbf138b6ba52cbce320402b5ed7b57))
+* provenance timestamp in 2nd streetname consumer ([107b3ca](https://github.com/informatievlaanderen/address-registry/commit/107b3cae1a0bcf0836cfcb494e634ecccb524b36))
+
 # [4.5.0](https://github.com/informatievlaanderen/address-registry/compare/v4.4.1...v4.5.0) (2024-05-17)
 
 

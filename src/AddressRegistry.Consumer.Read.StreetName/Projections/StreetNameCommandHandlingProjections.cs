@@ -6,7 +6,6 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts.StreetNameRegistry;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
-    using NodaTime;
     using NodaTime.Text;
     using Contracts = Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common;
 

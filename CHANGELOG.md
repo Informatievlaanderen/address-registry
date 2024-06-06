@@ -1,3 +1,10 @@
+# [4.6.0](https://github.com/informatievlaanderen/address-registry/compare/v4.5.1...v4.6.0) (2024-06-06)
+
+
+### Features
+
+* new address fix readdress topic ([ea9ff97](https://github.com/informatievlaanderen/address-registry/commit/ea9ff97b732a8d0bed308f63e354666f58519fe3))
+
 ## [4.5.1](https://github.com/informatievlaanderen/address-registry/compare/v4.5.0...v4.5.1) (2024-06-03)
 
 

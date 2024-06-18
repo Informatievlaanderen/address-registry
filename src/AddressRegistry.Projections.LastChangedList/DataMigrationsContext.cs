@@ -15,14 +15,12 @@ namespace AddressRegistry.Projections.LastChangedList
 
         // This needs to be here to please EF
         public DataMigrationsContext()
-        {
-        }
+        { }
 
         // This needs to be DbContextOptions<T> for Autofac!
         public DataMigrationsContext(DbContextOptions<DataMigrationsContext> options)
             : base(options)
-        {
-        }
+        { }
 
         public override Task UpdateProjectionState(string projectionName, long position,
             CancellationToken cancellationToken)

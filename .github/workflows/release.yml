@@ -528,31 +528,19 @@ jobs:
         name: lambda-backoffice-${{ needs.release.outputs.version }}
         path: ~/
 
-    - name: Configure AWS credentials (New Test)
+    - name: Configure AWS credentials (DevOps)
       uses: aws-actions/configure-aws-credentials@v4.0.2
       with:
         aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
         aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
         aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
-    - name: Login to Amazon ECR (New Test)
-      uses: aws-actions/amazon-ecr-login@v2
-
-    - name: Push Lambda functions to S3 Test
+    - name: Push Lambda functions to S3 DevOps
       shell: bash
       run: |
-        echo Push Lambda functions to S3 Test
-        echo aws s3 cp ~/lambda.zip s3://s3-vbr-tst-basisregisters-lam-ar-sqsbackofficefunction/$SEMVER/lambda.zip
-        aws s3 cp ~/lambda.zip s3://s3-vbr-tst-basisregisters-lam-ar-sqsbackofficefunction/$SEMVER/lambda.zip
-      env:
-        SEMVER: ${{ needs.release.outputs.version }}
-
-    - name: Push Lambda functions to S3 New Staging
-      shell: bash
-      run: |
-        echo Push Lambda functions to S3 New Staging
-        echo aws s3 cp ~/lambda.zip s3://s3-vbr-stg-basisregisters-lam-ar-sqsbackofficefunction/$SEMVER/lambda.zip
-        aws s3 cp ~/lambda.zip s3://s3-vbr-stg-basisregisters-lam-ar-sqsbackofficefunction/$SEMVER/lambda.zip
+        echo Push Lambda functions to S3 DevOps
+        echo aws s3 cp ~/lambda.zip s3://s3-vbr-lam-ar-sqsbackofficefunction-362233117987/$SEMVER/lambda.zip
+        aws s3 cp ~/lambda.zip s3://s3-vbr-lam-ar-sqsbackofficefunction-362233117987/$SEMVER/lambda.zip
       env:
         SEMVER: ${{ needs.release.outputs.version }}
 
@@ -878,26 +866,19 @@ jobs:
         aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
         aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
-    - name: Prepare Lambda(s)
-      shell: bash
-      run: |
-        echo aws s3 cp s3://s3-vbr-tst-basisregisters-lam-ar-sqsbackofficefunction/$VERSION/lambda.zip s3://s3-vbr-tst-basisregisters-lam-ar-sqsbackofficefunction/lambda.zip --copy-props none
-        aws s3 cp s3://s3-vbr-tst-basisregisters-lam-ar-sqsbackofficefunction/$VERSION/lambda.zip s3://s3-vbr-tst-basisregisters-lam-ar-sqsbackofficefunction/lambda.zip --copy-props none
-      env:
-        VERSION: ${{ needs.release.outputs.version }}
-
     - name: Promote Lambda(s)
       shell: bash
       run: |
         echo pulling awscurl docker image
         docker pull ghcr.io/okigan/awscurl:latest
-        echo docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "functionName": "ar-sqsbackofficefunction", "project": "basisregisters", "domain": "basisregisters" }' $PROMOTEURL/tst
-        docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "functionName": "ar-sqsbackofficefunction", "project": "basisregisters", "domain": "basisregisters" }' $PROMOTEURL/tst
+        echo docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "deploy_target": "lambda", "version": "'$SEMVER'" }' $PROMOTEURL/ar-sqsbackofficefunction/tst/deploy/v4/
+        docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "deploy_target": "lambda", "version": "'$SEMVER'" }' $PROMOTEURL/ar-sqsbackofficefunction/tst/deploy/v4/
       env:
         ACCESS_KEY_ID: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
         SECRET_ACCESS_KEY_ID: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
         REGION: ${{ secrets.VBR_AWS_REGION_PRD }}
-        PROMOTEURL: ${{ vars.VBR_AWS_PROMOTE_LAMBDA_DEVOPS_BASEURL }}
+        PROMOTEURL: ${{ vars.VBR_AWS_DEPLOY_LAMBDA_DEVOPS_BASEURL }}
+        SEMVER: ${{ needs.release.outputs.version }}
 
   deploy_to_test_finish_slack:
     if: github.repository_owner == 'Informatievlaanderen'
@@ -1037,26 +1018,19 @@ jobs:
         aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
         aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
-    - name: Prepare Lambda(s)
-      shell: bash
-      run: |
-        echo aws s3 cp s3://s3-vbr-stg-basisregisters-lam-ar-sqsbackofficefunction/$VERSION/lambda.zip s3://s3-vbr-stg-basisregisters-lam-ar-sqsbackofficefunction/lambda.zip --copy-props none
-        aws s3 cp s3://s3-vbr-stg-basisregisters-lam-ar-sqsbackofficefunction/$VERSION/lambda.zip s3://s3-vbr-stg-basisregisters-lam-ar-sqsbackofficefunction/lambda.zip --copy-props none
-      env:
-        VERSION: ${{ needs.release.outputs.version }}
-
     - name: Promote Lambda(s)
       shell: bash
       run: |
         echo pulling awscurl docker image
         docker pull ghcr.io/okigan/awscurl:latest
-        echo docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "functionName": "ar-sqsbackofficefunction", "project": "basisregisters", "domain": "basisregisters" }' $PROMOTEURL/stg
-        docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "functionName": "ar-sqsbackofficefunction", "project": "basisregisters", "domain": "basisregisters" }' $PROMOTEURL/stg
+        echo docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "deploy_target": "lambda", "version": "'$SEMVER'" }' $PROMOTEURL/ar-sqsbackofficefunction/stg/deploy/v4/
+        docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "deploy_target": "lambda", "version": "'$SEMVER'" }' $PROMOTEURL/ar-sqsbackofficefunction/stg/deploy/v4/
       env:
         ACCESS_KEY_ID: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
         SECRET_ACCESS_KEY_ID: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
         REGION: ${{ secrets.VBR_AWS_REGION_PRD }}
-        PROMOTEURL: ${{ vars.VBR_AWS_PROMOTE_LAMBDA_DEVOPS_BASEURL }}
+        PROMOTEURL: ${{ vars.VBR_AWS_DEPLOY_LAMBDA_DEVOPS_BASEURL }}
+        SEMVER: ${{ needs.release.outputs.version }}
 
   deploy_to_new_staging_finish_slack:
     if: github.repository_owner == 'Informatievlaanderen'

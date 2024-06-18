@@ -1,3 +1,10 @@
+## [4.6.1](https://github.com/informatievlaanderen/address-registry/compare/v4.6.0...v4.6.1) (2024-06-18)
+
+
+### Bug Fixes
+
+* style to trigger bump ([8c94498](https://github.com/informatievlaanderen/address-registry/commit/8c94498e53a55a2f030995353b59198b9358a03e))
+
 # [4.6.0](https://github.com/informatievlaanderen/address-registry/compare/v4.5.1...v4.6.0) (2024-06-06)
 
 

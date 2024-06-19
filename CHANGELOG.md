@@ -1,3 +1,10 @@
+## [4.6.2](https://github.com/informatievlaanderen/address-registry/compare/v4.6.1...v4.6.2) (2024-06-19)
+
+
+### Bug Fixes
+
+* **ci:** change deploy lambda tst+stg ([1f1be96](https://github.com/informatievlaanderen/address-registry/commit/1f1be96d9fda35d799cf9b687b108a4bd1140dc1))
+
 ## [4.6.1](https://github.com/informatievlaanderen/address-registry/compare/v4.6.0...v4.6.1) (2024-06-18)
 
 

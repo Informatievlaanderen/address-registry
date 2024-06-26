@@ -15,6 +15,7 @@ namespace AddressRegistry.Api.Oslo.Address
     using Projections.Legacy.AddressList;
     using Projections.Legacy.AddressListV2;
     using MunicipalityLanguage = Consumer.Read.Municipality.Projections.MunicipalityLanguage;
+    using Point = Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools.Point;
 
     public static class AddressMapper
     {
@@ -53,22 +54,15 @@ namespace AddressRegistry.Api.Oslo.Address
                 defaultMunicipalityName.Key);
         }
 
-        public static VolledigAdres? GetVolledigAdres(string houseNumber, string boxNumber, string postalCode,
-            Projections.Syndication.StreetName.StreetNameLatestItem? streetName, Projections.Syndication.Municipality.MunicipalityLatestItem? municipality)
+        public static Point GetAddressPoint(byte[] point)
         {
-            if (streetName == null || municipality == null)
-            {
-                return null;
-            }
+            var geometry = WKBReaderFactory.CreateForLegacy().Read(point);
 
-            var defaultMunicipalityName = GetDefaultMunicipalityName(municipality);
-            return new VolledigAdres(
-                GetDefaultStreetNameName(streetName, municipality.PrimaryLanguage).Value,
-                houseNumber,
-                boxNumber,
-                postalCode,
-                defaultMunicipalityName.Value,
-                defaultMunicipalityName.Key);
+            return new Point
+            {
+                XmlPoint = new GmlPoint { Pos = $"{geometry.Coordinate.X.ToPointGeometryCoordinateValueFormat()} {geometry.Coordinate.Y.ToPointGeometryCoordinateValueFormat()}" },
+                JsonPoint = new GeoJSONPoint { Coordinates = new[] { geometry.Coordinate.X, geometry.Coordinate.Y } }
+            };
         }
 
         private static string GetGml(Geometry geometry)
@@ -95,18 +89,6 @@ namespace AddressRegistry.Api.Oslo.Address
 
         public static AddressPosition GetAddressPoint(
             byte[] point,
-            GeometryMethod? method,
-            GeometrySpecification? specification)
-        {
-            var geometry = WKBReaderFactory.CreateForLegacy().Read(point);
-            var gml = GetGml(geometry);
-            var positieSpecificatie = ConvertFromGeometrySpecification(specification);
-            var positieGeometrieMethode = ConvertFromGeometryMethod(method);
-            return new AddressPosition(new GmlJsonPoint(gml), positieGeometrieMethode, positieSpecificatie);
-        }
-
-        public static AddressPosition GetAddressPoint(
-            byte[] point,
             StreetName.GeometryMethod? method,
             StreetName.GeometrySpecification? specification)
         {
@@ -115,17 +97,6 @@ namespace AddressRegistry.Api.Oslo.Address
             var positieSpecificatie = ConvertFromGeometrySpecification(specification);
             var positieGeometrieMethode = ConvertFromGeometryMethod(method);
             return new AddressPosition(new GmlJsonPoint(gml), positieGeometrieMethode, positieSpecificatie);
-        }
-
-        public static PositieGeometrieMethode ConvertFromGeometryMethod(GeometryMethod? method)
-        {
-            return method switch
-            {
-                GeometryMethod.DerivedFromObject => PositieGeometrieMethode.AfgeleidVanObject,
-                GeometryMethod.Interpolated => PositieGeometrieMethode.Geinterpoleerd,
-                GeometryMethod.AppointedByAdministrator => PositieGeometrieMethode.AangeduidDoorBeheerder,
-                _ => PositieGeometrieMethode.AangeduidDoorBeheerder
-            };
         }
 
         public static PositieGeometrieMethode ConvertFromGeometryMethod(StreetName.GeometryMethod? method)

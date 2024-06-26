@@ -6,6 +6,9 @@ namespace AddressRegistry.Api.Oslo.Convertors
 
     public static class StreetNameAddressStatusExtensions
     {
+        public static AdresStatus? ConvertFromAddressStatus(this AddressStatus? status)
+            => status == null ? (AdresStatus?)null : ConvertFromAddressStatus(status.Value);
+
         public static AddressStatus ConvertFromAdresStatus(this AdresStatus status)
         {
             switch (status)

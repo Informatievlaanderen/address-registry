@@ -4,6 +4,7 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
     using Address.Count;
     using Address.Detail;
     using Address.List;
+    using Address.Sync;
     using AddressMatch.Requests;
     using AddressMatch.Responses;
     using AddressMatch.V2;
@@ -24,6 +25,10 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
             builder
                 .RegisterType<Mediator>()
                 .As<IMediator>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<AddressSyndicationHandler>()
+                .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();
 
             builder.Register(c => (IRequestHandler<AddressListOsloRequest, AddressListOsloResponse>)

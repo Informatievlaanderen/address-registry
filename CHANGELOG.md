@@ -1,3 +1,10 @@
+# [4.7.0](https://github.com/informatievlaanderen/address-registry/compare/v4.6.2...v4.7.0) (2024-07-02)
+
+
+### Features
+
+* add syndication to oslo api ([a5ebf72](https://github.com/informatievlaanderen/address-registry/commit/a5ebf726a314e8c9b15f1db41a76e0ec386b3e59))
+
 ## [4.6.2](https://github.com/informatievlaanderen/address-registry/compare/v4.6.1...v4.6.2) (2024-06-19)
 
 

@@ -91,6 +91,31 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
         }
 
         [Fact]
+        public async Task AddressWasProposedBecauseOfMunicipalityMerger()
+        {
+            var addressWasProposedBecauseOfMunicipalityMerger = _fixture.Create<AddressWasProposedBecauseOfMunicipalityMerger>();
+
+            await Sut
+                .Given(new Envelope<AddressWasProposedBecauseOfMunicipalityMerger>(new Envelope(addressWasProposedBecauseOfMunicipalityMerger, new Dictionary<string, object>())))
+                .Then(async ct =>
+                {
+                    var addressWfsItem = (await ct.AddressWfsItems.FindAsync(addressWasProposedBecauseOfMunicipalityMerger.AddressPersistentLocalId));
+                    addressWfsItem.Should().NotBeNull();
+                    addressWfsItem!.StreetNamePersistentLocalId.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.StreetNamePersistentLocalId);
+                    addressWfsItem.HouseNumber.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.HouseNumber);
+                    addressWfsItem.BoxNumber.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.BoxNumber);
+                    addressWfsItem.PostalCode.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.PostalCode);
+                    addressWfsItem.Status.Should().Be(AddressWfsProjections.MapStatus(AddressStatus.Proposed));
+                    addressWfsItem.OfficiallyAssigned.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.OfficiallyAssigned);
+                    addressWfsItem.Position.Should().BeEquivalentTo((Point)_wkbReader.Read(addressWasProposedBecauseOfMunicipalityMerger.ExtendedWkbGeometry.ToByteArray()));
+                    addressWfsItem.PositionMethod.Should().Be(AddressWfsProjections.ConvertGeometryMethodToString(addressWasProposedBecauseOfMunicipalityMerger.GeometryMethod));
+                    addressWfsItem.PositionSpecification.Should().Be(AddressWfsProjections.ConvertGeometrySpecificationToString(addressWasProposedBecauseOfMunicipalityMerger.GeometrySpecification));
+                    addressWfsItem.Removed.Should().BeFalse();
+                    addressWfsItem.VersionTimestamp.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
         public async Task WhenAddressWasApproved()
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();

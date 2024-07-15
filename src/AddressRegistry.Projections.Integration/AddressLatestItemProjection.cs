@@ -116,6 +116,37 @@
                     .AddAsync(addressLatestItem, ct);
             });
 
+            When<Envelope<AddressWasProposedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            {
+                var geometry = WKBReaderFactory.CreateForLegacy().Read(message.Message.ExtendedWkbGeometry.ToByteArray());
+
+                var addressLatestItem = new AddressLatestItem()
+                {
+                    PersistentLocalId = message.Message.AddressPersistentLocalId,
+                    PostalCode = message.Message.PostalCode,
+                    StreetNamePersistentLocalId = message.Message.StreetNamePersistentLocalId,
+                    ParentPersistentLocalId = message.Message.ParentPersistentLocalId,
+                    Status = AddressStatus.Proposed,
+                    OsloStatus = AddressStatus.Proposed.Map(),
+                    HouseNumber = message.Message.HouseNumber,
+                    BoxNumber = message.Message.BoxNumber,
+                    Geometry = geometry,
+                    PositionMethod = message.Message.GeometryMethod,
+                    OsloPositionMethod = message.Message.GeometryMethod.ToPositieGeometrieMethode(),
+                    PositionSpecification = message.Message.GeometrySpecification,
+                    OsloPositionSpecification = message.Message.GeometrySpecification.ToPositieSpecificatie(),
+                    OfficiallyAssigned = message.Message.OfficiallyAssigned,
+                    Removed = false,
+                    VersionTimestamp = message.Message.Provenance.Timestamp,
+                    Namespace = options.Value.Namespace,
+                    PuriId = $"{options.Value.Namespace}/{message.Message.AddressPersistentLocalId}",
+                };
+
+                await context
+                    .AddressLatestItems
+                    .AddAsync(addressLatestItem, ct);
+            });
+
             When<Envelope<AddressWasApproved>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressLatestItem(

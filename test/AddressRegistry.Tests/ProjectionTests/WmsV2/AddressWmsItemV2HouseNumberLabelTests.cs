@@ -141,6 +141,47 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
         }
 
         [Fact]
+        public async Task WhenAddressWasProposedBecauseOfMunicipalityMerger()
+        {
+            var houseNumberOne = _fixture.Create<AddressWasProposedBecauseOfMunicipalityMerger>()
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(1))
+                .WithParentAddressPersistentLocalId(null)
+                .WithHouseNumber(new HouseNumber("1"));
+            var houseNumberTwo = CreateAddressWasMigratedToStreetName(
+                new AddressPersistentLocalId(2),
+                new HouseNumber("2"),
+                AddressStatus.Proposed,
+                new ExtendedWkbGeometry(houseNumberOne.ExtendedWkbGeometry));
+            var houseNumberThree = CreateAddressWasMigratedToStreetName(
+                new AddressPersistentLocalId(3),
+                new HouseNumber("3"),
+                AddressStatus.Proposed,
+                new ExtendedWkbGeometry(houseNumberOne.ExtendedWkbGeometry));
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasMigratedToStreetName>(new Envelope(houseNumberThree, new Dictionary<string, object>())),
+                    new Envelope<AddressWasMigratedToStreetName>(new Envelope(houseNumberTwo, new Dictionary<string, object>())),
+                    new Envelope<AddressWasProposedBecauseOfMunicipalityMerger>(new Envelope(houseNumberOne, new Dictionary<string, object>())))
+                .Then(async ct =>
+                {
+                    var one = await ct.AddressWmsItemsV2.FindAsync(houseNumberOne.AddressPersistentLocalId);
+                    one.Should().NotBeNull();
+                    var two = await ct.AddressWmsItemsV2.FindAsync(houseNumberTwo.AddressPersistentLocalId);
+                    one.Should().NotBeNull();
+                    var three = await ct.AddressWmsItemsV2.FindAsync(houseNumberThree.AddressPersistentLocalId);
+                    one.Should().NotBeNull();
+
+                    one!.HouseNumberLabel.Should().Be("1-3");
+                    two!.HouseNumberLabel.Should().Be("1-3");
+                    three!.HouseNumberLabel.Should().Be("1-3");
+                    one.HouseNumberLabelLength.Should().Be(3);
+                    two.HouseNumberLabelLength.Should().Be(3);
+                    three.HouseNumberLabelLength.Should().Be(3);
+                });
+        }
+
+        [Fact]
         public async Task WhenAddressWasApproved()
         {
             var houseNumberOneWasProposed = _fixture.Create<AddressWasProposedV2>()

@@ -132,6 +132,50 @@
         }
 
         [Fact]
+        public async Task WhenAddressWasProposedBecauseOfMunicipalityMerger()
+        {
+            var addressWasProposedBecauseOfMunicipalityMerger = _fixture.Create<AddressWasProposedBecauseOfMunicipalityMerger>();
+
+            var geometry = WKBReaderFactory.CreateForLegacy().Read(addressWasProposedBecauseOfMunicipalityMerger.ExtendedWkbGeometry.ToByteArray());
+
+            var position = _fixture.Create<long>();
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, "EventName"}
+            };
+
+            await Sut
+                .Given(new Envelope<AddressWasProposedBecauseOfMunicipalityMerger>(new Envelope(addressWasProposedBecauseOfMunicipalityMerger, metadata)))
+                .Then(async ct =>
+                {
+                    var expectedVersion =
+                        await ct.AddressVersions.FindAsync(position, addressWasProposedBecauseOfMunicipalityMerger.AddressPersistentLocalId);
+                    expectedVersion.Should().NotBeNull();
+                    expectedVersion!.StreetNamePersistentLocalId.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.StreetNamePersistentLocalId);
+                    expectedVersion.ParentPersistentLocalId.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.ParentPersistentLocalId);
+                    expectedVersion.HouseNumber.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.HouseNumber);
+                    expectedVersion.BoxNumber.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.BoxNumber);
+                    expectedVersion.PostalCode.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.PostalCode);
+                    expectedVersion.Status.Should().Be(AddressStatus.Proposed);
+                    expectedVersion.OsloStatus.Should().Be(AddressStatus.Proposed.Map());
+                    expectedVersion.OfficiallyAssigned.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.OfficiallyAssigned);
+                    expectedVersion.PositionMethod.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.GeometryMethod);
+                    expectedVersion.OsloPositionMethod.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.GeometryMethod.ToPositieGeometrieMethode());
+                    expectedVersion.PositionSpecification.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.GeometrySpecification);
+                    expectedVersion.OsloPositionSpecification.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.GeometrySpecification.ToPositieSpecificatie());
+                    expectedVersion.Removed.Should().Be(false);
+                    expectedVersion.Namespace.Should().Be(Namespace);
+                    expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasProposedBecauseOfMunicipalityMerger.AddressPersistentLocalId}");
+                    expectedVersion.VersionTimestamp.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.Provenance.Timestamp);
+                    expectedVersion.CreatedOnTimestamp.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.Provenance.Timestamp);
+                    expectedVersion.Geometry.Should().BeEquivalentTo(geometry);
+                    expectedVersion.Type.Should().Be("EventName");
+                });
+        }
+
+        [Fact]
         public async Task WhenAddressWasApproved()
         {
             var addressWasApproved = _fixture.Create<AddressWasApproved>();

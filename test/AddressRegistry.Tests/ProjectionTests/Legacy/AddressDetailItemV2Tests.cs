@@ -95,6 +95,37 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
         }
 
         [Fact]
+        public async Task WhenAddressWasProposedBecauseOfMunicipalityMerger()
+        {
+            var addressWasProposedBecauseOfMunicipalityMerger = _fixture.Create<AddressWasProposedBecauseOfMunicipalityMerger>();
+
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedBecauseOfMunicipalityMerger.GetHash() }
+            };
+
+            await Sut
+                .Given(new Envelope<AddressWasProposedBecauseOfMunicipalityMerger>(new Envelope(addressWasProposedBecauseOfMunicipalityMerger, metadata)))
+                .Then(async ct =>
+                {
+                    var addressDetailItemV2 = (await ct.AddressDetailV2.FindAsync(addressWasProposedBecauseOfMunicipalityMerger.AddressPersistentLocalId));
+                    addressDetailItemV2.Should().NotBeNull();
+                    addressDetailItemV2!.StreetNamePersistentLocalId.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.StreetNamePersistentLocalId);
+                    addressDetailItemV2.HouseNumber.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.HouseNumber);
+                    addressDetailItemV2.BoxNumber.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.BoxNumber);
+                    addressDetailItemV2.PostalCode.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.PostalCode);
+                    addressDetailItemV2.Status.Should().Be(AddressStatus.Proposed);
+                    addressDetailItemV2.OfficiallyAssigned.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.OfficiallyAssigned);
+                    addressDetailItemV2.Position.Should().BeEquivalentTo(addressWasProposedBecauseOfMunicipalityMerger.ExtendedWkbGeometry.ToByteArray());
+                    addressDetailItemV2.PositionMethod.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.GeometryMethod);
+                    addressDetailItemV2.PositionSpecification.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.GeometrySpecification);
+                    addressDetailItemV2.Removed.Should().BeFalse();
+                    addressDetailItemV2.VersionTimestamp.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.Provenance.Timestamp);
+                    addressDetailItemV2.LastEventHash.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.GetHash());
+                });
+        }
+
+        [Fact]
         public async Task WhenAddressWasApproved()
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();

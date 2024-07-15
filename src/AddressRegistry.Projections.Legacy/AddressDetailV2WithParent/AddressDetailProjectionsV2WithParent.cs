@@ -115,6 +115,30 @@ namespace AddressRegistry.Projections.Legacy.AddressDetailV2WithParent
                     .AddAsync(addressDetailItemV2, ct);
             });
 
+            When<Envelope<AddressWasProposedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            {
+                var addressDetailItemV2 = new AddressDetailItemV2WithParent(
+                    message.Message.AddressPersistentLocalId,
+                    message.Message.StreetNamePersistentLocalId,
+                    message.Message.ParentPersistentLocalId,
+                    message.Message.PostalCode,
+                    message.Message.HouseNumber,
+                    message.Message.BoxNumber,
+                    AddressStatus.Proposed,
+                    officiallyAssigned: message.Message.OfficiallyAssigned,
+                    position: message.Message.ExtendedWkbGeometry.ToByteArray(),
+                    positionMethod: message.Message.GeometryMethod,
+                    positionSpecification: message.Message.GeometrySpecification,
+                    removed: false,
+                    message.Message.Provenance.Timestamp);
+
+                UpdateHash(addressDetailItemV2, message);
+
+                await context
+                    .AddressDetailV2WithParent
+                    .AddAsync(addressDetailItemV2, ct);
+            });
+
             When<Envelope<AddressWasApproved>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressDetailV2(

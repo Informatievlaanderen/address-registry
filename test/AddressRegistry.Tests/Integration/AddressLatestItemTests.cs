@@ -121,6 +121,48 @@
         }
 
         [Fact]
+        public async Task WhenAddressWasProposedBecauseOfMunicipalityMerger()
+        {
+            var addressWasProposedBecauseOfMunicipalityMerger = _fixture.Create<AddressWasProposedBecauseOfMunicipalityMerger>();
+
+            var geometry = WKBReaderFactory.CreateForLegacy().Read(
+                addressWasProposedBecauseOfMunicipalityMerger.ExtendedWkbGeometry.ToByteArray());
+
+            var position = _fixture.Create<long>();
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, position }
+            };
+
+            await Sut
+                .Given(new Envelope<AddressWasProposedBecauseOfMunicipalityMerger>(new Envelope(addressWasProposedBecauseOfMunicipalityMerger, metadata)))
+                .Then(async ct =>
+                {
+                    var expectedLatestItem =
+                        await ct.AddressLatestItems.FindAsync(addressWasProposedBecauseOfMunicipalityMerger.AddressPersistentLocalId);
+                    expectedLatestItem.Should().NotBeNull();
+                    expectedLatestItem!.StreetNamePersistentLocalId.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.StreetNamePersistentLocalId);
+                    expectedLatestItem.ParentPersistentLocalId.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.ParentPersistentLocalId);
+                    expectedLatestItem.HouseNumber.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.HouseNumber);
+                    expectedLatestItem.BoxNumber.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.BoxNumber);
+                    expectedLatestItem.PostalCode.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.PostalCode);
+                    expectedLatestItem.Status.Should().Be(AddressStatus.Proposed);
+                    expectedLatestItem.OsloStatus.Should().Be(AddressStatus.Proposed.Map());
+                    expectedLatestItem.OfficiallyAssigned.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.OfficiallyAssigned);
+                    expectedLatestItem.PositionMethod.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.GeometryMethod);
+                    expectedLatestItem.OsloPositionMethod.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.GeometryMethod.ToPositieGeometrieMethode());
+                    expectedLatestItem.PositionSpecification.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.GeometrySpecification);
+                    expectedLatestItem.OsloPositionSpecification.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.GeometrySpecification.ToPositieSpecificatie());
+                    expectedLatestItem.Removed.Should().Be(false);
+                    expectedLatestItem.Namespace.Should().Be(Namespace);
+                    expectedLatestItem.PuriId.Should().Be($"{Namespace}/{addressWasProposedBecauseOfMunicipalityMerger.AddressPersistentLocalId}");
+                    expectedLatestItem.VersionTimestamp.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.Provenance.Timestamp);
+                    expectedLatestItem.Geometry.Should().BeEquivalentTo(geometry);
+                });
+        }
+
+        [Fact]
         public async Task WhenAddressWasApproved()
         {
             var addressWasApproved = _fixture.Create<AddressWasApproved>();

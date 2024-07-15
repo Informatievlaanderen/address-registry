@@ -14,9 +14,18 @@ namespace AddressRegistry.Projections.BackOffice
     {
         public BackOfficeProjections(IDbContextFactory<BackOfficeContext> backOfficeContextFactory, IConfiguration configuration)
         {
-            var delayInSeconds = configuration.GetValue<int>("DelayInSeconds", 10);
+            var delayInSeconds = configuration.GetValue("DelayInSeconds", 10);
 
             When<Envelope<AddressWasProposedV2>>(async (_, message, cancellationToken) =>
+            {
+                await DelayProjection(message.CreatedUtc, delayInSeconds, cancellationToken);
+
+                await using var backOfficeContext = await backOfficeContextFactory.CreateDbContextAsync(cancellationToken);
+                await backOfficeContext.AddIdempotentAddressStreetNameIdRelation(
+                    message.Message.AddressPersistentLocalId, message.Message.StreetNamePersistentLocalId, cancellationToken);
+            });
+
+            When<Envelope<AddressWasProposedBecauseOfMunicipalityMerger>>(async (_, message, cancellationToken) =>
             {
                 await DelayProjection(message.CreatedUtc, delayInSeconds, cancellationToken);
 

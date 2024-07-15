@@ -267,6 +267,12 @@ namespace AddressRegistry.Projections.LastChangedList
                 RebuildKeyAndUri(records, message.Message.AddressPersistentLocalId);
             });
 
+            When<Envelope<AddressWasProposedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            {
+                var records = await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
+                RebuildKeyAndUri(records, message.Message.AddressPersistentLocalId);
+            });
+
             When<Envelope<AddressWasApproved>>(async (context, message, ct) =>
             {
                 await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);

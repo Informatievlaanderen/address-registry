@@ -148,6 +148,44 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
                 }
             });
 
+            When<Envelope<AddressWasProposedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            {
+                var addressWmsItem = new AddressWmsItemV2(
+                    message.Message.AddressPersistentLocalId,
+                    message.Message.ParentPersistentLocalId,
+                    message.Message.StreetNamePersistentLocalId,
+                    message.Message.PostalCode,
+                    message.Message.HouseNumber,
+                    message.Message.BoxNumber,
+                    MapStatus(AddressStatus.Proposed),
+                    officiallyAssigned: message.Message.OfficiallyAssigned,
+                    ParsePosition(message.Message.ExtendedWkbGeometry),
+                    ConvertGeometryMethodToString(message.Message.GeometryMethod),
+                    ConvertGeometrySpecificationToString(message.Message.GeometrySpecification),
+                    removed: false,
+                    message.Message.Provenance.Timestamp);
+
+                await context.UpdateHouseNumberLabelsV2(addressWmsItem, ct, includeAddressInUpdate: true);
+
+                await context
+                    .AddressWmsItemsV2
+                    .AddAsync(addressWmsItem, ct);
+
+                if (message.Message.ParentPersistentLocalId.HasValue)
+                {
+                    var parent = await context.FindAddressDetailV2(message.Message.ParentPersistentLocalId.Value, ct);
+                    if (parent.Position == addressWmsItem.Position)
+                    {
+                        await context.FindAndUpdateAddressDetailV2(
+                            message.Message.ParentPersistentLocalId.Value,
+                            address => { address.LabelType = WmsAddressLabelType.BoxNumberOrHouseNumberWithBoxesOnSamePosition; },
+                            ct,
+                            updateHouseNumberLabelsBeforeAddressUpdate: false,
+                            updateHouseNumberLabelsAfterAddressUpdate: false);
+                    }
+                }
+            });
+
             When<Envelope<AddressWasApproved>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressDetailV2(

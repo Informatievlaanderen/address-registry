@@ -84,6 +84,32 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
         }
 
         [Fact]
+        public async Task WhenAddressWasProposedBecauseOfMunicipalityMerger()
+        {
+            var addressWasProposedBecauseOfMunicipalityMerger = _fixture.Create<AddressWasProposedBecauseOfMunicipalityMerger>();
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedBecauseOfMunicipalityMerger.GetHash() }
+            };
+
+            await Sut
+                .Given(new Envelope<AddressWasProposedBecauseOfMunicipalityMerger>(new Envelope(addressWasProposedBecauseOfMunicipalityMerger, metadata)))
+                .Then(async ct =>
+                {
+                    var expectedListItem = (await ct.AddressListV2.FindAsync(addressWasProposedBecauseOfMunicipalityMerger.AddressPersistentLocalId));
+                    expectedListItem.Should().NotBeNull();
+                    expectedListItem!.StreetNamePersistentLocalId.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.StreetNamePersistentLocalId);
+                    expectedListItem.HouseNumber.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.HouseNumber);
+                    expectedListItem.BoxNumber.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.BoxNumber);
+                    expectedListItem.PostalCode.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.PostalCode);
+                    expectedListItem.Status.Should().Be(AddressStatus.Proposed);
+                    expectedListItem.Removed.Should().BeFalse();
+                    expectedListItem.VersionTimestamp.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.Provenance.Timestamp);
+                    expectedListItem.LastEventHash.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.GetHash());
+                });
+        }
+
+        [Fact]
         public async Task WhenAddressWasApproved()
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();

@@ -43,6 +43,7 @@ namespace AddressRegistry.StreetName
         {
             Register<AddressWasMigratedToStreetName>(When);
             Register<AddressWasProposedV2>(When);
+            Register<AddressWasProposedBecauseOfMunicipalityMerger>(When);
             Register<AddressWasApproved>(When);
             Register<AddressWasRejected>(When);
             Register<AddressWasRejectedBecauseHouseNumberWasRejected>(When);
@@ -109,6 +110,23 @@ namespace AddressRegistry.StreetName
             BoxNumber = string.IsNullOrEmpty(@event.BoxNumber) ? null : new BoxNumber(@event.BoxNumber);
             PostalCode = new PostalCode(@event.PostalCode);
             IsOfficiallyAssigned = true;
+            Geometry = new AddressGeometry(
+                @event.GeometryMethod,
+                @event.GeometrySpecification,
+                new ExtendedWkbGeometry(@event.ExtendedWkbGeometry));
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressWasProposedBecauseOfMunicipalityMerger @event)
+        {
+            _streetNamePersistentLocalId = new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId);
+            AddressPersistentLocalId = new AddressPersistentLocalId(@event.AddressPersistentLocalId);
+            HouseNumber = new HouseNumber(@event.HouseNumber);
+            Status = AddressStatus.Proposed;
+            BoxNumber = string.IsNullOrEmpty(@event.BoxNumber) ? null : new BoxNumber(@event.BoxNumber);
+            PostalCode = new PostalCode(@event.PostalCode);
+            IsOfficiallyAssigned = @event.OfficiallyAssigned;
             Geometry = new AddressGeometry(
                 @event.GeometryMethod,
                 @event.GeometrySpecification,

@@ -67,6 +67,26 @@ namespace AddressRegistry.StreetName
                         message.Command.Position);
                 });
 
+            For<ProposeAddressForMunicipalityMerger>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<ProposeAddressForMunicipalityMerger, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streetNameStreamId = new StreetNameStreamId(message.Command.StreetNamePersistentLocalId);
+                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+
+                    streetName.ProposeAddressForMunicipalityMerger(
+                        message.Command.AddressPersistentLocalId,
+                        message.Command.PostalCode,
+                        message.Command.HouseNumber,
+                        message.Command.BoxNumber,
+                        message.Command.GeometryMethod,
+                        message.Command.GeometrySpecification,
+                        message.Command.Position,
+                        message.Command.OfficiallyAssigned);
+                });
+
             For<ApproveAddress>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
                 .AddEventHash<ApproveAddress, StreetName>(getUnitOfWork)

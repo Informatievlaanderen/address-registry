@@ -1,5 +1,8 @@
 namespace AddressRegistry.Infrastructure
 {
+    using System;
+    using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
     public static class Schema
     {
         public const string Default = "AddressRegistry";
@@ -12,6 +15,7 @@ namespace AddressRegistry.Infrastructure
         public const string ConsumerProjections = "AddressRegistryConsumer";
         public const string ConsumerReadMunicipality = "AddressRegistryConsumerReadMunicipality";
         public const string ConsumerReadStreetName = "AddressRegistryConsumerReadStreetName";
+        public const string ConsumerReadPostal = "AddressRegistryConsumerReadPostal";
         public const string MigrateAddress = "AddressRegistryMigration";
         public const string BackOffice = "AddressRegistryBackOffice";
         public const string BackOfficeProjections = "AddressRegistryBackOfficeProjections";
@@ -33,6 +37,7 @@ namespace AddressRegistry.Infrastructure
         public const string ConsumerProjections = "__EFMigrationsHistoryConsumer";
         public const string ConsumerReadMunicipality = "__EFMigrationsHistoryConsumerReadMunicipality";
         public const string ConsumerReadStreetName = "__EFMigrationsHistoryConsumerReadStreetName";
+        public const string ConsumerReadPostal = "__EFMigrationsHistoryConsumerReadPostal";
         public const string BackOffice = "__EFMigrationsHistoryBackOffice";
         public const string BackOfficeProjections = "__EFMigrationsHistoryBackOfficeProjections";
         public const string Wfs = "__EFMigrationsHistoryWfsAddress";

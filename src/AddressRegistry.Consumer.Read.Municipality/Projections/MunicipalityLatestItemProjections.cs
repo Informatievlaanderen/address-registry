@@ -13,11 +13,6 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
 
     public class MunicipalityLatestItemProjections : ConnectedProjection<MunicipalityConsumerContext>
     {
-        public static string Dutch => MunicipalityLanguage.Dutch.ToString();
-        public static string French => MunicipalityLanguage.French.ToString();
-        public static string German => MunicipalityLanguage.German.ToString();
-        public static string English => MunicipalityLanguage.English.ToString();
-
         private void UpdateVersionTimestamp(Provenance provenance, MunicipalityLatestItem municipality)
         {
             var timestamp = InstantPattern.General.Parse(provenance.Timestamp).Value;

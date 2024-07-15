@@ -220,6 +220,21 @@ jobs:
       dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
     secrets: inherit
 
+  build-consumer-read-postal:
+    name: Build Consumer Postal
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
+    needs: [ set-release-version ]
+    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
+    with:
+      registry: ${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/address-registry
+      image-file: ar-consumer-read-postal-image.tar
+      image-name: consumer-read-postal
+      test-project: AddressRegistry.Tests
+      build-project: AddressRegistry.Consumer.Read.Postal
+      semver: ${{ needs.set-release-version.outputs.version }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
+    secrets: inherit
+
   build-producer:
     name: Build Producer
     uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
@@ -397,6 +412,7 @@ jobs:
       build-projections-last-changed-list,
       build-consumer,
       build-consumer-read-municipality,
+      build-consumer-read-postal,
       build-consumer-read-streetname,
       build-producer,
       build-producer-snapshot-oslo,
@@ -705,6 +721,7 @@ jobs:
           , 'consumer'
           , 'consumer-read-municipality'
           , 'consumer-read-streetname'
+          #, 'consumer-read-postal'
           , 'producer'
           , 'producer-snapshot-oslo'
           , 'cache-warmer'
@@ -784,6 +801,7 @@ jobs:
           'address-consumer',
           'address-consumer-municipality',
           'address-consumer-streetname',
+          #'address-consumer-postal',
           'address-producer',
           'address-producer-snapshot-oslo',
           'address-projections',
@@ -936,6 +954,7 @@ jobs:
           'address-consumer',
           'address-consumer-municipality',
           'address-consumer-streetname',
+          #'address-consumer-postal',
           'address-producer',
           'address-producer-snapshot-oslo',
           'address-projections',

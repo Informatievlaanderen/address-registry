@@ -423,6 +423,7 @@ NUGET
     Confluent.Kafka (2.3)
       librdkafka.redist (>= 2.3)
       System.Memory (>= 4.5)
+    CsvHelper (33.0.1)
     Dapper (2.1.35)
     Datadog.Trace (2.49)
       System.Diagnostics.DiagnosticSource (>= 4.4.1)

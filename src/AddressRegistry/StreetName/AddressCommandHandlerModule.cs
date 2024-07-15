@@ -84,7 +84,8 @@ namespace AddressRegistry.StreetName
                         message.Command.GeometryMethod,
                         message.Command.GeometrySpecification,
                         message.Command.Position,
-                        message.Command.OfficiallyAssigned);
+                        message.Command.OfficiallyAssigned,
+                        message.Command.MergedAddressPersistentLocalId);
                 });
 
             For<ApproveAddress>()

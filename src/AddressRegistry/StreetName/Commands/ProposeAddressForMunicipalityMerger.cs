@@ -10,15 +10,17 @@ namespace AddressRegistry.StreetName.Commands
     {
         private static readonly Guid Namespace = new Guid("75540a40-3528-4ddd-b716-6bc997911258");
 
-        public StreetNamePersistentLocalId StreetNamePersistentLocalId { get; set; }
-        public PostalCode PostalCode { get; set; }
-        public AddressPersistentLocalId AddressPersistentLocalId { get; set; }
-        public HouseNumber HouseNumber { get; set; }
-        public BoxNumber? BoxNumber { get; set; }
-        public GeometryMethod GeometryMethod { get; set; }
-        public GeometrySpecification GeometrySpecification { get; set; }
-        public ExtendedWkbGeometry Position { get; set; }
+        public StreetNamePersistentLocalId StreetNamePersistentLocalId { get; }
+        public PostalCode PostalCode { get; }
+        public AddressPersistentLocalId AddressPersistentLocalId { get; }
+        public HouseNumber HouseNumber { get; }
+        public BoxNumber? BoxNumber { get; }
+        public GeometryMethod GeometryMethod { get; }
+        public GeometrySpecification GeometrySpecification { get; }
+        public ExtendedWkbGeometry Position { get; }
         public bool OfficiallyAssigned { get; }
+
+        public AddressPersistentLocalId MergedAddressPersistentLocalId { get; }
         public Provenance Provenance { get; }
 
         public ProposeAddressForMunicipalityMerger(
@@ -31,6 +33,7 @@ namespace AddressRegistry.StreetName.Commands
             GeometrySpecification geometrySpecification,
             ExtendedWkbGeometry position,
             bool officiallyAssigned,
+            AddressPersistentLocalId mergedAddressPersistentLocalId,
             Provenance provenance)
         {
             StreetNamePersistentLocalId = streetNamePersistentLocalId;
@@ -42,6 +45,7 @@ namespace AddressRegistry.StreetName.Commands
             GeometrySpecification = geometrySpecification;
             Position = position;
             OfficiallyAssigned = officiallyAssigned;
+            MergedAddressPersistentLocalId = mergedAddressPersistentLocalId;
             Provenance = provenance;
         }
 
@@ -62,6 +66,7 @@ namespace AddressRegistry.StreetName.Commands
             yield return GeometrySpecification.ToString();
             yield return Position;
             yield return OfficiallyAssigned;
+            yield return MergedAddressPersistentLocalId;
 
             foreach (var field in Provenance.GetIdentityFields())
             {

@@ -25,7 +25,8 @@ namespace AddressRegistry.StreetName
         public bool IsBoxNumberAddress => BoxNumber is not null;
         public PostalCode? PostalCode { get; private set; }
         public AddressGeometry Geometry { get; private set; }
-        public bool IsOfficiallyAssigned { get; set; }
+        public bool IsOfficiallyAssigned { get; private set; }
+        public AddressPersistentLocalId? MergedAddressPersistentLocalId { get; private set; }
         public bool IsRemoved { get; private set; }
 
         public StreetNameAddress? Parent { get; private set; }
@@ -131,6 +132,7 @@ namespace AddressRegistry.StreetName
                 @event.GeometryMethod,
                 @event.GeometrySpecification,
                 new ExtendedWkbGeometry(@event.ExtendedWkbGeometry));
+            MergedAddressPersistentLocalId = new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId);
 
             _lastEvent = @event;
         }

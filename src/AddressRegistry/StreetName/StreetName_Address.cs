@@ -159,7 +159,8 @@ namespace AddressRegistry.StreetName
             GeometryMethod geometryMethod,
             GeometrySpecification geometrySpecification,
             ExtendedWkbGeometry geometryPosition,
-            bool officiallyAssigned)
+            bool officiallyAssigned,
+            AddressPersistentLocalId mergedAddressPersistentLocalId)
         {
             GuardActiveStreetName();
 
@@ -197,6 +198,8 @@ namespace AddressRegistry.StreetName
 
             StreetNameAddress.GuardGeometry(geometryMethod, geometrySpecification);
 
+            //TODO-rik validate mergedAddressPersistentLocalId + add test
+
             ApplyChange(new AddressWasProposedBecauseOfMunicipalityMerger(
                 PersistentLocalId,
                 addressPersistentLocalId,
@@ -207,7 +210,8 @@ namespace AddressRegistry.StreetName
                 geometryMethod,
                 geometrySpecification,
                 geometryPosition,
-                officiallyAssigned));
+                officiallyAssigned,
+                mergedAddressPersistentLocalId));
         }
 
         public void ApproveAddress(AddressPersistentLocalId addressPersistentLocalId)

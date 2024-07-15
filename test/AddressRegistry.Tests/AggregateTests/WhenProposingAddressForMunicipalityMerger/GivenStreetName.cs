@@ -46,7 +46,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
-                officiallyAssigned: Fixture.Create<bool>());
+                officiallyAssigned: Fixture.Create<bool>(),
+                Fixture.Create<AddressPersistentLocalId>());
             ((ISetProvenance)parentAddressWasProposed).SetProvenance(Fixture.Create<Provenance>());
 
             var proposeChildAddress = new ProposeAddressForMunicipalityMerger(
@@ -59,6 +60,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 GeometrySpecification.Entry,
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                 Fixture.Create<bool>(),
+                Fixture.Create<AddressPersistentLocalId>(),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -78,7 +80,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                             GeometryMethod.AppointedByAdministrator,
                             GeometrySpecification.Entry,
                             GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
-                            proposeChildAddress.OfficiallyAssigned))));
+                            proposeChildAddress.OfficiallyAssigned,
+                            proposeChildAddress.MergedAddressPersistentLocalId))));
         }
 
         [Fact]
@@ -96,7 +99,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
-                Fixture.Create<bool>());
+                Fixture.Create<bool>(),
+                Fixture.Create<AddressPersistentLocalId>());
 
             ((ISetProvenance)parentAddressWasProposed).SetProvenance(Fixture.Create<Provenance>());
 
@@ -116,6 +120,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 GeometrySpecification.Entry,
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                 Fixture.Create<bool>(),
+                Fixture.Create<AddressPersistentLocalId>(),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -145,6 +150,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 GeometrySpecification.Municipality,
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                 Fixture.Create<bool>(),
+                Fixture.Create<AddressPersistentLocalId>(),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -167,6 +173,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 GeometrySpecification.Entry,
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                 Fixture.Create<bool>(),
+                Fixture.Create<AddressPersistentLocalId>(),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -185,7 +192,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                             GeometryMethod.AppointedByAdministrator,
                             GeometrySpecification.Entry,
                             GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
-                            proposeParentAddress.OfficiallyAssigned))));
+                            proposeParentAddress.OfficiallyAssigned,
+                            proposeParentAddress.MergedAddressPersistentLocalId))));
         }
 
         [Fact]
@@ -201,7 +209,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
-                Fixture.Create<bool>());
+                Fixture.Create<bool>(),
+                Fixture.Create<AddressPersistentLocalId>());
             ((ISetProvenance)addressWasProposedBecauseOfMunicipalityMerger).SetProvenance(Fixture.Create<Provenance>());
 
             var command = new ProposeAddressForMunicipalityMerger(
@@ -214,6 +223,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 GeometrySpecification.Entry,
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                 Fixture.Create<bool>(),
+                Fixture.Create<AddressPersistentLocalId>(),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -239,6 +249,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 GeometrySpecification.Entry,
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                 Fixture.Create<bool>(),
+                Fixture.Create<AddressPersistentLocalId>(),
                 Fixture.Create<Provenance>());
 
             var addressWasProposedBecauseOfMunicipalityMerger = new AddressWasProposedBecauseOfMunicipalityMerger(
@@ -251,7 +262,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Lot,
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
-                Fixture.Create<bool>());
+                Fixture.Create<bool>(),
+                Fixture.Create<AddressPersistentLocalId>());
             ((ISetProvenance)addressWasProposedBecauseOfMunicipalityMerger).SetProvenance(Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -279,6 +291,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 GeometrySpecification.Entry,
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                 Fixture.Create<bool>(),
+                Fixture.Create<AddressPersistentLocalId>(),
                 Fixture.Create<Provenance>());
 
             var parentAddressWasProposedBecauseOfMunicipalityMerger = new AddressWasProposedBecauseOfMunicipalityMerger(
@@ -291,7 +304,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Lot,
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
-                Fixture.Create<bool>());
+                Fixture.Create<bool>(),
+                Fixture.Create<AddressPersistentLocalId>());
             ((ISetProvenance)parentAddressWasProposedBecauseOfMunicipalityMerger).SetProvenance(Fixture.Create<Provenance>());
 
             var addressWasProposedBecauseOfMunicipalityMerger = new AddressWasProposedBecauseOfMunicipalityMerger(
@@ -304,7 +318,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Lot,
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
-                Fixture.Create<bool>());
+                Fixture.Create<bool>(),
+                Fixture.Create<AddressPersistentLocalId>());
             ((ISetProvenance)addressWasProposedBecauseOfMunicipalityMerger).SetProvenance(Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -329,6 +344,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 GeometrySpecification.Entry,
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                 Fixture.Create<bool>(),
+                Fixture.Create<AddressPersistentLocalId>(),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -355,6 +371,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 invalidSpecification,
                 Fixture.Create<ExtendedWkbGeometry>(),
                 Fixture.Create<bool>(),
+                Fixture.Create<AddressPersistentLocalId>(),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -382,6 +399,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 invalidSpecification,
                 Fixture.Create<ExtendedWkbGeometry>(),
                 Fixture.Create<bool>(),
+                Fixture.Create<AddressPersistentLocalId>(),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -406,7 +424,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
-                Fixture.Create<bool>());
+                Fixture.Create<bool>(),
+                Fixture.Create<AddressPersistentLocalId>());
             ((ISetProvenance)parentAddressWasProposed).SetProvenance(Fixture.Create<Provenance>());
 
             var proposeChildAddress = new ProposeAddressForMunicipalityMerger(
@@ -419,6 +438,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 GeometrySpecification.Entry,
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                 Fixture.Create<bool>(),
+                Fixture.Create<AddressPersistentLocalId>(),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -451,6 +471,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 GeometrySpecification.Entry,
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                 Fixture.Create<bool>(),
+                Fixture.Create<AddressPersistentLocalId>(),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -482,6 +503,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 GeometrySpecification.Entry,
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                 Fixture.Create<bool>(),
+                Fixture.Create<AddressPersistentLocalId>(),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -505,6 +527,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
             var childPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
             var childBoxNumber = Fixture.Create<BoxNumber>();
             var officiallyAssigned = Fixture.Create<bool>();
+            var mergedAddressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
 
             var parentAddressWasProposed = new AddressWasProposedBecauseOfMunicipalityMerger(
                 Fixture.Create<StreetNamePersistentLocalId>(),
@@ -516,7 +539,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 geometryMethod,
                 geometrySpecification,
                 geometryPosition,
-                officiallyAssigned);
+                officiallyAssigned,
+                mergedAddressPersistentLocalId);
             ((ISetProvenance)parentAddressWasProposed).SetProvenance(Fixture.Create<Provenance>());
 
             var migrateRemovedIdenticalParentAddress = new AddressWasMigratedToStreetName(
@@ -568,7 +592,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 geometryMethod,
                 geometrySpecification,
                 geometryPosition,
-                officiallyAssigned);
+                officiallyAssigned,
+                mergedAddressPersistentLocalId);
 
             // Assert
             var result = aggregate.StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(parentAddressWasProposed.AddressPersistentLocalId));
@@ -584,6 +609,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
             child.Geometry.GeometryMethod.Should().Be(geometryMethod);
             child.Geometry.GeometrySpecification.Should().Be(geometrySpecification);
             child.Geometry.Geometry.Should().Be(geometryPosition);
+            child.MergedAddressPersistentLocalId.Should().Be(mergedAddressPersistentLocalId);
         }
     }
 }

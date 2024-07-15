@@ -29,6 +29,9 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections
                 await context.StreetNameLatestItems.AddAsync(item, ct);
             });
 
+            //TODO-rik listen to StreetNameWasProposedForMunicipalityMerger en hou bij welke straatnamen voor een fusie zijn
+            //zodat bij StreetNameWasApproved hiernaar kan gekeken worden en indien nodig de proposed addressen kan approven
+
             When<StreetNameWasProposedV2>(async (context, message, ct) =>
             {
                 var item = new StreetNameLatestItem(message.PersistentLocalId, message.NisCode) { Status = StreetNameStatus.Proposed };

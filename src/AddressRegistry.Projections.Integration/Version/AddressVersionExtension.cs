@@ -1,4 +1,4 @@
-﻿namespace AddressRegistry.Projections.Integration
+﻿namespace AddressRegistry.Projections.Integration.Version
 {
     using System;
     using System.Linq;

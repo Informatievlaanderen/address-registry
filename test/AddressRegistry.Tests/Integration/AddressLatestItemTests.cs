@@ -15,6 +15,7 @@
     using Projections.Integration;
     using Projections.Integration.Convertors;
     using Projections.Integration.Infrastructure;
+    using Projections.Integration.LatestItem;
     using StreetName;
     using StreetName.DataStructures;
     using StreetName.Events;

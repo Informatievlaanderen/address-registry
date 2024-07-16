@@ -3,6 +3,7 @@ namespace AddressRegistry.Projections.Integration
     using AddressRegistry.Infrastructure;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
     using LatestItem;
+    using Merger;
     using Microsoft.EntityFrameworkCore;
     using Version;
 
@@ -13,6 +14,7 @@ namespace AddressRegistry.Projections.Integration
         public DbSet<AddressLatestItem> AddressLatestItems => Set<AddressLatestItem>();
         public DbSet<AddressVersion> AddressVersions => Set<AddressVersion>();
         public DbSet<AddressIdAddressPersistentLocalIdRelation> AddressIdAddressPersistentLocalIds => Set<AddressIdAddressPersistentLocalIdRelation>();
+        public DbSet<AddressMergerItem> AddressMergerItems => Set<AddressMergerItem>();
 
         // This needs to be here to please EF
         public IntegrationContext() { }

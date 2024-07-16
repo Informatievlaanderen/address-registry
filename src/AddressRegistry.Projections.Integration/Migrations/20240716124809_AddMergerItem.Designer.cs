@@ -3,6 +3,7 @@ using System;
 using AddressRegistry.Projections.Integration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AddressRegistry.Projections.Integration.Migrations
 {
     [DbContext(typeof(IntegrationContext))]
-    partial class IntegrationContextModelSnapshot : ModelSnapshot
+    [Migration("20240716124809_AddMergerItem")]
+    partial class AddMergerItem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -1,14 +1,14 @@
-﻿namespace AddressRegistry.Projections.Integration
+﻿namespace AddressRegistry.Projections.Integration.LatestItem
 {
+    using AddressRegistry.Projections.Integration.Convertors;
+    using AddressRegistry.Projections.Integration.Infrastructure;
+    using AddressRegistry.StreetName;
+    using AddressRegistry.StreetName.Events;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
-    using Convertors;
-    using Infrastructure;
     using Microsoft.Extensions.Options;
     using NodaTime;
-    using StreetName;
-    using StreetName.Events;
 
     [ConnectedProjectionName("Integratie adres latest item")]
     [ConnectedProjectionDescription("Projectie die de laatste adres data voor de integratie database bijhoudt.")]

@@ -7,6 +7,8 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using AddressRegistry.Projections.Extract.AddressExtract;
     using AddressRegistry.Projections.Integration;
     using AddressRegistry.Projections.Integration.Infrastructure;
+    using AddressRegistry.Projections.Integration.LatestItem;
+    using AddressRegistry.Projections.Integration.Version;
     using AddressRegistry.Projections.LastChangedList;
     using AddressRegistry.Projections.Legacy;
     using AddressRegistry.Projections.Legacy.AddressDetailV2WithParent;

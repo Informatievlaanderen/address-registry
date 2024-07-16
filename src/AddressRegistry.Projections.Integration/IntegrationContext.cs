@@ -2,7 +2,9 @@ namespace AddressRegistry.Projections.Integration
 {
     using AddressRegistry.Infrastructure;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
+    using LatestItem;
     using Microsoft.EntityFrameworkCore;
+    using Version;
 
     public class IntegrationContext : RunnerDbContext<IntegrationContext>
     {

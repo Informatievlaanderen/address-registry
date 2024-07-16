@@ -226,7 +226,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressHouseNumber
             var addressWasMigratedToStreetName = Fixture.Create<AddressWasMigratedToStreetName>()
                 .AsHouseNumberAddress(addressStatus: AddressStatus.Current);
 
-            var command =Fixture.Create<CorrectAddressHouseNumber>();
+            var command = Fixture.Create<CorrectAddressHouseNumber>();
 
             Assert(new Scenario()
                 .Given(_streamId,

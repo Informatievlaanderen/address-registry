@@ -67,26 +67,30 @@ namespace AddressRegistry.StreetName
                         message.Command.Position);
                 });
 
-            For<ProposeAddressForMunicipalityMerger>()
+            For<ProposeAddressesForMunicipalityMerger>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
-                .AddEventHash<ProposeAddressForMunicipalityMerger, StreetName>(getUnitOfWork)
+                .AddEventHash<ProposeAddressesForMunicipalityMerger, StreetName>(getUnitOfWork)
                 .AddProvenance(getUnitOfWork, provenanceFactory)
                 .Handle(async (message, ct) =>
                 {
                     var streetNameStreamId = new StreetNameStreamId(message.Command.StreetNamePersistentLocalId);
                     var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
 
-                    streetName.ProposeAddressForMunicipalityMerger(
-                        message.Command.AddressPersistentLocalId,
-                        message.Command.PostalCode,
-                        message.Command.HouseNumber,
-                        message.Command.BoxNumber,
-                        message.Command.GeometryMethod,
-                        message.Command.GeometrySpecification,
-                        message.Command.Position,
-                        message.Command.OfficiallyAssigned,
-                        message.Command.MergedAddressPersistentLocalId);
+                    foreach (var address in message.Command.Addresses)
+                    {
+                        streetName.ProposeAddressForMunicipalityMerger(
+                            address.AddressPersistentLocalId,
+                            address.PostalCode,
+                            address.HouseNumber,
+                            address.BoxNumber,
+                            address.GeometryMethod,
+                            address.GeometrySpecification,
+                            address.Position,
+                            address.OfficiallyAssigned,
+                            address.MergedAddressPersistentLocalId);
+                    }
                 });
+
 
             For<ApproveAddress>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
@@ -312,7 +316,7 @@ namespace AddressRegistry.StreetName
                     streetName.ChangeAddressPostalCode(message.Command.AddressPersistentLocalId, message.Command.PostalCode);
                 });
 
-           For<Readdress>()
+            For<Readdress>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
                 .AddEventHash<Readdress, StreetName>(getUnitOfWork)
                 .AddProvenance(getUnitOfWork, provenanceFactory)
@@ -348,17 +352,17 @@ namespace AddressRegistry.StreetName
                         lazyPersistentLocalIdGenerator.Value);
                 });
 
-           For<RejectOrRetireAddressForReaddress>()
-               .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
-               .AddEventHash<RejectOrRetireAddressForReaddress, StreetName>(getUnitOfWork)
-               .AddProvenance(getUnitOfWork, provenanceFactory)
-               .Handle(async (message, ct) =>
-               {
-                   var streetNameStreamId = new StreetNameStreamId(message.Command.StreetNamePersistentLocalId);
-                   var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+            For<RejectOrRetireAddressForReaddress>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<RejectOrRetireAddressForReaddress, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streetNameStreamId = new StreetNameStreamId(message.Command.StreetNamePersistentLocalId);
+                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
 
-                   streetName.RejectOrRetireAddressForReaddress(message.Command.AddressPersistentLocalId);
-               });
+                    streetName.RejectOrRetireAddressForReaddress(message.Command.AddressPersistentLocalId);
+                });
         }
     }
 }

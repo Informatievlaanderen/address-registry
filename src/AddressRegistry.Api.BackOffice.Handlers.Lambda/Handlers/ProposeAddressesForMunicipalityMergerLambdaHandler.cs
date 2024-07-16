@@ -36,18 +36,15 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
 
         protected override async Task<object> InnerHandle(ProposeAddressesForMunicipalityMergerLambdaRequest request, CancellationToken cancellationToken)
         {
-            var commands = await BuildCommands(request, cancellationToken);
+            var command = await BuildCommand(request, cancellationToken);
 
             try
             {
-                foreach (var command in commands)
-                {
-                    await IdempotentCommandHandler.Dispatch(
-                        command.CreateCommandId(),
-                        command,
-                        request.Metadata,
-                        cancellationToken);
-                }
+                await IdempotentCommandHandler.Dispatch(
+                    command.CreateCommandId(),
+                    command,
+                    request.Metadata,
+                    cancellationToken);
             }
             catch (IdempotencyException)
             {
@@ -56,32 +53,32 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
 
             var etagResponses = new List<ETagResponse>();
 
-            foreach (var command in commands)
+            foreach (var address in command.Addresses)
             {
                 await _backOfficeContext.AddIdempotentAddressStreetNameIdRelation(
-                    command.AddressPersistentLocalId, request.StreetNamePersistentLocalId(), cancellationToken);
+                    address.AddressPersistentLocalId, request.StreetNamePersistentLocalId(), cancellationToken);
 
-                var lastHash = await GetHash(request.StreetNamePersistentLocalId(), command.AddressPersistentLocalId, cancellationToken);
-                etagResponses.Add(new ETagResponse(string.Format(DetailUrlFormat, command.AddressPersistentLocalId), lastHash));
+                var lastHash = await GetHash(request.StreetNamePersistentLocalId(), address.AddressPersistentLocalId, cancellationToken);
+                etagResponses.Add(new ETagResponse(string.Format(DetailUrlFormat, address.AddressPersistentLocalId), lastHash));
             }
 
             return etagResponses;
         }
 
-        private async Task<ICollection<ProposeAddressForMunicipalityMerger>> BuildCommands(
+        private async Task<ProposeAddressesForMunicipalityMerger> BuildCommand(
             ProposeAddressesForMunicipalityMergerLambdaRequest request,
             CancellationToken cancellationToken)
         {
-            return await Task.WhenAll(request.Addresses
+            var addresses = await Task.WhenAll(request.Addresses
                 .Select(async x =>
                 {
                     var streetName = await StreetNames.GetAsync(
                         new StreetNameStreamId(new StreetNamePersistentLocalId(x.MergedStreetNamePersistentLocalId)), cancellationToken);
 
-                    var address = streetName.StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(x.MergedAddressPersistentLocalId));
+                    var address = streetName.StreetNameAddresses.GetByPersistentLocalId(
+                        new AddressPersistentLocalId(x.MergedAddressPersistentLocalId));
 
-                    return new ProposeAddressForMunicipalityMerger(
-                        new StreetNamePersistentLocalId(x.StreetNamePersistentLocalId),
+                    return new ProposeAddressesForMunicipalityMergerItem(
                         new PostalCode(x.PostalCode),
                         new AddressPersistentLocalId(x.NewAddressPersistentLocalId),
                         HouseNumber.Create(x.HouseNumber),
@@ -90,10 +87,14 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                         address.Geometry.GeometrySpecification,
                         address.Geometry.Geometry,
                         address.IsOfficiallyAssigned,
-                        new AddressPersistentLocalId(x.MergedAddressPersistentLocalId),
-                        request.Provenance);
+                        new AddressPersistentLocalId(x.MergedAddressPersistentLocalId));
                 })
                 .ToList());
+
+            return new ProposeAddressesForMunicipalityMerger(
+                new StreetNamePersistentLocalId(request.StreetNamePersistentLocalId()),
+                addresses,
+                request.Provenance);
         }
 
         protected override TicketError? InnerMapDomainException(DomainException exception, ProposeAddressesForMunicipalityMergerLambdaRequest request)

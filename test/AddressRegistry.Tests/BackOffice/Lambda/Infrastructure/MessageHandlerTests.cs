@@ -388,7 +388,6 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
                 .Verify(x => x.Send(It.Is<ProposeAddressesForMunicipalityMergerLambdaRequest>(actualRequest =>
                     actualRequest.TicketId == sqsRequest.TicketId
                     && actualRequest.MessageGroupId == messageMetadata.MessageGroupId
-                    && actualRequest.NisCode == sqsRequest.NisCode
                     && actualRequest.Addresses == sqsRequest.Addresses
                     && actualRequest.IfMatchHeaderValue == null
                     && actualRequest.Provenance == sqsRequest.ProvenanceData.ToProvenance()

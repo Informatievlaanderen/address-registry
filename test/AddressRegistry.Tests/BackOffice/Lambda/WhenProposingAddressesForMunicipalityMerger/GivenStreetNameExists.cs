@@ -1,34 +1,31 @@
 namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddressesForMunicipalityMerger
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Abstractions.SqsRequests;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using AddressRegistry.Api.BackOffice.Handlers.Lambda.Requests;
-    using AddressRegistry.Consumer.Read.Municipality.Projections;
-    using AddressRegistry.Projections.Syndication.PostalInfo;
-    using AddressRegistry.StreetName;
-    using AddressRegistry.StreetName.Exceptions;
-    using AddressRegistry.Tests.AutoFixture;
-    using AddressRegistry.Tests.BackOffice.Infrastructure;
-    using AddressRegistry.Tests.BackOffice.Lambda.Infrastructure;
     using Autofac;
+    using AutoFixture;
+    using BackOffice.Infrastructure;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
-    using Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Sqs.Responses;
+    using Consumer.Read.Municipality.Projections;
     using FluentAssertions;
     using global::AutoFixture;
+    using Infrastructure;
     using Microsoft.Extensions.Configuration;
     using Moq;
+    using Projections.Syndication.PostalInfo;
     using SqlStreamStore;
     using SqlStreamStore.Streams;
+    using StreetName;
+    using StreetName.Exceptions;
     using TicketingService.Abstractions;
     using Xunit;
     using Xunit.Abstractions;
@@ -55,64 +52,106 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddressesForMunic
         [Fact]
         public async Task GivenRequest_ThenPersistentLocalIdETagResponse()
         {
-            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-            var nisCode = Fixture.Create<NisCode>();
-            var postInfoId = Fixture.Create<PostalCode>();
-            var municipalityId = Fixture.Create<MunicipalityId>();
-//TODO-rik fix unit tests
-            var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var proposeAddressesForMunicipalityMergerLambdaHandler = CreateProposeAddressesForMunicipalityMergerLambdaHandler(
-                new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext),
-                MockTicketing(result => { eTagResponse = result; }).Object);
+            var setupData = Fixture.Create<SetupData>();
 
-            await SetupMunicipalityAndStreetName(postInfoId, nisCode, municipalityId, streetNamePersistentLocalId);
+            var eTagResponses = new List<ETagResponse>();
+            var ticketingMock = MockTicketing(result => { eTagResponses = result; });
+            var lambdaHandler = CreateProposeAddressesForMunicipalityMergerLambdaHandler(
+                new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext),
+                ticketingMock.Object);
+
+            await SetupMunicipalityAndStreetName(setupData);
 
             // Act
-            await proposeAddressesForMunicipalityMergerLambdaHandler.Handle(
-                CreateProposeAddressesForMunicipalityMergerLambdaRequest(streetNamePersistentLocalId, addressPersistentLocalId, postInfoId),
+            await lambdaHandler.Handle(
+                CreateProposeAddressesForMunicipalityMergerLambdaRequest(setupData),
                 CancellationToken.None);
 
             // Assert
+            var eTagResponse = eTagResponses.Single();
             var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(
-                new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))), 1, 1);
+                new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(setupData.StreetNamePersistentLocalId))), 1, 1);
             stream.Messages.First().JsonMetadata.Should().Contain(eTagResponse.ETag);
             stream.Messages.First().JsonMetadata.Should().Contain(Provenance.ProvenanceMetadataKey.ToLower());
         }
 
         [Fact]
+        public async Task GivenRequestWithMultipleAddresses_ThenPersistentLocalIdETagResponses()
+        {
+            var setupData = Fixture.Create<SetupData>();
+            var mergedAddressPersistentLocalId2 = Fixture.Create<AddressPersistentLocalId>();
+
+            var eTagResponses = new List<ETagResponse>();
+            var ticketingMock = MockTicketing(result => { eTagResponses = result; });
+            var lambdaHandler = CreateProposeAddressesForMunicipalityMergerLambdaHandler(
+                new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext),
+                ticketingMock.Object);
+
+            await SetupMunicipalityAndStreetName(setupData);
+
+            ProposeAddress(
+                setupData.MergedStreetNamePersistentLocalId,
+                mergedAddressPersistentLocalId2,
+                Fixture.Create<PostalCode>(),
+                Fixture.Create<MunicipalityId>(),
+                Fixture.Create<HouseNumber>(),
+                null);
+
+            // Act
+            var request = CreateProposeAddressesForMunicipalityMergerLambdaRequest(setupData,
+                extraAddresses: [
+                    new ProposeAddressesForMunicipalityMergerSqsRequestItem(
+                        setupData.PostInfoId,
+                        Fixture.Create<AddressPersistentLocalId>(),
+                        Fixture.Create<HouseNumber>(),
+                        null,
+                        setupData.MergedStreetNamePersistentLocalId,
+                        mergedAddressPersistentLocalId2
+                    )
+                ]);
+            await lambdaHandler.Handle(request, CancellationToken.None);
+
+            // Assert
+            eTagResponses.Should().HaveCount(2);
+
+            var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(
+                new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(setupData.StreetNamePersistentLocalId))), 2, 2);
+            stream.Messages.First().JsonMetadata.Should().Contain(Provenance.ProvenanceMetadataKey.ToLower());
+            stream.Messages[0].JsonMetadata.Should().Contain(eTagResponses[1].ETag);
+            stream.Messages[1].JsonMetadata.Should().Contain(eTagResponses[0].ETag);
+        }
+
+        [Fact]
         public async Task GivenDuplicateRequest_ThenPersistentLocalIdETagResponse()
         {
-            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-            var nisCode = Fixture.Create<NisCode>();
-            var postInfoId = Fixture.Create<PostalCode>();
+            var setupData = Fixture.Create<SetupData>();
             var houseNumber = Fixture.Create<HouseNumber>();
             var provenanceData = Fixture.Create<ProvenanceData>();
 
-            await SetupMunicipalityAndStreetName(postInfoId, nisCode, Fixture.Create<MunicipalityId>(), streetNamePersistentLocalId);
+            await SetupMunicipalityAndStreetName(setupData);
 
-            var eTagResponse = new ETagResponse(string.Empty, string.Empty);
-            var ProposeAddressesForMunicipalityMergerLambdaHandler = CreateProposeAddressesForMunicipalityMergerLambdaHandler(
+            var eTagResponses = new List<ETagResponse>();
+            var lambdaHandler = CreateProposeAddressesForMunicipalityMergerLambdaHandler(
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext),
-                MockTicketing(result => { eTagResponse = result; }).Object,
+                MockTicketing(result => { eTagResponses = result; }).Object,
                 Container.Resolve<IStreetNames>());
 
-            var ProposeAddressesForMunicipalityMergerLambdaRequest =
-                CreateProposeAddressesForMunicipalityMergerLambdaRequest(streetNamePersistentLocalId, addressPersistentLocalId, postInfoId, houseNumber, boxNumber: null, provenanceData);
+            var proposeAddressesForMunicipalityMergerLambdaRequest =
+                CreateProposeAddressesForMunicipalityMergerLambdaRequest(setupData, houseNumber, provenanceData: provenanceData);
 
             // Act
-            await ProposeAddressesForMunicipalityMergerLambdaHandler.Handle(ProposeAddressesForMunicipalityMergerLambdaRequest, CancellationToken.None);
-            await ProposeAddressesForMunicipalityMergerLambdaHandler.Handle(ProposeAddressesForMunicipalityMergerLambdaRequest, CancellationToken.None);
+            await lambdaHandler.Handle(proposeAddressesForMunicipalityMergerLambdaRequest, CancellationToken.None);
+            await lambdaHandler.Handle(proposeAddressesForMunicipalityMergerLambdaRequest, CancellationToken.None);
 
             // Assert
+            var eTagResponse = eTagResponses.Single();
             var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(
-                new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(streetNamePersistentLocalId))), 1, 1);
+                new StreamId(new StreetNameStreamId(new StreetNamePersistentLocalId(setupData.StreetNamePersistentLocalId))), 1, 1);
             stream.Messages.First().JsonMetadata.Should().Contain(eTagResponse.ETag);
 
-            var houseNumberRelation = await _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.FindAsync((int)addressPersistentLocalId);
+            var houseNumberRelation = await _backOfficeContext.AddressPersistentIdStreetNamePersistentIds.FindAsync((int)setupData.AddressPersistentLocalId);
             houseNumberRelation.Should().NotBeNull();
-            houseNumberRelation.StreetNamePersistentLocalId.Should().Be(streetNamePersistentLocalId);
+            houseNumberRelation!.StreetNamePersistentLocalId.Should().Be(setupData.StreetNamePersistentLocalId);
         }
 
         [Fact]
@@ -121,20 +160,17 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddressesForMunic
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-            var nisCode = Fixture.Create<NisCode>();
-            var postInfoId = Fixture.Create<PostalCode>();
+            var setupData = Fixture.Create<SetupData>();
 
-            var ProposeAddressesForMunicipalityMergerLambdaHandler = CreateProposeAddressesForMunicipalityMergerLambdaHandler(
+            var lambdaHandler = CreateProposeAddressesForMunicipalityMergerLambdaHandler(
                 MockExceptionIdempotentCommandHandler<ParentAddressAlreadyExistsException>().Object,
                 ticketing.Object);
 
-            await SetupMunicipalityAndStreetName(postInfoId, nisCode, Fixture.Create<MunicipalityId>(), streetNamePersistentLocalId);
+            await SetupMunicipalityAndStreetName(setupData);
 
             // Act
-            await ProposeAddressesForMunicipalityMergerLambdaHandler.Handle(
-                CreateProposeAddressesForMunicipalityMergerLambdaRequest(streetNamePersistentLocalId, addressPersistentLocalId, postInfoId),
+            await lambdaHandler.Handle(
+                CreateProposeAddressesForMunicipalityMergerLambdaRequest(setupData),
                 CancellationToken.None);
 
             //Assert
@@ -153,20 +189,17 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddressesForMunic
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-            var nisCode = Fixture.Create<NisCode>();
-            var postInfoId = Fixture.Create<PostalCode>();
+            var setupData = Fixture.Create<SetupData>();
 
-            var ProposeAddressesForMunicipalityMergerLambdaHandler = CreateProposeAddressesForMunicipalityMergerLambdaHandler(
+            var lambdaHandler = CreateProposeAddressesForMunicipalityMergerLambdaHandler(
                 MockExceptionIdempotentCommandHandler(() => new HouseNumberHasInvalidFormatException("ABC")).Object,
                 ticketing.Object);
 
-            await SetupMunicipalityAndStreetName(postInfoId, nisCode, Fixture.Create<MunicipalityId>(), streetNamePersistentLocalId);
+            await SetupMunicipalityAndStreetName(setupData);
 
             // Act
-            await ProposeAddressesForMunicipalityMergerLambdaHandler.Handle(
-                CreateProposeAddressesForMunicipalityMergerLambdaRequest(streetNamePersistentLocalId, addressPersistentLocalId, postInfoId),
+            await lambdaHandler.Handle(
+                CreateProposeAddressesForMunicipalityMergerLambdaRequest(setupData),
                 CancellationToken.None);
 
             //Assert
@@ -183,20 +216,17 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddressesForMunic
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-            var nisCode = Fixture.Create<NisCode>();
-            var postInfoId = Fixture.Create<PostalCode>();
+            var setupData = Fixture.Create<SetupData>();
 
-            var ProposeAddressesForMunicipalityMergerLambdaHandler = CreateProposeAddressesForMunicipalityMergerLambdaHandler(
+            var lambdaHandler = CreateProposeAddressesForMunicipalityMergerLambdaHandler(
                 MockExceptionIdempotentCommandHandler<AddressAlreadyExistsException>().Object,
                 ticketing.Object);
 
-            await SetupMunicipalityAndStreetName(postInfoId, nisCode, Fixture.Create<MunicipalityId>(), streetNamePersistentLocalId);
+            await SetupMunicipalityAndStreetName(setupData);
 
             // Act
-            await ProposeAddressesForMunicipalityMergerLambdaHandler.Handle(
-                CreateProposeAddressesForMunicipalityMergerLambdaRequest(streetNamePersistentLocalId, addressPersistentLocalId, postInfoId),
+            await lambdaHandler.Handle(
+                CreateProposeAddressesForMunicipalityMergerLambdaRequest(setupData),
                 CancellationToken.None);
 
             //Assert
@@ -215,21 +245,18 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddressesForMunic
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-            var nisCode = Fixture.Create<NisCode>();
-            var postInfoId = Fixture.Create<PostalCode>();
+            var setupData = Fixture.Create<SetupData>();
             var houseNumber = Fixture.Create<HouseNumber>();
 
-            var ProposeAddressesForMunicipalityMergerLambdaHandler = CreateProposeAddressesForMunicipalityMergerLambdaHandler(
-                MockExceptionIdempotentCommandHandler(() => new ParentAddressNotFoundException(streetNamePersistentLocalId, HouseNumber.Create(houseNumber))).Object,
+            var lambdaHandler = CreateProposeAddressesForMunicipalityMergerLambdaHandler(
+                MockExceptionIdempotentCommandHandler(() => new ParentAddressNotFoundException(setupData.StreetNamePersistentLocalId, HouseNumber.Create(houseNumber))).Object,
                 ticketing.Object);
 
-            await SetupMunicipalityAndStreetName(postInfoId, nisCode, Fixture.Create<MunicipalityId>(), streetNamePersistentLocalId);
+            await SetupMunicipalityAndStreetName(setupData);
 
             // Act
-            await ProposeAddressesForMunicipalityMergerLambdaHandler.Handle(
-                CreateProposeAddressesForMunicipalityMergerLambdaRequest(streetNamePersistentLocalId, addressPersistentLocalId, postInfoId, houseNumber),
+            await lambdaHandler.Handle(
+                CreateProposeAddressesForMunicipalityMergerLambdaRequest(setupData, houseNumber),
                 CancellationToken.None);
 
             //Assert
@@ -237,7 +264,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddressesForMunic
                 x.Error(
                     It.IsAny<Guid>(),
                     new TicketError(
-                        $"Er bestaat geen actief adres zonder busnummer voor straatnaam '{StraatNaamPuri}{streetNamePersistentLocalId}' en huisnummer '{houseNumber}'.",
+                        $"Er bestaat geen actief adres zonder busnummer voor straatnaam '{setupData.StreetNamePersistentLocalId}' en huisnummer '{houseNumber}'.",
                         "AdresActiefHuisNummerNietGekendValidatie"),
                     CancellationToken.None));
         }
@@ -248,20 +275,17 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddressesForMunic
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-            var nisCode = Fixture.Create<NisCode>();
-            var postInfoId = Fixture.Create<PostalCode>();
+            var setupData = Fixture.Create<SetupData>();
 
-            var ProposeAddressesForMunicipalityMergerLambdaHandler = CreateProposeAddressesForMunicipalityMergerLambdaHandler(
+            var lambdaHandler = CreateProposeAddressesForMunicipalityMergerLambdaHandler(
                 MockExceptionIdempotentCommandHandler<StreetNameHasInvalidStatusException>().Object,
                 ticketing.Object);
 
-            await SetupMunicipalityAndStreetName(postInfoId, nisCode, Fixture.Create<MunicipalityId>(), streetNamePersistentLocalId);
+            await SetupMunicipalityAndStreetName(setupData);
 
             // Act
-            await ProposeAddressesForMunicipalityMergerLambdaHandler.Handle(
-                CreateProposeAddressesForMunicipalityMergerLambdaRequest(streetNamePersistentLocalId, addressPersistentLocalId, postInfoId),
+            await lambdaHandler.Handle(
+                CreateProposeAddressesForMunicipalityMergerLambdaRequest(setupData),
                 CancellationToken.None);
 
             //Assert
@@ -275,56 +299,22 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddressesForMunic
         }
 
         [Fact]
-        public async Task WhenStreetNameIsRemoved_ThenTicketingErrorIsExpected()
-        {
-            // Arrange
-            var ticketing = new Mock<ITicketing>();
-
-            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-            var nisCode = Fixture.Create<NisCode>();
-            var postInfoId = Fixture.Create<PostalCode>();
-
-            var ProposeAddressesForMunicipalityMergerLambdaHandler = CreateProposeAddressesForMunicipalityMergerLambdaHandler(
-                MockExceptionIdempotentCommandHandler<StreetNameIsRemovedException>().Object,
-                ticketing.Object);
-
-            await SetupMunicipalityAndStreetName(postInfoId, nisCode, Fixture.Create<MunicipalityId>(), streetNamePersistentLocalId);
-
-            // Act
-            var request = CreateProposeAddressesForMunicipalityMergerLambdaRequest(streetNamePersistentLocalId, addressPersistentLocalId, postInfoId);
-            await ProposeAddressesForMunicipalityMergerLambdaHandler.Handle(request, CancellationToken.None);
-
-            //Assert
-            ticketing.Verify(x =>
-                x.Error(
-                    It.IsAny<Guid>(),
-                    new TicketError(
-                        $"De straatnaam '{StraatNaamPuri}{request.StreetNamePersistentLocalId()}' is niet gekend in het straatnaamregister.",
-                        "AdresStraatnaamNietGekendValidatie"),
-                    CancellationToken.None));
-        }
-
-        [Fact]
         public async Task WhenPostalCodeMunicipalityDoesNotMatchStreetNameMunicipality_ThenTicketingErrorIsExpected()
         {
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-            var nisCode = Fixture.Create<NisCode>();
-            var postInfoId = Fixture.Create<PostalCode>();
+            var setupData = Fixture.Create<SetupData>();
 
-            var ProposeAddressesForMunicipalityMergerLambdaHandler = CreateProposeAddressesForMunicipalityMergerLambdaHandler(
+            var lambdaHandler = CreateProposeAddressesForMunicipalityMergerLambdaHandler(
                 MockExceptionIdempotentCommandHandler<PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException>().Object,
                 ticketing.Object);
 
-            await SetupMunicipalityAndStreetName(postInfoId, nisCode, Fixture.Create<MunicipalityId>(), streetNamePersistentLocalId);
+            await SetupMunicipalityAndStreetName(setupData);
 
             // Act
-            await ProposeAddressesForMunicipalityMergerLambdaHandler.Handle(
-                CreateProposeAddressesForMunicipalityMergerLambdaRequest(streetNamePersistentLocalId, addressPersistentLocalId, postInfoId),
+            await lambdaHandler.Handle(
+                CreateProposeAddressesForMunicipalityMergerLambdaRequest(setupData),
                 CancellationToken.None);
 
             //Assert
@@ -343,20 +333,17 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddressesForMunic
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-            var nisCode = Fixture.Create<NisCode>();
-            var postInfoId = Fixture.Create<PostalCode>();
+            var setupData = Fixture.Create<SetupData>();
 
-            var ProposeAddressesForMunicipalityMergerLambdaHandler = CreateProposeAddressesForMunicipalityMergerLambdaHandler(
+            var lambdaHandler = CreateProposeAddressesForMunicipalityMergerLambdaHandler(
                 MockExceptionIdempotentCommandHandler<AddressHasInvalidGeometryMethodException>().Object,
                 ticketing.Object);
 
-            await SetupMunicipalityAndStreetName(postInfoId, nisCode, Fixture.Create<MunicipalityId>(), streetNamePersistentLocalId);
+            await SetupMunicipalityAndStreetName(setupData);
 
             // Act
-            await ProposeAddressesForMunicipalityMergerLambdaHandler.Handle(CreateProposeAddressesForMunicipalityMergerLambdaRequest(
-                streetNamePersistentLocalId, addressPersistentLocalId, postInfoId),
+            await lambdaHandler.Handle(
+                CreateProposeAddressesForMunicipalityMergerLambdaRequest(setupData),
                 CancellationToken.None);
 
             //Assert
@@ -375,20 +362,17 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddressesForMunic
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-            var nisCode = Fixture.Create<NisCode>();
-            var postInfoId = Fixture.Create<PostalCode>();
+            var setupData = Fixture.Create<SetupData>();
 
-            var ProposeAddressesForMunicipalityMergerLambdaHandler = CreateProposeAddressesForMunicipalityMergerLambdaHandler(
+            var lambdaHandler = CreateProposeAddressesForMunicipalityMergerLambdaHandler(
                 MockExceptionIdempotentCommandHandler<AddressHasInvalidGeometrySpecificationException>().Object,
                 ticketing.Object);
 
-            await SetupMunicipalityAndStreetName(postInfoId, nisCode, Fixture.Create<MunicipalityId>(), streetNamePersistentLocalId);
+            await SetupMunicipalityAndStreetName(setupData);
 
             // Act
-            await ProposeAddressesForMunicipalityMergerLambdaHandler.Handle(
-                CreateProposeAddressesForMunicipalityMergerLambdaRequest(streetNamePersistentLocalId, addressPersistentLocalId, postInfoId),
+            await lambdaHandler.Handle(
+                CreateProposeAddressesForMunicipalityMergerLambdaRequest(setupData),
                 CancellationToken.None);
 
             //Assert
@@ -407,20 +391,17 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddressesForMunic
             // Arrange
             var ticketing = new Mock<ITicketing>();
 
-            var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-            var nisCode = Fixture.Create<NisCode>();
-            var postInfoId = Fixture.Create<PostalCode>();
+            var setupData = Fixture.Create<SetupData>();
 
-            var ProposeAddressesForMunicipalityMergerLambdaHandler = CreateProposeAddressesForMunicipalityMergerLambdaHandler(
+            var lambdaHandler = CreateProposeAddressesForMunicipalityMergerLambdaHandler(
                 MockExceptionIdempotentCommandHandler<BoxNumberPostalCodeDoesNotMatchHouseNumberPostalCodeException>().Object,
                 ticketing.Object);
 
-            await SetupMunicipalityAndStreetName(postInfoId, nisCode, Fixture.Create<MunicipalityId>(), streetNamePersistentLocalId);
+            await SetupMunicipalityAndStreetName(setupData);
 
             // Act
-            await ProposeAddressesForMunicipalityMergerLambdaHandler.Handle(
-                CreateProposeAddressesForMunicipalityMergerLambdaRequest(streetNamePersistentLocalId, addressPersistentLocalId, postInfoId),
+            await lambdaHandler.Handle(
+                CreateProposeAddressesForMunicipalityMergerLambdaRequest(setupData),
                 CancellationToken.None);
 
             //Assert
@@ -433,14 +414,23 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddressesForMunic
                     CancellationToken.None));
         }
 
-        private async Task SetupMunicipalityAndStreetName(PostalCode postInfoId, NisCode nisCode, MunicipalityId municipalityId, StreetNamePersistentLocalId streetNamePersistentLocalId)
+        private async Task SetupMunicipalityAndStreetName(SetupData setupData)
         {
-            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem { PostalCode = postInfoId, NisCode = nisCode, });
-            _municipalityContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem { MunicipalityId = municipalityId, NisCode = nisCode });
+            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem { PostalCode = setupData.PostInfoId, NisCode = setupData.NisCode, });
+            _municipalityContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem { MunicipalityId = setupData.MunicipalityId, NisCode = setupData.NisCode });
             await _municipalityContext.SaveChangesAsync();
             await _syndicationContext.SaveChangesAsync();
 
-            ImportMigratedStreetName(new StreetNameId(Guid.NewGuid()), streetNamePersistentLocalId, nisCode);
+            ImportMigratedStreetName(new StreetNameId(Guid.NewGuid()), setupData.StreetNamePersistentLocalId, setupData.NisCode);
+            ImportMigratedStreetName(new StreetNameId(Guid.NewGuid()), setupData.MergedStreetNamePersistentLocalId, setupData.NisCode);
+
+            ProposeAddress(
+                setupData.MergedStreetNamePersistentLocalId,
+                setupData.MergedAddressPersistentLocalId,
+                Fixture.Create<PostalCode>(),
+                Fixture.Create<MunicipalityId>(),
+                Fixture.Create<HouseNumber>(),
+                null);
         }
 
         private ProposeAddressesForMunicipalityMergerLambdaHandler CreateProposeAddressesForMunicipalityMergerLambdaHandler(
@@ -458,34 +448,42 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddressesForMunic
         }
 
         private ProposeAddressesForMunicipalityMergerLambdaRequest CreateProposeAddressesForMunicipalityMergerLambdaRequest(
-            StreetNamePersistentLocalId streetNamePersistentLocalId,
-            AddressPersistentLocalId addressPersistentLocalId,
-            PostalCode postInfoId,
+            SetupData setupData,
             HouseNumber? houseNumber = null,
-            BoxNumber? boxNumber = null,
+            IEnumerable<ProposeAddressesForMunicipalityMergerSqsRequestItem>? extraAddresses = null,
             ProvenanceData? provenanceData = null)
         {
             return new ProposeAddressesForMunicipalityMergerLambdaRequest(
-                streetNamePersistentLocalId,
-                new ProposeAddressesForMunicipalityMergerSqsRequest
+                setupData.StreetNamePersistentLocalId,
+                new ProposeAddressesForMunicipalityMergerSqsRequest(
+                    setupData.StreetNamePersistentLocalId,
+                    new [] {
+                        new ProposeAddressesForMunicipalityMergerSqsRequestItem(
+                            setupData.PostInfoId,
+                            setupData.AddressPersistentLocalId,
+                            houseNumber ?? Fixture.Create<HouseNumber>(),
+                            null,
+                            setupData.MergedStreetNamePersistentLocalId,
+                            setupData.MergedAddressPersistentLocalId
+                        )
+                    }.Concat(extraAddresses ?? []).ToList(),
+                    provenanceData ?? Fixture.Create<ProvenanceData>()
+                )
                 {
-                    NisCode = Fixture.Create<string>(),
-                    Addresses = Fixture.CreateMany<ProposeAddressesForMunicipalityMergerSqsRequestItem>(5).ToList(),
-                    // PersistentLocalId = addressPersistentLocalId,
-                    // Request = new ProposeAddressesForMunicipalityMergerRequest
-                    // {
-                    //     StraatNaamId = $"https://data.vlaanderen.be/id/straatnaam/{streetNamePersistentLocalId}",
-                    //     PostInfoId = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}",
-                    //     Huisnummer = houseNumber ?? Fixture.Create<HouseNumber>(),
-                    //     Busnummer = boxNumber,
-                    //     PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                    //     PositieSpecificatie = PositieSpecificatie.Ingang,
-                    //     Positie = GeometryHelpers.GmlPointGeometry
-                    // },
                     TicketId = Guid.NewGuid(),
-                    Metadata = new Dictionary<string, object?>(),
-                    ProvenanceData = provenanceData ?? Fixture.Create<ProvenanceData>()
+                    Metadata = new Dictionary<string, object?>()
                 });
+        }
+
+        private sealed class SetupData
+        {
+            public StreetNamePersistentLocalId StreetNamePersistentLocalId { get; set; }
+            public StreetNamePersistentLocalId MergedStreetNamePersistentLocalId { get; set; }
+            public AddressPersistentLocalId AddressPersistentLocalId { get; set; }
+            public AddressPersistentLocalId MergedAddressPersistentLocalId  { get; set; }
+            public MunicipalityId MunicipalityId { get; set; }
+            public NisCode NisCode { get; set; }
+            public PostalCode PostInfoId { get; set; }
         }
     }
 }

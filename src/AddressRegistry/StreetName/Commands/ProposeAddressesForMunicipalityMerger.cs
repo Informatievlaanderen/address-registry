@@ -2,15 +2,57 @@ namespace AddressRegistry.StreetName.Commands
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Be.Vlaanderen.Basisregisters.Generators.Guid;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Utilities;
 
-    public class ProposeAddressForMunicipalityMerger : IHasCommandProvenance
+    public class ProposeAddressesForMunicipalityMerger : IHasCommandProvenance
     {
         private static readonly Guid Namespace = new Guid("75540a40-3528-4ddd-b716-6bc997911258");
 
         public StreetNamePersistentLocalId StreetNamePersistentLocalId { get; }
+        public List<ProposeAddressesForMunicipalityMergerItem> Addresses { get; }
+
+        public Provenance Provenance { get; }
+
+        public ProposeAddressesForMunicipalityMerger(
+            StreetNamePersistentLocalId streetNamePersistentLocalId,
+            IEnumerable<ProposeAddressesForMunicipalityMergerItem> addresses,
+            Provenance provenance)
+        {
+            StreetNamePersistentLocalId = streetNamePersistentLocalId;
+            Addresses = addresses.ToList();
+            Provenance = provenance;
+        }
+
+        public Guid CreateCommandId()
+            => Deterministic.Create(Namespace, $"ProposeAddressesForMunicipalityMerger-{ToString()}");
+
+        public override string? ToString()
+            => ToStringBuilder.ToString(IdentityFields());
+
+        private IEnumerable<object> IdentityFields()
+        {
+            yield return StreetNamePersistentLocalId;
+
+            foreach (var address in Addresses)
+            {
+                foreach (var field in address.GetIdentityFields())
+                {
+                    yield return field;
+                }
+            }
+
+            foreach (var field in Provenance.GetIdentityFields())
+            {
+                yield return field;
+            }
+        }
+    }
+
+    public class ProposeAddressesForMunicipalityMergerItem
+    {
         public PostalCode PostalCode { get; }
         public AddressPersistentLocalId AddressPersistentLocalId { get; }
         public HouseNumber HouseNumber { get; }
@@ -21,10 +63,8 @@ namespace AddressRegistry.StreetName.Commands
         public bool OfficiallyAssigned { get; }
 
         public AddressPersistentLocalId MergedAddressPersistentLocalId { get; }
-        public Provenance Provenance { get; }
 
-        public ProposeAddressForMunicipalityMerger(
-            StreetNamePersistentLocalId streetNamePersistentLocalId,
+        public ProposeAddressesForMunicipalityMergerItem(
             PostalCode postalCode,
             AddressPersistentLocalId addressPersistentLocalId,
             HouseNumber houseNumber,
@@ -33,10 +73,8 @@ namespace AddressRegistry.StreetName.Commands
             GeometrySpecification geometrySpecification,
             ExtendedWkbGeometry position,
             bool officiallyAssigned,
-            AddressPersistentLocalId mergedAddressPersistentLocalId,
-            Provenance provenance)
+            AddressPersistentLocalId mergedAddressPersistentLocalId)
         {
-            StreetNamePersistentLocalId = streetNamePersistentLocalId;
             PostalCode = postalCode;
             AddressPersistentLocalId = addressPersistentLocalId;
             HouseNumber = houseNumber;
@@ -46,18 +84,10 @@ namespace AddressRegistry.StreetName.Commands
             Position = position;
             OfficiallyAssigned = officiallyAssigned;
             MergedAddressPersistentLocalId = mergedAddressPersistentLocalId;
-            Provenance = provenance;
         }
 
-        public Guid CreateCommandId()
-            => Deterministic.Create(Namespace, $"ProposeAddressForMunicipalityMerger-{ToString()}");
-
-        public override string? ToString()
-            => ToStringBuilder.ToString(IdentityFields());
-
-        private IEnumerable<object> IdentityFields()
+        public IEnumerable<object> GetIdentityFields()
         {
-            yield return StreetNamePersistentLocalId;
             yield return AddressPersistentLocalId;
             yield return PostalCode;
             yield return HouseNumber;
@@ -67,11 +97,6 @@ namespace AddressRegistry.StreetName.Commands
             yield return Position;
             yield return OfficiallyAssigned;
             yield return MergedAddressPersistentLocalId;
-
-            foreach (var field in Provenance.GetIdentityFields())
-            {
-                yield return field;
-            }
         }
     }
 }

@@ -4,7 +4,6 @@
 
     public sealed record ProposeAddressesForMunicipalityMergerLambdaRequest : AddressLambdaRequest
     {
-        public string NisCode { get; }
         public IEnumerable<ProposeAddressesForMunicipalityMergerSqsRequestItem> Addresses { get; }
 
         public ProposeAddressesForMunicipalityMergerLambdaRequest(
@@ -18,7 +17,6 @@
                 sqsRequest.Metadata)
         {
             Addresses = sqsRequest.Addresses;
-            NisCode = sqsRequest.NisCode;
         }
     }
 }

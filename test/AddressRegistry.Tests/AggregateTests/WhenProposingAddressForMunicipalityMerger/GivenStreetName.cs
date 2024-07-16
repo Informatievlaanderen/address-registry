@@ -574,7 +574,70 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 .Throws(new MergedAddressPersistentLocalIdIsInvalidException()));
         }
 
-        //TODO-rik add test to ensure housenumber addresses are processed before boxnumber addresses
+        [Fact]
+        public void WithFirstChildAndThenParentAddress_ThenAddressesWereProposed()
+        {
+            var houseNumber = Fixture.Create<HouseNumber>();
+            var postalCode = Fixture.Create<PostalCode>();
+
+            var proposeParentAddress = new ProposeAddressesForMunicipalityMergerItem(
+                postalCode,
+                Fixture.Create<AddressPersistentLocalId>(),
+                houseNumber,
+                null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
+                Fixture.Create<bool>(),
+                Fixture.Create<AddressPersistentLocalId>());
+
+            var proposeChildAddress = new ProposeAddressesForMunicipalityMergerItem(
+                proposeParentAddress.PostalCode,
+                Fixture.Create<AddressPersistentLocalId>(),
+                proposeParentAddress.HouseNumber,
+                new BoxNumber("1A"),
+                proposeParentAddress.GeometryMethod,
+                proposeParentAddress.GeometrySpecification,
+                proposeParentAddress.Position,
+                proposeParentAddress.OfficiallyAssigned,
+                Fixture.Create<AddressPersistentLocalId>());
+
+            var proposeAddresses = new ProposeAddressesForMunicipalityMerger(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                [proposeChildAddress, proposeParentAddress],
+                Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    Fixture.Create<MigratedStreetNameWasImported>())
+                .When(proposeAddresses)
+                .Then(_streamId,
+                    new AddressWasProposedBecauseOfMunicipalityMerger(
+                        proposeAddresses.StreetNamePersistentLocalId,
+                        proposeParentAddress.AddressPersistentLocalId,
+                        null,
+                        proposeParentAddress.PostalCode,
+                        proposeParentAddress.HouseNumber,
+                        proposeParentAddress.BoxNumber,
+                        GeometryMethod.AppointedByAdministrator,
+                        GeometrySpecification.Entry,
+                        GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
+                        proposeParentAddress.OfficiallyAssigned,
+                        proposeParentAddress.MergedAddressPersistentLocalId),
+                    new AddressWasProposedBecauseOfMunicipalityMerger(
+                        proposeAddresses.StreetNamePersistentLocalId,
+                        proposeChildAddress.AddressPersistentLocalId,
+                        new AddressPersistentLocalId(proposeParentAddress.AddressPersistentLocalId),
+                        proposeChildAddress.PostalCode,
+                        proposeChildAddress.HouseNumber,
+                        proposeChildAddress.BoxNumber,
+                        GeometryMethod.AppointedByAdministrator,
+                        GeometrySpecification.Entry,
+                        GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
+                        proposeChildAddress.OfficiallyAssigned,
+                        proposeChildAddress.MergedAddressPersistentLocalId)
+                ));
+        }
 
         [Fact]
         public void StateCheck()

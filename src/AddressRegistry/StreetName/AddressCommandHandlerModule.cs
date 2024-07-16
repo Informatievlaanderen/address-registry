@@ -1,6 +1,7 @@
 namespace AddressRegistry.StreetName
 {
     using System;
+    using System.Linq;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
@@ -76,7 +77,11 @@ namespace AddressRegistry.StreetName
                     var streetNameStreamId = new StreetNameStreamId(message.Command.StreetNamePersistentLocalId);
                     var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
 
-                    foreach (var address in message.Command.Addresses)
+                    var sortedAddresses = message.Command.Addresses
+                        .OrderBy(x => x.HouseNumber)
+                        .ThenBy(x => x.BoxNumber)
+                        .ToList();
+                    foreach (var address in sortedAddresses)
                     {
                         streetName.ProposeAddressForMunicipalityMerger(
                             address.AddressPersistentLocalId,

@@ -1,7 +1,7 @@
 namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
 {
-    using AddressRegistry.Api.BackOffice.Abstractions;
-    using AddressRegistry.Api.BackOffice.Abstractions.Validation;
+    using Abstractions;
+    using Abstractions.Validation;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Infrastructure;
@@ -13,11 +13,11 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
     using StreetName.Exceptions;
     using TicketingService.Abstractions;
 
-    public sealed class ProposeAddressesForMunicipalityMergerHandler : SqsLambdaHandler<ProposeAddressesForMunicipalityMergerLambdaRequest>
+    public sealed class ProposeAddressesForMunicipalityMergerLambdaHandler : SqsLambdaHandler<ProposeAddressesForMunicipalityMergerLambdaRequest>
     {
         private readonly BackOfficeContext _backOfficeContext;
 
-        public ProposeAddressesForMunicipalityMergerHandler(
+        public ProposeAddressesForMunicipalityMergerLambdaHandler(
             IConfiguration configuration,
             ICustomRetryPolicy retryPolicy,
             ITicketing ticketing,
@@ -36,24 +36,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
 
         protected override async Task<object> InnerHandle(ProposeAddressesForMunicipalityMergerLambdaRequest request, CancellationToken cancellationToken)
         {
-            //TODO-rik implement
-            /*  // public IEnumerable<ProposeAddressForMunicipalityMerger> ToCommand()
-        // {
-        //     return _addresses.Select(x =>
-        //         new ProposeAddressForMunicipalityMerger(
-        //             this.StreetNamePersistentLocalId(),
-        //             new PostalCode(x.PostalCode),
-        //             new AddressPersistentLocalId(x.NewAddressPersistentLocalId),
-        //             HouseNumber.Create(x.HouseNumber),
-        //             x.BoxNumber is not null ? new BoxNumber(x.BoxNumber) : null,
-        //             x.GeometryMethod,
-        //             x.GeometrySpecification,
-        //             new ExtendedWkbGeometry(x.Position),
-        //             x.OfficiallyAssigned,
-        //             new AddressPersistentLocalId(x.MergedAddressPersistentLocalId),
-        //             Provenance));
-        // }*/
-            var commands = new List<ProposeAddressForMunicipalityMerger>(); //request.ToCommand().ToList();
+            var commands = await BuildCommands(request, cancellationToken);
 
             try
             {
@@ -85,14 +68,38 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             return etagResponses;
         }
 
+        private async Task<ICollection<ProposeAddressForMunicipalityMerger>> BuildCommands(
+            ProposeAddressesForMunicipalityMergerLambdaRequest request,
+            CancellationToken cancellationToken)
+        {
+            return await Task.WhenAll(request.Addresses
+                .Select(async x =>
+                {
+                    var streetName = await StreetNames.GetAsync(
+                        new StreetNameStreamId(new StreetNamePersistentLocalId(x.MergedStreetNamePersistentLocalId)), cancellationToken);
+
+                    var address = streetName.StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(x.MergedAddressPersistentLocalId));
+
+                    return new ProposeAddressForMunicipalityMerger(
+                        new StreetNamePersistentLocalId(x.StreetNamePersistentLocalId),
+                        new PostalCode(x.PostalCode),
+                        new AddressPersistentLocalId(x.NewAddressPersistentLocalId),
+                        HouseNumber.Create(x.HouseNumber),
+                        x.BoxNumber is not null ? new BoxNumber(x.BoxNumber) : null,
+                        address.Geometry.GeometryMethod,
+                        address.Geometry.GeometrySpecification,
+                        address.Geometry.Geometry,
+                        address.IsOfficiallyAssigned,
+                        new AddressPersistentLocalId(x.MergedAddressPersistentLocalId),
+                        request.Provenance);
+                })
+                .ToList());
+        }
+
         protected override TicketError? InnerMapDomainException(DomainException exception, ProposeAddressesForMunicipalityMergerLambdaRequest request)
         {
             return exception switch
             {
-                //TODO-rik confirm
-                // StreetNameIsRemovedException => new TicketError(
-                //     ValidationErrors.Common.StreetNameInvalid.Message(request.Request.StraatNaamId),
-                //     ValidationErrors.Common.StreetNameInvalid.Code),
                 ParentAddressAlreadyExistsException => new TicketError(
                     ValidationErrors.Common.AddressAlreadyExists.Message,
                     ValidationErrors.Common.AddressAlreadyExists.Code),
@@ -102,10 +109,9 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 AddressAlreadyExistsException => new TicketError(
                     ValidationErrors.Common.AddressAlreadyExists.Message,
                     ValidationErrors.Common.AddressAlreadyExists.Code),
-                //TODO-rik confirm
-                // ParentAddressNotFoundException e => new TicketError(
-                //     ValidationErrors.Propose.AddressHouseNumberUnknown.Message(request.Request.StraatNaamId, e.HouseNumber),
-                //     ValidationErrors.Propose.AddressHouseNumberUnknown.Code),
+                ParentAddressNotFoundException e => new TicketError(
+                    ValidationErrors.Propose.AddressHouseNumberUnknown.Message(e.StreetNamePersistentLocalId, e.HouseNumber),
+                    ValidationErrors.Propose.AddressHouseNumberUnknown.Code),
                 StreetNameHasInvalidStatusException => new TicketError(
                     ValidationErrors.Common.StreetNameIsNotActive.Message,
                     ValidationErrors.Common.StreetNameIsNotActive.Code),
@@ -120,11 +126,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                     ValidationErrors.Common.PositionSpecification.Invalid.Code),
                 BoxNumberPostalCodeDoesNotMatchHouseNumberPostalCodeException =>
                     ValidationErrors.Propose.BoxNumberPostalCodeDoesNotMatchHouseNumberPostalCode.ToTicketError(),
-                //TODO-rik handle validation for MergedAddressPersistentLocalId
-                // MergedStreetNamePersistentLocalIdsAreMissingException =>
-                //     new TicketError("MergedStreetNamePersistentLocalIdsAreMissing", "MergedStreetNamePersistentLocalIdsAreMissing"),
-                // MergedStreetNamePersistentLocalIdsAreNotUniqueException =>
-                //     new TicketError("MergedStreetNamePersistentLocalIdsAreNotUnique", "MergedStreetNamePersistentLocalIdsAreNotUnique"),
+                MergedAddressPersistentLocalIdIsInvalidException =>
+                    new TicketError("MergedAddressPersistentLocalIdIsInvalid", "MergedAddressPersistentLocalIdIsInvalid"),
                 _ => null
             };
         }

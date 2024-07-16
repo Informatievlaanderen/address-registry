@@ -4,8 +4,8 @@
 
     public sealed record ProposeAddressesForMunicipalityMergerLambdaRequest : AddressLambdaRequest
     {
-        private readonly IEnumerable<ProposeAddressesForMunicipalityMergerSqsRequestItem> _addresses;
         public string NisCode { get; }
+        public IEnumerable<ProposeAddressesForMunicipalityMergerSqsRequestItem> Addresses { get; }
 
         public ProposeAddressesForMunicipalityMergerLambdaRequest(
             string groupId,
@@ -13,11 +13,11 @@
             : base(
                 groupId,
                 sqsRequest.TicketId,
-                sqsRequest.IfMatchHeaderValue,
+                null,
                 sqsRequest.ProvenanceData.ToProvenance(),
                 sqsRequest.Metadata)
         {
-            _addresses = sqsRequest.Addresses;
+            Addresses = sqsRequest.Addresses;
             NisCode = sqsRequest.NisCode;
         }
     }

@@ -513,6 +513,36 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
         }
 
         [Fact]
+        public void WithInvalidMergedAddressPersistentLocalId_ThenThrowsMergedAddressPersistentLocalIdIsInvalidException()
+        {
+            var migratedStreetNameWasImported = new MigratedStreetNameWasImported(
+                Fixture.Create<StreetNameId>(),
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                Fixture.Create<MunicipalityId>(), Fixture.Create<NisCode>(),
+                StreetNameStatus.Current);
+            ((ISetProvenance)migratedStreetNameWasImported).SetProvenance(Fixture.Create<Provenance>());
+
+            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
+            var command = new ProposeAddressForMunicipalityMerger(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                new PostalCode("9820"),
+                addressPersistentLocalId,
+                Fixture.Create<HouseNumber>(),
+                null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
+                Fixture.Create<bool>(),
+                addressPersistentLocalId,
+                Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId, migratedStreetNameWasImported)
+                .When(command)
+                .Throws(new MergedAddressPersistentLocalIdIsInvalidException()));
+        }
+
+        [Fact]
         public void StateCheck()
         {
             var aggregate = new StreetNameFactory(IntervalStrategy.Default).Create();

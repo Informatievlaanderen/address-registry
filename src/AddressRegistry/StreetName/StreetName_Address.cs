@@ -164,6 +164,11 @@ namespace AddressRegistry.StreetName
         {
             GuardActiveStreetName();
 
+            if (mergedAddressPersistentLocalId == addressPersistentLocalId)
+            {
+                throw new MergedAddressPersistentLocalIdIsInvalidException();
+            }
+
             if (StreetNameAddresses.HasPersistentLocalId(addressPersistentLocalId))
             {
                 throw new AddressPersistentLocalIdAlreadyExistsException();
@@ -197,8 +202,6 @@ namespace AddressRegistry.StreetName
             }
 
             StreetNameAddress.GuardGeometry(geometryMethod, geometrySpecification);
-
-            //TODO-rik validate mergedAddressPersistentLocalId + add test
 
             ApplyChange(new AddressWasProposedBecauseOfMunicipalityMerger(
                 PersistentLocalId,

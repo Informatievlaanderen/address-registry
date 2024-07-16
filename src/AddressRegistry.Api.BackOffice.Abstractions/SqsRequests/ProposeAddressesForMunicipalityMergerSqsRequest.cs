@@ -33,13 +33,16 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.SqsRequests
         public string HouseNumber { get; set; }
         public string? BoxNumber { get; set; }
 
+        public int MergedStreetNamePersistentLocalId { get; set; }
         public int MergedAddressPersistentLocalId { get; set; }
 
         public ProposeAddressesForMunicipalityMergerSqsRequestItem(
             int streetNamePersistentLocalId,
-            string postalCode, int newAddressPersistentLocalId,
+            string postalCode,
+            int newAddressPersistentLocalId,
             string houseNumber,
             string? boxNumber,
+            int mergedStreetNamePersistentLocalId,
             int mergedAddressPersistentLocalId)
         {
             StreetNamePersistentLocalId = streetNamePersistentLocalId;
@@ -47,6 +50,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.SqsRequests
             NewAddressPersistentLocalId = newAddressPersistentLocalId;
             HouseNumber = houseNumber;
             BoxNumber = boxNumber;
+            MergedStreetNamePersistentLocalId = mergedStreetNamePersistentLocalId;
             MergedAddressPersistentLocalId = mergedAddressPersistentLocalId;
         }
     }

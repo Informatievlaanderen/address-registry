@@ -1,16 +1,26 @@
 namespace AddressRegistry.Api.BackOffice
 {
     using System;
+    using System.Collections.Generic;
+    using System.Globalization;
     using System.IO;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Abstractions.Requests;
+    using Abstractions.SqsRequests;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.Auth.AcmIdm;
+    using Be.Vlaanderen.Basisregisters.GrAr.Edit.Validators;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Consumer.Read.StreetName;
+    using CsvHelper;
+    using CsvHelper.Configuration;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
     using Swashbuckle.AspNetCore.Filters;
 
     public partial class AddressController
@@ -22,6 +32,7 @@ namespace AddressRegistry.Api.BackOffice
         /// <param name="file"></param>
         /// <param name="nisCode"></param>
         /// <param name="persistentLocalIdGenerator"></param>
+        /// <param name="streetNameConsumerContext"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpPost("acties/voorstellen/gemeentefusie/{niscode}")]
@@ -36,6 +47,7 @@ namespace AddressRegistry.Api.BackOffice
             IFormFile? file,
             [FromRoute(Name = "niscode")] string nisCode,
             [FromServices] IPersistentLocalIdGenerator persistentLocalIdGenerator,
+            [FromServices] StreetNameConsumerContext streetNameConsumerContext,
             CancellationToken cancellationToken = default)
         {
             if (file == null || file.Length == 0)
@@ -44,99 +56,123 @@ namespace AddressRegistry.Api.BackOffice
             if (!Path.GetExtension(file.FileName).Equals(".csv", StringComparison.CurrentCultureIgnoreCase))
                 return BadRequest("Only CSV files are allowed.");
 
-            throw new NotImplementedException();
-            // try
-            // {
-            //     //TODO-rik read correct fields
-            //     var records = new List<CsvRecord>();
-            //     using (var stream = new MemoryStream())
-            //     {
-            //         await file.CopyToAsync(stream, cancellationToken);
-            //         stream.Position = 0;
-            //         using (var reader = new StreamReader(stream))
-            //         using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)
-            //                {
-            //                    Delimiter = ";"
-            //                }))
-            //         {
-            //             var recordNr = 0;
-            //             while (await csv.ReadAsync())
-            //             {
-            //                 recordNr++;
-            //
-            //                 var oldStreetNamePersistentLocalId = csv.GetField<string>(0);
-            //                 var newNisCode = csv.GetField<string>(1);
-            //                 var streetName = csv.GetField<string>(2);
-            //
-            //                 if(string.IsNullOrWhiteSpace(oldStreetNamePersistentLocalId))
-            //                     return BadRequest($"OldStreetNamePersistentLocalId is required at record number {recordNr}");
-            //
-            //                 if (string.IsNullOrWhiteSpace(newNisCode))
-            //                     return BadRequest($"NisCode is required at record number {recordNr}");
-            //
-            //                 if (newNisCode.Trim() != nisCode)
-            //                     return BadRequest(
-            //                         $"NisCode {newNisCode} does not match the provided NisCode {nisCode} at record number {recordNr}");
-            //
-            //                 if (string.IsNullOrWhiteSpace(streetName))
-            //                     return BadRequest($"StreetName is required at record number {recordNr}");
-            //
-            //                 records.Add(new CsvRecord
-            //                 {
-            //                     OldStreetNamePersistentLocalId = oldStreetNamePersistentLocalId.Trim(),
-            //                     NisCode = nisCode.Trim(),
-            //                     StreetName = streetName.Trim(),
-            //                     HomonymAddition = csv.GetField<string>(3)?.Trim()
-            //                 });
-            //             }
-            //         }
-            //     }
-            //
-            //     var streetNamesByNisCodeRecords = records
-            //         .GroupBy(x => x.NisCode)
-            //         .ToDictionary(
-            //             x => x.Key,
-            //             y => y.ToList())
-            //         .Single()
-            //         .Value;
-            //
-            //     // group by streetname and homonym addition
-            //     var streetNamesByNisCode = streetNamesByNisCodeRecords
-            //         .GroupBy(x => (x.StreetName, x.HomonymAddition))
-            //         .ToDictionary(
-            //             x => x.Key,
-            //             y => y
-            //                 .Select(z =>  z.OldStreetNamePersistentLocalId.AsIdentifier().Map(int.Parse).Value).ToList());
-            //
-            //     var result = await _mediator
-            //         .Send(
-            //             new ProposeAddressesForMunicipalityMergerSqsRequest(
-            //                 nisCode,
-            //                 streetNamesByNisCode.Select(x => new ProposeAddressesForMunicipalityMergerSqsRequestItem(
-            //                     persistentLocalIdGenerator.GenerateNextPersistentLocalId(),
-            //                     x.Key.StreetName,
-            //                     x.Key.HomonymAddition,
-            //                     x.Value)).ToList(),
-            //                 new ProvenanceData(CreateProvenance(Modification.Insert)))
-            //             , cancellationToken);
-            //
-            //     return Accepted(result);
-            // }
-            // catch (AggregateIdIsNotFoundException)
-            // {
-            //     throw CreateValidationException(
-            //         ValidationErrors.Common.StreetNameInvalid.Code,
-            //         nameof(request.StraatNaamId),
-            //         ValidationErrors.Common.StreetNameInvalid.Message(request.StraatNaamId));
-            // }
+            var records = new List<CsvRecord>();
+            using (var stream = new MemoryStream())
+            {
+                await file.CopyToAsync(stream, cancellationToken);
+                stream.Position = 0;
+                using (var reader = new StreamReader(stream))
+                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)
+                       {
+                           Delimiter = ";",
+                           HasHeaderRecord = true,
+                           IgnoreBlankLines = true
+                       }))
+                {
+                    var recordNr = 1;
+                    while (await csv.ReadAsync())
+                    {
+                        recordNr++;
+
+                        var oldStreetNamePuri = csv.GetField<string>("OUD straatnaamid");
+                        var oldAddressPuri = csv.GetField<string>("OUD adresid");
+                        var streetNameName = csv.GetField<string>("NIEUW straatnaam");
+                        var streetNameHomonymAddition = csv.GetField<string?>("NIEUW homoniemtoevoeging");
+                        var houseNumber = csv.GetField<string>("NIEUW huisnummer");
+                        var boxNumber = csv.GetField<string?>("NIEUW busnummer");
+                        var postalCode = csv.GetField<string>("NIEUW postcode");
+
+                        if (string.IsNullOrWhiteSpace(oldStreetNamePuri))
+                            return BadRequest($"OldStreetNamePuri is required at record number {recordNr}");
+
+                        if (!OsloPuriValidator.TryParseIdentifier(oldStreetNamePuri, out var oldStreetNamePersistentLocalIdAsString)
+                            || !int.TryParse(oldStreetNamePersistentLocalIdAsString, out var oldStreetNamePersistentLocalId))
+                            return BadRequest($"OldStreetNamePuri is NaN at record number {recordNr}");
+
+                        if (string.IsNullOrWhiteSpace(oldAddressPuri))
+                            return BadRequest($"OldAddressPuri is required at record number {recordNr}");
+
+                        if (!OsloPuriValidator.TryParseIdentifier(oldAddressPuri, out var oldAddressPersistentLocalIdAsString)
+                            || !int.TryParse(oldAddressPersistentLocalIdAsString, out var oldAddressNamePersistentLocalId))
+                            return BadRequest($"OldAddressPuri is NaN at record number {recordNr}");
+
+                        if (string.IsNullOrWhiteSpace(streetNameName))
+                            return BadRequest($"StreetNameName is required at record number {recordNr}");
+
+                        if (string.IsNullOrWhiteSpace(houseNumber))
+                            return BadRequest($"HouseNumber is required at record number {recordNr}");
+
+                        if (string.IsNullOrWhiteSpace(postalCode))
+                            return BadRequest($"postalCode is required at record number {recordNr}");
+
+                        records.Add(new CsvRecord
+                        {
+                            OldStreetNamePersistentLocalId = oldStreetNamePersistentLocalId,
+                            OldAddressPersistentLocalId = oldAddressNamePersistentLocalId,
+                            StreetNameName = streetNameName.Trim(),
+                            StreetNameHomonymAddition =
+                                string.IsNullOrWhiteSpace(streetNameHomonymAddition) ? null : streetNameHomonymAddition.Trim(),
+                            HouseNumber = houseNumber.Trim(),
+                            BoxNumber = string.IsNullOrWhiteSpace(boxNumber) ? null : boxNumber.Trim(),
+                            PostalCode = postalCode
+                        });
+                    }
+                }
+            }
+
+            var addressesByStreetNameRecords = records
+                .GroupBy(x => (x.StreetNameName, x.StreetNameHomonymAddition))
+                .ToDictionary(
+                    x => x.Key,
+                    x => x.ToList());
+
+            var sqsRequests = new List<ProposeAddressesForMunicipalityMergerSqsRequest>();
+
+            foreach (var (streetName, addressRecords) in addressesByStreetNameRecords)
+            {
+                var (streetNameName, streetNameHomonymAddition) = streetName;
+
+                var streetNameLatestItem = await streetNameConsumerContext.StreetNameLatestItems.SingleOrDefaultAsync(
+                    x =>
+                        string.Equals(nisCode, x.NisCode, StringComparison.InvariantCultureIgnoreCase)
+                        && string.Equals(streetNameName, x.NameDutch, StringComparison.InvariantCultureIgnoreCase)
+                        && string.Equals(streetNameHomonymAddition, x.HomonymAdditionDutch, StringComparison.InvariantCultureIgnoreCase),
+                    cancellationToken: cancellationToken);
+
+                if (streetNameLatestItem is null)
+                {
+                    return BadRequest($"No streetNameLatestItem found for {nisCode}, {streetNameName} and {streetNameHomonymAddition}");
+                }
+
+                sqsRequests.Add(new ProposeAddressesForMunicipalityMergerSqsRequest(
+                    streetNameLatestItem.PersistentLocalId,
+                    addressRecords.Select(x => new ProposeAddressesForMunicipalityMergerSqsRequestItem(
+                        x.PostalCode,
+                        persistentLocalIdGenerator.GenerateNextPersistentLocalId(),
+                        x.HouseNumber,
+                        x.BoxNumber,
+                        x.OldStreetNamePersistentLocalId,
+                        x.OldAddressPersistentLocalId)).ToList(),
+                    new ProvenanceData(CreateProvenance(Modification.Insert, $"Fusie {nisCode}"))));
+            }
+
+            var results = await Task.WhenAll(sqsRequests.Select(sqsRequest => _mediator.Send(sqsRequest, cancellationToken)));
+
+            return Ok(results.Select(x =>
+                x.Location
+                    .ToString()
+                    .Replace(_ticketingOptions.InternalBaseUrl, _ticketingOptions.PublicBaseUrl)));
         }
     }
 
     public sealed class CsvRecord
     {
-        public required string OldStreetNamePersistentLocalId { get; init; }
-        public required string NisCode { get; init; }
-        public required string StreetName { get; init; }
-        public string? HomonymAddition { get; init; }
+        public required int OldStreetNamePersistentLocalId { get; init; }
+        public required int OldAddressPersistentLocalId { get; init; }
+        public required string StreetNameName { get; init; }
+        public required string? StreetNameHomonymAddition { get; init; }
+        public required string HouseNumber { get; init; }
+        public required string? BoxNumber { get; init; }
+        public required string PostalCode { get; init; }
     }
 }

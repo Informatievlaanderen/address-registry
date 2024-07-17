@@ -1,3 +1,10 @@
+# [4.8.0](https://github.com/informatievlaanderen/address-registry/compare/v4.7.0...v4.8.0) (2024-07-17)
+
+
+### Features
+
+* add postal consumer ([15c2b94](https://github.com/informatievlaanderen/address-registry/commit/15c2b94197a73ceb29852e64ce35df2d30391c2c))
+
 # [4.7.0](https://github.com/informatievlaanderen/address-registry/compare/v4.6.2...v4.7.0) (2024-07-02)
 
 

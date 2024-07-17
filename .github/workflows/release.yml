@@ -721,7 +721,7 @@ jobs:
           , 'consumer'
           , 'consumer-read-municipality'
           , 'consumer-read-streetname'
-          #, 'consumer-read-postal'
+          , 'consumer-read-postal'
           , 'producer'
           , 'producer-snapshot-oslo'
           , 'cache-warmer'
@@ -801,7 +801,7 @@ jobs:
           'address-consumer',
           'address-consumer-municipality',
           'address-consumer-streetname',
-          #'address-consumer-postal',
+          'address-consumer-postal',
           'address-producer',
           'address-producer-snapshot-oslo',
           'address-projections',
@@ -954,7 +954,7 @@ jobs:
           'address-consumer',
           'address-consumer-municipality',
           'address-consumer-streetname',
-          #'address-consumer-postal',
+          'address-consumer-postal',
           'address-producer',
           'address-producer-snapshot-oslo',
           'address-projections',

@@ -6,6 +6,7 @@ namespace AddressRegistry.StreetName.Events
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Newtonsoft.Json;
 
+    // Todo-rik: rename to match streetname registry
     [EventTags(EventTag.For.Sync, EventTag.For.Edit)]
     [EventName(EventName)]
     [EventDescription("Het adres werd voorgesteld in functie van een gemeentelijke fusie.")]

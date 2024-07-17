@@ -26,283 +26,57 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddressesForMunicipa
     public class GivenInvalidRequest : BackOfficeApiTest
     {
         private readonly AddressController _controller;
-        private readonly Mock<IStreamStore> _streamStore;
 
         public GivenInvalidRequest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            _streamStore = new Mock<IStreamStore>();
-
             _controller = CreateApiBusControllerWithUser<AddressController>();
         }
 
         [Fact]
-        public void WithInvalidStreetName_ThenThrowsValidationException()
+        public void WithNoFormFile_ThenReturnsBadRequest()
         {
-            WithStreamExists();
+            var result =
+                _controller.ProposeForMunicipalityMerger(
+                    null,
+                    "bla",
+                    Mock.Of<IPersistentLocalIdGenerator>(),
+                    new FakeStreetNameConsumerContextFactory().CreateDbContext(),
+                    CancellationToken.None).GetAwaiter().GetResult();
 
-            var invalidStraatNaamId = "invalid";
-
-            var act = SetupController(new ProposeAddressRequest
-            {
-                StraatNaamId = invalidStraatNaamId,
-                Huisnummer = "11"
-            });
-
-            // Assert
-            act
-                .Should()
-                .ThrowAsync<ValidationException>()
-                .Result
-                .Where(x =>
-                    x.Errors.Any(e => e.ErrorCode == "AdresStraatnaamNietGekendValidatie"
-                                      && e.ErrorMessage == $"De straatnaam '{invalidStraatNaamId}' is niet gekend in het straatnaamregister."));
+            result.Should().BeOfType<BadRequestObjectResult>();
+            ((BadRequestObjectResult)result).Value.Should().BeEquivalentTo("Please upload a CSV file.");
         }
 
         [Fact]
-        public void WithUnexistingStreetName_ThenThrowsValidationException()
+        public void WithNoCsvFile_ThenReturnsBadRequest()
         {
-            WithStreamDoesNotExist();
+            var result =
+                _controller.ProposeForMunicipalityMerger(
+                    CsvHelpers.CreateFormFileFromString("", "file.txt"),
+                    "bla",
+                    Mock.Of<IPersistentLocalIdGenerator>(),
+                    new FakeStreetNameConsumerContextFactory().CreateDbContext(),
+                    CancellationToken.None).GetAwaiter().GetResult();
 
-            var straatNaamId = StraatNaamPuri + "123";
-
-            var act = SetupController(new ProposeAddressRequest
-            {
-                StraatNaamId = straatNaamId,
-                Huisnummer = "11"
-            });
-
-            // Assert
-            act
-                .Should()
-                .ThrowAsync<ValidationException>()
-                .Result
-                .Where(x =>
-                    x.Errors.Any(e =>
-                        e.ErrorCode == "AdresStraatnaamNietGekendValidatie"
-                        && e.ErrorMessage == $"De straatnaam '{straatNaamId}' is niet gekend in het straatnaamregister."));
+            result.Should().BeOfType<BadRequestObjectResult>();
+            ((BadRequestObjectResult)result).Value.Should().BeEquivalentTo("Only CSV files are allowed.");
         }
 
         [Fact]
-        public void WithNonExistentPostInfo_ThenThrowsValidationException()
+        public void WithEmptyOldStreetNamePuri_ThenReturnsBadRequest()
         {
-            WithStreamExists();
+            var result =
+                _controller.ProposeForMunicipalityMerger(
+                    CsvHelpers.CreateFormFileFromString(@"
+OUD straatnaamid;OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
+;https://data.vlaanderen.be/id/adres/2268196;Vagevuurstraat;;14;;8755"),
+                    "10000",
+                    Mock.Of<IPersistentLocalIdGenerator>(),
+                    new FakeStreetNameConsumerContextFactory().CreateDbContext(),
+                    CancellationToken.None).GetAwaiter().GetResult();
 
-            var nonExistentPostInfo = PostInfoPuri + "123456";
-
-            var act = SetupController(new ProposeAddressRequest
-            {
-                StraatNaamId = StraatNaamPuri + "123",
-                Huisnummer = "11",
-                PostInfoId = nonExistentPostInfo
-            });
-
-            // Assert
-            act
-                .Should()
-                .ThrowAsync<ValidationException>()
-                .Result
-                .Where(x =>
-                    x.Errors.Any(e => e.ErrorCode == "AdresPostinfoNietGekendValidatie"
-                                      && e.ErrorMessage == $"De postinfo '{nonExistentPostInfo}' is niet gekend in het postinforegister."));
-        }
-
-        [Fact]
-        public void WithInvalidHouseNumber_ThenThrowsValidationException()
-        {
-            WithStreamExists();
-
-            var act = SetupController(new ProposeAddressRequest
-            {
-                StraatNaamId = StraatNaamPuri + "123",
-                Huisnummer = "AA",
-                PostInfoId = PostInfoPuri + "101"
-            });
-
-            // Assert
-            act
-                .Should()
-                .ThrowAsync<ValidationException>()
-                .Result
-                .Where(x =>
-                    x.Errors.Any(e => e.ErrorCode == "AdresOngeldigHuisnummerformaat"
-                                      && e.ErrorMessage == "Ongeldig huisnummerformaat."));
-        }
-
-        [Fact]
-        public void WithInvalidBoxNumber_ThenThrowsValidationException()
-        {
-            WithStreamExists();
-
-            var act = SetupController(new ProposeAddressRequest
-            {
-                StraatNaamId = StraatNaamPuri + "123",
-                Huisnummer = "11",
-                Busnummer = "$Invalid$",
-                PostInfoId = PostInfoPuri + "101"
-            });
-
-            // Assert
-            act
-                .Should()
-                .ThrowAsync<ValidationException>()
-                .Result
-                .Where(x =>
-                    x.Errors.Any(e => e.ErrorCode == "AdresOngeldigBusnummerformaat"
-                                      && e.ErrorMessage == "Ongeldig busnummerformaat."));
-        }
-
-        [Fact]
-        public void WithGeometryMethodIsInvalid_ThenThrowsValidationException()
-        {
-            WithStreamExists();
-
-            var act = SetupController(new ProposeAddressRequest
-            {
-                StraatNaamId = StraatNaamPuri + "123",
-                Huisnummer = "11",
-                Busnummer = "AA",
-                PostInfoId = PostInfoPuri + "101",
-                PositieGeometrieMethode = 0
-            });
-
-            // Assert
-            act
-                .Should()
-                .ThrowAsync<ValidationException>()
-                .Result
-                .Where(x =>
-                    x.Errors.Any(e => e.ErrorCode == "AdresPositieGeometriemethodeValidatie"
-                                      && e.ErrorMessage == "Ongeldige positieGeometrieMethode."));
-        }
-
-        [Theory]
-        [InlineData(PositieSpecificatie.Lot)]
-        [InlineData(PositieSpecificatie.Standplaats)]
-        [InlineData(PositieSpecificatie.Ligplaats)]
-        [InlineData(PositieSpecificatie.Ingang)]
-        public void WithInvalidSpecificationAndDerivedFromObject_ThenThrowsValidationException(PositieSpecificatie specificatie)
-        {
-            WithStreamExists();
-
-            var act = SetupController(new ProposeAddressRequest
-            {
-                StraatNaamId = StraatNaamPuri + "123",
-                Huisnummer = "11",
-                Busnummer = "AA",
-                PostInfoId = PostInfoPuri + "101",
-
-                PositieGeometrieMethode = PositieGeometrieMethode.AfgeleidVanObject,
-                PositieSpecificatie = specificatie,
-                Positie = GeometryHelpers.GmlPointGeometry
-            });
-
-            // Assert
-            act
-                .Should()
-                .ThrowAsync<ValidationException>()
-                .Result
-                .Where(x =>
-                    x.Errors.Any(e => e.ErrorCode == "AdresPositieSpecificatieValidatie"
-                                      && e.ErrorMessage == "Ongeldige positieSpecificatie."));
-        }
-
-        [Fact]
-        public void WithNoPosition_ThenThrowsValidationException()
-        {
-            WithStreamExists();
-
-            var act = SetupController(new ProposeAddressRequest
-            {
-                StraatNaamId = StraatNaamPuri + "123",
-                Huisnummer = "11",
-                Busnummer = "AA",
-                PostInfoId = PostInfoPuri + "101",
-
-                PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                PositieSpecificatie = PositieSpecificatie.Ingang,
-                Positie = null
-            });
-
-            // Assert
-            act
-                .Should()
-                .ThrowAsync<ValidationException>()
-                .Result
-                .Where(x =>
-                    x.Errors.Any(e => e.ErrorCode == "AdresPositieVerplicht"
-                                      && e.ErrorMessage == "De positie is verplicht."));
-        }
-
-        [Fact]
-        public void WithInvalidGml_ThenThrowsValidationException()
-        {
-            WithStreamExists();
-
-            var act = SetupController(new ProposeAddressRequest
-            {
-                StraatNaamId = StraatNaamPuri + "123",
-                Huisnummer = "11",
-                Busnummer = "AA",
-                PostInfoId = PostInfoPuri + "101",
-
-                PositieGeometrieMethode = PositieGeometrieMethode.AangeduidDoorBeheerder,
-                PositieSpecificatie = PositieSpecificatie.Ingang,
-                Positie = "invalid gml"
-            });
-
-            // Assert
-            act
-                .Should()
-                .ThrowAsync<ValidationException>()
-                .Result
-                .Where(x =>
-                    x.Errors.Any(e => e.ErrorCode == "AdresPositieformaatValidatie"
-                                      && e.ErrorMessage == "De positie is geen geldige gml-puntgeometrie."));
-        }
-
-        private Func<Task<IActionResult>> SetupController(ProposeAddressRequest request)
-        {
-            var syndicationContext = new FakeSyndicationContextFactory().CreateDbContext();
-
-            syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
-            {
-                NisCode = "validniscode",
-                PostalCode = "101",
-                PostalNames = new List<PostalInfoPostalName>
-                {
-                    new PostalInfoPostalName
-                    {
-                        PostalCode = "101",
-                        Language = Taal.NL,
-                        PostalName = "postalname"
-                    }
-                }
-            });
-
-            syndicationContext.SaveChanges();
-
-            return async () => await _controller.Propose(
-                new ProposeAddressRequestValidator(
-                    new StreetNameExistsValidator(_streamStore.Object),
-                    syndicationContext,
-                    FakeHouseNumberValidator.Instance),
-                new ProposeAddressSqsRequestFactory(Mock.Of<IPersistentLocalIdGenerator>()),
-                request,
-                CancellationToken.None);
-        }
-
-        private void WithStreamExists()
-        {
-            _streamStore
-                .Setup(store => store.ReadStreamBackwards(It.IsAny<StreamId>(), StreamVersion.End, 1, false, CancellationToken.None))
-                .ReturnsAsync(() => new ReadStreamPage("id", PageReadStatus.Success, 1, 2, 2, 2, ReadDirection.Backward, false, messages: new []{ new StreamMessage() }));
-        }
-
-        private void WithStreamDoesNotExist()
-        {
-            _streamStore
-                .Setup(store => store.ReadStreamBackwards(It.IsAny<StreamId>(), StreamVersion.End, 1, false, CancellationToken.None))
-                .ReturnsAsync(() => new ReadStreamPage("id", PageReadStatus.StreamNotFound, -1, -1, -1, -1, ReadDirection.Backward, false, messages: Array.Empty<StreamMessage>()));
+            result.Should().BeOfType<BadRequestObjectResult>();
+            ((BadRequestObjectResult)result).Value.Should().BeEquivalentTo("OldStreetNamePuri is required at record number 1");
         }
     }
 }

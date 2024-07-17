@@ -1,27 +1,14 @@
 namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddressesForMunicipalityMerger
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Threading;
-    using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice;
-    using AddressRegistry.Api.BackOffice.Abstractions.Requests;
-    using AddressRegistry.Api.BackOffice.Abstractions.SqsRequests;
-    using AddressRegistry.Api.BackOffice.Validators;
-    using AddressRegistry.Projections.Syndication.PostalInfo;
-    using AddressRegistry.Tests.BackOffice.Infrastructure;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
+    using Consumer.Read.StreetName.Projections;
     using FluentAssertions;
-    using FluentValidation;
+    using Infrastructure;
     using Microsoft.AspNetCore.Mvc;
     using Moq;
-    using SqlStreamStore;
-    using SqlStreamStore.Streams;
     using Xunit;
     using Xunit.Abstractions;
-    using PositieGeometrieMethode = Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts.PositieGeometrieMethode;
-    using PositieSpecificatie = Be.Vlaanderen.Basisregisters.GrAr.Edit.Contracts.PositieSpecificatie;
 
     public class GivenInvalidRequest : BackOfficeApiTest
     {
@@ -38,7 +25,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddressesForMunicipa
             var result =
                 _controller.ProposeForMunicipalityMerger(
                     null,
-                    "bla",
+                    "10000",
                     Mock.Of<IPersistentLocalIdGenerator>(),
                     new FakeStreetNameConsumerContextFactory().CreateDbContext(),
                     CancellationToken.None).GetAwaiter().GetResult();
@@ -52,8 +39,8 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddressesForMunicipa
         {
             var result =
                 _controller.ProposeForMunicipalityMerger(
-                    CsvHelpers.CreateFormFileFromString("", "file.txt"),
-                    "bla",
+                    CsvHelpers.CreateFormFileFromString("abc", "file.txt"),
+                    "10000",
                     Mock.Of<IPersistentLocalIdGenerator>(),
                     new FakeStreetNameConsumerContextFactory().CreateDbContext(),
                     CancellationToken.None).GetAwaiter().GetResult();
@@ -77,6 +64,217 @@ OUD straatnaamid;OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW hui
 
             result.Should().BeOfType<BadRequestObjectResult>();
             ((BadRequestObjectResult)result).Value.Should().BeEquivalentTo("OldStreetNamePuri is required at record number 1");
+        }
+
+        [Fact]
+        public void WithInvalidOldStreetNamePuri_ThenReturnsBadRequest()
+        {
+            var result =
+                _controller.ProposeForMunicipalityMerger(
+                    CsvHelpers.CreateFormFileFromString(@"
+OUD straatnaamid;OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
+https://data.vlaanderen.be/id/straatnaam/abc;https://data.vlaanderen.be/id/adres/2268196;Vagevuurstraat;;14;;8755"),
+                    "10000",
+                    Mock.Of<IPersistentLocalIdGenerator>(),
+                    new FakeStreetNameConsumerContextFactory().CreateDbContext(),
+                    CancellationToken.None).GetAwaiter().GetResult();
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+            ((BadRequestObjectResult)result).Value.Should().BeEquivalentTo("OldStreetNamePuri is NaN at record number 1");
+        }
+
+        [Fact]
+        public void WithEmptyOldAddressPuri_ThenReturnsBadRequest()
+        {
+            var result =
+                _controller.ProposeForMunicipalityMerger(
+                    CsvHelpers.CreateFormFileFromString(@"
+OUD straatnaamid;OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
+https://data.vlaanderen.be/id/straatnaam/59111;;Vagevuurstraat;;14;;8755"),
+                    "10000",
+                    Mock.Of<IPersistentLocalIdGenerator>(),
+                    new FakeStreetNameConsumerContextFactory().CreateDbContext(),
+                    CancellationToken.None).GetAwaiter().GetResult();
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+            ((BadRequestObjectResult)result).Value.Should().BeEquivalentTo("OldAddressPuri is required at record number 1");
+        }
+
+        [Fact]
+        public void WithInvalidOldAddressPuri_ThenReturnsBadRequest()
+        {
+            var result =
+                _controller.ProposeForMunicipalityMerger(
+                    CsvHelpers.CreateFormFileFromString(@"
+OUD straatnaamid;OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
+https://data.vlaanderen.be/id/straatnaam/59111;https://data.vlaanderen.be/id/adres/abc;Vagevuurstraat;;14;;8755"),
+                    "10000",
+                    Mock.Of<IPersistentLocalIdGenerator>(),
+                    new FakeStreetNameConsumerContextFactory().CreateDbContext(),
+                    CancellationToken.None).GetAwaiter().GetResult();
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+            ((BadRequestObjectResult)result).Value.Should().BeEquivalentTo("OldAddressPuri is NaN at record number 1");
+        }
+
+        [Fact]
+        public void WithEmptyStreetNameName_ThenReturnsBadRequest()
+        {
+            var result =
+                _controller.ProposeForMunicipalityMerger(
+                    CsvHelpers.CreateFormFileFromString(@"
+OUD straatnaamid;OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
+https://data.vlaanderen.be/id/straatnaam/59111;https://data.vlaanderen.be/id/adres/2268196;;;14;;8755"),
+                    "10000",
+                    Mock.Of<IPersistentLocalIdGenerator>(),
+                    new FakeStreetNameConsumerContextFactory().CreateDbContext(),
+                    CancellationToken.None).GetAwaiter().GetResult();
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+            ((BadRequestObjectResult)result).Value.Should().BeEquivalentTo("StreetNameName is required at record number 1");
+        }
+
+        [Fact]
+        public void WithEmptyHouseNumber_ThenReturnsBadRequest()
+        {
+            var result =
+                _controller.ProposeForMunicipalityMerger(
+                    CsvHelpers.CreateFormFileFromString(@"
+OUD straatnaamid;OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
+https://data.vlaanderen.be/id/straatnaam/59111;https://data.vlaanderen.be/id/adres/2268196;Vagevuurstraat;;;;8755"),
+                    "10000",
+                    Mock.Of<IPersistentLocalIdGenerator>(),
+                    new FakeStreetNameConsumerContextFactory().CreateDbContext(),
+                    CancellationToken.None).GetAwaiter().GetResult();
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+            ((BadRequestObjectResult)result).Value.Should().BeEquivalentTo("HouseNumber is required at record number 1");
+        }
+
+        [Fact]
+        public void WithInvalidHouseNumber_ThenReturnsBadRequest()
+        {
+            var result =
+                _controller.ProposeForMunicipalityMerger(
+                    CsvHelpers.CreateFormFileFromString(@"
+OUD straatnaamid;OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
+https://data.vlaanderen.be/id/straatnaam/59111;https://data.vlaanderen.be/id/adres/2268196;Vagevuurstraat;;x;;8755"),
+                    "10000",
+                    Mock.Of<IPersistentLocalIdGenerator>(),
+                    new FakeStreetNameConsumerContextFactory().CreateDbContext(),
+                    CancellationToken.None).GetAwaiter().GetResult();
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+            ((BadRequestObjectResult)result).Value.Should().BeEquivalentTo("HouseNumber is invalid at record number 1");
+        }
+
+        [Fact]
+        public void WithInvalidBoxNumber_ThenReturnsBadRequest()
+        {
+            var result =
+                _controller.ProposeForMunicipalityMerger(
+                    CsvHelpers.CreateFormFileFromString(@"
+OUD straatnaamid;OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
+https://data.vlaanderen.be/id/straatnaam/59111;https://data.vlaanderen.be/id/adres/2268196;Vagevuurstraat;;1;-;8755"),
+                    "10000",
+                    Mock.Of<IPersistentLocalIdGenerator>(),
+                    new FakeStreetNameConsumerContextFactory().CreateDbContext(),
+                    CancellationToken.None).GetAwaiter().GetResult();
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+            ((BadRequestObjectResult)result).Value.Should().BeEquivalentTo("BoxNumber is invalid at record number 1");
+        }
+
+        [Fact]
+        public void WithEmptyPostalCode_ThenReturnsBadRequest()
+        {
+            var result =
+                _controller.ProposeForMunicipalityMerger(
+                    CsvHelpers.CreateFormFileFromString(@"
+OUD straatnaamid;OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
+https://data.vlaanderen.be/id/straatnaam/59111;https://data.vlaanderen.be/id/adres/2268196;Vagevuurstraat;;14;;"),
+                    "10000",
+                    Mock.Of<IPersistentLocalIdGenerator>(),
+                    new FakeStreetNameConsumerContextFactory().CreateDbContext(),
+                    CancellationToken.None).GetAwaiter().GetResult();
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+            ((BadRequestObjectResult)result).Value.Should().BeEquivalentTo("PostalCode is required at record number 1");
+        }
+
+        [Fact]
+        public void WithUnknownStreetName_ThenReturnsBadRequest()
+        {
+            var result =
+                _controller.ProposeForMunicipalityMerger(
+                    CsvHelpers.CreateFormFileFromString(@"
+OUD straatnaamid;OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
+https://data.vlaanderen.be/id/straatnaam/59111;https://data.vlaanderen.be/id/adres/2268196;Vagevuurstraat;;14;;8755"),
+                    "10000",
+                    Mock.Of<IPersistentLocalIdGenerator>(),
+                    new FakeStreetNameConsumerContextFactory().CreateDbContext(),
+                    CancellationToken.None).GetAwaiter().GetResult();
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+            ((BadRequestObjectResult)result).Value.Should().BeEquivalentTo("No streetNameLatestItem found for 10000, 'Vagevuurstraat' and ''");
+        }
+
+        [Fact]
+        public void WithDuplicateHouseNumbers_ThenReturnsBadRequest()
+        {
+            var dbContext = new FakeStreetNameConsumerContextFactory().CreateDbContext();
+            dbContext.StreetNameLatestItems.Add(new StreetNameLatestItem
+            {
+                PersistentLocalId = 1,
+                NisCode = "10000",
+                NameDutch = "Vagevuurstraat",
+                HomonymAdditionDutch = null
+            });
+            dbContext.SaveChanges();
+
+            var result =
+                _controller.ProposeForMunicipalityMerger(
+                    CsvHelpers.CreateFormFileFromString(@"
+OUD straatnaamid;OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
+https://data.vlaanderen.be/id/straatnaam/59111;https://data.vlaanderen.be/id/adres/2268196;Vagevuurstraat;;14;;8755
+https://data.vlaanderen.be/id/straatnaam/59111;https://data.vlaanderen.be/id/adres/2268196;Vagevuurstraat;;14;;8755
+"),
+                    "10000",
+                    Mock.Of<IPersistentLocalIdGenerator>(),
+                    dbContext,
+                    CancellationToken.None).GetAwaiter().GetResult();
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+            ((BadRequestObjectResult)result).Value.Should().BeEquivalentTo("House numbers are not unique for street 'Vagevuurstraat' and ''");
+        }
+
+        [Fact]
+        public void WithDuplicateBoxNumbers_ThenReturnsBadRequest()
+        {
+            var dbContext = new FakeStreetNameConsumerContextFactory().CreateDbContext();
+            dbContext.StreetNameLatestItems.Add(new StreetNameLatestItem
+            {
+                PersistentLocalId = 1,
+                NisCode = "10000",
+                NameDutch = "Vagevuurstraat",
+                HomonymAdditionDutch = null
+            });
+            dbContext.SaveChanges();
+
+            var result =
+                _controller.ProposeForMunicipalityMerger(
+                    CsvHelpers.CreateFormFileFromString(@"
+OUD straatnaamid;OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
+https://data.vlaanderen.be/id/straatnaam/59111;https://data.vlaanderen.be/id/adres/2268196;Vagevuurstraat;;14;A;8755
+https://data.vlaanderen.be/id/straatnaam/59111;https://data.vlaanderen.be/id/adres/2268196;Vagevuurstraat;;14;A;8755
+"),
+                    "10000",
+                    Mock.Of<IPersistentLocalIdGenerator>(),
+                    dbContext,
+                    CancellationToken.None).GetAwaiter().GetResult();
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+            ((BadRequestObjectResult)result).Value.Should().BeEquivalentTo("Box numbers are not unique for street 'Vagevuurstraat' and ''");
         }
     }
 }

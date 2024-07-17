@@ -131,6 +131,11 @@ namespace AddressRegistry.Api.BackOffice
                 }
             }
 
+            if (records.Count != records.Select(x => x.OldAddressPersistentLocalId).Distinct().Count())
+            {
+                return BadRequest("OldAddressPuri is not unique");
+            }
+
             var addressesByStreetNameRecords = records
                 .GroupBy(x => (x.StreetNameName, x.StreetNameHomonymAddition))
                 .ToDictionary(

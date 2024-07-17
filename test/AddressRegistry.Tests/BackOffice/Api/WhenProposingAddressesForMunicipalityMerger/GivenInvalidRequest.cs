@@ -220,6 +220,35 @@ https://data.vlaanderen.be/id/straatnaam/59111;https://data.vlaanderen.be/id/adr
         }
 
         [Fact]
+        public void WithDuplicateOldAddressPuri_ThenReturnsBadRequest()
+        {
+            var dbContext = new FakeStreetNameConsumerContextFactory().CreateDbContext();
+            dbContext.StreetNameLatestItems.Add(new StreetNameLatestItem
+            {
+                PersistentLocalId = 1,
+                NisCode = "10000",
+                NameDutch = "Vagevuurstraat",
+                HomonymAdditionDutch = null
+            });
+            dbContext.SaveChanges();
+
+            var result =
+                _controller.ProposeForMunicipalityMerger(
+                    CsvHelpers.CreateFormFileFromString(@"
+OUD straatnaamid;OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
+https://data.vlaanderen.be/id/straatnaam/59111;https://data.vlaanderen.be/id/adres/2268196;Vagevuurstraat;;14;;8755
+https://data.vlaanderen.be/id/straatnaam/59111;https://data.vlaanderen.be/id/adres/2268196;Vagevuurstraat;;15;;8755
+"),
+                    "10000",
+                    Mock.Of<IPersistentLocalIdGenerator>(),
+                    dbContext,
+                    CancellationToken.None).GetAwaiter().GetResult();
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+            ((BadRequestObjectResult)result).Value.Should().BeEquivalentTo("OldAddressPuri is not unique");
+        }
+
+        [Fact]
         public void WithDuplicateHouseNumbers_ThenReturnsBadRequest()
         {
             var dbContext = new FakeStreetNameConsumerContextFactory().CreateDbContext();
@@ -237,7 +266,7 @@ https://data.vlaanderen.be/id/straatnaam/59111;https://data.vlaanderen.be/id/adr
                     CsvHelpers.CreateFormFileFromString(@"
 OUD straatnaamid;OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
 https://data.vlaanderen.be/id/straatnaam/59111;https://data.vlaanderen.be/id/adres/2268196;Vagevuurstraat;;14;;8755
-https://data.vlaanderen.be/id/straatnaam/59111;https://data.vlaanderen.be/id/adres/2268196;Vagevuurstraat;;14;;8755
+https://data.vlaanderen.be/id/straatnaam/59111;https://data.vlaanderen.be/id/adres/2268197;Vagevuurstraat;;14;;8755
 "),
                     "10000",
                     Mock.Of<IPersistentLocalIdGenerator>(),
@@ -266,7 +295,7 @@ https://data.vlaanderen.be/id/straatnaam/59111;https://data.vlaanderen.be/id/adr
                     CsvHelpers.CreateFormFileFromString(@"
 OUD straatnaamid;OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
 https://data.vlaanderen.be/id/straatnaam/59111;https://data.vlaanderen.be/id/adres/2268196;Vagevuurstraat;;14;A;8755
-https://data.vlaanderen.be/id/straatnaam/59111;https://data.vlaanderen.be/id/adres/2268196;Vagevuurstraat;;14;A;8755
+https://data.vlaanderen.be/id/straatnaam/59111;https://data.vlaanderen.be/id/adres/2268197;Vagevuurstraat;;14;A;8755
 "),
                     "10000",
                     Mock.Of<IPersistentLocalIdGenerator>(),

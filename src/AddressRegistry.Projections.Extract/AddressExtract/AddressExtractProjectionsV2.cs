@@ -171,7 +171,7 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 }, cancellationToken: ct);
             });
 
-            When<Envelope<AddressWasProposedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            When<Envelope<AddressWasProposedForMunicipalityMerger>>(async (context, message, ct) =>
             {
                 var addressDbaseRecord = new AddressDbaseRecordV2
                 {

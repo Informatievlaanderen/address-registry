@@ -82,7 +82,7 @@
                 await context.AddressVersions.AddAsync(addressVersion, ct);
             });
 
-            When<Envelope<AddressWasProposedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            When<Envelope<AddressWasProposedForMunicipalityMerger>>(async (context, message, ct) =>
             {
                 var geometry = WKBReaderFactory.CreateForLegacy().Read(message.Message.ExtendedWkbGeometry.ToByteArray());
 

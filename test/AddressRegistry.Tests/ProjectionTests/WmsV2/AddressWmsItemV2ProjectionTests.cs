@@ -160,30 +160,30 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
         }
 
         [Fact]
-        public async Task WhenHouseNumberAddressWasProposedBecauseOfMunicipalityMerger()
+        public async Task WhenHouseNumberAddressWasProposedForMunicipalityMerger()
         {
-            var addressWasProposedBecauseOfMunicipalityMerger = _fixture.Create<AddressWasProposedBecauseOfMunicipalityMerger>()
+            var addressWasProposedForMunicipalityMerger = _fixture.Create<AddressWasProposedForMunicipalityMerger>()
                 .AsHouseNumberAddress();
 
             await Sut
-                .Given(new Envelope<AddressWasProposedBecauseOfMunicipalityMerger>(new Envelope(addressWasProposedBecauseOfMunicipalityMerger, new Dictionary<string, object>())))
+                .Given(new Envelope<AddressWasProposedForMunicipalityMerger>(new Envelope(addressWasProposedForMunicipalityMerger, new Dictionary<string, object>())))
                 .Then(async ct =>
                 {
-                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasProposedBecauseOfMunicipalityMerger.AddressPersistentLocalId);
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasProposedForMunicipalityMerger.AddressPersistentLocalId);
                     addressWmsItem.Should().NotBeNull();
-                    addressWmsItem!.StreetNamePersistentLocalId.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.StreetNamePersistentLocalId);
+                    addressWmsItem!.StreetNamePersistentLocalId.Should().Be(addressWasProposedForMunicipalityMerger.StreetNamePersistentLocalId);
                     addressWmsItem.ParentAddressPersistentLocalId.Should().BeNull();
-                    addressWmsItem.HouseNumber.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.HouseNumber);
+                    addressWmsItem.HouseNumber.Should().Be(addressWasProposedForMunicipalityMerger.HouseNumber);
                     addressWmsItem.BoxNumber.Should().BeNull();
                     addressWmsItem.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithoutBoxes);
-                    addressWmsItem.PostalCode.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.PostalCode);
+                    addressWmsItem.PostalCode.Should().Be(addressWasProposedForMunicipalityMerger.PostalCode);
                     addressWmsItem.Status.Should().Be(AddressWmsItemV2Projections.MapStatus(AddressStatus.Proposed));
-                    addressWmsItem.OfficiallyAssigned.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.OfficiallyAssigned);
-                    addressWmsItem.Position.Should().BeEquivalentTo((Point)_wkbReader.Read(addressWasProposedBecauseOfMunicipalityMerger.ExtendedWkbGeometry.ToByteArray()));
-                    addressWmsItem.PositionMethod.Should().Be(AddressWmsItemV2Projections.ConvertGeometryMethodToString(addressWasProposedBecauseOfMunicipalityMerger.GeometryMethod));
-                    addressWmsItem.PositionSpecification.Should().Be(AddressWmsItemV2Projections.ConvertGeometrySpecificationToString(addressWasProposedBecauseOfMunicipalityMerger.GeometrySpecification));
+                    addressWmsItem.OfficiallyAssigned.Should().Be(addressWasProposedForMunicipalityMerger.OfficiallyAssigned);
+                    addressWmsItem.Position.Should().BeEquivalentTo((Point)_wkbReader.Read(addressWasProposedForMunicipalityMerger.ExtendedWkbGeometry.ToByteArray()));
+                    addressWmsItem.PositionMethod.Should().Be(AddressWmsItemV2Projections.ConvertGeometryMethodToString(addressWasProposedForMunicipalityMerger.GeometryMethod));
+                    addressWmsItem.PositionSpecification.Should().Be(AddressWmsItemV2Projections.ConvertGeometrySpecificationToString(addressWasProposedForMunicipalityMerger.GeometrySpecification));
                     addressWmsItem.Removed.Should().BeFalse();
-                    addressWmsItem.VersionTimestamp.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.Provenance.Timestamp);
+                    addressWmsItem.VersionTimestamp.Should().Be(addressWasProposedForMunicipalityMerger.Provenance.Timestamp);
                 });
         }
 

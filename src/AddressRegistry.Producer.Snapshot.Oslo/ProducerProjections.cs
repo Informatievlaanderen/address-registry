@@ -103,7 +103,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         ct);
             });
 
-            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasProposedBecauseOfMunicipalityMerger>>(async (_, message, ct) =>
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasProposedForMunicipalityMerger>>(async (_, message, ct) =>
             {
                 await FindAndProduce(async () =>
                         await snapshotManager.FindMatchingSnapshot(

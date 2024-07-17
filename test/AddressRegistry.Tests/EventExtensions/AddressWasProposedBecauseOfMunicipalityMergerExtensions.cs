@@ -4,25 +4,25 @@ namespace AddressRegistry.Tests.EventExtensions
     using StreetName;
     using StreetName.Events;
 
-    public static class AddressWasProposedBecauseOfMunicipalityMergerExtensions
+    public static class AddressWasProposedForMunicipalityMergerExtensions
     {
-        public static AddressWasProposedBecauseOfMunicipalityMerger AsHouseNumberAddress(
-            this AddressWasProposedBecauseOfMunicipalityMerger @event, HouseNumber? houseNumber = null)
+        public static AddressWasProposedForMunicipalityMerger AsHouseNumberAddress(
+            this AddressWasProposedForMunicipalityMerger @event, HouseNumber? houseNumber = null)
         {
-            var houseNumberAddressWasProposedBecauseOfMunicipalityMerger = @event
+            var houseNumberAddressWasProposedForMunicipalityMerger = @event
                 .WithParentAddressPersistentLocalId(null)
                 .WithBoxNumber(null);
 
             if (houseNumber is not null)
             {
-                houseNumberAddressWasProposedBecauseOfMunicipalityMerger = houseNumberAddressWasProposedBecauseOfMunicipalityMerger.WithHouseNumber(houseNumber);
+                houseNumberAddressWasProposedForMunicipalityMerger = houseNumberAddressWasProposedForMunicipalityMerger.WithHouseNumber(houseNumber);
             }
 
-            return houseNumberAddressWasProposedBecauseOfMunicipalityMerger;
+            return houseNumberAddressWasProposedForMunicipalityMerger;
         }
 
-        public static AddressWasProposedBecauseOfMunicipalityMerger AsBoxNumberAddress(
-            this AddressWasProposedBecauseOfMunicipalityMerger @event,
+        public static AddressWasProposedForMunicipalityMerger AsBoxNumberAddress(
+            this AddressWasProposedForMunicipalityMerger @event,
             AddressPersistentLocalId houseNumberAddressPersistentLocalId,
             BoxNumber? boxNumber = null)
         {
@@ -33,11 +33,11 @@ namespace AddressRegistry.Tests.EventExtensions
                 .WithBoxNumber(boxNumberToUse);
         }
 
-        public static AddressWasProposedBecauseOfMunicipalityMerger WithStreetNamePersistentLocalId(
-            this AddressWasProposedBecauseOfMunicipalityMerger @event,
+        public static AddressWasProposedForMunicipalityMerger WithStreetNamePersistentLocalId(
+            this AddressWasProposedForMunicipalityMerger @event,
             StreetNamePersistentLocalId streetNamePersistentLocalId)
         {
-            var newEvent = new AddressWasProposedBecauseOfMunicipalityMerger(
+            var newEvent = new AddressWasProposedForMunicipalityMerger(
                 streetNamePersistentLocalId,
                 new AddressPersistentLocalId(@event.AddressPersistentLocalId),
                 @event.ParentPersistentLocalId is not null ? new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value) : null,
@@ -54,11 +54,11 @@ namespace AddressRegistry.Tests.EventExtensions
             return newEvent;
         }
 
-        public static AddressWasProposedBecauseOfMunicipalityMerger WithAddressPersistentLocalId(
-            this AddressWasProposedBecauseOfMunicipalityMerger @event,
+        public static AddressWasProposedForMunicipalityMerger WithAddressPersistentLocalId(
+            this AddressWasProposedForMunicipalityMerger @event,
             AddressPersistentLocalId addressPersistentLocalId)
         {
-            var newEvent = new AddressWasProposedBecauseOfMunicipalityMerger(
+            var newEvent = new AddressWasProposedForMunicipalityMerger(
                 new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId),
                 addressPersistentLocalId,
                 @event.ParentPersistentLocalId is not null ? new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value) : null,
@@ -75,11 +75,11 @@ namespace AddressRegistry.Tests.EventExtensions
             return newEvent;
         }
 
-        public static AddressWasProposedBecauseOfMunicipalityMerger WithAddressPersistentLocalId(
-            this AddressWasProposedBecauseOfMunicipalityMerger @event,
+        public static AddressWasProposedForMunicipalityMerger WithAddressPersistentLocalId(
+            this AddressWasProposedForMunicipalityMerger @event,
             int addressPersistentLocalId)
         {
-            var newEvent = new AddressWasProposedBecauseOfMunicipalityMerger(
+            var newEvent = new AddressWasProposedForMunicipalityMerger(
                 new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId),
                 new AddressPersistentLocalId(addressPersistentLocalId),
                 @event.ParentPersistentLocalId is not null ? new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value) : null,
@@ -96,11 +96,11 @@ namespace AddressRegistry.Tests.EventExtensions
             return newEvent;
         }
 
-        public static AddressWasProposedBecauseOfMunicipalityMerger WithParentAddressPersistentLocalId(
-            this AddressWasProposedBecauseOfMunicipalityMerger @event,
+        public static AddressWasProposedForMunicipalityMerger WithParentAddressPersistentLocalId(
+            this AddressWasProposedForMunicipalityMerger @event,
             AddressPersistentLocalId? parentAddressPersistentLocalId)
         {
-            var newEvent = new AddressWasProposedBecauseOfMunicipalityMerger(
+            var newEvent = new AddressWasProposedForMunicipalityMerger(
                 new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId),
                 new AddressPersistentLocalId(@event.AddressPersistentLocalId),
                 parentAddressPersistentLocalId,
@@ -117,11 +117,11 @@ namespace AddressRegistry.Tests.EventExtensions
             return newEvent;
         }
 
-        public static AddressWasProposedBecauseOfMunicipalityMerger WithPostalCode(
-            this AddressWasProposedBecauseOfMunicipalityMerger @event,
+        public static AddressWasProposedForMunicipalityMerger WithPostalCode(
+            this AddressWasProposedForMunicipalityMerger @event,
             PostalCode postalCode)
         {
-            var newEvent = new AddressWasProposedBecauseOfMunicipalityMerger(
+            var newEvent = new AddressWasProposedForMunicipalityMerger(
                 new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId),
                 new AddressPersistentLocalId(@event.AddressPersistentLocalId),
                 @event.ParentPersistentLocalId is not null ? new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value) : null,
@@ -138,11 +138,11 @@ namespace AddressRegistry.Tests.EventExtensions
             return newEvent;
         }
 
-        public static AddressWasProposedBecauseOfMunicipalityMerger WithHouseNumber(
-            this AddressWasProposedBecauseOfMunicipalityMerger @event,
+        public static AddressWasProposedForMunicipalityMerger WithHouseNumber(
+            this AddressWasProposedForMunicipalityMerger @event,
             HouseNumber houseNumber)
         {
-            var newEvent = new AddressWasProposedBecauseOfMunicipalityMerger(
+            var newEvent = new AddressWasProposedForMunicipalityMerger(
                 new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId),
                 new AddressPersistentLocalId(@event.AddressPersistentLocalId),
                 @event.ParentPersistentLocalId is not null ? new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value) : null,
@@ -159,11 +159,11 @@ namespace AddressRegistry.Tests.EventExtensions
             return newEvent;
         }
 
-        public static AddressWasProposedBecauseOfMunicipalityMerger WithBoxNumber(
-            this AddressWasProposedBecauseOfMunicipalityMerger @event,
+        public static AddressWasProposedForMunicipalityMerger WithBoxNumber(
+            this AddressWasProposedForMunicipalityMerger @event,
             BoxNumber? boxNumber)
         {
-            var newEvent = new AddressWasProposedBecauseOfMunicipalityMerger(
+            var newEvent = new AddressWasProposedForMunicipalityMerger(
                 new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId),
                 new AddressPersistentLocalId(@event.AddressPersistentLocalId),
                 @event.ParentPersistentLocalId is not null ? new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value) : null,
@@ -180,11 +180,11 @@ namespace AddressRegistry.Tests.EventExtensions
             return newEvent;
         }
 
-        public static AddressWasProposedBecauseOfMunicipalityMerger WithExtendedWkbGeometry(
-            this AddressWasProposedBecauseOfMunicipalityMerger @event,
+        public static AddressWasProposedForMunicipalityMerger WithExtendedWkbGeometry(
+            this AddressWasProposedForMunicipalityMerger @event,
             string extendedWkbGeometry)
         {
-            var newEvent = new AddressWasProposedBecauseOfMunicipalityMerger(
+            var newEvent = new AddressWasProposedForMunicipalityMerger(
                 new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId),
                 new AddressPersistentLocalId(@event.AddressPersistentLocalId),
                 @event.ParentPersistentLocalId is not null ? new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value) : null,
@@ -201,11 +201,11 @@ namespace AddressRegistry.Tests.EventExtensions
             return newEvent;
         }
 
-        public static AddressWasProposedBecauseOfMunicipalityMerger WithGeometryMethod(
-            this AddressWasProposedBecauseOfMunicipalityMerger @event,
+        public static AddressWasProposedForMunicipalityMerger WithGeometryMethod(
+            this AddressWasProposedForMunicipalityMerger @event,
             GeometryMethod geometryMethod)
         {
-            var newEvent = new AddressWasProposedBecauseOfMunicipalityMerger(
+            var newEvent = new AddressWasProposedForMunicipalityMerger(
                 new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId),
                 new AddressPersistentLocalId(@event.AddressPersistentLocalId),
                 @event.ParentPersistentLocalId is not null ? new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value) : null,
@@ -222,11 +222,11 @@ namespace AddressRegistry.Tests.EventExtensions
             return newEvent;
         }
 
-        public static AddressWasProposedBecauseOfMunicipalityMerger WithGeometrySpecification(
-            this AddressWasProposedBecauseOfMunicipalityMerger @event,
+        public static AddressWasProposedForMunicipalityMerger WithGeometrySpecification(
+            this AddressWasProposedForMunicipalityMerger @event,
             GeometrySpecification geometrySpecification)
         {
-            var newEvent = new AddressWasProposedBecauseOfMunicipalityMerger(
+            var newEvent = new AddressWasProposedForMunicipalityMerger(
                 new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId),
                 new AddressPersistentLocalId(@event.AddressPersistentLocalId),
                 @event.ParentPersistentLocalId is not null ? new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value) : null,

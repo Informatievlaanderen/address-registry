@@ -40,7 +40,7 @@ namespace AddressRegistry.StreetName
 
             Register<AddressWasMigratedToStreetName>(When);
             Register<AddressWasProposedV2>(When);
-            Register<AddressWasProposedBecauseOfMunicipalityMerger>(When);
+            Register<AddressWasProposedForMunicipalityMerger>(When);
             Register<AddressWasApproved>(When);
             Register<AddressWasRejected>(When);
             Register<AddressWasRejectedBecauseHouseNumberWasRejected>(When);
@@ -221,7 +221,7 @@ namespace AddressRegistry.StreetName
             StreetNameAddresses.Add(address);
         }
 
-        private void When(AddressWasProposedBecauseOfMunicipalityMerger @event)
+        private void When(AddressWasProposedForMunicipalityMerger @event)
         {
             var address = new StreetNameAddress(applier: ApplyChange);
             address.Route(@event);

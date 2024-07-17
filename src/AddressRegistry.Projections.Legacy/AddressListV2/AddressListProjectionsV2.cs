@@ -104,7 +104,7 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
                     .AddAsync(addressListItemV2, ct);
             });
 
-            When<Envelope<AddressWasProposedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            When<Envelope<AddressWasProposedForMunicipalityMerger>>(async (context, message, ct) =>
             {
                 var addressListItemV2 = new AddressListItemV2(
                     message.Message.AddressPersistentLocalId,

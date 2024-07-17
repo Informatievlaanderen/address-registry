@@ -86,12 +86,12 @@ namespace AddressRegistry.Tests.ProjectionTests.BackOffice
         }
 
         [Fact]
-        public async Task GivenAddressWasProposedBecauseOfMunicipalityMerger_ThenRelationIsAdded()
+        public async Task GivenAddressWasProposedForMunicipalityMerger_ThenRelationIsAdded()
         {
-            var addressWasProposedBecauseOfMunicipalityMerger = _fixture.Create<AddressWasProposedBecauseOfMunicipalityMerger>();
+            var addressWasProposedForMunicipalityMerger = _fixture.Create<AddressWasProposedForMunicipalityMerger>();
 
             await Sut
-                .Given(new Envelope<AddressWasProposedBecauseOfMunicipalityMerger>(new Envelope(addressWasProposedBecauseOfMunicipalityMerger, new Dictionary<string, object>
+                .Given(new Envelope<AddressWasProposedForMunicipalityMerger>(new Envelope(addressWasProposedForMunicipalityMerger, new Dictionary<string, object>
                 {
                     { Envelope.CreatedUtcMetadataKey, DateTime.UtcNow }
                 })))
@@ -100,10 +100,10 @@ namespace AddressRegistry.Tests.ProjectionTests.BackOffice
                     await Task.Delay(TimeSpan.FromSeconds(DelayInSeconds + 1));
                     var result = await _fakeBackOfficeContext
                         .AddressPersistentIdStreetNamePersistentIds
-                        .FindAsync(addressWasProposedBecauseOfMunicipalityMerger.AddressPersistentLocalId);
+                        .FindAsync(addressWasProposedForMunicipalityMerger.AddressPersistentLocalId);
 
                     result.Should().NotBeNull();
-                    result!.StreetNamePersistentLocalId.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.StreetNamePersistentLocalId);
+                    result!.StreetNamePersistentLocalId.Should().Be(addressWasProposedForMunicipalityMerger.StreetNamePersistentLocalId);
                 });
         }
 

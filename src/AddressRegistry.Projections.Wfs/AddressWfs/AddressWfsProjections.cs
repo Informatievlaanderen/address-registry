@@ -109,7 +109,7 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
                     .AddAsync(addressWfsItem, ct);
             });
 
-            When<Envelope<AddressWasProposedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            When<Envelope<AddressWasProposedForMunicipalityMerger>>(async (context, message, ct) =>
             {
                 var addressWfsItem = new AddressWfsItem(
                     message.Message.AddressPersistentLocalId,

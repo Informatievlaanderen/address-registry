@@ -84,28 +84,28 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
         }
 
         [Fact]
-        public async Task WhenAddressWasProposedBecauseOfMunicipalityMerger()
+        public async Task WhenAddressWasProposedForMunicipalityMerger()
         {
-            var addressWasProposedBecauseOfMunicipalityMerger = _fixture.Create<AddressWasProposedBecauseOfMunicipalityMerger>();
+            var addressWasProposedForMunicipalityMerger = _fixture.Create<AddressWasProposedForMunicipalityMerger>();
             var metadata = new Dictionary<string, object>
             {
-                { AddEventHashPipe.HashMetadataKey, addressWasProposedBecauseOfMunicipalityMerger.GetHash() }
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedForMunicipalityMerger.GetHash() }
             };
 
             await Sut
-                .Given(new Envelope<AddressWasProposedBecauseOfMunicipalityMerger>(new Envelope(addressWasProposedBecauseOfMunicipalityMerger, metadata)))
+                .Given(new Envelope<AddressWasProposedForMunicipalityMerger>(new Envelope(addressWasProposedForMunicipalityMerger, metadata)))
                 .Then(async ct =>
                 {
-                    var expectedListItem = (await ct.AddressListV2.FindAsync(addressWasProposedBecauseOfMunicipalityMerger.AddressPersistentLocalId));
+                    var expectedListItem = (await ct.AddressListV2.FindAsync(addressWasProposedForMunicipalityMerger.AddressPersistentLocalId));
                     expectedListItem.Should().NotBeNull();
-                    expectedListItem!.StreetNamePersistentLocalId.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.StreetNamePersistentLocalId);
-                    expectedListItem.HouseNumber.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.HouseNumber);
-                    expectedListItem.BoxNumber.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.BoxNumber);
-                    expectedListItem.PostalCode.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.PostalCode);
+                    expectedListItem!.StreetNamePersistentLocalId.Should().Be(addressWasProposedForMunicipalityMerger.StreetNamePersistentLocalId);
+                    expectedListItem.HouseNumber.Should().Be(addressWasProposedForMunicipalityMerger.HouseNumber);
+                    expectedListItem.BoxNumber.Should().Be(addressWasProposedForMunicipalityMerger.BoxNumber);
+                    expectedListItem.PostalCode.Should().Be(addressWasProposedForMunicipalityMerger.PostalCode);
                     expectedListItem.Status.Should().Be(AddressStatus.Proposed);
                     expectedListItem.Removed.Should().BeFalse();
-                    expectedListItem.VersionTimestamp.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.Provenance.Timestamp);
-                    expectedListItem.LastEventHash.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.GetHash());
+                    expectedListItem.VersionTimestamp.Should().Be(addressWasProposedForMunicipalityMerger.Provenance.Timestamp);
+                    expectedListItem.LastEventHash.Should().Be(addressWasProposedForMunicipalityMerger.GetHash());
                 });
         }
 

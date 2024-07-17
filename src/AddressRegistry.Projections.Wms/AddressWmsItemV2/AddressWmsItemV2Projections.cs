@@ -148,7 +148,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
                 }
             });
 
-            When<Envelope<AddressWasProposedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            When<Envelope<AddressWasProposedForMunicipalityMerger>>(async (context, message, ct) =>
             {
                 var addressWmsItem = new AddressWmsItemV2(
                     message.Message.AddressPersistentLocalId,

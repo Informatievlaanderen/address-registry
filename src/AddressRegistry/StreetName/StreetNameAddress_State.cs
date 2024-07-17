@@ -44,7 +44,7 @@ namespace AddressRegistry.StreetName
         {
             Register<AddressWasMigratedToStreetName>(When);
             Register<AddressWasProposedV2>(When);
-            Register<AddressWasProposedBecauseOfMunicipalityMerger>(When);
+            Register<AddressWasProposedForMunicipalityMerger>(When);
             Register<AddressWasApproved>(When);
             Register<AddressWasRejected>(When);
             Register<AddressWasRejectedBecauseHouseNumberWasRejected>(When);
@@ -119,7 +119,7 @@ namespace AddressRegistry.StreetName
             _lastEvent = @event;
         }
 
-        private void When(AddressWasProposedBecauseOfMunicipalityMerger @event)
+        private void When(AddressWasProposedForMunicipalityMerger @event)
         {
             _streetNamePersistentLocalId = new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId);
             AddressPersistentLocalId = new AddressPersistentLocalId(@event.AddressPersistentLocalId);

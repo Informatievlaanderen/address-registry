@@ -26,7 +26,7 @@
         [Fact]
         public async Task WhenAddressWasProposedForMunicipalityMerger()
         {
-            var addressWasProposedBecauseOfMunicipalityMerger = _fixture.Create<AddressWasProposedBecauseOfMunicipalityMerger>();
+            var addressWasProposedForMunicipalityMerger = _fixture.Create<AddressWasProposedForMunicipalityMerger>();
 
             var position = _fixture.Create<long>();
 
@@ -37,17 +37,17 @@
             };
 
             await Sut
-                .Given(new Envelope<AddressWasProposedBecauseOfMunicipalityMerger>(new Envelope(
-                    addressWasProposedBecauseOfMunicipalityMerger, firstEventMetadata)))
+                .Given(new Envelope<AddressWasProposedForMunicipalityMerger>(new Envelope(
+                    addressWasProposedForMunicipalityMerger, firstEventMetadata)))
                 .Then(async ct =>
                 {
                     var expectedItem = await ct.AddressMergerItems.SingleOrDefaultAsync(x =>
-                        x.NewPersistentLocalId == addressWasProposedBecauseOfMunicipalityMerger.AddressPersistentLocalId);
+                        x.NewPersistentLocalId == addressWasProposedForMunicipalityMerger.AddressPersistentLocalId);
                     expectedItem.Should().NotBeNull();
                     expectedItem!.NewPersistentLocalId.Should()
-                        .Be(addressWasProposedBecauseOfMunicipalityMerger.AddressPersistentLocalId);
+                        .Be(addressWasProposedForMunicipalityMerger.AddressPersistentLocalId);
                     expectedItem.MergedPersistentLocalId.Should()
-                        .Be(addressWasProposedBecauseOfMunicipalityMerger.MergedAddressPersistentLocalId);
+                        .Be(addressWasProposedForMunicipalityMerger.MergedAddressPersistentLocalId);
                 });
         }
 

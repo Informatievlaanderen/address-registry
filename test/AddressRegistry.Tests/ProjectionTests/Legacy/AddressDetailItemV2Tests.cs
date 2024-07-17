@@ -95,33 +95,33 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
         }
 
         [Fact]
-        public async Task WhenAddressWasProposedBecauseOfMunicipalityMerger()
+        public async Task WhenAddressWasProposedForMunicipalityMerger()
         {
-            var addressWasProposedBecauseOfMunicipalityMerger = _fixture.Create<AddressWasProposedBecauseOfMunicipalityMerger>();
+            var addressWasProposedForMunicipalityMerger = _fixture.Create<AddressWasProposedForMunicipalityMerger>();
 
             var metadata = new Dictionary<string, object>
             {
-                { AddEventHashPipe.HashMetadataKey, addressWasProposedBecauseOfMunicipalityMerger.GetHash() }
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedForMunicipalityMerger.GetHash() }
             };
 
             await Sut
-                .Given(new Envelope<AddressWasProposedBecauseOfMunicipalityMerger>(new Envelope(addressWasProposedBecauseOfMunicipalityMerger, metadata)))
+                .Given(new Envelope<AddressWasProposedForMunicipalityMerger>(new Envelope(addressWasProposedForMunicipalityMerger, metadata)))
                 .Then(async ct =>
                 {
-                    var addressDetailItemV2 = (await ct.AddressDetailV2.FindAsync(addressWasProposedBecauseOfMunicipalityMerger.AddressPersistentLocalId));
+                    var addressDetailItemV2 = (await ct.AddressDetailV2.FindAsync(addressWasProposedForMunicipalityMerger.AddressPersistentLocalId));
                     addressDetailItemV2.Should().NotBeNull();
-                    addressDetailItemV2!.StreetNamePersistentLocalId.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.StreetNamePersistentLocalId);
-                    addressDetailItemV2.HouseNumber.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.HouseNumber);
-                    addressDetailItemV2.BoxNumber.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.BoxNumber);
-                    addressDetailItemV2.PostalCode.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.PostalCode);
+                    addressDetailItemV2!.StreetNamePersistentLocalId.Should().Be(addressWasProposedForMunicipalityMerger.StreetNamePersistentLocalId);
+                    addressDetailItemV2.HouseNumber.Should().Be(addressWasProposedForMunicipalityMerger.HouseNumber);
+                    addressDetailItemV2.BoxNumber.Should().Be(addressWasProposedForMunicipalityMerger.BoxNumber);
+                    addressDetailItemV2.PostalCode.Should().Be(addressWasProposedForMunicipalityMerger.PostalCode);
                     addressDetailItemV2.Status.Should().Be(AddressStatus.Proposed);
-                    addressDetailItemV2.OfficiallyAssigned.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.OfficiallyAssigned);
-                    addressDetailItemV2.Position.Should().BeEquivalentTo(addressWasProposedBecauseOfMunicipalityMerger.ExtendedWkbGeometry.ToByteArray());
-                    addressDetailItemV2.PositionMethod.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.GeometryMethod);
-                    addressDetailItemV2.PositionSpecification.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.GeometrySpecification);
+                    addressDetailItemV2.OfficiallyAssigned.Should().Be(addressWasProposedForMunicipalityMerger.OfficiallyAssigned);
+                    addressDetailItemV2.Position.Should().BeEquivalentTo(addressWasProposedForMunicipalityMerger.ExtendedWkbGeometry.ToByteArray());
+                    addressDetailItemV2.PositionMethod.Should().Be(addressWasProposedForMunicipalityMerger.GeometryMethod);
+                    addressDetailItemV2.PositionSpecification.Should().Be(addressWasProposedForMunicipalityMerger.GeometrySpecification);
                     addressDetailItemV2.Removed.Should().BeFalse();
-                    addressDetailItemV2.VersionTimestamp.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.Provenance.Timestamp);
-                    addressDetailItemV2.LastEventHash.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.GetHash());
+                    addressDetailItemV2.VersionTimestamp.Should().Be(addressWasProposedForMunicipalityMerger.Provenance.Timestamp);
+                    addressDetailItemV2.LastEventHash.Should().Be(addressWasProposedForMunicipalityMerger.GetHash());
                 });
         }
 

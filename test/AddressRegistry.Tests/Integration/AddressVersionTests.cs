@@ -133,11 +133,11 @@
         }
 
         [Fact]
-        public async Task WhenAddressWasProposedBecauseOfMunicipalityMerger()
+        public async Task WhenAddressWasProposedForMunicipalityMerger()
         {
-            var addressWasProposedBecauseOfMunicipalityMerger = _fixture.Create<AddressWasProposedBecauseOfMunicipalityMerger>();
+            var addressWasProposedForMunicipalityMerger = _fixture.Create<AddressWasProposedForMunicipalityMerger>();
 
-            var geometry = WKBReaderFactory.CreateForLegacy().Read(addressWasProposedBecauseOfMunicipalityMerger.ExtendedWkbGeometry.ToByteArray());
+            var geometry = WKBReaderFactory.CreateForLegacy().Read(addressWasProposedForMunicipalityMerger.ExtendedWkbGeometry.ToByteArray());
 
             var position = _fixture.Create<long>();
             var metadata = new Dictionary<string, object>
@@ -148,29 +148,29 @@
             };
 
             await Sut
-                .Given(new Envelope<AddressWasProposedBecauseOfMunicipalityMerger>(new Envelope(addressWasProposedBecauseOfMunicipalityMerger, metadata)))
+                .Given(new Envelope<AddressWasProposedForMunicipalityMerger>(new Envelope(addressWasProposedForMunicipalityMerger, metadata)))
                 .Then(async ct =>
                 {
                     var expectedVersion =
-                        await ct.AddressVersions.FindAsync(position, addressWasProposedBecauseOfMunicipalityMerger.AddressPersistentLocalId);
+                        await ct.AddressVersions.FindAsync(position, addressWasProposedForMunicipalityMerger.AddressPersistentLocalId);
                     expectedVersion.Should().NotBeNull();
-                    expectedVersion!.StreetNamePersistentLocalId.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.StreetNamePersistentLocalId);
-                    expectedVersion.ParentPersistentLocalId.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.ParentPersistentLocalId);
-                    expectedVersion.HouseNumber.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.HouseNumber);
-                    expectedVersion.BoxNumber.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.BoxNumber);
-                    expectedVersion.PostalCode.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.PostalCode);
+                    expectedVersion!.StreetNamePersistentLocalId.Should().Be(addressWasProposedForMunicipalityMerger.StreetNamePersistentLocalId);
+                    expectedVersion.ParentPersistentLocalId.Should().Be(addressWasProposedForMunicipalityMerger.ParentPersistentLocalId);
+                    expectedVersion.HouseNumber.Should().Be(addressWasProposedForMunicipalityMerger.HouseNumber);
+                    expectedVersion.BoxNumber.Should().Be(addressWasProposedForMunicipalityMerger.BoxNumber);
+                    expectedVersion.PostalCode.Should().Be(addressWasProposedForMunicipalityMerger.PostalCode);
                     expectedVersion.Status.Should().Be(AddressStatus.Proposed);
                     expectedVersion.OsloStatus.Should().Be(AddressStatus.Proposed.Map());
-                    expectedVersion.OfficiallyAssigned.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.OfficiallyAssigned);
-                    expectedVersion.PositionMethod.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.GeometryMethod);
-                    expectedVersion.OsloPositionMethod.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.GeometryMethod.ToPositieGeometrieMethode());
-                    expectedVersion.PositionSpecification.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.GeometrySpecification);
-                    expectedVersion.OsloPositionSpecification.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.GeometrySpecification.ToPositieSpecificatie());
+                    expectedVersion.OfficiallyAssigned.Should().Be(addressWasProposedForMunicipalityMerger.OfficiallyAssigned);
+                    expectedVersion.PositionMethod.Should().Be(addressWasProposedForMunicipalityMerger.GeometryMethod);
+                    expectedVersion.OsloPositionMethod.Should().Be(addressWasProposedForMunicipalityMerger.GeometryMethod.ToPositieGeometrieMethode());
+                    expectedVersion.PositionSpecification.Should().Be(addressWasProposedForMunicipalityMerger.GeometrySpecification);
+                    expectedVersion.OsloPositionSpecification.Should().Be(addressWasProposedForMunicipalityMerger.GeometrySpecification.ToPositieSpecificatie());
                     expectedVersion.Removed.Should().Be(false);
                     expectedVersion.Namespace.Should().Be(Namespace);
-                    expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasProposedBecauseOfMunicipalityMerger.AddressPersistentLocalId}");
-                    expectedVersion.VersionTimestamp.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.Provenance.Timestamp);
-                    expectedVersion.CreatedOnTimestamp.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.Provenance.Timestamp);
+                    expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasProposedForMunicipalityMerger.AddressPersistentLocalId}");
+                    expectedVersion.VersionTimestamp.Should().Be(addressWasProposedForMunicipalityMerger.Provenance.Timestamp);
+                    expectedVersion.CreatedOnTimestamp.Should().Be(addressWasProposedForMunicipalityMerger.Provenance.Timestamp);
                     expectedVersion.Geometry.Should().BeEquivalentTo(geometry);
                     expectedVersion.Type.Should().Be("EventName");
                 });

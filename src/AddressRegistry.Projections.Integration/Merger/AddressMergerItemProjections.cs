@@ -10,7 +10,7 @@
     {
         public AddressMergerItemProjections()
         {
-            When<Envelope<AddressWasProposedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            When<Envelope<AddressWasProposedForMunicipalityMerger>>(async (context, message, ct) =>
             {
                 var item = new AddressMergerItem(message.Message.AddressPersistentLocalId, message.Message.MergedAddressPersistentLocalId);
 

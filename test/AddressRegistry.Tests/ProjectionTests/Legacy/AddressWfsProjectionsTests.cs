@@ -91,27 +91,27 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
         }
 
         [Fact]
-        public async Task AddressWasProposedBecauseOfMunicipalityMerger()
+        public async Task AddressWasProposedForMunicipalityMerger()
         {
-            var addressWasProposedBecauseOfMunicipalityMerger = _fixture.Create<AddressWasProposedBecauseOfMunicipalityMerger>();
+            var addressWasProposedForMunicipalityMerger = _fixture.Create<AddressWasProposedForMunicipalityMerger>();
 
             await Sut
-                .Given(new Envelope<AddressWasProposedBecauseOfMunicipalityMerger>(new Envelope(addressWasProposedBecauseOfMunicipalityMerger, new Dictionary<string, object>())))
+                .Given(new Envelope<AddressWasProposedForMunicipalityMerger>(new Envelope(addressWasProposedForMunicipalityMerger, new Dictionary<string, object>())))
                 .Then(async ct =>
                 {
-                    var addressWfsItem = (await ct.AddressWfsItems.FindAsync(addressWasProposedBecauseOfMunicipalityMerger.AddressPersistentLocalId));
+                    var addressWfsItem = (await ct.AddressWfsItems.FindAsync(addressWasProposedForMunicipalityMerger.AddressPersistentLocalId));
                     addressWfsItem.Should().NotBeNull();
-                    addressWfsItem!.StreetNamePersistentLocalId.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.StreetNamePersistentLocalId);
-                    addressWfsItem.HouseNumber.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.HouseNumber);
-                    addressWfsItem.BoxNumber.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.BoxNumber);
-                    addressWfsItem.PostalCode.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.PostalCode);
+                    addressWfsItem!.StreetNamePersistentLocalId.Should().Be(addressWasProposedForMunicipalityMerger.StreetNamePersistentLocalId);
+                    addressWfsItem.HouseNumber.Should().Be(addressWasProposedForMunicipalityMerger.HouseNumber);
+                    addressWfsItem.BoxNumber.Should().Be(addressWasProposedForMunicipalityMerger.BoxNumber);
+                    addressWfsItem.PostalCode.Should().Be(addressWasProposedForMunicipalityMerger.PostalCode);
                     addressWfsItem.Status.Should().Be(AddressWfsProjections.MapStatus(AddressStatus.Proposed));
-                    addressWfsItem.OfficiallyAssigned.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.OfficiallyAssigned);
-                    addressWfsItem.Position.Should().BeEquivalentTo((Point)_wkbReader.Read(addressWasProposedBecauseOfMunicipalityMerger.ExtendedWkbGeometry.ToByteArray()));
-                    addressWfsItem.PositionMethod.Should().Be(AddressWfsProjections.ConvertGeometryMethodToString(addressWasProposedBecauseOfMunicipalityMerger.GeometryMethod));
-                    addressWfsItem.PositionSpecification.Should().Be(AddressWfsProjections.ConvertGeometrySpecificationToString(addressWasProposedBecauseOfMunicipalityMerger.GeometrySpecification));
+                    addressWfsItem.OfficiallyAssigned.Should().Be(addressWasProposedForMunicipalityMerger.OfficiallyAssigned);
+                    addressWfsItem.Position.Should().BeEquivalentTo((Point)_wkbReader.Read(addressWasProposedForMunicipalityMerger.ExtendedWkbGeometry.ToByteArray()));
+                    addressWfsItem.PositionMethod.Should().Be(AddressWfsProjections.ConvertGeometryMethodToString(addressWasProposedForMunicipalityMerger.GeometryMethod));
+                    addressWfsItem.PositionSpecification.Should().Be(AddressWfsProjections.ConvertGeometrySpecificationToString(addressWasProposedForMunicipalityMerger.GeometrySpecification));
                     addressWfsItem.Removed.Should().BeFalse();
-                    addressWfsItem.VersionTimestamp.Should().Be(addressWasProposedBecauseOfMunicipalityMerger.Provenance.Timestamp);
+                    addressWfsItem.VersionTimestamp.Should().Be(addressWasProposedForMunicipalityMerger.Provenance.Timestamp);
                 });
         }
 

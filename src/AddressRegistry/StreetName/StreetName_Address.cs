@@ -203,7 +203,7 @@ namespace AddressRegistry.StreetName
 
             StreetNameAddress.GuardGeometry(geometryMethod, geometrySpecification);
 
-            ApplyChange(new AddressWasProposedBecauseOfMunicipalityMerger(
+            ApplyChange(new AddressWasProposedForMunicipalityMerger(
                 PersistentLocalId,
                 addressPersistentLocalId,
                 parent?.AddressPersistentLocalId,

@@ -21,7 +21,7 @@ namespace AddressRegistry.Address.Events
         [EventPropertyDescription("Specificatie van het object dat voorgesteld wordt door de adrespositie. Mogelijkheden: BuildingUnit, Stand, Parcel, Lot, Entry, RoadSegment, Municipality of Berth.")]
         public GeometrySpecification GeometrySpecification { get; }
 
-        [EventPropertyDescription("Extended WKB-voorstelling van de adrespositie.")]
+        [EventPropertyDescription("Extended WKB-voorstelling van de adrespositie (Hexadecimale notatie).")]
         public string ExtendedWkbGeometry { get; }
 
         [EventPropertyDescription("Metadata bij het event.")]

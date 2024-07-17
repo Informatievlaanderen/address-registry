@@ -6,13 +6,12 @@ namespace AddressRegistry.StreetName.Events
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Newtonsoft.Json;
 
-    // Todo-rik: rename to match streetname registry
     [EventTags(EventTag.For.Sync, EventTag.For.Edit)]
     [EventName(EventName)]
     [EventDescription("Het adres werd voorgesteld in functie van een gemeentelijke fusie.")]
-    public class AddressWasProposedBecauseOfMunicipalityMerger : IStreetNameEvent, IHasAddressPersistentLocalId
+    public class AddressWasProposedForMunicipalityMerger : IStreetNameEvent, IHasAddressPersistentLocalId
     {
-        public const string EventName = "AddressWasProposedBecauseOfMunicipalityMerger"; // BE CAREFUL CHANGING THIS!!
+        public const string EventName = "AddressWasProposedForMunicipalityMerger"; // BE CAREFUL CHANGING THIS!!
 
         [EventPropertyDescription("Objectidentificator van de straatnaam aan dewelke het adres is toegewezen.")]
         public int StreetNamePersistentLocalId { get; }
@@ -38,7 +37,7 @@ namespace AddressRegistry.StreetName.Events
         [EventPropertyDescription("Specificatie van het object dat voorgesteld wordt door de adrespositie. Mogelijkheden: Municipality, Parcel, Lot, Stand, Berth, Entry.")]
         public GeometrySpecification GeometrySpecification { get; }
 
-        [EventPropertyDescription("Extended WKB-voorstelling van de adrespositie.")]
+        [EventPropertyDescription("Extended WKB-voorstelling van de adrespositie (Hexadecimale notatie).")]
         public string ExtendedWkbGeometry { get; }
 
         [EventPropertyDescription("True wanneer het adres aanduiding kreeg 'officieel toegekend'.")]
@@ -50,7 +49,7 @@ namespace AddressRegistry.StreetName.Events
         [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
-        public AddressWasProposedBecauseOfMunicipalityMerger(
+        public AddressWasProposedForMunicipalityMerger(
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             AddressPersistentLocalId addressPersistentLocal,
             AddressPersistentLocalId? parentPersistentLocalId,
@@ -77,7 +76,7 @@ namespace AddressRegistry.StreetName.Events
         }
 
         [JsonConstructor]
-        private AddressWasProposedBecauseOfMunicipalityMerger(
+        private AddressWasProposedForMunicipalityMerger(
             int streetNamePersistentLocalId,
             int addressPersistentLocalId,
             int? parentPersistentLocalId,

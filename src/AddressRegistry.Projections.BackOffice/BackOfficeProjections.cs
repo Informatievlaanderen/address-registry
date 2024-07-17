@@ -25,7 +25,7 @@ namespace AddressRegistry.Projections.BackOffice
                     message.Message.AddressPersistentLocalId, message.Message.StreetNamePersistentLocalId, cancellationToken);
             });
 
-            When<Envelope<AddressWasProposedBecauseOfMunicipalityMerger>>(async (_, message, cancellationToken) =>
+            When<Envelope<AddressWasProposedForMunicipalityMerger>>(async (_, message, cancellationToken) =>
             {
                 await DelayProjection(message.CreatedUtc, delayInSeconds, cancellationToken);
 

@@ -438,7 +438,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                 }
             });
 
-            When<Envelope<AddressWasProposedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            When<Envelope<AddressWasProposedForMunicipalityMerger>>(async (context, message, ct) =>
             {
                 var addressSyndicationItem = new AddressSyndicationItem
                 {

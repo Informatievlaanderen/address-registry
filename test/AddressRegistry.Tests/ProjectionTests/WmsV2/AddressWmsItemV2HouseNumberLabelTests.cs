@@ -141,9 +141,9 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
         }
 
         [Fact]
-        public async Task WhenAddressWasProposedBecauseOfMunicipalityMerger()
+        public async Task WhenAddressWasProposedForMunicipalityMerger()
         {
-            var houseNumberOne = _fixture.Create<AddressWasProposedBecauseOfMunicipalityMerger>()
+            var houseNumberOne = _fixture.Create<AddressWasProposedForMunicipalityMerger>()
                 .WithAddressPersistentLocalId(new AddressPersistentLocalId(1))
                 .WithParentAddressPersistentLocalId(null)
                 .WithHouseNumber(new HouseNumber("1"));
@@ -162,7 +162,7 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
                 .Given(
                     new Envelope<AddressWasMigratedToStreetName>(new Envelope(houseNumberThree, new Dictionary<string, object>())),
                     new Envelope<AddressWasMigratedToStreetName>(new Envelope(houseNumberTwo, new Dictionary<string, object>())),
-                    new Envelope<AddressWasProposedBecauseOfMunicipalityMerger>(new Envelope(houseNumberOne, new Dictionary<string, object>())))
+                    new Envelope<AddressWasProposedForMunicipalityMerger>(new Envelope(houseNumberOne, new Dictionary<string, object>())))
                 .Then(async ct =>
                 {
                     var one = await ct.AddressWmsItemsV2.FindAsync(houseNumberOne.AddressPersistentLocalId);

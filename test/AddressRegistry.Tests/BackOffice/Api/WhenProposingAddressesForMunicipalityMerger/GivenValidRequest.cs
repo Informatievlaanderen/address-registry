@@ -108,13 +108,13 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddressesForMunicipa
                     It.Is<ProposeAddressesForMunicipalityMergerSqsRequest>(sqsRequest =>
                         sqsRequest.StreetNamePersistentLocalId == newStreetNamePersistentLocalIdOne
                         && sqsRequest.Addresses.Count == 2
-                        && sqsRequest.Addresses.First().NewAddressPersistentLocalId == persistentLocalIdOne
+                        && sqsRequest.Addresses.First().AddressPersistentLocalId == persistentLocalIdOne
                         && sqsRequest.Addresses.First().MergedAddressPersistentLocalId == oldAddressPersistenLocalIdOne
                         && sqsRequest.Addresses.First().MergedStreetNamePersistentLocalId == oldStreetNamePersistenLocalIdOne
                         && sqsRequest.Addresses.First().HouseNumber == houseNumberOne
                         && sqsRequest.Addresses.First().BoxNumber == null
                         && sqsRequest.Addresses.First().PostalCode == postalCode
-                        && sqsRequest.Addresses.Last().NewAddressPersistentLocalId == persistentLocalIdTwo
+                        && sqsRequest.Addresses.Last().AddressPersistentLocalId == persistentLocalIdTwo
                         && sqsRequest.Addresses.Last().MergedAddressPersistentLocalId == oldAddressPersistenLocalIdTwo
                         && sqsRequest.Addresses.Last().MergedStreetNamePersistentLocalId == oldStreetNamePersistenLocalIdOne
                         && sqsRequest.Addresses.Last().HouseNumber == houseNumberOne
@@ -131,7 +131,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddressesForMunicipa
                     It.Is<ProposeAddressesForMunicipalityMergerSqsRequest>(sqsRequest =>
                         sqsRequest.StreetNamePersistentLocalId == newStreetNamePersistentLocalIdTwo
                         && sqsRequest.Addresses.Count == 1
-                        && sqsRequest.Addresses.First().NewAddressPersistentLocalId == persistentLocalIdThree
+                        && sqsRequest.Addresses.First().AddressPersistentLocalId == persistentLocalIdThree
                         && sqsRequest.Addresses.First().MergedAddressPersistentLocalId == oldAddressPersistenLocalIdThree
                         && sqsRequest.Addresses.First().MergedStreetNamePersistentLocalId == oldStreetNamePersistenLocalIdTwo
                         && sqsRequest.Addresses.First().HouseNumber == houseNumberTwo

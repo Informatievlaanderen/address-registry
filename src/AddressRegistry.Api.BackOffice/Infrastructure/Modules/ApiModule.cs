@@ -10,6 +10,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance.AcmIdm;
+    using Consumer.Read.StreetName.Infrastructure.Modules;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -72,6 +73,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
 
             builder.RegisterModule(new BackOfficeModule(_configuration, _services, _loggerFactory));
             builder.RegisterModule(new SyndicationModule(_configuration, _services, _loggerFactory));
+            builder.RegisterModule(new StreetNameConsumerModule(_configuration, _services, _loggerFactory));
             builder.RegisterModule(new AggregateSourceModule(_configuration));
             builder.RegisterModule(new SequenceModule(_configuration, _services, _loggerFactory));
             builder.RegisterModule(new MediatRModule());

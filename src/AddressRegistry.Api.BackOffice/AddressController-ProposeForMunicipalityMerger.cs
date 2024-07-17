@@ -28,7 +28,7 @@ namespace AddressRegistry.Api.BackOffice
     {
         /// <summary>
         /// Stel een adres voor.
-        /// Accept a csv file with street names and their municipality codes.
+        /// Accept a csv file with addresses and their street names.
         /// </summary>
         /// <param name="file"></param>
         /// <param name="nisCode"></param>
@@ -125,7 +125,7 @@ namespace AddressRegistry.Api.BackOffice
                                 string.IsNullOrWhiteSpace(streetNameHomonymAddition) ? null : streetNameHomonymAddition.Trim(),
                             HouseNumber = houseNumber.Trim(),
                             BoxNumber = string.IsNullOrWhiteSpace(boxNumber) ? null : boxNumber.Trim(),
-                            PostalCode = postalCode
+                            PostalCode = postalCode.Trim()
                         });
                     }
                 }

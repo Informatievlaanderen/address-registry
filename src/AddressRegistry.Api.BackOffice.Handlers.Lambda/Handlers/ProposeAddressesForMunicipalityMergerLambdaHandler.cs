@@ -80,7 +80,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
 
                     return new ProposeAddressesForMunicipalityMergerItem(
                         new PostalCode(x.PostalCode),
-                        new AddressPersistentLocalId(x.NewAddressPersistentLocalId),
+                        new AddressPersistentLocalId(x.AddressPersistentLocalId),
                         HouseNumber.Create(x.HouseNumber),
                         x.BoxNumber is not null ? new BoxNumber(x.BoxNumber) : null,
                         address.Geometry.GeometryMethod,

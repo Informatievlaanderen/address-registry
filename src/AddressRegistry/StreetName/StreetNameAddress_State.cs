@@ -311,6 +311,9 @@ namespace AddressRegistry.StreetName
             IsOfficiallyAssigned = addressData.IsOfficiallyAssigned;
             IsRemoved = addressData.IsRemoved;
 
+            MergedAddressPersistentLocalId = addressData.MergedAddressPersistentLocalId.HasValue
+                ? new AddressPersistentLocalId(addressData.MergedAddressPersistentLocalId.Value)
+                : null;
             LegacyAddressId = addressData.LegacyAddressId.HasValue ? new AddressId(addressData.LegacyAddressId.Value) : null;
             _lastSnapshottedEventHash = addressData.LastEventHash;
             _lastSnapshottedProvenance = addressData.LastProvenanceData;

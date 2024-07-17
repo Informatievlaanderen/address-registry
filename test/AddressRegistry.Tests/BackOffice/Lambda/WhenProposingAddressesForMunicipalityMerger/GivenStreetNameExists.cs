@@ -41,6 +41,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddressesForMunic
         public GivenStreetNameExists(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             Fixture.Customize(new WithFixedMunicipalityId());
+            Fixture.Customizations.Add(new WithUniqueInteger());
 
             _idempotencyContext = new FakeIdempotencyContextFactory().CreateDbContext();
             _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();

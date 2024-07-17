@@ -28,7 +28,6 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
             Fixture.Customize(new InfrastructureCustomization());
             Fixture.Customize(new WithFixedStreetNamePersistentLocalId());
             Fixture.Customize(new WithFixedMunicipalityId());
-            Fixture.Customize(new WithFixedValidHouseNumber());
             Fixture.Customize(new WithExtendedWkbGeometry());
             _streamId = Fixture.Create<StreetNameStreamId>();
         }
@@ -38,7 +37,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
         {
             Fixture.Register(() => (ISnapshotStrategy)IntervalStrategy.SnapshotEvery(1));
 
-            var houseNumber = Fixture.Create<HouseNumber>();
+            var houseNumber = new HouseNumber("1");
             var boxNumber = Fixture.Create<BoxNumber>();
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
             var postalCode = Fixture.Create<PostalCode>();
@@ -82,10 +81,25 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)addressWasProposedV2).SetProvenance(provenance);
 
+            var addressWasProposedForMunicipalityMerger = new AddressWasProposedForMunicipalityMerger(
+                streetNamePersistentLocalId,
+                Fixture.Create<AddressPersistentLocalId>(),
+                null,
+                postalCode,
+                new HouseNumber("2"),
+                null,
+                GeometryMethod.AppointedByAdministrator,
+                GeometrySpecification.Entry,
+                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
+                true,
+                Fixture.Create<AddressPersistentLocalId>());
+            ((ISetProvenance)addressWasProposedForMunicipalityMerger).SetProvenance(provenance);
+
             Assert(new Scenario()
                 .Given(_streamId,
                     migratedStreetNameWasImported,
-                    parentAddressWasProposed)
+                    parentAddressWasProposed,
+                    addressWasProposedForMunicipalityMerger)
                 .When(proposeChildAddress)
                 .Then(new Fact(_streamId, addressWasProposedV2)));
 
@@ -101,7 +115,21 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                     GeometrySpecification.Entry,
                     GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                     null,
+                    null,
                     parentAddressWasProposed.GetHash(),
+                    new ProvenanceData(provenance))
+                .WithAddress(
+                    new AddressPersistentLocalId(addressWasProposedForMunicipalityMerger.AddressPersistentLocalId),
+                    AddressStatus.Proposed,
+                    postalCode,
+                    new HouseNumber(addressWasProposedForMunicipalityMerger.HouseNumber),
+                    null,
+                    GeometryMethod.AppointedByAdministrator,
+                    GeometrySpecification.Entry,
+                    GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
+                    new AddressPersistentLocalId(parentAddressWasProposed.AddressPersistentLocalId),
+                    new AddressPersistentLocalId(addressWasProposedForMunicipalityMerger.MergedAddressPersistentLocalId),
+                    addressWasProposedV2.GetHash(),
                     new ProvenanceData(provenance))
                 .WithAddress(proposeChildAddress.AddressPersistentLocalId,
                     AddressStatus.Proposed,
@@ -112,6 +140,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                     GeometrySpecification.Entry,
                     GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                     new AddressPersistentLocalId(parentAddressWasProposed.AddressPersistentLocalId),
+                    null,
                     addressWasProposedV2.GetHash(),
                     new ProvenanceData(provenance));
 

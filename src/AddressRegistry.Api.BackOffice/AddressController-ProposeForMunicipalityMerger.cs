@@ -21,6 +21,7 @@ namespace AddressRegistry.Api.BackOffice
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
+    using StreetName;
     using Swashbuckle.AspNetCore.Filters;
 
     public partial class AddressController
@@ -69,7 +70,10 @@ namespace AddressRegistry.Api.BackOffice
                            IgnoreBlankLines = true
                        }))
                 {
-                    var recordNr = 1;
+                    await csv.ReadAsync();
+                    csv.ReadHeader();
+
+                    var recordNr = 0;
                     while (await csv.ReadAsync())
                     {
                         recordNr++;
@@ -102,11 +106,18 @@ namespace AddressRegistry.Api.BackOffice
                         if (string.IsNullOrWhiteSpace(houseNumber))
                             return BadRequest($"HouseNumber is required at record number {recordNr}");
 
+                        if (!HouseNumber.HasValidFormat(houseNumber))
+                            return BadRequest($"HouseNumber is invalid at record number {recordNr}");
+
+                        if (!string.IsNullOrWhiteSpace(boxNumber) && !BoxNumber.HasValidFormat(boxNumber))
+                            return BadRequest($"BoxNumber is invalid at record number {recordNr}");
+
                         if (string.IsNullOrWhiteSpace(postalCode))
-                            return BadRequest($"postalCode is required at record number {recordNr}");
+                            return BadRequest($"PostalCode is required at record number {recordNr}");
 
                         records.Add(new CsvRecord
                         {
+                            RecordNumber = recordNr,
                             OldStreetNamePersistentLocalId = oldStreetNamePersistentLocalId,
                             OldAddressPersistentLocalId = oldAddressNamePersistentLocalId,
                             StreetNameName = streetNameName.Trim(),
@@ -141,7 +152,19 @@ namespace AddressRegistry.Api.BackOffice
 
                 if (streetNameLatestItem is null)
                 {
-                    return BadRequest($"No streetNameLatestItem found for {nisCode}, {streetNameName} and {streetNameHomonymAddition}");
+                    return BadRequest($"No streetNameLatestItem found for {nisCode}, '{streetNameName}' and '{streetNameHomonymAddition}'");
+                }
+
+                var houseNumberAddressRecords = addressRecords.Where(x => x.BoxNumber is null).ToList();
+                if (houseNumberAddressRecords.Count != houseNumberAddressRecords.Select(x => x.HouseNumber).Distinct().Count())
+                {
+                    return BadRequest($"House numbers are not unique for street '{streetNameName}' and '{streetNameHomonymAddition}'");
+                }
+
+                var boxNumberAddressRecords = addressRecords.Where(x => x.BoxNumber is not null).ToList();
+                if (boxNumberAddressRecords.Count != boxNumberAddressRecords.Select(x => new { x.HouseNumber, x.BoxNumber }).Distinct().Count())
+                {
+                    return BadRequest($"Box numbers are not unique for street '{streetNameName}' and '{streetNameHomonymAddition}'");
                 }
 
                 sqsRequests.Add(new ProposeAddressesForMunicipalityMergerSqsRequest(
@@ -167,6 +190,7 @@ namespace AddressRegistry.Api.BackOffice
 
     public sealed class CsvRecord
     {
+        public required int RecordNumber { get; init; }
         public required int OldStreetNamePersistentLocalId { get; init; }
         public required int OldAddressPersistentLocalId { get; init; }
         public required string StreetNameName { get; init; }

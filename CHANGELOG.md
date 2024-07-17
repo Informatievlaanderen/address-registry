@@ -1,3 +1,10 @@
+## [4.8.1](https://github.com/informatievlaanderen/address-registry/compare/v4.8.0...v4.8.1) (2024-07-17)
+
+
+### Bug Fixes
+
+* add migrations for consumer postal ([06d21cc](https://github.com/informatievlaanderen/address-registry/commit/06d21cc85307f9a68f94eeceaea8140bb528c1bb))
+
 # [4.8.0](https://github.com/informatievlaanderen/address-registry/compare/v4.7.0...v4.8.0) (2024-07-17)
 
 

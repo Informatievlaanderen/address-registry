@@ -145,21 +145,6 @@ jobs:
       dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
     secrets: inherit
 
-  build-projections-syndication:
-    name: Build Projections Syndication
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
-    needs: [ set-release-version ]
-    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
-    with:
-      registry: ${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/address-registry
-      image-file: ar-projections-syndication-image.tar
-      image-name: projections-syndication
-      test-project: AddressRegistry.Tests
-      build-project: AddressRegistry.Projections.Syndication
-      semver: ${{ needs.set-release-version.outputs.version }}
-      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
-    secrets: inherit
-
   build-consumer:
     name: Build Consumer
     uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
@@ -378,7 +363,6 @@ jobs:
       build-api-extract,
       build-projector,
       build-projections-backoffice,
-      build-projections-syndication,
       build-projections-last-changed-list,
       build-consumer,
       build-consumer-read-municipality,
@@ -670,7 +654,6 @@ jobs:
           , 'api-oslo'
           , 'api-extract'
           , 'projector'
-          , 'projections-syndication'
           , 'projections-backoffice'
           , 'projections-last-changed-list-console'
           , 'consumer'

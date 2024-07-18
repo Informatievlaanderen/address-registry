@@ -8,13 +8,13 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Consumer.Read.Municipality.Infrastructure.Modules;
+    using Consumer.Read.Postal.Infrastructure.Modules;
     using Consumer.Read.StreetName.Infrastructure.Modules;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Projections.Legacy;
-    using Projections.Syndication;
 
     public class ApiModule : Module
     {
@@ -51,7 +51,7 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
         {
             builder
                 .RegisterModule(new LegacyModule(_configuration, _services, _loggerFactory))
-                .RegisterModule(new SyndicationModule(_configuration, _services, _loggerFactory))
+                .RegisterModule(new PostalConsumerModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new MunicipalityConsumerModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new StreetNameConsumerModule(_configuration, _services, _loggerFactory));
 

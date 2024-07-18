@@ -9,13 +9,12 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Abstractions.SqsRequests;
     using AddressRegistry.Api.BackOffice.Validators;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
+    using Consumer.Read.Postal.Projections;
     using FluentAssertions;
     using FluentValidation;
     using Infrastructure;
     using Microsoft.AspNetCore.Mvc;
     using Moq;
-    using Projections.Syndication.PostalInfo;
     using SqlStreamStore;
     using SqlStreamStore.Streams;
     using Xunit;
@@ -262,9 +261,9 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
 
         private Func<Task<IActionResult>> SetupController(ProposeAddressRequest request)
         {
-            var syndicationContext = new FakeSyndicationContextFactory().CreateDbContext();
+            var postalConsumerContext = new FakePostalConsumerContextFactory().CreateDbContext();
 
-            syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
+            postalConsumerContext.PostalLatestItems.Add(new PostalLatestItem
             {
                 NisCode = "validniscode",
                 PostalCode = "101",
@@ -273,18 +272,18 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
                     new PostalInfoPostalName
                     {
                         PostalCode = "101",
-                        Language = Taal.NL,
+                        Language = PostalLanguage.Dutch,
                         PostalName = "postalname"
                     }
                 }
             });
 
-            syndicationContext.SaveChanges();
+            postalConsumerContext.SaveChanges();
 
             return async () => await _controller.Propose(
                 new ProposeAddressRequestValidator(
                     new StreetNameExistsValidator(_streamStore.Object),
-                    syndicationContext,
+                    postalConsumerContext,
                     FakeHouseNumberValidator.Instance),
                 new ProposeAddressSqsRequestFactory(Mock.Of<IPersistentLocalIdGenerator>()),
                 request,

@@ -10,12 +10,12 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance.AcmIdm;
+    using Consumer.Read.Postal.Infrastructure.Modules;
     using Consumer.Read.StreetName.Infrastructure.Modules;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using Projections.Syndication;
     using Validators;
 
     public class ApiModule : Module
@@ -72,7 +72,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure.Modules
                 _loggerFactory);
 
             builder.RegisterModule(new BackOfficeModule(_configuration, _services, _loggerFactory));
-            builder.RegisterModule(new SyndicationModule(_configuration, _services, _loggerFactory));
+            builder.RegisterModule(new PostalConsumerModule(_configuration, _services, _loggerFactory));
             builder.RegisterModule(new StreetNameConsumerModule(_configuration, _services, _loggerFactory));
             builder.RegisterModule(new AggregateSourceModule(_configuration));
             builder.RegisterModule(new SequenceModule(_configuration, _services, _loggerFactory));

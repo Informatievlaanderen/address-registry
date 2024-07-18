@@ -3,13 +3,13 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using AddressRegistry.Consumer.Read.Municipality.Projections;
-    using AddressRegistry.Consumer.Read.StreetName.Projections;
-    using Projections.Legacy.AddressDetailV2WithParent;
-    using Projections.Syndication.PostalInfo;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Consumer.Read.Municipality.Projections;
+    using Consumer.Read.Postal.Projections;
+    using Consumer.Read.StreetName.Projections;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Caching.Memory;
+    using Projections.Legacy.AddressDetailV2WithParent;
 
     public interface ILatestQueries
     {
@@ -19,7 +19,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
         IEnumerable<StreetNameLatestItem> GetLatestStreetNamesBy(params string[] municipalityNames);
         StreetNameLatestItem? FindLatestStreetNameById(int streetNamePersistentLocalId);
         IEnumerable<AddressDetailItemV2WithParent> GetLatestAddressesBy(int streetNamePersistentLocalId, string? houseNumber, string? boxNumber);
-        IEnumerable<PostalInfoLatestItem> GetAllPostalInfo();
+        IEnumerable<PostalLatestItem> GetAllPostalInfo();
     }
 
     public sealed class CachedLatestQueriesDecorator : CachedService, ILatestQueries
@@ -103,7 +103,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
             return query;
         }
 
-        public IEnumerable<PostalInfoLatestItem> GetAllPostalInfo() =>
+        public IEnumerable<PostalLatestItem> GetAllPostalInfo() =>
             GetOrAdd(
                 AllPostalInfoCacheKey,
                 () => _context.PostalInfoLatestItems.ToList(),

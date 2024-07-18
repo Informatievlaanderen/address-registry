@@ -15,6 +15,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Infrastructure;
     using Consumer.Read.Municipality.Infrastructure.Modules;
+    using Consumer.Read.Postal.Infrastructure.Modules;
     using Infrastructure;
     using Infrastructure.Modules;
     using MediatR;
@@ -22,7 +23,6 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
-    using Projections.Syndication;
     using TicketingService.Proxy.HttpProxy;
 
     public class Function : FunctionBase
@@ -78,7 +78,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
                 .RegisterModule(new SequenceModule(configuration, services, loggerFactory))
                 .RegisterModule(new BackOfficeModule(configuration, services, loggerFactory))
                 .RegisterModule(new MunicipalityConsumerModule(configuration, services, loggerFactory))
-                .RegisterModule(new SyndicationModule(configuration, services, loggerFactory));
+                .RegisterModule(new PostalConsumerModule(configuration, services, loggerFactory));
 
             builder.RegisterType<IdempotentCommandHandler>()
                 .As<IIdempotentCommandHandler>()

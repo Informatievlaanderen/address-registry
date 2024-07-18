@@ -2,18 +2,18 @@ namespace AddressRegistry.Tests.BackOffice.Validators
 {
     using System.Threading;
     using AddressRegistry.Api.BackOffice.Validators;
+    using Consumer.Read.Postal.Projections;
     using FluentAssertions;
     using Infrastructure;
-    using Projections.Syndication.PostalInfo;
     using Xunit;
 
     public class PostalCodeValidatorTests
     {
-        private readonly TestSyndicationContext _syndicationContext;
+        private readonly FakePostalConsumerContext _postalConsumerContext;
 
         public PostalCodeValidatorTests()
         {
-            _syndicationContext = new FakeSyndicationContextFactory().CreateDbContext();
+            _postalConsumerContext = new FakePostalConsumerContextFactory().CreateDbContext();
         }
 
         [Theory]
@@ -21,7 +21,7 @@ namespace AddressRegistry.Tests.BackOffice.Validators
         [InlineData("test/123")]
         public async void GivenInvalidPostInfoIdUri_Invalid(string invalidPuri)
         {
-            var result = await PostalCodeValidator.PostalCodeExists(_syndicationContext, invalidPuri, CancellationToken.None);
+            var result = await PostalCodeValidator.PostalCodeExists(_postalConsumerContext, invalidPuri, CancellationToken.None);
             result.Should().BeFalse();
         }
 
@@ -30,13 +30,13 @@ namespace AddressRegistry.Tests.BackOffice.Validators
         {
             var postInfoId = "8200";
             var postInfoIdPuri = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}";
-            _syndicationContext.AddPostalInfoLatestItem(new PostalInfoLatestItem
+            _postalConsumerContext.PostalLatestItems.Add(new PostalLatestItem
             {
                 PostalCode = postInfoId
             });
-            await _syndicationContext.SaveChangesAsync();
+            await _postalConsumerContext.SaveChangesAsync();
 
-            var result = await PostalCodeValidator.PostalCodeExists(_syndicationContext, postInfoIdPuri, CancellationToken.None);
+            var result = await PostalCodeValidator.PostalCodeExists(_postalConsumerContext, postInfoIdPuri, CancellationToken.None);
 
             result.Should().BeTrue();
         }
@@ -46,7 +46,7 @@ namespace AddressRegistry.Tests.BackOffice.Validators
         {
             var postInfoId = "8200";
             var postInfoIdPuri = $"https://data.vlaanderen.be/id/postinfo/{postInfoId}";
-            var result = await PostalCodeValidator.PostalCodeExists(_syndicationContext, postInfoIdPuri, CancellationToken.None);
+            var result = await PostalCodeValidator.PostalCodeExists(_postalConsumerContext, postInfoIdPuri, CancellationToken.None);
             result.Should().BeFalse();
         }
     }

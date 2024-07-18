@@ -11,17 +11,15 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
     using Api.Oslo.Infrastructure.Options;
     using Asserts;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Consumer.Read.Municipality.Projections;
+    using Consumer.Read.Postal.Projections;
     using Consumer.Read.StreetName.Projections;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Options;
     using Moq;
     using NetTopologySuite.Geometries;
     using NodaTime;
-    using Projections.Legacy.AddressDetailV2;
     using Projections.Legacy.AddressDetailV2WithParent;
-    using Projections.Syndication.PostalInfo;
     using StreetName;
     using Xunit;
     using Xunit.Abstractions;
@@ -449,7 +447,7 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
 
         private void MockGetAllPostalInfo(string nisCode, string postalCode, string postalName = "")
         {
-            var postalInfoLatestItem = new PostalInfoLatestItem { NisCode = nisCode, PostalCode = postalCode, };
+            var postalInfoLatestItem = new PostalLatestItem { NisCode = nisCode, PostalCode = postalCode, };
 
             if (!string.IsNullOrWhiteSpace(postalName))
             {
@@ -457,7 +455,7 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
                 {
                     new PostalInfoPostalName
                     {
-                        Language = Taal.NL, PostalCode = postalCode, PostalName = postalName
+                        Language = PostalLanguage.Dutch, PostalCode = postalCode, PostalName = postalName
                     }
                 };
             }

@@ -3,7 +3,6 @@ namespace AddressRegistry.Api.Oslo.Address
     using System.Collections.Generic;
     using System.Text;
     using System.Xml;
-    using AddressRegistry.Address;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.SpatialTools.GeometryCoordinates;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
@@ -12,8 +11,9 @@ namespace AddressRegistry.Api.Oslo.Address
     using Consumer.Read.StreetName.Projections;
     using NetTopologySuite.Geometries;
     using NetTopologySuite.Utilities;
-    using Projections.Legacy.AddressList;
     using Projections.Legacy.AddressListV2;
+    using StreetName;
+    using AddressStatus = AddressRegistry.Address.AddressStatus;
     using MunicipalityLanguage = Consumer.Read.Municipality.Projections.MunicipalityLanguage;
     using Point = Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools.Point;
 
@@ -89,8 +89,8 @@ namespace AddressRegistry.Api.Oslo.Address
 
         public static AddressPosition GetAddressPoint(
             byte[] point,
-            StreetName.GeometryMethod? method,
-            StreetName.GeometrySpecification? specification)
+            GeometryMethod? method,
+            GeometrySpecification? specification)
         {
             var geometry = WKBReaderFactory.CreateForLegacy().Read(point);
             var gml = GetGml(geometry);
@@ -99,14 +99,32 @@ namespace AddressRegistry.Api.Oslo.Address
             return new AddressPosition(new GmlJsonPoint(gml), positieGeometrieMethode, positieSpecificatie);
         }
 
-        public static PositieGeometrieMethode ConvertFromGeometryMethod(StreetName.GeometryMethod? method)
+        public static PositieGeometrieMethode ConvertFromGeometryMethod(GeometryMethod? method)
         {
             return method switch
             {
-                StreetName.GeometryMethod.DerivedFromObject => PositieGeometrieMethode.AfgeleidVanObject,
-                StreetName.GeometryMethod.Interpolated => PositieGeometrieMethode.Geinterpoleerd,
-                StreetName.GeometryMethod.AppointedByAdministrator => PositieGeometrieMethode.AangeduidDoorBeheerder,
+                GeometryMethod.DerivedFromObject => PositieGeometrieMethode.AfgeleidVanObject,
+                GeometryMethod.Interpolated => PositieGeometrieMethode.Geinterpoleerd,
+                GeometryMethod.AppointedByAdministrator => PositieGeometrieMethode.AangeduidDoorBeheerder,
                 _ => PositieGeometrieMethode.AangeduidDoorBeheerder
+            };
+        }
+
+        public static PositieSpecificatie ConvertFromGeometrySpecification(AddressRegistry.Address.GeometrySpecification? specification)
+        {
+            return specification switch
+            {
+                AddressRegistry.Address.GeometrySpecification.Street => PositieSpecificatie.Straat,
+                AddressRegistry.Address.GeometrySpecification.Parcel => PositieSpecificatie.Perceel,
+                AddressRegistry.Address.GeometrySpecification.Lot => PositieSpecificatie.Lot,
+                AddressRegistry.Address.GeometrySpecification.Stand => PositieSpecificatie.Standplaats,
+                AddressRegistry.Address.GeometrySpecification.Berth => PositieSpecificatie.Ligplaats,
+                AddressRegistry.Address.GeometrySpecification.Building => PositieSpecificatie.Gebouw,
+                AddressRegistry.Address.GeometrySpecification.BuildingUnit => PositieSpecificatie.Gebouweenheid,
+                AddressRegistry.Address.GeometrySpecification.Entry => PositieSpecificatie.Ingang,
+                AddressRegistry.Address.GeometrySpecification.RoadSegment => PositieSpecificatie.Wegsegment,
+                AddressRegistry.Address.GeometrySpecification.Municipality => PositieSpecificatie.Gemeente,
+                _ => PositieSpecificatie.Gemeente
             };
         }
 
@@ -128,24 +146,6 @@ namespace AddressRegistry.Api.Oslo.Address
             };
         }
 
-        public static PositieSpecificatie ConvertFromGeometrySpecification(StreetName.GeometrySpecification? specification)
-        {
-            return specification switch
-            {
-                StreetName.GeometrySpecification.Street => PositieSpecificatie.Straat,
-                StreetName.GeometrySpecification.Parcel => PositieSpecificatie.Perceel,
-                StreetName.GeometrySpecification.Lot => PositieSpecificatie.Lot,
-                StreetName.GeometrySpecification.Stand => PositieSpecificatie.Standplaats,
-                StreetName.GeometrySpecification.Berth => PositieSpecificatie.Ligplaats,
-                StreetName.GeometrySpecification.Building => PositieSpecificatie.Gebouw,
-                StreetName.GeometrySpecification.BuildingUnit => PositieSpecificatie.Gebouweenheid,
-                StreetName.GeometrySpecification.Entry => PositieSpecificatie.Ingang,
-                StreetName.GeometrySpecification.RoadSegment => PositieSpecificatie.Wegsegment,
-                StreetName.GeometrySpecification.Municipality => PositieSpecificatie.Gemeente,
-                _ => PositieSpecificatie.Gemeente
-            };
-        }
-
         public static AdresStatus ConvertFromAddressStatus(AddressStatus? status)
         {
             return status switch
@@ -158,14 +158,14 @@ namespace AddressRegistry.Api.Oslo.Address
             };
         }
 
-        public static AdresStatus ConvertFromAddressStatus(StreetName.AddressStatus? status)
+        public static AdresStatus ConvertFromAddressStatus(AddressRegistry.StreetName.AddressStatus? status)
         {
             return status switch
             {
-                StreetName.AddressStatus.Proposed => AdresStatus.Voorgesteld,
-                StreetName.AddressStatus.Retired => AdresStatus.Gehistoreerd,
-                StreetName.AddressStatus.Current => AdresStatus.InGebruik,
-                StreetName.AddressStatus.Rejected => AdresStatus.Afgekeurd,
+                AddressRegistry.StreetName.AddressStatus.Proposed => AdresStatus.Voorgesteld,
+                AddressRegistry.StreetName.AddressStatus.Retired => AdresStatus.Gehistoreerd,
+                AddressRegistry.StreetName.AddressStatus.Current => AdresStatus.InGebruik,
+                AddressRegistry.StreetName.AddressStatus.Rejected => AdresStatus.Afgekeurd,
                 _ => AdresStatus.InGebruik
             };
         }
@@ -181,43 +181,6 @@ namespace AddressRegistry.Api.Oslo.Address
             };
         }
 
-        public static KeyValuePair<Taal, string?> GetDefaultMunicipalityName(Projections.Syndication.Municipality.MunicipalityLatestItem municipality)
-        {
-            return municipality.PrimaryLanguage switch
-            {
-                Taal.NL => new KeyValuePair<Taal, string?>(Taal.NL, municipality.NameDutch),
-                Taal.FR => new KeyValuePair<Taal, string?>(Taal.FR, municipality.NameFrench),
-                Taal.DE => new KeyValuePair<Taal, string?>(Taal.DE, municipality.NameGerman),
-                Taal.EN => new KeyValuePair<Taal, string?>(Taal.EN, municipality.NameEnglish),
-                _ => new KeyValuePair<Taal, string?>(Taal.NL, municipality.NameDutch)
-            };
-        }
-
-        public static KeyValuePair<Taal, string?> GetDefaultStreetNameName(
-            Projections.Syndication.StreetName.StreetNameLatestItem streetName,
-            Taal? municipalityLanguage)
-        {
-            return municipalityLanguage switch
-            {
-                Taal.NL => new KeyValuePair<Taal, string?>(Taal.NL, streetName.NameDutch),
-                Taal.FR => new KeyValuePair<Taal, string?>(Taal.FR, streetName.NameFrench),
-                Taal.DE => new KeyValuePair<Taal, string?>(Taal.DE, streetName.NameGerman),
-                Taal.EN => new KeyValuePair<Taal, string?>(Taal.EN, streetName.NameEnglish),
-                _ => new KeyValuePair<Taal, string?>(Taal.NL, streetName.NameDutch)
-            };
-        }
-
-        public static KeyValuePair<Taal, string?> GetDefaultStreetNameName(Projections.Syndication.StreetName.StreetNameLatestItem streetName, MunicipalityLanguage municipalityLanguage)
-        {
-            return municipalityLanguage switch
-            {
-                MunicipalityLanguage.French => new KeyValuePair<Taal, string?>(Taal.FR, streetName.NameFrench),
-                MunicipalityLanguage.German => new KeyValuePair<Taal, string?>(Taal.DE, streetName.NameGerman),
-                MunicipalityLanguage.English => new KeyValuePair<Taal, string?>(Taal.EN, streetName.NameEnglish),
-                _ => new KeyValuePair<Taal, string?>(Taal.NL, streetName.NameDutch)
-            };
-        }
-
         public static KeyValuePair<Taal, string?> GetDefaultStreetNameName(
             StreetNameLatestItem streetName,
             MunicipalityLanguage? municipalityLanguage)
@@ -228,25 +191,6 @@ namespace AddressRegistry.Api.Oslo.Address
                 MunicipalityLanguage.German => new KeyValuePair<Taal, string?>(Taal.DE, streetName.NameGerman),
                 MunicipalityLanguage.English => new KeyValuePair<Taal, string?>(Taal.EN, streetName.NameEnglish),
                 _ => new KeyValuePair<Taal, string?>(Taal.NL, streetName.NameDutch)
-            };
-        }
-
-        public static KeyValuePair<Taal, string?>? GetDefaultHomonymAddition(
-            Projections.Syndication.StreetName.StreetNameLatestItem streetName,
-            Taal? municipalityLanguage)
-        {
-            if (!streetName.HasHomonymAddition)
-            {
-                return null;
-            }
-
-            return municipalityLanguage switch
-            {
-                Taal.NL => new KeyValuePair<Taal, string?>(Taal.NL, streetName.HomonymAdditionDutch),
-                Taal.FR => new KeyValuePair<Taal, string?>(Taal.FR, streetName.HomonymAdditionFrench),
-                Taal.DE => new KeyValuePair<Taal, string?>(Taal.DE, streetName.HomonymAdditionGerman),
-                Taal.EN => new KeyValuePair<Taal, string?>(Taal.EN, streetName.HomonymAdditionEnglish),
-                _ => new KeyValuePair<Taal, string?>(Taal.NL, streetName.HomonymAdditionDutch)
             };
         }
 

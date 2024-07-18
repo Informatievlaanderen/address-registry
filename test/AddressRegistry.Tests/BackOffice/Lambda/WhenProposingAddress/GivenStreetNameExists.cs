@@ -18,12 +18,12 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Sqs.Responses;
     using Consumer.Read.Municipality.Projections;
+    using Consumer.Read.Postal.Projections;
     using FluentAssertions;
     using global::AutoFixture;
     using Infrastructure;
     using Microsoft.Extensions.Configuration;
     using Moq;
-    using Projections.Syndication.PostalInfo;
     using SqlStreamStore;
     using SqlStreamStore.Streams;
     using StreetName;
@@ -36,7 +36,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
     {
         private readonly TestBackOfficeContext _backOfficeContext;
         private readonly IdempotencyContext _idempotencyContext;
-        private readonly TestSyndicationContext _syndicationContext;
+        private readonly FakePostalConsumerContext _postalConsumerContext;
         private readonly IStreetNames _streetNames;
         private readonly TestMunicipalityConsumerContext _municipalityContext;
 
@@ -46,7 +46,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
 
             _idempotencyContext = new FakeIdempotencyContextFactory().CreateDbContext();
             _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
-            _syndicationContext = new FakeSyndicationContextFactory().CreateDbContext();
+            _postalConsumerContext = new FakePostalConsumerContextFactory().CreateDbContext();
             _municipalityContext = new FakeMunicipalityConsumerContextFactory().CreateDbContext();
             _streetNames = Container.Resolve<IStreetNames>();
         }
@@ -434,10 +434,10 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
 
         private async Task SetupMunicipalityAndStreetName(PostalCode postInfoId, NisCode nisCode, MunicipalityId municipalityId, StreetNamePersistentLocalId streetNamePersistentLocalId)
         {
-            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem { PostalCode = postInfoId, NisCode = nisCode, });
+            _postalConsumerContext.PostalLatestItems.Add(new PostalLatestItem { PostalCode = postInfoId, NisCode = nisCode, });
             _municipalityContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem { MunicipalityId = municipalityId, NisCode = nisCode });
             await _municipalityContext.SaveChangesAsync();
-            await _syndicationContext.SaveChangesAsync();
+            await _postalConsumerContext.SaveChangesAsync();
 
             ImportMigratedStreetName(new StreetNameId(Guid.NewGuid()), streetNamePersistentLocalId, nisCode);
         }
@@ -454,7 +454,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddress
                 streetNames ?? _streetNames,
                 idempotentCommandHandler,
                 _backOfficeContext,
-                _syndicationContext,
+                _postalConsumerContext,
                 _municipalityContext);
             return proposeAddressLambdaHandler;
         }

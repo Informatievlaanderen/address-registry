@@ -28,8 +28,5 @@ files
   AddressRegistry.Projections.Legacy.dll => lib\net8.0
   AddressRegistry.Projections.Legacy.pdb => lib\net8.0
 
-  AddressRegistry.Projections.Syndication.dll => lib\net8.0
-  AddressRegistry.Projections.Syndication.pdb => lib\net8.0
-  
   AddressRegistry.dll => lib\net8.0
   AddressRegistry.pdb => lib\net8.0

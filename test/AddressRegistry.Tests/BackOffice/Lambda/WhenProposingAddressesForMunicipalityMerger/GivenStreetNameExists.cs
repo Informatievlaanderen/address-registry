@@ -16,12 +16,12 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddressesForMunic
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Sqs.Responses;
     using Consumer.Read.Municipality.Projections;
+    using Consumer.Read.Postal.Projections;
     using FluentAssertions;
     using global::AutoFixture;
     using Infrastructure;
     using Microsoft.Extensions.Configuration;
     using Moq;
-    using Projections.Syndication.PostalInfo;
     using SqlStreamStore;
     using SqlStreamStore.Streams;
     using StreetName;
@@ -34,7 +34,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddressesForMunic
     {
         private readonly TestBackOfficeContext _backOfficeContext;
         private readonly IdempotencyContext _idempotencyContext;
-        private readonly TestSyndicationContext _syndicationContext;
+        private readonly FakePostalConsumerContext _postalConsumerContext;
         private readonly IStreetNames _streetNames;
         private readonly TestMunicipalityConsumerContext _municipalityContext;
 
@@ -45,7 +45,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddressesForMunic
 
             _idempotencyContext = new FakeIdempotencyContextFactory().CreateDbContext();
             _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
-            _syndicationContext = new FakeSyndicationContextFactory().CreateDbContext();
+            _postalConsumerContext = new FakePostalConsumerContextFactory().CreateDbContext();
             _municipalityContext = new FakeMunicipalityConsumerContextFactory().CreateDbContext();
             _streetNames = Container.Resolve<IStreetNames>();
         }
@@ -417,10 +417,10 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenProposingAddressesForMunic
 
         private async Task SetupMunicipalityAndStreetName(SetupData setupData)
         {
-            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem { PostalCode = setupData.PostInfoId, NisCode = setupData.NisCode, });
+            _postalConsumerContext.PostalLatestItems.Add(new PostalLatestItem { PostalCode = setupData.PostInfoId, NisCode = setupData.NisCode, });
             _municipalityContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem { MunicipalityId = setupData.MunicipalityId, NisCode = setupData.NisCode });
             await _municipalityContext.SaveChangesAsync();
-            await _syndicationContext.SaveChangesAsync();
+            await _postalConsumerContext.SaveChangesAsync();
 
             ImportMigratedStreetName(new StreetNameId(Guid.NewGuid()), setupData.StreetNamePersistentLocalId, setupData.NisCode);
             ImportMigratedStreetName(new StreetNameId(Guid.NewGuid()), setupData.MergedStreetNamePersistentLocalId, setupData.NisCode);

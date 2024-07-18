@@ -17,12 +17,12 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Sqs.Responses;
     using Consumer.Read.Municipality.Projections;
+    using Consumer.Read.Postal.Projections;
     using FluentAssertions;
     using global::AutoFixture;
     using Infrastructure;
     using Microsoft.Extensions.Configuration;
     using Moq;
-    using Projections.Syndication.PostalInfo;
     using SqlStreamStore;
     using SqlStreamStore.Streams;
     using StreetName;
@@ -34,7 +34,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
     public class GivenStreetNameExists : BackOfficeLambdaTest
     {
         private readonly IdempotencyContext _idempotencyContext;
-        private readonly TestSyndicationContext _syndicationContext;
+        private readonly FakePostalConsumerContext _postalConsumerContext;
         private readonly TestMunicipalityConsumerContext _municipalityContext;
         private readonly IStreetNames _streetNames;
 
@@ -43,7 +43,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
             Fixture.Customize(new WithFixedMunicipalityId());
 
             _idempotencyContext = new FakeIdempotencyContextFactory().CreateDbContext();
-            _syndicationContext = new FakeSyndicationContextFactory().CreateDbContext();
+            _postalConsumerContext = new FakePostalConsumerContextFactory().CreateDbContext();
             _municipalityContext = new FakeMunicipalityConsumerContextFactory().CreateDbContext();
             _streetNames = Container.Resolve<IStreetNames>();
         }
@@ -59,17 +59,17 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
             var nisCode = Fixture.Create<NisCode>();
             var municipalityId = Fixture.Create<MunicipalityId>();
 
-            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
+            _postalConsumerContext.PostalLatestItems.Add(new PostalLatestItem
             {
                 PostalCode = postInfoId,
                 NisCode = nisCode
             });
-            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
+            _postalConsumerContext.PostalLatestItems.Add(new PostalLatestItem
             {
                 PostalCode = correctPostInfoId,
                 NisCode = nisCode
             });
-            await _syndicationContext.SaveChangesAsync();
+            await _postalConsumerContext.SaveChangesAsync();
 
             _municipalityContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem
             {
@@ -98,7 +98,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
                 MockTicketing(result => { eTagResponse = result; }).Object,
                 _streetNames,
                 new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext),
-                _syndicationContext,
+                _postalConsumerContext,
                 _municipalityContext);
 
             // Act
@@ -131,8 +131,8 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
             var municipalityId = Fixture.Create<MunicipalityId>();
             var postalCode = "9000";
 
-            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem { PostalCode = postalCode, NisCode = nisCode });
-            await _syndicationContext.SaveChangesAsync();
+            _postalConsumerContext.PostalLatestItems.Add(new PostalLatestItem { PostalCode = postalCode, NisCode = nisCode });
+            await _postalConsumerContext.SaveChangesAsync();
 
             _municipalityContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem { MunicipalityId = municipalityId, NisCode = nisCode });
             await _municipalityContext.SaveChangesAsync();
@@ -143,7 +143,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
                 ticketing.Object,
                 Mock.Of<IStreetNames>(),
                 MockExceptionIdempotentCommandHandler<AddressHasBoxNumberException>().Object,
-                _syndicationContext,
+                _postalConsumerContext,
                 _municipalityContext);
 
             // Act
@@ -177,17 +177,17 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
             var nisCode = Fixture.Create<NisCode>();
             var municipalityId = Fixture.Create<MunicipalityId>();
 
-            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
+            _postalConsumerContext.PostalLatestItems.Add(new PostalLatestItem
             {
                 PostalCode = postInfoId,
                 NisCode = nisCode
             });
-            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
+            _postalConsumerContext.PostalLatestItems.Add(new PostalLatestItem
             {
                 PostalCode = correctPostInfoId,
                 NisCode = nisCode
             });
-            await _syndicationContext.SaveChangesAsync();
+            await _postalConsumerContext.SaveChangesAsync();
 
             _municipalityContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem
             {
@@ -202,7 +202,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
                 ticketing.Object,
                 Mock.Of<IStreetNames>(),
                 MockExceptionIdempotentCommandHandler<AddressHasInvalidStatusException>().Object,
-                _syndicationContext,
+                _postalConsumerContext,
                 _municipalityContext);
 
             // Act
@@ -238,17 +238,17 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
             var nisCode = Fixture.Create<NisCode>();
             var municipalityId = Fixture.Create<MunicipalityId>();
 
-            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
+            _postalConsumerContext.PostalLatestItems.Add(new PostalLatestItem
             {
                 PostalCode = postInfoId,
                 NisCode = nisCode
             });
-            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
+            _postalConsumerContext.PostalLatestItems.Add(new PostalLatestItem
             {
                 PostalCode = correctPostInfoId,
                 NisCode = nisCode
             });
-            await _syndicationContext.SaveChangesAsync();
+            await _postalConsumerContext.SaveChangesAsync();
 
             _municipalityContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem
             {
@@ -263,7 +263,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
                 ticketing.Object,
                 Mock.Of<IStreetNames>(),
                 MockExceptionIdempotentCommandHandler<PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException>().Object,
-                _syndicationContext,
+                _postalConsumerContext,
                 _municipalityContext);
 
             // Act
@@ -315,17 +315,17 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
                 houseNumber,
                 null);
 
-            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
+            _postalConsumerContext.PostalLatestItems.Add(new PostalLatestItem
             {
                 PostalCode = postInfoId,
                 NisCode = nisCode
             });
-            _syndicationContext.PostalInfoLatestItems.Add(new PostalInfoLatestItem
+            _postalConsumerContext.PostalLatestItems.Add(new PostalLatestItem
             {
                 PostalCode = correctPostInfoId,
                 NisCode = nisCode
             });
-            await _syndicationContext.SaveChangesAsync();
+            await _postalConsumerContext.SaveChangesAsync();
 
             _municipalityContext.MunicipalityLatestItems.Add(new MunicipalityLatestItem
             {
@@ -340,7 +340,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressPostalCod
                 ticketing.Object,
                 _streetNames,
                 MockExceptionIdempotentCommandHandler(() => new IdempotencyException(string.Empty)).Object,
-                _syndicationContext,
+                _postalConsumerContext,
                 _municipalityContext);
 
             var streetName =

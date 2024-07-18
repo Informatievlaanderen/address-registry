@@ -9,9 +9,9 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Infrastructure;
     using Be.Vlaanderen.Basisregisters.Sqs.Responses;
     using Consumer.Read.Municipality;
+    using Consumer.Read.Postal;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
-    using Projections.Syndication;
     using Requests;
     using StreetName;
     using StreetName.Exceptions;
@@ -19,7 +19,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
 
     public sealed class CorrectAddressPostalCodeLambdaHandler : SqsLambdaHandler<CorrectAddressPostalCodeLambdaRequest>
     {
-        private readonly SyndicationContext _syndicationContext;
+        private readonly PostalConsumerContext _postalConsumerContext;
         private readonly MunicipalityConsumerContext _municipalityConsumerContext;
 
         public CorrectAddressPostalCodeLambdaHandler(
@@ -28,7 +28,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
              ITicketing ticketing,
              IStreetNames streetNames,
              IIdempotentCommandHandler idempotentCommandHandler,
-             SyndicationContext syndicationContext,
+             PostalConsumerContext postalConsumerContext,
              MunicipalityConsumerContext municipalityConsumerContext)
              : base(
                  configuration,
@@ -37,7 +37,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                  ticketing,
                  idempotentCommandHandler)
         {
-            _syndicationContext = syndicationContext;
+            _postalConsumerContext = postalConsumerContext;
             _municipalityConsumerContext = municipalityConsumerContext;
         }
 
@@ -49,7 +49,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 .Map(x => x);
             var postalCode = new PostalCode(postInfoIdentifier.Value);
 
-            var postalMunicipality = await _syndicationContext.PostalInfoLatestItems.FindAsync(new object[] { postalCode.ToString() }, cancellationToken);
+            var postalMunicipality = await _postalConsumerContext.PostalLatestItems.FindAsync(new object[] { postalCode.ToString() }, cancellationToken);
             if (postalMunicipality is null)
             {
                 throw new PostalCodeMunicipalityDoesNotMatchStreetNameMunicipalityException();

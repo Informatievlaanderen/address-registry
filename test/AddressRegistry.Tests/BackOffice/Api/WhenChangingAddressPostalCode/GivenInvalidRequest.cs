@@ -28,9 +28,9 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenChangingAddressPostalCode
         public void WithNonExistentPostInfo_ThenThrowsValidationException()
         {
             var nonExistentPostInfo = PostInfoPuri + "123456";
-            var syndicationContext = new FakeSyndicationContextFactory().CreateDbContext();
+            var postalConsumerContext = new FakePostalConsumerContextFactory().CreateDbContext();
 
-            Func<Task> act = async () => await _controller.ChangePostalCode(new ChangeAddressPostalCodeRequestValidator(syndicationContext),
+            Func<Task> act = async () => await _controller.ChangePostalCode(new ChangeAddressPostalCodeRequestValidator(postalConsumerContext),
                 MockIfMatchValidator(true),
                 Fixture.Create<AddressPersistentLocalId>(),
                 new ChangeAddressPostalCodeRequest()

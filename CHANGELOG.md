@@ -1,3 +1,15 @@
+# [4.10.0](https://github.com/informatievlaanderen/address-registry/compare/v4.9.0...v4.10.0) (2024-07-18)
+
+
+### Bug Fixes
+
+* syndication querycontext ([458fbd0](https://github.com/informatievlaanderen/address-registry/commit/458fbd062df7c0781a49953e7274630733e71aa0))
+
+
+### Features
+
+* remove syndication project ([2b6d455](https://github.com/informatievlaanderen/address-registry/commit/2b6d45500299ddce84058cff83901555525338a7))
+
 # [4.9.0](https://github.com/informatievlaanderen/address-registry/compare/v4.8.1...v4.9.0) (2024-07-18)
 
 

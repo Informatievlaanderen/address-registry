@@ -1,3 +1,11 @@
+# [4.9.0](https://github.com/informatievlaanderen/address-registry/compare/v4.8.1...v4.9.0) (2024-07-18)
+
+
+### Features
+
+* propose address for municipality merger ([e8f77e6](https://github.com/informatievlaanderen/address-registry/commit/e8f77e6d060d3338a503dd4ada2d95f529d961e3))
+* remove api.legacy + remove syndicationcontext dep ([ff56904](https://github.com/informatievlaanderen/address-registry/commit/ff5690464915e67ae3d7fae20fd57ac558609773))
+
 ## [4.8.1](https://github.com/informatievlaanderen/address-registry/compare/v4.8.0...v4.8.1) (2024-07-17)
 
 

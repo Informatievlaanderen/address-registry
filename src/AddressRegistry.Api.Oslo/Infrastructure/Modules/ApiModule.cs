@@ -32,7 +32,7 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
             _loggerFactory = loggerFactory;
 
             var logger = loggerFactory.CreateLogger<ApiModule>();
-            var connectionString = configuration.GetConnectionString("SyndicationProjections");
+            var connectionString = configuration.GetConnectionString("LegacyProjections");
 
             var hasConnectionString = !string.IsNullOrWhiteSpace(connectionString);
             if (hasConnectionString)

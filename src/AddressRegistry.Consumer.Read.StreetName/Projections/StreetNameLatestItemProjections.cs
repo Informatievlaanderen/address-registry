@@ -29,14 +29,25 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections
                 await context.StreetNameLatestItems.AddAsync(item, ct);
             });
 
-            //TODO-rik listen to StreetNameWasProposedForMunicipalityMerger en hou bij welke straatnamen voor een fusie zijn
-            //zodat bij StreetNameWasApproved hiernaar kan gekeken worden en indien nodig de proposed addressen kan approven
-
             When<StreetNameWasProposedV2>(async (context, message, ct) =>
             {
                 var item = new StreetNameLatestItem(message.PersistentLocalId, message.NisCode) { Status = StreetNameStatus.Proposed };
 
                 UpdateNames(item, message.StreetNameNames);
+                UpdateVersionTimestamp(item, message.Provenance.Timestamp);
+
+                await context.StreetNameLatestItems.AddAsync(item, ct);
+            });
+
+            When<StreetNameWasProposedForMunicipalityMerger>(async (context, message, ct) =>
+            {
+                var item = new StreetNameLatestItem(message.PersistentLocalId, message.NisCode)
+                {
+                    Status = StreetNameStatus.Proposed
+                };
+
+                UpdateNames(item, message.StreetNameNames);
+                UpdateHomonyms(item, message.HomonymAdditions);
                 UpdateVersionTimestamp(item, message.Provenance.Timestamp);
 
                 await context.StreetNameLatestItems.AddAsync(item, ct);
@@ -69,6 +80,15 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections
                 }, ct);
             });
 
+            When<StreetNameWasRejectedBecauseOfMunicipalityMerger>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateLatestItem(message.PersistentLocalId, item =>
+                {
+                    item.Status = StreetNameStatus.Rejected;
+                    UpdateVersionTimestamp(item, message.Provenance.Timestamp);
+                }, ct);
+            });
+
             When<StreetNameWasCorrectedFromRejectedToProposed>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateLatestItem(message.PersistentLocalId, item =>
@@ -79,6 +99,15 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections
             });
 
             When<StreetNameWasRetiredV2>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateLatestItem(message.PersistentLocalId, item =>
+                {
+                    item.Status = StreetNameStatus.Retired;
+                    UpdateVersionTimestamp(item, message.Provenance.Timestamp);
+                }, ct);
+            });
+
+            When<StreetNameWasRetiredBecauseOfMunicipalityMerger>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateLatestItem(message.PersistentLocalId, item =>
                 {

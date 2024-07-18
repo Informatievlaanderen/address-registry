@@ -25,7 +25,7 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
 
         private readonly StreetNameWasProposedV2 _streetNameWasProposedV2;
 
-        private Dictionary<string, string> _names = new Dictionary<string, string>
+        private readonly Dictionary<string, string> _names = new()
         {
             { StreetNameLatestItemProjections.Dutch, "nl-name" },
             { StreetNameLatestItemProjections.French, "fr-name" },
@@ -33,7 +33,7 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
             { StreetNameLatestItemProjections.English, "en-name" },
         };
 
-        private Dictionary<string, string> _homonyms = new Dictionary<string, string>
+        private readonly Dictionary<string, string> _homonyms = new()
         {
             { StreetNameLatestItemProjections.Dutch, "nl hom" },
             { StreetNameLatestItemProjections.French, "fr hom" },
@@ -49,7 +49,8 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
             _fixture.Customize(new WithContractProvenance());
             _fixture.Customize(new WithFixedStreetNamePersistentLocalId());
 
-            _provenance = new Provenance(_fixture.Create<Instant>().Plus(Duration.FromMinutes(1)).ToString(), string.Empty, string.Empty, string.Empty, string.Empty);
+            _provenance = new Provenance(
+                _fixture.Create<Instant>().Plus(Duration.FromMinutes(1)).ToString(), string.Empty, string.Empty, string.Empty, string.Empty);
 
             _streetNameWasProposedV2 = new StreetNameWasProposedV2(
                 _fixture.Create<Guid>().ToString(),
@@ -84,7 +85,7 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
             {
                 var result = await ctx.StreetNameLatestItems.FindAsync((int)streetNamePersistentLocalId);
                 result.Should().NotBeNull();
-                result.PersistentLocalId.Should().Be(e.PersistentLocalId);
+                result!.PersistentLocalId.Should().Be(e.PersistentLocalId);
                 result.NisCode.Should().Be(e.NisCode);
                 result.Status.Should().Be(StreetNameLatestItem.ConvertStringToStatus(e.Status));
 
@@ -98,18 +99,50 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
         }
 
         [Fact]
-        public async Task StreetNameWasProposed()
+        public async Task StreetNameWasProposedV2()
         {
             Given(_streetNameWasProposedV2);
             await Then(async ctx =>
             {
                 var result = await ctx.StreetNameLatestItems.FindAsync(_streetNameWasProposedV2.PersistentLocalId);
                 result.Should().NotBeNull();
-                result.PersistentLocalId.Should().Be(_streetNameWasProposedV2.PersistentLocalId);
+                result!.PersistentLocalId.Should().Be(_streetNameWasProposedV2.PersistentLocalId);
                 result.NisCode.Should().Be(_streetNameWasProposedV2.NisCode);
                 result.Status.Should().Be(AddressRegistry.Consumer.Read.StreetName.Projections.StreetNameStatus.Proposed);
 
                 AssertNames(result);
+
+                result.VersionTimestamp.Should().Be(InstantPattern.General.Parse(_streetNameWasProposedV2.Provenance.Timestamp).Value);
+            });
+        }
+
+        [Fact]
+        public async Task StreetNameWasProposedForMunicipalityMerger()
+        {
+            var streetNamePersistentLocalId = _fixture.Create<StreetNamePersistentLocalId>();
+            var streetNameWasProposed = new StreetNameWasProposedForMunicipalityMerger(
+                _fixture.Create<Guid>().ToString(),
+                _fixture.Create<string>(),
+                _names,
+                _homonyms,
+                streetNamePersistentLocalId,
+                [streetNamePersistentLocalId+1],
+                _provenance);
+
+            Given(streetNameWasProposed);
+
+            await Then(async ctx =>
+            {
+                var result = await ctx.StreetNameLatestItems.FindAsync(
+                    streetNameWasProposed.PersistentLocalId);
+                result.Should().NotBeNull();
+                result!.PersistentLocalId.Should().Be(streetNameWasProposed.PersistentLocalId);
+                result.NisCode.Should().Be(streetNameWasProposed.NisCode);
+                result.Status.Should().Be(
+                    AddressRegistry.Consumer.Read.StreetName.Projections.StreetNameStatus.Proposed);
+
+                AssertNames(result);
+                AssertHomonyms(result);
 
                 result.VersionTimestamp.Should().Be(InstantPattern.General.Parse(_streetNameWasProposedV2.Provenance.Timestamp).Value);
             });
@@ -130,7 +163,7 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
             {
                 var result = await ctx.StreetNameLatestItems.FindAsync((int)streetNamePersistentLocalId);
                 result.Should().NotBeNull();
-                result.PersistentLocalId.Should().Be(e.PersistentLocalId);
+                result!.PersistentLocalId.Should().Be(e.PersistentLocalId);
                 result.Status.Should().Be(AddressRegistry.Consumer.Read.StreetName.Projections.StreetNameStatus.Current);
                 result.VersionTimestamp.Should().Be(InstantPattern.General.Parse(e.Provenance.Timestamp).Value);
             });
@@ -177,9 +210,31 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
             {
                 var result = await ctx.StreetNameLatestItems.FindAsync((int)streetNamePersistentLocalId);
                 result.Should().NotBeNull();
-                result.PersistentLocalId.Should().Be(e.PersistentLocalId);
+                result!.PersistentLocalId.Should().Be(e.PersistentLocalId);
                 result.Status.Should().Be(AddressRegistry.Consumer.Read.StreetName.Projections.StreetNameStatus.Rejected);
                 result.VersionTimestamp.Should().Be(InstantPattern.General.Parse(e.Provenance.Timestamp).Value);
+            });
+        }
+
+        [Fact]
+        public async Task StreetNameWasRejectedBecauseOfMunicipalityMerger()
+        {
+            var streetNamePersistentLocalId = _fixture.Create<StreetNamePersistentLocalId>();
+
+            var @event = new StreetNameWasRejectedBecauseOfMunicipalityMerger(
+                _fixture.Create<Guid>().ToString(),
+                streetNamePersistentLocalId,
+                [streetNamePersistentLocalId+1, streetNamePersistentLocalId+2],
+                _provenance);
+
+            Given(_streetNameWasProposedV2, @event);
+            await Then(async ctx =>
+            {
+                var result = await ctx.StreetNameLatestItems.FindAsync((int)streetNamePersistentLocalId);
+                result.Should().NotBeNull();
+                result!.PersistentLocalId.Should().Be(@event.PersistentLocalId);
+                result.Status.Should().Be(AddressRegistry.Consumer.Read.StreetName.Projections.StreetNameStatus.Rejected);
+                result.VersionTimestamp.Should().Be(InstantPattern.General.Parse(@event.Provenance.Timestamp).Value);
             });
         }
 
@@ -224,7 +279,29 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
             {
                 var result = await ctx.StreetNameLatestItems.FindAsync((int)streetNamePersistentLocalId);
                 result.Should().NotBeNull();
-                result.PersistentLocalId.Should().Be(e.PersistentLocalId);
+                result!.PersistentLocalId.Should().Be(e.PersistentLocalId);
+                result.Status.Should().Be(AddressRegistry.Consumer.Read.StreetName.Projections.StreetNameStatus.Retired);
+                result.VersionTimestamp.Should().Be(InstantPattern.General.Parse(e.Provenance.Timestamp).Value);
+            });
+        }
+
+        [Fact]
+        public async Task StreetNameWasRetiredBecauseOfMunicipalityMerger()
+        {
+            var streetNamePersistentLocalId = _fixture.Create<StreetNamePersistentLocalId>();
+
+            var e = new StreetNameWasRetiredBecauseOfMunicipalityMerger(
+                _fixture.Create<Guid>().ToString(),
+                streetNamePersistentLocalId,
+                [streetNamePersistentLocalId+1, streetNamePersistentLocalId+2],
+                _provenance);
+
+            Given(_streetNameWasProposedV2, e);
+            await Then(async ctx =>
+            {
+                var result = await ctx.StreetNameLatestItems.FindAsync((int)streetNamePersistentLocalId);
+                result.Should().NotBeNull();
+                result!.PersistentLocalId.Should().Be(e.PersistentLocalId);
                 result.Status.Should().Be(AddressRegistry.Consumer.Read.StreetName.Projections.StreetNameStatus.Retired);
                 result.VersionTimestamp.Should().Be(InstantPattern.General.Parse(e.Provenance.Timestamp).Value);
             });
@@ -277,7 +354,7 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
             {
                 var result = await ctx.StreetNameLatestItems.FindAsync((int)streetNamePersistentLocalId);
                 result.Should().NotBeNull();
-                result.PersistentLocalId.Should().Be(e.PersistentLocalId);
+                result!.PersistentLocalId.Should().Be(e.PersistentLocalId);
                 result.Status.Should().Be(AddressRegistry.Consumer.Read.StreetName.Projections.StreetNameStatus.Proposed);
                 result.VersionTimestamp.Should().Be(InstantPattern.General.Parse(e.Provenance.Timestamp).Value);
 
@@ -385,7 +462,7 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
             {
                 var result = await ctx.StreetNameLatestItems.FindAsync((int)streetNamePersistentLocalId);
                 result.Should().NotBeNull();
-                result.IsRemoved.Should().BeTrue();
+                result!.IsRemoved.Should().BeTrue();
                 result.VersionTimestamp.Should().Be(InstantPattern.General.Parse(streetNameWasRemovedV2.Provenance.Timestamp).Value);
             });
         }

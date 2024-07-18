@@ -8,7 +8,7 @@ namespace AddressRegistry.StreetName.Events
 
     [EventTags(EventTag.For.Sync, EventTag.For.Edit)]
     [EventName(EventName)]
-    [EventDescription("Het adres werd voorgesteld in functie van een gemeentelijke fusie.")]
+    [EventDescription("Het adres werd voorgesteld ter voorbereiding van een gemeentefusie.")]
     public class AddressWasProposedForMunicipalityMerger : IStreetNameEvent, IHasAddressPersistentLocalId
     {
         public const string EventName = "AddressWasProposedForMunicipalityMerger"; // BE CAREFUL CHANGING THIS!!

@@ -70,6 +70,9 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
                 case ProposeAddressSqsRequest request:
                     await mediator.Send(new ProposeAddressLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
+                case ProposeAddressesForMunicipalityMergerSqsRequest request:
+                    await mediator.Send(new ProposeAddressesForMunicipalityMergerLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
+                    break;
                 case RegularizeAddressSqsRequest request:
                     await mediator.Send(new RegularizeAddressLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;

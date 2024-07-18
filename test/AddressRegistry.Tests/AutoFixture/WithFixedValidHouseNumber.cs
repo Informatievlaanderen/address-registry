@@ -9,7 +9,12 @@ namespace AddressRegistry.Tests.AutoFixture
         public void Customize(IFixture fixture)
         {
             var houseNumberStr = "11A";
-            fixture.Customize<HouseNumber>(c => c.FromFactory(() => new HouseNumber(houseNumberStr)));
+
+            fixture.Customize<AddressRegistry.StreetName.HouseNumber>(c =>
+                c.FromFactory(() => new AddressRegistry.StreetName.HouseNumber(houseNumberStr)));
+            fixture.Customize<HouseNumber>(c =>
+                c.FromFactory(() => new HouseNumber(houseNumberStr)));
+
             fixture.Customizations.Add(
                 new FilteringSpecimenBuilder(
                     new FixedBuilder(houseNumberStr),

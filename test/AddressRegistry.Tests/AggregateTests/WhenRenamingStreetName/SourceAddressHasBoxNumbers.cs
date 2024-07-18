@@ -26,7 +26,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRenamingStreetName
 
         public SourceAddressHasBoxNumbers(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            Fixture.Customize(new WithFixedHouseNumber());
+            Fixture.Customize(new WithFixedValidHouseNumber());
             Fixture.Customize(new WithFixedPostalCode());
             Fixture.Customizations.Add(new WithUniqueInteger());
 

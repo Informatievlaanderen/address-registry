@@ -18,6 +18,7 @@
     using Projections.Integration;
     using Projections.Integration.Convertors;
     using Projections.Integration.Infrastructure;
+    using Projections.Integration.Version;
     using StreetName;
     using StreetName.DataStructures;
     using StreetName.Events;
@@ -126,6 +127,50 @@
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasProposedV2.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasProposedV2.Provenance.Timestamp);
                     expectedVersion.CreatedOnTimestamp.Should().Be(addressWasProposedV2.Provenance.Timestamp);
+                    expectedVersion.Geometry.Should().BeEquivalentTo(geometry);
+                    expectedVersion.Type.Should().Be("EventName");
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressWasProposedForMunicipalityMerger()
+        {
+            var addressWasProposedForMunicipalityMerger = _fixture.Create<AddressWasProposedForMunicipalityMerger>();
+
+            var geometry = WKBReaderFactory.CreateForLegacy().Read(addressWasProposedForMunicipalityMerger.ExtendedWkbGeometry.ToByteArray());
+
+            var position = _fixture.Create<long>();
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, "EventName"}
+            };
+
+            await Sut
+                .Given(new Envelope<AddressWasProposedForMunicipalityMerger>(new Envelope(addressWasProposedForMunicipalityMerger, metadata)))
+                .Then(async ct =>
+                {
+                    var expectedVersion =
+                        await ct.AddressVersions.FindAsync(position, addressWasProposedForMunicipalityMerger.AddressPersistentLocalId);
+                    expectedVersion.Should().NotBeNull();
+                    expectedVersion!.StreetNamePersistentLocalId.Should().Be(addressWasProposedForMunicipalityMerger.StreetNamePersistentLocalId);
+                    expectedVersion.ParentPersistentLocalId.Should().Be(addressWasProposedForMunicipalityMerger.ParentPersistentLocalId);
+                    expectedVersion.HouseNumber.Should().Be(addressWasProposedForMunicipalityMerger.HouseNumber);
+                    expectedVersion.BoxNumber.Should().Be(addressWasProposedForMunicipalityMerger.BoxNumber);
+                    expectedVersion.PostalCode.Should().Be(addressWasProposedForMunicipalityMerger.PostalCode);
+                    expectedVersion.Status.Should().Be(AddressStatus.Proposed);
+                    expectedVersion.OsloStatus.Should().Be(AddressStatus.Proposed.Map());
+                    expectedVersion.OfficiallyAssigned.Should().Be(addressWasProposedForMunicipalityMerger.OfficiallyAssigned);
+                    expectedVersion.PositionMethod.Should().Be(addressWasProposedForMunicipalityMerger.GeometryMethod);
+                    expectedVersion.OsloPositionMethod.Should().Be(addressWasProposedForMunicipalityMerger.GeometryMethod.ToPositieGeometrieMethode());
+                    expectedVersion.PositionSpecification.Should().Be(addressWasProposedForMunicipalityMerger.GeometrySpecification);
+                    expectedVersion.OsloPositionSpecification.Should().Be(addressWasProposedForMunicipalityMerger.GeometrySpecification.ToPositieSpecificatie());
+                    expectedVersion.Removed.Should().Be(false);
+                    expectedVersion.Namespace.Should().Be(Namespace);
+                    expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasProposedForMunicipalityMerger.AddressPersistentLocalId}");
+                    expectedVersion.VersionTimestamp.Should().Be(addressWasProposedForMunicipalityMerger.Provenance.Timestamp);
+                    expectedVersion.CreatedOnTimestamp.Should().Be(addressWasProposedForMunicipalityMerger.Provenance.Timestamp);
                     expectedVersion.Geometry.Should().BeEquivalentTo(geometry);
                     expectedVersion.Type.Should().Be("EventName");
                 });

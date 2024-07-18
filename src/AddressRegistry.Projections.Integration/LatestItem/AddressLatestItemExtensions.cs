@@ -1,4 +1,4 @@
-﻿namespace AddressRegistry.Projections.Integration
+﻿namespace AddressRegistry.Projections.Integration.LatestItem
 {
     using System;
     using System.Threading;

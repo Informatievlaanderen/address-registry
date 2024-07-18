@@ -1,15 +1,15 @@
-﻿namespace AddressRegistry.Projections.Integration
+﻿namespace AddressRegistry.Projections.Integration.Version
 {
     using System;
-    using Address.Events;
+    using AddressRegistry.Address.Events;
+    using AddressRegistry.Projections.Integration.Convertors;
+    using AddressRegistry.Projections.Integration.Infrastructure;
+    using AddressRegistry.StreetName;
+    using AddressRegistry.StreetName.Events;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
-    using Convertors;
-    using Infrastructure;
     using Microsoft.Extensions.Options;
-    using StreetName;
-    using StreetName.Events;
 
     [ConnectedProjectionName("Integratie adres versie")]
     [ConnectedProjectionDescription("Projectie die de laatste adres data voor de integratie database bijhoudt.")]
@@ -71,6 +71,38 @@
                     PositionSpecification = message.Message.GeometrySpecification,
                     OsloPositionSpecification = message.Message.GeometrySpecification.ToPositieSpecificatie(),
                     OfficiallyAssigned = true,
+                    Removed = false,
+                    VersionTimestamp = message.Message.Provenance.Timestamp,
+                    CreatedOnTimestamp = message.Message.Provenance.Timestamp,
+                    Namespace = options.Value.Namespace,
+                    PuriId = $"{options.Value.Namespace}/{message.Message.AddressPersistentLocalId}",
+                    Type = message.EventName
+                };
+
+                await context.AddressVersions.AddAsync(addressVersion, ct);
+            });
+
+            When<Envelope<AddressWasProposedForMunicipalityMerger>>(async (context, message, ct) =>
+            {
+                var geometry = WKBReaderFactory.CreateForLegacy().Read(message.Message.ExtendedWkbGeometry.ToByteArray());
+
+                var addressVersion = new AddressVersion()
+                {
+                    Position = message.Position,
+                    PersistentLocalId = message.Message.AddressPersistentLocalId,
+                    PostalCode = message.Message.PostalCode,
+                    StreetNamePersistentLocalId = message.Message.StreetNamePersistentLocalId,
+                    ParentPersistentLocalId = message.Message.ParentPersistentLocalId,
+                    Status = AddressStatus.Proposed,
+                    OsloStatus = AddressStatus.Proposed.Map(),
+                    HouseNumber = message.Message.HouseNumber,
+                    BoxNumber = message.Message.BoxNumber,
+                    Geometry = geometry,
+                    PositionMethod = message.Message.GeometryMethod,
+                    OsloPositionMethod = message.Message.GeometryMethod.ToPositieGeometrieMethode(),
+                    PositionSpecification = message.Message.GeometrySpecification,
+                    OsloPositionSpecification = message.Message.GeometrySpecification.ToPositieSpecificatie(),
+                    OfficiallyAssigned = message.Message.OfficiallyAssigned,
                     Removed = false,
                     VersionTimestamp = message.Message.Provenance.Timestamp,
                     CreatedOnTimestamp = message.Message.Provenance.Timestamp,

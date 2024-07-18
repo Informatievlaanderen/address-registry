@@ -40,6 +40,7 @@ namespace AddressRegistry.StreetName
 
             Register<AddressWasMigratedToStreetName>(When);
             Register<AddressWasProposedV2>(When);
+            Register<AddressWasProposedForMunicipalityMerger>(When);
             Register<AddressWasApproved>(When);
             Register<AddressWasRejected>(When);
             Register<AddressWasRejectedBecauseHouseNumberWasRejected>(When);
@@ -205,6 +206,22 @@ namespace AddressRegistry.StreetName
         }
 
         private void When(AddressWasProposedV2 @event)
+        {
+            var address = new StreetNameAddress(applier: ApplyChange);
+            address.Route(@event);
+
+            if (@event.ParentPersistentLocalId.HasValue)
+            {
+                var parent =
+                    StreetNameAddresses.GetByPersistentLocalId(
+                        new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value));
+                parent.AddChild(address);
+            }
+
+            StreetNameAddresses.Add(address);
+        }
+
+        private void When(AddressWasProposedForMunicipalityMerger @event)
         {
             var address = new StreetNameAddress(applier: ApplyChange);
             address.Route(@event);

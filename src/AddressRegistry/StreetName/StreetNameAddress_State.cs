@@ -25,7 +25,8 @@ namespace AddressRegistry.StreetName
         public bool IsBoxNumberAddress => BoxNumber is not null;
         public PostalCode? PostalCode { get; private set; }
         public AddressGeometry Geometry { get; private set; }
-        public bool IsOfficiallyAssigned { get; set; }
+        public bool IsOfficiallyAssigned { get; private set; }
+        public AddressPersistentLocalId? MergedAddressPersistentLocalId { get; private set; }
         public bool IsRemoved { get; private set; }
 
         public StreetNameAddress? Parent { get; private set; }
@@ -43,6 +44,7 @@ namespace AddressRegistry.StreetName
         {
             Register<AddressWasMigratedToStreetName>(When);
             Register<AddressWasProposedV2>(When);
+            Register<AddressWasProposedForMunicipalityMerger>(When);
             Register<AddressWasApproved>(When);
             Register<AddressWasRejected>(When);
             Register<AddressWasRejectedBecauseHouseNumberWasRejected>(When);
@@ -113,6 +115,24 @@ namespace AddressRegistry.StreetName
                 @event.GeometryMethod,
                 @event.GeometrySpecification,
                 new ExtendedWkbGeometry(@event.ExtendedWkbGeometry));
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressWasProposedForMunicipalityMerger @event)
+        {
+            _streetNamePersistentLocalId = new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId);
+            AddressPersistentLocalId = new AddressPersistentLocalId(@event.AddressPersistentLocalId);
+            HouseNumber = new HouseNumber(@event.HouseNumber);
+            Status = AddressStatus.Proposed;
+            BoxNumber = string.IsNullOrEmpty(@event.BoxNumber) ? null : new BoxNumber(@event.BoxNumber);
+            PostalCode = new PostalCode(@event.PostalCode);
+            IsOfficiallyAssigned = @event.OfficiallyAssigned;
+            Geometry = new AddressGeometry(
+                @event.GeometryMethod,
+                @event.GeometrySpecification,
+                new ExtendedWkbGeometry(@event.ExtendedWkbGeometry));
+            MergedAddressPersistentLocalId = new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId);
 
             _lastEvent = @event;
         }
@@ -291,6 +311,9 @@ namespace AddressRegistry.StreetName
             IsOfficiallyAssigned = addressData.IsOfficiallyAssigned;
             IsRemoved = addressData.IsRemoved;
 
+            MergedAddressPersistentLocalId = addressData.MergedAddressPersistentLocalId.HasValue
+                ? new AddressPersistentLocalId(addressData.MergedAddressPersistentLocalId.Value)
+                : null;
             LegacyAddressId = addressData.LegacyAddressId.HasValue ? new AddressId(addressData.LegacyAddressId.Value) : null;
             _lastSnapshottedEventHash = addressData.LastEventHash;
             _lastSnapshottedProvenance = addressData.LastProvenanceData;

@@ -151,6 +151,72 @@ namespace AddressRegistry.StreetName
                 geometryPosition));
         }
 
+        public void ProposeAddressForMunicipalityMerger(
+            AddressPersistentLocalId addressPersistentLocalId,
+            PostalCode postalCode,
+            HouseNumber houseNumber,
+            BoxNumber? boxNumber,
+            GeometryMethod geometryMethod,
+            GeometrySpecification geometrySpecification,
+            ExtendedWkbGeometry geometryPosition,
+            bool officiallyAssigned,
+            AddressPersistentLocalId mergedAddressPersistentLocalId)
+        {
+            GuardActiveStreetName();
+
+            if (mergedAddressPersistentLocalId == addressPersistentLocalId)
+            {
+                throw new MergedAddressPersistentLocalIdIsInvalidException();
+            }
+
+            if (StreetNameAddresses.HasPersistentLocalId(addressPersistentLocalId))
+            {
+                throw new AddressPersistentLocalIdAlreadyExistsException();
+            }
+
+            var parent = StreetNameAddresses.FindActiveParentByHouseNumber(houseNumber);
+
+            var isChild = boxNumber is not null;
+            var isParent = !isChild;
+            var parentFound = parent is not null;
+            var parentNotFound = !parentFound;
+
+            if (isParent && parentFound)
+            {
+                throw new ParentAddressAlreadyExistsException(houseNumber);
+            }
+
+            if (isChild && parentNotFound)
+            {
+                throw new ParentAddressNotFoundException(PersistentLocalId, houseNumber);
+            }
+
+            if (isChild && !parent!.BoxNumberIsUnique(boxNumber!))
+            {
+                throw new AddressAlreadyExistsException(houseNumber, boxNumber!);
+            }
+
+            if (isChild && parent!.PostalCode! != postalCode)
+            {
+                throw new BoxNumberPostalCodeDoesNotMatchHouseNumberPostalCodeException();
+            }
+
+            StreetNameAddress.GuardGeometry(geometryMethod, geometrySpecification);
+
+            ApplyChange(new AddressWasProposedForMunicipalityMerger(
+                PersistentLocalId,
+                addressPersistentLocalId,
+                parent?.AddressPersistentLocalId,
+                postalCode,
+                houseNumber,
+                boxNumber,
+                geometryMethod,
+                geometrySpecification,
+                geometryPosition,
+                officiallyAssigned,
+                mergedAddressPersistentLocalId));
+        }
+
         public void ApproveAddress(AddressPersistentLocalId addressPersistentLocalId)
         {
             GuardActiveStreetName();
@@ -322,13 +388,13 @@ namespace AddressRegistry.StreetName
         public void CorrectAddressRemoval(AddressPersistentLocalId addressPersistentLocalId)
         {
             GuardActiveStreetName();
-            
+
             var addressToCorrect = StreetNameAddresses.GetByPersistentLocalId(addressPersistentLocalId);
 
             if (addressToCorrect.IsBoxNumberAddress)
             {
                 var parent = addressToCorrect.Parent;
-                
+
                 if (parent!.IsRemoved)
                 {
                     throw new ParentAddressIsRemovedException(PersistentLocalId, addressToCorrect.HouseNumber);

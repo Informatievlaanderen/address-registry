@@ -91,6 +91,31 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
         }
 
         [Fact]
+        public async Task AddressWasProposedForMunicipalityMerger()
+        {
+            var addressWasProposedForMunicipalityMerger = _fixture.Create<AddressWasProposedForMunicipalityMerger>();
+
+            await Sut
+                .Given(new Envelope<AddressWasProposedForMunicipalityMerger>(new Envelope(addressWasProposedForMunicipalityMerger, new Dictionary<string, object>())))
+                .Then(async ct =>
+                {
+                    var addressWfsItem = (await ct.AddressWfsItems.FindAsync(addressWasProposedForMunicipalityMerger.AddressPersistentLocalId));
+                    addressWfsItem.Should().NotBeNull();
+                    addressWfsItem!.StreetNamePersistentLocalId.Should().Be(addressWasProposedForMunicipalityMerger.StreetNamePersistentLocalId);
+                    addressWfsItem.HouseNumber.Should().Be(addressWasProposedForMunicipalityMerger.HouseNumber);
+                    addressWfsItem.BoxNumber.Should().Be(addressWasProposedForMunicipalityMerger.BoxNumber);
+                    addressWfsItem.PostalCode.Should().Be(addressWasProposedForMunicipalityMerger.PostalCode);
+                    addressWfsItem.Status.Should().Be(AddressWfsProjections.MapStatus(AddressStatus.Proposed));
+                    addressWfsItem.OfficiallyAssigned.Should().Be(addressWasProposedForMunicipalityMerger.OfficiallyAssigned);
+                    addressWfsItem.Position.Should().BeEquivalentTo((Point)_wkbReader.Read(addressWasProposedForMunicipalityMerger.ExtendedWkbGeometry.ToByteArray()));
+                    addressWfsItem.PositionMethod.Should().Be(AddressWfsProjections.ConvertGeometryMethodToString(addressWasProposedForMunicipalityMerger.GeometryMethod));
+                    addressWfsItem.PositionSpecification.Should().Be(AddressWfsProjections.ConvertGeometrySpecificationToString(addressWasProposedForMunicipalityMerger.GeometrySpecification));
+                    addressWfsItem.Removed.Should().BeFalse();
+                    addressWfsItem.VersionTimestamp.Should().Be(addressWasProposedForMunicipalityMerger.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
         public async Task WhenAddressWasApproved()
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();

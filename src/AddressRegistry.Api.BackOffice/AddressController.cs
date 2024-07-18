@@ -5,7 +5,6 @@ namespace AddressRegistry.Api.BackOffice
     using System.Linq;
     using Asp.Versioning;
     using Be.Vlaanderen.Basisregisters.Api;
-    using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Middleware;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Sqs.Requests;
     using FluentValidation;
@@ -75,7 +74,7 @@ namespace AddressRegistry.Api.BackOffice
             };
         }
 
-        protected Provenance CreateProvenance(Modification modification)
-            => _provenanceFactory.Create(new Reason(""), modification);
+        protected Provenance CreateProvenance(Modification modification, string reason = "")
+            => _provenanceFactory.Create(new Reason(reason), modification);
     }
 }

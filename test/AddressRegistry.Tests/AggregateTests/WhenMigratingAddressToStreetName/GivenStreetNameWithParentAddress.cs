@@ -23,6 +23,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenMigratingAddressToStreetName
         {
             Fixture.Customize(new InfrastructureCustomization());
             Fixture.Customize(new WithFixedStreetNamePersistentLocalId());
+            Fixture.Customize(new WithFixedValidHouseNumber());
             Fixture.Customize(new WithoutParentAddressPersistentLocalId());
             Fixture.Customize(new WithExtendedWkbGeometry());
             Fixture.Customize(new WithFlemishNisCode());

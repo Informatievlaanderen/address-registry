@@ -109,6 +109,27 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
                     .AddAsync(addressWfsItem, ct);
             });
 
+            When<Envelope<AddressWasProposedForMunicipalityMerger>>(async (context, message, ct) =>
+            {
+                var addressWfsItem = new AddressWfsItem(
+                    message.Message.AddressPersistentLocalId,
+                    message.Message.StreetNamePersistentLocalId,
+                    message.Message.PostalCode,
+                    message.Message.HouseNumber,
+                    message.Message.BoxNumber,
+                    MapStatus(AddressStatus.Proposed),
+                    officiallyAssigned: message.Message.OfficiallyAssigned,
+                    ParsePosition(message.Message.ExtendedWkbGeometry),
+                    ConvertGeometryMethodToString(message.Message.GeometryMethod)!,
+                    ConvertGeometrySpecificationToString(message.Message.GeometrySpecification)!,
+                    removed: false,
+                    message.Message.Provenance.Timestamp);
+
+                await context
+                    .AddressWfsItems
+                    .AddAsync(addressWfsItem, ct);
+            });
+
             When<Envelope<AddressWasApproved>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressDetail(

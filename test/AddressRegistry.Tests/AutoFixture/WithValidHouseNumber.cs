@@ -8,12 +8,13 @@
     {
         public void Customize(IFixture fixture)
         {
-            var houseNumber = fixture.Create<int>().ToString();
+            fixture.Customize<HouseNumber>(c =>
+                c.FromFactory(() =>
+                    new HouseNumber(fixture.Create<int>().ToString())));
 
-            fixture.Customize<HouseNumber>(c => c.FromFactory(() => new HouseNumber(houseNumber)));
             fixture.Customizations.Add(
                 new FilteringSpecimenBuilder(
-                    new FixedBuilder(houseNumber),
+                    new SpecimenFactory<string>(() => fixture.Create<int>().ToString()),
                     new ParameterSpecification(
                         typeof(string),
                         "houseNumber")));

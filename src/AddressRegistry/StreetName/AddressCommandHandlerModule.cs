@@ -1,6 +1,7 @@
 namespace AddressRegistry.StreetName
 {
     using System;
+    using System.Linq;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
@@ -66,6 +67,35 @@ namespace AddressRegistry.StreetName
                         message.Command.GeometrySpecification,
                         message.Command.Position);
                 });
+
+            For<ProposeAddressesForMunicipalityMerger>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<ProposeAddressesForMunicipalityMerger, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streetNameStreamId = new StreetNameStreamId(message.Command.StreetNamePersistentLocalId);
+                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+
+                    var sortedAddresses = message.Command.Addresses
+                        .OrderBy(x => x.HouseNumber)
+                        .ThenBy(x => x.BoxNumber)
+                        .ToList();
+                    foreach (var address in sortedAddresses)
+                    {
+                        streetName.ProposeAddressForMunicipalityMerger(
+                            address.AddressPersistentLocalId,
+                            address.PostalCode,
+                            address.HouseNumber,
+                            address.BoxNumber,
+                            address.GeometryMethod,
+                            address.GeometrySpecification,
+                            address.Position,
+                            address.OfficiallyAssigned,
+                            address.MergedAddressPersistentLocalId);
+                    }
+                });
+
 
             For<ApproveAddress>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
@@ -291,7 +321,7 @@ namespace AddressRegistry.StreetName
                     streetName.ChangeAddressPostalCode(message.Command.AddressPersistentLocalId, message.Command.PostalCode);
                 });
 
-           For<Readdress>()
+            For<Readdress>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
                 .AddEventHash<Readdress, StreetName>(getUnitOfWork)
                 .AddProvenance(getUnitOfWork, provenanceFactory)
@@ -327,17 +357,17 @@ namespace AddressRegistry.StreetName
                         lazyPersistentLocalIdGenerator.Value);
                 });
 
-           For<RejectOrRetireAddressForReaddress>()
-               .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
-               .AddEventHash<RejectOrRetireAddressForReaddress, StreetName>(getUnitOfWork)
-               .AddProvenance(getUnitOfWork, provenanceFactory)
-               .Handle(async (message, ct) =>
-               {
-                   var streetNameStreamId = new StreetNameStreamId(message.Command.StreetNamePersistentLocalId);
-                   var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+            For<RejectOrRetireAddressForReaddress>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<RejectOrRetireAddressForReaddress, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streetNameStreamId = new StreetNameStreamId(message.Command.StreetNamePersistentLocalId);
+                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
 
-                   streetName.RejectOrRetireAddressForReaddress(message.Command.AddressPersistentLocalId);
-               });
+                    streetName.RejectOrRetireAddressForReaddress(message.Command.AddressPersistentLocalId);
+                });
         }
     }
 }

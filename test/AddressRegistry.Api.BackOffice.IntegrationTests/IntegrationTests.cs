@@ -35,6 +35,7 @@ namespace AddressRegistry.Api.BackOffice.IntegrationTests
         [InlineData("/v2/adressen/1/acties/corrigeren/regularisatie", "dv_ar_adres_beheer")]
         [InlineData("/v2/adressen/1/acties/corrigeren/deregularisatie", "dv_ar_adres_beheer")]
         [InlineData("/v2/adressen/1/acties/corrigeren/verwijdering", "dv_ar_adres_beheer dv_ar_adres_uitzonderingen")]
+        [InlineData("/v2/adressen/acties/voorstellen/gemeentefusie/10000", "dv_ar_adres_uitzonderingen")]
         [InlineData("/v2/adressen/1/acties/wijzigen/adrespositie", "dv_ar_adres_beheer")]
         [InlineData("/v2/adressen/1/acties/wijzigen/postcode", "dv_ar_adres_beheer dv_ar_adres_uitzonderingen")]
         [InlineData("/v2/adressen/acties/heradresseren", "dv_ar_adres_beheer")]
@@ -49,6 +50,7 @@ namespace AddressRegistry.Api.BackOffice.IntegrationTests
             Assert.NotNull(response);
             Assert.NotEqual(HttpStatusCode.Unauthorized, response.StatusCode);
             Assert.NotEqual(HttpStatusCode.Forbidden, response.StatusCode);
+            Assert.NotEqual(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Theory]
@@ -69,6 +71,7 @@ namespace AddressRegistry.Api.BackOffice.IntegrationTests
         [InlineData("/v2/adressen/1/acties/corrigeren/regularisatie")]
         [InlineData("/v2/adressen/1/acties/corrigeren/deregularisatie")]
         [InlineData("/v2/adressen/1/acties/corrigeren/verwijdering")]
+        [InlineData("/v2/adressen/acties/voorstellen/gemeentefusie/10000")]
         [InlineData("/v2/adressen/1/acties/wijzigen/adrespositie")]
         [InlineData("/v2/adressen/1/acties/wijzigen/postcode")]
         [InlineData("/v2/adressen/acties/heradresseren")]
@@ -104,6 +107,7 @@ namespace AddressRegistry.Api.BackOffice.IntegrationTests
         [InlineData("/v2/adressen/1/acties/corrigeren/verwijdering")]
         [InlineData("/v2/adressen/1/acties/corrigeren/verwijdering", "dv_ar_adres_beheer")]
         [InlineData("/v2/adressen/1/acties/corrigeren/verwijdering", "dv_ar_adres_uitzonderingen")]
+        [InlineData("/v2/adressen/acties/voorstellen/gemeentefusie/10000", "dv_ar_adres_beheer")]
         [InlineData("/v2/adressen/1/acties/wijzigen/adrespositie")]
         [InlineData("/v2/adressen/1/acties/wijzigen/postcode")]
         [InlineData("/v2/adressen/1/acties/wijzigen/postcode", "dv_ar_adres_beheer")]

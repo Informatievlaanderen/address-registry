@@ -1,9 +1,14 @@
-﻿namespace AddressRegistry.Projections.Integration
+﻿namespace AddressRegistry.Projections.Integration.Version
 {
     using System;
     using System.Threading.Tasks;
     using Dapper;
     using Microsoft.Data.SqlClient;
+
+    public interface IEventsRepository
+    {
+        Task<int?> GetAddressPersistentLocalId(Guid addressId);
+    }
 
     public class EventsRepository : IEventsRepository
 

@@ -364,6 +364,38 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.Infrastructure
         }
 
         [Fact]
+        public async Task WhenProposeAddressesForMunicipalityMergerSqsRequest_ThenProposeAddressesForMunicipalityMergerLambdaRequestIsSent()
+        {
+            // Arrange
+            var mediator = new Mock<IMediator>();
+            var containerBuilder = new ContainerBuilder();
+            containerBuilder.Register(_ => mediator.Object);
+            var container = containerBuilder.Build();
+
+            var sqsRequest = Fixture.Create<ProposeAddressesForMunicipalityMergerSqsRequest>();
+            var messageMetadata = new MessageMetadata { MessageGroupId = Fixture.Create<string>() };
+
+            var sut = new MessageHandler(container);
+
+            // Act
+            await sut.HandleMessage(
+                sqsRequest,
+                messageMetadata,
+                It.IsAny<CancellationToken>());
+
+            // Assert
+            mediator
+                .Verify(x => x.Send(It.Is<ProposeAddressesForMunicipalityMergerLambdaRequest>(actualRequest =>
+                    actualRequest.TicketId == sqsRequest.TicketId
+                    && actualRequest.MessageGroupId == messageMetadata.MessageGroupId
+                    && actualRequest.Addresses == sqsRequest.Addresses
+                    && actualRequest.IfMatchHeaderValue == null
+                    && actualRequest.Provenance == sqsRequest.ProvenanceData.ToProvenance()
+                    && actualRequest.Metadata == sqsRequest.Metadata
+                ), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
         public async Task WhenRegularizeRequest_ThenRegularizeRequestIsSent()
         {
             // Arrange

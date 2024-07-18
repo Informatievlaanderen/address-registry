@@ -86,6 +86,28 @@ namespace AddressRegistry.Tests.ProjectionTests.BackOffice
         }
 
         [Fact]
+        public async Task GivenAddressWasProposedForMunicipalityMerger_ThenRelationIsAdded()
+        {
+            var addressWasProposedForMunicipalityMerger = _fixture.Create<AddressWasProposedForMunicipalityMerger>();
+
+            await Sut
+                .Given(new Envelope<AddressWasProposedForMunicipalityMerger>(new Envelope(addressWasProposedForMunicipalityMerger, new Dictionary<string, object>
+                {
+                    { Envelope.CreatedUtcMetadataKey, DateTime.UtcNow }
+                })))
+                .Then(async _ =>
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(DelayInSeconds + 1));
+                    var result = await _fakeBackOfficeContext
+                        .AddressPersistentIdStreetNamePersistentIds
+                        .FindAsync(addressWasProposedForMunicipalityMerger.AddressPersistentLocalId);
+
+                    result.Should().NotBeNull();
+                    result!.StreetNamePersistentLocalId.Should().Be(addressWasProposedForMunicipalityMerger.StreetNamePersistentLocalId);
+                });
+        }
+
+        [Fact]
         public async Task GivenAddressWasProposedBecauseReaddress_ThenRelationIsAdded()
         {
             var @event = _fixture.Create<AddressWasProposedBecauseOfReaddress>();

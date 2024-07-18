@@ -15,6 +15,7 @@
     using Projections.Integration;
     using Projections.Integration.Convertors;
     using Projections.Integration.Infrastructure;
+    using Projections.Integration.LatestItem;
     using StreetName;
     using StreetName.DataStructures;
     using StreetName.Events;
@@ -116,6 +117,48 @@
                     expectedLatestItem.Namespace.Should().Be(Namespace);
                     expectedLatestItem.PuriId.Should().Be($"{Namespace}/{addressWasProposedV2.AddressPersistentLocalId}");
                     expectedLatestItem.VersionTimestamp.Should().Be(addressWasProposedV2.Provenance.Timestamp);
+                    expectedLatestItem.Geometry.Should().BeEquivalentTo(geometry);
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressWasProposedForMunicipalityMerger()
+        {
+            var addressWasProposedForMunicipalityMerger = _fixture.Create<AddressWasProposedForMunicipalityMerger>();
+
+            var geometry = WKBReaderFactory.CreateForLegacy().Read(
+                addressWasProposedForMunicipalityMerger.ExtendedWkbGeometry.ToByteArray());
+
+            var position = _fixture.Create<long>();
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, position }
+            };
+
+            await Sut
+                .Given(new Envelope<AddressWasProposedForMunicipalityMerger>(new Envelope(addressWasProposedForMunicipalityMerger, metadata)))
+                .Then(async ct =>
+                {
+                    var expectedLatestItem =
+                        await ct.AddressLatestItems.FindAsync(addressWasProposedForMunicipalityMerger.AddressPersistentLocalId);
+                    expectedLatestItem.Should().NotBeNull();
+                    expectedLatestItem!.StreetNamePersistentLocalId.Should().Be(addressWasProposedForMunicipalityMerger.StreetNamePersistentLocalId);
+                    expectedLatestItem.ParentPersistentLocalId.Should().Be(addressWasProposedForMunicipalityMerger.ParentPersistentLocalId);
+                    expectedLatestItem.HouseNumber.Should().Be(addressWasProposedForMunicipalityMerger.HouseNumber);
+                    expectedLatestItem.BoxNumber.Should().Be(addressWasProposedForMunicipalityMerger.BoxNumber);
+                    expectedLatestItem.PostalCode.Should().Be(addressWasProposedForMunicipalityMerger.PostalCode);
+                    expectedLatestItem.Status.Should().Be(AddressStatus.Proposed);
+                    expectedLatestItem.OsloStatus.Should().Be(AddressStatus.Proposed.Map());
+                    expectedLatestItem.OfficiallyAssigned.Should().Be(addressWasProposedForMunicipalityMerger.OfficiallyAssigned);
+                    expectedLatestItem.PositionMethod.Should().Be(addressWasProposedForMunicipalityMerger.GeometryMethod);
+                    expectedLatestItem.OsloPositionMethod.Should().Be(addressWasProposedForMunicipalityMerger.GeometryMethod.ToPositieGeometrieMethode());
+                    expectedLatestItem.PositionSpecification.Should().Be(addressWasProposedForMunicipalityMerger.GeometrySpecification);
+                    expectedLatestItem.OsloPositionSpecification.Should().Be(addressWasProposedForMunicipalityMerger.GeometrySpecification.ToPositieSpecificatie());
+                    expectedLatestItem.Removed.Should().Be(false);
+                    expectedLatestItem.Namespace.Should().Be(Namespace);
+                    expectedLatestItem.PuriId.Should().Be($"{Namespace}/{addressWasProposedForMunicipalityMerger.AddressPersistentLocalId}");
+                    expectedLatestItem.VersionTimestamp.Should().Be(addressWasProposedForMunicipalityMerger.Provenance.Timestamp);
                     expectedLatestItem.Geometry.Should().BeEquivalentTo(geometry);
                 });
         }

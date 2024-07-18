@@ -26,6 +26,8 @@ nuget Npgsql.EntityFrameworkCore.PostgreSQL 8.0.2
 nuget Npgsql.EntityFrameworkCore.PostgreSQL.Design 2.0.0-preview1
 nuget Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite 8.0.2
 
+nuget CsvHelper 33.0.1
+
 // VBR STUFF
 nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 7.2.5
 nuget Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events 4.0.0 content: true, copy_content_to_output_dir: always, copy_local: true

@@ -44,7 +44,7 @@ namespace AddressRegistry.Projections.Integration.Migrations
                     b.ToTable("address_id_address_persistent_local_id", "integration_address");
                 });
 
-            modelBuilder.Entity("AddressRegistry.Projections.Integration.AddressLatestItem", b =>
+            modelBuilder.Entity("AddressRegistry.Projections.Integration.LatestItem.AddressLatestItem", b =>
                 {
                     b.Property<int>("PersistentLocalId")
                         .HasColumnType("integer")
@@ -152,7 +152,27 @@ namespace AddressRegistry.Projections.Integration.Migrations
                     b.ToTable("address_latest_items", "integration_address");
                 });
 
-            modelBuilder.Entity("AddressRegistry.Projections.Integration.AddressVersion", b =>
+            modelBuilder.Entity("AddressRegistry.Projections.Integration.Merger.AddressMergerItem", b =>
+                {
+                    b.Property<int>("NewPersistentLocalId")
+                        .HasColumnType("integer")
+                        .HasColumnName("new_persistent_local_id");
+
+                    b.Property<int>("MergedPersistentLocalId")
+                        .HasColumnType("integer")
+                        .HasColumnName("merged_persistent_local_id");
+
+                    b.HasKey("NewPersistentLocalId", "MergedPersistentLocalId")
+                        .HasAnnotation("SqlServer:Clustered", true);
+
+                    b.HasIndex("MergedPersistentLocalId");
+
+                    b.HasIndex("NewPersistentLocalId");
+
+                    b.ToTable("address_merger_items", "integration_address");
+                });
+
+            modelBuilder.Entity("AddressRegistry.Projections.Integration.Version.AddressVersion", b =>
                 {
                     b.Property<long>("Position")
                         .HasColumnType("bigint")

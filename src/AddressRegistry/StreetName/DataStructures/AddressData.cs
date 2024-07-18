@@ -19,6 +19,7 @@ namespace AddressRegistry.StreetName.DataStructures
         public bool IsOfficiallyAssigned { get; }
         public bool IsRemoved { get; }
         public int? ParentId { get; }
+        public int? MergedAddressPersistentLocalId { get; }
 
         public Guid? LegacyAddressId { get; }
         public string LastEventHash { get; }
@@ -34,6 +35,7 @@ namespace AddressRegistry.StreetName.DataStructures
                 address.IsOfficiallyAssigned,
                 address.IsRemoved,
                 address.Parent,
+                address.MergedAddressPersistentLocalId,
                 address.LegacyAddressId,
                 address.LastEventHash,
                 address.LastProvenanceData)
@@ -49,6 +51,7 @@ namespace AddressRegistry.StreetName.DataStructures
             bool isOfficiallyAssigned,
             bool isRemoved,
             StreetNameAddress? parent,
+            AddressPersistentLocalId? mergedAddressPersistentLocalId,
             AddressId? legacyAddressId,
             string lastEventHash,
             ProvenanceData lastProvenanceData)
@@ -70,6 +73,7 @@ namespace AddressRegistry.StreetName.DataStructures
             IsOfficiallyAssigned = isOfficiallyAssigned;
             IsRemoved = isRemoved;
             ParentId = parent is null ? (int?)null : parent.AddressPersistentLocalId;
+            MergedAddressPersistentLocalId = mergedAddressPersistentLocalId is null ? (int?)null : mergedAddressPersistentLocalId;
             LegacyAddressId = legacyAddressId is null ? (Guid?)null : legacyAddressId;
             LastEventHash = lastEventHash;
             LastProvenanceData = lastProvenanceData;
@@ -88,6 +92,7 @@ namespace AddressRegistry.StreetName.DataStructures
             bool isOfficiallyAssigned,
             bool isRemoved,
             int? parentId,
+            int? mergedAddressPersistentLocalId,
             Guid? legacyAddressId,
             string lastEventHash,
             ProvenanceData lastProvenanceData)
@@ -106,6 +111,7 @@ namespace AddressRegistry.StreetName.DataStructures
             IsRemoved = isRemoved;
 
             ParentId = parentId;
+            MergedAddressPersistentLocalId = mergedAddressPersistentLocalId;
             LegacyAddressId = legacyAddressId;
             LastEventHash = lastEventHash;
             LastProvenanceData = lastProvenanceData;

@@ -3,7 +3,6 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddress
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using Address;
     using AddressRegistry.Api.BackOffice;
     using AddressRegistry.Api.BackOffice.Abstractions.Requests;
     using AddressRegistry.Api.BackOffice.Abstractions.SqsRequests;

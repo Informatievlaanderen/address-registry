@@ -100,6 +100,16 @@ namespace AddressRegistry.Consumer.Projections
                 );
             }
 
+            if (type == typeof(StreetNameWasRejectedBecauseOfMunicipalityMerger))
+            {
+                var msg = (StreetNameWasRejectedBecauseOfMunicipalityMerger)message;
+                return new RejectStreetNameBecauseOfMunicipalityMerger(
+                    new StreetNamePersistentLocalId(msg.PersistentLocalId),
+                    msg.NewPersistentLocalIds.Select(x => new StreetNamePersistentLocalId(x)),
+                    FromProvenance(msg.Provenance)
+                );
+            }
+
             if (type == typeof(StreetNameWasRetiredV2))
             {
                 var msg = (StreetNameWasRetiredV2)message;
@@ -191,6 +201,12 @@ namespace AddressRegistry.Consumer.Projections
             });
 
             When<StreetNameWasRejected>(async (commandHandler, message, ct) =>
+            {
+                var command = GetCommand(message);
+                await commandHandler.Handle(command, ct);
+            });
+
+            When<StreetNameWasRejectedBecauseOfMunicipalityMerger>(async (commandHandler, message, ct) =>
             {
                 var command = GetCommand(message);
                 await commandHandler.Handle(command, ct);

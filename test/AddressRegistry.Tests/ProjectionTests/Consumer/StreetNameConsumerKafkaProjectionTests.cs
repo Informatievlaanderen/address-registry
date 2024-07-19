@@ -63,6 +63,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
                     new object[] { new StreetNameWasApproved(municipalityId, streetNamePersistentLocalId, provenance) },
                     new object[] { new StreetNameWasCorrectedFromApprovedToProposed(municipalityId, streetNamePersistentLocalId, provenance) },
                     new object[] { new StreetNameWasRejected(municipalityId, streetNamePersistentLocalId, provenance) },
+                    new object[] { new StreetNameWasRejectedBecauseOfMunicipalityMerger(municipalityId, streetNamePersistentLocalId, [], provenance) },
                     new object[] { new StreetNameWasCorrectedFromRejectedToProposed(municipalityId, streetNamePersistentLocalId, provenance) },
                     new object[] { new StreetNameWasRetiredV2(municipalityId, streetNamePersistentLocalId, provenance) },
                     new object[] { new StreetNameWasRetiredBecauseOfMunicipalityMerger(municipalityId, streetNamePersistentLocalId, [], provenance) },
@@ -272,6 +273,30 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
         }
 
         [Fact]
+        public async Task GivenStreetNameWasRejectedBecauseOfMunicipalityMerger_ThenRejectStreetNameBecauseOfMunicipalityMerger()
+        {
+            var @event = new StreetNameWasRejectedBecauseOfMunicipalityMerger(
+                Fixture.Create<MunicipalityId>(),
+                Fixture.Create<PersistentLocalId>(),
+                [],
+                new Provenance(
+                    Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
+                    Application.AddressRegistry.ToString(),
+                    Modification.Update.ToString(),
+                    Organisation.Aiv.ToString(),
+                    "test"));
+
+            Given(@event);
+            await Then(async _ =>
+            {
+                _mockCommandHandler.Verify(
+                    x => x.Handle(It.Is<IHasCommandProvenance>(y => y is RejectStreetNameBecauseOfMunicipalityMerger), CancellationToken.None),
+                    Times.Once);
+                await Task.CompletedTask;
+            });
+        }
+
+        [Fact]
         public async Task GivenStreetNameWasRetiredV2_ThenRetireStreetName()
         {
             var @event = new StreetNameWasRetiredV2(
@@ -295,7 +320,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
         }
 
         [Fact]
-        public async Task GivenRetireStreetNameBecauseOfMunicipalityMerger_ThenRetireStreetNameBecauseOfMunicipalityMerger()
+        public async Task GivenStreetNameWasRetiredBecauseOfMunicipalityMerger_ThenRetireStreetNameBecauseOfMunicipalityMerger()
         {
             var @event = new StreetNameWasRetiredBecauseOfMunicipalityMerger(
                 Fixture.Create<MunicipalityId>(),

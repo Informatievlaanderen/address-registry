@@ -683,6 +683,49 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
         }
 
         [Fact]
+        public async Task WhenAddressWasRetiredBecauseOfMunicipalityMerger()
+        {
+            var houseNumberOneWasProposed = _fixture.Create<AddressWasProposedV2>()
+                .WithHouseNumber(new HouseNumber("1"));
+            var houseNumberOneWasApproved = _fixture.Create<AddressWasApproved>();
+            var houseNumberOneWasRetired = _fixture.Create<AddressWasRetiredBecauseOfMunicipalityMerger>();
+            var houseNumberTwo = CreateAddressWasMigratedToStreetName(
+                new AddressPersistentLocalId(2),
+                new HouseNumber("2"),
+                AddressStatus.Retired,
+                new ExtendedWkbGeometry(houseNumberOneWasProposed.ExtendedWkbGeometry));
+            var houseNumberThree = CreateAddressWasMigratedToStreetName(
+                new AddressPersistentLocalId(3),
+                new HouseNumber("3"),
+                AddressStatus.Current,
+                new ExtendedWkbGeometry(houseNumberOneWasProposed.ExtendedWkbGeometry));
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(houseNumberOneWasProposed, new Dictionary<string, object>())),
+                    new Envelope<AddressWasApproved>(new Envelope(houseNumberOneWasApproved, new Dictionary<string, object>())),
+                    new Envelope<AddressWasMigratedToStreetName>(new Envelope(houseNumberThree, new Dictionary<string, object>())),
+                    new Envelope<AddressWasMigratedToStreetName>(new Envelope(houseNumberTwo, new Dictionary<string, object>())),
+                    new Envelope<AddressWasRetiredBecauseOfMunicipalityMerger>(new Envelope(houseNumberOneWasRetired, new Dictionary<string, object>())))
+                .Then(async ct =>
+                {
+                    var one = await ct.AddressWmsItemsV2.FindAsync(houseNumberOneWasProposed.AddressPersistentLocalId);
+                    one.Should().NotBeNull();
+                    var two = await ct.AddressWmsItemsV2.FindAsync(houseNumberTwo.AddressPersistentLocalId);
+                    one.Should().NotBeNull();
+                    var three = await ct.AddressWmsItemsV2.FindAsync(houseNumberThree.AddressPersistentLocalId);
+                    one.Should().NotBeNull();
+
+                    one!.HouseNumberLabel.Should().Be("1-2");
+                    two!.HouseNumberLabel.Should().Be("1-2");
+                    three!.HouseNumberLabel.Should().Be("3");
+                    one.HouseNumberLabelLength.Should().Be(3);
+                    two.HouseNumberLabelLength.Should().Be(3);
+                    three.HouseNumberLabelLength.Should().Be(1);
+                });
+        }
+
+        [Fact]
         public async Task WhenAddressWasRetiredBecauseHouseNumberWasRetired()
         {
             var houseNumberOneWasProposed = _fixture.Create<AddressWasProposedV2>()

@@ -424,6 +424,41 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
         }
 
         [Fact]
+        public async Task WhenAddressWasRetiredBecauseOfMunicipalityMerger()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasApproved = _fixture.Create<AddressWasApproved>();
+            var approveMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasApproved.GetHash() }
+            };
+
+            var addressWasRetired = _fixture.Create<AddressWasRetiredBecauseOfMunicipalityMerger>();
+            var retireMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasRetired.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasApproved>(new Envelope(addressWasApproved, approveMetadata)),
+                    new Envelope<AddressWasRetiredBecauseOfMunicipalityMerger>(new Envelope(addressWasRetired, retireMetadata)))
+                .Then(async ct =>
+                {
+                    var item = (await ct.AddressWfsItems.FindAsync(addressWasRetired.AddressPersistentLocalId));
+                    item.Should().NotBeNull();
+                    item!.Status.Should().Be(AddressWfsProjections.MapStatus(AddressStatus.Retired));
+                    item.VersionTimestamp.Should().Be(addressWasRetired.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
         public async Task WhenAddressWasRetiredBecauseHouseNumberWasRetired()
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();

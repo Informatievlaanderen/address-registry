@@ -667,6 +667,20 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     ct);
             });
 
+            When<Envelope<AddressWasRetiredBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressPersistentLocalId,
+                    message,
+                    x => x.Status = AddressStatus.Retired,
+                    ct);
+
+                await context.UpdateAddressBoxNumberSyndicationHelper(
+                    message.Message.AddressPersistentLocalId,
+                    x => x.Status = AddressStatus.Retired,
+                    ct);
+            });
+
             When<Envelope<AddressWasRetiredBecauseHouseNumberWasRetired>>(async (context, message, ct) =>
             {
                 await context.CreateNewAddressSyndicationItem(

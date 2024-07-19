@@ -367,6 +367,20 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
                     updateHouseNumberLabelsAfterAddressUpdate: true);
             });
 
+            When<Envelope<AddressWasRetiredBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateAddressDetailV2(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.Status = MapStatus(AddressStatus.Retired);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    ct,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true);
+            });
+
             When<Envelope<AddressWasRetiredBecauseHouseNumberWasRetired>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressDetailV2(

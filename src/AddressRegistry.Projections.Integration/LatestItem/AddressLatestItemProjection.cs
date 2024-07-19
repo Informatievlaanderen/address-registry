@@ -315,6 +315,20 @@
                     ct);
             });
 
+            When<Envelope<AddressWasRetiredBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateAddressLatestItem(
+                    message.Message.AddressPersistentLocalId,
+                    message.Position,
+                    item =>
+                    {
+                        item.Status = AddressStatus.Retired;
+                        item.OsloStatus = AddressStatus.Retired.Map();
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+            });
+
             When<Envelope<AddressWasRetiredBecauseHouseNumberWasRetired>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressLatestItem(

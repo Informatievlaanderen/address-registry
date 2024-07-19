@@ -333,6 +333,11 @@ namespace AddressRegistry.Projections.LastChangedList
                 await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
             });
 
+            When<Envelope<AddressWasRetiredBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            {
+                await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
+            });
+
             When<Envelope<AddressWasRetiredBecauseHouseNumberWasRetired>>(async (context, message, ct) =>
             {
                 await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);

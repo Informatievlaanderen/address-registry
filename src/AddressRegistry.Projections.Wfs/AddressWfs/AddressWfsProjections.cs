@@ -254,6 +254,16 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
             });
 
+            When<Envelope<AddressWasRetiredBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    item => item.Status = MapStatus(AddressStatus.Retired),
+                    ct);
+
+                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+            });
+
             When<Envelope<AddressWasRetiredBecauseHouseNumberWasRetired>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressDetail(

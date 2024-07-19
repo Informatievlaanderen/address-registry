@@ -305,6 +305,20 @@ namespace AddressRegistry.Projections.Legacy.AddressDetailV2
                 UpdateHash(item, message);
             });
 
+            When<Envelope<AddressWasRetiredBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressDetailV2(
+                    message.Message.AddressPersistentLocalId,
+                    item =>
+                    {
+                        item.Status = AddressStatus.Retired;
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+
+                UpdateHash(item, message);
+            });
+
             When<Envelope<AddressWasRetiredBecauseHouseNumberWasRetired>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressDetailV2(

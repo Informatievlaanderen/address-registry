@@ -20,6 +20,9 @@ namespace AddressRegistry.StreetName
         public IEnumerable<StreetNameAddress> ProposedStreetNameAddresses =>
             this.Where(x => x is { IsRemoved: false, Status: AddressStatus.Proposed });
 
+        public IEnumerable<StreetNameAddress> ProposedStreetNameAddressesFromMunicipalityMerger =>
+            this.Where(x => x is { IsRemoved: false, Status: AddressStatus.Proposed, MergedAddressPersistentLocalId: not null });
+
         public IEnumerable<StreetNameAddress> CurrentStreetNameAddresses =>
             this.Where(x => x is { IsRemoved: false, Status: AddressStatus.Current });
 

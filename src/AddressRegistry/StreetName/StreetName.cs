@@ -48,6 +48,16 @@ namespace AddressRegistry.StreetName
             {
                 ApplyChange(new StreetNameWasApproved(PersistentLocalId));
             }
+
+            foreach (var address in StreetNameAddresses.ProposedStreetNameAddressesFromMunicipalityMerger.Where(x => x.IsHouseNumberAddress))
+            {
+                address.Approve();
+            }
+
+            foreach (var address in StreetNameAddresses.ProposedStreetNameAddressesFromMunicipalityMerger.Where(x => x.IsBoxNumberAddress))
+            {
+                address.Approve();
+            }
         }
 
         public void RejectStreetName()

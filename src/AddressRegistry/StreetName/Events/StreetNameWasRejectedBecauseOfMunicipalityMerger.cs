@@ -9,7 +9,7 @@ namespace AddressRegistry.StreetName.Events
 
     [EventTags(Tag.StreetName)]
     [EventName(EventName)]
-    [EventDescription("De straatnaam werd gehistoreerd in functie van een gemeentefusie.")]
+    [EventDescription("De straatnaam werd afgekeurd in functie van een gemeentefusie.")]
     public class StreetNameWasRejectedBecauseOfMunicipalityMerger : IStreetNameEvent
     {
         public const string EventName = "StreetNameWasRejectedBecauseOfMunicipalityMerger"; // BE CAREFUL CHANGING THIS!!

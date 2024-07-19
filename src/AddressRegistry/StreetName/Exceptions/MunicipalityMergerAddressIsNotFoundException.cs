@@ -10,7 +10,7 @@ namespace AddressRegistry.StreetName.Exceptions
         { }
 
         public MunicipalityMergerAddressIsNotFoundException(AddressPersistentLocalId addressPersistentLocalId)
-            : base($"No new address was found for address with Id '{addressPersistentLocalId}' has not been found.")
+            : base($"No new address was found for address with Id '{addressPersistentLocalId}'.")
         { }
 
         private MunicipalityMergerAddressIsNotFoundException(SerializationInfo info, StreamingContext context)

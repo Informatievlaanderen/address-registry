@@ -52,6 +52,17 @@ namespace AddressRegistry.Consumer.Projections
                 );
             }
 
+            if (type == typeof(StreetNameWasProposedForMunicipalityMerger))
+            {
+                var msg = (StreetNameWasProposedForMunicipalityMerger)message;
+                return new ImportStreetName(
+                    new StreetNamePersistentLocalId(msg.PersistentLocalId),
+                    new MunicipalityId(MunicipalityId.CreateFor(msg.MunicipalityId)),
+                    StreetNameStatus.Proposed,
+                    FromProvenance(msg.Provenance, Modification.Insert)
+                );
+            }
+
             if (type == typeof(StreetNameWasApproved))
             {
                 var msg = (StreetNameWasApproved)message;
@@ -145,6 +156,12 @@ namespace AddressRegistry.Consumer.Projections
             });
 
             When<StreetNameWasProposedV2>(async (commandHandler, message, ct) =>
+            {
+                var command = GetCommand(message);
+                await commandHandler.Handle(command, ct);
+            });
+
+            When<StreetNameWasProposedForMunicipalityMerger>(async (commandHandler, message, ct) =>
             {
                 var command = GetCommand(message);
                 await commandHandler.Handle(command, ct);

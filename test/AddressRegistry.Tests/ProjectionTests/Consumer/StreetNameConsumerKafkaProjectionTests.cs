@@ -5,7 +5,6 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using Address;
     using AddressRegistry.Consumer.Projections;
     using AddressRegistry.StreetName;
     using AddressRegistry.StreetName.Commands;
@@ -59,7 +58,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
                 var result = new List<object[]>
                 {
                     new object[] { new StreetNameWasMigratedToMunicipality(municipalityId, nisCode, _fixture.Create<Guid>().ToString("D"), streetNamePersistentLocalId, _fixture.Create<StreetNameStatus>().ToString(), null, null,null,null, true, false, provenance ) },
-                    new object[] { new StreetNameWasProposedV2(municipalityId, nisCode, null, streetNamePersistentLocalId, provenance) },
+                    new object[] { new StreetNameWasProposedV2(municipalityId, nisCode, new Dictionary<string, string>(), streetNamePersistentLocalId, provenance) },
+                    new object[] { new StreetNameWasProposedForMunicipalityMerger(municipalityId, nisCode, new Dictionary<string, string>(), new Dictionary<string, string>(), streetNamePersistentLocalId, [], provenance) },
                     new object[] { new StreetNameWasApproved(municipalityId, streetNamePersistentLocalId, provenance) },
                     new object[] { new StreetNameWasCorrectedFromApprovedToProposed(municipalityId, streetNamePersistentLocalId, provenance) },
                     new object[] { new StreetNameWasRejected(municipalityId, streetNamePersistentLocalId, provenance) },
@@ -146,6 +146,33 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
             {
                 _mockCommandHandler.Verify(
                     x => x.Handle(It.Is<IHasCommandProvenance>(x => x is ImportStreetName), CancellationToken.None),
+                    Times.Once);
+                await Task.CompletedTask;
+            });
+        }
+
+        [Fact]
+        public async Task GivenStreetNameWasProposedForMunicipalityMerger_ThenImportStreetName()
+        {
+            var @event = new StreetNameWasProposedForMunicipalityMerger(
+                Fixture.Create<MunicipalityId>(),
+                Fixture.Create<NisCode>(),
+                Fixture.Create<IDictionary<string, string>>(),
+                Fixture.Create<IDictionary<string, string>>(),
+                Fixture.Create<PersistentLocalId>(),
+                [],
+                new Provenance(
+                    Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
+                    Application.AddressRegistry.ToString(),
+                    Modification.Insert.ToString(),
+                    Organisation.Aiv.ToString(),
+                    "test"));
+
+            Given(@event);
+            await Then(async _ =>
+            {
+                _mockCommandHandler.Verify(
+                    x => x.Handle(It.Is<IHasCommandProvenance>(y => y is ImportStreetName), CancellationToken.None),
                     Times.Once);
                 await Task.CompletedTask;
             });

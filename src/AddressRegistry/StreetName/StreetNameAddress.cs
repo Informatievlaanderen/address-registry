@@ -1,6 +1,7 @@
 namespace AddressRegistry.StreetName
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Events;
@@ -200,6 +201,24 @@ namespace AddressRegistry.StreetName
             }
         }
 
+        public void RejectBecauseOfMunicipalityMerger()
+        {
+            if (IsRemoved)
+            {
+                return;
+            }
+
+            if (Status == AddressStatus.Rejected)
+            {
+                return;
+            }
+
+            if (Status == AddressStatus.Proposed)
+            {
+                Apply(new AddressWasRejectedBecauseOfMunicipalityMerger(_streetNamePersistentLocalId, AddressPersistentLocalId));
+            }
+        }
+
         public void RetireBecauseStreetNameWasRetired()
         {
             if (IsRemoved)
@@ -215,6 +234,46 @@ namespace AddressRegistry.StreetName
             if (Status == AddressStatus.Current)
             {
                 Apply(new AddressWasRetiredBecauseStreetNameWasRetired(_streetNamePersistentLocalId, AddressPersistentLocalId));
+            }
+        }
+
+        public void RetireBecauseOfMunicipalityMerger(IEnumerable<StreetName> newStreetNames)
+        {
+            if (IsRemoved)
+            {
+                return;
+            }
+
+            if (Status == AddressStatus.Retired)
+            {
+                return;
+            }
+
+            AddressPersistentLocalId? newAddressPersistentLocalId = null;
+            foreach (var newStreetName in newStreetNames)
+            {
+                newAddressPersistentLocalId = newStreetName.StreetNameAddresses
+                    .SingleOrDefault(x =>
+                        x.MergedAddressPersistentLocalId is not null && x.MergedAddressPersistentLocalId == AddressPersistentLocalId)
+                    ?.AddressPersistentLocalId;
+
+                if (newAddressPersistentLocalId is not null)
+                {
+                    break;
+                }
+            }
+
+            if (newAddressPersistentLocalId is null)
+            {
+                throw new MunicipalityMergerAddressIsNotFoundException(AddressPersistentLocalId);
+            }
+
+            if (Status == AddressStatus.Current)
+            {
+                Apply(new AddressWasRetiredBecauseOfMunicipalityMerger(
+                    _streetNamePersistentLocalId,
+                    AddressPersistentLocalId,
+                    newAddressPersistentLocalId));
             }
         }
 

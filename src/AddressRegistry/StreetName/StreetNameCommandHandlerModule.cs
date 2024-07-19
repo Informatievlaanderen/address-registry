@@ -1,6 +1,8 @@
 namespace AddressRegistry.StreetName
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
@@ -105,6 +107,26 @@ namespace AddressRegistry.StreetName
                     var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
 
                     streetName.RetireStreetName();
+                });
+
+            For<RetireStreetNameBecauseOfMunicipalityMerger>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<RetireStreetNameBecauseOfMunicipalityMerger, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streetNameStreamId = new StreetNameStreamId(message.Command.PersistentLocalId);
+                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+
+                    var newStreetNames = new List<StreetName>();
+                    foreach (var newPersistentLocalId in message.Command.NewPersistentLocalIds.Distinct())
+                    {
+                        var newStreetNameStreamId = new StreetNameStreamId(newPersistentLocalId);
+                        var newStreetName = await getStreetNames().GetAsync(newStreetNameStreamId, ct);
+                        newStreetNames.Add(newStreetName);
+                    }
+
+                    streetName.RetireStreetNameBecauseOfMunicipalityMerger(newStreetNames);
                 });
 
             For<RemoveStreetName>()

@@ -75,27 +75,6 @@ namespace AddressRegistry.Tests.EventExtensions
             return newEvent;
         }
 
-        public static AddressWasProposedForMunicipalityMerger WithAddressPersistentLocalId(
-            this AddressWasProposedForMunicipalityMerger @event,
-            int addressPersistentLocalId)
-        {
-            var newEvent = new AddressWasProposedForMunicipalityMerger(
-                new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId),
-                new AddressPersistentLocalId(addressPersistentLocalId),
-                @event.ParentPersistentLocalId is not null ? new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value) : null,
-                new PostalCode(@event.PostalCode),
-                new HouseNumber(@event.HouseNumber),
-                @event.BoxNumber is not null ? new BoxNumber(@event.BoxNumber) : null,
-                @event.GeometryMethod,
-                @event.GeometrySpecification,
-                new ExtendedWkbGeometry(@event.ExtendedWkbGeometry),
-                @event.OfficiallyAssigned,
-                new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId));
-            ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
-
-            return newEvent;
-        }
-
         public static AddressWasProposedForMunicipalityMerger WithParentAddressPersistentLocalId(
             this AddressWasProposedForMunicipalityMerger @event,
             AddressPersistentLocalId? parentAddressPersistentLocalId)
@@ -117,22 +96,22 @@ namespace AddressRegistry.Tests.EventExtensions
             return newEvent;
         }
 
-        public static AddressWasProposedForMunicipalityMerger WithPostalCode(
+        public static AddressWasProposedForMunicipalityMerger WithMergedAddressPersistentLocalId(
             this AddressWasProposedForMunicipalityMerger @event,
-            PostalCode postalCode)
+            AddressPersistentLocalId mergedAddressPersistentLocalId)
         {
             var newEvent = new AddressWasProposedForMunicipalityMerger(
                 new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId),
                 new AddressPersistentLocalId(@event.AddressPersistentLocalId),
                 @event.ParentPersistentLocalId is not null ? new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value) : null,
-                postalCode,
+                new PostalCode(@event.PostalCode),
                 new HouseNumber(@event.HouseNumber),
                 @event.BoxNumber is not null ? new BoxNumber(@event.BoxNumber) : null,
                 @event.GeometryMethod,
                 @event.GeometrySpecification,
                 new ExtendedWkbGeometry(@event.ExtendedWkbGeometry),
                 @event.OfficiallyAssigned,
-                new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId));
+                mergedAddressPersistentLocalId);
             ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
 
             return newEvent;
@@ -172,69 +151,6 @@ namespace AddressRegistry.Tests.EventExtensions
                 boxNumber,
                 @event.GeometryMethod,
                 @event.GeometrySpecification,
-                new ExtendedWkbGeometry(@event.ExtendedWkbGeometry),
-                @event.OfficiallyAssigned,
-                new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId));
-            ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
-
-            return newEvent;
-        }
-
-        public static AddressWasProposedForMunicipalityMerger WithExtendedWkbGeometry(
-            this AddressWasProposedForMunicipalityMerger @event,
-            string extendedWkbGeometry)
-        {
-            var newEvent = new AddressWasProposedForMunicipalityMerger(
-                new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId),
-                new AddressPersistentLocalId(@event.AddressPersistentLocalId),
-                @event.ParentPersistentLocalId is not null ? new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value) : null,
-                new PostalCode(@event.PostalCode),
-                new HouseNumber(@event.HouseNumber),
-                @event.BoxNumber is not null ? new BoxNumber(@event.BoxNumber) : null,
-                @event.GeometryMethod,
-                @event.GeometrySpecification,
-                new ExtendedWkbGeometry(extendedWkbGeometry),
-                @event.OfficiallyAssigned,
-                new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId));
-            ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
-
-            return newEvent;
-        }
-
-        public static AddressWasProposedForMunicipalityMerger WithGeometryMethod(
-            this AddressWasProposedForMunicipalityMerger @event,
-            GeometryMethod geometryMethod)
-        {
-            var newEvent = new AddressWasProposedForMunicipalityMerger(
-                new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId),
-                new AddressPersistentLocalId(@event.AddressPersistentLocalId),
-                @event.ParentPersistentLocalId is not null ? new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value) : null,
-                new PostalCode(@event.PostalCode),
-                new HouseNumber(@event.HouseNumber),
-                @event.BoxNumber is not null ? new BoxNumber(@event.BoxNumber) : null,
-                geometryMethod,
-                @event.GeometrySpecification,
-                new ExtendedWkbGeometry(@event.ExtendedWkbGeometry),
-                @event.OfficiallyAssigned,
-                new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId));
-            ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
-
-            return newEvent;
-        }
-
-        public static AddressWasProposedForMunicipalityMerger WithGeometrySpecification(
-            this AddressWasProposedForMunicipalityMerger @event,
-            GeometrySpecification geometrySpecification)
-        {
-            var newEvent = new AddressWasProposedForMunicipalityMerger(
-                new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId),
-                new AddressPersistentLocalId(@event.AddressPersistentLocalId),
-                @event.ParentPersistentLocalId is not null ? new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value) : null,
-                new PostalCode(@event.PostalCode),
-                new HouseNumber(@event.HouseNumber),
-                @event.BoxNumber is not null ? new BoxNumber(@event.BoxNumber) : null,
-                @event.GeometryMethod,
-                geometrySpecification,
                 new ExtendedWkbGeometry(@event.ExtendedWkbGeometry),
                 @event.OfficiallyAssigned,
                 new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId));

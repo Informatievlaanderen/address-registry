@@ -47,10 +47,12 @@ namespace AddressRegistry.StreetName
             Register<AddressWasProposedForMunicipalityMerger>(When);
             Register<AddressWasApproved>(When);
             Register<AddressWasRejected>(When);
+            Register<AddressWasRejectedBecauseOfMunicipalityMerger>(When);
             Register<AddressWasRejectedBecauseHouseNumberWasRejected>(When);
             Register<AddressWasRejectedBecauseHouseNumberWasRetired>(When);
             Register<AddressWasRejectedBecauseStreetNameWasRetired>(When);
             Register<AddressWasRetiredV2>(When);
+            Register<AddressWasRetiredBecauseOfMunicipalityMerger>(When);
             Register<AddressWasRetiredBecauseHouseNumberWasRetired>(When);
             Register<AddressWasRetiredBecauseStreetNameWasRetired>(When);
             Register<AddressWasRemovedV2>(When);
@@ -151,6 +153,13 @@ namespace AddressRegistry.StreetName
             _lastEvent = @event;
         }
 
+        private void When(AddressWasRejectedBecauseOfMunicipalityMerger @event)
+        {
+            Status = AddressStatus.Rejected;
+
+            _lastEvent = @event;
+        }
+
         private void When(AddressWasRejectedBecauseHouseNumberWasRejected @event)
         {
             Status = AddressStatus.Rejected;
@@ -173,6 +182,13 @@ namespace AddressRegistry.StreetName
         }
 
         private void When(AddressWasRetiredV2 @event)
+        {
+            Status = AddressStatus.Retired;
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressWasRetiredBecauseOfMunicipalityMerger @event)
         {
             Status = AddressStatus.Retired;
 

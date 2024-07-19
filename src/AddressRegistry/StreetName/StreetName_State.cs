@@ -28,6 +28,7 @@ namespace AddressRegistry.StreetName
 
             Register<StreetNameWasApproved>(When);
             Register<StreetNameWasRejected>(When);
+            Register<StreetNameWasRejectedBecauseOfMunicipalityMerger>(When);
             Register<StreetNameWasRetired>(When);
             Register<StreetNameWasRetiredBecauseOfMunicipalityMerger>(When);
             Register<StreetNameWasRenamed>(When);
@@ -128,6 +129,11 @@ namespace AddressRegistry.StreetName
         }
 
         private void When(StreetNameWasRejected @event)
+        {
+            Status = StreetNameStatus.Rejected;
+        }
+
+        private void When(StreetNameWasRejectedBecauseOfMunicipalityMerger @event)
         {
             Status = StreetNameStatus.Rejected;
         }

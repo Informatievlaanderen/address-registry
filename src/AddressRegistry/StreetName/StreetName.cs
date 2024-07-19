@@ -70,6 +70,39 @@ namespace AddressRegistry.StreetName
             ApplyChange(new StreetNameWasRejected(PersistentLocalId));
         }
 
+        public void RejectStreetNameBecauseOfMunicipalityMerger(ICollection<StreetName> newStreetNames)
+        {
+            if (Status == StreetNameStatus.Rejected)
+            {
+                return;
+            }
+
+            foreach (var address in StreetNameAddresses.ProposedStreetNameAddresses.Where(address => address.IsBoxNumberAddress))
+            {
+                Reject(address);
+            }
+            foreach (var address in StreetNameAddresses.CurrentStreetNameAddresses.Where(address => address.IsBoxNumberAddress))
+            {
+                Retire(address);
+            }
+
+            foreach (var address in StreetNameAddresses.ProposedStreetNameAddresses.Where(address => address.IsHouseNumberAddress))
+            {
+                Reject(address);
+            }
+            foreach (var address in StreetNameAddresses.CurrentStreetNameAddresses.Where(address => address.IsHouseNumberAddress))
+            {
+                Retire(address);
+            }
+
+            ApplyChange(new StreetNameWasRejectedBecauseOfMunicipalityMerger(
+                PersistentLocalId,
+                newStreetNames.Select(x => x.PersistentLocalId)));
+
+            void Reject(StreetNameAddress address) => address.RejectBecauseOfMunicipalityMerger();
+            void Retire(StreetNameAddress address) => address.RetireBecauseOfMunicipalityMerger(newStreetNames);
+        }
+
         public void RetireStreetName()
         {
             if (Status == StreetNameStatus.Retired)

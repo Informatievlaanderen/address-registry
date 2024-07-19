@@ -97,6 +97,26 @@ namespace AddressRegistry.StreetName
                     streetName.RejectStreetName();
                 });
 
+            For<RejectStreetNameBecauseOfMunicipalityMerger>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<RejectStreetNameBecauseOfMunicipalityMerger, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streetNameStreamId = new StreetNameStreamId(message.Command.PersistentLocalId);
+                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+
+                    var newStreetNames = new List<StreetName>();
+                    foreach (var newPersistentLocalId in message.Command.NewPersistentLocalIds.Distinct())
+                    {
+                        var newStreetNameStreamId = new StreetNameStreamId(newPersistentLocalId);
+                        var newStreetName = await getStreetNames().GetAsync(newStreetNameStreamId, ct);
+                        newStreetNames.Add(newStreetName);
+                    }
+
+                    streetName.RejectStreetNameBecauseOfMunicipalityMerger(newStreetNames);
+                });
+
             For<RetireStreetName>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
                 .AddEventHash<RetireStreetName, StreetName>(getUnitOfWork)

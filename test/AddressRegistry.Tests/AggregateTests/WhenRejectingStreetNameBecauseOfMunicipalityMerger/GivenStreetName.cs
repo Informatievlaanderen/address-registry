@@ -1,4 +1,4 @@
-namespace AddressRegistry.Tests.AggregateTests.WhenRetiringStreetNameBecauseOfMunicipalityMerger
+namespace AddressRegistry.Tests.AggregateTests.WhenRejectingStreetNameBecauseOfMunicipalityMerger
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -30,11 +30,11 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringStreetNameBecauseOfMu
         }
 
         [Fact]
-        public void ThenStreetNameWasRetired()
+        public void ThenStreetNameWasRejected()
         {
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
 
-            var command = new RetireStreetNameBecauseOfMunicipalityMerger(
+            var command = new RejectStreetNameBecauseOfMunicipalityMerger(
                 streetNamePersistentLocalId,
                 [],
                 Fixture.Create<Provenance>());
@@ -42,7 +42,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringStreetNameBecauseOfMu
             var streetNameWasImported = new StreetNameWasImported(
                 streetNamePersistentLocalId,
                 Fixture.Create<MunicipalityId>(),
-                StreetNameStatus.Current);
+                StreetNameStatus.Proposed);
             ((ISetProvenance)streetNameWasImported).SetProvenance(Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -50,17 +50,17 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringStreetNameBecauseOfMu
                 .When(command)
                 .Then(
                     new Fact(new StreetNameStreamId(command.PersistentLocalId),
-                        new StreetNameWasRetiredBecauseOfMunicipalityMerger(
+                        new StreetNameWasRejectedBecauseOfMunicipalityMerger(
                             streetNamePersistentLocalId,
                             []))));
         }
 
         [Fact]
-        public void WithAlreadyRetiredStreetName_ThenNone()
+        public void WithAlreadyRejectedStreetName_ThenNone()
         {
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
 
-            var command = new RetireStreetNameBecauseOfMunicipalityMerger(
+            var command = new RejectStreetNameBecauseOfMunicipalityMerger(
                 streetNamePersistentLocalId,
                 [],
                 Fixture.Create<Provenance>());
@@ -68,7 +68,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringStreetNameBecauseOfMu
             var streetNameWasImported = new StreetNameWasImported(
                 Fixture.Create<StreetNamePersistentLocalId>(),
                 Fixture.Create<MunicipalityId>(),
-                StreetNameStatus.Retired);
+                StreetNameStatus.Rejected);
             ((ISetProvenance)streetNameWasImported).SetProvenance(Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -95,7 +95,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringStreetNameBecauseOfMu
             var newStreetName = new StreetNameFactory(NoSnapshotStrategy.Instance).Create();
             newStreetName.Initialize(new List<object>
             {
-                new StreetNameWasImported(newStreetNamePersistentLocalId, Fixture.Create<MunicipalityId>(), StreetNameStatus.Current),
+                new StreetNameWasImported(newStreetNamePersistentLocalId, Fixture.Create<MunicipalityId>(), StreetNameStatus.Proposed),
                 Fixture.Create<AddressWasProposedForMunicipalityMerger>()
                     .AsHouseNumberAddress()
                     .WithStreetNamePersistentLocalId(newStreetNamePersistentLocalId)
@@ -111,7 +111,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringStreetNameBecauseOfMu
             var streetNames = Container.Resolve<IStreetNames>();
             streetNames.Add(new StreetNameStreamId(newStreetNamePersistentLocalId), newStreetName);
 
-            var command = new RetireStreetNameBecauseOfMunicipalityMerger(
+            var command = new RejectStreetNameBecauseOfMunicipalityMerger(
                 streetNamePersistentLocalId,
                 [newStreetNamePersistentLocalId],
                 Fixture.Create<Provenance>());
@@ -119,7 +119,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringStreetNameBecauseOfMu
             var streetNameWasImported = new StreetNameWasImported(
                 streetNamePersistentLocalId,
                 Fixture.Create<MunicipalityId>(),
-                StreetNameStatus.Current);
+                StreetNameStatus.Proposed);
             ((ISetProvenance)streetNameWasImported).SetProvenance(Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -163,21 +163,21 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringStreetNameBecauseOfMu
                             currentHouseNumberAddressPersistentLocalId,
                             newHouseNumberAddressPersistentLocalId)),
                     new Fact(new StreetNameStreamId(command.PersistentLocalId),
-                        new StreetNameWasRetiredBecauseOfMunicipalityMerger(
+                        new StreetNameWasRejectedBecauseOfMunicipalityMerger(
                             streetNamePersistentLocalId,
                             [newStreetNamePersistentLocalId]))
                     ));
         }
 
         [Fact]
-        public void WithInactiveAddressess_ThenStreetNameWasRetired()
+        public void WithInactiveAddressess_ThenStreetNameWasRejected()
         {
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
 
             var rejectedAddressPersistentLocalId = new AddressPersistentLocalId(1);
             var retiredAddressPersistentLocalId = new AddressPersistentLocalId(2);
 
-            var command = new RetireStreetNameBecauseOfMunicipalityMerger(
+            var command = new RejectStreetNameBecauseOfMunicipalityMerger(
                 streetNamePersistentLocalId,
                 [],
                 Fixture.Create<Provenance>());
@@ -206,7 +206,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringStreetNameBecauseOfMu
                 .When(command)
                 .Then(
                     new Fact(new StreetNameStreamId(command.PersistentLocalId),
-                        new StreetNameWasRetiredBecauseOfMunicipalityMerger(
+                        new StreetNameWasRejectedBecauseOfMunicipalityMerger(
                             streetNamePersistentLocalId,
                             []))
                     ));
@@ -219,7 +219,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringStreetNameBecauseOfMu
 
             var currentAddressPersistentLocalId = new AddressPersistentLocalId(1);
 
-            var command = new RetireStreetNameBecauseOfMunicipalityMerger(
+            var command = new RejectStreetNameBecauseOfMunicipalityMerger(
                 streetNamePersistentLocalId,
                 [],
                 Fixture.Create<Provenance>());
@@ -252,13 +252,13 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringStreetNameBecauseOfMu
             var streetNameWasImported = new StreetNameWasImported(
                 streetNamePersistentLocalId,
                 Fixture.Create<MunicipalityId>(),
-                StreetNameStatus.Current);
+                StreetNameStatus.Proposed);
             ((ISetProvenance)streetNameWasImported).SetProvenance(Fixture.Create<Provenance>());
 
-            var streetNameWasRetired = new StreetNameWasRetiredBecauseOfMunicipalityMerger(
+            var streetNameWasRejected = new StreetNameWasRejectedBecauseOfMunicipalityMerger(
                 streetNamePersistentLocalId,
                 []);
-            ((ISetProvenance)streetNameWasRetired).SetProvenance(Fixture.Create<Provenance>());
+            ((ISetProvenance)streetNameWasRejected).SetProvenance(Fixture.Create<Provenance>());
 
             var sut = new StreetNameFactory(NoSnapshotStrategy.Instance).Create();
             sut.Initialize(new List<object>
@@ -277,10 +277,10 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRetiringStreetNameBecauseOfMu
                     new AddressWasRejectedBecauseOfMunicipalityMerger(
                         streetNamePersistentLocalId,
                         addressPersistentLocalIdTwo),
-                streetNameWasRetired
+                streetNameWasRejected
             });
 
-            sut.Status.Should().Be(StreetNameStatus.Retired);
+            sut.Status.Should().Be(StreetNameStatus.Rejected);
 
             var retiredAddress = sut.StreetNameAddresses.First(x => x.AddressPersistentLocalId == addressPersistentLocalIdOne);
             var rejectedAddress = sut.StreetNameAddresses.First(x => x.AddressPersistentLocalId == addressPersistentLocalIdTwo);

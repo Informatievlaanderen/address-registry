@@ -1,6 +1,7 @@
 namespace AddressRegistry.Consumer.Projections
 {
     using System;
+    using System.Linq;
     using AddressRegistry.StreetName;
     using AddressRegistry.StreetName.Commands;
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts;
@@ -108,6 +109,16 @@ namespace AddressRegistry.Consumer.Projections
                 );
             }
 
+            if (type == typeof(StreetNameWasRetiredBecauseOfMunicipalityMerger))
+            {
+                var msg = (StreetNameWasRetiredBecauseOfMunicipalityMerger)message;
+                return new RetireStreetNameBecauseOfMunicipalityMerger(
+                    new StreetNamePersistentLocalId(msg.PersistentLocalId),
+                    msg.NewPersistentLocalIds.Select(x => new StreetNamePersistentLocalId(x)),
+                    FromProvenance(msg.Provenance)
+                );
+            }
+
             if (type == typeof(StreetNameWasRenamed))
             {
                 var msg = (StreetNameWasRenamed)message;
@@ -209,6 +220,12 @@ namespace AddressRegistry.Consumer.Projections
             });
 
             When<StreetNameWasRetiredV2>(async (commandHandler, message, ct) =>
+            {
+                var command = GetCommand(message);
+                await commandHandler.Handle(command, ct);
+            });
+
+            When<StreetNameWasRetiredBecauseOfMunicipalityMerger>(async (commandHandler, message, ct) =>
             {
                 var command = GetCommand(message);
                 await commandHandler.Handle(command, ct);

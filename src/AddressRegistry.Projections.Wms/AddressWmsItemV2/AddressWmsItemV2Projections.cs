@@ -242,6 +242,20 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
                     updateHouseNumberLabelsAfterAddressUpdate: true);
             });
 
+            When<Envelope<AddressWasRejectedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateAddressDetailV2(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.Status = MapStatus(AddressStatus.Rejected);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    ct,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true);
+            });
+
             When<Envelope<AddressWasRejectedBecauseHouseNumberWasRejected>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressDetailV2(

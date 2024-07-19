@@ -166,6 +166,19 @@
                     ct);
             });
 
+            When<Envelope<AddressWasRejectedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(message.Message.AddressPersistentLocalId),
+                    message,
+                    item =>
+                    {
+                        item.Status = AddressStatus.Rejected;
+                        item.OsloStatus = AddressStatus.Rejected.Map();
+                    },
+                    ct);
+            });
+
             When<Envelope<AddressWasRejectedBecauseHouseNumberWasRejected>>(async (context, message, ct) =>
             {
                 await context.CreateNewAddressVersion(

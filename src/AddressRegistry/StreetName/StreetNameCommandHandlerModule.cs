@@ -119,6 +119,18 @@ namespace AddressRegistry.StreetName
                     streetName.RemoveStreetName();
                 });
 
+            For<ChangeStreetNameNames>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<ChangeStreetNameNames, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streetNameStreamId = new StreetNameStreamId(message.Command.PersistentLocalId);
+                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+
+                    streetName.ChangeStreetNameNames(message.Command.StreetNameNames);
+                });
+
             For<CorrectStreetNameNames>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
                 .AddEventHash<CorrectStreetNameNames, StreetName>(getUnitOfWork)

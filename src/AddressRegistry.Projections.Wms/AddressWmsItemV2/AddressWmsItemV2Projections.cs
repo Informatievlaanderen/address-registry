@@ -28,7 +28,23 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
         public AddressWmsItemV2Projections(WKBReader wkbReader)
         {
             _wkbReader = wkbReader;
-            // StreetName
+
+            #region StreetName
+
+            When<Envelope<StreetNameNamesWereChanged>>(async (context, message, ct) =>
+            {
+                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
+                {
+                    await context.FindAndUpdateAddressDetailV2(
+                        addressPersistentLocalId,
+                        address => { UpdateVersionTimestampIfNewer(address, message.Message.Provenance.Timestamp); },
+                        ct,
+                        updateHouseNumberLabelsBeforeAddressUpdate: false,
+                        updateHouseNumberLabelsAfterAddressUpdate: false,
+                        allowUpdateRemovedAddress: true);
+                }
+            });
+
             When<Envelope<StreetNameNamesWereCorrected>>(async (context, message, ct) =>
             {
                 foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
@@ -70,6 +86,8 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
                         allowUpdateRemovedAddress: true);
                 }
             });
+
+            #endregion StreetName
 
             // Address
             When<Envelope<AddressWasMigratedToStreetName>>(async (context, message, ct) =>

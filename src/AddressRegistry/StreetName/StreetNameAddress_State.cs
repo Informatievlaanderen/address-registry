@@ -77,6 +77,7 @@ namespace AddressRegistry.StreetName
             Register<AddressWasRejectedBecauseOfReaddress>(When);
             Register<AddressWasRetiredBecauseOfReaddress>(When);
 
+            Register<StreetNameNamesWereChanged>(When);
             Register<StreetNameNamesWereCorrected>(When);
             Register<StreetNameHomonymAdditionsWereCorrected>(When);
             Register<StreetNameHomonymAdditionsWereRemoved>(When);
@@ -366,6 +367,11 @@ namespace AddressRegistry.StreetName
                 boxNumberAddress.PostalCode = new PostalCode(@event.PostalCode);
             }
 
+            _lastEvent = @event;
+        }
+
+        private void When(StreetNameNamesWereChanged @event)
+        {
             _lastEvent = @event;
         }
 

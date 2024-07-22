@@ -224,6 +224,14 @@ namespace AddressRegistry.Projections.LastChangedList
             When<Envelope<AddressSubaddressStatusWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
             #endregion Legacy Events
 
+            When<Envelope<StreetNameNamesWereChanged>>(async (context, message, ct) =>
+            {
+                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
+                {
+                    await GetLastChangedRecordsAndUpdatePosition(addressPersistentLocalId.ToString(), message.Position, context, ct);
+                }
+            });
+
             When<Envelope<StreetNameNamesWereCorrected>>(async (context, message, ct) =>
             {
                 foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)

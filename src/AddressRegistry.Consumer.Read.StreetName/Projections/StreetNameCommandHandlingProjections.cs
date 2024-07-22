@@ -28,6 +28,16 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections
                 await commandHandler.Handle(command, ct);
             });
 
+            When<StreetNameNamesWereChanged>(async (commandHandler, message, ct) =>
+            {
+                var command = new ChangeStreetNameNames(
+                    new StreetNamePersistentLocalId(message.PersistentLocalId),
+                    message.StreetNameNames,
+                    FromProvenance(message.Provenance));
+
+                await commandHandler.Handle(command, ct);
+            });
+
             When<StreetNameHomonymAdditionsWereCorrected>(async (commandHandler, message, ct) =>
             {
                 var command = new CorrectStreetNameHomonymAdditions(

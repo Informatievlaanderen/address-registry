@@ -22,7 +22,24 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
         {
             _producer = producer;
 
-            // StreetName
+            #region StreetName
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetNameNamesWereChanged>>(async (_, message, ct) =>
+            {
+                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
+                {
+                    await FindAndProduce(async () =>
+                            await snapshotManager.FindMatchingSnapshot(
+                                addressPersistentLocalId.ToString(),
+                                message.Message.Provenance.Timestamp,
+                                message.Message.GetHash(),
+                                message.Position,
+                                throwStaleWhenGone: false,
+                                ct),
+                        message.Position,
+                        ct);
+                }
+            });
+
             When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetNameNamesWereCorrected>>(async (_, message, ct) =>
             {
                 foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
@@ -73,6 +90,7 @@ namespace AddressRegistry.Producer.Snapshot.Oslo
                         ct);
                 }
             });
+            #endregion StreetName
 
             // Address
             When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<AddressWasMigratedToStreetName>>(async (_, message, ct) =>

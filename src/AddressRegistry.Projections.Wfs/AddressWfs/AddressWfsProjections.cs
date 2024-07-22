@@ -26,7 +26,22 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
         public AddressWfsProjections(WKBReader wkbReader)
         {
             _wkbReader = wkbReader;
-            // StreetName
+
+            #region StreetName
+
+            When<Envelope<StreetNameNamesWereChanged>>(async (context, message, ct) =>
+            {
+                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
+                {
+                    var item = await context.FindAndUpdateAddressDetail(
+                        addressPersistentLocalId,
+                        x =>  { },
+                        ct);
+
+                    UpdateVersionTimestampIfNewer(item, message.Message.Provenance.Timestamp);
+                }
+            });
+
             When<Envelope<StreetNameNamesWereCorrected>>(async (context, message, ct) =>
             {
                 foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
@@ -65,6 +80,8 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
                     UpdateVersionTimestampIfNewer(item, message.Message.Provenance.Timestamp);
                 }
             });
+
+            #endregion StreetName
 
             // Address
             When<Envelope<AddressWasMigratedToStreetName>>(async (context, message, ct) =>

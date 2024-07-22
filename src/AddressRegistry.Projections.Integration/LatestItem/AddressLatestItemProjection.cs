@@ -16,7 +16,19 @@
     {
         public AddressLatestItemProjections(IOptions<IntegrationOptions> options)
         {
-            // StreetName
+            #region StreetName
+            When<Envelope<StreetNameNamesWereChanged>>(async (context, message, ct) =>
+            {
+                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
+                {
+                    await context.FindAndUpdateAddressLatestItem(
+                        addressPersistentLocalId,
+                        message.Position,
+                        item => { UpdateVersionTimestampIfNewer(item, message.Message.Provenance.Timestamp); },
+                        ct);
+                }
+            });
+
             When<Envelope<StreetNameNamesWereCorrected>>(async (context, message, ct) =>
             {
                 foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
@@ -52,6 +64,7 @@
                         ct);
                 }
             });
+            #endregion StreetName
 
             // Address
             When<Envelope<AddressWasMigratedToStreetName>>(async (context, message, ct) =>

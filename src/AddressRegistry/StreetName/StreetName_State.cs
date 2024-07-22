@@ -31,6 +31,7 @@ namespace AddressRegistry.StreetName
             Register<StreetNameWasRetired>(When);
             Register<StreetNameWasRenamed>(When);
             Register<StreetNameWasRemoved>(When);
+            Register<StreetNameNamesWereChanged>(When);
             Register<StreetNameNamesWereCorrected>(When);
             Register<StreetNameHomonymAdditionsWereCorrected>(When);
             Register<StreetNameHomonymAdditionsWereRemoved>(When);
@@ -142,6 +143,16 @@ namespace AddressRegistry.StreetName
         private void When(StreetNameWasRemoved @event)
         {
             IsRemoved = true;
+        }
+
+        private void When(StreetNameNamesWereChanged @event)
+        {
+            foreach (var addressPersistentLocalId in @event.AddressPersistentLocalIds)
+            {
+                StreetNameAddresses
+                    .GetByPersistentLocalId(new AddressPersistentLocalId(addressPersistentLocalId))
+                    .Route(@event);
+            }
         }
 
         private void When(StreetNameNamesWereCorrected @event)

@@ -1280,6 +1280,33 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
         }
 
         [Fact]
+        public async Task WhenStreetNameNamesWereChanged()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var streetNameNamesWereChanged = _fixture.Create<StreetNameNamesWereChanged>();
+            var streetNameNamesWereChangedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, streetNameNamesWereChanged.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<StreetNameNamesWereChanged>(new Envelope(streetNameNamesWereChanged, streetNameNamesWereChangedMetadata)))
+                .Then(async ct =>
+                {
+                    var item = (await ct.AddressWfsItems.FindAsync(addressWasProposedV2.AddressPersistentLocalId));
+                    item.Should().NotBeNull();
+                    item.VersionTimestamp.Should().Be(streetNameNamesWereChanged.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
         public async Task WhenStreetNameNamesWereCorrectedWithOlderTimestamp()
         {
             var provenance = _fixture.Create<Provenance>();
@@ -1307,6 +1334,42 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
                 .Given(
                     new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
                     new Envelope<StreetNameNamesWereCorrected>(new Envelope(streetNameNamesWereCorrected, streetNameNamesWereCorrectedMetadata)))
+                .Then(async ct =>
+                {
+                    var item = (await ct.AddressWfsItems.FindAsync(addressWasProposedV2.AddressPersistentLocalId));
+                    item.Should().NotBeNull();
+                    item.VersionTimestamp.Should().Be(addressWasProposedV2.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
+        public async Task WhenStreetNameNamesWereChangedWithOlderTimestamp()
+        {
+            var provenance = _fixture.Create<Provenance>();
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var streetNameNamesWereChanged = _fixture.Create<StreetNameNamesWereChanged>();
+            var streetNameNamesWereChangedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, streetNameNamesWereChanged.GetHash() }
+            };
+            ((ISetProvenance) streetNameNamesWereChanged).SetProvenance(new Provenance(
+                provenance.Timestamp.Minus(Duration.FromDays(1)),
+                provenance.Application,
+                provenance.Reason,
+                provenance.Operator,
+                provenance.Modification,
+                provenance.Organisation
+            ));
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<StreetNameNamesWereChanged>(new Envelope(streetNameNamesWereChanged, streetNameNamesWereChangedMetadata)))
                 .Then(async ct =>
                 {
                     var item = (await ct.AddressWfsItems.FindAsync(addressWasProposedV2.AddressPersistentLocalId));

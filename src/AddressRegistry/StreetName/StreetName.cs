@@ -108,6 +108,16 @@ namespace AddressRegistry.StreetName
             }
         }
 
+        public void ChangeStreetNameNames(IDictionary<string, string> streetNameNames)
+        {
+            ApplyChange(new StreetNameNamesWereChanged(
+                PersistentLocalId,
+                streetNameNames,
+                StreetNameAddresses
+                    .Where(x => !x.IsRemoved)
+                    .Select(x => new AddressPersistentLocalId(x.AddressPersistentLocalId))));
+        }
+
         public void CorrectStreetNameNames(IDictionary<string, string> streetNameNames)
         {
             ApplyChange(new StreetNameNamesWereCorrected(

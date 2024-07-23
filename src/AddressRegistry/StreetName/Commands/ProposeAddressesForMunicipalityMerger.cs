@@ -62,6 +62,7 @@ namespace AddressRegistry.StreetName.Commands
         public ExtendedWkbGeometry Position { get; }
         public bool OfficiallyAssigned { get; }
 
+        public StreetNamePersistentLocalId MergedStreetNamePersistentLocalId { get; }
         public AddressPersistentLocalId MergedAddressPersistentLocalId { get; }
 
         public ProposeAddressesForMunicipalityMergerItem(
@@ -73,6 +74,7 @@ namespace AddressRegistry.StreetName.Commands
             GeometrySpecification geometrySpecification,
             ExtendedWkbGeometry position,
             bool officiallyAssigned,
+            StreetNamePersistentLocalId mergedStreetNamePersistentLocalId,
             AddressPersistentLocalId mergedAddressPersistentLocalId)
         {
             PostalCode = postalCode;
@@ -83,6 +85,7 @@ namespace AddressRegistry.StreetName.Commands
             GeometrySpecification = geometrySpecification;
             Position = position;
             OfficiallyAssigned = officiallyAssigned;
+            MergedStreetNamePersistentLocalId = mergedStreetNamePersistentLocalId;
             MergedAddressPersistentLocalId = mergedAddressPersistentLocalId;
         }
 
@@ -96,6 +99,7 @@ namespace AddressRegistry.StreetName.Commands
             yield return GeometrySpecification.ToString();
             yield return Position;
             yield return OfficiallyAssigned;
+            yield return MergedStreetNamePersistentLocalId;
             yield return MergedAddressPersistentLocalId;
         }
     }

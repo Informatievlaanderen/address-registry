@@ -27,6 +27,7 @@ namespace AddressRegistry.StreetName
         public AddressGeometry Geometry { get; private set; }
         public bool IsOfficiallyAssigned { get; private set; }
         public AddressPersistentLocalId? MergedAddressPersistentLocalId { get; private set; }
+        public AddressStatus? DesiredStatusAfterMunicipalityMerger { get; private set; }
         public bool IsRemoved { get; private set; }
 
         public StreetNameAddress? Parent { get; private set; }
@@ -135,6 +136,7 @@ namespace AddressRegistry.StreetName
                 @event.GeometrySpecification,
                 new ExtendedWkbGeometry(@event.ExtendedWkbGeometry));
             MergedAddressPersistentLocalId = new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId);
+            DesiredStatusAfterMunicipalityMerger = @event.DesiredStatus;
 
             _lastEvent = @event;
         }
@@ -330,6 +332,7 @@ namespace AddressRegistry.StreetName
             MergedAddressPersistentLocalId = addressData.MergedAddressPersistentLocalId.HasValue
                 ? new AddressPersistentLocalId(addressData.MergedAddressPersistentLocalId.Value)
                 : null;
+            DesiredStatusAfterMunicipalityMerger = addressData.DesiredStatusAfterMunicipalityMerger;
             LegacyAddressId = addressData.LegacyAddressId.HasValue ? new AddressId(addressData.LegacyAddressId.Value) : null;
             _lastSnapshottedEventHash = addressData.LastEventHash;
             _lastSnapshottedProvenance = addressData.LastProvenanceData;

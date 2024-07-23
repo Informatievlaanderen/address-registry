@@ -57,6 +57,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
             ExtendedWkbGeometry geometryPosition,
             AddressPersistentLocalId? parentAddressPersistentLocalId,
             AddressPersistentLocalId? mergedAddressPersistentLocalId,
+            AddressStatus? desiredStatus,
             string eventHash,
             ProvenanceData provenanceData)
         {
@@ -76,6 +77,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                 false,
                 parentAddressPersistentLocalId is null ? null : addresses.GetByPersistentLocalId(parentAddressPersistentLocalId),
                 mergedAddressPersistentLocalId,
+                desiredStatus,
                 null,
                 eventHash,
                 provenanceData));

@@ -74,8 +74,9 @@ namespace AddressRegistry.StreetName
                 .AddProvenance(getUnitOfWork, provenanceFactory)
                 .Handle(async (message, ct) =>
                 {
+                    var streetNames = getStreetNames();
                     var streetNameStreamId = new StreetNameStreamId(message.Command.StreetNamePersistentLocalId);
-                    var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
+                    var streetName = await streetNames.GetAsync(streetNameStreamId, ct);
 
                     var sortedAddresses = message.Command.Addresses
                         .OrderBy(x => x.HouseNumber)
@@ -83,6 +84,9 @@ namespace AddressRegistry.StreetName
                         .ToList();
                     foreach (var address in sortedAddresses)
                     {
+                        var oldStreetName = await streetNames.GetAsync(new StreetNameStreamId(address.MergedStreetNamePersistentLocalId), ct);
+                        var oldAddress = oldStreetName.StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(address.MergedAddressPersistentLocalId));
+
                         streetName.ProposeAddressForMunicipalityMerger(
                             address.AddressPersistentLocalId,
                             address.PostalCode,
@@ -92,7 +96,8 @@ namespace AddressRegistry.StreetName
                             address.GeometrySpecification,
                             address.Position,
                             address.OfficiallyAssigned,
-                            address.MergedAddressPersistentLocalId);
+                            address.MergedAddressPersistentLocalId,
+                            oldAddress.Status);
                     }
                 });
 

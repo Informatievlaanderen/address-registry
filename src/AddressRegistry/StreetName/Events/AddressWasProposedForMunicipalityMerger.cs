@@ -46,6 +46,9 @@ namespace AddressRegistry.StreetName.Events
         [EventPropertyDescription("Objectidentificator van het adres van de gefusioneerde gemeente waarvoor dit adres is voorgesteld.")]
         public int MergedAddressPersistentLocalId { get; }
 
+        [EventPropertyDescription("De gewenste status van het adres na het uitvoeren van de gemeentefusie. Mogelijkheden: Current en Proposed.")]
+        public AddressStatus DesiredStatus { get; }
+
         [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
@@ -60,7 +63,8 @@ namespace AddressRegistry.StreetName.Events
             GeometrySpecification geometrySpecification,
             ExtendedWkbGeometry extendedWkbGeometry,
             bool officiallyAssigned,
-            AddressPersistentLocalId mergedAddressPersistentLocalId)
+            AddressPersistentLocalId mergedAddressPersistentLocalId,
+            AddressStatus desiredStatus)
         {
             StreetNamePersistentLocalId = streetNamePersistentLocalId;
             AddressPersistentLocalId = addressPersistentLocal;
@@ -73,6 +77,7 @@ namespace AddressRegistry.StreetName.Events
             ExtendedWkbGeometry = extendedWkbGeometry.ToString();
             OfficiallyAssigned = officiallyAssigned;
             MergedAddressPersistentLocalId = mergedAddressPersistentLocalId;
+            DesiredStatus = desiredStatus;
         }
 
         [JsonConstructor]
@@ -88,6 +93,7 @@ namespace AddressRegistry.StreetName.Events
             string extendedWkbGeometry,
             bool officiallyAssigned,
             int mergedAddressPersistentLocalId,
+            AddressStatus desiredStatus,
             ProvenanceData provenance)
             : this(
                 new StreetNamePersistentLocalId(streetNamePersistentLocalId),
@@ -100,7 +106,8 @@ namespace AddressRegistry.StreetName.Events
                 geometrySpecification,
                 new ExtendedWkbGeometry(extendedWkbGeometry),
                 officiallyAssigned,
-                new AddressPersistentLocalId(mergedAddressPersistentLocalId))
+                new AddressPersistentLocalId(mergedAddressPersistentLocalId),
+                desiredStatus)
             => ((ISetProvenance)this).SetProvenance(provenance.ToProvenance());
 
         void ISetProvenance.SetProvenance(Provenance provenance) => Provenance = new ProvenanceData(provenance);
@@ -116,6 +123,7 @@ namespace AddressRegistry.StreetName.Events
             fields.Add(ExtendedWkbGeometry.ToString(System.Globalization.CultureInfo.InvariantCulture));
             fields.Add(OfficiallyAssigned.ToString());
             fields.Add(MergedAddressPersistentLocalId.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            fields.Add(DesiredStatus.ToString());
 
             if (BoxNumber is not null)
             {

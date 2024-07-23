@@ -9,8 +9,7 @@ namespace AddressRegistry.Tests.EventBuilders
     {
         private readonly Fixture _fixture;
 
-        private readonly AddressStatus _addressStatus;
-
+        private AddressStatus _addressStatus;
         private StreetNamePersistentLocalId? _streetNamePersistentLocalId;
         private AddressPersistentLocalId? _addressPersistentLocalId;
         private AddressPersistentLocalId? _parentAddressPersistentLocalId;
@@ -42,6 +41,12 @@ namespace AddressRegistry.Tests.EventBuilders
         public AddressWasMigratedToStreetNameBuilder WithHouseNumber(HouseNumber houseNumber)
         {
             _houseNumber = houseNumber;
+            return this;
+        }
+
+        public AddressWasMigratedToStreetNameBuilder WithStatus(AddressStatus status)
+        {
+            _addressStatus = status;
             return this;
         }
 

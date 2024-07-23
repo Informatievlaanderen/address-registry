@@ -55,6 +55,11 @@ namespace AddressRegistry.StreetName
                 throw new ParentAddressHasInvalidStatusException();
             }
 
+            if (DesiredStatusAfterMunicipalityMerger == AddressStatus.Proposed)
+            {
+                return;
+            }
+
             if (Status == AddressStatus.Current)
             {
                 return;

@@ -47,6 +47,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                         fixture.Create<bool>(),
                         null,
                         fixture.Create<AddressPersistentLocalId>(),
+                        fixture.Create<AddressStatus>(),
                         null,
                         Fixture.Create<string>(),
                         Fixture.Create<ProvenanceData>()))
@@ -80,6 +81,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                         fixture.Create<bool>(),
                         houseNumbers.ToArray()[random.Next(0, houseNumbers.Count)],
                         fixture.Create<AddressPersistentLocalId>(),
+                        fixture.Create<AddressStatus>(),
                         null,
                         Fixture.Create<string>(),
                         Fixture.Create<ProvenanceData>()))
@@ -169,6 +171,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                 address.IsOfficiallyAssigned.Should().Be(snapshotAddress.IsOfficiallyAssigned);
                 address.IsRemoved.Should().Be(snapshotAddress.IsRemoved);
                 address.MergedAddressPersistentLocalId.Should().Be(new AddressPersistentLocalId(snapshotAddress.MergedAddressPersistentLocalId!.Value));
+                address.DesiredStatusAfterMunicipalityMerger.Should().Be(snapshotAddress.DesiredStatusAfterMunicipalityMerger);
                 address.LastProvenanceData.Should().BeEquivalentTo(snapshotAddress.LastProvenanceData);
                 address.LastEventHash.Should().Be(snapshotAddress.LastEventHash);
             }

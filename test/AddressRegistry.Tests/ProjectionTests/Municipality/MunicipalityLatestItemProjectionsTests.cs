@@ -366,6 +366,28 @@ namespace AddressRegistry.Tests.ProjectionTests.Municipality
             });
         }
 
+        [Fact]
+        public async Task MunicipalityWasMerged()
+        {
+            var municipalityWasMerged = new MunicipalityWasMerged(
+                _municipalityId.ToString("D"),
+                _registered.NisCode,
+                _fixture.CreateMany<string>(),
+                _fixture.CreateMany<string>(),
+                _fixture.Create<string>(),
+                _fixture.Create<string>(),
+                _provenance);
+
+            Given(_registered, municipalityWasMerged);
+            await Then(async ct =>
+            {
+                var expected = await ct.MunicipalityLatestItems.FindAsync(_municipalityId);
+                expected.Should().NotBeNull();
+                expected!.Status.Should().Be(MunicipalityStatus.Retired);
+                expected.VersionTimestamp.Should().Be(InstantPattern.General.Parse(municipalityWasMerged.Provenance.Timestamp).Value);
+            });
+        }
+
         protected override MunicipalityConsumerContext CreateContext()
         {
             var options = new DbContextOptionsBuilder<MunicipalityConsumerContext>()

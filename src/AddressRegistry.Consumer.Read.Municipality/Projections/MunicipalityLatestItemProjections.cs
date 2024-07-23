@@ -191,6 +191,15 @@ namespace AddressRegistry.Consumer.Read.Municipality.Projections
                     }
                 }, ct);
             });
+
+            When<MunicipalityWasMerged>(async (contextFactory, message, ct) =>
+            {
+                await contextFactory.FindAndUpdate(new Guid(message.MunicipalityId), municipality =>
+                {
+                    municipality.Status = MunicipalityStatus.Retired;
+                    UpdateVersionTimestamp(message.Provenance, municipality);
+                }, ct);
+            });
         }
 
         private static Taal StringToTaal(string taal)

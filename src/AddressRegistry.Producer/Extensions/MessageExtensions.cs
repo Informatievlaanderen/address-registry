@@ -257,6 +257,20 @@ namespace AddressRegistry.Producer.Extensions
                 message.MergedAddressPersistentLocalId,
                 message.Provenance.ToContract());
 
+        public static Contracts.AddressWasRetiredBecauseOfMunicipalityMerger ToContract(this StreetNameAggregate.AddressWasRetiredBecauseOfMunicipalityMerger message) =>
+            new Contracts.AddressWasRetiredBecauseOfMunicipalityMerger(
+                message.StreetNamePersistentLocalId,
+                message.AddressPersistentLocalId,
+                message.NewAddressPersistentLocalId,
+                message.Provenance.ToContract());
+
+        public static Contracts.AddressWasRejectedBecauseOfMunicipalityMerger ToContract(this StreetNameAggregate.AddressWasRejectedBecauseOfMunicipalityMerger message) =>
+            new Contracts.AddressWasRejectedBecauseOfMunicipalityMerger(
+                message.StreetNamePersistentLocalId,
+                message.AddressPersistentLocalId,
+                message.NewAddressPersistentLocalId,
+                message.Provenance.ToContract());
+
         public static Contracts.AddressWasCorrectedFromRejectedToProposed ToContract(this StreetNameAggregate.AddressWasCorrectedFromRejectedToProposed message) =>
             new Contracts.AddressWasCorrectedFromRejectedToProposed(
                 message.StreetNamePersistentLocalId,

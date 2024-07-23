@@ -21,25 +21,32 @@ namespace AddressRegistry.StreetName.Events
         [EventPropertyDescription("Objectidentificator van het adres.")]
         public int AddressPersistentLocalId { get; }
 
+        [EventPropertyDescription("Objectidentificator van het nieuwe adres.")]
+        public int NewAddressPersistentLocalId { get; }
+
         [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
         public AddressWasRejectedBecauseOfMunicipalityMerger(
             StreetNamePersistentLocalId streetNamePersistentLocalId,
-            AddressPersistentLocalId addressPersistentLocalId)
+            AddressPersistentLocalId addressPersistentLocalId,
+            AddressPersistentLocalId newAddressPersistentLocalId)
         {
             StreetNamePersistentLocalId = streetNamePersistentLocalId;
             AddressPersistentLocalId = addressPersistentLocalId;
+            NewAddressPersistentLocalId = newAddressPersistentLocalId;
         }
 
         [JsonConstructor]
         private AddressWasRejectedBecauseOfMunicipalityMerger(
             int streetNamePersistentLocalId,
             int addressPersistentLocalId,
+            int newAddressPersistentLocalId,
             ProvenanceData provenance)
             : this(
                 new StreetNamePersistentLocalId(streetNamePersistentLocalId),
-                new AddressPersistentLocalId(addressPersistentLocalId))
+                new AddressPersistentLocalId(addressPersistentLocalId),
+                new AddressPersistentLocalId(newAddressPersistentLocalId))
             => ((ISetProvenance)this).SetProvenance(provenance.ToProvenance());
 
         void ISetProvenance.SetProvenance(Provenance provenance) => Provenance = new ProvenanceData(provenance);
@@ -49,6 +56,7 @@ namespace AddressRegistry.StreetName.Events
             var fields = Provenance.GetHashFields().ToList();
             fields.Add(StreetNamePersistentLocalId.ToString(CultureInfo.InvariantCulture));
             fields.Add(AddressPersistentLocalId.ToString(CultureInfo.InvariantCulture));
+            fields.Add(NewAddressPersistentLocalId.ToString(CultureInfo.InvariantCulture));
             return fields;
         }
 

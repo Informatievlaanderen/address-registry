@@ -59,7 +59,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
                 {
                     new object[] { new StreetNameWasMigratedToMunicipality(municipalityId, nisCode, _fixture.Create<Guid>().ToString("D"), streetNamePersistentLocalId, _fixture.Create<StreetNameStatus>().ToString(), null, null,null,null, true, false, provenance ) },
                     new object[] { new StreetNameWasProposedV2(municipalityId, nisCode, new Dictionary<string, string>(), streetNamePersistentLocalId, provenance) },
-                    new object[] { new StreetNameWasProposedForMunicipalityMerger(municipalityId, nisCode, new Dictionary<string, string>(), new Dictionary<string, string>(), streetNamePersistentLocalId, [], provenance) },
+                    new object[] { new StreetNameWasProposedForMunicipalityMerger(municipalityId, nisCode, _fixture.Create<StreetNameStatus>().ToString(), new Dictionary<string, string>(), new Dictionary<string, string>(), streetNamePersistentLocalId, [], provenance) },
                     new object[] { new StreetNameWasApproved(municipalityId, streetNamePersistentLocalId, provenance) },
                     new object[] { new StreetNameWasCorrectedFromApprovedToProposed(municipalityId, streetNamePersistentLocalId, provenance) },
                     new object[] { new StreetNameWasRejected(municipalityId, streetNamePersistentLocalId, provenance) },
@@ -159,6 +159,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
             var @event = new StreetNameWasProposedForMunicipalityMerger(
                 Fixture.Create<MunicipalityId>(),
                 Fixture.Create<NisCode>(),
+                Fixture.Create<string>(),
                 Fixture.Create<IDictionary<string, string>>(),
                 Fixture.Create<IDictionary<string, string>>(),
                 Fixture.Create<PersistentLocalId>(),

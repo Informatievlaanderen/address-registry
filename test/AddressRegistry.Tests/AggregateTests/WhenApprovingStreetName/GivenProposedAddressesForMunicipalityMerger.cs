@@ -64,7 +64,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenApprovingStreetName
         }
 
         [Fact]
-        public void ThenProposedAddressesWithDesiredStatusStayProposed()
+        public void ThenProposedAddressesWithDesiredStatusProposedStayProposed()
         {
             var command = Fixture.Create<ApproveStreetName>();
 

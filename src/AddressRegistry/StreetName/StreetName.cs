@@ -109,7 +109,7 @@ namespace AddressRegistry.StreetName
                 PersistentLocalId,
                 newStreetNames.Select(x => x.PersistentLocalId)));
 
-            void Reject(StreetNameAddress address) => address.RejectBecauseOfMunicipalityMerger();
+            void Reject(StreetNameAddress address) => address.RejectBecauseOfMunicipalityMerger(newStreetNames);
             void Retire(StreetNameAddress address) => address.RetireBecauseOfMunicipalityMerger(newStreetNames);
         }
 
@@ -162,7 +162,7 @@ namespace AddressRegistry.StreetName
                 PersistentLocalId,
                 newStreetNames.Select(x => x.PersistentLocalId)));
 
-            void Reject(StreetNameAddress address) => address.RejectBecauseOfMunicipalityMerger();
+            void Reject(StreetNameAddress address) => address.RejectBecauseOfMunicipalityMerger(newStreetNames);
             void Retire(StreetNameAddress address) => address.RetireBecauseOfMunicipalityMerger(newStreetNames);
         }
 

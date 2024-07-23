@@ -84,28 +84,46 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingStreetNameBecauseOfM
             var streetNamePersistentLocalId = Fixture.Create<StreetNamePersistentLocalId>();
             var newStreetNamePersistentLocalId = new StreetNamePersistentLocalId(streetNamePersistentLocalId + 1);
 
-            var proposedHouseNumberAddressPersistentLocalId = new AddressPersistentLocalId(1);
-            var proposedBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(2);
-            var currentHouseNumberAddressPersistentLocalId = new AddressPersistentLocalId(3);
-            var currentBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(4);
+            var oldProposedHouseNumberAddressPersistentLocalId = new AddressPersistentLocalId(1);
+            var oldProposedBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(2);
+            var oldCurrentHouseNumberAddressPersistentLocalId = new AddressPersistentLocalId(3);
+            var oldCurrentBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(4);
 
-            var newHouseNumberAddressPersistentLocalId = new AddressPersistentLocalId(5);
-            var newBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(6);
+            var newProposedHouseNumberAddressPersistentLocalId = new AddressPersistentLocalId(5);
+            var newProposedBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(6);
+            var newCurrentHouseNumberAddressPersistentLocalId = new AddressPersistentLocalId(7);
+            var newCurrentBoxNumberAddressPersistentLocalId = new AddressPersistentLocalId(8);
 
             var newStreetName = new StreetNameFactory(NoSnapshotStrategy.Instance).Create();
             newStreetName.Initialize(new List<object>
             {
                 new StreetNameWasImported(newStreetNamePersistentLocalId, Fixture.Create<MunicipalityId>(), StreetNameStatus.Proposed),
+
                 Fixture.Create<AddressWasProposedForMunicipalityMerger>()
                     .AsHouseNumberAddress()
                     .WithStreetNamePersistentLocalId(newStreetNamePersistentLocalId)
-                    .WithAddressPersistentLocalId(newHouseNumberAddressPersistentLocalId)
-                    .WithMergedAddressPersistentLocalId(currentHouseNumberAddressPersistentLocalId),
+                    .WithAddressPersistentLocalId(newProposedHouseNumberAddressPersistentLocalId)
+                    .WithMergedAddressPersistentLocalId(oldProposedHouseNumberAddressPersistentLocalId)
+                    .WithDesiredStatus(AddressStatus.Proposed),
                 Fixture.Create<AddressWasProposedForMunicipalityMerger>()
-                    .AsBoxNumberAddress(newHouseNumberAddressPersistentLocalId)
+                    .AsBoxNumberAddress(newProposedHouseNumberAddressPersistentLocalId)
                     .WithStreetNamePersistentLocalId(newStreetNamePersistentLocalId)
-                    .WithAddressPersistentLocalId(newBoxNumberAddressPersistentLocalId)
-                    .WithMergedAddressPersistentLocalId(currentBoxNumberAddressPersistentLocalId)
+                    .WithAddressPersistentLocalId(newProposedBoxNumberAddressPersistentLocalId)
+                    .WithMergedAddressPersistentLocalId(oldProposedBoxNumberAddressPersistentLocalId)
+                    .WithDesiredStatus(AddressStatus.Proposed),
+
+                Fixture.Create<AddressWasProposedForMunicipalityMerger>()
+                    .AsHouseNumberAddress()
+                    .WithStreetNamePersistentLocalId(newStreetNamePersistentLocalId)
+                    .WithAddressPersistentLocalId(newCurrentHouseNumberAddressPersistentLocalId)
+                    .WithMergedAddressPersistentLocalId(oldCurrentHouseNumberAddressPersistentLocalId)
+                    .WithDesiredStatus(AddressStatus.Current),
+                Fixture.Create<AddressWasProposedForMunicipalityMerger>()
+                    .AsBoxNumberAddress(newCurrentHouseNumberAddressPersistentLocalId)
+                    .WithStreetNamePersistentLocalId(newStreetNamePersistentLocalId)
+                    .WithAddressPersistentLocalId(newCurrentBoxNumberAddressPersistentLocalId)
+                    .WithMergedAddressPersistentLocalId(oldCurrentBoxNumberAddressPersistentLocalId)
+                    .WithDesiredStatus(AddressStatus.Current)
             });
 
             var streetNames = Container.Resolve<IStreetNames>();
@@ -127,41 +145,45 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingStreetNameBecauseOfM
                     streetNameWasImported,
                     Fixture.Create<AddressWasProposedV2>()
                         .AsHouseNumberAddress()
-                        .WithAddressPersistentLocalId(proposedHouseNumberAddressPersistentLocalId),
+                        .WithAddressPersistentLocalId(oldProposedHouseNumberAddressPersistentLocalId),
                     Fixture.Create<AddressWasProposedV2>()
-                        .AsBoxNumberAddress(proposedHouseNumberAddressPersistentLocalId)
-                        .WithAddressPersistentLocalId(proposedBoxNumberAddressPersistentLocalId),
+                        .AsBoxNumberAddress(oldProposedHouseNumberAddressPersistentLocalId)
+                        .WithAddressPersistentLocalId(oldProposedBoxNumberAddressPersistentLocalId),
+
                     Fixture.Create<AddressWasProposedV2>()
                         .AsHouseNumberAddress()
-                        .WithAddressPersistentLocalId(currentHouseNumberAddressPersistentLocalId),
+                        .WithAddressPersistentLocalId(oldCurrentHouseNumberAddressPersistentLocalId),
+                    Fixture.Create<AddressWasApproved>()
+                        .WithAddressPersistentLocalId(oldCurrentHouseNumberAddressPersistentLocalId),
+
                     Fixture.Create<AddressWasProposedV2>()
-                        .AsBoxNumberAddress(currentHouseNumberAddressPersistentLocalId)
-                        .WithAddressPersistentLocalId(currentBoxNumberAddressPersistentLocalId),
+                        .AsBoxNumberAddress(oldCurrentHouseNumberAddressPersistentLocalId)
+                        .WithAddressPersistentLocalId(oldCurrentBoxNumberAddressPersistentLocalId),
                     Fixture.Create<AddressWasApproved>()
-                        .WithAddressPersistentLocalId(currentHouseNumberAddressPersistentLocalId),
-                    Fixture.Create<AddressWasApproved>()
-                        .WithAddressPersistentLocalId(currentBoxNumberAddressPersistentLocalId)
+                        .WithAddressPersistentLocalId(oldCurrentBoxNumberAddressPersistentLocalId)
                     )
                 .When(command)
                 .Then(
                     new Fact(new StreetNameStreamId(command.PersistentLocalId),
                         new AddressWasRejectedBecauseOfMunicipalityMerger(
                             streetNamePersistentLocalId,
-                            proposedBoxNumberAddressPersistentLocalId)),
+                            oldProposedBoxNumberAddressPersistentLocalId,
+                            newProposedBoxNumberAddressPersistentLocalId)),
                     new Fact(new StreetNameStreamId(command.PersistentLocalId),
                         new AddressWasRetiredBecauseOfMunicipalityMerger(
                             streetNamePersistentLocalId,
-                            currentBoxNumberAddressPersistentLocalId,
-                            newBoxNumberAddressPersistentLocalId)),
+                            oldCurrentBoxNumberAddressPersistentLocalId,
+                            newCurrentBoxNumberAddressPersistentLocalId)),
                     new Fact(new StreetNameStreamId(command.PersistentLocalId),
                         new AddressWasRejectedBecauseOfMunicipalityMerger(
                             streetNamePersistentLocalId,
-                            proposedHouseNumberAddressPersistentLocalId)),
+                            oldProposedHouseNumberAddressPersistentLocalId,
+                            newProposedHouseNumberAddressPersistentLocalId)),
                     new Fact(new StreetNameStreamId(command.PersistentLocalId),
                         new AddressWasRetiredBecauseOfMunicipalityMerger(
                             streetNamePersistentLocalId,
-                            currentHouseNumberAddressPersistentLocalId,
-                            newHouseNumberAddressPersistentLocalId)),
+                            oldCurrentHouseNumberAddressPersistentLocalId,
+                            newCurrentHouseNumberAddressPersistentLocalId)),
                     new Fact(new StreetNameStreamId(command.PersistentLocalId),
                         new StreetNameWasRejectedBecauseOfMunicipalityMerger(
                             streetNamePersistentLocalId,
@@ -276,7 +298,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingStreetNameBecauseOfM
                         Fixture.Create<AddressPersistentLocalId>()),
                     new AddressWasRejectedBecauseOfMunicipalityMerger(
                         streetNamePersistentLocalId,
-                        addressPersistentLocalIdTwo),
+                        addressPersistentLocalIdTwo,
+                        Fixture.Create<AddressPersistentLocalId>()),
                 streetNameWasRejected
             });
 

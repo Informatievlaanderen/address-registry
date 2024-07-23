@@ -92,7 +92,8 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                 GeometrySpecification.Entry,
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                 true,
-                Fixture.Create<AddressPersistentLocalId>());
+                Fixture.Create<AddressPersistentLocalId>(),
+                Fixture.Create<AddressStatus>());
             ((ISetProvenance)addressWasProposedForMunicipalityMerger).SetProvenance(provenance);
 
             Assert(new Scenario()
@@ -106,7 +107,8 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
             var expectedSnapshot = SnapshotBuilder.CreateDefaultSnapshot(streetNamePersistentLocalId)
                 .WithMunicipalityId(Fixture.Create<MunicipalityId>())
                 .WithMigratedNisCode(migratedStreetNameWasImported.NisCode)
-                .WithAddress(new AddressPersistentLocalId(parentAddressWasProposed.AddressPersistentLocalId),
+                .WithAddress(
+                    new AddressPersistentLocalId(parentAddressWasProposed.AddressPersistentLocalId),
                     AddressStatus.Proposed,
                     postalCode,
                     houseNumber,
@@ -114,6 +116,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                     GeometryMethod.AppointedByAdministrator,
                     GeometrySpecification.Entry,
                     GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
+                    null,
                     null,
                     null,
                     parentAddressWasProposed.GetHash(),
@@ -129,9 +132,11 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                     GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                     new AddressPersistentLocalId(parentAddressWasProposed.AddressPersistentLocalId),
                     new AddressPersistentLocalId(addressWasProposedForMunicipalityMerger.MergedAddressPersistentLocalId),
+                    addressWasProposedForMunicipalityMerger.DesiredStatus,
                     addressWasProposedV2.GetHash(),
                     new ProvenanceData(provenance))
-                .WithAddress(proposeChildAddress.AddressPersistentLocalId,
+                .WithAddress(
+                    proposeChildAddress.AddressPersistentLocalId,
                     AddressStatus.Proposed,
                     postalCode,
                     houseNumber,
@@ -140,6 +145,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                     GeometrySpecification.Entry,
                     GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                     new AddressPersistentLocalId(parentAddressWasProposed.AddressPersistentLocalId),
+                    null,
                     null,
                     addressWasProposedV2.GetHash(),
                     new ProvenanceData(provenance));

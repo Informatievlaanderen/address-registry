@@ -28,7 +28,9 @@ namespace AddressRegistry.StreetName
 
             Register<StreetNameWasApproved>(When);
             Register<StreetNameWasRejected>(When);
+            Register<StreetNameWasRejectedBecauseOfMunicipalityMerger>(When);
             Register<StreetNameWasRetired>(When);
+            Register<StreetNameWasRetiredBecauseOfMunicipalityMerger>(When);
             Register<StreetNameWasRenamed>(When);
             Register<StreetNameWasRemoved>(When);
             Register<StreetNameNamesWereChanged>(When);
@@ -44,10 +46,12 @@ namespace AddressRegistry.StreetName
             Register<AddressWasProposedForMunicipalityMerger>(When);
             Register<AddressWasApproved>(When);
             Register<AddressWasRejected>(When);
+            Register<AddressWasRejectedBecauseOfMunicipalityMerger>(When);
             Register<AddressWasRejectedBecauseHouseNumberWasRejected>(When);
             Register<AddressWasRejectedBecauseHouseNumberWasRetired>(When);
             Register<AddressWasRejectedBecauseStreetNameWasRetired>(When);
             Register<AddressWasRetiredV2>(When);
+            Register<AddressWasRetiredBecauseOfMunicipalityMerger>(When);
             Register<AddressWasRetiredBecauseHouseNumberWasRetired>(When);
             Register<AddressWasRetiredBecauseStreetNameWasRetired>(When);
             Register<AddressWasRemovedV2>(When);
@@ -130,7 +134,17 @@ namespace AddressRegistry.StreetName
             Status = StreetNameStatus.Rejected;
         }
 
+        private void When(StreetNameWasRejectedBecauseOfMunicipalityMerger @event)
+        {
+            Status = StreetNameStatus.Rejected;
+        }
+
         private void When(StreetNameWasRetired @event)
+        {
+            Status = StreetNameStatus.Retired;
+        }
+
+        private void When(StreetNameWasRetiredBecauseOfMunicipalityMerger @event)
         {
             Status = StreetNameStatus.Retired;
         }
@@ -252,6 +266,8 @@ namespace AddressRegistry.StreetName
 
         private void When(AddressWasRejected @event) => RouteToAddress(@event);
 
+        private void When(AddressWasRejectedBecauseOfMunicipalityMerger @event) => RouteToAddress(@event);
+
         private void When(AddressWasRejectedBecauseHouseNumberWasRejected @event) => RouteToAddress(@event);
 
         private void When(AddressWasRejectedBecauseHouseNumberWasRetired @event) => RouteToAddress(@event);
@@ -259,6 +275,8 @@ namespace AddressRegistry.StreetName
         private void When(AddressWasRejectedBecauseStreetNameWasRetired @event) => RouteToAddress(@event);
 
         private void When(AddressWasRetiredV2 @event) => RouteToAddress(@event);
+
+        private void When(AddressWasRetiredBecauseOfMunicipalityMerger @event) => RouteToAddress(@event);
 
         private void When(AddressWasRetiredBecauseHouseNumberWasRetired @event) => RouteToAddress(@event);
 

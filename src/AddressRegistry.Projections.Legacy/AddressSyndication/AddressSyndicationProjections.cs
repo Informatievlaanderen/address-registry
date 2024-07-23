@@ -547,6 +547,20 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     ct);
             });
 
+            When<Envelope<AddressWasRejectedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressPersistentLocalId,
+                    message,
+                    x => x.Status = AddressStatus.Rejected,
+                    ct);
+
+                await context.UpdateAddressBoxNumberSyndicationHelper(
+                    message.Message.AddressPersistentLocalId,
+                    x => x.Status = AddressStatus.Rejected,
+                    ct);
+            });
+
             When<Envelope<AddressWasRejectedBecauseHouseNumberWasRejected>>(async (context, message, ct) =>
             {
                 await context.CreateNewAddressSyndicationItem(
@@ -654,6 +668,20 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             });
 
             When<Envelope<AddressWasRetiredV2>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressSyndicationItem(
+                    message.Message.AddressPersistentLocalId,
+                    message,
+                    x => x.Status = AddressStatus.Retired,
+                    ct);
+
+                await context.UpdateAddressBoxNumberSyndicationHelper(
+                    message.Message.AddressPersistentLocalId,
+                    x => x.Status = AddressStatus.Retired,
+                    ct);
+            });
+
+            When<Envelope<AddressWasRetiredBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
             {
                 await context.CreateNewAddressSyndicationItem(
                     message.Message.AddressPersistentLocalId,

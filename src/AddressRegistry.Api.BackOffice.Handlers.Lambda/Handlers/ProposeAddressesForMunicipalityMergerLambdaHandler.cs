@@ -87,7 +87,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                         address.Geometry.GeometrySpecification,
                         address.Geometry.Geometry,
                         address.IsOfficiallyAssigned,
-                        new AddressPersistentLocalId(x.MergedAddressPersistentLocalId));
+                        streetName.PersistentLocalId,
+                        address.AddressPersistentLocalId);
                 })
                 .ToList());
 

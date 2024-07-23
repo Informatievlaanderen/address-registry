@@ -48,7 +48,8 @@ namespace AddressRegistry.Tests.EventExtensions
                 @event.GeometrySpecification,
                 new ExtendedWkbGeometry(@event.ExtendedWkbGeometry),
                 @event.OfficiallyAssigned,
-                new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId));
+                new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId),
+                @event.DesiredStatus);
             ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
 
             return newEvent;
@@ -69,7 +70,8 @@ namespace AddressRegistry.Tests.EventExtensions
                 @event.GeometrySpecification,
                 new ExtendedWkbGeometry(@event.ExtendedWkbGeometry),
                 @event.OfficiallyAssigned,
-                new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId));
+                new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId),
+                @event.DesiredStatus);
             ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
 
             return newEvent;
@@ -90,7 +92,8 @@ namespace AddressRegistry.Tests.EventExtensions
                 @event.GeometrySpecification,
                 new ExtendedWkbGeometry(@event.ExtendedWkbGeometry),
                 @event.OfficiallyAssigned,
-                new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId));
+                new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId),
+                @event.DesiredStatus);
             ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
 
             return newEvent;
@@ -111,7 +114,8 @@ namespace AddressRegistry.Tests.EventExtensions
                 @event.GeometrySpecification,
                 new ExtendedWkbGeometry(@event.ExtendedWkbGeometry),
                 @event.OfficiallyAssigned,
-                new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId));
+                new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId),
+                @event.DesiredStatus);
             ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
 
             return newEvent;
@@ -132,7 +136,52 @@ namespace AddressRegistry.Tests.EventExtensions
                 @event.GeometrySpecification,
                 new ExtendedWkbGeometry(@event.ExtendedWkbGeometry),
                 @event.OfficiallyAssigned,
-                new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId));
+                new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId),
+                @event.DesiredStatus);
+            ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
+
+            return newEvent;
+        }
+
+        public static AddressWasProposedForMunicipalityMerger WithMergedAddressPersistentLocalId(
+            this AddressWasProposedForMunicipalityMerger @event,
+            AddressPersistentLocalId mergedAddressPersistentLocalId)
+        {
+            var newEvent = new AddressWasProposedForMunicipalityMerger(
+                new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId),
+                new AddressPersistentLocalId(@event.AddressPersistentLocalId),
+                @event.ParentPersistentLocalId is not null ? new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value) : null,
+                new PostalCode(@event.PostalCode),
+                new HouseNumber(@event.HouseNumber),
+                @event.BoxNumber is not null ? new BoxNumber(@event.BoxNumber) : null,
+                @event.GeometryMethod,
+                @event.GeometrySpecification,
+                new ExtendedWkbGeometry(@event.ExtendedWkbGeometry),
+                @event.OfficiallyAssigned,
+                mergedAddressPersistentLocalId,
+                @event.DesiredStatus);
+            ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
+
+            return newEvent;
+        }
+
+        public static AddressWasProposedForMunicipalityMerger WithDesiredStatus(
+            this AddressWasProposedForMunicipalityMerger @event,
+            AddressStatus desiredStatus)
+        {
+            var newEvent = new AddressWasProposedForMunicipalityMerger(
+                new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId),
+                new AddressPersistentLocalId(@event.AddressPersistentLocalId),
+                @event.ParentPersistentLocalId is not null ? new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value) : null,
+                new PostalCode(@event.PostalCode),
+                new HouseNumber(@event.HouseNumber),
+                @event.BoxNumber is not null ? new BoxNumber(@event.BoxNumber) : null,
+                @event.GeometryMethod,
+                @event.GeometrySpecification,
+                new ExtendedWkbGeometry(@event.ExtendedWkbGeometry),
+                @event.OfficiallyAssigned,
+                new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId),
+                desiredStatus);
             ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
 
             return newEvent;
@@ -153,7 +202,8 @@ namespace AddressRegistry.Tests.EventExtensions
                 @event.GeometrySpecification,
                 new ExtendedWkbGeometry(@event.ExtendedWkbGeometry),
                 @event.OfficiallyAssigned,
-                new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId));
+                new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId),
+                @event.DesiredStatus);
             ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
 
             return newEvent;
@@ -174,7 +224,8 @@ namespace AddressRegistry.Tests.EventExtensions
                 @event.GeometrySpecification,
                 new ExtendedWkbGeometry(@event.ExtendedWkbGeometry),
                 @event.OfficiallyAssigned,
-                new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId));
+                new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId),
+                @event.DesiredStatus);
             ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
 
             return newEvent;
@@ -195,7 +246,8 @@ namespace AddressRegistry.Tests.EventExtensions
                 @event.GeometrySpecification,
                 new ExtendedWkbGeometry(extendedWkbGeometry),
                 @event.OfficiallyAssigned,
-                new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId));
+                new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId),
+                @event.DesiredStatus);
             ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
 
             return newEvent;
@@ -216,7 +268,8 @@ namespace AddressRegistry.Tests.EventExtensions
                 @event.GeometrySpecification,
                 new ExtendedWkbGeometry(@event.ExtendedWkbGeometry),
                 @event.OfficiallyAssigned,
-                new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId));
+                new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId),
+                @event.DesiredStatus);
             ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
 
             return newEvent;
@@ -237,7 +290,8 @@ namespace AddressRegistry.Tests.EventExtensions
                 geometrySpecification,
                 new ExtendedWkbGeometry(@event.ExtendedWkbGeometry),
                 @event.OfficiallyAssigned,
-                new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId));
+                new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId),
+                @event.DesiredStatus);
             ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
 
             return newEvent;

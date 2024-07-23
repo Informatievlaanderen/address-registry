@@ -12,7 +12,6 @@
     using FluentAssertions;
     using global::AutoFixture;
     using Microsoft.Extensions.Options;
-    using Projections.Integration;
     using Projections.Integration.Convertors;
     using Projections.Integration.Infrastructure;
     using Projections.Integration.LatestItem;
@@ -313,6 +312,46 @@
                 .Given(
                     new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
                     new Envelope<AddressWasRejected>(new Envelope(addressWasRejected, metadata)))
+                .Then(async ct =>
+                {
+                    var expectedLatestItem =
+                        await ct.AddressLatestItems.FindAsync(addressWasRejected.AddressPersistentLocalId);
+                    expectedLatestItem.Should().NotBeNull();
+                    expectedLatestItem!.StreetNamePersistentLocalId.Should().Be(addressWasRejected.StreetNamePersistentLocalId);
+                    expectedLatestItem.Status.Should().Be(AddressStatus.Rejected);
+                    expectedLatestItem.OsloStatus.Should().Be(AddressStatus.Rejected.Map());
+                    expectedLatestItem.OfficiallyAssigned.Should().BeTrue();
+                    expectedLatestItem.Removed.Should().BeFalse();
+
+                    expectedLatestItem.Namespace.Should().Be(Namespace);
+                    expectedLatestItem.PuriId.Should().Be($"{Namespace}/{addressWasRejected.AddressPersistentLocalId}");
+                    expectedLatestItem.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressWasRejectedBecauseOfMunicipalityMerger()
+        {
+            var addressWasRejected = _fixture.Create<AddressWasRejectedBecauseOfMunicipalityMerger>();
+
+            var position = _fixture.Create<long>();
+
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
+                { Envelope.PositionMetadataKey, position }
+            };
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, position + 1 }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasRejectedBecauseOfMunicipalityMerger>(new Envelope(addressWasRejected, metadata)))
                 .Then(async ct =>
                 {
                     var expectedLatestItem =
@@ -663,6 +702,48 @@
                     expectedLatestItem.Namespace.Should().Be(Namespace);
                     expectedLatestItem.PuriId.Should().Be($"{Namespace}/{addressWasRetiredV2.AddressPersistentLocalId}");
                     expectedLatestItem.VersionTimestamp.Should().Be(addressWasRetiredV2.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressWasRetiredBecauseOfMunicipalityMerger()
+        {
+            var addressWasRetired = _fixture.Create<AddressWasRetiredBecauseOfMunicipalityMerger>();
+
+            var position = _fixture.Create<long>();
+
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
+                { Envelope.PositionMetadataKey, position }
+            };
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, position + 1 }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasRetiredBecauseOfMunicipalityMerger>(new Envelope(addressWasRetired,
+                        metadata)))
+                .Then(async ct =>
+                {
+                    var expectedLatestItem =
+                        await ct.AddressLatestItems.FindAsync(addressWasRetired.AddressPersistentLocalId);
+                    expectedLatestItem.Should().NotBeNull();
+                    expectedLatestItem!.StreetNamePersistentLocalId.Should()
+                        .Be(addressWasRetired.StreetNamePersistentLocalId);
+                    expectedLatestItem.Status.Should().Be(AddressStatus.Retired);
+                    expectedLatestItem.OsloStatus.Should().Be(AddressStatus.Retired.Map());
+                    expectedLatestItem.OfficiallyAssigned.Should().BeTrue();
+                    expectedLatestItem.Removed.Should().BeFalse();
+
+                    expectedLatestItem.Namespace.Should().Be(Namespace);
+                    expectedLatestItem.PuriId.Should().Be($"{Namespace}/{addressWasRetired.AddressPersistentLocalId}");
+                    expectedLatestItem.VersionTimestamp.Should().Be(addressWasRetired.Provenance.Timestamp);
                 });
         }
 

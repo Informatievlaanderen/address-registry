@@ -160,7 +160,8 @@ namespace AddressRegistry.StreetName
             GeometrySpecification geometrySpecification,
             ExtendedWkbGeometry geometryPosition,
             bool officiallyAssigned,
-            AddressPersistentLocalId mergedAddressPersistentLocalId)
+            AddressPersistentLocalId mergedAddressPersistentLocalId,
+            AddressStatus desiredStatus)
         {
             GuardActiveStreetName();
 
@@ -214,7 +215,8 @@ namespace AddressRegistry.StreetName
                 geometrySpecification,
                 geometryPosition,
                 officiallyAssigned,
-                mergedAddressPersistentLocalId));
+                mergedAddressPersistentLocalId,
+                desiredStatus));
         }
 
         public void ApproveAddress(AddressPersistentLocalId addressPersistentLocalId)

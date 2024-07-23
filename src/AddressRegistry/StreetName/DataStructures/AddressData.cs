@@ -20,6 +20,7 @@ namespace AddressRegistry.StreetName.DataStructures
         public bool IsRemoved { get; }
         public int? ParentId { get; }
         public int? MergedAddressPersistentLocalId { get; }
+        public AddressStatus? DesiredStatusAfterMunicipalityMerger { get; }
 
         public Guid? LegacyAddressId { get; }
         public string LastEventHash { get; }
@@ -36,6 +37,7 @@ namespace AddressRegistry.StreetName.DataStructures
                 address.IsRemoved,
                 address.Parent,
                 address.MergedAddressPersistentLocalId,
+                address.DesiredStatusAfterMunicipalityMerger,
                 address.LegacyAddressId,
                 address.LastEventHash,
                 address.LastProvenanceData)
@@ -52,6 +54,7 @@ namespace AddressRegistry.StreetName.DataStructures
             bool isRemoved,
             StreetNameAddress? parent,
             AddressPersistentLocalId? mergedAddressPersistentLocalId,
+            AddressStatus? desiredStatusAfterMunicipalityMerger,
             AddressId? legacyAddressId,
             string lastEventHash,
             ProvenanceData lastProvenanceData)
@@ -74,6 +77,7 @@ namespace AddressRegistry.StreetName.DataStructures
             IsRemoved = isRemoved;
             ParentId = parent is null ? (int?)null : parent.AddressPersistentLocalId;
             MergedAddressPersistentLocalId = mergedAddressPersistentLocalId is null ? (int?)null : mergedAddressPersistentLocalId;
+            DesiredStatusAfterMunicipalityMerger = desiredStatusAfterMunicipalityMerger;
             LegacyAddressId = legacyAddressId is null ? (Guid?)null : legacyAddressId;
             LastEventHash = lastEventHash;
             LastProvenanceData = lastProvenanceData;
@@ -93,6 +97,7 @@ namespace AddressRegistry.StreetName.DataStructures
             bool isRemoved,
             int? parentId,
             int? mergedAddressPersistentLocalId,
+            AddressStatus? desiredStatusAfterMunicipalityMerger,
             Guid? legacyAddressId,
             string lastEventHash,
             ProvenanceData lastProvenanceData)
@@ -112,6 +117,7 @@ namespace AddressRegistry.StreetName.DataStructures
 
             ParentId = parentId;
             MergedAddressPersistentLocalId = mergedAddressPersistentLocalId;
+            DesiredStatusAfterMunicipalityMerger = desiredStatusAfterMunicipalityMerger;
             LegacyAddressId = legacyAddressId;
             LastEventHash = lastEventHash;
             LastProvenanceData = lastProvenanceData;

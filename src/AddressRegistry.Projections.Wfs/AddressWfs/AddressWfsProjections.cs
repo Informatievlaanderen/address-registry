@@ -187,6 +187,16 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
             });
 
+            When<Envelope<AddressWasRejectedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    item => item.Status = MapStatus(AddressStatus.Rejected),
+                    ct);
+
+                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+            });
+
             When<Envelope<AddressWasRejectedBecauseHouseNumberWasRejected>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressDetail(
@@ -262,6 +272,16 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
             });
 
             When<Envelope<AddressWasRetiredV2>>(async (context, message, ct) =>
+            {
+                var item = await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    item => item.Status = MapStatus(AddressStatus.Retired),
+                    ct);
+
+                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+            });
+
+            When<Envelope<AddressWasRetiredBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
             {
                 var item = await context.FindAndUpdateAddressDetail(
                     message.Message.AddressPersistentLocalId,

@@ -1,15 +1,15 @@
 ﻿namespace AddressRegistry.Projections.Integration.Version
 {
     using System;
-    using AddressRegistry.Address.Events;
-    using AddressRegistry.Projections.Integration.Convertors;
-    using AddressRegistry.Projections.Integration.Infrastructure;
-    using AddressRegistry.StreetName;
-    using AddressRegistry.StreetName.Events;
+    using Address.Events;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
+    using Convertors;
+    using Infrastructure;
     using Microsoft.Extensions.Options;
+    using StreetName;
+    using StreetName.Events;
 
     [ConnectedProjectionName("Integratie adres versie")]
     [ConnectedProjectionDescription("Projectie die de laatste adres data voor de integratie database bijhoudt.")]
@@ -166,6 +166,19 @@
                     ct);
             });
 
+            When<Envelope<AddressWasRejectedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(message.Message.AddressPersistentLocalId),
+                    message,
+                    item =>
+                    {
+                        item.Status = AddressStatus.Rejected;
+                        item.OsloStatus = AddressStatus.Rejected.Map();
+                    },
+                    ct);
+            });
+
             When<Envelope<AddressWasRejectedBecauseHouseNumberWasRejected>>(async (context, message, ct) =>
             {
                 await context.CreateNewAddressVersion(
@@ -255,6 +268,19 @@
             });
 
             When<Envelope<AddressWasRetiredV2>>(async (context, message, ct) =>
+            {
+                await context.CreateNewAddressVersion(
+                    new PersistentLocalId(message.Message.AddressPersistentLocalId),
+                    message,
+                    item =>
+                    {
+                        item.Status = AddressStatus.Retired;
+                        item.OsloStatus = AddressStatus.Retired.Map();
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasRetiredBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
             {
                 await context.CreateNewAddressVersion(
                     new PersistentLocalId(message.Message.AddressPersistentLocalId),

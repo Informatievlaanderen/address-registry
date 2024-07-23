@@ -27,6 +27,7 @@ namespace AddressRegistry.StreetName
         public AddressGeometry Geometry { get; private set; }
         public bool IsOfficiallyAssigned { get; private set; }
         public AddressPersistentLocalId? MergedAddressPersistentLocalId { get; private set; }
+        public AddressStatus? DesiredStatusAfterMunicipalityMerger { get; private set; }
         public bool IsRemoved { get; private set; }
 
         public StreetNameAddress? Parent { get; private set; }
@@ -47,10 +48,12 @@ namespace AddressRegistry.StreetName
             Register<AddressWasProposedForMunicipalityMerger>(When);
             Register<AddressWasApproved>(When);
             Register<AddressWasRejected>(When);
+            Register<AddressWasRejectedBecauseOfMunicipalityMerger>(When);
             Register<AddressWasRejectedBecauseHouseNumberWasRejected>(When);
             Register<AddressWasRejectedBecauseHouseNumberWasRetired>(When);
             Register<AddressWasRejectedBecauseStreetNameWasRetired>(When);
             Register<AddressWasRetiredV2>(When);
+            Register<AddressWasRetiredBecauseOfMunicipalityMerger>(When);
             Register<AddressWasRetiredBecauseHouseNumberWasRetired>(When);
             Register<AddressWasRetiredBecauseStreetNameWasRetired>(When);
             Register<AddressWasRemovedV2>(When);
@@ -134,6 +137,7 @@ namespace AddressRegistry.StreetName
                 @event.GeometrySpecification,
                 new ExtendedWkbGeometry(@event.ExtendedWkbGeometry));
             MergedAddressPersistentLocalId = new AddressPersistentLocalId(@event.MergedAddressPersistentLocalId);
+            DesiredStatusAfterMunicipalityMerger = @event.DesiredStatus;
 
             _lastEvent = @event;
         }
@@ -146,6 +150,13 @@ namespace AddressRegistry.StreetName
         }
 
         private void When(AddressWasRejected @event)
+        {
+            Status = AddressStatus.Rejected;
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressWasRejectedBecauseOfMunicipalityMerger @event)
         {
             Status = AddressStatus.Rejected;
 
@@ -174,6 +185,13 @@ namespace AddressRegistry.StreetName
         }
 
         private void When(AddressWasRetiredV2 @event)
+        {
+            Status = AddressStatus.Retired;
+
+            _lastEvent = @event;
+        }
+
+        private void When(AddressWasRetiredBecauseOfMunicipalityMerger @event)
         {
             Status = AddressStatus.Retired;
 
@@ -315,6 +333,7 @@ namespace AddressRegistry.StreetName
             MergedAddressPersistentLocalId = addressData.MergedAddressPersistentLocalId.HasValue
                 ? new AddressPersistentLocalId(addressData.MergedAddressPersistentLocalId.Value)
                 : null;
+            DesiredStatusAfterMunicipalityMerger = addressData.DesiredStatusAfterMunicipalityMerger;
             LegacyAddressId = addressData.LegacyAddressId.HasValue ? new AddressId(addressData.LegacyAddressId.Value) : null;
             _lastSnapshottedEventHash = addressData.LastEventHash;
             _lastSnapshottedProvenance = addressData.LastProvenanceData;

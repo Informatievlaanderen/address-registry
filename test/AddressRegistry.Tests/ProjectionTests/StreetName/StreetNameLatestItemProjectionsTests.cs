@@ -123,6 +123,7 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
             var streetNameWasProposed = new StreetNameWasProposedForMunicipalityMerger(
                 _fixture.Create<Guid>().ToString(),
                 _fixture.Create<string>(),
+                _fixture.Create<string>(),
                 _names,
                 _homonyms,
                 streetNamePersistentLocalId,

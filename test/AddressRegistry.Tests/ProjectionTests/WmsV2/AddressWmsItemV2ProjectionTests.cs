@@ -348,6 +348,34 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
         }
 
         [Fact]
+        public async Task WhenAddressWasRejectedBecauseOfMunicipalityMerger()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasRejected = _fixture.Create<AddressWasRejectedBecauseOfMunicipalityMerger>();
+            var rejectedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasRejected.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasRejectedBecauseOfMunicipalityMerger>(new Envelope(addressWasRejected, rejectedMetadata)))
+                .Then(async ct =>
+                {
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasRejected.AddressPersistentLocalId);
+                    addressWmsItem.Should().NotBeNull();
+                    addressWmsItem!.Status.Should().Be(AddressWmsItemV2Projections.MapStatus(AddressStatus.Rejected));
+                    addressWmsItem.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
         public async Task WhenAddressWasRejectedBecauseHouseNumberWasRejected()
         {
             var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
@@ -583,6 +611,41 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
                     addressWmsItem.Should().NotBeNull();
                     addressWmsItem!.Status.Should().Be(AddressWmsItemV2Projections.MapStatus(AddressStatus.Retired));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRetiredV2.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressWasRetiredBecauseOfMunicipalityMerger()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasApproved = _fixture.Create<AddressWasApproved>();
+            var approvedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasApproved.GetHash() }
+            };
+
+            var addressWasRetired = _fixture.Create<AddressWasRetiredBecauseOfMunicipalityMerger>();
+            var retiredMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasRetired.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasApproved>(new Envelope(addressWasApproved, approvedMetadata)),
+                    new Envelope<AddressWasRetiredBecauseOfMunicipalityMerger>(new Envelope(addressWasRetired, retiredMetadata)))
+                .Then(async ct =>
+                {
+                    var addressWmsItem = await ct.AddressWmsItemsV2.FindAsync(addressWasRetired.AddressPersistentLocalId);
+                    addressWmsItem.Should().NotBeNull();
+                    addressWmsItem!.Status.Should().Be(AddressWmsItemV2Projections.MapStatus(AddressStatus.Retired));
+                    addressWmsItem.VersionTimestamp.Should().Be(addressWasRetired.Provenance.Timestamp);
                 });
         }
 

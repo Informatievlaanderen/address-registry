@@ -48,6 +48,16 @@ namespace AddressRegistry.StreetName
             {
                 ApplyChange(new StreetNameWasApproved(PersistentLocalId));
             }
+
+            foreach (var address in StreetNameAddresses.ProposedStreetNameAddressesFromMunicipalityMerger.Where(x => x.IsHouseNumberAddress))
+            {
+                address.Approve();
+            }
+
+            foreach (var address in StreetNameAddresses.ProposedStreetNameAddressesFromMunicipalityMerger.Where(x => x.IsBoxNumberAddress))
+            {
+                address.Approve();
+            }
         }
 
         public void RejectStreetName()
@@ -70,6 +80,39 @@ namespace AddressRegistry.StreetName
             ApplyChange(new StreetNameWasRejected(PersistentLocalId));
         }
 
+        public void RejectStreetNameBecauseOfMunicipalityMerger(ICollection<StreetName> newStreetNames)
+        {
+            if (Status == StreetNameStatus.Rejected)
+            {
+                return;
+            }
+
+            foreach (var address in StreetNameAddresses.ProposedStreetNameAddresses.Where(address => address.IsBoxNumberAddress))
+            {
+                Reject(address);
+            }
+            foreach (var address in StreetNameAddresses.CurrentStreetNameAddresses.Where(address => address.IsBoxNumberAddress))
+            {
+                Retire(address);
+            }
+
+            foreach (var address in StreetNameAddresses.ProposedStreetNameAddresses.Where(address => address.IsHouseNumberAddress))
+            {
+                Reject(address);
+            }
+            foreach (var address in StreetNameAddresses.CurrentStreetNameAddresses.Where(address => address.IsHouseNumberAddress))
+            {
+                Retire(address);
+            }
+
+            ApplyChange(new StreetNameWasRejectedBecauseOfMunicipalityMerger(
+                PersistentLocalId,
+                newStreetNames.Select(x => x.PersistentLocalId)));
+
+            void Reject(StreetNameAddress address) => address.RejectBecauseOfMunicipalityMerger(newStreetNames);
+            void Retire(StreetNameAddress address) => address.RetireBecauseOfMunicipalityMerger(newStreetNames);
+        }
+
         public void RetireStreetName()
         {
             if (Status == StreetNameStatus.Retired)
@@ -88,6 +131,39 @@ namespace AddressRegistry.StreetName
                 StreetNameAddresses.CurrentStreetNameAddresses.Where(address => address.IsHouseNumberAddress));
 
             ApplyChange(new StreetNameWasRetired(PersistentLocalId));
+        }
+
+        public void RetireStreetNameBecauseOfMunicipalityMerger(ICollection<StreetName> newStreetNames)
+        {
+            if (Status == StreetNameStatus.Retired)
+            {
+                return;
+            }
+
+            foreach (var address in StreetNameAddresses.ProposedStreetNameAddresses.Where(address => address.IsBoxNumberAddress))
+            {
+                Reject(address);
+            }
+            foreach (var address in StreetNameAddresses.CurrentStreetNameAddresses.Where(address => address.IsBoxNumberAddress))
+            {
+                Retire(address);
+            }
+
+            foreach (var address in StreetNameAddresses.ProposedStreetNameAddresses.Where(address => address.IsHouseNumberAddress))
+            {
+                Reject(address);
+            }
+            foreach (var address in StreetNameAddresses.CurrentStreetNameAddresses.Where(address => address.IsHouseNumberAddress))
+            {
+                Retire(address);
+            }
+
+            ApplyChange(new StreetNameWasRetiredBecauseOfMunicipalityMerger(
+                PersistentLocalId,
+                newStreetNames.Select(x => x.PersistentLocalId)));
+
+            void Reject(StreetNameAddress address) => address.RejectBecauseOfMunicipalityMerger(newStreetNames);
+            void Retire(StreetNameAddress address) => address.RetireBecauseOfMunicipalityMerger(newStreetNames);
         }
 
         public void RemoveStreetName()

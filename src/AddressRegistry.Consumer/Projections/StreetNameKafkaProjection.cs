@@ -1,6 +1,7 @@
 namespace AddressRegistry.Consumer.Projections
 {
     using System;
+    using System.Linq;
     using AddressRegistry.StreetName;
     using AddressRegistry.StreetName.Commands;
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts;
@@ -52,6 +53,17 @@ namespace AddressRegistry.Consumer.Projections
                 );
             }
 
+            if (type == typeof(StreetNameWasProposedForMunicipalityMerger))
+            {
+                var msg = (StreetNameWasProposedForMunicipalityMerger)message;
+                return new ImportStreetName(
+                    new StreetNamePersistentLocalId(msg.PersistentLocalId),
+                    new MunicipalityId(MunicipalityId.CreateFor(msg.MunicipalityId)),
+                    StreetNameStatus.Proposed,
+                    FromProvenance(msg.Provenance, Modification.Insert)
+                );
+            }
+
             if (type == typeof(StreetNameWasApproved))
             {
                 var msg = (StreetNameWasApproved)message;
@@ -88,11 +100,31 @@ namespace AddressRegistry.Consumer.Projections
                 );
             }
 
+            if (type == typeof(StreetNameWasRejectedBecauseOfMunicipalityMerger))
+            {
+                var msg = (StreetNameWasRejectedBecauseOfMunicipalityMerger)message;
+                return new RejectStreetNameBecauseOfMunicipalityMerger(
+                    new StreetNamePersistentLocalId(msg.PersistentLocalId),
+                    msg.NewPersistentLocalIds.Select(x => new StreetNamePersistentLocalId(x)),
+                    FromProvenance(msg.Provenance)
+                );
+            }
+
             if (type == typeof(StreetNameWasRetiredV2))
             {
                 var msg = (StreetNameWasRetiredV2)message;
                 return new RetireStreetName(
                     new StreetNamePersistentLocalId(msg.PersistentLocalId),
+                    FromProvenance(msg.Provenance)
+                );
+            }
+
+            if (type == typeof(StreetNameWasRetiredBecauseOfMunicipalityMerger))
+            {
+                var msg = (StreetNameWasRetiredBecauseOfMunicipalityMerger)message;
+                return new RetireStreetNameBecauseOfMunicipalityMerger(
+                    new StreetNamePersistentLocalId(msg.PersistentLocalId),
+                    msg.NewPersistentLocalIds.Select(x => new StreetNamePersistentLocalId(x)),
                     FromProvenance(msg.Provenance)
                 );
             }
@@ -150,6 +182,12 @@ namespace AddressRegistry.Consumer.Projections
                 await commandHandler.Handle(command, ct);
             });
 
+            When<StreetNameWasProposedForMunicipalityMerger>(async (commandHandler, message, ct) =>
+            {
+                var command = GetCommand(message);
+                await commandHandler.Handle(command, ct);
+            });
+
             When<StreetNameWasApproved>(async (commandHandler, message, ct) =>
             {
                 var command = GetCommand(message);
@@ -163,6 +201,12 @@ namespace AddressRegistry.Consumer.Projections
             });
 
             When<StreetNameWasRejected>(async (commandHandler, message, ct) =>
+            {
+                var command = GetCommand(message);
+                await commandHandler.Handle(command, ct);
+            });
+
+            When<StreetNameWasRejectedBecauseOfMunicipalityMerger>(async (commandHandler, message, ct) =>
             {
                 var command = GetCommand(message);
                 await commandHandler.Handle(command, ct);
@@ -192,6 +236,12 @@ namespace AddressRegistry.Consumer.Projections
             });
 
             When<StreetNameWasRetiredV2>(async (commandHandler, message, ct) =>
+            {
+                var command = GetCommand(message);
+                await commandHandler.Handle(command, ct);
+            });
+
+            When<StreetNameWasRetiredBecauseOfMunicipalityMerger>(async (commandHandler, message, ct) =>
             {
                 var command = GetCommand(message);
                 await commandHandler.Handle(command, ct);

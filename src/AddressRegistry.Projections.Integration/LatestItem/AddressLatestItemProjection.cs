@@ -216,6 +216,20 @@
                     ct);
             });
 
+            When<Envelope<AddressWasRejectedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateAddressLatestItem(
+                    message.Message.AddressPersistentLocalId,
+                    message.Position,
+                    item =>
+                    {
+                        item.Status = AddressStatus.Rejected;
+                        item.OsloStatus = AddressStatus.Rejected.Map();
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+            });
+
             When<Envelope<AddressWasRejectedBecauseHouseNumberWasRejected>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressLatestItem(
@@ -315,6 +329,20 @@
             });
 
             When<Envelope<AddressWasRetiredV2>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateAddressLatestItem(
+                    message.Message.AddressPersistentLocalId,
+                    message.Position,
+                    item =>
+                    {
+                        item.Status = AddressStatus.Retired;
+                        item.OsloStatus = AddressStatus.Retired.Map();
+                        UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasRetiredBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressLatestItem(
                     message.Message.AddressPersistentLocalId,

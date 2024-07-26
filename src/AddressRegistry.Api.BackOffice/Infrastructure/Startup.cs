@@ -6,9 +6,9 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure
     using Asp.Versioning.ApiExplorer;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
-    using Be.Vlaanderen.Basisregisters.Auth.AcmIdm;
     using Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Api;
+    using Be.Vlaanderen.Basisregisters.Auth.AcmIdm;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Configuration;
     using IdentityModel.AspNetCore.OAuth2Introspection;
@@ -51,12 +51,12 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure
                 .GetSection(nameof(OAuth2IntrospectionOptions))
                 .Get<OAuth2IntrospectionOptions>();
 
-            var baseUrl = _configuration.GetValue<string>("BaseUrl");
+            var baseUrl = _configuration.GetValue<string>("BaseUrl")!;
             var baseUrlForExceptions = baseUrl.EndsWith("/")
                 ? baseUrl.Substring(0, baseUrl.Length - 1)
                 : baseUrl;
 
-            services.AddAcmIdmAuthentication(oAuth2IntrospectionOptions);
+            services.AddAcmIdmAuthentication(oAuth2IntrospectionOptions!);
             services
                 .ConfigureDefaultForApi<Startup>(new StartupConfigureOptions
                     {
@@ -74,7 +74,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure
                         },
                         Swagger =
                         {
-                            ApiInfo = (provider, description) => new OpenApiInfo
+                            ApiInfo = (_, description) => new OpenApiInfo
                             {
                                 Version = description.ApiVersion.ToString(),
                                 Title = "Basisregisters Vlaanderen Address Registry API",
@@ -86,7 +86,7 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure
                                     Url = new Uri("https://backoffice.basisregisters.vlaanderen")
                                 }
                             },
-                            XmlCommentPaths = new[] { typeof(Startup).GetTypeInfo().Assembly.GetName().Name }
+                            XmlCommentPaths = new string[] { typeof(Startup).GetTypeInfo().Assembly.GetName().Name! }
                         },
                         MiddlewareHooks =
                         {
@@ -100,13 +100,19 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure
 
                                 foreach (var connectionString in connectionStrings)
                                     health.AddSqlServer(
-                                        connectionString.Value,
+                                        connectionString.Value!,
                                         name: $"sqlserver-{connectionString.Key.ToLowerInvariant()}",
                                         tags: new[] { DatabaseTag, "sql", "sqlserver" });
                             },
                             Authorization = options =>
                             {
-                                options.AddAcmIdmAuthorization();
+                                var blacklistedOvoCodes =  _configuration
+                                    .GetSection("BlacklistedOvoCodes")
+                                    .GetChildren()
+                                    .Select(c => c.Value!)
+                                    .ToArray();
+
+                                options.AddAddressPolicies(blacklistedOvoCodes);
                             }
                         }
                     }
@@ -175,8 +181,8 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure
             app.UseIdempotencyDatabaseMigrations();
 
             MigrationsHelper.Run(
-                _configuration.GetConnectionString("Sequences"),
-                _configuration.GetConnectionString("BackOffice"),
+                _configuration.GetConnectionString("Sequences")!,
+                _configuration.GetConnectionString("BackOffice")!,
                 serviceProvider.GetService<ILoggerFactory>());
 
             StartupHelpers.CheckDatabases(healthCheckService, DatabaseTag, loggerFactory).GetAwaiter().GetResult();

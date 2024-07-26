@@ -190,7 +190,7 @@ NUGET
       NSwag.CodeGeneration.CSharp (>= 14.0.3)
       NSwag.CodeGeneration.TypeScript (>= 14.0.3)
       Swashbuckle.AspNetCore (6.2.3)
-    Be.Vlaanderen.Basisregisters.Auth.AcmIdm (2.0)
+    Be.Vlaanderen.Basisregisters.Auth.AcmIdm (3.0)
       Be.Vlaanderen.Basisregisters.NisCodeService.Abstractions (>= 2.0)
       IdentityModel.AspNetCore.OAuth2Introspection (>= 6.2)
       Microsoft.AspNetCore.Authentication.JwtBearer (>= 8.0.3)

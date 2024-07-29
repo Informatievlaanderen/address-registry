@@ -1,3 +1,19 @@
+# [4.11.0](https://github.com/informatievlaanderen/address-registry/compare/v4.10.0...v4.11.0) (2024-07-29)
+
+
+### Bug Fixes
+
+* add streetnamenameswerechanged ([e47420e](https://github.com/informatievlaanderen/address-registry/commit/e47420ec383df3d9be2fbf38cacc010e4296d088))
+
+
+### Features
+
+* add snapshot status endpoint ([#1205](https://github.com/informatievlaanderen/address-registry/issues/1205)) ([8710899](https://github.com/informatievlaanderen/address-registry/commit/87108996be0a270542e6cbffc70932e55bcea94e))
+* add streetname municipality merger events to read streetname consumer ([d7cb54a](https://github.com/informatievlaanderen/address-registry/commit/d7cb54ac448e2059d538763f43c92abd992b93df))
+* blacklist ovocodes ([#1204](https://github.com/informatievlaanderen/address-registry/issues/1204)) ([ccffc0b](https://github.com/informatievlaanderen/address-registry/commit/ccffc0bc13065afeab8fe7faba3fbae1d775bfac))
+* consume MunicipalityWasMerged ([e433ead](https://github.com/informatievlaanderen/address-registry/commit/e433ead1c4a197d56bac0839a4c743365e6e4ebc))
+* consume streetname municipality merger events ([e3fdf1d](https://github.com/informatievlaanderen/address-registry/commit/e3fdf1d71233c2bacfef3718cb3af058e3cf8f1d))
+
 # [4.10.0](https://github.com/informatievlaanderen/address-registry/compare/v4.9.0...v4.10.0) (2024-07-18)
 
 

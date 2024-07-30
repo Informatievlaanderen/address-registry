@@ -1,3 +1,10 @@
+## [4.11.2](https://github.com/informatievlaanderen/address-registry/compare/v4.11.1...v4.11.2) (2024-07-30)
+
+
+### Bug Fixes
+
+* rejected or retired address because of municipality merger doesn't always have a new address ([aca2365](https://github.com/informatievlaanderen/address-registry/commit/aca2365e8dd1973f44045d18a33afcf6997b7334))
+
 ## [4.11.1](https://github.com/informatievlaanderen/address-registry/compare/v4.11.0...v4.11.1) (2024-07-30)
 
 # [4.11.0](https://github.com/informatievlaanderen/address-registry/compare/v4.10.0...v4.11.0) (2024-07-29)

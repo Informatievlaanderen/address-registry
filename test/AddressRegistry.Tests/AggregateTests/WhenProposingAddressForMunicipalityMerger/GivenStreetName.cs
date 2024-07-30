@@ -330,7 +330,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                     GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                     Fixture.Create<bool>(),
                     oldStreetNamePersistentLocalId,
-                    Fixture.Create<AddressPersistentLocalId>()
+                    new AddressPersistentLocalId(1)
                 )],
                 Fixture.Create<Provenance>());
 
@@ -345,7 +345,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 GeometrySpecification.Lot,
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                 Fixture.Create<bool>(),
-                Fixture.Create<AddressPersistentLocalId>(),
+                new AddressPersistentLocalId(2),
                 Fixture.Create<AddressStatus>());
             ((ISetProvenance)addressWasProposedForMunicipalityMerger).SetProvenance(Fixture.Create<Provenance>());
 

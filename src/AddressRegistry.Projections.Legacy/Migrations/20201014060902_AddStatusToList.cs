@@ -2,8 +2,6 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace AddressRegistry.Projections.Legacy.Migrations
 {
-    using AddressDetail;
-    using AddressList;
     using Infrastructure;
 
     public partial class AddStatusToList : Migration
@@ -16,8 +14,8 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                 table: "AddressList",
                 nullable: true);
 
-            migrationBuilder.Sql(@$"MERGE INTO [{Schema.Legacy}].[{AddressListItemConfiguration.TableName}] list
-                                        USING [{Schema.Legacy}].[{AddressDetailItemConfiguration.TableName}] detail
+            migrationBuilder.Sql(@$"MERGE INTO [{Schema.Legacy}].[AddressList] list
+                                        USING [{Schema.Legacy}].[AddressDetails] detail
                                             ON list.[AddressId] = detail.[AddressId]
                                     WHEN MATCHED THEN
                                         UPDATE

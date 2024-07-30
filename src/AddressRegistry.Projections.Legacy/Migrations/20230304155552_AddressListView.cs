@@ -4,7 +4,6 @@
 
 namespace AddressRegistry.Projections.Legacy.Migrations
 {
-    using AddressList;
     using Infrastructure;
 
     public partial class AddressListView : Migration
@@ -15,7 +14,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
             migrationBuilder.Sql("ALTER AUTHORIZATION ON SCHEMA::AddressRegistrySyndication TO address");
 
             migrationBuilder.Sql(@$"
-CREATE VIEW [AddressRegistryLegacy].{AddressListViewItemConfiguration.ViewName}
+CREATE VIEW [AddressRegistryLegacy].vw_AddressList
 WITH SCHEMABINDING
 AS
   SELECT al.[PersistentLocalId]
@@ -55,35 +54,35 @@ INNER JOIN AddressRegistrySyndication.MunicipalityLatestSyndication m
 	ON s.NisCode = m.NisCode
 WHERE al.Complete = 1 AND al.Removed = 0 AND al.PersistentLocalId <> 0 AND al.PersistentLocalId IS NOT NULL");
 
-            migrationBuilder.Sql($"CREATE UNIQUE CLUSTERED INDEX IX_{AddressListViewItemConfiguration.ViewName}_PersistentLocalId ON [AddressRegistryLegacy].{AddressListViewItemConfiguration.ViewName} (PersistentLocalId);");
+            migrationBuilder.Sql($"CREATE UNIQUE CLUSTERED INDEX IX_vw_AddressList_PersistentLocalId ON [AddressRegistryLegacy].vw_AddressList (PersistentLocalId);");
 
             migrationBuilder.CreateIndex(
-                name: $"IX_{AddressListViewItemConfiguration.ViewName}_HouseNumber",
-                table: AddressListViewItemConfiguration.ViewName,
+                name: $"IX_vw_AddressList_HouseNumber",
+                table: "vw_AddressList",
                 schema: "AddressRegistryLegacy",
                 column: "HouseNumber");
 
             migrationBuilder.CreateIndex(
-                name: $"IX_{AddressListViewItemConfiguration.ViewName}_BoxNumber",
-                table: AddressListViewItemConfiguration.ViewName,
+                name: $"IX_vw_AddressList_BoxNumber",
+                table: "vw_AddressList",
                 schema: "AddressRegistryLegacy",
                 column: "BoxNumber");
 
             migrationBuilder.CreateIndex(
-                name: $"IX_{AddressListViewItemConfiguration.ViewName}_PostalCode",
-                table: AddressListViewItemConfiguration.ViewName,
+                name: $"IX_vw_AddressList_PostalCode",
+                table: "vw_AddressList",
                 schema: "AddressRegistryLegacy",
                 column: "PostalCode");
 
             migrationBuilder.CreateIndex(
-                name: $"IX_{AddressListViewItemConfiguration.ViewName}_Status",
-                table: AddressListViewItemConfiguration.ViewName,
+                name: $"IX_vw_AddressList_Status",
+                table: "vw_AddressList",
                 schema: "AddressRegistryLegacy",
                 column: "Status");
 
             migrationBuilder.CreateIndex(
-                    name: $"IX_{AddressListViewItemConfiguration.ViewName}_MunicipalityNameSearch",
-                    table: AddressListViewItemConfiguration.ViewName,
+                    name: $"IX_vw_AddressList_MunicipalityNameSearch",
+                    table: "vw_AddressList",
                     schema: "AddressRegistryLegacy",
                     columns: new[]
                     {
@@ -95,48 +94,48 @@ WHERE al.Complete = 1 AND al.Removed = 0 AND al.PersistentLocalId <> 0 AND al.Pe
                 .Annotation("SqlServer:Include", new[] { "NisCode" });
 
             migrationBuilder.CreateIndex(
-                name: $"IX_{AddressListViewItemConfiguration.ViewName}_NisCode",
-                table: AddressListViewItemConfiguration.ViewName,
+                name: $"IX_vw_AddressList_NisCode",
+                table: "vw_AddressList",
                 schema: "AddressRegistryLegacy",
                 column: "NisCode");
 
             migrationBuilder.CreateIndex(
-                    name: $"IX_{AddressListViewItemConfiguration.ViewName}_StreetNameDutchSearch",
-                    table: AddressListViewItemConfiguration.ViewName,
+                    name: $"IX_vw_AddressList_StreetNameDutchSearch",
+                    table: "vw_AddressList",
                     schema: "AddressRegistryLegacy",
                     columns: new[] { "StreetNameDutchSearch" })
                 .Annotation("SqlServer:Include", new[] { "StreetNamePersistentLocalId" });
 
             migrationBuilder.CreateIndex(
-                    name: $"IX_{AddressListViewItemConfiguration.ViewName}_StreetNameEnglishSearch",
-                    table: AddressListViewItemConfiguration.ViewName,
+                    name: $"IX_vw_AddressList_StreetNameEnglishSearch",
+                    table: "vw_AddressList",
                     schema: "AddressRegistryLegacy",
                     columns: new[] { "StreetNameEnglishSearch" })
                 .Annotation("SqlServer:Include", new[] { "StreetNamePersistentLocalId" });
 
             migrationBuilder.CreateIndex(
-                    name: $"IX_{AddressListViewItemConfiguration.ViewName}_StreetNameFrenchSearch",
-                    table: AddressListViewItemConfiguration.ViewName,
+                    name: $"IX_vw_AddressList_StreetNameFrenchSearch",
+                    table: "vw_AddressList",
                     schema: "AddressRegistryLegacy",
                     columns: new[] { "StreetNameFrenchSearch" })
                 .Annotation("SqlServer:Include", new[] { "StreetNamePersistentLocalId" });
 
             migrationBuilder.CreateIndex(
-                    name: $"IX_{AddressListViewItemConfiguration.ViewName}_StreetNameGermanSearch",
-                    table: AddressListViewItemConfiguration.ViewName,
+                    name: $"IX_vw_AddressList_StreetNameGermanSearch",
+                    table: "vw_AddressList",
                     schema: "AddressRegistryLegacy",
                     columns: new[] { "StreetNameGermanSearch" })
                 .Annotation("SqlServer:Include", new[] { "StreetNamePersistentLocalId" });
 
             migrationBuilder.CreateIndex(
-                name: $"IX_{AddressListViewItemConfiguration.ViewName}_StreetNamePersistentLocalId",
-                table: AddressListViewItemConfiguration.ViewName,
+                name: $"IX_vw_AddressList_StreetNamePersistentLocalId",
+                table: "vw_AddressList",
                 schema: "AddressRegistryLegacy",
                 column: "StreetNamePersistentLocalId");
 
             migrationBuilder.CreateIndex(
-                    name: $"IX_{AddressListViewItemConfiguration.ViewName}_HomonymAdditions",
-                    table: AddressListViewItemConfiguration.ViewName,
+                    name: $"IX_vw_AddressList_HomonymAdditions",
+                    table: "vw_AddressList",
                     schema: "AddressRegistryLegacy",
                     columns: new[]
                     {
@@ -150,7 +149,7 @@ WHERE al.Complete = 1 AND al.Removed = 0 AND al.PersistentLocalId <> 0 AND al.Pe
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql($"DROP VIEW [AddressRegistryLegacy].{AddressListViewItemConfiguration.ViewName}");
+            migrationBuilder.Sql($"DROP VIEW [AddressRegistryLegacy].vw_AddressList");
         }
     }
 }

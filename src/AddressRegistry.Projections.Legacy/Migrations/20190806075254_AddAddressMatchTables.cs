@@ -2,14 +2,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace AddressRegistry.Projections.Legacy.Migrations
 {
-    using AddressMatch;
-
     public partial class AddAddressMatchTables : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: RRStreetName.TableName,
+                name: "RRStreetNames",
                 schema: Infrastructure.Schema.Legacy,
                 columns: table => new
                 {
@@ -20,7 +18,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: KadStreetName.TableName,
+                name: "KadStreetNames",
                 schema: Infrastructure.Schema.Legacy,
                 columns: table => new
                 {
@@ -30,7 +28,7 @@ namespace AddressRegistry.Projections.Legacy.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: RRAddress.TableName,
+                name: "RRAddresses",
                 schema: Infrastructure.Schema.Legacy,
                 columns: table => new
                 {
@@ -45,64 +43,64 @@ namespace AddressRegistry.Projections.Legacy.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_RRStreetName_StreetCode",
                 schema: Infrastructure.Schema.Legacy,
-                table: RRStreetName.TableName,
-                column: nameof(RRStreetName.StreetCode));
+                table: "RRStreetNames",
+                column: "StreetCode");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RRStreetName_PostalCode",
                 schema: Infrastructure.Schema.Legacy,
-                table: RRStreetName.TableName,
-                column: nameof(RRStreetName.PostalCode));
+                table: "RRStreetNames",
+                column: "PostalCode");
 
             migrationBuilder.CreateIndex(
                 name: "IX_KadStreetNames_KadStreetNameCode",
                 schema: Infrastructure.Schema.Legacy,
-                table: KadStreetName.TableName,
-                column: nameof(KadStreetName.KadStreetNameCode));
+                table: "KadStreetNames",
+                column: "KadStreetNameCode");
 
             migrationBuilder.CreateIndex(
                 name: "IX_KadStreetNames_NisCode",
                 schema: Infrastructure.Schema.Legacy,
-                table: KadStreetName.TableName,
-                column: nameof(KadStreetName.NisCode));
+                table: "KadStreetNames",
+                column: "NisCode");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RRAddresses_RRHouseNumber",
                 schema: Infrastructure.Schema.Legacy,
-                table: RRAddress.TableName,
-                column: nameof(RRAddress.RRHouseNumber));
+                table: "RRAddresses",
+                column: "RRHouseNumber");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RRAddresses_RRIndex",
                 schema: Infrastructure.Schema.Legacy,
-                table: RRAddress.TableName,
-                column: nameof(RRAddress.RRIndex));
+                table: "RRAddresses",
+                column: "RRIndex");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RRAddresses_StreetCode",
                 schema: Infrastructure.Schema.Legacy,
-                table: RRAddress.TableName,
-                column: nameof(RRAddress.StreetCode));
+                table: "RRAddresses",
+                column: "StreetCode");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RRAddresses_PostalCode",
                 schema: Infrastructure.Schema.Legacy,
-                table: RRAddress.TableName,
-                column: nameof(RRAddress.PostalCode));
+                table: "RRAddresses",
+                column: "PostalCode");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: RRStreetName.TableName,
+                name: "RRStreetNames",
                 schema: Infrastructure.Schema.Legacy);
 
             migrationBuilder.DropTable(
-                name: KadStreetName.TableName,
+                name: "KadStreetNames",
                 schema: Infrastructure.Schema.Legacy);
 
             migrationBuilder.DropTable(
-                name: RRAddress.TableName,
+                name: "RRAddresses",
                 schema: Infrastructure.Schema.Legacy);
         }
     }

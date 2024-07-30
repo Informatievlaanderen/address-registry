@@ -1,3 +1,10 @@
+## [4.11.3](https://github.com/informatievlaanderen/address-registry/compare/v4.11.2...v4.11.3) (2024-07-30)
+
+
+### Bug Fixes
+
+* remove v1 mgiration ([59bc94c](https://github.com/informatievlaanderen/address-registry/commit/59bc94cac4c289f061a03d2570995258c4c91631))
+
 ## [4.11.2](https://github.com/informatievlaanderen/address-registry/compare/v4.11.1...v4.11.2) (2024-07-30)
 
 

@@ -15,7 +15,6 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using AddressRegistry.Projections.Legacy.AddressDetailV2WithParent;
     using AddressRegistry.Projections.Legacy.AddressListV2;
     using AddressRegistry.Projections.Legacy.AddressSyndication;
-    using AddressRegistry.Projections.Legacy.CrabIdToPersistentLocalId;
     using AddressRegistry.Projections.Wfs;
     using AddressRegistry.Projections.Wfs.AddressWfs;
     using AddressRegistry.Projections.Wms;
@@ -171,8 +170,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .RegisterProjections<AddressListProjectionsV2, LegacyContext>(ConnectedProjectionSettings.Default)
                 .RegisterProjections<AddressSyndicationProjections, LegacyContext>(
                     () => new AddressSyndicationProjections(),
-                    ConnectedProjectionSettings.Default)
-                .RegisterProjections<CrabIdToPersistentLocalIdProjections, LegacyContext>(ConnectedProjectionSettings.Default);
+                    ConnectedProjectionSettings.Default);
         }
 
         private void RegisterWfsProjectionsV2(ContainerBuilder builder)

@@ -21,8 +21,8 @@ namespace AddressRegistry.StreetName.Events
         [EventPropertyDescription("Objectidentificator van het adres.")]
         public int AddressPersistentLocalId { get; }
 
-        [EventPropertyDescription("Objectidentificator van het nieuwe adres.")]
-        public int NewAddressPersistentLocalId { get; }
+        [EventPropertyDescription("Objectidentificator van het nieuwe adres (optioneel).")]
+        public int? NewAddressPersistentLocalId { get; }
 
         [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
@@ -30,23 +30,23 @@ namespace AddressRegistry.StreetName.Events
         public AddressWasRejectedBecauseOfMunicipalityMerger(
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             AddressPersistentLocalId addressPersistentLocalId,
-            AddressPersistentLocalId newAddressPersistentLocalId)
+            AddressPersistentLocalId? newAddressPersistentLocalId)
         {
             StreetNamePersistentLocalId = streetNamePersistentLocalId;
             AddressPersistentLocalId = addressPersistentLocalId;
-            NewAddressPersistentLocalId = newAddressPersistentLocalId;
+            NewAddressPersistentLocalId = newAddressPersistentLocalId is not null ? (int?)newAddressPersistentLocalId : null;
         }
 
         [JsonConstructor]
         private AddressWasRejectedBecauseOfMunicipalityMerger(
             int streetNamePersistentLocalId,
             int addressPersistentLocalId,
-            int newAddressPersistentLocalId,
+            int? newAddressPersistentLocalId,
             ProvenanceData provenance)
             : this(
                 new StreetNamePersistentLocalId(streetNamePersistentLocalId),
                 new AddressPersistentLocalId(addressPersistentLocalId),
-                new AddressPersistentLocalId(newAddressPersistentLocalId))
+                newAddressPersistentLocalId is not null ? new AddressPersistentLocalId(newAddressPersistentLocalId.Value) : null)
             => ((ISetProvenance)this).SetProvenance(provenance.ToProvenance());
 
         void ISetProvenance.SetProvenance(Provenance provenance) => Provenance = new ProvenanceData(provenance);
@@ -56,7 +56,10 @@ namespace AddressRegistry.StreetName.Events
             var fields = Provenance.GetHashFields().ToList();
             fields.Add(StreetNamePersistentLocalId.ToString(CultureInfo.InvariantCulture));
             fields.Add(AddressPersistentLocalId.ToString(CultureInfo.InvariantCulture));
-            fields.Add(NewAddressPersistentLocalId.ToString(CultureInfo.InvariantCulture));
+            if (NewAddressPersistentLocalId.HasValue)
+            {
+                fields.Add(NewAddressPersistentLocalId.Value.ToString(CultureInfo.InvariantCulture));
+            }
             return fields;
         }
 

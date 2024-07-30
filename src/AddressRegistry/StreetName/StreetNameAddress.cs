@@ -657,7 +657,7 @@ namespace AddressRegistry.StreetName
             }
         }
 
-        private AddressPersistentLocalId GetNewAddressPersistentLocalId(IEnumerable<StreetName> newStreetNames)
+        private AddressPersistentLocalId? GetNewAddressPersistentLocalId(IEnumerable<StreetName> newStreetNames)
         {
             foreach (var newStreetName in newStreetNames)
             {
@@ -672,7 +672,7 @@ namespace AddressRegistry.StreetName
                 }
             }
 
-            throw new MunicipalityMergerAddressIsNotFoundException(AddressPersistentLocalId);
+            return null;
         }
     }
 }

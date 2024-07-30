@@ -15,7 +15,6 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Options;
     using Moq;
-    using Projections.Integration;
     using Projections.Integration.Convertors;
     using Projections.Integration.Infrastructure;
     using Projections.Integration.Version;
@@ -1028,8 +1027,10 @@
         [Fact]
         public async Task WhenAddressPostalCodeWasCorrectedV2()
         {
-            var boxNumberPersistentLocalId = new AddressPersistentLocalId(1);
+            var houseNumberPersistentLocalId = _fixture.Create<AddressPersistentLocalId>();
+            var boxNumberPersistentLocalId = new AddressPersistentLocalId(houseNumberPersistentLocalId + 1);
             var addressPostalCodeWasCorrectedV2 = _fixture.Create<AddressPostalCodeWasCorrectedV2>()
+                .WithAddressPersistentLocalId(houseNumberPersistentLocalId)
                 .WithBoxNumberPersistentLocalIds(new List<AddressPersistentLocalId>()
                 {
                     boxNumberPersistentLocalId
@@ -1045,20 +1046,21 @@
                 { Envelope.PositionMetadataKey, position },
                 { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
-            var metadata = new Dictionary<string, object>
-            {
-                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 },
-                { Envelope.EventNameMetadataKey, "EventName"}
-            };
 
             var boxNumberWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
                 .WithAddressPersistentLocalId(boxNumberPersistentLocalId);
             var boxNumberMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() },
-                { Envelope.PositionMetadataKey, position },
+                { Envelope.PositionMetadataKey, ++position },
                 { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
+            };
+
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, ++position },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -1070,7 +1072,7 @@
                 .Then(async ct =>
                 {
                     var expectedVersion =
-                        await ct.AddressVersions.FindAsync(position + 1, addressPostalCodeWasCorrectedV2.AddressPersistentLocalId);
+                        await ct.AddressVersions.FindAsync(position, addressPostalCodeWasCorrectedV2.AddressPersistentLocalId);
                     expectedVersion.Should().NotBeNull();
                     expectedVersion!.StreetNamePersistentLocalId.Should()
                         .Be(addressPostalCodeWasCorrectedV2.StreetNamePersistentLocalId);
@@ -1082,7 +1084,7 @@
                     expectedVersion.VersionTimestamp.Should().Be(addressPostalCodeWasCorrectedV2.Provenance.Timestamp);
 
                     var expectedBoxNumberVersion =
-                        await ct.AddressVersions.FindAsync(position + 1, (int)boxNumberPersistentLocalId);
+                        await ct.AddressVersions.FindAsync(position, (int)boxNumberPersistentLocalId);
                     expectedBoxNumberVersion.Should().NotBeNull();
                     expectedBoxNumberVersion!.StreetNamePersistentLocalId.Should()
                         .Be(addressPostalCodeWasCorrectedV2.StreetNamePersistentLocalId);

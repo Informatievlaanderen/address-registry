@@ -11,6 +11,10 @@ namespace AddressRegistry.Projections.Legacy.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql(@"
+DROP VIEW [AddressRegistryLegacy].[vw_AddressList]
+DROP VIEW [AddressRegistryLegacy].[vw_AddressListCount]");
+        
             migrationBuilder.DropTable(
                 name: "AddressDetails",
                 schema: "AddressRegistryLegacy");
@@ -31,9 +35,6 @@ namespace AddressRegistry.Projections.Legacy.Migrations
 drop table [AddressRegistryLegacy].[KadStreetNames]
 drop table [AddressRegistryLegacy].[RRAddresses]
 drop table [AddressRegistryLegacy].[RRStreetNames]
-
-drop view [AddressRegistryLegacy].[vw_AddressList]
-drop view [AddressRegistryLegacy].[vw_AddressListCount]
 
 drop table [AddressRegistrySyndication].[__EFMigrationsHistorySyndication]
 drop table [AddressRegistrySyndication].[AddressBuildingUnitLinksExtract]

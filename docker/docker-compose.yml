@@ -1,0 +1,42 @@
+version: "3.8"
+
+# https://dev.to/birolaydin/installing-elasticsearch-and-kibana-with-docker-compose-2ni4
+# https://www.elastic.co/blog/getting-started-with-the-elastic-stack-and-docker-compose
+# https://github.com/elkninja/elastic-stack-docker-part-one/blob/main/docker-compose.yml
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.14.3
+    container_name: elasticsearch
+    ports:
+      - "9200:9200"
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+    networks:
+      - elastic
+    environment:
+      ELASTIC_PASSWORD: local_development
+      discovery.type: single-node
+      xpack.security.enabled: false
+      xpack.security.enrollment.enabled: false
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.14.3
+    container_name: kibana
+    ports:
+     - "5601:5601"
+    volumes:
+      - kibanadata:/usr/share/kibana/data
+    networks:
+      - elastic
+    environment:
+      XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY: d1a66dfd-c4d3-4a0a-8290-2abcb83ab3aa
+
+volumes:
+  es-data:
+    driver: local
+  kibanadata: 
+    driver: local
+
+networks:
+  elastic:

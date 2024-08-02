@@ -24,7 +24,7 @@ namespace AddressRegistry.Projections.Elastic.Infrastructure
                 RunOnSqlServer(services, loggerFactory, connectionString);
             else
                 RunInMemoryDb(services, loggerFactory, logger);
-
+            
             logger.LogInformation(
                 "Added {Context} to services:" +
                 Environment.NewLine +

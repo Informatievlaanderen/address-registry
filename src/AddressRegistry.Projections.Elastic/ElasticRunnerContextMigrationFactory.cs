@@ -1,7 +1,7 @@
 namespace AddressRegistry.Projections.Elastic
 {
+    using AddressRegistry.Infrastructure;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer;
-    using Infrastructure;
     using Microsoft.EntityFrameworkCore;
 
     public class ElasticRunnerContextMigrationFactory : SqlServerRunnerDbContextMigrationFactory<ElasticRunnerContext>

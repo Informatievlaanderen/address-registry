@@ -1,15 +1,15 @@
-namespace AddressRegistry.Projections.Elastic.AddressDetailV2WithParent
+namespace AddressRegistry.Projections.Elastic.AddressSearch
 {
     using System;
+    using AddressRegistry.StreetName;
     using NodaTime;
-    using StreetName;
 
-    public class AddressDetailItemV2WithParent
+    public class AddressSearchDocument
     {
-        protected AddressDetailItemV2WithParent()
+        protected AddressSearchDocument()
         { }
 
-        public AddressDetailItemV2WithParent(
+        public AddressSearchDocument(
             int addressPersistentLocalId,
             int streetNamePersistentLocalId,
             int? parentAddressPersistentLocalId,

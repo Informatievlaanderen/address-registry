@@ -1,9 +1,9 @@
-namespace AddressRegistry.Projections.Elastic
+namespace AddressRegistry.Projections.Elastic.Infrastructure
 {
     using System;
+    using AddressRegistry.Infrastructure;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer.MigrationExtensions;
-    using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;

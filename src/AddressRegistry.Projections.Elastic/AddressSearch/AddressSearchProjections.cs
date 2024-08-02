@@ -1,4 +1,4 @@
-namespace AddressRegistry.Projections.Elastic.AddressDetailV2WithParent
+namespace AddressRegistry.Projections.Elastic.AddressSearch
 {
     using System;
     using Be.Vlaanderen.Basisregisters.EventHandling;
@@ -10,9 +10,9 @@ namespace AddressRegistry.Projections.Elastic.AddressDetailV2WithParent
 
     [ConnectedProjectionName("API endpoint search adressen")]
     [ConnectedProjectionDescription("Projectie die de adressen data in Elastic Search synchroniseert.")]
-    public class AddressDetailProjectionsV2WithParent : ConnectedProjection<ElasticRunnerContext>
+    public class AddressSearchProjections : ConnectedProjection<ElasticRunnerContext>
     {
-        public AddressDetailProjectionsV2WithParent()
+        public AddressSearchProjections()
         {
         //     #region StreetName
         //
@@ -730,7 +730,7 @@ namespace AddressRegistry.Projections.Elastic.AddressDetailV2WithParent
         //     });
         }
 
-        private static void UpdateHash<T>(AddressDetailItemV2WithParent entity, Envelope<T> wrappedEvent) where T : IHaveHash, IMessage
+        private static void UpdateHash<T>(AddressSearchDocument entity, Envelope<T> wrappedEvent) where T : IHaveHash, IMessage
         {
             if (!wrappedEvent.Metadata.ContainsKey(AddEventHashPipe.HashMetadataKey))
             {
@@ -740,11 +740,11 @@ namespace AddressRegistry.Projections.Elastic.AddressDetailV2WithParent
             entity.LastEventHash = wrappedEvent.Metadata[AddEventHashPipe.HashMetadataKey].ToString()!;
         }
 
-        private static void UpdateVersionTimestamp(AddressDetailItemV2WithParent addressDetailItem, Instant versionTimestamp)
+        private static void UpdateVersionTimestamp(AddressSearchDocument addressDetailItem, Instant versionTimestamp)
             => addressDetailItem.VersionTimestamp = versionTimestamp;
 
 
-        private static void UpdateVersionTimestampIfNewer(AddressDetailItemV2WithParent addressDetailItem, Instant versionTimestamp)
+        private static void UpdateVersionTimestampIfNewer(AddressSearchDocument addressDetailItem, Instant versionTimestamp)
         {
             if(versionTimestamp > addressDetailItem.VersionTimestamp)
             {

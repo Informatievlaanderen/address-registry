@@ -21,7 +21,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
         public AddressStatus Status { get; set; }
         public bool Active => Status is AddressStatus.Proposed or AddressStatus.Current;
         public bool OfficiallyAssigned { get; set; }
-        public string HouseNumber { get; set; } = string.Empty;
+        public string HouseNumber { get; set; }
         public string? BoxNumber { get; set; }
 
         public Municipality Municipality { get; set; }
@@ -40,6 +40,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             Instant versionTimestamp,
             AddressStatus status,
             bool officiallyAssigned,
+            string houseNumber,
             string? boxNumber,
             Municipality municipality,
             PostalInfo? postalInfo,
@@ -51,6 +52,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             VersionTimestamp = versionTimestamp.ToBelgianDateTimeOffset();
             Status = status;
             OfficiallyAssigned = officiallyAssigned;
+            HouseNumber = houseNumber;
             BoxNumber = boxNumber;
             Municipality = municipality;
             PostalInfo = postalInfo;

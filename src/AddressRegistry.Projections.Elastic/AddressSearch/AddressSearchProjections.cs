@@ -1,11 +1,7 @@
 namespace AddressRegistry.Projections.Elastic.AddressSearch
 {
-    using System;
-    using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
-    using Be.Vlaanderen.Basisregisters.GrAr.Common.Pipes;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using NodaTime;
 
     [ConnectedProjectionName("API endpoint search adressen")]
@@ -730,25 +726,15 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
         //     });
         }
 
-        private static void UpdateHash<T>(AddressSearchDocument entity, Envelope<T> wrappedEvent) where T : IHaveHash, IMessage
-        {
-            if (!wrappedEvent.Metadata.ContainsKey(AddEventHashPipe.HashMetadataKey))
-            {
-                throw new InvalidOperationException($"Cannot find hash in metadata for event at position {wrappedEvent.Position}");
-            }
-
-            entity.LastEventHash = wrappedEvent.Metadata[AddEventHashPipe.HashMetadataKey].ToString()!;
-        }
-
         private static void UpdateVersionTimestamp(AddressSearchDocument addressDetailItem, Instant versionTimestamp)
-            => addressDetailItem.VersionTimestamp = versionTimestamp;
+            => addressDetailItem.VersionTimestamp = versionTimestamp.ToBelgianDateTimeOffset();
 
 
         private static void UpdateVersionTimestampIfNewer(AddressSearchDocument addressDetailItem, Instant versionTimestamp)
         {
-            if(versionTimestamp > addressDetailItem.VersionTimestamp)
+            if(versionTimestamp.ToBelgianDateTimeOffset() > addressDetailItem.VersionTimestamp)
             {
-                addressDetailItem.VersionTimestamp = versionTimestamp;
+                addressDetailItem.VersionTimestamp = versionTimestamp.ToBelgianDateTimeOffset();
             }
         }
     }

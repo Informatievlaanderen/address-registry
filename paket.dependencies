@@ -20,6 +20,7 @@ nuget MediatR 12.2.0
 nuget MediatR.Contracts 2.0.1
 nuget Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite 8.0.3
 nuget NetTopologySuite 2.5.0
+nuget DotSpatial.Projections 4.0.656
 
 nuget Microsoft.EntityFrameworkCore.Design 8.0.3
 

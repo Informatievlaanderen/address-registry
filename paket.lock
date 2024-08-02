@@ -432,6 +432,7 @@ NUGET
     Destructurama.JsonNet (3.0)
       Newtonsoft.Json (>= 13.0.3)
       Serilog (>= 3.1.1)
+    DotSpatial.Projections (4.0.656)
     Ductus.FluentDocker (2.10.59)
       Newtonsoft.Json (>= 13.0.1)
       SharpCompress (>= 0.29)

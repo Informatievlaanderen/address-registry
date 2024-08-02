@@ -1,6 +1,9 @@
 namespace AddressRegistry.Projector.Infrastructure.Modules
 {
     using AddressRegistry.Infrastructure;
+    using AddressRegistry.Projections.Elastic;
+    using AddressRegistry.Projections.Elastic.AddressSearch;
+    using AddressRegistry.Projections.Elastic.Infrastructure;
     using AddressRegistry.Projections.Extract;
     using AddressRegistry.Projections.Extract.AddressCrabHouseNumberIdExtract;
     using AddressRegistry.Projections.Extract.AddressCrabSubaddressIdExtract;
@@ -29,7 +32,12 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
     using Be.Vlaanderen.Basisregisters.Projector.Modules;
     using Be.Vlaanderen.Basisregisters.Shaperon;
+    using Consumer.Read.Municipality;
+    using Consumer.Read.Postal;
+    using Consumer.Read.StreetName;
+    using Elastic.Clients.Elasticsearch;
     using Microsoft.Data.SqlClient;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -85,6 +93,8 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
             RegisterWmsProjectionsV2(builder);
             if(_configuration.GetSection("Integration").GetValue("Enabled", false))
                 RegisterIntegrationProjections(builder);
+
+            RegisterElasticProjections(builder);
         }
 
         private void RegisterIntegrationProjections(ContainerBuilder builder)
@@ -215,6 +225,34 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .RegisterProjections<AddressWmsItemV2Projections, WmsContext>(() =>
                         new AddressWmsItemV2Projections(WKBReaderFactory.CreateForLegacy()),
                     wmsProjectionSettings);
+        }
+
+        private void RegisterElasticProjections(ContainerBuilder builder)
+        {
+            builder
+                .RegisterModule(
+                    new ElasticRunnerModule(
+                        _configuration,
+                        _services,
+                        _loggerFactory))
+                .RegisterModule(new ElasticModule(_configuration));
+
+            //TODO-rik: add modules for context factories below + connection strings
+
+            builder
+                .RegisterProjectionMigrator<ElasticRunnerContextMigrationFactory>(
+                    _configuration,
+                    _loggerFactory)
+                .RegisterProjections<AddressSearchProjections, ElasticRunnerContext>((c) =>
+                        new AddressSearchProjections(c.Resolve<ElasticsearchClient>(),
+                            c.Resolve<IConfiguration>().GetSection(ElasticModule.ConfigurationSectionName)["IndexName"],
+                            c.Resolve<IDbContextFactory<MunicipalityConsumerContext>>(),
+                            c.Resolve<IDbContextFactory<PostalConsumerContext>>(),
+                            c.Resolve<IDbContextFactory<StreetNameConsumerContext>>()),
+                    ConnectedProjectionSettings.Configure(x =>
+                    {
+                        x.ConfigureCatchUpUpdatePositionMessageInterval(1);
+                    }));
         }
     }
 }

@@ -1,16 +1,50 @@
 namespace AddressRegistry.Projections.Elastic.AddressSearch
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using AddressRegistry.StreetName;
+    using AddressRegistry.StreetName.Events;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
+    using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
+    using Consumer.Read.Municipality;
+    using Consumer.Read.Postal;
+    using Consumer.Read.StreetName;
+    using Consumer.Read.StreetName.Projections;
+    using global::Elastic.Clients.Elasticsearch;
+    using Microsoft.EntityFrameworkCore;
+    using NetTopologySuite.Geometries;
+    using NetTopologySuite.IO;
     using NodaTime;
 
     [ConnectedProjectionName("API endpoint search adressen")]
     [ConnectedProjectionDescription("Projectie die de adressen data in Elastic Search synchroniseert.")]
     public class AddressSearchProjections : ConnectedProjection<ElasticRunnerContext>
     {
-        public AddressSearchProjections()
+        private readonly IDictionary<string, Municipality> _municipalities = new Dictionary<string, Municipality>();
+        private readonly IDictionary<string, PostalInfo> _postalInfos = new Dictionary<string, PostalInfo>();
+
+        private readonly IDbContextFactory<MunicipalityConsumerContext> _municipalityConsumerContextFactory;
+        private readonly IDbContextFactory<PostalConsumerContext> _postalConsumerContextFactory;
+        private readonly IDbContextFactory<StreetNameConsumerContext> _streetNameConsumerContextFactory;
+        private WKBReader _wkbReader;
+
+        public AddressSearchProjections(
+            ElasticsearchClient elasticClient,
+            IndexName indexName,
+            IDbContextFactory<MunicipalityConsumerContext> municipalityConsumerContextFactory,
+            IDbContextFactory<PostalConsumerContext> postalConsumerContextFactory,
+            IDbContextFactory<StreetNameConsumerContext> streetNameConsumerContextFactory)
         {
-        //     #region StreetName
+            _municipalityConsumerContextFactory = municipalityConsumerContextFactory;
+            _postalConsumerContextFactory = postalConsumerContextFactory;
+            _streetNameConsumerContextFactory = streetNameConsumerContextFactory;
+
+            _wkbReader = WKBReaderFactory.Create();
+            //     #region StreetName
         //
         //     When<Envelope<StreetNameNamesWereChanged>>(async (context, message, ct) =>
         //     {
@@ -79,29 +113,24 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
         //     #endregion StreetName
         //
         //     // Address
-        //     When<Envelope<AddressWasMigratedToStreetName>>(async (context, message, ct) =>
-        //     {
-        //         var addressDetailItemV2 = new AddressDetailItemV2WithParent(
-        //             message.Message.AddressPersistentLocalId,
-        //             message.Message.StreetNamePersistentLocalId,
-        //             message.Message.ParentPersistentLocalId,
-        //             message.Message.PostalCode,
-        //             message.Message.HouseNumber,
-        //             message.Message.BoxNumber,
-        //             message.Message.Status,
-        //             message.Message.OfficiallyAssigned,
-        //             message.Message.ExtendedWkbGeometry.ToByteArray(),
-        //             message.Message.GeometryMethod,
-        //             message.Message.GeometrySpecification,
-        //             message.Message.IsRemoved,
-        //             message.Message.Provenance.Timestamp);
-        //
-        //         UpdateHash(addressDetailItemV2, message);
-        //
-        //         await context
-        //             .AddressDetailV2WithParent
-        //             .AddAsync(addressDetailItemV2, ct);
-        //     });
+        When<Envelope<AddressWasMigratedToStreetName>>(async (context, message, ct) =>
+        {
+            var streetName = await GetStreetName(message.Message.StreetNamePersistentLocalId, ct);
+
+            var document = new AddressSearchDocument(
+                message.Message.AddressPersistentLocalId,
+                message.Message.ParentPersistentLocalId,
+                message.Message.Provenance.Timestamp,
+                message.Message.Status,
+                message.Message.OfficiallyAssigned,
+                message.Message.BoxNumber,
+                await GetMunicipality(streetName.NisCode, ct),
+                await GetPostalInfo(message.Message.PostalCode, ct),
+                StreetName.FromStreetNameLatestItem(streetName),
+                AddressPosition(message.Message.ExtendedWkbGeometry.ToByteArray(), message.Message.GeometryMethod, message.Message.GeometrySpecification));
+
+            await elasticClient.CreateAsync(new CreateRequest<AddressSearchDocument>(document, indexName, Id.From(document.AddressPersistentLocalId)), ct);
+        });
         //
         //     When<Envelope<AddressWasProposedV2>>(async (context, message, ct) =>
         //     {
@@ -726,9 +755,19 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
         //     });
         }
 
+        private AddressPosition AddressPosition(
+            byte[] extendedWkbAsBytes,
+            GeometryMethod geometryMethod,
+            GeometrySpecification geometrySpecification)
+        {
+            return new AddressPosition(
+                (_wkbReader.Read(extendedWkbAsBytes) as Point)!,
+                geometryMethod,
+                geometrySpecification);
+        }
+
         private static void UpdateVersionTimestamp(AddressSearchDocument addressDetailItem, Instant versionTimestamp)
             => addressDetailItem.VersionTimestamp = versionTimestamp.ToBelgianDateTimeOffset();
-
 
         private static void UpdateVersionTimestampIfNewer(AddressSearchDocument addressDetailItem, Instant versionTimestamp)
         {
@@ -736,6 +775,58 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             {
                 addressDetailItem.VersionTimestamp = versionTimestamp.ToBelgianDateTimeOffset();
             }
+        }
+
+        private async Task<Municipality> GetMunicipality(string nisCode, CancellationToken ct)
+        {
+            if (_municipalities.TryGetValue(nisCode, out var value))
+                return value;
+
+            await using var context = await _municipalityConsumerContextFactory.CreateDbContextAsync(ct);
+            var municipality = await context.MunicipalityLatestItems
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.NisCode == nisCode, ct);
+
+            if (municipality == null)
+                throw new InvalidOperationException($"Municipality with NisCode {nisCode} not found");
+
+            _municipalities.Add(nisCode, Municipality.FromMunicipalityLatestItem(municipality));
+
+            return _municipalities[nisCode];
+        }
+
+        private async Task<PostalInfo?> GetPostalInfo(string? postalCode, CancellationToken ct)
+        {
+            if (postalCode is null)
+                return null;
+
+            if (_postalInfos.TryGetValue(postalCode, out var value))
+                return value;
+
+            await using var context = await _postalConsumerContextFactory.CreateDbContextAsync(ct);
+            var postalInfo = await context.PostalLatestItems
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.PostalCode == postalCode, ct);
+
+            if (postalInfo == null)
+                throw new InvalidOperationException($"PostalInfo with postalCode {postalCode} not found");
+
+            _postalInfos.Add(postalCode, PostalInfo.FromPostalLatestItem(postalInfo));
+
+            return _postalInfos[postalCode];
+        }
+
+        private async Task<StreetNameLatestItem> GetStreetName(int streetNamePersistentLocalId, CancellationToken ct)
+        {
+            await using var context = await _streetNameConsumerContextFactory.CreateDbContextAsync(ct);
+            var streetName = await context.StreetNameLatestItems
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.PersistentLocalId == streetNamePersistentLocalId, ct);
+
+            if (streetName == null)
+                throw new InvalidOperationException($"StreetName with id {streetNamePersistentLocalId} not found");
+
+            return streetName;
         }
     }
 }

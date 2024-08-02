@@ -8,6 +8,8 @@
 
     public class ElasticModule : Module
     {
+        public const string ConfigurationSectionName = "Elastic";
+
         private readonly IConfiguration _configuration;
 
         public ElasticModule(
@@ -18,7 +20,7 @@
 
         protected override void Load(ContainerBuilder builder)
         {
-            var elasticOptions = _configuration.GetSection("Elastic");
+            var elasticOptions = _configuration.GetSection(ConfigurationSectionName);
 
             var clientSettings = new ElasticsearchClientSettings(new Uri(elasticOptions["Uri"]!));
 

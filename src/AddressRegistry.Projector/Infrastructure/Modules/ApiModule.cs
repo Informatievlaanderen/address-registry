@@ -245,7 +245,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                     _loggerFactory)
                 .RegisterProjections<AddressSearchProjections, ElasticRunnerContext>((c) =>
                         new AddressSearchProjections(c.Resolve<ElasticsearchClient>(),
-                            c.Resolve<IConfiguration>().GetSection(ElasticModule.ConfigurationSectionName)["IndexName"],
+                            c.Resolve<IConfiguration>().GetSection(ElasticModule.ConfigurationSectionName)["IndexName"]!,
                             c.Resolve<IDbContextFactory<MunicipalityConsumerContext>>(),
                             c.Resolve<IDbContextFactory<PostalConsumerContext>>(),
                             c.Resolve<IDbContextFactory<StreetNameConsumerContext>>()),

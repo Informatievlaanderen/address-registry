@@ -5,6 +5,7 @@ namespace AddressRegistry.Projector.Infrastructure
     using System.Reflection;
     using System.Threading;
     using AddressRegistry.Infrastructure.Modules;
+    using AddressRegistry.Projections.Elastic;
     using AddressRegistry.Projections.Extract;
     using AddressRegistry.Projections.Integration.Infrastructure;
     using AddressRegistry.Projections.Legacy;
@@ -17,6 +18,7 @@ namespace AddressRegistry.Projector.Infrastructure
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
     using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
     using Configuration;
+    using Elastic.Clients.Elasticsearch;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -202,6 +204,13 @@ namespace AddressRegistry.Projector.Infrastructure
                 var projectionsManager = _applicationContainer.Resolve<IConnectedProjectionsManager>();
                 projectionsManager.Resume(_projectionsCancellationTokenSource.Token);
             });
+
+            var elasticIndex = new ElasticIndex(
+                _applicationContainer.Resolve<ElasticsearchClient>(),
+                _configuration);
+
+            elasticIndex.CreateIndexIfNotExist(_projectionsCancellationTokenSource.Token).GetAwaiter().GetResult();
+            elasticIndex.CreateAliasIfNotExist(_projectionsCancellationTokenSource.Token).GetAwaiter().GetResult();
         }
 
         private static string GetApiLeadingText(ApiVersionDescription description)

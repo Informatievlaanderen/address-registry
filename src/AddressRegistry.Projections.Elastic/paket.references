@@ -5,6 +5,7 @@ Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer
 Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac
 
 DotSpatial.Projections
+ProjNet
 
 Elastic.Clients.Elasticsearch
 

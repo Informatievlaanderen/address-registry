@@ -39,6 +39,8 @@
 
         public async Task CreateIndexIfNotExist(CancellationToken ct)
         {
+            // todo-rik add analyzers/normalizers like in association registry
+
             var indexName = Indices.Index(_indexName);
             var response = await _client.Indices.ExistsAsync(new ExistsRequest(indexName), ct);
             if (response.Exists)

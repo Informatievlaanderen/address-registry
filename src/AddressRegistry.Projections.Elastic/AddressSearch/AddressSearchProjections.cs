@@ -151,8 +151,16 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
                         message.Message.GeometryMethod,
                         message.Message.GeometrySpecification));
 
-                await elasticClient.CreateAsync(
-                    new CreateRequest<AddressSearchDocument>(document, indexName, Id.From(document.AddressPersistentLocalId)), ct);
+                //var response = await elasticClient.CreateAsync(document, indexName, Id.From(document.AddressPersistentLocalId), ct);
+                var response = await elasticClient.IndexAsync(document, indexName, Id.From(document.AddressPersistentLocalId), ct);
+
+                if (!response.IsValidResponse)
+                {
+                    // todo-rik throw?
+                }
+
+                // await elasticClient.CreateAsync(
+                //     new CreateRequest<AddressSearchDocument>(document, indexName, Id.From(document.AddressPersistentLocalId)), ct);
             });
 
             //     When<Envelope<AddressWasProposedV2>>(async (_, message, ct) =>

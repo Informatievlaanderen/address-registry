@@ -33,8 +33,11 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.Projector.Modules;
     using Be.Vlaanderen.Basisregisters.Shaperon;
     using Consumer.Read.Municipality;
+    using Consumer.Read.Municipality.Infrastructure.Modules;
     using Consumer.Read.Postal;
+    using Consumer.Read.Postal.Infrastructure.Modules;
     using Consumer.Read.StreetName;
+    using Consumer.Read.StreetName.Infrastructure.Modules;
     using Elastic.Clients.Elasticsearch;
     using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
@@ -171,9 +174,6 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .RegisterProjectionMigrator<LegacyContextMigrationFactory>(
                     _configuration,
                     _loggerFactory)
-                // .RegisterProjections<AddressDetailProjectionsV2, LegacyContext>(
-                //     () => new AddressDetailProjectionsV2(),
-                //     ConnectedProjectionSettings.Default) //TODO: remove after february 2024
                 .RegisterProjections<AddressDetailProjectionsV2WithParent, LegacyContext>(
                     () => new AddressDetailProjectionsV2WithParent(),
                     ConnectedProjectionSettings.Default)
@@ -235,9 +235,14 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                         _configuration,
                         _services,
                         _loggerFactory))
-                .RegisterModule(new ElasticModule(_configuration));
+                .RegisterModule(new ElasticModule(_configuration))
+                .RegisterModule(new StreetNameConsumerModule(_configuration, _services, _loggerFactory))
+                .RegisterModule(new PostalConsumerModule(_configuration, _services, _loggerFactory))
+                .RegisterModule(new MunicipalityConsumerModule(_configuration, _services, _loggerFactory));
 
-            //TODO-rik: add modules for context factories below + connection strings
+            _services.AddDbContextFactory<StreetNameConsumerContext>();
+            _services.AddDbContextFactory<PostalConsumerContext>();
+            _services.AddDbContextFactory<MunicipalityConsumerContext>();
 
             builder
                 .RegisterProjectionMigrator<ElasticRunnerContextMigrationFactory>(

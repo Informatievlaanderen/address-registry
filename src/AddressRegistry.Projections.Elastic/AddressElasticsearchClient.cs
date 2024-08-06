@@ -4,13 +4,17 @@
     using System.Threading;
     using System.Threading.Tasks;
     using AddressSearch;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Exceptions;
     using global::Elastic.Clients.Elasticsearch;
+    using NodaTime;
+    using StreetName;
 
     public interface IAddressElasticsearchClient
     {
         Task CreateDocument(AddressSearchDocument document, CancellationToken ct);
-        Task UpdateDocument(int addressPersistentLocalId, CancellationToken ct);
+        Task PartialUpdateDocument(int addressPersistentLocalId, AddressSearchPartialUpdateDocument document, CancellationToken ct);
+        Task DeleteDocument(int addressPersistentLocalId, CancellationToken ct);
     }
 
     public class AddressElasticsearchClient : IAddressElasticsearchClient
@@ -36,9 +40,33 @@
             }
         }
 
-        public async Task UpdateDocument(int addressPersistentLocalId, CancellationToken ct)
+        public async Task PartialUpdateDocument(int addressPersistentLocalId, AddressSearchPartialUpdateDocument document, CancellationToken ct)
         {
-            throw new NotImplementedException();
+            var response = await _elasticClient.UpdateAsync<AddressSearchDocument, AddressSearchPartialUpdateDocument>(
+                _indexName,
+                new Id(addressPersistentLocalId),
+                updateRequestDescriptor =>
+            {
+                updateRequestDescriptor.Doc(document);
+            }, ct);
+
+            if (!response.IsValidResponse)
+            {
+                throw new ElasticsearchClientException(response.ApiCallDetails.OriginalException);
+            }
+        }
+
+        public async Task DeleteDocument(int addressPersistentLocalId, CancellationToken ct)
+        {
+            var response = await _elasticClient.DeleteAsync(
+                _indexName,
+                new Id(addressPersistentLocalId),
+                ct);
+
+            if (!response.IsValidResponse)
+            {
+                throw new ElasticsearchClientException(response.ApiCallDetails.OriginalException);
+            }
         }
     }
 }

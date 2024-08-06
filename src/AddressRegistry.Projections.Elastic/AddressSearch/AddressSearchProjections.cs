@@ -23,6 +23,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
     [ConnectedProjectionDescription("Projectie die de adressen data in Elastic Search synchroniseert.")]
     public class AddressSearchProjections : ConnectedProjection<ElasticRunnerContext>
     {
+        //TODO-rik hoelang gaan we dat in de cache houden?
         private readonly IDictionary<string, Municipality> _municipalities = new Dictionary<string, Municipality>();
         private readonly IDictionary<string, PostalInfo> _postalInfos = new Dictionary<string, PostalInfo>();
         private readonly IDictionary<int, StreetNameLatestItem> _streetNames = new Dictionary<int, StreetNameLatestItem>();
@@ -152,627 +153,507 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
                 await elasticsearchClient.CreateDocument(document, ct);
             });
 
-            //     When<Envelope<AddressWasProposedV2>>(async (_, message, ct) =>
-            //     {
-            //         var addressDetailItemV2 = new AddressDetailItemV2WithParent(
-            //             message.Message.AddressPersistentLocalId,
-            //             message.Message.StreetNamePersistentLocalId,
-            //             message.Message.ParentPersistentLocalId,
-            //             message.Message.PostalCode,
-            //             message.Message.HouseNumber,
-            //             message.Message.BoxNumber,
-            //             AddressStatus.Proposed,
-            //             officiallyAssigned: true,
-            //             position: message.Message.ExtendedWkbGeometry.ToByteArray(),
-            //             positionMethod: message.Message.GeometryMethod,
-            //             positionSpecification: message.Message.GeometrySpecification,
-            //             removed: false,
-            //             message.Message.Provenance.Timestamp);
-            //
-            //         UpdateHash(addressDetailItemV2, message);
-            //
-            //         await context
-            //             .AddressDetailV2WithParent
-            //             .AddAsync(addressDetailItemV2, ct);
-            //     });
-            //
-            //     When<Envelope<AddressWasProposedForMunicipalityMerger>>(async (_, message, ct) =>
-            //     {
-            //         var addressDetailItemV2 = new AddressDetailItemV2WithParent(
-            //             message.Message.AddressPersistentLocalId,
-            //             message.Message.StreetNamePersistentLocalId,
-            //             message.Message.ParentPersistentLocalId,
-            //             message.Message.PostalCode,
-            //             message.Message.HouseNumber,
-            //             message.Message.BoxNumber,
-            //             AddressStatus.Proposed,
-            //             officiallyAssigned: message.Message.OfficiallyAssigned,
-            //             position: message.Message.ExtendedWkbGeometry.ToByteArray(),
-            //             positionMethod: message.Message.GeometryMethod,
-            //             positionSpecification: message.Message.GeometrySpecification,
-            //             removed: false,
-            //             message.Message.Provenance.Timestamp);
-            //
-            //         UpdateHash(addressDetailItemV2, message);
-            //
-            //         await context
-            //             .AddressDetailV2WithParent
-            //             .AddAsync(addressDetailItemV2, ct);
-            //     });
-            //
-            //     When<Envelope<AddressWasApproved>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.Status = AddressStatus.Current;
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //     });
-            //
-            //     When<Envelope<AddressWasCorrectedFromApprovedToProposed>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.Status = AddressStatus.Proposed;
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //     });
-            //
-            //     When<Envelope<AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.Status = AddressStatus.Proposed;
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //     });
-            //
-            //     When<Envelope<AddressWasRejected>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.Status = AddressStatus.Rejected;
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //     });
-            //
-            //     When<Envelope<AddressWasRejectedBecauseOfMunicipalityMerger>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.Status = AddressStatus.Rejected;
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //     });
-            //
-            //     When<Envelope<AddressWasRejectedBecauseHouseNumberWasRejected>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.Status = AddressStatus.Rejected;
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //     });
-            //
-            //     When<Envelope<AddressWasRejectedBecauseHouseNumberWasRetired>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.Status = AddressStatus.Rejected;
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //     });
-            //
-            //     When<Envelope<AddressWasRejectedBecauseStreetNameWasRejected>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.Status = AddressStatus.Rejected;
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //     });
-            //
-            //     When<Envelope<AddressWasRetiredBecauseStreetNameWasRejected>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.Status = AddressStatus.Retired;
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //     });
-            //
-            //     When<Envelope<AddressWasRejectedBecauseStreetNameWasRetired>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.Status = AddressStatus.Rejected;
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //     });
-            //
-            //     When<Envelope<AddressWasDeregulated>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.OfficiallyAssigned = false;
-            //                 item.Status = AddressStatus.Current;
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //     });
-            //
-            //     When<Envelope<AddressWasRegularized>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.OfficiallyAssigned = true;
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //     });
-            //
-            //     When<Envelope<AddressWasRetiredV2>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.Status = AddressStatus.Retired;
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //     });
-            //
-            //     When<Envelope<AddressWasRetiredBecauseOfMunicipalityMerger>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.Status = AddressStatus.Retired;
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //     });
-            //
-            //     When<Envelope<AddressWasRetiredBecauseHouseNumberWasRetired>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.Status = AddressStatus.Retired;
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //     });
-            //
-            //     When<Envelope<AddressWasRetiredBecauseStreetNameWasRetired>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.Status = AddressStatus.Retired;
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //     });
-            //
-            //     When<Envelope<AddressWasCorrectedFromRetiredToCurrent>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.Status = AddressStatus.Current;
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //     });
-            //
-            //     When<Envelope<AddressPostalCodeWasChangedV2>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.PostalCode = message.Message.PostalCode;
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //
-            //         foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
-            //         {
-            //             var boxNumberItem = await context.FindAndUpdateAddressDetailV2(
-            //                 boxNumberPersistentLocalId,
-            //                 boxNumberItem =>
-            //                 {
-            //                     boxNumberItem.PostalCode = message.Message.PostalCode;
-            //                     UpdateVersionTimestamp(boxNumberItem, message.Message.Provenance.Timestamp);
-            //                 },
-            //                 ct);
-            //
-            //             UpdateHash(boxNumberItem, message);
-            //         }
-            //     });
-            //
-            //     When<Envelope<AddressPostalCodeWasCorrectedV2>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.PostalCode = message.Message.PostalCode;
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //
-            //         foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
-            //         {
-            //             var boxNumberItem = await context.FindAndUpdateAddressDetailV2(
-            //                 boxNumberPersistentLocalId,
-            //                 boxNumberItem =>
-            //                 {
-            //                     boxNumberItem.PostalCode = message.Message.PostalCode;
-            //                     UpdateVersionTimestamp(boxNumberItem, message.Message.Provenance.Timestamp);
-            //                 },
-            //                 ct);
-            //
-            //             UpdateHash(boxNumberItem, message);
-            //         }
-            //     });
-            //
-            //     When<Envelope<AddressHouseNumberWasCorrectedV2>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.HouseNumber = message.Message.HouseNumber;
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //
-            //         foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
-            //         {
-            //             var boxNumberItem = await context.FindAndUpdateAddressDetailV2(
-            //                 boxNumberPersistentLocalId,
-            //                 boxNumberItem =>
-            //                 {
-            //                     boxNumberItem.HouseNumber = message.Message.HouseNumber;
-            //                     UpdateVersionTimestamp(boxNumberItem, message.Message.Provenance.Timestamp);
-            //                 },
-            //                 ct);
-            //
-            //             UpdateHash(boxNumberItem, message);
-            //         }
-            //     });
-            //
-            //     When<Envelope<AddressBoxNumberWasCorrectedV2>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.BoxNumber = message.Message.BoxNumber;
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //     });
-            //
-            //     When<Envelope<AddressPositionWasChanged>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.PositionMethod = message.Message.GeometryMethod;
-            //                 item.PositionSpecification = message.Message.GeometrySpecification;
-            //                 item.Position = message.Message.ExtendedWkbGeometry.ToByteArray();
-            //
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //     });
-            //
-            //     When<Envelope<AddressPositionWasCorrectedV2>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.PositionMethod = message.Message.GeometryMethod;
-            //                 item.PositionSpecification = message.Message.GeometrySpecification;
-            //                 item.Position = message.Message.ExtendedWkbGeometry.ToByteArray();
-            //
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //     });
-            //
-            //     When<Envelope<AddressHouseNumberWasReaddressed>>(async (_, message, ct) =>
-            //     {
-            //         var houseNumberItem = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.Status = message.Message.ReaddressedHouseNumber.SourceStatus;
-            //                 item.HouseNumber = message.Message.ReaddressedHouseNumber.DestinationHouseNumber;
-            //                 item.PostalCode = message.Message.ReaddressedHouseNumber.SourcePostalCode;
-            //                 item.OfficiallyAssigned = message.Message.ReaddressedHouseNumber.SourceIsOfficiallyAssigned;
-            //                 item.PositionMethod = message.Message.ReaddressedHouseNumber.SourceGeometryMethod;
-            //                 item.PositionSpecification = message.Message.ReaddressedHouseNumber.SourceGeometrySpecification;
-            //                 item.Position = message.Message.ReaddressedHouseNumber.SourceExtendedWkbGeometry.ToByteArray();
-            //
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(houseNumberItem, message);
-            //
-            //         foreach (var readdressedBoxNumber in message.Message.ReaddressedBoxNumbers)
-            //         {
-            //             var boxNumberItem = await context.FindAndUpdateAddressDetailV2(
-            //                 readdressedBoxNumber.DestinationAddressPersistentLocalId,
-            //                 item =>
-            //                 {
-            //                     item.Status = readdressedBoxNumber.SourceStatus;
-            //                     item.HouseNumber = readdressedBoxNumber.DestinationHouseNumber;
-            //                     item.BoxNumber = readdressedBoxNumber.SourceBoxNumber;
-            //                     item.PostalCode = readdressedBoxNumber.SourcePostalCode;
-            //                     item.OfficiallyAssigned = readdressedBoxNumber.SourceIsOfficiallyAssigned;
-            //                     item.PositionMethod = readdressedBoxNumber.SourceGeometryMethod;
-            //                     item.PositionSpecification = readdressedBoxNumber.SourceGeometrySpecification;
-            //                     item.Position = readdressedBoxNumber.SourceExtendedWkbGeometry.ToByteArray();
-            //
-            //                     UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //                 },
-            //                 ct);
-            //
-            //             UpdateHash(boxNumberItem, message);
-            //         }
-            //     });
-            //
-            //     When<Envelope<AddressWasProposedBecauseOfReaddress>>(async (_, message, ct) =>
-            //     {
-            //         var addressDetailItemV2 = new AddressDetailItemV2WithParent(
-            //             message.Message.AddressPersistentLocalId,
-            //             message.Message.StreetNamePersistentLocalId,
-            //             message.Message.ParentPersistentLocalId,
-            //             message.Message.PostalCode,
-            //             message.Message.HouseNumber,
-            //             message.Message.BoxNumber,
-            //             AddressStatus.Proposed,
-            //             officiallyAssigned: true,
-            //             position: message.Message.ExtendedWkbGeometry.ToByteArray(),
-            //             positionMethod: message.Message.GeometryMethod,
-            //             positionSpecification: message.Message.GeometrySpecification,
-            //             removed: false,
-            //             message.Message.Provenance.Timestamp);
-            //
-            //         UpdateHash(addressDetailItemV2, message);
-            //
-            //         await context
-            //             .AddressDetailV2WithParent
-            //             .AddAsync(addressDetailItemV2, ct);
-            //     });
-            //
-            //     When<Envelope<AddressWasRejectedBecauseOfReaddress>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.Status = AddressStatus.Rejected;
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //     });
-            //
-            //     When<Envelope<AddressWasRetiredBecauseOfReaddress>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.Status = AddressStatus.Retired;
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //     });
-            //
-            //     When<Envelope<AddressWasRemovedV2>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.Removed = true;
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //     });
-            //
-            //     When<Envelope<AddressWasRemovedBecauseStreetNameWasRemoved>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.Removed = true;
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //     });
-            //
-            //     When<Envelope<AddressWasRemovedBecauseHouseNumberWasRemoved>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.Removed = true;
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //     });
-            //
-            //     When<Envelope<AddressWasCorrectedFromRejectedToProposed>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.Status = AddressStatus.Proposed;
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //     });
-            //
-            //     When<Envelope<AddressRegularizationWasCorrected>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.OfficiallyAssigned = false;
-            //                 item.Status = AddressStatus.Current;
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //     });
-            //
-            //     When<Envelope<AddressDeregulationWasCorrected>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.OfficiallyAssigned = true;
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //     });
-            //
-            //     When<Envelope<AddressRemovalWasCorrected>>(async (_, message, ct) =>
-            //     {
-            //         var item = await context.FindAndUpdateAddressDetailV2(
-            //             message.Message.AddressPersistentLocalId,
-            //             item =>
-            //             {
-            //                 item.Status =  message.Message.Status;
-            //                 item.PostalCode = message.Message.PostalCode;
-            //                 item.HouseNumber = message.Message.HouseNumber;
-            //                 item.BoxNumber = message.Message.BoxNumber;
-            //                 item.Position = message.Message.ExtendedWkbGeometry.ToByteArray();
-            //                 item.PositionMethod = message.Message.GeometryMethod;
-            //                 item.PositionSpecification = message.Message.GeometrySpecification;
-            //                 item.OfficiallyAssigned = message.Message.OfficiallyAssigned;
-            //                 item.Removed = false;
-            //
-            //                 UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
-            //             },
-            //             ct);
-            //
-            //         UpdateHash(item, message);
-            //     });
+            When<Envelope<AddressWasProposedV2>>(async (_, message, ct) =>
+            {
+                var streetName = await GetStreetName(message.Message.StreetNamePersistentLocalId, ct);
+
+                var document = new AddressSearchDocument(
+                    message.Message.AddressPersistentLocalId,
+                    message.Message.ParentPersistentLocalId,
+                    message.Message.Provenance.Timestamp,
+                    AddressStatus.Proposed,
+                    true,
+                    message.Message.HouseNumber,
+                    message.Message.BoxNumber,
+                    await GetMunicipality(streetName.NisCode!, ct),
+                    await GetPostalInfo(message.Message.PostalCode, ct),
+                    StreetName.FromStreetNameLatestItem(streetName),
+                    AddressPosition(
+                        message.Message.ExtendedWkbGeometry.ToByteArray(),
+                        message.Message.GeometryMethod,
+                        message.Message.GeometrySpecification));
+
+                await elasticsearchClient.CreateDocument(document, ct);
+            });
+
+            When<Envelope<AddressWasProposedForMunicipalityMerger>>(async (_, message, ct) =>
+            {
+                var streetName = await GetStreetName(message.Message.StreetNamePersistentLocalId, ct);
+
+                var document = new AddressSearchDocument(
+                    message.Message.AddressPersistentLocalId,
+                    message.Message.ParentPersistentLocalId,
+                    message.Message.Provenance.Timestamp,
+                    AddressStatus.Proposed,
+                    message.Message.OfficiallyAssigned,
+                    message.Message.HouseNumber,
+                    message.Message.BoxNumber,
+                    await GetMunicipality(streetName.NisCode!, ct),
+                    await GetPostalInfo(message.Message.PostalCode, ct),
+                    StreetName.FromStreetNameLatestItem(streetName),
+                    AddressPosition(
+                        message.Message.ExtendedWkbGeometry.ToByteArray(),
+                        message.Message.GeometryMethod,
+                        message.Message.GeometrySpecification));
+
+                await elasticsearchClient.CreateDocument(document, ct);
+            });
+
+            When<Envelope<AddressWasApproved>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.PartialUpdateDocument(
+                    message.Message.AddressPersistentLocalId,
+                    new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                    {
+                        Status = AddressStatus.Current
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasCorrectedFromApprovedToProposed>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.PartialUpdateDocument(
+                    message.Message.AddressPersistentLocalId,
+                    new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                    {
+                        Status = AddressStatus.Proposed
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.PartialUpdateDocument(
+                    message.Message.AddressPersistentLocalId,
+                    new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                    {
+                        Status = AddressStatus.Proposed
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasRejected>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.PartialUpdateDocument(
+                    message.Message.AddressPersistentLocalId,
+                    new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                    {
+                        Status = AddressStatus.Rejected
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasRejectedBecauseOfMunicipalityMerger>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.PartialUpdateDocument(
+                    message.Message.AddressPersistentLocalId,
+                    new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                    {
+                        Status = AddressStatus.Rejected
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasRejectedBecauseHouseNumberWasRejected>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.PartialUpdateDocument(
+                    message.Message.AddressPersistentLocalId,
+                    new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                    {
+                        Status = AddressStatus.Rejected
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasRejectedBecauseHouseNumberWasRetired>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.PartialUpdateDocument(
+                    message.Message.AddressPersistentLocalId,
+                    new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                    {
+                        Status = AddressStatus.Rejected
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasRejectedBecauseStreetNameWasRejected>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.PartialUpdateDocument(
+                    message.Message.AddressPersistentLocalId,
+                    new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                    {
+                        Status = AddressStatus.Rejected
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasRetiredBecauseStreetNameWasRejected>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.PartialUpdateDocument(
+                    message.Message.AddressPersistentLocalId,
+                    new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                    {
+                        Status = AddressStatus.Retired
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasRejectedBecauseStreetNameWasRetired>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.PartialUpdateDocument(
+                    message.Message.AddressPersistentLocalId,
+                    new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                    {
+                        Status = AddressStatus.Rejected
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasDeregulated>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.PartialUpdateDocument(
+                    message.Message.AddressPersistentLocalId,
+                    new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                    {
+                        OfficiallyAssigned = false,
+                        Status = AddressStatus.Current
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasRegularized>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.PartialUpdateDocument(
+                    message.Message.AddressPersistentLocalId,
+                    new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                    {
+                        OfficiallyAssigned = true
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasRetiredV2>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.PartialUpdateDocument(
+                    message.Message.AddressPersistentLocalId,
+                    new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                    {
+                        Status = AddressStatus.Retired
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasRetiredBecauseOfMunicipalityMerger>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.PartialUpdateDocument(
+                    message.Message.AddressPersistentLocalId,
+                    new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                    {
+                        Status = AddressStatus.Retired
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasRetiredBecauseHouseNumberWasRetired>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.PartialUpdateDocument(
+                    message.Message.AddressPersistentLocalId,
+                    new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                    {
+                        Status = AddressStatus.Retired
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasRetiredBecauseStreetNameWasRetired>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.PartialUpdateDocument(
+                    message.Message.AddressPersistentLocalId,
+                    new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                    {
+                        Status = AddressStatus.Retired
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasCorrectedFromRetiredToCurrent>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.PartialUpdateDocument(
+                    message.Message.AddressPersistentLocalId,
+                    new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                    {
+                        Status = AddressStatus.Current
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressPostalCodeWasChangedV2>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.PartialUpdateDocument(
+                    message.Message.AddressPersistentLocalId,
+                    new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                    {
+                        PostalCode = message.Message.PostalCode
+                    },
+                    ct);
+
+
+                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
+                {
+                    await elasticsearchClient.PartialUpdateDocument(
+                        boxNumberPersistentLocalId,
+                        new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                        {
+                            PostalCode = message.Message.PostalCode
+                        },
+                        ct);
+                }
+            });
+
+            When<Envelope<AddressPostalCodeWasCorrectedV2>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.PartialUpdateDocument(
+                    message.Message.AddressPersistentLocalId,
+                    new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                    {
+                        PostalCode = message.Message.PostalCode
+                    },
+                    ct);
+
+
+                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
+                {
+                    await elasticsearchClient.PartialUpdateDocument(
+                        boxNumberPersistentLocalId,
+                        new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                        {
+                            PostalCode = message.Message.PostalCode
+                        },
+                        ct);
+                }
+            });
+
+            When<Envelope<AddressHouseNumberWasCorrectedV2>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.PartialUpdateDocument(
+                    message.Message.AddressPersistentLocalId,
+                    new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                    {
+                        HouseNumber = message.Message.HouseNumber
+                    },
+                    ct);
+
+                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
+                {
+                    await elasticsearchClient.PartialUpdateDocument(
+                        boxNumberPersistentLocalId,
+                        new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                        {
+                            HouseNumber = message.Message.HouseNumber
+                        },
+                        ct);
+                }
+            });
+
+            When<Envelope<AddressBoxNumberWasCorrectedV2>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.PartialUpdateDocument(
+                    message.Message.AddressPersistentLocalId,
+                    new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                    {
+                        BoxNumber = message.Message.BoxNumber
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressPositionWasChanged>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.PartialUpdateDocument(
+                    message.Message.AddressPersistentLocalId,
+                    new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                    {
+                        AddressPosition = AddressPosition(
+                            message.Message.ExtendedWkbGeometry.ToByteArray(),
+                            message.Message.GeometryMethod,
+                            message.Message.GeometrySpecification)
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressPositionWasCorrectedV2>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.PartialUpdateDocument(
+                    message.Message.AddressPersistentLocalId,
+                    new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                    {
+                        AddressPosition = AddressPosition(
+                            message.Message.ExtendedWkbGeometry.ToByteArray(),
+                            message.Message.GeometryMethod,
+                            message.Message.GeometrySpecification)
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressHouseNumberWasReaddressed>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.PartialUpdateDocument(
+                    message.Message.AddressPersistentLocalId,
+                    new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                    {
+                        Status = message.Message.ReaddressedHouseNumber.SourceStatus,
+                        HouseNumber = message.Message.ReaddressedHouseNumber.DestinationHouseNumber,
+                        PostalCode = message.Message.ReaddressedHouseNumber.SourcePostalCode,
+                        OfficiallyAssigned = message.Message.ReaddressedHouseNumber.SourceIsOfficiallyAssigned,
+                        AddressPosition = AddressPosition(
+                            message.Message.ReaddressedHouseNumber.SourceExtendedWkbGeometry.ToByteArray(),
+                            message.Message.ReaddressedHouseNumber.SourceGeometryMethod,
+                            message.Message.ReaddressedHouseNumber.SourceGeometrySpecification)
+                    },
+                    ct);
+
+
+                foreach (var readdressedBoxNumber in message.Message.ReaddressedBoxNumbers)
+                {
+                    await elasticsearchClient.PartialUpdateDocument(
+                        readdressedBoxNumber.DestinationAddressPersistentLocalId,
+                        new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                        {
+                            Status = readdressedBoxNumber.SourceStatus,
+                            HouseNumber = readdressedBoxNumber.DestinationHouseNumber,
+                            BoxNumber = readdressedBoxNumber.SourceBoxNumber,
+                            PostalCode = readdressedBoxNumber.SourcePostalCode,
+                            OfficiallyAssigned = readdressedBoxNumber.SourceIsOfficiallyAssigned,
+                            AddressPosition = AddressPosition(
+                                readdressedBoxNumber.SourceExtendedWkbGeometry.ToByteArray(),
+                                readdressedBoxNumber.SourceGeometryMethod,
+                                readdressedBoxNumber.SourceGeometrySpecification)
+                        },
+                        ct);
+                }
+            });
+
+            When<Envelope<AddressWasProposedBecauseOfReaddress>>(async (_, message, ct) =>
+            {
+                var streetName = await GetStreetName(message.Message.StreetNamePersistentLocalId, ct);
+
+                var document = new AddressSearchDocument(
+                    message.Message.AddressPersistentLocalId,
+                    message.Message.ParentPersistentLocalId,
+                    message.Message.Provenance.Timestamp,
+                    AddressStatus.Proposed,
+                    true,
+                    message.Message.HouseNumber,
+                    message.Message.BoxNumber,
+                    await GetMunicipality(streetName.NisCode!, ct),
+                    await GetPostalInfo(message.Message.PostalCode, ct),
+                    StreetName.FromStreetNameLatestItem(streetName),
+                    AddressPosition(
+                        message.Message.ExtendedWkbGeometry.ToByteArray(),
+                        message.Message.GeometryMethod,
+                        message.Message.GeometrySpecification));
+
+                await elasticsearchClient.CreateDocument(document, ct);
+            });
+
+            When<Envelope<AddressWasRejectedBecauseOfReaddress>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.PartialUpdateDocument(
+                    message.Message.AddressPersistentLocalId,
+                    new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                    {
+                        Status = AddressStatus.Rejected
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasRetiredBecauseOfReaddress>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.PartialUpdateDocument(
+                    message.Message.AddressPersistentLocalId,
+                    new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                    {
+                        Status = AddressStatus.Retired
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressWasRemovedV2>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.DeleteDocument(
+                    message.Message.AddressPersistentLocalId,
+                    ct);
+            });
+
+            When<Envelope<AddressWasRemovedBecauseStreetNameWasRemoved>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.DeleteDocument(
+                    message.Message.AddressPersistentLocalId,
+                    ct);
+            });
+
+            When<Envelope<AddressWasRemovedBecauseHouseNumberWasRemoved>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.DeleteDocument(
+                    message.Message.AddressPersistentLocalId,
+                    ct);
+            });
+
+            When<Envelope<AddressWasCorrectedFromRejectedToProposed>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.PartialUpdateDocument(
+                    message.Message.AddressPersistentLocalId,
+                    new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                    {
+                        Status = AddressStatus.Proposed
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressRegularizationWasCorrected>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.PartialUpdateDocument(
+                    message.Message.AddressPersistentLocalId,
+                    new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                    {
+                        OfficiallyAssigned = false,
+                        Status = AddressStatus.Current
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressDeregulationWasCorrected>>(async (_, message, ct) =>
+            {
+                await elasticsearchClient.PartialUpdateDocument(
+                    message.Message.AddressPersistentLocalId,
+                    new AddressSearchPartialUpdateDocument(message.Message.Provenance.Timestamp)
+                    {
+                        OfficiallyAssigned = true
+                    },
+                    ct);
+            });
+
+            When<Envelope<AddressRemovalWasCorrected>>(async (_, message, ct) =>
+            {
+                var streetName = await GetStreetName(message.Message.StreetNamePersistentLocalId, ct);
+
+                var document = new AddressSearchDocument(
+                    message.Message.AddressPersistentLocalId,
+                    message.Message.ParentPersistentLocalId,
+                    message.Message.Provenance.Timestamp,
+                    message.Message.Status,
+                    message.Message.OfficiallyAssigned,
+                    message.Message.HouseNumber,
+                    message.Message.BoxNumber,
+                    await GetMunicipality(streetName.NisCode!, ct),
+                    await GetPostalInfo(message.Message.PostalCode, ct),
+                    StreetName.FromStreetNameLatestItem(streetName),
+                    AddressPosition(
+                        message.Message.ExtendedWkbGeometry.ToByteArray(),
+                        message.Message.GeometryMethod,
+                        message.Message.GeometrySpecification));
+
+                await elasticsearchClient.CreateDocument(document, ct);
+            });
         }
 
         private AddressPosition AddressPosition(
@@ -785,9 +666,6 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
                 geometryMethod,
                 geometrySpecification);
         }
-
-        private static void UpdateVersionTimestamp(AddressSearchDocument address, Instant versionTimestamp)
-            => address.VersionTimestamp = versionTimestamp.ToBelgianDateTimeOffset();
 
         private static void UpdateVersionTimestampIfNewer(AddressSearchDocument address, Instant versionTimestamp)
         {

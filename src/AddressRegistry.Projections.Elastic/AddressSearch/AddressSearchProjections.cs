@@ -14,6 +14,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
     using Consumer.Read.Postal;
     using Consumer.Read.StreetName;
     using Consumer.Read.StreetName.Projections;
+    using Exceptions;
     using global::Elastic.Clients.Elasticsearch;
     using Microsoft.EntityFrameworkCore;
     using NetTopologySuite.Geometries;
@@ -151,16 +152,12 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
                         message.Message.GeometryMethod,
                         message.Message.GeometrySpecification));
 
-                //var response = await elasticClient.CreateAsync(document, indexName, Id.From(document.AddressPersistentLocalId), ct);
                 var response = await elasticClient.IndexAsync(document, indexName, new Id(document.AddressPersistentLocalId), ct);
 
                 if (!response.IsValidResponse)
                 {
-                    // todo-rik throw?
+                    throw new ElasticsearchClientException($"Failed to project message at {message.Position}", response.ApiCallDetails.OriginalException);
                 }
-
-                // await elasticClient.CreateAsync(
-                //     new CreateRequest<AddressSearchDocument>(document, indexName, Id.From(document.AddressPersistentLocalId)), ct);
             });
 
             //     When<Envelope<AddressWasProposedV2>>(async (_, message, ct) =>

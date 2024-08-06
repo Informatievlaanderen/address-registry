@@ -14,8 +14,6 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
     using Consumer.Read.Postal;
     using Consumer.Read.StreetName;
     using Consumer.Read.StreetName.Projections;
-    using Exceptions;
-    using global::Elastic.Clients.Elasticsearch;
     using Microsoft.EntityFrameworkCore;
     using NetTopologySuite.Geometries;
     using NetTopologySuite.IO;
@@ -35,8 +33,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
         private readonly WKBReader _wkbReader;
 
         public AddressSearchProjections(
-            ElasticsearchClient elasticClient,
-            IndexName indexName,
+            IAddressElasticsearchClient elasticsearchClient,
             IDbContextFactory<MunicipalityConsumerContext> municipalityConsumerContextFactory,
             IDbContextFactory<PostalConsumerContext> postalConsumerContextFactory,
             IDbContextFactory<StreetNameConsumerContext> streetNameConsumerContextFactory)
@@ -152,12 +149,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
                         message.Message.GeometryMethod,
                         message.Message.GeometrySpecification));
 
-                var response = await elasticClient.IndexAsync(document, indexName, new Id(document.AddressPersistentLocalId), ct);
-
-                if (!response.IsValidResponse)
-                {
-                    throw new ElasticsearchClientException($"Failed to project message at {message.Position}", response.ApiCallDetails.OriginalException);
-                }
+                await elasticsearchClient.CreateDocument(document, ct);
             });
 
             //     When<Envelope<AddressWasProposedV2>>(async (_, message, ct) =>

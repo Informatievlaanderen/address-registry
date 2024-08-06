@@ -33,6 +33,12 @@
             builder
                 .Register<ElasticsearchClient>(_ => new ElasticsearchClient(clientSettings))
                 .SingleInstance();
+
+            builder.Register<IAddressElasticsearchClient>(c =>
+                    new AddressElasticsearchClient(
+                        c.Resolve<ElasticsearchClient>(),
+                        c.Resolve<IConfiguration>().GetSection(ConfigurationSectionName)["IndexName"]!))
+                .SingleInstance();
         }
     }
 }

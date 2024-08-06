@@ -38,7 +38,6 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using Consumer.Read.Postal.Infrastructure.Modules;
     using Consumer.Read.StreetName;
     using Consumer.Read.StreetName.Infrastructure.Modules;
-    using Elastic.Clients.Elasticsearch;
     using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -249,8 +248,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                     _configuration,
                     _loggerFactory)
                 .RegisterProjections<AddressSearchProjections, ElasticRunnerContext>((c) =>
-                        new AddressSearchProjections(c.Resolve<ElasticsearchClient>(),
-                            c.Resolve<IConfiguration>().GetSection(ElasticModule.ConfigurationSectionName)["IndexName"]!,
+                        new AddressSearchProjections(c.Resolve<IAddressElasticsearchClient>(),
                             c.Resolve<IDbContextFactory<MunicipalityConsumerContext>>(),
                             c.Resolve<IDbContextFactory<PostalConsumerContext>>(),
                             c.Resolve<IDbContextFactory<StreetNameConsumerContext>>()),

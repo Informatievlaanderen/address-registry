@@ -152,7 +152,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
                         message.Message.GeometrySpecification));
 
                 //var response = await elasticClient.CreateAsync(document, indexName, Id.From(document.AddressPersistentLocalId), ct);
-                var response = await elasticClient.IndexAsync(document, indexName, Id.From(document.AddressPersistentLocalId), ct);
+                var response = await elasticClient.IndexAsync(document, indexName, new Id(document.AddressPersistentLocalId), ct);
 
                 if (!response.IsValidResponse)
                 {

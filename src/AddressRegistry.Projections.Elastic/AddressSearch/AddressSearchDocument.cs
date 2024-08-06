@@ -9,11 +9,8 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
     using Consumer.Read.Municipality.Projections;
     using Consumer.Read.Postal.Projections;
     using Consumer.Read.StreetName.Projections;
-    using DotSpatial.Projections;
     using NetTopologySuite.Geometries;
     using NodaTime;
-    using ProjNet.CoordinateSystems;
-    using ProjNet.CoordinateSystems.Transformations;
 
     public sealed class AddressSearchDocument
     {
@@ -255,29 +252,10 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             GeometryMethod geometryMethod,
             GeometrySpecification geometrySpecification)
         {
-            GeometryAsWkt = point.AsText(); // todo-rik check if srid is added or needs to be added?
-            // double[] coordinates = [point.X, point.Y];
-            // Reproject.ReprojectPoints(
-            //     coordinates,
-            //     [],
-            //     KnownCoordinateSystems.Geographic.Europe.Belge1972,
-            //     KnownCoordinateSystems.Geographic.World.WGS1984,
-            //     0,
-            //     1);
-            // GeometryAsWgs84 = $"{coordinates[0]}, {coordinates[1]}";
+            GeometryAsWkt = point.AsText();
 
-            // todo-rik points have to high values, needs to be corrected
-            var coordinateSystemFactory = new CoordinateSystemFactory();
-            var coordinateTransformationFactory = new CoordinateTransformationFactory();
-
-            var lambert72 = coordinateSystemFactory.CreateFromWkt(
-                "PROJCS[\"BD72 / Belgian Lambert 72\",GEOGCS[\"BD72\",DATUM[\"Reseau_National_Belge_1972\",SPHEROID[\"International 1924\",6378388,297,AUTHORITY[\"EPSG\",\"7022\"]],AUTHORITY[\"EPSG\",\"6313\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4313\"]],PROJECTION[\"Lambert_Conformal_Conic_2SP\"],PARAMETER[\"latitude_of_origin\",90],PARAMETER[\"central_meridian\",4.36748666666667],PARAMETER[\"standard_parallel_1\",51.1666672333333],PARAMETER[\"standard_parallel_2\",49.8333339],PARAMETER[\"false_easting\",150000.013],PARAMETER[\"false_northing\",5400088.438],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],AUTHORITY[\"EPSG\",\"31370\"]]");
-            var wsg84 = ProjectedCoordinateSystem.WGS84_UTM(33, true);
-
-            var coordinateTransformation = coordinateTransformationFactory.CreateFromCoordinateSystems(lambert72, wsg84);
-
-            var coordinates = coordinateTransformation.MathTransform.TransformList(new List<double[]> { new[] { point.X, point.Y } }).ToArray();
-            GeometryAsWgs84 = string.Format(CultureInfo.InvariantCulture, "{0}, {1}", coordinates[0][1], coordinates[0][0]);
+            var pointAsWgs84 = CoordinateTransformer.FromLambert72ToWgs84(point);
+            GeometryAsWgs84 = string.Format(CultureInfo.InvariantCulture, "{0}, {1}", pointAsWgs84.X, pointAsWgs84.Y);
 
             GeometryMethod = geometryMethod;
             GeometrySpecification = geometrySpecification;

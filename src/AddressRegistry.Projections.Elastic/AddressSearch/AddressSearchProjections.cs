@@ -690,6 +690,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
 
             await using var context = await _postalConsumerContextFactory.CreateDbContextAsync(ct);
             var postalInfo = await context.PostalLatestItems
+                .Include(x => x.PostalNames)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(p => p.PostalCode == postalCode, ct);
 

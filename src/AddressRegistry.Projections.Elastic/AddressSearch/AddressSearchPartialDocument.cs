@@ -8,7 +8,7 @@
 
     //TODO-rik add test to ensure properties are the same as in AddressSearchDocument
     //TODO-rik add test to ensure only filled in properties are serialized
-    public class AddressSearchPartialUpdateDocument
+    public class AddressSearchPartialDocument
     {
         public DateTimeOffset VersionTimestamp { get; set; }
 
@@ -32,11 +32,22 @@
         public string? BoxNumber { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public StreetName? StreetName { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public Name[]? FullAddress { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public AddressPosition? AddressPosition { get; set; }
 
-        public AddressSearchPartialUpdateDocument(Instant versionTimestamp)
+        public AddressSearchPartialDocument(Instant versionTimestamp)
+            : this(versionTimestamp.ToBelgianDateTimeOffset())
         {
-            VersionTimestamp = versionTimestamp.ToBelgianDateTimeOffset();
+        }
+
+        public AddressSearchPartialDocument(DateTimeOffset versionTimestamp)
+        {
+            VersionTimestamp = versionTimestamp;
         }
     }
 }

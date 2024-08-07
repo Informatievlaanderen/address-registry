@@ -59,26 +59,31 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             StreetName = streetName;
             AddressPosition = addressPosition;
 
-            SetFullAddress();
+            FullAddress = BuildFullAddress(municipality, postalInfo, streetName, houseNumber, boxNumber);
         }
 
-        public void SetFullAddress()
+        public static Name[] BuildFullAddress(
+            Municipality municipality,
+            PostalInfo? postalInfo,
+            StreetName streetName,
+            string houseNumber,
+            string? boxNumber)
         {
             var fullAddresses = new List<Name>();
-            foreach (var name in StreetName.Names)
+            foreach (var name in streetName.Names)
             {
                 fullAddresses.Add(
                     new Name(FormatFullAddress(
                             name.Spelling,
-                            HouseNumber,
-                            BoxNumber,
-                            PostalInfo?.PostalCode,
-                            Municipality.Names.SingleOrDefault(x => x.Language == name.Language)?.Spelling ?? Municipality.Names.First().Spelling,
+                            houseNumber,
+                            boxNumber,
+                            postalInfo?.PostalCode,
+                            municipality.Names.SingleOrDefault(x => x.Language == name.Language)?.Spelling ?? municipality.Names.First().Spelling,
                             name.Language),
                         name.Language));
             }
 
-            FullAddress = fullAddresses.ToArray();
+            return fullAddresses.ToArray();
         }
 
         private static string FormatFullAddress(string streetName, string houseNumber, string? boxNumber, string? postalCode, string municipality,

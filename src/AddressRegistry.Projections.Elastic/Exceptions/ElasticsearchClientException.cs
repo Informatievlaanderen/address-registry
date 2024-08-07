@@ -9,6 +9,10 @@
         public ElasticsearchClientException()
         { }
 
+        public ElasticsearchClientException(string message)
+            : base(message)
+        { }
+
         public ElasticsearchClientException(Exception? exception)
             : base("Failed to project to Elasticsearch", exception)
         { }

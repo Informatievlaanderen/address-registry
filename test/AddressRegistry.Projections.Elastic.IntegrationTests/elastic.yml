@@ -1,0 +1,17 @@
+version: "3.8"
+
+# https://dev.to/birolaydin/installing-elasticsearch-and-kibana-with-docker-compose-2ni4
+# https://www.elastic.co/blog/getting-started-with-the-elastic-stack-and-docker-compose
+# https://github.com/elkninja/elastic-stack-docker-part-one/blob/main/docker-compose.yml
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.14.3
+    container_name: address-test-elasticsearch
+    ports:
+      - "39200:9200"
+    environment:
+      ELASTIC_PASSWORD: local_development
+      discovery.type: single-node
+      xpack.security.enabled: false
+      xpack.security.enrollment.enabled: false

@@ -14,34 +14,39 @@
     public sealed class ElasticIndex
     {
         private readonly ElasticsearchClient _client;
-
-        private readonly string _indexName;
-        private readonly string _indexAlias;
+        private readonly string _name;
+        private readonly string _alias;
 
         public ElasticIndex(
             ElasticsearchClient client,
             IConfiguration configuration)
+            : this(client, ElasticIndexOptions.LoadFromConfiguration(configuration))
+        {
+        }
+
+        public ElasticIndex(
+            ElasticsearchClient client,
+            ElasticIndexOptions options)
         {
             _client = client;
-            var elasticOptions = configuration.GetSection("Elastic");
-            _indexName = elasticOptions["IndexName"]!;
-            _indexAlias = elasticOptions["IndexAlias"]!;
+            _name = options.Name;
+            _alias = options.Alias;
         }
 
         public async Task CreateAliasIfNotExist(CancellationToken ct)
         {
-            var aliasResponse = await _client.Indices.GetAliasAsync(new GetAliasRequest(Names.Parse(_indexAlias)), ct);
+            var aliasResponse = await _client.Indices.GetAliasAsync(new GetAliasRequest(Names.Parse(_alias)), ct);
             if (aliasResponse.IsValidResponse && aliasResponse.Aliases.Any())
                 return;
 
-            await _client.Indices.PutAliasAsync(new PutAliasRequest(_indexName, _indexAlias), ct);
+            await _client.Indices.PutAliasAsync(new PutAliasRequest(_name, _alias), ct);
         }
 
         public async Task CreateIndexIfNotExist(CancellationToken ct)
         {
             // todo-rik add analyzers/normalizers like in association registry
 
-            var indexName = Indices.Index(_indexName);
+            var indexName = Indices.Index(_name);
             var response = await _client.Indices.ExistsAsync(new ExistsRequest(indexName), ct);
             if (response.Exists)
                 return;
@@ -110,6 +115,22 @@
                     })
                     .Keyword("language")
                 );
+        }
+    }
+
+    public sealed class ElasticIndexOptions
+    {
+        public string Name { get; init; }
+        public string Alias { get; init; }
+
+        public static ElasticIndexOptions LoadFromConfiguration(IConfiguration configuration)
+        {
+            var elasticOptions = configuration.GetSection("Elastic");
+            return new ElasticIndexOptions
+            {
+                Name = elasticOptions["IndexName"]!,
+                Alias = elasticOptions["IndexAlias"]!
+            };
         }
     }
 }

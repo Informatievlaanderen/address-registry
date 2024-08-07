@@ -52,19 +52,10 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
                 await RefreshStreetNames(message.Message.StreetNamePersistentLocalId, ct);
 
                 // todo-rik update streetnames + full address
-
-                // foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
-                // {
-                //     var item = await context.FindAndUpdateAddressDetailV2(
-                //         addressPersistentLocalId,
-                //         item =>
-                //         {
-                //             UpdateVersionTimestampIfNewer(item, message.Message.Provenance.Timestamp);
-                //         },
-                //         ct);
-                //
-                //     UpdateHash(item, message);
-                // }
+                await elasticsearchClient.UpdateVersionTimestampIfNewer(
+                    message.Message.AddressPersistentLocalIds,
+                    message.Message.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                    ct);
             });
 
             When<Envelope<StreetNameNamesWereCorrected>>(async (_, message, ct) =>
@@ -72,19 +63,10 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
                 await RefreshStreetNames(message.Message.StreetNamePersistentLocalId, ct);
 
                 // todo-rik update streetnames + full address
-
-                // foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
-                // {
-                //     var item = await context.FindAndUpdateAddressDetailV2(
-                //         addressPersistentLocalId,
-                //         item =>
-                //         {
-                //             UpdateVersionTimestampIfNewer(item, message.Message.Provenance.Timestamp);
-                //         },
-                //         ct);
-                //
-                //     UpdateHash(item, message);
-                // }
+                await elasticsearchClient.UpdateVersionTimestampIfNewer(
+                    message.Message.AddressPersistentLocalIds,
+                    message.Message.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                    ct);
             });
 
             When<Envelope<StreetNameHomonymAdditionsWereCorrected>>(async (_, message, ct) =>
@@ -92,19 +74,10 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
                 await RefreshStreetNames(message.Message.StreetNamePersistentLocalId, ct);
 
                 // todo-rik update streetnames
-
-                // foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
-                // {
-                //     var item = await context.FindAndUpdateAddressDetailV2(
-                //         addressPersistentLocalId,
-                //         item =>
-                //         {
-                //             UpdateVersionTimestampIfNewer(item, message.Message.Provenance.Timestamp);
-                //         },
-                //         ct);
-                //
-                //     UpdateHash(item, message);
-                // }
+                await elasticsearchClient.UpdateVersionTimestampIfNewer(
+                    message.Message.AddressPersistentLocalIds,
+                    message.Message.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                    ct);
             });
 
             When<Envelope<StreetNameHomonymAdditionsWereRemoved>>(async (_, message, ct) =>
@@ -112,19 +85,10 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
                 await RefreshStreetNames(message.Message.StreetNamePersistentLocalId, ct);
 
                 // todo-rik update streetnames
-
-                // foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
-                // {
-                //     var item = await context.FindAndUpdateAddressDetailV2(
-                //         addressPersistentLocalId,
-                //         item =>
-                //         {
-                //             UpdateVersionTimestampIfNewer(item, message.Message.Provenance.Timestamp);
-                //         },
-                //         ct);
-                //
-                //     UpdateHash(item, message);
-                // }
+                await elasticsearchClient.UpdateVersionTimestampIfNewer(
+                    message.Message.AddressPersistentLocalIds,
+                    message.Message.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                    ct);
             });
 
             #endregion StreetName

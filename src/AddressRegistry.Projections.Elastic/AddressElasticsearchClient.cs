@@ -1,19 +1,20 @@
 ﻿namespace AddressRegistry.Projections.Elastic
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using AddressSearch;
-    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Exceptions;
     using global::Elastic.Clients.Elasticsearch;
-    using NodaTime;
-    using StreetName;
+    using global::Elastic.Clients.Elasticsearch.QueryDsl;
 
     public interface IAddressElasticsearchClient
     {
         Task CreateDocument(AddressSearchDocument document, CancellationToken ct);
         Task PartialUpdateDocument(int addressPersistentLocalId, AddressSearchPartialUpdateDocument document, CancellationToken ct);
+        Task UpdateVersionTimestampIfNewer(IEnumerable<int> addressPersistentLocalIds, DateTimeOffset versionTimestamp, CancellationToken ct);
         Task DeleteDocument(int addressPersistentLocalId, CancellationToken ct);
     }
 
@@ -45,10 +46,49 @@
             var response = await _elasticClient.UpdateAsync<AddressSearchDocument, AddressSearchPartialUpdateDocument>(
                 _indexName,
                 new Id(addressPersistentLocalId),
-                updateRequestDescriptor =>
+                updateRequestDescriptor => { updateRequestDescriptor.Doc(document); }, ct);
+
+            if (!response.IsValidResponse)
             {
-                updateRequestDescriptor.Doc(document);
-            }, ct);
+                throw new ElasticsearchClientException(response.ApiCallDetails.OriginalException);
+            }
+        }
+
+        public async Task UpdateVersionTimestampIfNewer(IEnumerable<int> addressPersistentLocalIds, DateTimeOffset versionTimestamp, CancellationToken ct)
+        {
+            var response = await _elasticClient
+                .UpdateByQueryAsync<AddressSearchDocument>(updateByQuery => updateByQuery
+                        .Indices(Indices.Index(_indexName))
+                        .Query(queryDescriptor =>
+                        {
+                            queryDescriptor
+                                .Bool(configureBool =>
+                                {
+                                    configureBool
+                                        .Must(
+                                            q =>
+                                            {
+                                                q.Ids(new IdsQuery
+                                                {
+                                                    Values = new Ids(addressPersistentLocalIds.Select(x => new Id(x).ToString()))
+                                                });
+                                            },
+                                            q =>
+                                            {
+                                                q.Range(new DateRangeQuery(new Field("versionTimestamp"))
+                                                {
+                                                    Lt = new DateMathExpression(versionTimestamp.ToString("o")),
+                                                    Format = "strict_date_time"
+                                                });
+                                            });
+                                });
+                        })
+                        .Script(script => script
+                            .Source("ctx._source.versionTimestamp = params.versionTimestamp")
+                            .Params(p => p
+                                .Add("versionTimestamp", versionTimestamp)
+                            ))
+                    , ct);
 
             if (!response.IsValidResponse)
             {

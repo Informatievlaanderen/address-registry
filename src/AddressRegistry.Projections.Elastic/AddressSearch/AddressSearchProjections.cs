@@ -52,38 +52,30 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
 
             When<Envelope<StreetNameNamesWereChanged>>(async (_, message, ct) =>
             {
-                await UpdateStreetNameAndFullAddress(
-                    message.Message.Provenance.Timestamp,
-                    message.Message.StreetNamePersistentLocalId,
+                await UpdateStreetNameAndFullAddress(message.Message.StreetNamePersistentLocalId,
                     message.Message.AddressPersistentLocalIds.ToArray(),
-                    ct);
+                    message.Message.Provenance.Timestamp, ct);
             });
 
             When<Envelope<StreetNameNamesWereCorrected>>(async (_, message, ct) =>
             {
-                await UpdateStreetNameAndFullAddress(
-                    message.Message.Provenance.Timestamp,
-                    message.Message.StreetNamePersistentLocalId,
+                await UpdateStreetNameAndFullAddress(message.Message.StreetNamePersistentLocalId,
                     message.Message.AddressPersistentLocalIds.ToArray(),
-                    ct);
+                    message.Message.Provenance.Timestamp, ct);
             });
 
             When<Envelope<StreetNameHomonymAdditionsWereCorrected>>(async (_, message, ct) =>
             {
-                await UpdateStreetNameAndFullAddress(
-                    message.Message.Provenance.Timestamp,
-                    message.Message.StreetNamePersistentLocalId,
+                await UpdateStreetNameAndFullAddress(message.Message.StreetNamePersistentLocalId,
                     message.Message.AddressPersistentLocalIds.ToArray(),
-                    ct);
+                    message.Message.Provenance.Timestamp, ct);
             });
 
             When<Envelope<StreetNameHomonymAdditionsWereRemoved>>(async (_, message, ct) =>
             {
-                await UpdateStreetNameAndFullAddress(
-                    message.Message.Provenance.Timestamp,
-                    message.Message.StreetNamePersistentLocalId,
+                await UpdateStreetNameAndFullAddress(message.Message.StreetNamePersistentLocalId,
                     message.Message.AddressPersistentLocalIds.ToArray(),
-                    ct);
+                    message.Message.Provenance.Timestamp, ct);
             });
 
             #endregion StreetName
@@ -160,7 +152,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
 
             When<Envelope<AddressWasApproved>>(async (_, message, ct) =>
             {
-                await elasticsearchClient.UpdateDocument(
+                await elasticsearchClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
                     new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
                     {
@@ -171,7 +163,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
 
             When<Envelope<AddressWasCorrectedFromApprovedToProposed>>(async (_, message, ct) =>
             {
-                await elasticsearchClient.UpdateDocument(
+                await elasticsearchClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
                     new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
                     {
@@ -182,7 +174,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
 
             When<Envelope<AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected>>(async (_, message, ct) =>
             {
-                await elasticsearchClient.UpdateDocument(
+                await elasticsearchClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
                     new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
                     {
@@ -193,7 +185,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
 
             When<Envelope<AddressWasRejected>>(async (_, message, ct) =>
             {
-                await elasticsearchClient.UpdateDocument(
+                await elasticsearchClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
                     new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
                     {
@@ -204,7 +196,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
 
             When<Envelope<AddressWasRejectedBecauseOfMunicipalityMerger>>(async (_, message, ct) =>
             {
-                await elasticsearchClient.UpdateDocument(
+                await elasticsearchClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
                     new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
                     {
@@ -215,7 +207,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
 
             When<Envelope<AddressWasRejectedBecauseHouseNumberWasRejected>>(async (_, message, ct) =>
             {
-                await elasticsearchClient.UpdateDocument(
+                await elasticsearchClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
                     new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
                     {
@@ -226,7 +218,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
 
             When<Envelope<AddressWasRejectedBecauseHouseNumberWasRetired>>(async (_, message, ct) =>
             {
-                await elasticsearchClient.UpdateDocument(
+                await elasticsearchClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
                     new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
                     {
@@ -237,7 +229,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
 
             When<Envelope<AddressWasRejectedBecauseStreetNameWasRejected>>(async (_, message, ct) =>
             {
-                await elasticsearchClient.UpdateDocument(
+                await elasticsearchClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
                     new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
                     {
@@ -248,7 +240,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
 
             When<Envelope<AddressWasRetiredBecauseStreetNameWasRejected>>(async (_, message, ct) =>
             {
-                await elasticsearchClient.UpdateDocument(
+                await elasticsearchClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
                     new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
                     {
@@ -259,7 +251,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
 
             When<Envelope<AddressWasRejectedBecauseStreetNameWasRetired>>(async (_, message, ct) =>
             {
-                await elasticsearchClient.UpdateDocument(
+                await elasticsearchClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
                     new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
                     {
@@ -270,7 +262,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
 
             When<Envelope<AddressWasDeregulated>>(async (_, message, ct) =>
             {
-                await elasticsearchClient.UpdateDocument(
+                await elasticsearchClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
                     new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
                     {
@@ -282,7 +274,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
 
             When<Envelope<AddressWasRegularized>>(async (_, message, ct) =>
             {
-                await elasticsearchClient.UpdateDocument(
+                await elasticsearchClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
                     new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
                     {
@@ -293,7 +285,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
 
             When<Envelope<AddressWasRetiredV2>>(async (_, message, ct) =>
             {
-                await elasticsearchClient.UpdateDocument(
+                await elasticsearchClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
                     new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
                     {
@@ -304,7 +296,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
 
             When<Envelope<AddressWasRetiredBecauseOfMunicipalityMerger>>(async (_, message, ct) =>
             {
-                await elasticsearchClient.UpdateDocument(
+                await elasticsearchClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
                     new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
                     {
@@ -315,7 +307,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
 
             When<Envelope<AddressWasRetiredBecauseHouseNumberWasRetired>>(async (_, message, ct) =>
             {
-                await elasticsearchClient.UpdateDocument(
+                await elasticsearchClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
                     new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
                     {
@@ -326,7 +318,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
 
             When<Envelope<AddressWasRetiredBecauseStreetNameWasRetired>>(async (_, message, ct) =>
             {
-                await elasticsearchClient.UpdateDocument(
+                await elasticsearchClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
                     new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
                     {
@@ -337,7 +329,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
 
             When<Envelope<AddressWasCorrectedFromRetiredToCurrent>>(async (_, message, ct) =>
             {
-                await elasticsearchClient.UpdateDocument(
+                await elasticsearchClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
                     new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
                     {
@@ -348,84 +340,56 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
 
             When<Envelope<AddressPostalCodeWasChangedV2>>(async (_, message, ct) =>
             {
-                await elasticsearchClient.UpdateDocument(
-                    message.Message.AddressPersistentLocalId,
-                    new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
-                    {
-                        PostalCode = message.Message.PostalCode
-                    },
-                    ct);
+                var postalInfo = await GetPostalInfo(message.Message.PostalCode, ct);
 
-                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
-                {
-                    await elasticsearchClient.UpdateDocument(
-                        boxNumberPersistentLocalId,
-                        new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
-                        {
-                            PostalCode = message.Message.PostalCode
-                        },
-                        ct);
-                }
+                var addressPersistentLocalIds =
+                    new[] { message.Message.AddressPersistentLocalId }.Concat(message.Message.BoxNumberPersistentLocalIds).ToArray();
+
+                await UpdateDocument(
+                    addressPersistentLocalIds,
+                    doc => doc.PostalInfo = postalInfo,
+                    message.Message.Provenance.Timestamp,
+                    ct);
             });
 
             When<Envelope<AddressPostalCodeWasCorrectedV2>>(async (_, message, ct) =>
             {
-                await elasticsearchClient.UpdateDocument(
-                    message.Message.AddressPersistentLocalId,
-                    new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
-                    {
-                        PostalCode = message.Message.PostalCode
-                    },
-                    ct);
+                var postalInfo = await GetPostalInfo(message.Message.PostalCode, ct);
 
-                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
-                {
-                    await elasticsearchClient.UpdateDocument(
-                        boxNumberPersistentLocalId,
-                        new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
-                        {
-                            PostalCode = message.Message.PostalCode
-                        },
-                        ct);
-                }
+                var addressPersistentLocalIds =
+                    new[] { message.Message.AddressPersistentLocalId }.Concat(message.Message.BoxNumberPersistentLocalIds).ToArray();
+
+                await UpdateDocument(
+                    addressPersistentLocalIds,
+                    doc => doc.PostalInfo = postalInfo,
+                    message.Message.Provenance.Timestamp,
+                    ct);
             });
 
             When<Envelope<AddressHouseNumberWasCorrectedV2>>(async (_, message, ct) =>
             {
-                await elasticsearchClient.UpdateDocument(
-                    message.Message.AddressPersistentLocalId,
-                    new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
-                    {
-                        HouseNumber = message.Message.HouseNumber
-                    },
-                    ct);
+                var addressPersistentLocalIds =
+                    new[] { message.Message.AddressPersistentLocalId }.Concat(message.Message.BoxNumberPersistentLocalIds).ToArray();
 
-                foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
-                {
-                    await elasticsearchClient.UpdateDocument(
-                        boxNumberPersistentLocalId,
-                        new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
-                        {
-                            HouseNumber = message.Message.HouseNumber
-                        },
-                        ct);
-                }
+                await UpdateDocument(
+                    addressPersistentLocalIds,
+                    doc => doc.HouseNumber = message.Message.HouseNumber,
+                    message.Message.Provenance.Timestamp,
+                    ct);
             });
 
             When<Envelope<AddressBoxNumberWasCorrectedV2>>(async (_, message, ct) =>
             {
-                await elasticsearchClient.UpdateDocument(
-                    message.Message.AddressPersistentLocalId,
-                    new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
-                    {
-                        BoxNumber = message.Message.BoxNumber
-                    },
+                await UpdateDocument(
+                    [message.Message.AddressPersistentLocalId],
+                    doc => doc.BoxNumber = message.Message.BoxNumber,
+                    message.Message.Provenance.Timestamp,
                     ct);
             });
 
             When<Envelope<AddressPositionWasChanged>>(async (_, message, ct) =>
             {
-                await elasticsearchClient.UpdateDocument(
+                await elasticsearchClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
                     new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
                     {
@@ -439,7 +403,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
 
             When<Envelope<AddressPositionWasCorrectedV2>>(async (_, message, ct) =>
             {
-                await elasticsearchClient.UpdateDocument(
+                await elasticsearchClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
                     new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
                     {
@@ -453,40 +417,40 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
 
             When<Envelope<AddressHouseNumberWasReaddressed>>(async (_, message, ct) =>
             {
-                await elasticsearchClient.UpdateDocument(
-                    message.Message.AddressPersistentLocalId,
-                    new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
-                    {
-                        Status = message.Message.ReaddressedHouseNumber.SourceStatus,
-                        HouseNumber = message.Message.ReaddressedHouseNumber.DestinationHouseNumber,
-                        PostalCode = message.Message.ReaddressedHouseNumber.SourcePostalCode,
-                        OfficiallyAssigned = message.Message.ReaddressedHouseNumber.SourceIsOfficiallyAssigned,
-                        AddressPosition = AddressPosition(
-                            message.Message.ReaddressedHouseNumber.SourceExtendedWkbGeometry.ToByteArray(),
-                            message.Message.ReaddressedHouseNumber.SourceGeometryMethod,
-                            message.Message.ReaddressedHouseNumber.SourceGeometrySpecification)
-                    },
-                    ct);
-
-
-                foreach (var readdressedBoxNumber in message.Message.ReaddressedBoxNumbers)
-                {
-                    await elasticsearchClient.UpdateDocument(
-                        readdressedBoxNumber.DestinationAddressPersistentLocalId,
-                        new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
-                        {
-                            Status = readdressedBoxNumber.SourceStatus,
-                            HouseNumber = readdressedBoxNumber.DestinationHouseNumber,
-                            BoxNumber = readdressedBoxNumber.SourceBoxNumber,
-                            PostalCode = readdressedBoxNumber.SourcePostalCode,
-                            OfficiallyAssigned = readdressedBoxNumber.SourceIsOfficiallyAssigned,
-                            AddressPosition = AddressPosition(
-                                readdressedBoxNumber.SourceExtendedWkbGeometry.ToByteArray(),
-                                readdressedBoxNumber.SourceGeometryMethod,
-                                readdressedBoxNumber.SourceGeometrySpecification)
-                        },
-                        ct);
-                }
+                // await elasticsearchClient.PartialUpdateDocument(
+                //     message.Message.AddressPersistentLocalId,
+                //     new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
+                //     {
+                //         Status = message.Message.ReaddressedHouseNumber.SourceStatus,
+                //         HouseNumber = message.Message.ReaddressedHouseNumber.DestinationHouseNumber,
+                //         PostalCode = message.Message.ReaddressedHouseNumber.SourcePostalCode,
+                //         OfficiallyAssigned = message.Message.ReaddressedHouseNumber.SourceIsOfficiallyAssigned,
+                //         AddressPosition = AddressPosition(
+                //             message.Message.ReaddressedHouseNumber.SourceExtendedWkbGeometry.ToByteArray(),
+                //             message.Message.ReaddressedHouseNumber.SourceGeometryMethod,
+                //             message.Message.ReaddressedHouseNumber.SourceGeometrySpecification)
+                //     },
+                //     ct);
+                //
+                //
+                // foreach (var readdressedBoxNumber in message.Message.ReaddressedBoxNumbers)
+                // {
+                //     await elasticsearchClient.PartialUpdateDocument(
+                //         readdressedBoxNumber.DestinationAddressPersistentLocalId,
+                //         new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
+                //         {
+                //             Status = readdressedBoxNumber.SourceStatus,
+                //             HouseNumber = readdressedBoxNumber.DestinationHouseNumber,
+                //             BoxNumber = readdressedBoxNumber.SourceBoxNumber,
+                //             PostalCode = readdressedBoxNumber.SourcePostalCode,
+                //             OfficiallyAssigned = readdressedBoxNumber.SourceIsOfficiallyAssigned,
+                //             AddressPosition = AddressPosition(
+                //                 readdressedBoxNumber.SourceExtendedWkbGeometry.ToByteArray(),
+                //                 readdressedBoxNumber.SourceGeometryMethod,
+                //                 readdressedBoxNumber.SourceGeometrySpecification)
+                //         },
+                //         ct);
+                // }
             });
 
             When<Envelope<AddressWasProposedBecauseOfReaddress>>(async (_, message, ct) =>
@@ -514,7 +478,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
 
             When<Envelope<AddressWasRejectedBecauseOfReaddress>>(async (_, message, ct) =>
             {
-                await elasticsearchClient.UpdateDocument(
+                await elasticsearchClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
                     new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
                     {
@@ -525,7 +489,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
 
             When<Envelope<AddressWasRetiredBecauseOfReaddress>>(async (_, message, ct) =>
             {
-                await elasticsearchClient.UpdateDocument(
+                await elasticsearchClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
                     new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
                     {
@@ -557,7 +521,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
 
             When<Envelope<AddressWasCorrectedFromRejectedToProposed>>(async (_, message, ct) =>
             {
-                await elasticsearchClient.UpdateDocument(
+                await elasticsearchClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
                     new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
                     {
@@ -568,7 +532,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
 
             When<Envelope<AddressRegularizationWasCorrected>>(async (_, message, ct) =>
             {
-                await elasticsearchClient.UpdateDocument(
+                await elasticsearchClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
                     new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
                     {
@@ -580,7 +544,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
 
             When<Envelope<AddressDeregulationWasCorrected>>(async (_, message, ct) =>
             {
-                await elasticsearchClient.UpdateDocument(
+                await elasticsearchClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
                     new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
                     {
@@ -613,10 +577,34 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             });
         }
 
+        private async Task UpdateDocument(
+             ICollection<int> addressPersistentLocalIds,
+            Action<AddressSearchDocument> update,
+             Instant versionTimestamp,
+            CancellationToken ct)
+        {
+            var documents = await _elasticsearchClient.GetDocuments(addressPersistentLocalIds, ct);
+
+            foreach (var addressPersistentLocalId in addressPersistentLocalIds)
+            {
+                var document = documents.SingleOrDefault(x => x.AddressPersistentLocalId == addressPersistentLocalId);
+                if (document is null)
+                {
+                    throw new NullReferenceException($"No document received for {addressPersistentLocalId}");
+                }
+
+                update(document);
+
+                document.VersionTimestamp = versionTimestamp.ToBelgianDateTimeOffset();
+
+                await _elasticsearchClient.UpdateDocument(document, ct);
+            }
+        }
+
         private async Task UpdateStreetNameAndFullAddress(
-            Instant versionTimestamp,
             int streetNamePersistentLocalId,
             ICollection<int> addressPersistentLocalIds,
+            Instant versionTimestamp,
             CancellationToken ct)
         {
             var streetNameLatestItem = await RefreshStreetNames(streetNamePersistentLocalId, ct);
@@ -636,18 +624,10 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
                     : document.VersionTimestamp;
                 var streetName = StreetName.FromStreetNameLatestItem(streetNameLatestItem);
 
-                await _elasticsearchClient.UpdateDocument(
-                    addressPersistentLocalId,
-                    new AddressSearchPartialDocument(desiredVersionTimestamp)
-                    {
-                        StreetName = streetName,
-                        FullAddress = AddressSearchDocument.BuildFullAddress(
-                            document.Municipality,
-                            document.PostalInfo,
-                            streetName,
-                            document.HouseNumber,
-                            document.BoxNumber)
-                    }, ct);
+                document.VersionTimestamp = desiredVersionTimestamp;
+                document.StreetName = streetName;
+
+                await _elasticsearchClient.UpdateDocument(document, ct);
             }
         }
 

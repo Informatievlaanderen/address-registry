@@ -64,5 +64,25 @@ namespace AddressRegistry.Tests.EventExtensions
 
             return newEvent;
         }
+
+        public static AddressWasProposedBecauseOfReaddress WithExtendedWkbGeometry(
+            this AddressWasProposedBecauseOfReaddress @event,
+            ExtendedWkbGeometry extendedWkbGeometry)
+        {
+            var newEvent = new AddressWasProposedBecauseOfReaddress(
+                new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId),
+                new AddressPersistentLocalId(@event.AddressPersistentLocalId),
+                new AddressPersistentLocalId(@event.SourceAddressPersistentLocalId),
+                @event.ParentPersistentLocalId is not null ? new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value) : null,
+                new PostalCode(@event.PostalCode),
+                new HouseNumber(@event.HouseNumber),
+                @event.BoxNumber is not null ? new BoxNumber(@event.BoxNumber) : null,
+                @event.GeometryMethod,
+                @event.GeometrySpecification,
+                extendedWkbGeometry);
+            ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
+
+            return newEvent;
+        }
     }
 }

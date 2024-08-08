@@ -27,7 +27,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
         public Municipality Municipality { get; set; }
         public PostalInfo? PostalInfo { get; set; }
         public StreetName StreetName { get; set; }
-        public Name[] FullAddress { get; set; }
+        public Name[] FullAddress => BuildFullAddress();
 
         public AddressPosition AddressPosition { get; set; }
 
@@ -58,27 +58,20 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             PostalInfo = postalInfo;
             StreetName = streetName;
             AddressPosition = addressPosition;
-
-            FullAddress = BuildFullAddress(municipality, postalInfo, streetName, houseNumber, boxNumber);
         }
 
-        public static Name[] BuildFullAddress(
-            Municipality municipality,
-            PostalInfo? postalInfo,
-            StreetName streetName,
-            string houseNumber,
-            string? boxNumber)
+        private Name[] BuildFullAddress()
         {
             var fullAddresses = new List<Name>();
-            foreach (var name in streetName.Names)
+            foreach (var name in StreetName.Names)
             {
                 fullAddresses.Add(
                     new Name(FormatFullAddress(
                             name.Spelling,
-                            houseNumber,
-                            boxNumber,
-                            postalInfo?.PostalCode,
-                            municipality.Names.SingleOrDefault(x => x.Language == name.Language)?.Spelling ?? municipality.Names.First().Spelling,
+                            HouseNumber,
+                            BoxNumber,
+                            PostalInfo?.PostalCode,
+                            Municipality.Names.SingleOrDefault(x => x.Language == name.Language)?.Spelling ?? Municipality.Names.First().Spelling,
                             name.Language),
                         name.Language));
             }

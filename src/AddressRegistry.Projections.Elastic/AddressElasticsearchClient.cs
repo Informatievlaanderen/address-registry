@@ -12,7 +12,8 @@
     {
         Task CreateDocument(AddressSearchDocument document, CancellationToken ct);
         Task<ICollection<AddressSearchDocument>> GetDocuments(IEnumerable<int> addressPersistentLocalIds, CancellationToken ct);
-        Task UpdateDocument(int addressPersistentLocalId, AddressSearchPartialDocument document, CancellationToken ct);
+        Task UpdateDocument(AddressSearchDocument document, CancellationToken ct);
+        Task PartialUpdateDocument(int addressPersistentLocalId, AddressSearchPartialDocument document, CancellationToken ct);
         Task DeleteDocument(int addressPersistentLocalId, CancellationToken ct);
     }
 
@@ -30,6 +31,16 @@
         }
 
         public async Task CreateDocument(AddressSearchDocument document, CancellationToken ct)
+        {
+            var response = await _elasticClient.IndexAsync(document, _indexName, new Id(document.AddressPersistentLocalId), ct);
+
+            if (!response.IsValidResponse)
+            {
+                throw new ElasticsearchClientException(response.ApiCallDetails.OriginalException);
+            }
+        }
+
+        public async Task UpdateDocument(AddressSearchDocument document, CancellationToken ct)
         {
             var response = await _elasticClient.IndexAsync(document, _indexName, new Id(document.AddressPersistentLocalId), ct);
 
@@ -68,7 +79,7 @@
             return result;
         }
 
-        public async Task UpdateDocument(int addressPersistentLocalId, AddressSearchPartialDocument document, CancellationToken ct)
+        public async Task PartialUpdateDocument(int addressPersistentLocalId, AddressSearchPartialDocument document, CancellationToken ct)
         {
             var response = await _elasticClient.UpdateAsync<AddressSearchDocument, AddressSearchPartialDocument>(
                 _indexName,

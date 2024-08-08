@@ -24,7 +24,6 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
     [ConnectedProjectionDescription("Projectie die de adressen data in Elastic Search synchroniseert.")]
     public class AddressSearchProjections : ConnectedProjection<ElasticRunnerContext>
     {
-        //TODO-rik hoelang gaan we dat in de cache houden?
         private readonly IDictionary<string, Municipality> _municipalities = new Dictionary<string, Municipality>();
         private readonly IDictionary<string, PostalInfo> _postalInfos = new Dictionary<string, PostalInfo>();
         private readonly IDictionary<int, StreetNameLatestItem> _streetNames = new Dictionary<int, StreetNameLatestItem>();
@@ -345,7 +344,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
                 var addressPersistentLocalIds =
                     new[] { message.Message.AddressPersistentLocalId }.Concat(message.Message.BoxNumberPersistentLocalIds).ToArray();
 
-                await UpdateDocument(
+                await UpdateDocuments(
                     addressPersistentLocalIds,
                     doc => doc.PostalInfo = postalInfo,
                     message.Message.Provenance.Timestamp,
@@ -359,7 +358,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
                 var addressPersistentLocalIds =
                     new[] { message.Message.AddressPersistentLocalId }.Concat(message.Message.BoxNumberPersistentLocalIds).ToArray();
 
-                await UpdateDocument(
+                await UpdateDocuments(
                     addressPersistentLocalIds,
                     doc => doc.PostalInfo = postalInfo,
                     message.Message.Provenance.Timestamp,
@@ -371,7 +370,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
                 var addressPersistentLocalIds =
                     new[] { message.Message.AddressPersistentLocalId }.Concat(message.Message.BoxNumberPersistentLocalIds).ToArray();
 
-                await UpdateDocument(
+                await UpdateDocuments(
                     addressPersistentLocalIds,
                     doc => doc.HouseNumber = message.Message.HouseNumber,
                     message.Message.Provenance.Timestamp,
@@ -380,7 +379,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
 
             When<Envelope<AddressBoxNumberWasCorrectedV2>>(async (_, message, ct) =>
             {
-                await UpdateDocument(
+                await UpdateDocuments(
                     [message.Message.AddressPersistentLocalId],
                     doc => doc.BoxNumber = message.Message.BoxNumber,
                     message.Message.Provenance.Timestamp,
@@ -417,40 +416,43 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
 
             When<Envelope<AddressHouseNumberWasReaddressed>>(async (_, message, ct) =>
             {
-                // await elasticsearchClient.PartialUpdateDocument(
-                //     message.Message.AddressPersistentLocalId,
-                //     new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
-                //     {
-                //         Status = message.Message.ReaddressedHouseNumber.SourceStatus,
-                //         HouseNumber = message.Message.ReaddressedHouseNumber.DestinationHouseNumber,
-                //         PostalCode = message.Message.ReaddressedHouseNumber.SourcePostalCode,
-                //         OfficiallyAssigned = message.Message.ReaddressedHouseNumber.SourceIsOfficiallyAssigned,
-                //         AddressPosition = AddressPosition(
-                //             message.Message.ReaddressedHouseNumber.SourceExtendedWkbGeometry.ToByteArray(),
-                //             message.Message.ReaddressedHouseNumber.SourceGeometryMethod,
-                //             message.Message.ReaddressedHouseNumber.SourceGeometrySpecification)
-                //     },
-                //     ct);
-                //
-                //
-                // foreach (var readdressedBoxNumber in message.Message.ReaddressedBoxNumbers)
-                // {
-                //     await elasticsearchClient.PartialUpdateDocument(
-                //         readdressedBoxNumber.DestinationAddressPersistentLocalId,
-                //         new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
-                //         {
-                //             Status = readdressedBoxNumber.SourceStatus,
-                //             HouseNumber = readdressedBoxNumber.DestinationHouseNumber,
-                //             BoxNumber = readdressedBoxNumber.SourceBoxNumber,
-                //             PostalCode = readdressedBoxNumber.SourcePostalCode,
-                //             OfficiallyAssigned = readdressedBoxNumber.SourceIsOfficiallyAssigned,
-                //             AddressPosition = AddressPosition(
-                //                 readdressedBoxNumber.SourceExtendedWkbGeometry.ToByteArray(),
-                //                 readdressedBoxNumber.SourceGeometryMethod,
-                //                 readdressedBoxNumber.SourceGeometrySpecification)
-                //         },
-                //         ct);
-                // }
+                var houseNumberPostalInfo = await GetPostalInfo(message.Message.ReaddressedHouseNumber.SourcePostalCode, ct);
+                await UpdateDocuments(
+                    [message.Message.AddressPersistentLocalId],
+                    doc =>
+                    {
+                        doc.Status = message.Message.ReaddressedHouseNumber.SourceStatus;
+                        doc.HouseNumber = message.Message.ReaddressedHouseNumber.DestinationHouseNumber;
+                        doc.PostalInfo = houseNumberPostalInfo;
+                        doc.OfficiallyAssigned = message.Message.ReaddressedHouseNumber.SourceIsOfficiallyAssigned;
+                        doc.AddressPosition = AddressPosition(
+                            message.Message.ReaddressedHouseNumber.SourceExtendedWkbGeometry.ToByteArray(),
+                            message.Message.ReaddressedHouseNumber.SourceGeometryMethod,
+                            message.Message.ReaddressedHouseNumber.SourceGeometrySpecification);
+                    },
+                    message.Message.Provenance.Timestamp,
+                    ct);
+
+                foreach (var boxNumber in message.Message.ReaddressedBoxNumbers)
+                {
+                    var boxNumberPostalInfo = await GetPostalInfo(boxNumber.SourcePostalCode, ct);
+                    await UpdateDocuments(
+                        [boxNumber.DestinationAddressPersistentLocalId],
+                        doc =>
+                        {
+                            doc.Status = boxNumber.SourceStatus;
+                            doc.HouseNumber = boxNumber.DestinationHouseNumber;
+                            doc.BoxNumber = boxNumber.SourceBoxNumber;
+                            doc.PostalInfo = boxNumberPostalInfo;
+                            doc.OfficiallyAssigned = boxNumber.SourceIsOfficiallyAssigned;
+                            doc.AddressPosition = AddressPosition(
+                                boxNumber.SourceExtendedWkbGeometry.ToByteArray(),
+                                boxNumber.SourceGeometryMethod,
+                                boxNumber.SourceGeometrySpecification);
+                        },
+                        message.Message.Provenance.Timestamp,
+                        ct);
+                }
             });
 
             When<Envelope<AddressWasProposedBecauseOfReaddress>>(async (_, message, ct) =>
@@ -577,10 +579,10 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             });
         }
 
-        private async Task UpdateDocument(
-             ICollection<int> addressPersistentLocalIds,
+        private async Task UpdateDocuments(
+            ICollection<int> addressPersistentLocalIds,
             Action<AddressSearchDocument> update,
-             Instant versionTimestamp,
+            Instant versionTimestamp,
             CancellationToken ct)
         {
             var documents = await _elasticsearchClient.GetDocuments(addressPersistentLocalIds, ct);
@@ -648,14 +650,14 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
                 return value;
 
             await using var context = await _municipalityConsumerContextFactory.CreateDbContextAsync(ct);
-            var municipality = await context.MunicipalityLatestItems
+            var municipalityLatestItem = await context.MunicipalityLatestItems
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.NisCode == nisCode, ct);
 
-            if (municipality == null)
+            if (municipalityLatestItem == null)
                 throw new InvalidOperationException($"Municipality with NisCode {nisCode} not found");
 
-            _municipalities.Add(nisCode, Municipality.FromMunicipalityLatestItem(municipality));
+            _municipalities.Add(nisCode, Municipality.FromMunicipalityLatestItem(municipalityLatestItem));
 
             return _municipalities[nisCode];
         }
@@ -669,15 +671,15 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
                 return value;
 
             await using var context = await _postalConsumerContextFactory.CreateDbContextAsync(ct);
-            var postalInfo = await context.PostalLatestItems
+            var postalInfoLatestItem = await context.PostalLatestItems
                 .Include(x => x.PostalNames)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(p => p.PostalCode == postalCode, ct);
 
-            if (postalInfo == null)
+            if (postalInfoLatestItem == null)
                 throw new InvalidOperationException($"PostalInfo with postalCode {postalCode} not found");
 
-            _postalInfos.Add(postalCode, PostalInfo.FromPostalLatestItem(postalInfo));
+            _postalInfos.Add(postalCode, PostalInfo.FromPostalLatestItem(postalInfoLatestItem));
 
             return _postalInfos[postalCode];
         }
@@ -688,31 +690,29 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
                 return value;
 
             await using var context = await _streetNameConsumerContextFactory.CreateDbContextAsync(ct);
-            var streetName = await context.StreetNameLatestItems
+            var streetNameLatestItem = await context.StreetNameLatestItems
                 .AsNoTracking()
                 .FirstOrDefaultAsync(s => s.PersistentLocalId == streetNamePersistentLocalId, ct);
 
-            if (streetName == null)
+            if (streetNameLatestItem == null)
                 throw new InvalidOperationException($"StreetName with id {streetNamePersistentLocalId} not found");
 
-            _streetNames.Add(streetNamePersistentLocalId, streetName);
+            _streetNames.Add(streetNamePersistentLocalId, streetNameLatestItem);
 
-            return streetName;
+            return streetNameLatestItem;
         }
 
         private async Task<StreetNameLatestItem> RefreshStreetNames(int streetNamePersistentLocalId, CancellationToken ct)
         {
             await using var context = await _streetNameConsumerContextFactory.CreateDbContextAsync(ct);
-            var streetName = await context.StreetNameLatestItems
+            var streetNameLatestItem = await context.StreetNameLatestItems
                 .AsNoTracking()
                 .FirstOrDefaultAsync(s => s.PersistentLocalId == streetNamePersistentLocalId, ct);
 
-            if (streetName == null)
-                throw new InvalidOperationException($"StreetName with id {streetNamePersistentLocalId} not found");
+            _streetNames[streetNamePersistentLocalId] =
+                streetNameLatestItem ?? throw new InvalidOperationException($"StreetName with id {streetNamePersistentLocalId} not found");
 
-            _streetNames[streetNamePersistentLocalId] = streetName;
-
-            return streetName;
+            return streetNameLatestItem;
         }
     }
 }

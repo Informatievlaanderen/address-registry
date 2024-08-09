@@ -29,6 +29,15 @@
             {
                 clientSettings = clientSettings.Authentication(new ApiKey(apiKey));
             }
+            else
+            {
+                var username = elasticOptions.GetValue("Username", string.Empty);
+                var password = elasticOptions.GetValue("Password", string.Empty);
+                if (!string.IsNullOrWhiteSpace(username) && !string.IsNullOrWhiteSpace(password))
+                {
+                    clientSettings = clientSettings.Authentication(new BasicAuthentication(username, password));
+                }
+            }
 
             builder
                 .Register<ElasticsearchClient>(_ => new ElasticsearchClient(clientSettings))

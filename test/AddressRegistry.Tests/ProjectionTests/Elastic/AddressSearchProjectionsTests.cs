@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -22,10 +23,12 @@
     using global::AutoFixture;
     using Microsoft.EntityFrameworkCore;
     using Moq;
+    using NetTopologySuite.Geometries;
     using Projections.Elastic;
     using Projections.Elastic.AddressSearch;
     using Tests.BackOffice.Infrastructure;
     using Xunit;
+    using Envelope = Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope;
 
     public class AddressSearchProjectionsTests
     {
@@ -84,12 +87,15 @@
         [Fact]
         public async Task WhenAddressWasMigratedToStreetName()
         {
+            var expectedPosition = GeometryHelpers.ExampleExtendedWkb;
+            var expectedPoint = (Point)WKBReaderFactory.Create().Read(expectedPosition);
+            var pointAsWgs84 = CoordinateTransformer.FromLambert72ToWgs84(expectedPoint);
             var @event = _fixture.Create<AddressWasMigratedToStreetName>()
-                .WithPosition(new ExtendedWkbGeometry(GeometryHelpers.ExampleExtendedWkb));
+                .WithPosition(new ExtendedWkbGeometry(expectedPosition));
             var eventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey,  _fixture.Create<long>() }
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
             };
 
             var streetNameLatestItem = new StreetNameLatestItem
@@ -147,6 +153,9 @@
                             && doc.FullAddress.Length == 2
                             && doc.AddressPosition.GeometryMethod == @event.GeometryMethod
                             && doc.AddressPosition.GeometrySpecification == @event.GeometrySpecification
+                            && doc.AddressPosition.GeometryAsWkt == expectedPoint.AsText()
+                            && doc.AddressPosition.GeometryAsWgs84 ==
+                            string.Format(CultureInfo.InvariantCulture, "{0}, {1}", pointAsWgs84.X, pointAsWgs84.Y)
                         ),
                         It.IsAny<CancellationToken>()));
 
@@ -157,12 +166,15 @@
         [Fact]
         public async Task WhenAddressWasProposedV2()
         {
+            var expectedPosition = GeometryHelpers.ExampleExtendedWkb;
+            var expectedPoint = (Point)WKBReaderFactory.Create().Read(expectedPosition);
+            var pointAsWgs84 = CoordinateTransformer.FromLambert72ToWgs84(expectedPoint);
             var @event = _fixture.Create<AddressWasProposedV2>()
-                .WithExtendedWkbGeometry(new ExtendedWkbGeometry(GeometryHelpers.ExampleExtendedWkb));
+                .WithExtendedWkbGeometry(new ExtendedWkbGeometry(expectedPosition));
             var eventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey,  _fixture.Create<long>() }
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
             };
 
             var streetNameLatestItem = new StreetNameLatestItem
@@ -219,7 +231,10 @@
                             && doc.StreetName.HomonymAdditions.Length == 2
                             && doc.FullAddress.Length == 2
                             && doc.AddressPosition.GeometryMethod == @event.GeometryMethod
-                            && doc.AddressPosition.GeometrySpecification == @event.GeometrySpecification
+                            && doc.AddressPosition.GeometrySpecification == @event.GeometrySpecification &&
+                            doc.AddressPosition.GeometryAsWkt == expectedPoint.AsText()
+                            && doc.AddressPosition.GeometryAsWgs84 ==
+                            string.Format(CultureInfo.InvariantCulture, "{0}, {1}", pointAsWgs84.X, pointAsWgs84.Y)
                         ),
                         It.IsAny<CancellationToken>()));
 
@@ -230,12 +245,15 @@
         [Fact]
         public async Task WhenAddressWasProposedBecauseOfReaddress()
         {
+            var expectedPosition = GeometryHelpers.ExampleExtendedWkb;
+            var expectedPoint = (Point)WKBReaderFactory.Create().Read(expectedPosition);
+            var pointAsWgs84 = CoordinateTransformer.FromLambert72ToWgs84(expectedPoint);
             var @event = _fixture.Create<AddressWasProposedBecauseOfReaddress>()
-                .WithExtendedWkbGeometry(new ExtendedWkbGeometry(GeometryHelpers.ExampleExtendedWkb));
+                .WithExtendedWkbGeometry(new ExtendedWkbGeometry(expectedPosition));
             var eventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey,  _fixture.Create<long>() }
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
             };
 
             var streetNameLatestItem = new StreetNameLatestItem
@@ -292,7 +310,10 @@
                             && doc.StreetName.HomonymAdditions.Length == 2
                             && doc.FullAddress.Length == 2
                             && doc.AddressPosition.GeometryMethod == @event.GeometryMethod
-                            && doc.AddressPosition.GeometrySpecification == @event.GeometrySpecification
+                            && doc.AddressPosition.GeometrySpecification == @event.GeometrySpecification &&
+                            doc.AddressPosition.GeometryAsWkt == expectedPoint.AsText()
+                            && doc.AddressPosition.GeometryAsWgs84 ==
+                            string.Format(CultureInfo.InvariantCulture, "{0}, {1}", pointAsWgs84.X, pointAsWgs84.Y)
                         ),
                         It.IsAny<CancellationToken>()));
 
@@ -303,12 +324,15 @@
         [Fact]
         public async Task WhenAddressWasProposedForMunicipalityMerger()
         {
+            var expectedPosition = GeometryHelpers.ExampleExtendedWkb;
+            var expectedPoint = (Point)WKBReaderFactory.Create().Read(expectedPosition);
+            var pointAsWgs84 = CoordinateTransformer.FromLambert72ToWgs84(expectedPoint);
             var @event = _fixture.Create<AddressWasProposedForMunicipalityMerger>()
-                .WithExtendedWkbGeometry(new ExtendedWkbGeometry(GeometryHelpers.ExampleExtendedWkb));
+                .WithExtendedWkbGeometry(new ExtendedWkbGeometry(expectedPosition));
             var eventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey,  _fixture.Create<long>() }
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
             };
 
             var streetNameLatestItem = new StreetNameLatestItem
@@ -365,7 +389,10 @@
                             && doc.StreetName.HomonymAdditions.Length == 2
                             && doc.FullAddress.Length == 2
                             && doc.AddressPosition.GeometryMethod == @event.GeometryMethod
-                            && doc.AddressPosition.GeometrySpecification == @event.GeometrySpecification
+                            && doc.AddressPosition.GeometrySpecification == @event.GeometrySpecification &&
+                            doc.AddressPosition.GeometryAsWkt == expectedPoint.AsText()
+                            && doc.AddressPosition.GeometryAsWgs84 ==
+                            string.Format(CultureInfo.InvariantCulture, "{0}, {1}", pointAsWgs84.X, pointAsWgs84.Y)
                         ),
                         It.IsAny<CancellationToken>()));
 
@@ -380,7 +407,7 @@
             var eventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey,  _fixture.Create<long>() }
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
             };
 
             await _sut
@@ -395,7 +422,7 @@
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
-                            ),
+                        ),
                         It.IsAny<CancellationToken>()));
 
                     return Task.CompletedTask;
@@ -409,7 +436,7 @@
             var eventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey,  _fixture.Create<long>() }
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
             };
 
             await _sut
@@ -424,7 +451,7 @@
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
-                            ),
+                        ),
                         It.IsAny<CancellationToken>()));
 
                     return Task.CompletedTask;
@@ -438,7 +465,7 @@
             var eventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey,  _fixture.Create<long>() }
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
             };
 
             await _sut
@@ -453,7 +480,36 @@
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
-                            ),
+                        ),
+                        It.IsAny<CancellationToken>()));
+
+                    return Task.CompletedTask;
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressWasCorrectedFromRejectedToProposed()
+        {
+            var @event = _fixture.Create<AddressWasCorrectedFromRejectedToProposed>();
+            var eventMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
+            };
+
+            await _sut
+                .Given(new Envelope<AddressWasCorrectedFromRejectedToProposed>(new Envelope(@event, eventMetadata)))
+                .Then(_ =>
+                {
+                    _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
+                        @event.AddressPersistentLocalId,
+                        It.Is<AddressSearchPartialDocument>(doc =>
+                            doc.Status == AddressStatus.Proposed
+                            && doc.Active == true
+                            && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
+                            && doc.AddressPosition == null
+                            && doc.OfficiallyAssigned == null
+                        ),
                         It.IsAny<CancellationToken>()));
 
                     return Task.CompletedTask;
@@ -467,7 +523,7 @@
             var eventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey,  _fixture.Create<long>() }
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
             };
 
             await _sut
@@ -482,7 +538,7 @@
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
-                            ),
+                        ),
                         It.IsAny<CancellationToken>()));
 
                     return Task.CompletedTask;
@@ -496,7 +552,7 @@
             var eventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey,  _fixture.Create<long>() }
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
             };
 
             await _sut
@@ -511,7 +567,7 @@
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
-                            ),
+                        ),
                         It.IsAny<CancellationToken>()));
 
                     return Task.CompletedTask;
@@ -525,7 +581,7 @@
             var eventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey,  _fixture.Create<long>() }
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
             };
 
             await _sut
@@ -540,7 +596,7 @@
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
-                            ),
+                        ),
                         It.IsAny<CancellationToken>()));
 
                     return Task.CompletedTask;
@@ -554,7 +610,7 @@
             var eventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey,  _fixture.Create<long>() }
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
             };
 
             await _sut
@@ -569,7 +625,7 @@
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
-                            ),
+                        ),
                         It.IsAny<CancellationToken>()));
 
                     return Task.CompletedTask;
@@ -583,7 +639,7 @@
             var eventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey,  _fixture.Create<long>() }
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
             };
 
             await _sut
@@ -598,7 +654,36 @@
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
-                            ),
+                        ),
+                        It.IsAny<CancellationToken>()));
+
+                    return Task.CompletedTask;
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressWasRejectedBecauseOfReaddress()
+        {
+            var @event = _fixture.Create<AddressWasRejectedBecauseOfReaddress>();
+            var eventMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
+            };
+
+            await _sut
+                .Given(new Envelope<AddressWasRejectedBecauseOfReaddress>(new Envelope(@event, eventMetadata)))
+                .Then(_ =>
+                {
+                    _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
+                        @event.AddressPersistentLocalId,
+                        It.Is<AddressSearchPartialDocument>(doc =>
+                            doc.Status == AddressStatus.Rejected
+                            && doc.Active == false
+                            && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
+                            && doc.AddressPosition == null
+                            && doc.OfficiallyAssigned == null
+                        ),
                         It.IsAny<CancellationToken>()));
 
                     return Task.CompletedTask;
@@ -612,7 +697,7 @@
             var eventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey,  _fixture.Create<long>() }
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
             };
 
             await _sut
@@ -627,7 +712,7 @@
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
-                            ),
+                        ),
                         It.IsAny<CancellationToken>()));
 
                     return Task.CompletedTask;
@@ -641,7 +726,7 @@
             var eventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey,  _fixture.Create<long>() }
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
             };
 
             await _sut
@@ -656,7 +741,7 @@
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
-                            ),
+                        ),
                         It.IsAny<CancellationToken>()));
 
                     return Task.CompletedTask;
@@ -670,7 +755,7 @@
             var eventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey,  _fixture.Create<long>() }
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
             };
 
             await _sut
@@ -699,7 +784,7 @@
             var eventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey,  _fixture.Create<long>() }
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
             };
 
             await _sut
@@ -714,7 +799,7 @@
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
-                            ),
+                        ),
                         It.IsAny<CancellationToken>()));
 
                     return Task.CompletedTask;
@@ -728,7 +813,7 @@
             var eventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey,  _fixture.Create<long>() }
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
             };
 
             await _sut
@@ -743,7 +828,36 @@
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
-                            ),
+                        ),
+                        It.IsAny<CancellationToken>()));
+
+                    return Task.CompletedTask;
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressWasRetiredBecauseOfReaddress()
+        {
+            var @event = _fixture.Create<AddressWasRetiredBecauseOfReaddress>();
+            var eventMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
+            };
+
+            await _sut
+                .Given(new Envelope<AddressWasRetiredBecauseOfReaddress>(new Envelope(@event, eventMetadata)))
+                .Then(_ =>
+                {
+                    _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
+                        @event.AddressPersistentLocalId,
+                        It.Is<AddressSearchPartialDocument>(doc =>
+                            doc.Status == AddressStatus.Retired
+                            && doc.Active == false
+                            && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
+                            && doc.AddressPosition == null
+                            && doc.OfficiallyAssigned == null
+                        ),
                         It.IsAny<CancellationToken>()));
 
                     return Task.CompletedTask;
@@ -757,7 +871,7 @@
             var eventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey,  _fixture.Create<long>() }
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
             };
 
             await _sut
@@ -772,7 +886,7 @@
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
-                            ),
+                        ),
                         It.IsAny<CancellationToken>()));
 
                     return Task.CompletedTask;
@@ -786,7 +900,7 @@
             var eventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey,  _fixture.Create<long>() }
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
             };
 
             await _sut
@@ -801,7 +915,7 @@
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
-                            ),
+                        ),
                         It.IsAny<CancellationToken>()));
 
                     return Task.CompletedTask;
@@ -815,7 +929,7 @@
             var eventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey,  _fixture.Create<long>() }
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
             };
 
             await _sut
@@ -830,7 +944,36 @@
                             && doc.OfficiallyAssigned == false
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
-                            ),
+                        ),
+                        It.IsAny<CancellationToken>()));
+
+                    return Task.CompletedTask;
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressDeregulationWasCorrected()
+        {
+            var @event = _fixture.Create<AddressDeregulationWasCorrected>();
+            var eventMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
+            };
+
+            await _sut
+                .Given(new Envelope<AddressDeregulationWasCorrected>(new Envelope(@event, eventMetadata)))
+                .Then(_ =>
+                {
+                    _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
+                        @event.AddressPersistentLocalId,
+                        It.Is<AddressSearchPartialDocument>(doc =>
+                            doc.OfficiallyAssigned == true
+                            && doc.Status == null
+                            && doc.Active == null
+                            && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
+                            && doc.AddressPosition == null
+                        ),
                         It.IsAny<CancellationToken>()));
 
                     return Task.CompletedTask;
@@ -844,7 +987,7 @@
             var eventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey,  _fixture.Create<long>() }
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
             };
 
             await _sut
@@ -859,7 +1002,36 @@
                             && doc.Active == null
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
-                            ),
+                        ),
+                        It.IsAny<CancellationToken>()));
+
+                    return Task.CompletedTask;
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressRegularizationWasCorrected()
+        {
+            var @event = _fixture.Create<AddressRegularizationWasCorrected>();
+            var eventMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
+            };
+
+            await _sut
+                .Given(new Envelope<AddressRegularizationWasCorrected>(new Envelope(@event, eventMetadata)))
+                .Then(_ =>
+                {
+                    _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
+                        @event.AddressPersistentLocalId,
+                        It.Is<AddressSearchPartialDocument>(doc =>
+                            doc.OfficiallyAssigned == false
+                            && doc.Status == AddressStatus.Current
+                            && doc.Active == true
+                            && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
+                            && doc.AddressPosition == null
+                        ),
                         It.IsAny<CancellationToken>()));
 
                     return Task.CompletedTask;
@@ -873,7 +1045,7 @@
             var eventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey,  _fixture.Create<long>() }
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
             };
 
             var storedDocuments = new[] { @event.AddressPersistentLocalId }.Concat(@event.BoxNumberPersistentLocalIds)
@@ -912,7 +1084,7 @@
                             && doc.PostalInfo.Names.Single().Language == Language.nl
                             && doc.PostalInfo.Names.Single().Spelling == postalInfoPostalName.PostalName
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
-                            ),
+                        ),
                         It.IsAny<CancellationToken>()));
 
                     foreach (var boxNumberAddressPersistentLocalId in @event.BoxNumberPersistentLocalIds)
@@ -940,7 +1112,7 @@
             var eventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey,  _fixture.Create<long>() }
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
             };
 
             var storedDocuments = new[] { @event.AddressPersistentLocalId }.Concat(@event.BoxNumberPersistentLocalIds)
@@ -1007,7 +1179,7 @@
             var eventMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey,  _fixture.Create<long>() }
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
             };
 
             var storedDocuments = new[] { @event.AddressPersistentLocalId }.Concat(@event.BoxNumberPersistentLocalIds)
@@ -1045,6 +1217,353 @@
                             ),
                             It.IsAny<CancellationToken>()));
                     }
+
+                    return Task.CompletedTask;
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressBoxNumberWasCorrectedV2()
+        {
+            var @event = _fixture.Create<AddressBoxNumberWasCorrectedV2>();
+            var eventMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
+            };
+
+            var storedDocuments = new[] { @event.AddressPersistentLocalId }
+                .Select(x =>
+                {
+                    var document = _fixture.Create<AddressSearchDocument>();
+                    document.AddressPersistentLocalId = x;
+                    return document;
+                })
+                .ToArray();
+
+            _elasticSearchClient
+                .Setup(x => x.GetDocuments(It.IsAny<IEnumerable<int>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(storedDocuments);
+
+            await _sut
+                .Given(new Envelope<AddressBoxNumberWasCorrectedV2>(new Envelope(@event, eventMetadata)))
+                .Then(_ =>
+                {
+                    _elasticSearchClient.Verify(x => x.UpdateDocument(
+                        It.Is<AddressSearchDocument>(doc =>
+                            doc.AddressPersistentLocalId == @event.AddressPersistentLocalId
+                            && doc.BoxNumber == @event.BoxNumber
+                            && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
+                        ),
+                        It.IsAny<CancellationToken>()));
+
+                    return Task.CompletedTask;
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressPositionWasChanged()
+        {
+            var expectedPosition = GeometryHelpers.ExampleExtendedWkb;
+            var expectedPoint = (Point)WKBReaderFactory.Create().Read(expectedPosition);
+            var pointAsWgs84 = CoordinateTransformer.FromLambert72ToWgs84(expectedPoint);
+            var @event = _fixture.Create<AddressPositionWasChanged>()
+                .WithExtendedWkbGeometry(new ExtendedWkbGeometry(expectedPosition));
+            var eventMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
+            };
+
+            await _sut
+                .Given(new Envelope<AddressPositionWasChanged>(new Envelope(@event, eventMetadata)))
+                .Then(_ =>
+                {
+                    _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
+                        @event.AddressPersistentLocalId,
+                        It.Is<AddressSearchPartialDocument>(doc =>
+                            doc.AddressPosition!.GeometryMethod == @event.GeometryMethod
+                            && doc.AddressPosition.GeometrySpecification == @event.GeometrySpecification
+                            && doc.AddressPosition.GeometryAsWkt == expectedPoint.AsText()
+                            && doc.AddressPosition.GeometryAsWgs84 ==
+                            string.Format(CultureInfo.InvariantCulture, "{0}, {1}", pointAsWgs84.X, pointAsWgs84.Y)
+                            && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
+                            && doc.OfficiallyAssigned == null
+                            && doc.Status == null
+                            && doc.Active == null
+                        ),
+                        It.IsAny<CancellationToken>()));
+
+                    return Task.CompletedTask;
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressPositionWasCorrectedV2()
+        {
+            var expectedPosition = GeometryHelpers.ExampleExtendedWkb;
+            var expectedPoint = (Point)WKBReaderFactory.Create().Read(expectedPosition);
+            var pointAsWgs84 = CoordinateTransformer.FromLambert72ToWgs84(expectedPoint);
+            var @event = _fixture.Create<AddressPositionWasCorrectedV2>()
+                .WithExtendedWkbGeometry(new ExtendedWkbGeometry(expectedPosition));
+            var eventMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
+            };
+
+            await _sut
+                .Given(new Envelope<AddressPositionWasCorrectedV2>(new Envelope(@event, eventMetadata)))
+                .Then(_ =>
+                {
+                    _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
+                        @event.AddressPersistentLocalId,
+                        It.Is<AddressSearchPartialDocument>(doc =>
+                            doc.AddressPosition!.GeometryMethod == @event.GeometryMethod
+                            && doc.AddressPosition.GeometrySpecification == @event.GeometrySpecification
+                            && doc.AddressPosition.GeometryAsWkt == expectedPoint.AsText()
+                            && doc.AddressPosition.GeometryAsWgs84 ==
+                            string.Format(CultureInfo.InvariantCulture, "{0}, {1}", pointAsWgs84.X, pointAsWgs84.Y)
+                            && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
+                            && doc.OfficiallyAssigned == null
+                            && doc.Status == null
+                            && doc.Active == null
+                        ),
+                        It.IsAny<CancellationToken>()));
+
+                    return Task.CompletedTask;
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressHouseNumberWasReaddressed()
+        {
+            _fixture.Customize(new WithFixedPostalCode());
+
+            var expectedPosition = GeometryHelpers.ExampleExtendedWkb;
+            var expectedPoint = (Point)WKBReaderFactory.Create().Read(expectedPosition);
+            var pointAsWgs84 = CoordinateTransformer.FromLambert72ToWgs84(expectedPoint);
+            var @event = _fixture.Create<AddressHouseNumberWasReaddressed>()
+                .WithExtendedWkbGeometry(new ExtendedWkbGeometry(expectedPosition));
+
+            var eventMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
+            };
+
+            var storedDocuments = new[] { @event.AddressPersistentLocalId }.Concat(
+                    @event.ReaddressedBoxNumbers.Select(x => x.DestinationAddressPersistentLocalId))
+                .Select(x =>
+                {
+                    var document = _fixture.Create<AddressSearchDocument>();
+                    document.AddressPersistentLocalId = x;
+                    return document;
+                })
+                .ToArray();
+
+            var postalInfoPostalName = new PostalInfoPostalName("9030", PostalLanguage.Dutch, "Mariakerke");
+            var postalLatestItem = new PostalLatestItem
+            {
+                PostalCode = _fixture.Create<PostalCode>(),
+                PostalNames = new List<PostalInfoPostalName>
+                {
+                    postalInfoPostalName
+                }
+            };
+            _postalConsumerContext.PostalLatestItems.Add(postalLatestItem);
+            await _postalConsumerContext.SaveChangesAsync();
+
+            _elasticSearchClient
+                .Setup(x => x.GetDocuments(It.IsAny<IEnumerable<int>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(storedDocuments);
+
+            await _sut
+                .Given(new Envelope<AddressHouseNumberWasReaddressed>(new Envelope(@event, eventMetadata)))
+                .Then(_ =>
+                {
+                    _elasticSearchClient.Verify(x => x.UpdateDocument(
+                        It.Is<AddressSearchDocument>(doc =>
+                            doc.AddressPersistentLocalId == @event.AddressPersistentLocalId
+                            && doc.HouseNumber == @event.ReaddressedHouseNumber.DestinationHouseNumber
+                            && doc.PostalInfo!.PostalCode == postalLatestItem.PostalCode
+                            && doc.PostalInfo.Names.Length == 1
+                            && doc.Status == @event.ReaddressedHouseNumber.SourceStatus
+                            && doc.OfficiallyAssigned == @event.ReaddressedHouseNumber.SourceIsOfficiallyAssigned
+                            && doc.AddressPosition.GeometryMethod == @event.ReaddressedHouseNumber.SourceGeometryMethod
+                            && doc.AddressPosition.GeometrySpecification == @event.ReaddressedHouseNumber.SourceGeometrySpecification
+                            && doc.AddressPosition.GeometryAsWkt == expectedPoint.AsText()
+                            && doc.AddressPosition.GeometryAsWgs84 ==
+                            string.Format(CultureInfo.InvariantCulture, "{0}, {1}", pointAsWgs84.X, pointAsWgs84.Y)
+                            && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
+                        ),
+                        It.IsAny<CancellationToken>()));
+
+                    foreach (var boxNumberAddress in @event.ReaddressedBoxNumbers)
+                    {
+                        _elasticSearchClient.Verify(x => x.UpdateDocument(
+                            It.Is<AddressSearchDocument>(doc =>
+                                doc.AddressPersistentLocalId == boxNumberAddress.DestinationAddressPersistentLocalId
+                                && doc.HouseNumber == boxNumberAddress.DestinationHouseNumber
+                                && doc.BoxNumber == boxNumberAddress.SourceBoxNumber
+                                && doc.PostalInfo!.PostalCode == postalLatestItem.PostalCode
+                                && doc.PostalInfo.Names.Length == 1
+                                && doc.Status == boxNumberAddress.SourceStatus
+                                && doc.OfficiallyAssigned == boxNumberAddress.SourceIsOfficiallyAssigned
+                                && doc.AddressPosition.GeometryMethod == boxNumberAddress.SourceGeometryMethod
+                                && doc.AddressPosition.GeometrySpecification == boxNumberAddress.SourceGeometrySpecification
+                                && doc.AddressPosition.GeometryAsWkt == expectedPoint.AsText()
+                                && doc.AddressPosition.GeometryAsWgs84 ==
+                                string.Format(CultureInfo.InvariantCulture, "{0}, {1}", pointAsWgs84.X, pointAsWgs84.Y)
+                                && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
+                            ),
+                            It.IsAny<CancellationToken>()));
+                    }
+
+                    return Task.CompletedTask;
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressWasRemovedV2()
+        {
+            var @event = _fixture.Create<AddressWasRemovedV2>();
+            var eventMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
+            };
+
+            await _sut
+                .Given(new Envelope<AddressWasRemovedV2>(new Envelope(@event, eventMetadata)))
+                .Then(_ =>
+                {
+                    _elasticSearchClient.Verify(x => x.DeleteDocument(
+                        @event.AddressPersistentLocalId,
+                        It.IsAny<CancellationToken>()));
+
+                    return Task.CompletedTask;
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressWasRemovedBecauseHouseNumberWasRemoved()
+        {
+            var @event = _fixture.Create<AddressWasRemovedBecauseHouseNumberWasRemoved>();
+            var eventMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
+            };
+
+            await _sut
+                .Given(new Envelope<AddressWasRemovedBecauseHouseNumberWasRemoved>(new Envelope(@event, eventMetadata)))
+                .Then(_ =>
+                {
+                    _elasticSearchClient.Verify(x => x.DeleteDocument(
+                        @event.AddressPersistentLocalId,
+                        It.IsAny<CancellationToken>()));
+
+                    return Task.CompletedTask;
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressWasRemovedBecauseStreetNameWasRemoved()
+        {
+            var @event = _fixture.Create<AddressWasRemovedBecauseStreetNameWasRemoved>();
+            var eventMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
+            };
+
+            await _sut
+                .Given(new Envelope<AddressWasRemovedBecauseStreetNameWasRemoved>(new Envelope(@event, eventMetadata)))
+                .Then(_ =>
+                {
+                    _elasticSearchClient.Verify(x => x.DeleteDocument(
+                        @event.AddressPersistentLocalId,
+                        It.IsAny<CancellationToken>()));
+
+                    return Task.CompletedTask;
+                });
+        }
+
+        [Fact]
+        public async Task WhenAddressRemovalWasCorrected()
+        {
+            var expectedPosition = GeometryHelpers.ExampleExtendedWkb;
+            var expectedPoint = (Point)WKBReaderFactory.Create().Read(expectedPosition);
+            var pointAsWgs84 = CoordinateTransformer.FromLambert72ToWgs84(expectedPoint);
+            var @event = _fixture.Create<AddressRemovalWasCorrected>()
+                .WithGeometry(new ExtendedWkbGeometry(expectedPosition));
+            var eventMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
+            };
+
+            var streetNameLatestItem = new StreetNameLatestItem
+            {
+                PersistentLocalId = @event.StreetNamePersistentLocalId,
+                NisCode = "44021",
+                NameDutch = "Bosstraat",
+                NameFrench = "Rue Forestière",
+                HomonymAdditionDutch = "MA",
+                HomonymAdditionFrench = "AM"
+            };
+            _streetNameConsumerContext.StreetNameLatestItems.Add(streetNameLatestItem);
+            await _streetNameConsumerContext.SaveChangesAsync();
+
+            var municipalityLatestItem = new MunicipalityLatestItem
+            {
+                NisCode = streetNameLatestItem.NisCode,
+                NameDutch = "Gent",
+                NameFrench = "Gand"
+            };
+            _municipalityContext.MunicipalityLatestItems.Add(municipalityLatestItem);
+            await _municipalityContext.SaveChangesAsync();
+
+            var postalInfoPostalName = new PostalInfoPostalName("9030", PostalLanguage.Dutch, "Mariakerke");
+            _postalConsumerContext.PostalLatestItems.Add(new PostalLatestItem
+            {
+                PostalCode = @event.PostalCode!,
+                PostalNames = new List<PostalInfoPostalName>
+                {
+                    postalInfoPostalName
+                }
+            });
+            await _postalConsumerContext.SaveChangesAsync();
+
+            await _sut
+                .Given(new Envelope<AddressRemovalWasCorrected>(new Envelope(@event, eventMetadata)))
+                .Then(_ =>
+                {
+                    _elasticSearchClient.Verify(x => x.CreateDocument(
+                        It.Is<AddressSearchDocument>(doc =>
+                            doc.AddressPersistentLocalId == @event.AddressPersistentLocalId
+                            && doc.ParentAddressPersistentLocalId == @event.ParentPersistentLocalId
+                            && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
+                            && doc.Status == @event.Status
+                            && doc.OfficiallyAssigned == @event.OfficiallyAssigned
+                            && doc.HouseNumber == @event.HouseNumber
+                            && doc.BoxNumber == @event.BoxNumber
+                            && doc.Municipality.NisCode == municipalityLatestItem.NisCode
+                            && doc.Municipality.Names.Length == 2
+                            && doc.PostalInfo!.PostalCode == postalInfoPostalName.PostalCode
+                            && doc.PostalInfo.Names.Length == 1
+                            && doc.StreetName.StreetNamePersistentLocalId == @event.StreetNamePersistentLocalId
+                            && doc.StreetName.Names.Length == 2
+                            && doc.StreetName.HomonymAdditions.Length == 2
+                            && doc.FullAddress.Length == 2
+                            && doc.AddressPosition.GeometryMethod == @event.GeometryMethod
+                            && doc.AddressPosition.GeometrySpecification == @event.GeometrySpecification
+                            && doc.AddressPosition.GeometryAsWkt == expectedPoint.AsText()
+                            && doc.AddressPosition.GeometryAsWgs84 ==
+                            string.Format(CultureInfo.InvariantCulture, "{0}, {1}", pointAsWgs84.X, pointAsWgs84.Y)
+                        ),
+                        It.IsAny<CancellationToken>()));
 
                     return Task.CompletedTask;
                 });

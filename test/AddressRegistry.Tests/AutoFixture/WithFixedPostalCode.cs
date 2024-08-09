@@ -16,6 +16,12 @@ namespace AddressRegistry.Tests.AutoFixture
                     new ParameterSpecification(
                         typeof(string),
                         "postalCode")));
+            fixture.Customizations.Add(
+                new FilteringSpecimenBuilder(
+                    new FixedBuilder(postalCodeAsString),
+                    new ParameterSpecification(
+                        typeof(string),
+                        "sourcePostalCode")));
         }
     }
 }

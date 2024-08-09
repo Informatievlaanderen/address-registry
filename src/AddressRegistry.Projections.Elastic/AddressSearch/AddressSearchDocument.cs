@@ -84,7 +84,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
         {
             if (string.IsNullOrWhiteSpace(boxNumber))
             {
-                return $"{streetName} {houseNumber}, {postalCode} {municipality}";
+                return $"{streetName} {houseNumber}, {postalCode} {municipality}".Replace("  ", " ");
             }
 
             var bus = language switch
@@ -96,7 +96,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
                 _ => throw new ArgumentOutOfRangeException()
             };
 
-            return $"{streetName} {houseNumber} {bus} {boxNumber}, {postalCode} {municipality}";
+            return $"{streetName} {houseNumber} {bus} {boxNumber}, {postalCode} {municipality}".Replace("  ", " ");
         }
     }
 

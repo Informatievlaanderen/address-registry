@@ -6,8 +6,6 @@
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using NodaTime;
 
-    //TODO-rik add test to ensure properties are the same as in AddressSearchDocument
-    //TODO-rik add test to ensure only filled in properties are serialized
     public class AddressSearchPartialDocument
     {
         public DateTimeOffset VersionTimestamp { get; set; }

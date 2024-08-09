@@ -1,3 +1,10 @@
+# [4.12.0](https://github.com/informatievlaanderen/address-registry/compare/v4.11.3...v4.12.0) (2024-08-09)
+
+
+### Features
+
+* elastic projections ([#1209](https://github.com/informatievlaanderen/address-registry/issues/1209)) ([7cdb160](https://github.com/informatievlaanderen/address-registry/commit/7cdb1606dcdee70b880db8081c99475cb9fafc1f))
+
 ## [4.11.3](https://github.com/informatievlaanderen/address-registry/compare/v4.11.2...v4.11.3) (2024-07-30)
 
 

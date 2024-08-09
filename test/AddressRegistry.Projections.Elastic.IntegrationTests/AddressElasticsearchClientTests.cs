@@ -97,7 +97,7 @@ namespace AddressRegistry.Projections.Elastic.IntegrationTests
             actualDocument.Status.Should().Be(documentUpdate.Status);
             actualDocument.Active.Should().Be(documentUpdate.Active!.Value);
             actualDocument.OfficiallyAssigned.Should().Be(documentUpdate.OfficiallyAssigned!.Value);
-            actualDocument.AddressPosition.Should().Be(documentUpdate.AddressPosition);
+            actualDocument.AddressPosition.Should().BeEquivalentTo(documentUpdate.AddressPosition);
             actualDocument.VersionTimestamp.Should().Be(documentUpdate.VersionTimestamp);
         }
 

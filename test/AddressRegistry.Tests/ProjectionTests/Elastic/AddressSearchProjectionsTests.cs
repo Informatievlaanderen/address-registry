@@ -1568,5 +1568,265 @@
                     return Task.CompletedTask;
                 });
         }
+
+        [Fact]
+        public async Task WhenStreetNameNamesWereChanged()
+        {
+            var @event = _fixture.Create<StreetNameNamesWereChanged>();
+            var eventMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
+            };
+
+            var storedDocuments = @event.AddressPersistentLocalIds
+                .Select(x =>
+                {
+                    var document = _fixture.Create<AddressSearchDocument>();
+                    document.AddressPersistentLocalId = x;
+                    document.VersionTimestamp = _fixture.Create<DateTimeOffset>();
+                    return document;
+                })
+                .ToArray();
+
+            _elasticSearchClient
+                .Setup(x => x.GetDocuments(It.IsAny<IEnumerable<int>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(storedDocuments);
+
+            var streetNameLatestItem = new StreetNameLatestItem
+            {
+                PersistentLocalId = @event.StreetNamePersistentLocalId,
+                NisCode = "44021",
+                NameDutch = "Bosstraat",
+                NameFrench = "Rue Forestière",
+                HomonymAdditionDutch = "MA",
+                HomonymAdditionFrench = "AM"
+            };
+            _streetNameConsumerContext.StreetNameLatestItems.Add(streetNameLatestItem);
+            await _streetNameConsumerContext.SaveChangesAsync();
+
+            await _sut
+                .Given(new Envelope<StreetNameNamesWereChanged>(new Envelope(@event, eventMetadata)))
+                .Then(_ =>
+                {
+                    foreach (var addressPersistentLocalId in @event.AddressPersistentLocalIds)
+                    {
+                        var expectedVersionTimeStamp = @event.Provenance.Timestamp.ToBelgianDateTimeOffset();
+                        var storedDocument = storedDocuments.Single(x => x.AddressPersistentLocalId == addressPersistentLocalId);
+                        if (expectedVersionTimeStamp < storedDocument.VersionTimestamp)
+                        {
+                            expectedVersionTimeStamp = storedDocument.VersionTimestamp;
+                        }
+
+                        _elasticSearchClient.Verify(x => x.UpdateDocument(
+                            It.Is<AddressSearchDocument>(doc =>
+                                doc.AddressPersistentLocalId == addressPersistentLocalId
+                                && doc.VersionTimestamp == expectedVersionTimeStamp
+                                && doc.StreetName.StreetNamePersistentLocalId == @event.StreetNamePersistentLocalId
+                                && doc.StreetName.Names.Length == 2
+                                && doc.StreetName.HomonymAdditions.Length == 2
+                                && doc.FullAddress.Length == 2
+                            ),
+                            It.IsAny<CancellationToken>()));
+                    }
+
+                    return Task.CompletedTask;
+                });
+        }
+
+        [Fact]
+        public async Task WhenStreetNameNamesWereCorrected()
+        {
+            var @event = _fixture.Create<StreetNameNamesWereCorrected>();
+            var eventMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
+            };
+
+            var storedDocuments = @event.AddressPersistentLocalIds
+                .Select(x =>
+                {
+                    var document = _fixture.Create<AddressSearchDocument>();
+                    document.AddressPersistentLocalId = x;
+                    document.VersionTimestamp = _fixture.Create<DateTimeOffset>();
+                    return document;
+                })
+                .ToArray();
+
+            _elasticSearchClient
+                .Setup(x => x.GetDocuments(It.IsAny<IEnumerable<int>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(storedDocuments);
+
+            var streetNameLatestItem = new StreetNameLatestItem
+            {
+                PersistentLocalId = @event.StreetNamePersistentLocalId,
+                NisCode = "44021",
+                NameDutch = "Bosstraat",
+                NameFrench = "Rue Forestière",
+                HomonymAdditionDutch = "MA",
+                HomonymAdditionFrench = "AM"
+            };
+            _streetNameConsumerContext.StreetNameLatestItems.Add(streetNameLatestItem);
+            await _streetNameConsumerContext.SaveChangesAsync();
+
+            await _sut
+                .Given(new Envelope<StreetNameNamesWereCorrected>(new Envelope(@event, eventMetadata)))
+                .Then(_ =>
+                {
+                    foreach (var addressPersistentLocalId in @event.AddressPersistentLocalIds)
+                    {
+                        var expectedVersionTimeStamp = @event.Provenance.Timestamp.ToBelgianDateTimeOffset();
+                        var storedDocument = storedDocuments.Single(x => x.AddressPersistentLocalId == addressPersistentLocalId);
+                        if (expectedVersionTimeStamp < storedDocument.VersionTimestamp)
+                        {
+                            expectedVersionTimeStamp = storedDocument.VersionTimestamp;
+                        }
+
+                        _elasticSearchClient.Verify(x => x.UpdateDocument(
+                            It.Is<AddressSearchDocument>(doc =>
+                                doc.AddressPersistentLocalId == addressPersistentLocalId
+                                && doc.VersionTimestamp == expectedVersionTimeStamp
+                                && doc.StreetName.StreetNamePersistentLocalId == @event.StreetNamePersistentLocalId
+                                && doc.StreetName.Names.Length == 2
+                                && doc.StreetName.HomonymAdditions.Length == 2
+                                && doc.FullAddress.Length == 2
+                            ),
+                            It.IsAny<CancellationToken>()));
+                    }
+
+                    return Task.CompletedTask;
+                });
+        }
+
+        [Fact]
+        public async Task WhenStreetNameHomonymAdditionsWereCorrected()
+        {
+            var @event = _fixture.Create<StreetNameHomonymAdditionsWereCorrected>();
+            var eventMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
+            };
+
+            var storedDocuments = @event.AddressPersistentLocalIds
+                .Select(x =>
+                {
+                    var document = _fixture.Create<AddressSearchDocument>();
+                    document.AddressPersistentLocalId = x;
+                    document.VersionTimestamp = _fixture.Create<DateTimeOffset>();
+                    return document;
+                })
+                .ToArray();
+
+            _elasticSearchClient
+                .Setup(x => x.GetDocuments(It.IsAny<IEnumerable<int>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(storedDocuments);
+
+            var streetNameLatestItem = new StreetNameLatestItem
+            {
+                PersistentLocalId = @event.StreetNamePersistentLocalId,
+                NisCode = "44021",
+                NameDutch = "Bosstraat",
+                NameFrench = "Rue Forestière",
+                HomonymAdditionDutch = "MA",
+                HomonymAdditionFrench = "AM"
+            };
+            _streetNameConsumerContext.StreetNameLatestItems.Add(streetNameLatestItem);
+            await _streetNameConsumerContext.SaveChangesAsync();
+
+            await _sut
+                .Given(new Envelope<StreetNameHomonymAdditionsWereCorrected>(new Envelope(@event, eventMetadata)))
+                .Then(_ =>
+                {
+                    foreach (var addressPersistentLocalId in @event.AddressPersistentLocalIds)
+                    {
+                        var expectedVersionTimeStamp = @event.Provenance.Timestamp.ToBelgianDateTimeOffset();
+                        var storedDocument = storedDocuments.Single(x => x.AddressPersistentLocalId == addressPersistentLocalId);
+                        if (expectedVersionTimeStamp < storedDocument.VersionTimestamp)
+                        {
+                            expectedVersionTimeStamp = storedDocument.VersionTimestamp;
+                        }
+
+                        _elasticSearchClient.Verify(x => x.UpdateDocument(
+                            It.Is<AddressSearchDocument>(doc =>
+                                doc.AddressPersistentLocalId == addressPersistentLocalId
+                                && doc.VersionTimestamp == expectedVersionTimeStamp
+                                && doc.StreetName.StreetNamePersistentLocalId == @event.StreetNamePersistentLocalId
+                                && doc.StreetName.Names.Length == 2
+                                && doc.StreetName.HomonymAdditions.Length == 2
+                                && doc.FullAddress.Length == 2
+                            ),
+                            It.IsAny<CancellationToken>()));
+                    }
+
+                    return Task.CompletedTask;
+                });
+        }
+
+        [Fact]
+        public async Task WhenStreetNameHomonymAdditionsWereRemoved()
+        {
+            var @event = _fixture.Create<StreetNameHomonymAdditionsWereRemoved>();
+            var eventMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, _fixture.Create<long>() }
+            };
+
+            var storedDocuments = @event.AddressPersistentLocalIds
+                .Select(x =>
+                {
+                    var document = _fixture.Create<AddressSearchDocument>();
+                    document.AddressPersistentLocalId = x;
+                    document.VersionTimestamp = _fixture.Create<DateTimeOffset>();
+                    return document;
+                })
+                .ToArray();
+
+            _elasticSearchClient
+                .Setup(x => x.GetDocuments(It.IsAny<IEnumerable<int>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(storedDocuments);
+
+            var streetNameLatestItem = new StreetNameLatestItem
+            {
+                PersistentLocalId = @event.StreetNamePersistentLocalId,
+                NisCode = "44021",
+                NameDutch = "Bosstraat",
+                NameFrench = "Rue Forestière",
+                HomonymAdditionDutch = "MA",
+                HomonymAdditionFrench = "AM"
+            };
+            _streetNameConsumerContext.StreetNameLatestItems.Add(streetNameLatestItem);
+            await _streetNameConsumerContext.SaveChangesAsync();
+
+            await _sut
+                .Given(new Envelope<StreetNameHomonymAdditionsWereRemoved>(new Envelope(@event, eventMetadata)))
+                .Then(_ =>
+                {
+                    foreach (var addressPersistentLocalId in @event.AddressPersistentLocalIds)
+                    {
+                        var expectedVersionTimeStamp = @event.Provenance.Timestamp.ToBelgianDateTimeOffset();
+                        var storedDocument = storedDocuments.Single(x => x.AddressPersistentLocalId == addressPersistentLocalId);
+                        if (expectedVersionTimeStamp < storedDocument.VersionTimestamp)
+                        {
+                            expectedVersionTimeStamp = storedDocument.VersionTimestamp;
+                        }
+
+                        _elasticSearchClient.Verify(x => x.UpdateDocument(
+                            It.Is<AddressSearchDocument>(doc =>
+                                doc.AddressPersistentLocalId == addressPersistentLocalId
+                                && doc.VersionTimestamp == expectedVersionTimeStamp
+                                && doc.StreetName.StreetNamePersistentLocalId == @event.StreetNamePersistentLocalId
+                                && doc.StreetName.Names.Length == 2
+                                && doc.StreetName.HomonymAdditions.Length == 2
+                                && doc.FullAddress.Length == 2
+                            ),
+                            It.IsAny<CancellationToken>()));
+                    }
+
+                    return Task.CompletedTask;
+                });
+        }
     }
 }

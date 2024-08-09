@@ -8,6 +8,8 @@ NetTopologySuite
 Moq
 Serilog.Sinks.XUnit
 
+ProjNet
+
 Be.Vlaanderen.Basisregisters.Crab
 
 Be.Vlaanderen.Basisregisters.AggregateSource.Testing.CommandHandling

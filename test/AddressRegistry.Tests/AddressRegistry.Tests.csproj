@@ -11,6 +11,7 @@
     <ProjectReference Include="..\..\src\AddressRegistry.Consumer.Read.Postal\AddressRegistry.Consumer.Read.Postal.csproj" />
     <ProjectReference Include="..\..\src\AddressRegistry.Consumer\AddressRegistry.Consumer.csproj" />
     <ProjectReference Include="..\..\src\AddressRegistry.Projections.BackOffice\AddressRegistry.Projections.BackOffice.csproj" />
+    <ProjectReference Include="..\..\src\AddressRegistry.Projections.Elastic\AddressRegistry.Projections.Elastic.csproj" />
     <ProjectReference Include="..\..\src\AddressRegistry.Projections.Integration\AddressRegistry.Projections.Integration.csproj" />
     <ProjectReference Include="..\..\src\AddressRegistry.Projections.Wfs\AddressRegistry.Projections.Wfs.csproj" />
     <ProjectReference Include="..\..\src\AddressRegistry.Projections.Wms\AddressRegistry.Projections.Wms.csproj" />

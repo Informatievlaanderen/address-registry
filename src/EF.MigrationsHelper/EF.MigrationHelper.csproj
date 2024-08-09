@@ -41,6 +41,7 @@
     <ProjectReference Include="..\AddressRegistry.Consumer.Read.StreetName\AddressRegistry.Consumer.Read.StreetName.csproj" />
     <ProjectReference Include="..\AddressRegistry.Consumer.Read.Postal\AddressRegistry.Consumer.Read.Postal.csproj" />
     <ProjectReference Include="..\AddressRegistry.Snapshot.Verifier\AddressRegistry.Snapshot.Verifier.csproj" />
+    <ProjectReference Include="..\AddressRegistry.Projections.Elastic\AddressRegistry.Projections.Elastic.csproj" />
   </ItemGroup>
 
   <Import Project="..\..\.paket\Paket.Restore.targets" />

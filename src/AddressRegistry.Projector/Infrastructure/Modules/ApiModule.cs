@@ -1,6 +1,9 @@
 namespace AddressRegistry.Projector.Infrastructure.Modules
 {
     using AddressRegistry.Infrastructure;
+    using AddressRegistry.Projections.Elastic;
+    using AddressRegistry.Projections.Elastic.AddressSearch;
+    using AddressRegistry.Projections.Elastic.Infrastructure;
     using AddressRegistry.Projections.Extract;
     using AddressRegistry.Projections.Extract.AddressCrabHouseNumberIdExtract;
     using AddressRegistry.Projections.Extract.AddressCrabSubaddressIdExtract;
@@ -29,7 +32,14 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
     using Be.Vlaanderen.Basisregisters.Projector.Modules;
     using Be.Vlaanderen.Basisregisters.Shaperon;
+    using Consumer.Read.Municipality;
+    using Consumer.Read.Municipality.Infrastructure.Modules;
+    using Consumer.Read.Postal;
+    using Consumer.Read.Postal.Infrastructure.Modules;
+    using Consumer.Read.StreetName;
+    using Consumer.Read.StreetName.Infrastructure.Modules;
     using Microsoft.Data.SqlClient;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -85,6 +95,8 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
             RegisterWmsProjectionsV2(builder);
             if(_configuration.GetSection("Integration").GetValue("Enabled", false))
                 RegisterIntegrationProjections(builder);
+
+            RegisterElasticProjections(builder);
         }
 
         private void RegisterIntegrationProjections(ContainerBuilder builder)
@@ -161,9 +173,6 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .RegisterProjectionMigrator<LegacyContextMigrationFactory>(
                     _configuration,
                     _loggerFactory)
-                // .RegisterProjections<AddressDetailProjectionsV2, LegacyContext>(
-                //     () => new AddressDetailProjectionsV2(),
-                //     ConnectedProjectionSettings.Default) //TODO: remove after february 2024
                 .RegisterProjections<AddressDetailProjectionsV2WithParent, LegacyContext>(
                     () => new AddressDetailProjectionsV2WithParent(),
                     ConnectedProjectionSettings.Default)
@@ -215,6 +224,38 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .RegisterProjections<AddressWmsItemV2Projections, WmsContext>(() =>
                         new AddressWmsItemV2Projections(WKBReaderFactory.CreateForLegacy()),
                     wmsProjectionSettings);
+        }
+
+        private void RegisterElasticProjections(ContainerBuilder builder)
+        {
+            builder
+                .RegisterModule(
+                    new ElasticRunnerModule(
+                        _configuration,
+                        _services,
+                        _loggerFactory))
+                .RegisterModule(new ElasticModule(_configuration))
+                .RegisterModule(new StreetNameConsumerModule(_configuration, _services, _loggerFactory))
+                .RegisterModule(new PostalConsumerModule(_configuration, _services, _loggerFactory))
+                .RegisterModule(new MunicipalityConsumerModule(_configuration, _services, _loggerFactory));
+
+            _services.AddDbContextFactory<StreetNameConsumerContext>();
+            _services.AddDbContextFactory<PostalConsumerContext>();
+            _services.AddDbContextFactory<MunicipalityConsumerContext>();
+
+            builder
+                .RegisterProjectionMigrator<ElasticRunnerContextMigrationFactory>(
+                    _configuration,
+                    _loggerFactory)
+                .RegisterProjections<AddressSearchProjections, ElasticRunnerContext>((c) =>
+                        new AddressSearchProjections(c.Resolve<IAddressElasticsearchClient>(),
+                            c.Resolve<IDbContextFactory<MunicipalityConsumerContext>>(),
+                            c.Resolve<IDbContextFactory<PostalConsumerContext>>(),
+                            c.Resolve<IDbContextFactory<StreetNameConsumerContext>>()),
+                    ConnectedProjectionSettings.Configure(x =>
+                    {
+                        x.ConfigureCatchUpUpdatePositionMessageInterval(1);
+                    }));
         }
     }
 }

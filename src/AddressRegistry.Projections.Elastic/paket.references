@@ -1,0 +1,12 @@
+Be.Vlaanderen.Basisregisters.AggregateSource
+Be.Vlaanderen.Basisregisters.EventHandling
+Be.Vlaanderen.Basisregisters.GrAr.Common
+Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer
+Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac
+
+ProjNet
+
+Elastic.Clients.Elasticsearch
+
+SourceLink.Embed.AllSourceFiles
+SourceLink.Copy.PdbFiles

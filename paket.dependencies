@@ -14,10 +14,13 @@ nuget Datadog.Trace.Bundle 2.49.0
 
 nuget Destructurama.JsonNet 3.0.0
 
+nuget Elastic.Clients.Elasticsearch 8.14.7
+
 nuget MediatR 12.2.0
 nuget MediatR.Contracts 2.0.1
 nuget Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite 8.0.3
 nuget NetTopologySuite 2.5.0
+nuget ProjNet 2.0.0
 
 nuget Microsoft.EntityFrameworkCore.Design 8.0.3
 

@@ -1,0 +1,7 @@
+Microsoft.NET.Test.Sdk
+Microsoft.Extensions.Logging.Abstractions
+xunit
+xunit.runner.visualstudio
+AutoFixture
+FluentAssertions
+Be.Vlaanderen.Basisregisters.DockerUtilities

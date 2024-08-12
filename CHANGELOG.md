@@ -1,3 +1,10 @@
+## [4.12.1](https://github.com/informatievlaanderen/address-registry/compare/v4.12.0...v4.12.1) (2024-08-12)
+
+
+### Bug Fixes
+
+* version bump ([77014c3](https://github.com/informatievlaanderen/address-registry/commit/77014c373d2511f73fec7fc3d5e44249b7e7a24e))
+
 # [4.12.0](https://github.com/informatievlaanderen/address-registry/compare/v4.11.3...v4.12.0) (2024-08-09)
 
 

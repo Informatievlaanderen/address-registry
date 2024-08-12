@@ -164,7 +164,7 @@ The new version 1.2 of the European Union Public Licence (EUPL) is published in 
 * [Be.Vlaanderen.Basisregisters.Projector](https://github.com/Informatievlaanderen/projector) - _Generic projection runner infrastructure._ - [MIT](https://choosealicense.com/licenses/mit/)
 
 ### Flemish Government Libraries
-
+ 
 * [Be.Vlaanderen.Basisregisters.Build.Pipeline](https://github.com/informatievlaanderen/build-pipeline/blob/master/LICENSE) - _Contains generic files for all Basisregisters Vlaanderen pipelines._ - [MIT](https://choosealicense.com/licenses/mit/)
 * [Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events](https://github.com/informatievlaanderen/infrastructure-tests/blob/master/LICENSE) - _Infrastructure unit-tests to validate assemblies._ - [MIT](https://choosealicense.com/licenses/mit/)
 * [Be.Vlaanderen.Basisregisters.Shaperon](https://github.com/Informatievlaanderen/shaperon/blob/master/LICENSE) - _Lightweight dbase and shape record handling._ - [MIT](https://choosealicense.com/licenses/mit/)

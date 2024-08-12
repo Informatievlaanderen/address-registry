@@ -23,8 +23,9 @@
             var elasticOptions = _configuration.GetSection(ConfigurationSectionName);
 
             var clientSettings = new ElasticsearchClientSettings(new Uri(elasticOptions["Uri"]!));
-            if (elasticOptions.GetValue<bool>("EnableDebugInformation"))
+            if (elasticOptions.GetValue<bool>("DebugMode"))
             {
+                clientSettings.EnableDebugMode();
                 clientSettings.DisableDirectStreaming();
             }
 

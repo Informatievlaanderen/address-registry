@@ -1,3 +1,10 @@
+## [4.12.3](https://github.com/informatievlaanderen/address-registry/compare/v4.12.2...v4.12.3) (2024-08-12)
+
+
+### Bug Fixes
+
+* add option to enable elastic debug information ([#1211](https://github.com/informatievlaanderen/address-registry/issues/1211)) ([e6ffbc0](https://github.com/informatievlaanderen/address-registry/commit/e6ffbc0377636003439433b1046f74e1ea98559a))
+
 ## [4.12.2](https://github.com/informatievlaanderen/address-registry/compare/v4.12.1...v4.12.2) (2024-08-12)
 
 

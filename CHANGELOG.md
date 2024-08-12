@@ -1,3 +1,10 @@
+## [4.12.2](https://github.com/informatievlaanderen/address-registry/compare/v4.12.1...v4.12.2) (2024-08-12)
+
+
+### Bug Fixes
+
+* add elastic ServerError to custom exception ([#1210](https://github.com/informatievlaanderen/address-registry/issues/1210)) ([40ed814](https://github.com/informatievlaanderen/address-registry/commit/40ed814e555661589022f8646bd49d1b3b59cdfd))
+
 ## [4.12.1](https://github.com/informatievlaanderen/address-registry/compare/v4.12.0...v4.12.1) (2024-08-12)
 
 

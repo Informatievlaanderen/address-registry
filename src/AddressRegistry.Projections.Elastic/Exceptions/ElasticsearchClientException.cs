@@ -18,8 +18,8 @@
             : base("Failed to project to Elasticsearch", exception)
         { }
 
-        public ElasticsearchClientException(string message, ElasticsearchServerError? serverError)
-            : base($"{message} [ServerError.Status={serverError?.Status}, ServerError.Error={serverError?.Error}]")
+        public ElasticsearchClientException(string message, ElasticsearchServerError? serverError, string debugInformation)
+            : base($"{message} [ServerError.Status={serverError?.Status}, ServerError.Error={serverError?.Error}, DebugInformation={debugInformation}]")
         { }
 
         public ElasticsearchClientException(string message, Exception? inner)

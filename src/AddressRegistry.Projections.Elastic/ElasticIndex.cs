@@ -99,7 +99,7 @@
 
             if (!createResponse.Acknowledged || !createResponse.IsValidResponse)
             {
-                throw new ElasticsearchClientException("Failed to create an index", createResponse.ElasticsearchServerError);
+                throw new ElasticsearchClientException("Failed to create an index", createResponse.ElasticsearchServerError, createResponse.DebugInformation);
             }
         }
 

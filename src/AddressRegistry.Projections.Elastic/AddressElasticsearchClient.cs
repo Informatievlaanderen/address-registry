@@ -36,7 +36,7 @@
 
             if (!response.IsValidResponse)
             {
-                throw new ElasticsearchClientException("Failed trying to create a document", response.ElasticsearchServerError);
+                throw new ElasticsearchClientException("Failed trying to create a document", response.ElasticsearchServerError, response.DebugInformation);
             }
         }
 
@@ -46,7 +46,7 @@
 
             if (!response.IsValidResponse)
             {
-                throw new ElasticsearchClientException("Failed trying to update a document", response.ElasticsearchServerError);
+                throw new ElasticsearchClientException("Failed trying to update a document", response.ElasticsearchServerError, response.DebugInformation);
             }
         }
 
@@ -60,7 +60,7 @@
 
             if (!response.IsValidResponse)
             {
-                throw new ElasticsearchClientException("Failed trying to get documents", response.ElasticsearchServerError);
+                throw new ElasticsearchClientException("Failed trying to get documents", response.ElasticsearchServerError, response.DebugInformation);
             }
 
             var result = new List<AddressSearchDocument>();
@@ -88,7 +88,7 @@
 
             if (!response.IsValidResponse)
             {
-                throw new ElasticsearchClientException("Failed trying to do a partial document update", response.ElasticsearchServerError);
+                throw new ElasticsearchClientException("Failed trying to do a partial document update", response.ElasticsearchServerError, response.DebugInformation);
             }
         }
 
@@ -101,7 +101,7 @@
 
             if (!response.IsValidResponse)
             {
-                throw new ElasticsearchClientException("Failed trying to delete a document", response.ElasticsearchServerError);
+                throw new ElasticsearchClientException("Failed trying to delete a document", response.ElasticsearchServerError, response.DebugInformation);
             }
         }
 

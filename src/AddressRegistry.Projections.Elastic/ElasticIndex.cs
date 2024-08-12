@@ -5,6 +5,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using AddressSearch;
+    using Exceptions;
     using global::Elastic.Clients.Elasticsearch;
     using global::Elastic.Clients.Elasticsearch.IndexManagement;
     using global::Elastic.Clients.Elasticsearch.Mapping;
@@ -98,7 +99,7 @@
 
             if (!createResponse.Acknowledged || !createResponse.IsValidResponse)
             {
-                throw new InvalidOperationException("Failed to create index");
+                throw new ElasticsearchClientException("Failed to create an index", createResponse.ElasticsearchServerError);
             }
         }
 

@@ -38,7 +38,7 @@ namespace AddressRegistry.Consumer.Read.Postal
 
             try
             {
-                await _consumer.ConsumeContinuously(async message =>
+                await _consumer.ConsumeContinuously(async (message, messageContext) =>
                 {
                     _logger.LogInformation("Handling next message");
 
@@ -46,6 +46,7 @@ namespace AddressRegistry.Consumer.Read.Postal
 
                     await latestItemProjector.ProjectAsync(context, message, stoppingToken).ConfigureAwait(false);
 
+                    await context.UpdateProjectionState(typeof(PostalLatestItemConsumer).FullName, messageContext.Offset, stoppingToken);
                     await context.SaveChangesAsync(CancellationToken.None);
                 }, stoppingToken);
             }

@@ -1,3 +1,10 @@
+## [4.12.4](https://github.com/informatievlaanderen/address-registry/compare/v4.12.3...v4.12.4) (2024-08-19)
+
+
+### Bug Fixes
+
+* **elastic:** multidoc when empty should return empty ([6e705a5](https://github.com/informatievlaanderen/address-registry/commit/6e705a52b621d1af1fc05b76a19168abc0c353ce))
+
 ## [4.12.3](https://github.com/informatievlaanderen/address-registry/compare/v4.12.2...v4.12.3) (2024-08-12)
 
 

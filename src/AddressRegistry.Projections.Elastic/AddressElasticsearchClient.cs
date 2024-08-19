@@ -52,10 +52,16 @@
 
         public async Task<ICollection<AddressSearchDocument>> GetDocuments(IEnumerable<int> addressPersistentLocalIds, CancellationToken ct)
         {
+            var persistentLocalIds = addressPersistentLocalIds.ToList();
+            if (persistentLocalIds.Count == 0)
+            {
+                return new List<AddressSearchDocument>();
+            }
+
             var response = await _elasticClient.MultiGetAsync<AddressSearchDocument>(_indexName,
                 configureRequest =>
                 {
-                    configureRequest.Ids(new Ids(addressPersistentLocalIds.Select(x => new Id(x).ToString())));
+                    configureRequest.Ids(new Ids(persistentLocalIds.Select(x => new Id(x).ToString())));
                 }, ct);
 
             if (!response.IsValidResponse)

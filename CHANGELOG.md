@@ -1,3 +1,10 @@
+# [4.13.0](https://github.com/informatievlaanderen/address-registry/compare/v4.12.4...v4.13.0) (2024-08-20)
+
+
+### Features
+
+* **consumer:** add offset as projection state to read consumers ([d25db8c](https://github.com/informatievlaanderen/address-registry/commit/d25db8c45c6ba8773dbfdfb94540d12db350ee51))
+
 ## [4.12.4](https://github.com/informatievlaanderen/address-registry/compare/v4.12.3...v4.12.4) (2024-08-19)
 
 

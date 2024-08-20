@@ -1,12 +1,14 @@
 ﻿namespace AddressRegistry.Projections.Elastic
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using AddressSearch;
     using Exceptions;
     using global::Elastic.Clients.Elasticsearch;
+    using global::Elastic.Clients.Elasticsearch.Analysis;
     using global::Elastic.Clients.Elasticsearch.IndexManagement;
     using global::Elastic.Clients.Elasticsearch.Mapping;
     using Microsoft.Extensions.Configuration;
@@ -14,6 +16,9 @@
 
     public sealed class ElasticIndex
     {
+        public const string AddressSearchNormalizer = "AddressSearchNormalizer";
+        public const string AddressSearchAnalyzer = "AddressSearchAnalyzer";
+
         private readonly ElasticsearchClient _client;
         private readonly string _name;
         private readonly string _alias;
@@ -45,8 +50,6 @@
 
         public async Task CreateIndexIfNotExist(CancellationToken ct)
         {
-            // todo-rik add analyzers/normalizers like in association registry
-
             var indexName = Indices.Index(_name);
             var response = await _client.Indices.ExistsAsync(new ExistsRequest(indexName), ct);
             if (response.Exists)
@@ -54,6 +57,16 @@
 
             var createResponse = await _client.Indices.CreateAsync<AddressSearchDocument>(indexName, c =>
             {
+                c.Settings(x => x.Analysis(a =>
+                    a
+                        .CharFilters(cf => cf
+                            .PatternReplace("dot_replace", prcf => prcf.Pattern("\\.").Replacement(""))
+                            .PatternReplace("underscore_replace", prcf => prcf.Pattern("_").Replacement(" ")))
+                        .TokenFilters(descriptor => AddDutchStopWordsFilter(descriptor))
+                        .Normalizers(descriptor => AddAddressSearchNormalizer(descriptor))
+                        .Analyzers(descriptor => AddAddressSearchAnalyzer(descriptor)))
+                );
+
                 c.Mappings(map => map
                     .Properties(p => p
                             .IntegerNumber(x => x.AddressPersistentLocalId)
@@ -111,12 +124,28 @@
                     {
                         Fields = new Properties
                         {
-                            { "keyword", new KeywordProperty { IgnoreAbove = 256 } }
-                        }
+                            { "keyword", new KeywordProperty { IgnoreAbove = 256, Normalizer = AddressSearchNormalizer } }
+                        },
+                        Analyzer = AddressSearchAnalyzer
                     })
                     .Keyword("language")
                 );
         }
+
+        private static TokenFiltersDescriptor AddDutchStopWordsFilter(TokenFiltersDescriptor tokenFiltersDescriptor)
+            => tokenFiltersDescriptor.Stop("dutch_stop", st => st.Stopwords(new List<string>{ "_dutch_" }));
+
+        private static NormalizersDescriptor AddAddressSearchNormalizer(NormalizersDescriptor normalizersDescriptor) =>
+            normalizersDescriptor.Custom(AddressSearchNormalizer, ca => ca
+                .CharFilter(new[] { "underscore_replace", "dot_replace" })
+                .Filter(new[] { "lowercase", "asciifolding", "trim" }));
+
+        private static AnalyzersDescriptor AddAddressSearchAnalyzer(AnalyzersDescriptor analyzersDescriptor)
+            => analyzersDescriptor.Custom(AddressSearchAnalyzer, ca => ca
+                        .Tokenizer("standard")
+                        .CharFilter(new [] { "underscore_replace", "dot_replace" })
+                        .Filter(new [] { "lowercase", "asciifolding", "dutch_stop" })
+            );
     }
 
     public sealed class ElasticIndexOptions

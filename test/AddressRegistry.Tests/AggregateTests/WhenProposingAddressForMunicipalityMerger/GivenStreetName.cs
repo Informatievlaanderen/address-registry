@@ -387,7 +387,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                     GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                     Fixture.Create<bool>(),
                     oldStreetNamePersistentLocalId,
-                    Fixture.Create<AddressPersistentLocalId>()
+                    new AddressPersistentLocalId(201)
                 )],
                 Fixture.Create<Provenance>());
 

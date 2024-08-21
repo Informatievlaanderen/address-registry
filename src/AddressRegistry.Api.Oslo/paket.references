@@ -4,6 +4,8 @@ Be.Vlaanderen.Basisregisters.Api
 
 DataDog.Trace.Bundle
 
+Elastic.Clients.Elasticsearch
+
 MediatR
 MediatR.Contracts
 

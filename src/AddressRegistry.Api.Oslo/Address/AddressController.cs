@@ -17,6 +17,7 @@ namespace AddressRegistry.Api.Oslo.Address
     using MediatR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Search;
     using Swashbuckle.AspNetCore.Filters;
     using Sync;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
@@ -86,6 +87,29 @@ namespace AddressRegistry.Api.Oslo.Address
 
             Response.AddPaginationResponse(result.Pagination);
             Response.AddSortingResponse(result.Sorting);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Zoek straatnamen / adressen.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <response code="200">Als de opvraging van het totaal aantal gelukt is.</response>
+        /// <response code="500">Als er een interne fout is opgetreden.</response>
+        [HttpGet("totaal-aantal")]
+        [Produces(AcceptTypes.JsonLd)]
+        [ProducesResponseType(typeof(TotaalAantalResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(TotalCountOsloResponseExample))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
+        public async Task<IActionResult> Search(CancellationToken cancellationToken = default)
+        {
+            var filtering = Request.ExtractFilteringRequest<AddressSearchFilter>();
+            var sorting = Request.ExtractSortingRequest();
+            var pagination = new NoPaginationRequest();
+
+            var result = await _mediator.Send(new AddressSearchRequest(filtering, sorting, pagination), cancellationToken);
 
             return Ok(result);
         }

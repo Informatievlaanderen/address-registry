@@ -1,3 +1,10 @@
+# [4.14.0](https://github.com/informatievlaanderen/address-registry/compare/v4.13.0...v4.14.0) (2024-08-21)
+
+
+### Features
+
+* **elastic:** add analyzer and normalizer ([bd1cdf5](https://github.com/informatievlaanderen/address-registry/commit/bd1cdf52b71f33d6a3e8b6079580f44b883bb7dc))
+
 # [4.13.0](https://github.com/informatievlaanderen/address-registry/compare/v4.12.4...v4.13.0) (2024-08-20)
 
 

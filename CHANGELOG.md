@@ -1,3 +1,10 @@
+## [4.14.1](https://github.com/informatievlaanderen/address-registry/compare/v4.14.0...v4.14.1) (2024-08-21)
+
+
+### Bug Fixes
+
+* **elastic:** correct homonymadditions mapping ([61d1377](https://github.com/informatievlaanderen/address-registry/commit/61d13779931a35da7c86e26b7d4fb9ead6829336))
+
 # [4.14.0](https://github.com/informatievlaanderen/address-registry/compare/v4.13.0...v4.14.0) (2024-08-21)
 
 

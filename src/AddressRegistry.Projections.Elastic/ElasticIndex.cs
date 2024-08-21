@@ -103,7 +103,7 @@
                                 .Properties(obj => obj
                                     .IntegerNumber(x => x.StreetName.StreetNamePersistentLocalId)
                                     .Nested("names", ConfigureNames())
-                                    .Nested("homonyms", ConfigureNames())
+                                    .Nested("homonymAdditions", ConfigureNames())
                                 )
                             )
                             .Nested(x => x.FullAddress, ConfigureNames())

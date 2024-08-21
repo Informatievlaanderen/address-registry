@@ -1,5 +1,16 @@
 # Test cases
 
+## Concerning all
+```json
+"filter": [
+  {
+    "term": {
+      "active": true 
+    }
+  }
+]
+```
+
 ## Only characters no spaces
 
 ### Input: `loppem`

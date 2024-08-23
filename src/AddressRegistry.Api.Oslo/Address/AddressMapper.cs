@@ -1,6 +1,8 @@
 namespace AddressRegistry.Api.Oslo.Address
 {
+    using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text;
     using System.Xml;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.SpatialTools.GeometryCoordinates;
@@ -11,6 +13,7 @@ namespace AddressRegistry.Api.Oslo.Address
     using Consumer.Read.StreetName.Projections;
     using NetTopologySuite.Geometries;
     using NetTopologySuite.Utilities;
+    using Projections.Elastic.AddressSearch;
     using Projections.Legacy.AddressListV2;
     using StreetName;
     using AddressStatus = AddressRegistry.Address.AddressStatus;
@@ -19,6 +22,37 @@ namespace AddressRegistry.Api.Oslo.Address
 
     public static class AddressMapper
     {
+        public static VolledigAdres? GetVolledigAdres(AddressSearchDocument addressSearchDocument)
+        {
+            if (string.IsNullOrEmpty(addressSearchDocument.Municipality.NisCode))
+            {
+                return null;
+            }
+
+            var defaultMunicipalityName = addressSearchDocument.Municipality.Names.FirstOrDefault(x => x.Language == Language.nl);
+            if(defaultMunicipalityName == null)
+                defaultMunicipalityName = addressSearchDocument.Municipality.Names.First();
+            return new VolledigAdres(
+                addressSearchDocument.StreetName.Names.FirstOrDefault(x => x.Language == defaultMunicipalityName.Language)?.Spelling ?? addressSearchDocument.StreetName.Names.First().Spelling,
+                addressSearchDocument.HouseNumber,
+                addressSearchDocument.BoxNumber,
+                addressSearchDocument.PostalInfo.PostalCode,
+                defaultMunicipalityName.Spelling,
+                MapElasticLanguageToTaal(defaultMunicipalityName.Language));
+        }
+
+        private static Taal MapElasticLanguageToTaal(Language language)
+        {
+            return language switch
+            {
+                Language.nl => Taal.NL,
+                Language.fr => Taal.FR,
+                Language.de => Taal.DE,
+                Language.en => Taal.EN,
+                _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
+            };
+        }
+
         public static VolledigAdres? GetVolledigAdres(AddressListViewItemV2 addressListViewItem)
         {
             if (string.IsNullOrEmpty(addressListViewItem.NisCode))

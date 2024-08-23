@@ -57,6 +57,8 @@
 
             var createResponse = await _client.Indices.CreateAsync<AddressSearchDocument>(indexName, c =>
             {
+                c.Settings(x => x.MaxResultWindow(1_000_000));
+
                 c.Settings(x => x.Analysis(a =>
                     a
                         .CharFilters(cf => cf

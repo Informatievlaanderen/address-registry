@@ -95,13 +95,13 @@ namespace AddressRegistry.Api.Oslo.Address
         /// Zoek straatnamen / adressen.
         /// </summary>
         /// <param name="cancellationToken"></param>
-        /// <response code="200">Als de opvraging van het totaal aantal gelukt is.</response>
+        /// <response code="200">Als de opvraging van de zoekopdracht gelukt is.</response>
         /// <response code="500">Als er een interne fout is opgetreden.</response>
-        [HttpGet("totaal-aantal")]
+        [HttpGet("zoeken")]
         [Produces(AcceptTypes.JsonLd)]
-        [ProducesResponseType(typeof(TotaalAantalResponse), StatusCodes.Status200OK)]
+        //[ProducesResponseType(typeof(TotaalAantalResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(TotalCountOsloResponseExample))]
+        //[SwaggerResponseExample(StatusCodes.Status200OK, typeof(TotalCountOsloResponseExample))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
         public async Task<IActionResult> Search(CancellationToken cancellationToken = default)
         {

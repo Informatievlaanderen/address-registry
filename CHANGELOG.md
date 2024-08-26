@@ -1,3 +1,11 @@
+# [4.15.0](https://github.com/informatievlaanderen/address-registry/compare/v4.14.1...v4.15.0) (2024-08-26)
+
+
+### Features
+
+* add elastic handler for list addresses ([5fe7b8d](https://github.com/informatievlaanderen/address-registry/commit/5fe7b8ddc76b69ebd3c90958b524d7a7605baa75))
+* add search for streetname ([d222720](https://github.com/informatievlaanderen/address-registry/commit/d222720424c6bff45cc8a27aece82670c0bd8b11))
+
 ## [4.14.1](https://github.com/informatievlaanderen/address-registry/compare/v4.14.0...v4.14.1) (2024-08-21)
 
 

@@ -239,7 +239,7 @@ NUGET
       NodaTime (>= 3.1.11)
     Be.Vlaanderen.Basisregisters.Crab.Autofac (4.0)
       Autofac (>= 8.0)
-    Be.Vlaanderen.Basisregisters.DockerUtilities (2.0)
+    Be.Vlaanderen.Basisregisters.DockerUtilities (3.0)
       Ductus.FluentDocker (>= 2.10.59)
     Be.Vlaanderen.Basisregisters.EventHandling (5.0)
       Be.Vlaanderen.Basisregisters.Converters.TrimString (>= 4.0)

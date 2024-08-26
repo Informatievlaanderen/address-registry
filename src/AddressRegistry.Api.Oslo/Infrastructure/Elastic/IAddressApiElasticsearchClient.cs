@@ -192,64 +192,66 @@
                 {
                     descriptor.Query(query =>
                     {
-                        if (!string.IsNullOrEmpty(streetNameId))
-                            query.Term(t => t
-                                .Field(
-                                    $"{ToCamelCase(nameof(AddressSearchDocument.StreetName))}.{ToCamelCase(nameof(AddressSearchDocument.StreetName.StreetNamePersistentLocalId))}"!)
-                                .Value(streetNameId));
-
-                        var streetNameNames = $"{ToCamelCase(nameof(AddressSearchDocument.StreetName))}.{ToCamelCase(nameof(AddressSearchDocument.StreetName.Names))}";
-                        if (!string.IsNullOrEmpty(streetName))
-                            query.Nested(t => t.Path(streetNameNames!)
-                                .Query(q => q.Term(t2 => t2
-                                    .Field($"{streetNameNames}.{NameSpelling}.{Keyword}"!)
-                                    .Value(streetName))));
-
-                        var streetNameHomonymAdditions = $"{ToCamelCase(nameof(AddressSearchDocument.StreetName))}.{ToCamelCase(nameof(AddressSearchDocument.StreetName.HomonymAdditions))}";
-                        if (!string.IsNullOrEmpty(homonymAddition))
-                            query.Nested(t => t.Path(streetNameHomonymAdditions!)
-                                .Query(q => q.Term(t2 => t2
-                                    .Field(
-                                        $"{streetNameHomonymAdditions}.{NameSpelling}.{Keyword}"!)
-                                    .Value(homonymAddition))));
-
-                        if (!string.IsNullOrEmpty(houseNumber))
-                            query.Term(t => t
-                                .Field($"{ToCamelCase(nameof(AddressSearchDocument.HouseNumber))}"!)
-                                .Value(houseNumber));
-
-                        if (!string.IsNullOrEmpty(boxNumber))
-                            query.Term(t => t
-                                .Field($"{ToCamelCase(nameof(AddressSearchDocument.BoxNumber))}"!)
-                                .Value(boxNumber));
-
-                        if (!string.IsNullOrEmpty(postalCode))
-                            query.Term(t => t
-                                .Field(
-                                    $"{ToCamelCase(nameof(AddressSearchDocument.PostalInfo))}.{ToCamelCase(nameof(AddressSearchDocument.PostalInfo.PostalCode))}"!)
-                                .Value(postalCode));
-
-                        if (!string.IsNullOrEmpty(nisCode))
-                            query.Term(t => t
-                                .Field(
-                                    $"{ToCamelCase(nameof(AddressSearchDocument.Municipality))}.{ToCamelCase(nameof(AddressSearchDocument.Municipality.NisCode))}"!)
-                                .Value(nisCode));
-
-                        var municipalityNames = $"{ToCamelCase(nameof(AddressSearchDocument.Municipality))}.{ToCamelCase(nameof(AddressSearchDocument.Municipality.Names))}";
-                        if (!string.IsNullOrEmpty(municipalityName))
-                            query.Nested(t => t.Path($"{municipalityNames}"!)
-                                .Query(q => q.Term(t2 => t2
-                                    .Field(
-                                        $"{municipalityNames}.{NameSpelling}.{Keyword}"!)
-                                    .Value(municipalityName))));
-
-                        if (!string.IsNullOrEmpty(status) && Enum.TryParse(typeof(AdresStatus), status, true, out var parsedStatus))
+                        query.Bool(b =>
                         {
-                            var addressStatus = StreetNameAddressStatusExtensions.ConvertFromAdresStatus((AdresStatus)parsedStatus);
-                            query.Term(t => t
-                                .Field($"{ToCamelCase(nameof(AddressSearchDocument.Status))}"!)
-                                .Value(Enum.GetName(addressStatus)!));
-                        }
+                            if (!string.IsNullOrEmpty(streetNameId))
+                                b.Must(m => m
+                                    .Term(t => t
+                                        .Field($"{ToCamelCase(nameof(AddressSearchDocument.StreetName))}.{ToCamelCase(nameof(AddressSearchDocument.StreetName.StreetNamePersistentLocalId))}"!)
+                                        .Value(streetNameId)));
+
+                            var streetNameNames = $"{ToCamelCase(nameof(AddressSearchDocument.StreetName))}.{ToCamelCase(nameof(AddressSearchDocument.StreetName.Names))}";
+                            if (!string.IsNullOrEmpty(streetName))
+                                b.Must(m => m.Nested(t => t.Path(streetNameNames!)
+                                    .Query(q => q.Term(t2 => t2
+                                        .Field($"{streetNameNames}.{NameSpelling}.{Keyword}"!)
+                                        .Value(streetName)))));
+
+                            var streetNameHomonymAdditions = $"{ToCamelCase(nameof(AddressSearchDocument.StreetName))}.{ToCamelCase(nameof(AddressSearchDocument.StreetName.HomonymAdditions))}";
+                            if (!string.IsNullOrEmpty(homonymAddition))
+                                b.Must(m => m.Nested(t => t.Path(streetNameHomonymAdditions!)
+                                    .Query(q => q.Term(t2 => t2
+                                        .Field($"{streetNameHomonymAdditions}.{NameSpelling}.{Keyword}"!)
+                                        .Value(homonymAddition)))));
+
+                            if (!string.IsNullOrEmpty(houseNumber))
+                                b.Must(m => m.Term(t => t
+                                    .Field($"{ToCamelCase(nameof(AddressSearchDocument.HouseNumber))}"!)
+                                    .Value(houseNumber)));
+
+                            if (!string.IsNullOrEmpty(boxNumber))
+                                b.Must(m => m.Term(t => t
+                                    .Field($"{ToCamelCase(nameof(AddressSearchDocument.BoxNumber))}"!)
+                                    .Value(boxNumber)));
+
+                            if (!string.IsNullOrEmpty(postalCode))
+                                b.Must(m => m.Term(t => t
+                                    .Field(
+                                        $"{ToCamelCase(nameof(AddressSearchDocument.PostalInfo))}.{ToCamelCase(nameof(AddressSearchDocument.PostalInfo.PostalCode))}"!)
+                                    .Value(postalCode)));
+
+                            if (!string.IsNullOrEmpty(nisCode))
+                                b.Must(m => m.Term(t => t
+                                    .Field(
+                                        $"{ToCamelCase(nameof(AddressSearchDocument.Municipality))}.{ToCamelCase(nameof(AddressSearchDocument.Municipality.NisCode))}"!)
+                                    .Value(nisCode)));
+
+                            var municipalityNames = $"{ToCamelCase(nameof(AddressSearchDocument.Municipality))}.{ToCamelCase(nameof(AddressSearchDocument.Municipality.Names))}";
+                            if (!string.IsNullOrEmpty(municipalityName))
+                                b.Must(m => m.Nested(t => t.Path($"{municipalityNames}"!)
+                                    .Query(q => q.Term(t2 => t2
+                                        .Field($"{municipalityNames}.{NameSpelling}.{Keyword}"!)
+                                        .Value(municipalityName)))));
+
+                            if (!string.IsNullOrEmpty(status) && Enum.TryParse(typeof(AdresStatus), status, true, out var parsedStatus))
+                            {
+                                var addressStatus = StreetNameAddressStatusExtensions.ConvertFromAdresStatus((AdresStatus)parsedStatus);
+                                b.Must(m => m.Term(t => t
+                                    .Field($"{ToCamelCase(nameof(AddressSearchDocument.Status))}"!)
+                                    .Value(Enum.GetName(addressStatus)!)));
+                            }
+                        });
+
                     });
                 }
             });

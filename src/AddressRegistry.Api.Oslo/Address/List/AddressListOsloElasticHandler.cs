@@ -52,7 +52,7 @@
                     address.VersionTimestamp))
                 .ToList();
 
-            var paginationInfo = new PaginationInfo(pagination.Offset, pagination.Limit, true);
+            var paginationInfo = new PaginationInfo(pagination.Offset, pagination.Limit, pagination.Limit > 0);
             return new AddressListOsloResponse
             {
                 Adressen = addressListItemResponsesV2,

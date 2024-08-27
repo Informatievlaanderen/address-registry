@@ -1,8 +1,6 @@
 namespace AddressRegistry.Projector.Infrastructure.Modules
 {
     using AddressRegistry.Infrastructure;
-    using AddressRegistry.Projections.Elastic;
-    using AddressRegistry.Projections.Elastic.AddressSearch;
     using AddressRegistry.Projections.Elastic.Infrastructure;
     using AddressRegistry.Projections.Extract;
     using AddressRegistry.Projections.Extract.AddressCrabHouseNumberIdExtract;
@@ -32,14 +30,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
     using Be.Vlaanderen.Basisregisters.Projector.Modules;
     using Be.Vlaanderen.Basisregisters.Shaperon;
-    using Consumer.Read.Municipality;
-    using Consumer.Read.Municipality.Infrastructure.Modules;
-    using Consumer.Read.Postal;
-    using Consumer.Read.Postal.Infrastructure.Modules;
-    using Consumer.Read.StreetName;
-    using Consumer.Read.StreetName.Infrastructure.Modules;
     using Microsoft.Data.SqlClient;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -233,29 +224,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                     new ElasticRunnerModule(
                         _configuration,
                         _services,
-                        _loggerFactory))
-                .RegisterModule(new ElasticModule(_configuration))
-                .RegisterModule(new StreetNameConsumerModule(_configuration, _services, _loggerFactory))
-                .RegisterModule(new PostalConsumerModule(_configuration, _services, _loggerFactory))
-                .RegisterModule(new MunicipalityConsumerModule(_configuration, _services, _loggerFactory));
-
-            _services.AddDbContextFactory<StreetNameConsumerContext>();
-            _services.AddDbContextFactory<PostalConsumerContext>();
-            _services.AddDbContextFactory<MunicipalityConsumerContext>();
-
-            builder
-                .RegisterProjectionMigrator<ElasticRunnerContextMigrationFactory>(
-                    _configuration,
-                    _loggerFactory)
-                .RegisterProjections<AddressSearchProjections, ElasticRunnerContext>((c) =>
-                        new AddressSearchProjections(c.Resolve<IAddressElasticsearchClient>(),
-                            c.Resolve<IDbContextFactory<MunicipalityConsumerContext>>(),
-                            c.Resolve<IDbContextFactory<PostalConsumerContext>>(),
-                            c.Resolve<IDbContextFactory<StreetNameConsumerContext>>()),
-                    ConnectedProjectionSettings.Configure(x =>
-                    {
-                        x.ConfigureCatchUpUpdatePositionMessageInterval(1);
-                    }));
+                        _loggerFactory));
         }
     }
 }

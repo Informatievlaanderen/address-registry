@@ -30,23 +30,23 @@
             int? size);
     }
 
-    public sealed class AddressApiApiElasticsearchClient : IAddressApiElasticsearchClient
+    public sealed class AddressApiElasticsearchClient : IAddressApiElasticsearchClient
     {
         private const string Keyword = "keyword";
         private static readonly string NameSpelling = $"{ToCamelCase(nameof(Projections.Elastic.AddressSearch.Name.Spelling))}";
 
         private readonly ElasticsearchClient _elasticsearchClient;
         private readonly string _indexAlias;
-        private readonly ILogger<AddressApiApiElasticsearchClient> _logger;
+        private readonly ILogger<AddressApiElasticsearchClient> _logger;
 
-        public AddressApiApiElasticsearchClient(
+        public AddressApiElasticsearchClient(
             ElasticsearchClient elasticsearchClient,
             string indexAlias,
             ILoggerFactory loggerFactory)
         {
             _elasticsearchClient = elasticsearchClient;
             _indexAlias = indexAlias;
-            _logger = loggerFactory.CreateLogger<AddressApiApiElasticsearchClient>();
+            _logger = loggerFactory.CreateLogger<AddressApiElasticsearchClient>();
         }
 
         public async Task<IEnumerable<object>> SearchStreetNames(string query, int size = 10)

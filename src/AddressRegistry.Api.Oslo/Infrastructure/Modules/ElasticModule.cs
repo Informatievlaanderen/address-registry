@@ -52,7 +52,7 @@
 
             builder
                 .Register(c =>
-                    new AddressApiApiElasticsearchClient(
+                    new AddressApiElasticsearchClient(
                         c.Resolve<ElasticsearchClient>(),
                         elasticOptions["IndexAlias"]!,
                         c.Resolve<ILoggerFactory>()

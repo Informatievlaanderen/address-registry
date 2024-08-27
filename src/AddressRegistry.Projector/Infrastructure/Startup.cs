@@ -18,7 +18,6 @@ namespace AddressRegistry.Projector.Infrastructure
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
     using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
     using Configuration;
-    using Elastic.Clients.Elasticsearch;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -103,7 +102,6 @@ namespace AddressRegistry.Projector.Infrastructure
                                     .Where(x => !x.Key.StartsWith("Integration", StringComparison.OrdinalIgnoreCase))
                                     .ToList();
 
-
                             foreach (var connectionString in connectionStrings.Where(x => !x.Value.Contains("host", StringComparison.OrdinalIgnoreCase)))
                             {
                                 health.AddSqlServer(
@@ -136,6 +134,10 @@ namespace AddressRegistry.Projector.Infrastructure
 
                             health.AddDbContextCheck<WmsContext>(
                                 $"dbcontext-{nameof(WmsContext).ToLowerInvariant()}",
+                                tags: new[] {DatabaseTag, "sql", "sqlserver"});
+
+                            health.AddDbContextCheck<ElasticRunnerContext>(
+                                $"dbcontext-{nameof(ElasticRunnerContext).ToLowerInvariant()}",
                                 tags: new[] {DatabaseTag, "sql", "sqlserver"});
                         }
                     }
@@ -204,13 +206,6 @@ namespace AddressRegistry.Projector.Infrastructure
                 var projectionsManager = _applicationContainer.Resolve<IConnectedProjectionsManager>();
                 projectionsManager.Resume(_projectionsCancellationTokenSource.Token);
             });
-
-            var elasticIndex = new ElasticIndex(
-                _applicationContainer.Resolve<ElasticsearchClient>(),
-                _configuration);
-
-            elasticIndex.CreateIndexIfNotExist(_projectionsCancellationTokenSource.Token).GetAwaiter().GetResult();
-            elasticIndex.CreateAliasIfNotExist(_projectionsCancellationTokenSource.Token).GetAwaiter().GetResult();
         }
 
         private static string GetApiLeadingText(ApiVersionDescription description)

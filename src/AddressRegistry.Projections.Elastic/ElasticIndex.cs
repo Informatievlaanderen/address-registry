@@ -77,8 +77,10 @@
                             .Keyword(x => x.Status)
                             .Boolean(x => x.Active)
                             .Boolean(x => x.OfficiallyAssigned)
-                            .Keyword(x => x.HouseNumber)
-                            .Keyword(x => x.BoxNumber)
+                            .Keyword(x => x.HouseNumber, c =>
+                                c.Normalizer(AddressSearchNormalizer))
+                            .Keyword(x => x.BoxNumber, c =>
+                                c.Normalizer(AddressSearchNormalizer))
                             .Object(x => x.AddressPosition, objConfig => objConfig
                                 .Properties(obj => obj
                                     .Text(x => x.AddressPosition.GeometryAsWkt)

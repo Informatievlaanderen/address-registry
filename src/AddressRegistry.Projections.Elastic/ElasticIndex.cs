@@ -57,7 +57,7 @@
 
             var createResponse = await _client.Indices.CreateAsync<AddressSearchDocument>(indexName, c =>
             {
-                c.Settings(x => x.MaxResultWindow(1_001_000));
+                c.Settings(x => x.MaxResultWindow(1_000_001)); // Linked to public-api offset limit of 1_000_000
 
                 c.Settings(x => x.Analysis(a =>
                     a

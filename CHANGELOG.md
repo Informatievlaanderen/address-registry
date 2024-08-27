@@ -1,3 +1,10 @@
+## [4.15.1](https://github.com/informatievlaanderen/address-registry/compare/v4.15.0...v4.15.1) (2024-08-27)
+
+
+### Bug Fixes
+
+* elastic list address fixes ([#1217](https://github.com/informatievlaanderen/address-registry/issues/1217)) ([b85523e](https://github.com/informatievlaanderen/address-registry/commit/b85523ee505825a26327bbc29ff46bc42839314c))
+
 # [4.15.0](https://github.com/informatievlaanderen/address-registry/compare/v4.14.1...v4.15.0) (2024-08-26)
 
 

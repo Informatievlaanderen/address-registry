@@ -137,6 +137,10 @@ namespace AddressRegistry.Projector.Infrastructure
                             health.AddDbContextCheck<WmsContext>(
                                 $"dbcontext-{nameof(WmsContext).ToLowerInvariant()}",
                                 tags: new[] {DatabaseTag, "sql", "sqlserver"});
+
+                            health.AddDbContextCheck<ElasticRunnerContext>(
+                                $"dbcontext-{nameof(ElasticRunnerContext).ToLowerInvariant()}",
+                                tags: new[] {DatabaseTag, "sql", "sqlserver"});
                         }
                     }
                 })

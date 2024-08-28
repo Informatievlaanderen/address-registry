@@ -36,7 +36,7 @@ namespace AddressRegistry.Api.Oslo.Address
                 addressSearchDocument.StreetName.Names.FirstOrDefault(x => x.Language == defaultMunicipalityName.Language)?.Spelling ?? addressSearchDocument.StreetName.Names.First().Spelling,
                 addressSearchDocument.HouseNumber,
                 addressSearchDocument.BoxNumber,
-                addressSearchDocument.PostalInfo.PostalCode,
+                addressSearchDocument.PostalInfo?.PostalCode,
                 defaultMunicipalityName.Spelling,
                 MapElasticLanguageToTaal(defaultMunicipalityName.Language));
         }

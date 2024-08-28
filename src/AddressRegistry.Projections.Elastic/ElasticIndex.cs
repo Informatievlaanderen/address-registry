@@ -17,6 +17,7 @@
     public sealed class ElasticIndex
     {
         public const string AddressSearchNormalizer = "AddressSearchNormalizer";
+        public const string TextNumberNormalizer = "TextNumberNormalizer";
         public const string AddressSearchAnalyzer = "AddressSearchAnalyzer";
 
         private readonly ElasticsearchClient _client;
@@ -57,7 +58,7 @@
 
             var createResponse = await _client.Indices.CreateAsync<AddressSearchDocument>(indexName, c =>
             {
-                c.Settings(x => x.MaxResultWindow(1_000_001)); // Linked to public-api offset limit of 1_000_000
+                c.Settings(x => x.MaxResultWindow(1_000_500)); // Linked to public-api offset of 1_000_000 + limit of 500
 
                 c.Settings(x => x.Analysis(a =>
                     a
@@ -65,7 +66,11 @@
                             .PatternReplace("dot_replace", prcf => prcf.Pattern("\\.").Replacement(""))
                             .PatternReplace("underscore_replace", prcf => prcf.Pattern("_").Replacement(" ")))
                         .TokenFilters(descriptor => AddDutchStopWordsFilter(descriptor))
-                        .Normalizers(descriptor => AddAddressSearchNormalizer(descriptor))
+                        .Normalizers(descriptor =>
+                        {
+                            AddAddressSearchNormalizer(descriptor);
+                            AddTextNumberNormalizer(descriptor);
+                        })
                         .Analyzers(descriptor => AddAddressSearchAnalyzer(descriptor)))
                 );
 
@@ -78,9 +83,9 @@
                             .Boolean(x => x.Active)
                             .Boolean(x => x.OfficiallyAssigned)
                             .Keyword(x => x.HouseNumber, c =>
-                                c.Normalizer(AddressSearchNormalizer))
+                                c.Normalizer(TextNumberNormalizer))
                             .Keyword(x => x.BoxNumber, c =>
-                                c.Normalizer(AddressSearchNormalizer))
+                                c.Normalizer(TextNumberNormalizer))
                             .Object(x => x.AddressPosition, objConfig => objConfig
                                 .Properties(obj => obj
                                     .Text(x => x.AddressPosition.GeometryAsWkt)
@@ -142,6 +147,10 @@
         private static NormalizersDescriptor AddAddressSearchNormalizer(NormalizersDescriptor normalizersDescriptor) =>
             normalizersDescriptor.Custom(AddressSearchNormalizer, ca => ca
                 .CharFilter(new[] { "underscore_replace", "dot_replace" })
+                .Filter(new[] { "lowercase", "asciifolding", "trim" }));
+
+        private static NormalizersDescriptor AddTextNumberNormalizer(NormalizersDescriptor normalizersDescriptor) =>
+            normalizersDescriptor.Custom(TextNumberNormalizer, ca => ca
                 .Filter(new[] { "lowercase", "asciifolding", "trim" }));
 
         private static AnalyzersDescriptor AddAddressSearchAnalyzer(AnalyzersDescriptor analyzersDescriptor)

@@ -42,9 +42,12 @@ jobs:
       shell: bash
       run: |
         dotnet build --nologo --no-restore --no-incremental --configuration Debug AddressRegistry.sln
+
     - name: Test
       shell: bash
-      run: dotnet test --nologo --no-build --filter 'FullyQualifiedName~IntegrationTests' AddressRegistry.sln
+      run: |
+        ln -s /usr/libexec/docker/cli-plugins/docker-compose /usr/local/bin/docker-compose
+        dotnet test --nologo --no-build --filter 'FullyQualifiedName~IntegrationTests' AddressRegistry.sln
       env:
         OAuth2IntrospectionOptions__ClientId: ${{ secrets.VBR_ACMIDM_INTROSPECTION_CLIENT_ID_TST }}
         OAuth2IntrospectionOptions__ClientSecret: ${{ secrets.VBR_ACMIDM_INTROSPECTION_CLIENT_SECRET_TST }}

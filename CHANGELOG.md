@@ -1,3 +1,10 @@
+## [4.15.3](https://github.com/informatievlaanderen/address-registry/compare/v4.15.2...v4.15.3) (2024-08-28)
+
+
+### Bug Fixes
+
+* **oslo:** elasticsearch list query ([d1611a7](https://github.com/informatievlaanderen/address-registry/commit/d1611a7723df5dcff9e835e4713371a28d53b4cc))
+
 ## [4.15.2](https://github.com/informatievlaanderen/address-registry/compare/v4.15.1...v4.15.2) (2024-08-28)
 
 

@@ -1,3 +1,12 @@
+## [4.15.2](https://github.com/informatievlaanderen/address-registry/compare/v4.15.1...v4.15.2) (2024-08-28)
+
+
+### Bug Fixes
+
+* add elastic to dbcontext healthcheck ([295d158](https://github.com/informatievlaanderen/address-registry/commit/295d158fe6a44f1b5fa2fced2675c2f706a3e5ad))
+* elastic query multiple conditions ([0685b5e](https://github.com/informatievlaanderen/address-registry/commit/0685b5eb0e347156d23111ed7801329445e6632e))
+* fix integration tests ([f0b3601](https://github.com/informatievlaanderen/address-registry/commit/f0b3601bdc4c39890ba530f7e4b6fe2a76a06785))
+
 ## [4.15.1](https://github.com/informatievlaanderen/address-registry/compare/v4.15.0...v4.15.1) (2024-08-27)
 
 

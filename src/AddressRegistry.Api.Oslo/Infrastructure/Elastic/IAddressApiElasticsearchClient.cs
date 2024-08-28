@@ -173,6 +173,11 @@
             int? from,
             int? size)
         {
+            if (!string.IsNullOrEmpty(status) & !Enum.TryParse(typeof(AdresStatus), status, true, out var parsedStatus))
+            {
+                return new AddressSearchResult(Enumerable.Empty<AddressSearchDocument>().AsQueryable(), 0);
+            }
+
             var searchResponse = await _elasticsearchClient.SearchAsync<AddressSearchDocument>(_indexAlias, descriptor =>
             {
                 descriptor.Size(size);
@@ -245,9 +250,9 @@
                                         .Field($"{municipalityNames}.{NameSpelling}.{Keyword}"!)
                                         .Value(municipalityName)))));
 
-                            if (!string.IsNullOrEmpty(status) && Enum.TryParse(typeof(AdresStatus), status, true, out var parsedStatus))
+                            if (!string.IsNullOrEmpty(status))
                             {
-                                var addressStatus = StreetNameAddressStatusExtensions.ConvertFromAdresStatus((AdresStatus)parsedStatus);
+                                var addressStatus = ((AdresStatus)parsedStatus!).ConvertFromAdresStatus();
                                 conditions.Add(m => m.Term(t => t
                                     .Field($"{ToCamelCase(nameof(AddressSearchDocument.Status))}"!)
                                     .Value(Enum.GetName(addressStatus)!)));
@@ -255,7 +260,6 @@
 
                             b.Must(conditions.ToArray());
                         });
-
                     });
                 }
             });

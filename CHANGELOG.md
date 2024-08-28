@@ -1,3 +1,10 @@
+## [4.15.4](https://github.com/informatievlaanderen/address-registry/compare/v4.15.3...v4.15.4) (2024-08-28)
+
+
+### Bug Fixes
+
+* elastic index settings (sort+max results) ([fe899a9](https://github.com/informatievlaanderen/address-registry/commit/fe899a953ceb4fe2e468c616f50e7b412e5bc50e))
+
 ## [4.15.3](https://github.com/informatievlaanderen/address-registry/compare/v4.15.2...v4.15.3) (2024-08-28)
 
 

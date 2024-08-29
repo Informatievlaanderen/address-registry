@@ -45,6 +45,14 @@
         [DataMember(Name = "Resultaat", Order = 4)]
         [JsonProperty(Required = Required.DisallowNull)]
         public string Result { get; set; }
+
+        public AddressSearchItem(string id, string objectId, Uri detail, string result)
+        {
+            Id = id;
+            ObjectId = objectId;
+            Detail = detail;
+            Result = result;
+        }
     }
 
     public sealed class AddressSearchFilter

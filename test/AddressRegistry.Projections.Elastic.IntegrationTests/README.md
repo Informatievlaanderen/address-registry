@@ -32,7 +32,7 @@ POST /tst_address_search_2/_search
                   "constant_score": {
                     "filter": {
                       "prefix": {
-                        "streetName.names.spelling": "loppem"
+                        "streetName.names.spelling.keyword": "loppem"
                       }
                     },
                     "boost": 5.0  // High boost for prefix match
@@ -50,18 +50,7 @@ POST /tst_address_search_2/_search
                 }
               ]
             }
-          },
-          "functions": [
-            {
-              "script_score": {
-                "script": {
-                  "source": "Math.max(0, _score - doc['streetName.names.spelling.keyword'].value.length() * 0.2)"
-                }
-              }
-            }
-          ],
-          "boost_mode": "replace",  // Replace the original score with the script score
-          "score_mode": "sum"  // Sum the function scores
+          }          
         }
       }
     }
@@ -78,7 +67,7 @@ POST /tst_address_search_2/_search
               "should": [
                 {
                   "prefix": {
-                    "streetName.names.spelling": "loppem"
+                    "streetName.names.spelling.keyword": "loppem"
                   }
                 },
                 {
@@ -156,7 +145,7 @@ POST /tst_address_search_2/_search
                         "constant_score": {
                           "filter": {
                             "prefix": {
-                              "streetName.names.spelling": "loppem"
+                              "streetName.names.spelling.keyword": "loppem"
                             }
                           },
                           "boost": 5.0
@@ -174,18 +163,7 @@ POST /tst_address_search_2/_search
                       }
                     ]
                   }
-                },
-                "functions": [
-                  {
-                    "script_score": {
-                      "script": {
-                        "source": "Math.max(0, _score - doc['streetName.names.spelling.keyword'].value.length() * 0.1)"
-                      }
-                    }
-                  }
-                ],
-                "boost_mode": "replace",
-                "score_mode": "sum"
+                }                
               }
             }
           }
@@ -200,7 +178,7 @@ POST /tst_address_search_2/_search
                     "constant_score": {
                       "filter": {
                         "prefix": {
-                          "municipality.names.spelling": "zedel"
+                          "municipality.names.spelling.keyword": "zedel"
                         }
                       },
                       "boost": 5.0
@@ -231,7 +209,7 @@ POST /tst_address_search_2/_search
                     "constant_score": {
                       "filter": {
                         "prefix": {
-                          "postalInfo.names.spelling": "zedel"
+                          "postalInfo.names.spelling.keyword": "zedel"
                         }
                       },
                       "boost": 5.0
@@ -264,7 +242,7 @@ POST /tst_address_search_2/_search
                         "constant_score": {
                           "filter": {
                             "prefix": {
-                              "streetName.names.spelling": "loppem zedel"
+                              "streetName.names.spelling.keyword": "loppem zedel"
                             }
                           },
                           "boost": 5.0
@@ -282,18 +260,7 @@ POST /tst_address_search_2/_search
                       }
                     ]
                   }
-                },
-                "functions": [
-                  {
-                    "script_score": {
-                      "script": {
-                        "source": "Math.max(0, _score - doc['streetName.names.spelling.keyword'].value.length() * 0.1)"
-                      }
-                    }
-                  }
-                ],
-                "boost_mode": "replace",
-                "score_mode": "sum"
+                }
               }
             }
           }
@@ -431,7 +398,7 @@ POST /tst_address_search_2/_search
                         "constant_score": {
                           "filter": {
                             "prefix": {
-                              "streetName.names.spelling": "loppem"
+                              "streetName.names.spelling.keyword": "loppem"
                             }
                           },
                           "boost": 5.0  // High boost for prefix match in street name
@@ -449,18 +416,7 @@ POST /tst_address_search_2/_search
                       }
                     ]
                   }
-                },
-                "functions": [
-                  {
-                    "script_score": {
-                      "script": {
-                        "source": "Math.max(0, _score - doc['streetName.names.spelling.keyword'].value.length() * 0.2)"
-                      }
-                    }
-                  }
-                ],
-                "boost_mode": "replace",
-                "score_mode": "sum"
+                }               
               }
             }
           }
@@ -509,7 +465,7 @@ POST /tst_address_search_2/_search
                         "constant_score": {
                           "filter": {
                             "prefix": {
-                              "streetName.names.spelling": "loppem"
+                              "streetName.names.spelling.keyword": "loppem"
                             }
                           },
                           "boost": 5.0  // High boost for prefix match in street name
@@ -527,18 +483,7 @@ POST /tst_address_search_2/_search
                       }
                     ]
                   }
-                },
-                "functions": [
-                  {
-                    "script_score": {
-                      "script": {
-                        "source": "Math.max(0, _score - doc['streetName.names.spelling.keyword'].value.length() * 0.2)"
-                      }
-                    }
-                  }
-                ],
-                "boost_mode": "replace",
-                "score_mode": "sum"
+                }
               }
             }
           }
@@ -582,7 +527,7 @@ POST /tst_address_search_2/_search
                           "constant_score": {
                             "filter": {
                               "prefix": {
-                                "municipality.names.spelling": "zedel"
+                                "municipality.names.spelling.keyword": "zedel"
                               }
                             },
                             "boost": 5.0  // High boost for prefix match in municipality name
@@ -613,7 +558,7 @@ POST /tst_address_search_2/_search
                           "constant_score": {
                             "filter": {
                               "prefix": {
-                                "postalInfo.names.spelling": "zedel"
+                                "postalInfo.names.spelling.keyword": "zedel"
                               }
                             },
                             "boost": 5.0  // High boost for prefix match in postal name
@@ -731,7 +676,7 @@ POST /tst_address_search_2/_search
                         "constant_score": {
                           "filter": {
                             "prefix": {
-                              "streetName.names.spelling": "loppem"
+                              "streetName.names.spelling.keyword": "loppem"
                             }
                           },
                           "boost": 5.0  // High boost for prefix match in street name
@@ -749,18 +694,7 @@ POST /tst_address_search_2/_search
                       }
                     ]
                   }
-                },
-                "functions": [
-                  {
-                    "script_score": {
-                      "script": {
-                        "source": "Math.max(0, _score - doc['streetName.names.spelling.keyword'].value.length() * 0.2)"
-                      }
-                    }
-                  }
-                ],
-                "boost_mode": "replace",
-                "score_mode": "sum"
+                }                
               }
             }
           }
@@ -807,7 +741,7 @@ POST /tst_address_search_2/_search
                         "constant_score": {
                           "filter": {
                             "prefix": {
-                              "streetName.names.spelling": "loppem"
+                              "streetName.names.spelling.keyword": "loppem"
                             }
                           },
                           "boost": 5.0  // High boost for prefix match in street name
@@ -825,18 +759,7 @@ POST /tst_address_search_2/_search
                       }
                     ]
                   }
-                },
-                "functions": [
-                  {
-                    "script_score": {
-                      "script": {
-                        "source": "Math.max(0, _score - doc['streetName.names.spelling.keyword'].value.length() * 0.2)"
-                      }
-                    }
-                  }
-                ],
-                "boost_mode": "replace",
-                "score_mode": "sum"
+                }                
               }
             }
           }
@@ -919,7 +842,7 @@ POST /tst_address_search_2/_search
                         "constant_score": {
                           "filter": {
                             "prefix": {
-                              "streetName.names.spelling": "loppem"
+                              "streetName.names.spelling.keyword": "loppem"
                             }
                           },
                           "boost": 5.0  // High boost for prefix match in street name
@@ -937,18 +860,7 @@ POST /tst_address_search_2/_search
                       }
                     ]
                   }
-                },
-                "functions": [
-                  {
-                    "script_score": {
-                      "script": {
-                        "source": "Math.max(0, _score - doc['streetName.names.spelling.keyword'].value.length() * 0.2)"
-                      }
-                    }
-                  }
-                ],
-                "boost_mode": "replace",
-                "score_mode": "sum"
+                }                
               }
             }
           }
@@ -1057,7 +969,7 @@ POST /tst_address_search_2/_search
                         "constant_score": {
                           "filter": {
                             "prefix": {
-                              "streetName.names.spelling": "loppem"
+                              "streetName.names.spelling.keyword": "loppem"
                             }
                           },
                           "boost": 5.0  // High boost for prefix match in street name
@@ -1075,18 +987,7 @@ POST /tst_address_search_2/_search
                       }
                     ]
                   }
-                },
-                "functions": [
-                  {
-                    "script_score": {
-                      "script": {
-                        "source": "Math.max(0, _score - doc['streetName.names.spelling.keyword'].value.length() * 0.2)"
-                      }
-                    }
-                  }
-                ],
-                "boost_mode": "replace",
-                "score_mode": "sum"
+                }                
               }
             }
           }
@@ -1140,7 +1041,7 @@ POST /tst_address_search_2/_search
                           "constant_score": {
                             "filter": {
                               "prefix": {
-                                "municipality.names.spelling": "zedel"
+                                "municipality.names.spelling.keyword": "zedel"
                               }
                             },
                             "boost": 5.0  // High boost for prefix match in municipality name
@@ -1171,7 +1072,7 @@ POST /tst_address_search_2/_search
                           "constant_score": {
                             "filter": {
                               "prefix": {
-                                "postalInfo.names.spelling": "zedel"
+                                "postalInfo.names.spelling.keyword": "zedel"
                               }
                             },
                             "boost": 5.0  // High boost for prefix match in postal name
@@ -1237,7 +1138,7 @@ POST /tst_address_search_2/_search
                         "constant_score": {
                           "filter": {
                             "prefix": {
-                              "streetName.names.spelling": "loppem"
+                              "streetName.names.spelling.keyword": "loppem"
                             }
                           },
                           "boost": 5.0  // High boost for prefix match in street name
@@ -1255,18 +1156,7 @@ POST /tst_address_search_2/_search
                       }
                     ]
                   }
-                },
-                "functions": [
-                  {
-                    "script_score": {
-                      "script": {
-                        "source": "Math.max(0, _score - doc['streetName.names.spelling.keyword'].value.length() * 0.2)"
-                      }
-                    }
-                  }
-                ],
-                "boost_mode": "replace",
-                "score_mode": "sum"
+                }                
               }
             }
           }
@@ -1346,7 +1236,7 @@ POST /tst_address_search_2/_search
                           "constant_score": {
                             "filter": {
                               "prefix": {
-                                "municipality.names.spelling": "zedel"
+                                "municipality.names.spelling.keyword": "zedel"
                               }
                             },
                             "boost": 5.0  // High boost for prefix match in municipality name
@@ -1377,7 +1267,7 @@ POST /tst_address_search_2/_search
                           "constant_score": {
                             "filter": {
                               "prefix": {
-                                "postalInfo.names.spelling": "zedel"
+                                "postalInfo.names.spelling.keyword": "zedel"
                               }
                             },
                             "boost": 5.0  // High boost for prefix match in postal name

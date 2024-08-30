@@ -98,16 +98,19 @@ namespace AddressRegistry.Api.Oslo.Address
         /// <response code="200">Als de opvraging van de zoekopdracht gelukt is.</response>
         /// <response code="500">Als er een interne fout is opgetreden.</response>
         [HttpGet("zoeken")]
-        [Produces(AcceptTypes.JsonLd)]
-        //[ProducesResponseType(typeof(TotaalAantalResponse), StatusCodes.Status200OK)]
+        [Produces(AcceptTypes.Json)]
+        [ProducesResponseType(typeof(AddressSearchResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-        //[SwaggerResponseExample(StatusCodes.Status200OK, typeof(TotalCountOsloResponseExample))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(AddressSearchResponseExamples))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
         public async Task<IActionResult> Search(CancellationToken cancellationToken = default)
         {
             var filtering = Request.ExtractFilteringRequest<AddressSearchFilter>();
             var sorting = Request.ExtractSortingRequest();
             var pagination = new NoPaginationRequest();
+
+            if(!filtering.ShouldFilter)
+                return Ok(new AddressSearchResponse([]));
 
             var result = await _mediator.Send(new AddressSearchRequest(filtering, sorting, pagination), cancellationToken);
 

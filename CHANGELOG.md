@@ -1,3 +1,10 @@
+# [4.16.0](https://github.com/informatievlaanderen/address-registry/compare/v4.15.4...v4.16.0) (2024-08-30)
+
+
+### Features
+
+* add search streetname ([ee024b5](https://github.com/informatievlaanderen/address-registry/commit/ee024b54ff5745c750ae75f73af8b3a597b9fd03))
+
 ## [4.15.4](https://github.com/informatievlaanderen/address-registry/compare/v4.15.3...v4.15.4) (2024-08-28)
 
 

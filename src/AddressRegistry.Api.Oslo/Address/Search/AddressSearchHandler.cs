@@ -27,24 +27,43 @@
         public async Task<AddressSearchResponse> Handle(AddressSearchRequest request, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(request.Filtering.Filter.Query))
-                return new AddressSearchResponse(new List<AddressSearchItem>());
+                return new AddressSearchResponse([]);
 
             var query = request.Filtering.Filter.Query;
 
             if (ContainsNumberAfterSpace(query))
             {
-                return new AddressSearchResponse(new List<AddressSearchItem>());
+                return new AddressSearchResponse([]);
             }
 
+            return await SearchStreetNames(request, query);
+        }
+
+        private async Task<AddressSearchResponse> SearchStreetNames(AddressSearchRequest request, string query)
+        {
             var streetNames = query.Split(' ');
             streetNames = streetNames.Select(x => x.Trim()).Where(x => !string.IsNullOrEmpty(x)).ToArray();
 
-            var streetNameResult = new List<StreetNameSearchResult>();
+            List<StreetNameSearchResult> streetNameResult;
             if (streetNames.Length > 1)
             {
                 var municipalityOrPostalName = streetNames.Last();
-                streetNames = streetNames.Take(streetNames.Length - 1).ToArray();
-                streetNameResult = (await _addressApiElasticsearchClient.SearchStreetNames([string.Join(' ', streetNames), municipalityOrPostalName], municipalityOrPostalName)).ToList();
+                var namesToSearch = new List<string>();
+                var previousStreetName = string.Empty;
+                foreach (var streetName in streetNames)
+                {
+                    if (!string.IsNullOrEmpty(previousStreetName))
+                    {
+                        namesToSearch.Add(previousStreetName + ' ' + streetName);
+                        previousStreetName = previousStreetName + ' ' + streetName;
+                    }
+                    else
+                    {
+                        namesToSearch.Add(streetName);
+                        previousStreetName = streetName;
+                    }
+                }
+                streetNameResult = (await _addressApiElasticsearchClient.SearchStreetNames(namesToSearch.ToArray(), municipalityOrPostalName)).ToList();
             }
             else
             {
@@ -56,7 +75,8 @@
                     $"{_responseOptions.StraatNaamNaamruimte.Trim('/')}/{x.StreetNamePersistentLocalId}",
                     x.StreetNamePersistentLocalId.ToString(),
                     new Uri(string.Format(_responseOptions.StraatnaamDetailUrl, x.StreetNamePersistentLocalId)),
-                    x.Spelling)));
+                    x.Spelling))
+                .ToList());
         }
 
         private static bool ContainsNumberAfterSpace(string input)

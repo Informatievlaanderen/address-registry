@@ -109,6 +109,9 @@ namespace AddressRegistry.Api.Oslo.Address
             var sorting = Request.ExtractSortingRequest();
             var pagination = new NoPaginationRequest();
 
+            if(!filtering.ShouldFilter)
+                return Ok(new AddressSearchResponse([]));
+
             var result = await _mediator.Send(new AddressSearchRequest(filtering, sorting, pagination), cancellationToken);
 
             return Ok(result);

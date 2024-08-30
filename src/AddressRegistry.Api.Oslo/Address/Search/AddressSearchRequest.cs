@@ -15,6 +15,6 @@
 
     public sealed class AddressSearchFilter
     {
-        public string Query { get; init; }
+        public string? Query { get; init; }
     }
 }

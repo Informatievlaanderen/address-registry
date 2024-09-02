@@ -64,6 +64,7 @@
             public const string TopHitScore = "top_hit_score";
             public const string TopStreetName = "top_street_name";
             public const string MunicipalityNames = "municipality_names";
+            public const string UniqueMunicipalities = "unique_municipalities";
             public const string InnerMunicipalityNames = "inner_municipality_names";
         }
 
@@ -306,20 +307,31 @@
                     {
                         aggs7.ReverseNested(new ReverseNestedAggregation());
                         aggs7.Aggregations(innerAggs7 => innerAggs7
-                            .Add(AggregationNames.InnerMunicipalityNames, aggs8 =>
-                            {
-                                aggs8.TopHits(new TopHitsAggregation
-                                {
-                                    Size = size,
-                                    Source = new SourceConfig(new SourceFilter
-                                    {
-                                        Includes = Fields.FromFields([
-                                            new Field($"{ToCamelCase(nameof(AddressSearchDocument.Municipality))}.{ToCamelCase(nameof(AddressSearchDocument.Municipality.Names))}"),
-                                            new Field($"{ToCamelCase(nameof(AddressSearchDocument.StreetName))}.{ToCamelCase(nameof(AddressSearchDocument.StreetName.StreetNamePersistentLocalId))}")
-                                        ])
-                                    })
-                                });
-                            }));
+                            .Add(AggregationNames.UniqueMunicipalities, aggs8 =>
+                                aggs8.Terms(x => x
+                                        .Field(
+                                            $"{ToCamelCase(nameof(AddressSearchDocument.StreetName))}.{ToCamelCase(nameof(AddressSearchDocument.StreetName.StreetNamePersistentLocalId))}")
+                                        .Size(size))
+                                    .Aggregations(innerAggs8 => innerAggs8
+                                        .Add(AggregationNames.InnerMunicipalityNames, aggs9 =>
+                                        {
+                                            aggs9.TopHits(new TopHitsAggregation
+                                            {
+                                                Size = 1,
+                                                Source = new SourceConfig(new SourceFilter
+                                                {
+                                                    Includes = Fields.FromFields([
+                                                        new Field(
+                                                            $"{ToCamelCase(nameof(AddressSearchDocument.Municipality))}.{ToCamelCase(nameof(AddressSearchDocument.Municipality.Names))}"),
+                                                        new Field(
+                                                            $"{ToCamelCase(nameof(AddressSearchDocument.StreetName))}.{ToCamelCase(nameof(AddressSearchDocument.StreetName.StreetNamePersistentLocalId))}")
+                                                    ])
+                                                })
+                                            });
+                                        })
+                                    )
+                            )
+                        );
                     })
                 );
             };
@@ -343,16 +355,18 @@
                     var score = bucket.Aggregations.GetMax(AggregationNames.TopHitScore)?.Value ?? 0;
 
                     var municipalityNamesAggs = bucket.Aggregations.GetReverseNested(AggregationNames.MunicipalityNames);
-                    var innerMunicipalityNames = municipalityNamesAggs?.Aggregations.GetTopHits(AggregationNames.InnerMunicipalityNames);
+                    var uniqueMunicipalities = municipalityNamesAggs?.Aggregations.GetLongTerms(AggregationNames.UniqueMunicipalities);
                     var municipalityNames = new Dictionary<int, List<Name>>();
-                    if (innerMunicipalityNames is not null)
+
+                    foreach (var municipalitiesBucket in uniqueMunicipalities?.Buckets)
                     {
-                        foreach (var municipalityHit in innerMunicipalityNames.Hits.Hits)
+                        var innerMunicipalityNames = municipalitiesBucket.Aggregations.GetTopHits(AggregationNames.InnerMunicipalityNames);
+                        if (innerMunicipalityNames is not null)
                         {
-                            var municipalityHitObject = JsonSerializer.Deserialize<MunicipalityHit>(municipalityHit.Source!.ToString()!, _jsonSerializerOptions);
+                            var hit = innerMunicipalityNames.Hits.Hits.First();
+                            var municipalityHitObject = JsonSerializer.Deserialize<MunicipalityHit>(hit.Source!.ToString()!, _jsonSerializerOptions);
                             var streetNameIdByMunicipalityId = municipalityHitObject.StreetName.StreetNamePersistentLocalId;
-                            if(!municipalityNames.ContainsKey(streetNameIdByMunicipalityId))
-                                municipalityNames.Add(streetNameIdByMunicipalityId, municipalityHitObject.Municipality.Names);
+                            municipalityNames.Add(streetNameIdByMunicipalityId, municipalityHitObject.Municipality.Names);
                         }
                     }
 

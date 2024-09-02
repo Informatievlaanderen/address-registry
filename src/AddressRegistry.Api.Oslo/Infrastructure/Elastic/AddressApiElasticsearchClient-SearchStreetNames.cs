@@ -11,17 +11,47 @@
     using global::Elastic.Clients.Elasticsearch.Aggregations;
     using global::Elastic.Clients.Elasticsearch.Core.Search;
     using global::Elastic.Clients.Elasticsearch.QueryDsl;
+    using Name = Projections.Elastic.AddressSearch.Name;
 
     public sealed class StreetNameSearchResult
     {
         public int StreetNamePersistentLocalId { get; set; }
-        public string Spelling { get; set; }
+        public Name StreetName { get; set; }
+
+        public List<Name> MunicipalityNames { get; set; }
+
+        public double Score { get; set; }
+
+        public string GetFormattedStreetName()
+        {
+            var municipalityName = StreetName.Language switch
+            {
+                Language.nl => MunicipalityNames.FirstOrDefault(x => x.Language == Language.nl),
+                Language.fr => MunicipalityNames.FirstOrDefault(x => x.Language == Language.fr),
+                Language.de => MunicipalityNames.FirstOrDefault(x => x.Language == Language.de),
+                Language.en => MunicipalityNames.FirstOrDefault(x => x.Language == Language.en),
+                _ => null
+            } ?? MunicipalityNames.First();
+
+            return $"{StreetName.Spelling}, {municipalityName.Spelling}";
+        }
     }
 
-    public sealed class SpellingObject
+    public sealed class MunicipalityHit
     {
-        [JsonPropertyName("spelling")]
-        public string Spelling { get; set; }
+        public Municipality Municipality { get; set; }
+        public StreetName StreetName { get; set; }
+    }
+
+    public sealed class StreetName
+    {
+        public int StreetNamePersistentLocalId { get; set; }
+    }
+
+    public sealed class Municipality
+    {
+        [JsonPropertyName("names")]
+        public List<Name> Names { get; set; }
     }
 
     public sealed partial class AddressApiElasticsearchClient
@@ -31,11 +61,11 @@
             public const string UniqueStreetNames = "unique_street_names";
             public const string FilteredNames = "filtered_names";
             public const string StreetNames = "street_names";
-            public const string FilteredByActive = "filtered_by_active";
-            public const string IdValue = "id_value";
-            public const string StreetNamePersistentLocalId = "streetNamePersistentLocalId";
             public const string TopHitScore = "top_hit_score";
             public const string TopStreetName = "top_street_name";
+            public const string MunicipalityNames = "municipality_names";
+            public const string UniqueMunicipalities = "unique_municipalities";
+            public const string InnerMunicipalityNames = "inner_municipality_names";
         }
 
         private static readonly string StreetNameNames = $"{ToCamelCase(nameof(AddressSearchDocument.StreetName))}.{ToCamelCase(nameof(AddressSearchDocument.StreetName.Names))}";
@@ -43,6 +73,7 @@
         public async Task<IEnumerable<StreetNameSearchResult>> SearchStreetNames(
             string[] streetNameQueries,
             string municipalityOrPostalName,
+            bool mustBeInMunicipality,
             int size = 10)
         {
             var searchResponse = await _elasticsearchClient.SearchAsync<AddressSearchDocument>(_indexAlias,
@@ -58,45 +89,93 @@
                             q.Bool(x =>
                             {
                                 x.Filter(f => f.Term(t => t.Field(ToCamelCase(nameof(AddressSearchDocument.Active))!).Value(true)));
-                                x.Should(q2 =>
-                                        q2.Nested(nested => QueryStreetNames(nested, streetNameQueries)),
-                                    q2 => q2.Nested(nested => nested
-                                        .Path(municipalityNames!)
-                                        .Query(nestedQuery => nestedQuery
-                                            .Bool(b => b
-                                                .Should(
-                                                    m => m
-                                                        .ConstantScore(cs =>
-                                                            cs.Filter(f => f.Prefix(pfx =>
-                                                                    pfx.Field($"{municipalityNames}.{NameSpelling}.{Keyword}"!).Value(municipalityOrPostalName)))
-                                                                .Boost(3)),
-                                                    m => m
-                                                        .ConstantScore(cs =>
-                                                            cs.Filter(f => f.Match(m2 =>
-                                                                m2.Field($"{municipalityNames}.{NameSpelling}"!).Query(municipalityOrPostalName))))
+                                if (mustBeInMunicipality)
+                                {
+                                    x.Must(q2 => q2.Nested(nested => QueryStreetNames(nested, streetNameQueries)),
+                                        q2 => q2
+                                            .Bool(should => should
+                                                .Should(q3 =>
+                                                    q3.Nested(nested => nested
+                                                        .Path(municipalityNames!)
+                                                        .Query(nestedQuery => nestedQuery
+                                                            .Bool(b => b
+                                                                .Should(
+                                                                    m => m
+                                                                        .ConstantScore(cs =>
+                                                                            cs.Filter(f => f.Prefix(pfx =>
+                                                                                    pfx.Field($"{municipalityNames}.{NameSpelling}.{Keyword}"!).Value(municipalityOrPostalName)))
+                                                                                .Boost(3)),
+                                                                    m => m
+                                                                        .ConstantScore(cs =>
+                                                                            cs.Filter(f => f.Match(m2 =>
+                                                                                m2.Field($"{municipalityNames}.{NameSpelling}"!).Query(municipalityOrPostalName))))
+                                                                )
+                                                            )
+                                                        )
+                                                    ),
+                                                    q3 => q3.Nested(nested => nested
+                                                        .Path(postalNames!)
+                                                        .Query(nestedQuery => nestedQuery
+                                                            .Bool(b => b
+                                                                .Should(
+                                                                    m => m
+                                                                        .ConstantScore(cs =>
+                                                                            cs.Filter(f => f.Prefix(pfx =>
+                                                                                    pfx.Field($"{postalNames}.{NameSpelling}.{Keyword}"!).Value(municipalityOrPostalName)))
+                                                                                .Boost(3)),
+                                                                    m => m
+                                                                        .ConstantScore(cs =>
+                                                                            cs.Filter(f => f.Match(m2 =>
+                                                                                m2.Field($"{postalNames}.{NameSpelling}"!).Query(municipalityOrPostalName))))
+                                                                )
+                                                            )
+                                                        )
+                                                    )
+                                                )
+                                            )
+                                    );
+                                }
+                                else
+                                {
+                                    x.Should(q2 => q2.Nested(nested => QueryStreetNames(nested, streetNameQueries)),
+                                        q2 => q2.Nested(nested => nested
+                                            .Path(municipalityNames!)
+                                            .Query(nestedQuery => nestedQuery
+                                                .Bool(b => b
+                                                    .Should(
+                                                        m => m
+                                                            .ConstantScore(cs =>
+                                                                cs.Filter(f => f.Prefix(pfx =>
+                                                                        pfx.Field($"{municipalityNames}.{NameSpelling}.{Keyword}"!).Value(municipalityOrPostalName)))
+                                                                    .Boost(3)),
+                                                        m => m
+                                                            .ConstantScore(cs =>
+                                                                cs.Filter(f => f.Match(m2 =>
+                                                                    m2.Field($"{municipalityNames}.{NameSpelling}"!).Query(municipalityOrPostalName))))
+                                                    )
+                                                )
+                                            )
+                                        ),
+                                        q2 => q2.Nested(nested => nested
+                                            .Path(postalNames!)
+                                            .Query(nestedQuery => nestedQuery
+                                                .Bool(b => b
+                                                    .Should(
+                                                        m => m
+                                                            .ConstantScore(cs =>
+                                                                cs.Filter(f => f.Prefix(pfx =>
+                                                                        pfx.Field($"{postalNames}.{NameSpelling}.{Keyword}"!).Value(municipalityOrPostalName)))
+                                                                    .Boost(3)),
+                                                        m => m
+                                                            .ConstantScore(cs =>
+                                                                cs.Filter(f => f.Match(m2 =>
+                                                                    m2.Field($"{postalNames}.{NameSpelling}"!).Query(municipalityOrPostalName))))
+                                                    )
                                                 )
                                             )
                                         )
-                                    ),
-                                    q2 => q2.Nested(nested => nested
-                                        .Path(postalNames!)
-                                        .Query(nestedQuery => nestedQuery
-                                            .Bool(b => b
-                                                .Should(
-                                                    m => m
-                                                        .ConstantScore(cs =>
-                                                            cs.Filter(f => f.Prefix(pfx =>
-                                                                    pfx.Field($"{postalNames}.{NameSpelling}.{Keyword}"!).Value(municipalityOrPostalName)))
-                                                                .Boost(3)),
-                                                    m => m
-                                                        .ConstantScore(cs =>
-                                                            cs.Filter(f => f.Match(m2 =>
-                                                                m2.Field($"{postalNames}.{NameSpelling}"!).Query(municipalityOrPostalName))))
-                                                )
-                                            )
-                                        )
-                                    )
-                                );
+                                    );
+                                }
                             })
                         )
                         .Aggregations(a => a.Add(AggregationNames.UniqueStreetNames, aggs =>
@@ -210,33 +289,55 @@
                     {
                         aggs4.TopHits(t => t
                             .Source(new SourceConfig(new SourceFilter()
-                                { Includes = Fields.FromField(new Field($"{StreetNameNames}.{NameSpelling}")) }))
+                            {
+                                Includes = Fields.FromFields([
+                                    new Field($"{StreetNameNames}.{NameSpelling}"),
+                                    new Field($"{StreetNameNames}.{NameSpelling}.{ToCamelCase(nameof(Name.Language))}")
+                                    ])
+                            }))
                             .Size(1)
                             .Sort(new List<SortOptions>{ SortOptions.Score(new ScoreSort(){ Order = SortOrder.Desc }) }));
 
                     })
                     .Add(AggregationNames.TopHitScore, aggs4 =>
                     {
-                        aggs4.Max(m => m.Script(new Script(){ Source = "_score" }));
+                        aggs4.Max(m => m.Script(new Script{ Source = "_score" }));
                     })
-                    .Add(AggregationNames.StreetNamePersistentLocalId, aggs5 =>
+                    .Add(AggregationNames.MunicipalityNames, aggs7 =>
                     {
-                        aggs5.ReverseNested(new ReverseNestedAggregation());
-                        aggs5.Aggregations(aggs6 => aggs6
-                            .Add(AggregationNames.FilteredByActive, innerAggs6 =>
-                            {
-                                innerAggs6.Filter(filter => filter
-                                    .Term(t => t.Field(ToCamelCase(nameof(AddressSearchDocument.Active))!).Value(true))
-                                );
-                                innerAggs6.Aggregations(aggs7 =>
-                                    aggs7.Add(AggregationNames.IdValue, x => x.Max(max => max.Field($"{ToCamelCase(nameof(AddressSearchDocument.StreetName))}.{ToCamelCase(nameof(AddressSearchDocument.StreetName.StreetNamePersistentLocalId))}"))));
-                            }));
+                        aggs7.ReverseNested(new ReverseNestedAggregation());
+                        aggs7.Aggregations(innerAggs7 => innerAggs7
+                            .Add(AggregationNames.UniqueMunicipalities, aggs8 =>
+                                aggs8.Terms(x => x
+                                        .Field(
+                                            $"{ToCamelCase(nameof(AddressSearchDocument.StreetName))}.{ToCamelCase(nameof(AddressSearchDocument.StreetName.StreetNamePersistentLocalId))}")
+                                        .Size(size))
+                                    .Aggregations(innerAggs8 => innerAggs8
+                                        .Add(AggregationNames.InnerMunicipalityNames, aggs9 =>
+                                        {
+                                            aggs9.TopHits(new TopHitsAggregation
+                                            {
+                                                Size = 1,
+                                                Source = new SourceConfig(new SourceFilter
+                                                {
+                                                    Includes = Fields.FromFields([
+                                                        new Field(
+                                                            $"{ToCamelCase(nameof(AddressSearchDocument.Municipality))}.{ToCamelCase(nameof(AddressSearchDocument.Municipality.Names))}"),
+                                                        new Field(
+                                                            $"{ToCamelCase(nameof(AddressSearchDocument.StreetName))}.{ToCamelCase(nameof(AddressSearchDocument.StreetName.StreetNamePersistentLocalId))}")
+                                                    ])
+                                                })
+                                            });
+                                        })
+                                    )
+                            )
+                        );
                     })
                 );
             };
         }
 
-        private static IEnumerable<StreetNameSearchResult> GetStreetNameSearchResults(SearchResponse<AddressSearchDocument> searchResponse)
+        private IEnumerable<StreetNameSearchResult> GetStreetNameSearchResults(SearchResponse<AddressSearchDocument> searchResponse)
         {
             var names = new List<StreetNameSearchResult>();
             var uniqueStreetNamesAgg = searchResponse.Aggregations?.GetNested(AggregationNames.UniqueStreetNames);
@@ -251,23 +352,41 @@
 
                 foreach (var bucket in streetNamesTermsAgg.Buckets)
                 {
-                    var streetNameId = bucket.Aggregations.GetReverseNested(AggregationNames.StreetNamePersistentLocalId);
+                    var score = bucket.Aggregations.GetMax(AggregationNames.TopHitScore)?.Value ?? 0;
 
-                    var id = streetNameId?.Aggregations.GetFilter(AggregationNames.FilteredByActive)?.Aggregations.GetMax(AggregationNames.IdValue)?.Value;
+                    var municipalityNamesAggs = bucket.Aggregations.GetReverseNested(AggregationNames.MunicipalityNames);
+                    var uniqueMunicipalities = municipalityNamesAggs?.Aggregations.GetLongTerms(AggregationNames.UniqueMunicipalities);
+                    var municipalityNames = new Dictionary<int, List<Name>>();
+
+                    foreach (var municipalitiesBucket in uniqueMunicipalities?.Buckets)
+                    {
+                        var innerMunicipalityNames = municipalitiesBucket.Aggregations.GetTopHits(AggregationNames.InnerMunicipalityNames);
+                        if (innerMunicipalityNames is not null)
+                        {
+                            var hit = innerMunicipalityNames.Hits.Hits.First();
+                            var municipalityHitObject = JsonSerializer.Deserialize<MunicipalityHit>(hit.Source!.ToString()!, _jsonSerializerOptions);
+                            var streetNameIdByMunicipalityId = municipalityHitObject.StreetName.StreetNamePersistentLocalId;
+                            municipalityNames.Add(streetNameIdByMunicipalityId, municipalityHitObject.Municipality.Names);
+                        }
+                    }
 
                     // Each bucket may have a 'top_street_name' hits aggregation
                     var topStreetNameHits = bucket.Aggregations.GetTopHits(AggregationNames.TopStreetName);
-
                     if (topStreetNameHits is not null)
                     {
                         var hit = topStreetNameHits.Hits.Hits.First();
 
-                        var name = JsonSerializer.Deserialize<SpellingObject>(hit.Source.ToString());
-                        names.Add(new StreetNameSearchResult
+                        var name = JsonSerializer.Deserialize<Name>(hit.Source!.ToString()!, _jsonSerializerOptions);
+                        foreach (var municipalityName in municipalityNames)
                         {
-                            StreetNamePersistentLocalId = Convert.ToInt32(id),
-                            Spelling = name.Spelling
-                        });
+                            names.Add(new StreetNameSearchResult
+                            {
+                                StreetNamePersistentLocalId = municipalityName.Key,
+                                StreetName = name,
+                                MunicipalityNames = municipalityName.Value,
+                                Score = score
+                            });
+                        }
                     }
                 }
             }

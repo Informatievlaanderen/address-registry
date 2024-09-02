@@ -10,6 +10,7 @@
         Task<IEnumerable<StreetNameSearchResult>> SearchStreetNames(
             string[] streetNameQueries,
             string municipalityOrPostalName,
+            bool mustBeInMunicipality,
             int size = 10);
 
         Task<AddressSearchResult> ListAddresses(

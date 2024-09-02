@@ -107,7 +107,7 @@ namespace AddressRegistry.Api.Oslo.Address
         {
             var filtering = Request.ExtractFilteringRequest<AddressSearchFilter>();
             var sorting = Request.ExtractSortingRequest();
-            var pagination = new NoPaginationRequest();
+            var pagination = Request.ExtractPaginationRequest();
 
             if(!filtering.ShouldFilter)
                 return Ok(new AddressSearchResponse([]));

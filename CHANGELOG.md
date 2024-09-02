@@ -1,3 +1,10 @@
+# [4.17.0](https://github.com/informatievlaanderen/address-registry/compare/v4.16.0...v4.17.0) (2024-09-02)
+
+
+### Features
+
+* **oslo-api:** add municipality name to search results ([b1f0fe0](https://github.com/informatievlaanderen/address-registry/commit/b1f0fe0afaf98a3e28cf8306a5c547c3cd8b27b8))
+
 # [4.16.0](https://github.com/informatievlaanderen/address-registry/compare/v4.15.4...v4.16.0) (2024-08-30)
 
 

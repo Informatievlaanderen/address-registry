@@ -75,6 +75,7 @@
         public async Task<IEnumerable<StreetNameSearchResult>> SearchStreetNames(
             string[] streetNameQueries,
             string municipalityOrPostalName,
+            bool mustBeInMunicipality,
             int size = 10)
         {
             var searchResponse = await _elasticsearchClient.SearchAsync<AddressSearchDocument>(_indexAlias,

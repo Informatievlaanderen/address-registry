@@ -36,7 +36,7 @@
                 new AddressSearchRequest(
                     new FilteringHeader<AddressSearchFilter>(new AddressSearchFilter { Query = query }),
                     new SortingHeader("fake", SortOrder.Ascending),
-                    new NoPaginationRequest()),
+                    new PaginationRequest(0, 10)),
                 CancellationToken.None);
 
             result.Results.Should().BeEmpty();
@@ -47,14 +47,15 @@
         [InlineData("street")]
         public async Task WithOneWord_ThenSearchStreetNames(string query)
         {
+            var limit = 10;
             await _sut.Handle(
                 new AddressSearchRequest(
                     new FilteringHeader<AddressSearchFilter>(new AddressSearchFilter { Query = query }),
                     new SortingHeader("fake", SortOrder.Ascending),
-                    new NoPaginationRequest()),
+                    new PaginationRequest(0, limit)),
                 CancellationToken.None);
 
-            _mockAddressSearchApi.Verify(x => x.SearchStreetNames(query, It.IsAny<int>()), Times.Once);
+            _mockAddressSearchApi.Verify(x => x.SearchStreetNames(query, limit), Times.Once);
         }
 
         [Theory]
@@ -66,14 +67,15 @@
             string[] streetNames,
             string municipalityOrPostalName)
         {
+            var limit = 50;
             await _sut.Handle(
                 new AddressSearchRequest(
                     new FilteringHeader<AddressSearchFilter>(new AddressSearchFilter { Query = query }),
                     new SortingHeader("fake", SortOrder.Ascending),
-                    new NoPaginationRequest()),
+                    new PaginationRequest(0, limit)),
                 CancellationToken.None);
 
-            _mockAddressSearchApi.Verify(x => x.SearchStreetNames(streetNames, municipalityOrPostalName, It.IsAny<int>()), Times.Once);
+            _mockAddressSearchApi.Verify(x => x.SearchStreetNames(streetNames, municipalityOrPostalName, false, limit), Times.Once);
         }
     }
 }

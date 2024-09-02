@@ -68,11 +68,17 @@
                         previousStreetName = streetName;
                     }
                 }
-                streetNameResult = (await _addressApiElasticsearchClient.SearchStreetNames(namesToSearch.ToArray(), municipalityOrPostalName)).ToList();
+                streetNameResult = (await _addressApiElasticsearchClient
+                    .SearchStreetNames(
+                        namesToSearch.ToArray(),
+                        municipalityOrPostalName,
+                        !string.IsNullOrEmpty(municipalityOrPostalNameQuery),
+                        limit))
+                    .ToList();
             }
             else
             {
-                streetNameResult = (await _addressApiElasticsearchClient.SearchStreetNames(query)).ToList();
+                streetNameResult = (await _addressApiElasticsearchClient.SearchStreetNames(query, limit)).ToList();
             }
 
             return new AddressSearchResponse(streetNameResult

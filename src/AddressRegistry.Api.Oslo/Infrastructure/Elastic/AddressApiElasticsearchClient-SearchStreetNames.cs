@@ -61,9 +61,6 @@
             public const string UniqueStreetNames = "unique_street_names";
             public const string FilteredNames = "filtered_names";
             public const string StreetNames = "street_names";
-            public const string FilteredByActive = "filtered_by_active";
-            public const string IdValue = "id_value";
-            public const string StreetNamePersistentLocalId = "streetNamePersistentLocalId";
             public const string TopHitScore = "top_hit_score";
             public const string TopStreetName = "top_street_name";
             public const string MunicipalityNames = "municipality_names";
@@ -91,45 +88,93 @@
                             q.Bool(x =>
                             {
                                 x.Filter(f => f.Term(t => t.Field(ToCamelCase(nameof(AddressSearchDocument.Active))!).Value(true)));
-                                x.Should(q2 =>
-                                        q2.Nested(nested => QueryStreetNames(nested, streetNameQueries)),
-                                    q2 => q2.Nested(nested => nested
-                                        .Path(municipalityNames!)
-                                        .Query(nestedQuery => nestedQuery
-                                            .Bool(b => b
-                                                .Should(
-                                                    m => m
-                                                        .ConstantScore(cs =>
-                                                            cs.Filter(f => f.Prefix(pfx =>
-                                                                    pfx.Field($"{municipalityNames}.{NameSpelling}.{Keyword}"!).Value(municipalityOrPostalName)))
-                                                                .Boost(3)),
-                                                    m => m
-                                                        .ConstantScore(cs =>
-                                                            cs.Filter(f => f.Match(m2 =>
-                                                                m2.Field($"{municipalityNames}.{NameSpelling}"!).Query(municipalityOrPostalName))))
+                                if (mustBeInMunicipality)
+                                {
+                                    x.Must(q2 => q2.Nested(nested => QueryStreetNames(nested, streetNameQueries)),
+                                        q2 => q2
+                                            .Bool(should => should
+                                                .Should(q3 =>
+                                                    q3.Nested(nested => nested
+                                                        .Path(municipalityNames!)
+                                                        .Query(nestedQuery => nestedQuery
+                                                            .Bool(b => b
+                                                                .Should(
+                                                                    m => m
+                                                                        .ConstantScore(cs =>
+                                                                            cs.Filter(f => f.Prefix(pfx =>
+                                                                                    pfx.Field($"{municipalityNames}.{NameSpelling}.{Keyword}"!).Value(municipalityOrPostalName)))
+                                                                                .Boost(3)),
+                                                                    m => m
+                                                                        .ConstantScore(cs =>
+                                                                            cs.Filter(f => f.Match(m2 =>
+                                                                                m2.Field($"{municipalityNames}.{NameSpelling}"!).Query(municipalityOrPostalName))))
+                                                                )
+                                                            )
+                                                        )
+                                                    ),
+                                                    q3 => q3.Nested(nested => nested
+                                                        .Path(postalNames!)
+                                                        .Query(nestedQuery => nestedQuery
+                                                            .Bool(b => b
+                                                                .Should(
+                                                                    m => m
+                                                                        .ConstantScore(cs =>
+                                                                            cs.Filter(f => f.Prefix(pfx =>
+                                                                                    pfx.Field($"{postalNames}.{NameSpelling}.{Keyword}"!).Value(municipalityOrPostalName)))
+                                                                                .Boost(3)),
+                                                                    m => m
+                                                                        .ConstantScore(cs =>
+                                                                            cs.Filter(f => f.Match(m2 =>
+                                                                                m2.Field($"{postalNames}.{NameSpelling}"!).Query(municipalityOrPostalName))))
+                                                                )
+                                                            )
+                                                        )
+                                                    )
+                                                )
+                                            )
+                                    );
+                                }
+                                else
+                                {
+                                    x.Should(q2 => q2.Nested(nested => QueryStreetNames(nested, streetNameQueries)),
+                                        q2 => q2.Nested(nested => nested
+                                            .Path(municipalityNames!)
+                                            .Query(nestedQuery => nestedQuery
+                                                .Bool(b => b
+                                                    .Should(
+                                                        m => m
+                                                            .ConstantScore(cs =>
+                                                                cs.Filter(f => f.Prefix(pfx =>
+                                                                        pfx.Field($"{municipalityNames}.{NameSpelling}.{Keyword}"!).Value(municipalityOrPostalName)))
+                                                                    .Boost(3)),
+                                                        m => m
+                                                            .ConstantScore(cs =>
+                                                                cs.Filter(f => f.Match(m2 =>
+                                                                    m2.Field($"{municipalityNames}.{NameSpelling}"!).Query(municipalityOrPostalName))))
+                                                    )
+                                                )
+                                            )
+                                        ),
+                                        q2 => q2.Nested(nested => nested
+                                            .Path(postalNames!)
+                                            .Query(nestedQuery => nestedQuery
+                                                .Bool(b => b
+                                                    .Should(
+                                                        m => m
+                                                            .ConstantScore(cs =>
+                                                                cs.Filter(f => f.Prefix(pfx =>
+                                                                        pfx.Field($"{postalNames}.{NameSpelling}.{Keyword}"!).Value(municipalityOrPostalName)))
+                                                                    .Boost(3)),
+                                                        m => m
+                                                            .ConstantScore(cs =>
+                                                                cs.Filter(f => f.Match(m2 =>
+                                                                    m2.Field($"{postalNames}.{NameSpelling}"!).Query(municipalityOrPostalName))))
+                                                    )
                                                 )
                                             )
                                         )
-                                    ),
-                                    q2 => q2.Nested(nested => nested
-                                        .Path(postalNames!)
-                                        .Query(nestedQuery => nestedQuery
-                                            .Bool(b => b
-                                                .Should(
-                                                    m => m
-                                                        .ConstantScore(cs =>
-                                                            cs.Filter(f => f.Prefix(pfx =>
-                                                                    pfx.Field($"{postalNames}.{NameSpelling}.{Keyword}"!).Value(municipalityOrPostalName)))
-                                                                .Boost(3)),
-                                                    m => m
-                                                        .ConstantScore(cs =>
-                                                            cs.Filter(f => f.Match(m2 =>
-                                                                m2.Field($"{postalNames}.{NameSpelling}"!).Query(municipalityOrPostalName))))
-                                                )
-                                            )
-                                        )
-                                    )
-                                );
+                                    );
+                                }
                             })
                         )
                         .Aggregations(a => a.Add(AggregationNames.UniqueStreetNames, aggs =>
@@ -257,19 +302,6 @@
                     {
                         aggs4.Max(m => m.Script(new Script{ Source = "_score" }));
                     })
-                    // .Add(AggregationNames.StreetNamePersistentLocalId, aggs5 =>
-                    // {
-                    //     aggs5.ReverseNested(new ReverseNestedAggregation());
-                    //     aggs5.Aggregations(aggs6 => aggs6
-                    //         .Add(AggregationNames.FilteredByActive, innerAggs6 =>
-                    //         {
-                    //             innerAggs6.Filter(filter => filter
-                    //                 .Term(t => t.Field(ToCamelCase(nameof(AddressSearchDocument.Active))!).Value(true))
-                    //             );
-                    //             innerAggs6.Aggregations(aggs7 =>
-                    //                 aggs7.Add(AggregationNames.IdValue, x => x.Max(max => max.Field($"{ToCamelCase(nameof(AddressSearchDocument.StreetName))}.{ToCamelCase(nameof(AddressSearchDocument.StreetName.StreetNamePersistentLocalId))}"))));
-                    //         }));
-                    // })
                     .Add(AggregationNames.MunicipalityNames, aggs7 =>
                     {
                         aggs7.ReverseNested(new ReverseNestedAggregation());

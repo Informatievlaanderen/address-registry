@@ -6,6 +6,7 @@
     using System.Text.RegularExpressions;
     using System.Threading;
     using System.Threading.Tasks;
+    using Be.Vlaanderen.Basisregisters.Api.Search.Pagination;
     using Infrastructure.Elastic;
     using Infrastructure.Options;
     using MediatR;
@@ -26,6 +27,7 @@
 
         public async Task<AddressSearchResponse> Handle(AddressSearchRequest request, CancellationToken cancellationToken)
         {
+            var pagination = (PaginationRequest)request.Pagination;
             if (string.IsNullOrEmpty(request.Filtering.Filter.Query))
                 return new AddressSearchResponse([]);
 
@@ -36,18 +38,21 @@
                 return new AddressSearchResponse([]);
             }
 
-            return await SearchStreetNames(request, query);
+            return await SearchStreetNames(query, request.Filtering.Filter.MunicipalityOrPostalName, pagination.Limit);
         }
 
-        private async Task<AddressSearchResponse> SearchStreetNames(AddressSearchRequest request, string query)
+        private async Task<AddressSearchResponse> SearchStreetNames(string query, string? municipalityOrPostalNameQuery, int limit)
         {
             var streetNames = query.Split(' ');
             streetNames = streetNames.Select(x => x.Trim()).Where(x => !string.IsNullOrEmpty(x)).ToArray();
 
             List<StreetNameSearchResult> streetNameResult;
-            if (streetNames.Length > 1)
+            if (streetNames.Length > 1 || !string.IsNullOrEmpty(municipalityOrPostalNameQuery))
             {
-                var municipalityOrPostalName = streetNames.Last();
+                var municipalityOrPostalName = string.IsNullOrEmpty(municipalityOrPostalNameQuery)
+                    ? streetNames.Last()
+                    : municipalityOrPostalNameQuery;
+
                 var namesToSearch = new List<string>();
                 var previousStreetName = string.Empty;
                 foreach (var streetName in streetNames)
@@ -67,7 +72,7 @@
             }
             else
             {
-                streetNameResult = (await _addressApiElasticsearchClient.SearchStreetNames(request.Filtering.Filter.Query)).ToList();
+                streetNameResult = (await _addressApiElasticsearchClient.SearchStreetNames(query)).ToList();
             }
 
             return new AddressSearchResponse(streetNameResult
@@ -75,7 +80,8 @@
                     $"{_responseOptions.StraatNaamNaamruimte.Trim('/')}/{x.StreetNamePersistentLocalId}",
                     x.StreetNamePersistentLocalId.ToString(),
                     new Uri(string.Format(_responseOptions.StraatnaamDetailUrl, x.StreetNamePersistentLocalId)),
-                    x.Spelling))
+                    x.GetFormattedStreetName()))
+                .Take(limit)
                 .ToList());
         }
 

@@ -11,17 +11,47 @@
     using global::Elastic.Clients.Elasticsearch.Aggregations;
     using global::Elastic.Clients.Elasticsearch.Core.Search;
     using global::Elastic.Clients.Elasticsearch.QueryDsl;
+    using Name = Projections.Elastic.AddressSearch.Name;
 
     public sealed class StreetNameSearchResult
     {
         public int StreetNamePersistentLocalId { get; set; }
-        public string Spelling { get; set; }
+        public Name StreetName { get; set; }
+
+        public List<Name> MunicipalityNames { get; set; }
+
+        public double Score { get; set; }
+
+        public string GetFormattedStreetName()
+        {
+            var municipalityName = StreetName.Language switch
+            {
+                Language.nl => MunicipalityNames.FirstOrDefault(x => x.Language == Language.nl),
+                Language.fr => MunicipalityNames.FirstOrDefault(x => x.Language == Language.fr),
+                Language.de => MunicipalityNames.FirstOrDefault(x => x.Language == Language.de),
+                Language.en => MunicipalityNames.FirstOrDefault(x => x.Language == Language.en),
+                _ => null
+            } ?? MunicipalityNames.First();
+
+            return $"{StreetName.Spelling}, {municipalityName.Spelling}";
+        }
     }
 
-    public sealed class SpellingObject
+    public sealed class MunicipalityHit
     {
-        [JsonPropertyName("spelling")]
-        public string Spelling { get; set; }
+        public Municipality Municipality { get; set; }
+        public StreetName StreetName { get; set; }
+    }
+
+    public sealed class StreetName
+    {
+        public int StreetNamePersistentLocalId { get; set; }
+    }
+
+    public sealed class Municipality
+    {
+        [JsonPropertyName("names")]
+        public List<Name> Names { get; set; }
     }
 
     public sealed partial class AddressApiElasticsearchClient
@@ -36,6 +66,8 @@
             public const string StreetNamePersistentLocalId = "streetNamePersistentLocalId";
             public const string TopHitScore = "top_hit_score";
             public const string TopStreetName = "top_street_name";
+            public const string MunicipalityNames = "municipality_names";
+            public const string InnerMunicipalityNames = "inner_municipality_names";
         }
 
         private static readonly string StreetNameNames = $"{ToCamelCase(nameof(AddressSearchDocument.StreetName))}.{ToCamelCase(nameof(AddressSearchDocument.StreetName.Names))}";
@@ -210,33 +242,57 @@
                     {
                         aggs4.TopHits(t => t
                             .Source(new SourceConfig(new SourceFilter()
-                                { Includes = Fields.FromField(new Field($"{StreetNameNames}.{NameSpelling}")) }))
+                            {
+                                Includes = Fields.FromFields([
+                                    new Field($"{StreetNameNames}.{NameSpelling}"),
+                                    new Field($"{StreetNameNames}.{NameSpelling}.{ToCamelCase(nameof(Name.Language))}")
+                                    ])
+                            }))
                             .Size(1)
                             .Sort(new List<SortOptions>{ SortOptions.Score(new ScoreSort(){ Order = SortOrder.Desc }) }));
 
                     })
                     .Add(AggregationNames.TopHitScore, aggs4 =>
                     {
-                        aggs4.Max(m => m.Script(new Script(){ Source = "_score" }));
+                        aggs4.Max(m => m.Script(new Script{ Source = "_score" }));
                     })
-                    .Add(AggregationNames.StreetNamePersistentLocalId, aggs5 =>
+                    // .Add(AggregationNames.StreetNamePersistentLocalId, aggs5 =>
+                    // {
+                    //     aggs5.ReverseNested(new ReverseNestedAggregation());
+                    //     aggs5.Aggregations(aggs6 => aggs6
+                    //         .Add(AggregationNames.FilteredByActive, innerAggs6 =>
+                    //         {
+                    //             innerAggs6.Filter(filter => filter
+                    //                 .Term(t => t.Field(ToCamelCase(nameof(AddressSearchDocument.Active))!).Value(true))
+                    //             );
+                    //             innerAggs6.Aggregations(aggs7 =>
+                    //                 aggs7.Add(AggregationNames.IdValue, x => x.Max(max => max.Field($"{ToCamelCase(nameof(AddressSearchDocument.StreetName))}.{ToCamelCase(nameof(AddressSearchDocument.StreetName.StreetNamePersistentLocalId))}"))));
+                    //         }));
+                    // })
+                    .Add(AggregationNames.MunicipalityNames, aggs7 =>
                     {
-                        aggs5.ReverseNested(new ReverseNestedAggregation());
-                        aggs5.Aggregations(aggs6 => aggs6
-                            .Add(AggregationNames.FilteredByActive, innerAggs6 =>
+                        aggs7.ReverseNested(new ReverseNestedAggregation());
+                        aggs7.Aggregations(innerAggs7 => innerAggs7
+                            .Add(AggregationNames.InnerMunicipalityNames, aggs8 =>
                             {
-                                innerAggs6.Filter(filter => filter
-                                    .Term(t => t.Field(ToCamelCase(nameof(AddressSearchDocument.Active))!).Value(true))
-                                );
-                                innerAggs6.Aggregations(aggs7 =>
-                                    aggs7.Add(AggregationNames.IdValue, x => x.Max(max => max.Field($"{ToCamelCase(nameof(AddressSearchDocument.StreetName))}.{ToCamelCase(nameof(AddressSearchDocument.StreetName.StreetNamePersistentLocalId))}"))));
+                                aggs8.TopHits(new TopHitsAggregation
+                                {
+                                    Size = size,
+                                    Source = new SourceConfig(new SourceFilter
+                                    {
+                                        Includes = Fields.FromFields([
+                                            new Field($"{ToCamelCase(nameof(AddressSearchDocument.Municipality))}.{ToCamelCase(nameof(AddressSearchDocument.Municipality.Names))}"),
+                                            new Field($"{ToCamelCase(nameof(AddressSearchDocument.StreetName))}.{ToCamelCase(nameof(AddressSearchDocument.StreetName.StreetNamePersistentLocalId))}")
+                                        ])
+                                    })
+                                });
                             }));
                     })
                 );
             };
         }
 
-        private static IEnumerable<StreetNameSearchResult> GetStreetNameSearchResults(SearchResponse<AddressSearchDocument> searchResponse)
+        private IEnumerable<StreetNameSearchResult> GetStreetNameSearchResults(SearchResponse<AddressSearchDocument> searchResponse)
         {
             var names = new List<StreetNameSearchResult>();
             var uniqueStreetNamesAgg = searchResponse.Aggregations?.GetNested(AggregationNames.UniqueStreetNames);
@@ -251,23 +307,39 @@
 
                 foreach (var bucket in streetNamesTermsAgg.Buckets)
                 {
-                    var streetNameId = bucket.Aggregations.GetReverseNested(AggregationNames.StreetNamePersistentLocalId);
+                    var score = bucket.Aggregations.GetMax(AggregationNames.TopHitScore)?.Value ?? 0;
 
-                    var id = streetNameId?.Aggregations.GetFilter(AggregationNames.FilteredByActive)?.Aggregations.GetMax(AggregationNames.IdValue)?.Value;
+                    var municipalityNamesAggs = bucket.Aggregations.GetReverseNested(AggregationNames.MunicipalityNames);
+                    var innerMunicipalityNames = municipalityNamesAggs?.Aggregations.GetTopHits(AggregationNames.InnerMunicipalityNames);
+                    var municipalityNames = new Dictionary<int, List<Name>>();
+                    if (innerMunicipalityNames is not null)
+                    {
+                        foreach (var municipalityHit in innerMunicipalityNames.Hits.Hits)
+                        {
+                            var municipalityHitObject = JsonSerializer.Deserialize<MunicipalityHit>(municipalityHit.Source!.ToString()!, _jsonSerializerOptions);
+                            var streetNameIdByMunicipalityId = municipalityHitObject.StreetName.StreetNamePersistentLocalId;
+                            if(!municipalityNames.ContainsKey(streetNameIdByMunicipalityId))
+                                municipalityNames.Add(streetNameIdByMunicipalityId, municipalityHitObject.Municipality.Names);
+                        }
+                    }
 
                     // Each bucket may have a 'top_street_name' hits aggregation
                     var topStreetNameHits = bucket.Aggregations.GetTopHits(AggregationNames.TopStreetName);
-
                     if (topStreetNameHits is not null)
                     {
                         var hit = topStreetNameHits.Hits.Hits.First();
 
-                        var name = JsonSerializer.Deserialize<SpellingObject>(hit.Source.ToString());
-                        names.Add(new StreetNameSearchResult
+                        var name = JsonSerializer.Deserialize<Name>(hit.Source!.ToString()!, _jsonSerializerOptions);
+                        foreach (var municipalityName in municipalityNames)
                         {
-                            StreetNamePersistentLocalId = Convert.ToInt32(id),
-                            Spelling = name.Spelling
-                        });
+                            names.Add(new StreetNameSearchResult
+                            {
+                                StreetNamePersistentLocalId = municipalityName.Key,
+                                StreetName = name,
+                                MunicipalityNames = municipalityName.Value,
+                                Score = score
+                            });
+                        }
                     }
                 }
             }

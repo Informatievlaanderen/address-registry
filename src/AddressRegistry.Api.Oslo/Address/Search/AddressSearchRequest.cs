@@ -16,5 +16,6 @@
     public sealed class AddressSearchFilter
     {
         public string? Query { get; init; }
+        public string? MunicipalityOrPostalName { get; init; }
     }
 }

@@ -13,6 +13,15 @@
             bool mustBeInMunicipality,
             int size = 10);
 
+        Task<AddressSearchResult> SearchAddresses(
+            string streetNameQuery,
+            string houseNumberQuery,
+            string? boxNumberQuery,
+            string? postalCodeQuery,
+            string? municipalityOrPostalName,
+            bool mustBeInMunicipality,
+            int? size = 10);
+
         Task<AddressSearchResult> ListAddresses(
             string? streetNameId,
             string? streetName,

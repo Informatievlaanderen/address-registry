@@ -11,6 +11,7 @@
     using global::Elastic.Clients.Elasticsearch.Aggregations;
     using global::Elastic.Clients.Elasticsearch.Core.Search;
     using global::Elastic.Clients.Elasticsearch.QueryDsl;
+    using Microsoft.Extensions.Logging;
     using Name = Projections.Elastic.AddressSearch.Name;
 
     public sealed class StreetNameSearchResult
@@ -204,7 +205,10 @@
                 });
 
             if (!searchResponse.IsValidResponse)
+            {
+                _logger.LogWarning("Failed to search for addresses: {Error}", searchResponse.ElasticsearchServerError);
                 return new List<StreetNameSearchResult>();
+            }
 
             return GetStreetNameSearchResults(searchResponse);
         }
@@ -248,7 +252,10 @@
                 });
 
             if (!searchResponse.IsValidResponse)
+            {
+                _logger.LogWarning("Failed to search for addresses: {Error}", searchResponse.ElasticsearchServerError);
                 return new List<StreetNameSearchResult>();
+            }
 
             return GetStreetNameSearchResults(searchResponse);
         }

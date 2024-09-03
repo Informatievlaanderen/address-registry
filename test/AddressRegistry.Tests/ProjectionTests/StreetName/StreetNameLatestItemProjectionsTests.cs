@@ -468,6 +468,28 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
             });
         }
 
+        [Fact]
+        public async Task StreetNameWasRenamed()
+        {
+            var streetNamePersistentLocalId = _fixture.Create<StreetNamePersistentLocalId>();
+
+            var e = new StreetNameWasRenamed(
+                _fixture.Create<Guid>().ToString(),
+                streetNamePersistentLocalId,
+                streetNamePersistentLocalId + 1,
+                _provenance);
+
+            Given(_streetNameWasProposedV2, e);
+            await Then(async ctx =>
+            {
+                var result = await ctx.StreetNameLatestItems.FindAsync((int)streetNamePersistentLocalId);
+                result.Should().NotBeNull();
+                result!.PersistentLocalId.Should().Be(e.PersistentLocalId);
+                result.Status.Should().Be(AddressRegistry.Consumer.Read.StreetName.Projections.StreetNameStatus.Retired);
+                result.VersionTimestamp.Should().Be(InstantPattern.General.Parse(e.Provenance.Timestamp).Value);
+            });
+        }
+
         private static void AssertNames(StreetNameLatestItem item)
         {
             item.NameDutch.Should().Be("nl-name");

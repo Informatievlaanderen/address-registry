@@ -180,6 +180,15 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections
                     UpdateVersionTimestamp(item, message.Provenance.Timestamp);
                 }, ct);
             });
+
+            When<StreetNameWasRenamed>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateLatestItem(message.PersistentLocalId, item =>
+                {
+                    item.Status = StreetNameStatus.Retired;
+                    UpdateVersionTimestamp(item, message.Provenance.Timestamp);
+                }, ct);
+            });
         }
 
         private void UpdateNames(StreetNameLatestItem item, IDictionary<string, string> names)

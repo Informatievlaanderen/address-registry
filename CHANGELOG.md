@@ -1,3 +1,10 @@
+## [4.18.1](https://github.com/informatievlaanderen/address-registry/compare/v4.18.0...v4.18.1) (2024-09-03)
+
+
+### Bug Fixes
+
+* **consumer:** add streetname was renamed to read consumer ([255b9ee](https://github.com/informatievlaanderen/address-registry/commit/255b9ee4b5e0a1d2f3d73d544bbdea0db9c92845))
+
 # [4.18.0](https://github.com/informatievlaanderen/address-registry/compare/v4.17.0...v4.18.0) (2024-09-03)
 
 

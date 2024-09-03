@@ -1,3 +1,10 @@
+# [4.18.0](https://github.com/informatievlaanderen/address-registry/compare/v4.17.0...v4.18.0) (2024-09-03)
+
+
+### Features
+
+* **oslo-api:** add address search ([5ec41d5](https://github.com/informatievlaanderen/address-registry/commit/5ec41d58e9de005de561998abc5224869b9a7fd1))
+
 # [4.17.0](https://github.com/informatievlaanderen/address-registry/compare/v4.16.0...v4.17.0) (2024-09-02)
 
 

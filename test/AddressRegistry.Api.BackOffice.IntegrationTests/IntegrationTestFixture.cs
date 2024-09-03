@@ -21,7 +21,6 @@ namespace AddressRegistry.Api.BackOffice.IntegrationTests
     {
         private string _clientId;
         private string _clientSecret;
-        private readonly IDictionary<string, AccessToken> _accessTokens = new Dictionary<string, AccessToken>();
 
         public TestServer TestServer { get; private set; }
         public SqlConnection SqlConnection { get; private set; }
@@ -85,11 +84,24 @@ namespace AddressRegistry.Api.BackOffice.IntegrationTests
             await cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task<string> GetAccessToken(string requiredScopes)
+        public async Task DisposeAsync()
         {
-            if (_accessTokens.ContainsKey(requiredScopes) && !_accessTokens[requiredScopes].IsExpired)
+            await SqlConnection.DisposeAsync();
+        }
+
+        public async Task<string> GetAccessToken(string requiredScopes)
+            => await Authentication.GetAccessToken(_clientId, _clientSecret, requiredScopes);
+    }
+
+    public static class Authentication
+    {
+        private static readonly IDictionary<string, AccessToken> AccessTokens = new Dictionary<string, AccessToken>();
+
+        public static async Task<string> GetAccessToken(string clientId, string clientSecret, string requiredScopes)
+        {
+            if (AccessTokens.TryGetValue(requiredScopes, out var value) && !value.IsExpired)
             {
-                return _accessTokens[requiredScopes].Token;
+                return value.Token;
             }
 
             var tokenClient = new TokenClient(
@@ -97,21 +109,16 @@ namespace AddressRegistry.Api.BackOffice.IntegrationTests
                 new TokenClientOptions
                 {
                     Address = "https://authenticatie-ti.vlaanderen.be/op/v1/token",
-                    ClientId = _clientId,
-                    ClientSecret = _clientSecret,
+                    ClientId = clientId,
+                    ClientSecret = clientSecret,
                     Parameters = new Parameters(new[] { new KeyValuePair<string, string>("scope", requiredScopes) })
                 });
 
             var response = await tokenClient.RequestTokenAsync(OidcConstants.GrantTypes.ClientCredentials);
 
-            _accessTokens[requiredScopes] = new AccessToken(response.AccessToken, response.ExpiresIn);
+            AccessTokens[requiredScopes] = new AccessToken(response.AccessToken, response.ExpiresIn);
 
-            return _accessTokens[requiredScopes].Token;
-        }
-
-        public async Task DisposeAsync()
-        {
-            await SqlConnection.DisposeAsync();
+            return AccessTokens[requiredScopes].Token;
         }
     }
 

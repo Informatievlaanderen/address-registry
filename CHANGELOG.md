@@ -1,3 +1,10 @@
+## [4.18.4](https://github.com/informatievlaanderen/address-registry/compare/v4.18.3...v4.18.4) (2024-09-04)
+
+
+### Bug Fixes
+
+* race condition when trying to load streetname ([b9cddaa](https://github.com/informatievlaanderen/address-registry/commit/b9cddaafb668bb2d79040f1a2823c67980861b7e))
+
 ## [4.18.3](https://github.com/informatievlaanderen/address-registry/compare/v4.18.2...v4.18.3) (2024-09-04)
 
 

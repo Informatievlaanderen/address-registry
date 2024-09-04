@@ -51,12 +51,21 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddressesForMunicipa
 
             var newStreetNamePersistentLocalIdOne = Fixture.Create<PersistentLocalId>();
             var newStreetNamePersistentLocalIdTwo = Fixture.Create<PersistentLocalId>();
+            var removedStreetNamePersistentLocalIdOne = Fixture.Create<PersistentLocalId>();
             const string nisCode = "10000";
             const string newStreetNameNameOne = "Vagevuurstraat";
             const string newStreetNameHomonymAdditionOne = "(HO)";
             const string newStreetNameNameTwo = "Molendorpstraat";
 
             var streetNameConsumerContext = new FakeStreetNameConsumerContextFactory().CreateDbContext();
+            streetNameConsumerContext.StreetNameLatestItems.Add(new StreetNameLatestItem(
+                removedStreetNamePersistentLocalIdOne,
+                nisCode)
+            {
+                NameDutch = newStreetNameNameOne,
+                HomonymAdditionDutch = newStreetNameHomonymAdditionOne,
+                IsRemoved = true
+            });
             streetNameConsumerContext.StreetNameLatestItems.Add(new StreetNameLatestItem(
                 newStreetNamePersistentLocalIdOne,
                 nisCode)

@@ -43,7 +43,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 await IdempotentCommandHandler.Dispatch(
                     command.CreateCommandId(),
                     command,
-                    request.Metadata,
+                    request.Metadata!,
                     cancellationToken);
             }
             catch (IdempotencyException)
@@ -69,28 +69,29 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             ProposeAddressesForMunicipalityMergerLambdaRequest request,
             CancellationToken cancellationToken)
         {
-            var addresses = await Task.WhenAll(request.Addresses
-                .Select(async x =>
-                {
-                    var streetName = await StreetNames.GetAsync(
-                        new StreetNameStreamId(new StreetNamePersistentLocalId(x.MergedStreetNamePersistentLocalId)), cancellationToken);
+            var addresses = new List<ProposeAddressesForMunicipalityMergerItem>();
 
-                    var address = streetName.StreetNameAddresses.GetByPersistentLocalId(
-                        new AddressPersistentLocalId(x.MergedAddressPersistentLocalId));
+            foreach (var x in request.Addresses)
+            {
+                var streetName = await StreetNames.GetAsync(
+                    new StreetNameStreamId(new StreetNamePersistentLocalId(x.MergedStreetNamePersistentLocalId)), cancellationToken);
 
-                    return new ProposeAddressesForMunicipalityMergerItem(
-                        new PostalCode(x.PostalCode),
-                        new AddressPersistentLocalId(x.AddressPersistentLocalId),
-                        HouseNumber.Create(x.HouseNumber),
-                        x.BoxNumber is not null ? new BoxNumber(x.BoxNumber) : null,
-                        address.Geometry.GeometryMethod,
-                        address.Geometry.GeometrySpecification,
-                        address.Geometry.Geometry,
-                        address.IsOfficiallyAssigned,
-                        streetName.PersistentLocalId,
-                        address.AddressPersistentLocalId);
-                })
-                .ToList());
+                var address = streetName.StreetNameAddresses.GetByPersistentLocalId(
+                    new AddressPersistentLocalId(x.MergedAddressPersistentLocalId));
+
+                addresses.Add(new ProposeAddressesForMunicipalityMergerItem(
+                    new PostalCode(x.PostalCode),
+                    new AddressPersistentLocalId(x.AddressPersistentLocalId),
+                    HouseNumber.Create(x.HouseNumber),
+                    x.BoxNumber is not null ? new BoxNumber(x.BoxNumber) : null,
+                    address.Geometry.GeometryMethod,
+                    address.Geometry.GeometrySpecification,
+                    address.Geometry.Geometry,
+                    address.IsOfficiallyAssigned,
+                    streetName.PersistentLocalId,
+                    address.AddressPersistentLocalId)
+                );
+            }
 
             return new ProposeAddressesForMunicipalityMerger(
                 new StreetNamePersistentLocalId(request.StreetNamePersistentLocalId()),

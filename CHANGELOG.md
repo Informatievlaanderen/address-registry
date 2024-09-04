@@ -1,3 +1,10 @@
+## [4.18.2](https://github.com/informatievlaanderen/address-registry/compare/v4.18.1...v4.18.2) (2024-09-04)
+
+
+### Bug Fixes
+
+* String.Equals with StringComparison not supported for EF ([9ca9e8e](https://github.com/informatievlaanderen/address-registry/commit/9ca9e8eb132677fcd05ded5479c3e5b0e8fafbcf))
+
 ## [4.18.1](https://github.com/informatievlaanderen/address-registry/compare/v4.18.0...v4.18.1) (2024-09-03)
 
 

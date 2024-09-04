@@ -1,3 +1,10 @@
+## [4.18.3](https://github.com/informatievlaanderen/address-registry/compare/v4.18.2...v4.18.3) (2024-09-04)
+
+
+### Bug Fixes
+
+* ignore matching on removed streetnames when proposing for municipality merger ([2dcfd67](https://github.com/informatievlaanderen/address-registry/commit/2dcfd67008fb19fc5b18f3498a3b91edf8609c82))
+
 ## [4.18.2](https://github.com/informatievlaanderen/address-registry/compare/v4.18.1...v4.18.2) (2024-09-04)
 
 

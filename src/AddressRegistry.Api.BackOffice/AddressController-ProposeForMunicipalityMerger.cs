@@ -153,7 +153,8 @@ namespace AddressRegistry.Api.BackOffice
                         // String comparisons translate to case-insensitive checks on SQL (=desired behavior)
                         x.NisCode == nisCode
                         && x.NameDutch == streetNameName
-                        && x.HomonymAdditionDutch == streetNameHomonymAddition,
+                        && x.HomonymAdditionDutch == streetNameHomonymAddition
+                        && !x.IsRemoved,
                     cancellationToken: cancellationToken);
 
                 if (streetNameLatestItem is null)

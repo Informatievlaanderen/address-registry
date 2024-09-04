@@ -150,9 +150,10 @@ namespace AddressRegistry.Api.BackOffice
 
                 var streetNameLatestItem = await streetNameConsumerContext.StreetNameLatestItems.SingleOrDefaultAsync(
                     x =>
-                        string.Equals(nisCode, x.NisCode, StringComparison.InvariantCultureIgnoreCase)
-                        && string.Equals(streetNameName, x.NameDutch, StringComparison.InvariantCultureIgnoreCase)
-                        && string.Equals(streetNameHomonymAddition, x.HomonymAdditionDutch, StringComparison.InvariantCultureIgnoreCase),
+                        // String comparisons translate to case-insensitive checks on SQL (=desired behavior)
+                        x.NisCode == nisCode
+                        && x.NameDutch == streetNameName
+                        && x.HomonymAdditionDutch == streetNameHomonymAddition,
                     cancellationToken: cancellationToken);
 
                 if (streetNameLatestItem is null)

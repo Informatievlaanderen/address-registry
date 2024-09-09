@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using global::Elastic.Clients.Elasticsearch;
     using global::Elastic.Clients.Elasticsearch.QueryDsl;
     using Microsoft.Extensions.Logging;
     using Projections.Elastic.AddressSearch;
@@ -11,14 +12,11 @@
     public sealed partial class AddressApiElasticsearchClient
     {
         public async Task<AddressSearchResult> SearchAddresses(
-            string streetNameQuery,
-            string houseNumberQuery,
-            string? boxNumberQuery,
-            string? postalCodeQuery,
+            string addressQuery,
             string? municipalityOrPostalName,
-            bool mustBeInMunicipality,
             int? size = 10)
         {
+            const string fullAddress = "fullAddress";
             var municipalityNames =
                 $"{ToCamelCase(nameof(AddressSearchDocument.Municipality))}.{ToCamelCase(nameof(AddressSearchDocument.Municipality.Names))}";
             var postalNames =
@@ -33,21 +31,22 @@
                             q.Bool(x =>
                             {
                                 x.Filter(f => f.Term(t => t.Field(ToCamelCase(nameof(AddressSearchDocument.Active))!).Value(true)));
-                                if (mustBeInMunicipality)
+                                if (!string.IsNullOrWhiteSpace(municipalityOrPostalName))
                                 {
                                     var shouldQueries = new List<Action<QueryDescriptor<AddressSearchDocument>>>();
-
-                                    shouldQueries.Add(q2 => q2.Nested(nested => QueryStreetNames(nested, [streetNameQuery])));
-                                    shouldQueries.Add(q2 => q2.Prefix(pfx => pfx.Field(document => document.HouseNumber).Value(houseNumberQuery).Boost(2)));
-                                    shouldQueries.Add(q2 => q2.Term(t => t.Field(document => document.HouseNumber).Value(houseNumberQuery).Boost(5)));
-
-                                    if (!string.IsNullOrWhiteSpace(boxNumberQuery))
-                                        shouldQueries.Add(q2 => q2.Prefix(pfx => pfx.Field(document => document.BoxNumber).Value(boxNumberQuery)));
-
-                                    if (!string.IsNullOrWhiteSpace(postalCodeQuery))
-                                        shouldQueries.Add(q2 => q2.Prefix(pfx => pfx.Field(document => document.PostalInfo.PostalCode).Value(postalCodeQuery)));
-
                                     var shouldMunicipalityOrPostalQueries = new List<Action<QueryDescriptor<AddressSearchDocument>>>();
+
+                                    shouldQueries.Add(q2 =>
+                                        q2.Nested(full =>
+                                            full
+                                                .Path(fullAddress)
+                                                .Query(fullAddressQuery => fullAddressQuery.MatchPhrase(mp =>
+                                                    mp
+                                                        .Field($"{fullAddress}.{NameSpelling}")
+                                                        .Query(addressQuery)
+                                                        .Slop(10)))));
+
+                                    //query municipality names
                                     if (!string.IsNullOrWhiteSpace(municipalityOrPostalName))
                                         shouldMunicipalityOrPostalQueries.Add(q2 =>
                                             q2.Nested(nested => nested
@@ -72,6 +71,7 @@
                                             )
                                         );
 
+                                    //query postal names
                                     if (!string.IsNullOrWhiteSpace(municipalityOrPostalName))
                                     {
                                         shouldMunicipalityOrPostalQueries.Add(q2 =>
@@ -102,70 +102,19 @@
                                 }
                                 else
                                 {
-                                    var shouldQueries = new List<Action<QueryDescriptor<AddressSearchDocument>>>();
-
-                                    shouldQueries.Add(q2 => q2.Nested(nested => QueryStreetNames(nested, [streetNameQuery])));
-                                    shouldQueries.Add(q2 => q2.Prefix(pfx => pfx.Field(document => document.HouseNumber).Value(houseNumberQuery).Boost(2)));
-                                    shouldQueries.Add(q2 => q2.Term(t => t.Field(document => document.HouseNumber).Value(houseNumberQuery).Boost(5)));
-
-                                    if (!string.IsNullOrWhiteSpace(boxNumberQuery))
-                                        shouldQueries.Add(q2 => q2.Prefix(pfx => pfx.Field(document => document.BoxNumber).Value(boxNumberQuery)));
-
-                                    if (!string.IsNullOrWhiteSpace(postalCodeQuery))
-                                        shouldQueries.Add(q2 => q2.Prefix(pfx => pfx.Field(document => document.PostalInfo.PostalCode).Value(postalCodeQuery)));
-
-                                    if (!string.IsNullOrWhiteSpace(municipalityOrPostalName))
-                                        shouldQueries.Add(q2 =>
-                                            q2.Nested(nested => nested
-                                                .Path(municipalityNames!)
-                                                .Query(nestedQuery => nestedQuery
-                                                    .Bool(b => b
-                                                        .Should(
-                                                            m => m
-                                                                .ConstantScore(cs =>
-                                                                    cs.Filter(f => f.Prefix(pfx =>
-                                                                            pfx.Field($"{municipalityNames}.{NameSpelling}.{Keyword}"!)
-                                                                                .Value(municipalityOrPostalName)))
-                                                                        .Boost(3)),
-                                                            m => m
-                                                                .ConstantScore(cs =>
-                                                                    cs.Filter(f => f.Match(m2 =>
-                                                                        m2.Field($"{municipalityNames}.{NameSpelling}"!)
-                                                                            .Query(municipalityOrPostalName))))
-                                                        )
-                                                    )
-                                                )
-                                            )
-                                        );
-
-                                    if (!string.IsNullOrWhiteSpace(municipalityOrPostalName))
-                                    {
-                                        shouldQueries.Add(q2 =>
-                                            q2.Nested(nested => nested
-                                            .Path(postalNames!)
-                                            .Query(nestedQuery => nestedQuery
-                                                .Bool(b => b
-                                                    .Should(
-                                                        m => m
-                                                            .ConstantScore(cs =>
-                                                                cs.Filter(f => f.Prefix(pfx =>
-                                                                        pfx.Field($"{postalNames}.{NameSpelling}.{Keyword}"!)
-                                                                            .Value(municipalityOrPostalName)))
-                                                                    .Boost(3)),
-                                                        m => m
-                                                            .ConstantScore(cs =>
-                                                                cs.Filter(f => f.Match(m2 =>
-                                                                    m2.Field($"{postalNames}.{NameSpelling}"!).Query(municipalityOrPostalName))))
-                                                    )
-                                                )
-                                            )
-                                        ));
-                                    }
-
-                                    x.Should(shouldQueries.ToArray());
+                                    x.Must(must =>
+                                        must.Nested(full =>
+                                            full
+                                                .Path(fullAddress)
+                                                .Query(fullAddressQuery => fullAddressQuery.MatchPhrase(mp =>
+                                                    mp
+                                                        .Field($"{fullAddress}.{NameSpelling}")
+                                                        .Query(addressQuery)
+                                                        .Slop(10)))));
                                 }
                             })
-                        );
+                        )
+                        .Sort(x => x.Score(new ScoreSort {Order = SortOrder.Desc}));
                 });
 
             if (!searchResponse.IsValidResponse)

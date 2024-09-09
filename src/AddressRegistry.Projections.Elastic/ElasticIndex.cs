@@ -66,7 +66,9 @@
                     .Analysis(a => a
                         .CharFilters(cf => cf
                             .PatternReplace("dot_replace", prcf => prcf.Pattern("\\.").Replacement(""))
-                            .PatternReplace("underscore_replace", prcf => prcf.Pattern("_").Replacement(" ")))
+                            .PatternReplace("underscore_replace", prcf => prcf.Pattern("_").Replacement(" "))
+                            .PatternReplace("quote_replace", prcf => prcf.Pattern("\'").Replacement(""))
+                        )
                         .TokenFilters(descriptor => AddDutchStopWordsFilter(descriptor))
                         .Normalizers(descriptor =>
                         {
@@ -148,7 +150,7 @@
 
         private static NormalizersDescriptor AddAddressSearchNormalizer(NormalizersDescriptor normalizersDescriptor) =>
             normalizersDescriptor.Custom(AddressSearchNormalizer, ca => ca
-                .CharFilter(new[] { "underscore_replace", "dot_replace" })
+                .CharFilter(new[] { "underscore_replace", "dot_replace", "quote_replace" })
                 .Filter(new[] { "lowercase", "asciifolding", "trim" }));
 
         private static NormalizersDescriptor AddTextNumberNormalizer(NormalizersDescriptor normalizersDescriptor) =>
@@ -158,7 +160,7 @@
         private static AnalyzersDescriptor AddAddressSearchAnalyzer(AnalyzersDescriptor analyzersDescriptor)
             => analyzersDescriptor.Custom(AddressSearchAnalyzer, ca => ca
                         .Tokenizer("standard")
-                        .CharFilter(new [] { "underscore_replace", "dot_replace" })
+                        .CharFilter(new [] { "underscore_replace", "dot_replace", "quote_replace" })
                         .Filter(new [] { "lowercase", "asciifolding", "dutch_stop" })
             );
     }

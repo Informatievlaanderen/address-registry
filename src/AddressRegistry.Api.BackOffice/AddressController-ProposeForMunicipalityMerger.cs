@@ -113,7 +113,7 @@ namespace AddressRegistry.Api.BackOffice
                             .FindRelationAsync(new AddressPersistentLocalId(oldAddressPersistentLocalId), cancellationToken);
 
                         if (relation is null)
-                            return BadRequest($"No streetname relation found for oldAddressPuri {oldAddressId} at record number {recordNr}");
+                            return BadRequest($"No streetname relation found for oldAddressId {oldAddressId} at record number {recordNr}");
 
                         records.Add(new CsvRecord
                         {
@@ -172,6 +172,14 @@ namespace AddressRegistry.Api.BackOffice
                 if (boxNumberAddressRecords.Count != boxNumberAddressRecords.Select(x => new { x.HouseNumber, x.BoxNumber }).Distinct().Count())
                 {
                     return BadRequest($"Box numbers are not unique for street '{streetNameName}' and '{streetNameHomonymAddition}'");
+                }
+
+                foreach (var boxNumberAddressRecord in boxNumberAddressRecords)
+                {
+                    if (houseNumberAddressRecords.All(x => x.HouseNumber != boxNumberAddressRecord.HouseNumber))
+                    {
+                        return BadRequest($"Box number '{boxNumberAddressRecord.BoxNumber}' does not have a corresponding house number '{boxNumberAddressRecord.HouseNumber}' for street '{streetNameName}' at record number {boxNumberAddressRecord.RecordNumber}");
+                    }
                 }
 
                 sqsRequests.Add(new ProposeAddressesForMunicipalityMergerSqsRequest(

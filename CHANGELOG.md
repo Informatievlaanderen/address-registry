@@ -1,3 +1,10 @@
+## [4.18.5](https://github.com/informatievlaanderen/address-registry/compare/v4.18.4...v4.18.5) (2024-09-17)
+
+
+### Bug Fixes
+
+* approve streetname for merger with desired proposed ([2d68117](https://github.com/informatievlaanderen/address-registry/commit/2d68117f925e6edd8463d8a5acba2f42523560f2))
+
 ## [4.18.4](https://github.com/informatievlaanderen/address-registry/compare/v4.18.3...v4.18.4) (2024-09-04)
 
 

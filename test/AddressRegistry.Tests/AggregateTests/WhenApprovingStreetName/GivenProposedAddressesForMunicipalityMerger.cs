@@ -69,12 +69,18 @@ namespace AddressRegistry.Tests.AggregateTests.WhenApprovingStreetName
             var command = Fixture.Create<ApproveStreetName>();
 
             var mergerAddressPersistentLocalIdOne = new AddressPersistentLocalId(1);
+            var mergerAddressPersistentLocalIdOneBoxOne = new AddressPersistentLocalId(11);
             var mergerAddressPersistentLocalIdTwo = new AddressPersistentLocalId(2);
             var addressPersistentLocalId = new AddressPersistentLocalId(3);
 
             var addressWasProposedForMunicipalityMergerOne = Fixture.Create<AddressWasProposedForMunicipalityMerger>()
                 .AsHouseNumberAddress()
                 .WithAddressPersistentLocalId(mergerAddressPersistentLocalIdOne)
+                .WithDesiredStatus(AddressStatus.Proposed);
+
+            var addressWasProposedForMunicipalityMergerOneBoxOne = Fixture.Create<AddressWasProposedForMunicipalityMerger>()
+                .AsBoxNumberAddress(mergerAddressPersistentLocalIdOne)
+                .WithAddressPersistentLocalId(mergerAddressPersistentLocalIdOneBoxOne)
                 .WithDesiredStatus(AddressStatus.Proposed);
 
             var addressWasProposedForMunicipalityMergerTwo = Fixture.Create<AddressWasProposedForMunicipalityMerger>()
@@ -93,6 +99,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenApprovingStreetName
                 .Given(_streamId,
                     Fixture.Create<StreetNameWasImported>(),
                     addressWasProposedForMunicipalityMergerOne,
+                    addressWasProposedForMunicipalityMergerOneBoxOne,
                     addressWasProposedForMunicipalityMergerTwo,
                     addressWasRejected,
                     addressWasProposedV2)

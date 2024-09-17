@@ -1,3 +1,10 @@
+## [4.18.6](https://github.com/informatievlaanderen/address-registry/compare/v4.18.5...v4.18.6) (2024-09-17)
+
+
+### Bug Fixes
+
+* **api:** upload streetname merger changes GAWR-6593 ([fff0a27](https://github.com/informatievlaanderen/address-registry/commit/fff0a2738d9b086521c441008a23dd72504e9f17))
+
 ## [4.18.5](https://github.com/informatievlaanderen/address-registry/compare/v4.18.4...v4.18.5) (2024-09-17)
 
 

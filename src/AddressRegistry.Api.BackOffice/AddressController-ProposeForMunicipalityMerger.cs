@@ -81,19 +81,18 @@ namespace AddressRegistry.Api.BackOffice
                     {
                         recordNr++;
 
-                        var oldAddressPuri = csv.GetField<string>("OUD adresid");
+                        var oldAddressId = csv.GetField<string>("OUD adresid");
                         var streetNameName = csv.GetField<string>("NIEUW straatnaam");
                         var streetNameHomonymAddition = csv.GetField<string?>("NIEUW homoniemtoevoeging");
                         var houseNumber = csv.GetField<string>("NIEUW huisnummer");
                         var boxNumber = csv.GetField<string?>("NIEUW busnummer");
                         var postalCode = csv.GetField<string>("NIEUW postcode");
 
-                        if (string.IsNullOrWhiteSpace(oldAddressPuri))
-                            return BadRequest($"OldAddressPuri is required at record number {recordNr}");
+                        if (string.IsNullOrWhiteSpace(oldAddressId))
+                            return BadRequest($"OldAddressId is required at record number {recordNr}");
 
-                        if (!OsloPuriValidator.TryParseIdentifier(oldAddressPuri, out var oldAddressPersistentLocalIdAsString)
-                            || !int.TryParse(oldAddressPersistentLocalIdAsString, out var oldAddressPersistentLocalId))
-                            return BadRequest($"OldAddressPuri is NaN at record number {recordNr}");
+                        if (!int.TryParse(oldAddressId, out var oldAddressPersistentLocalId))
+                            return BadRequest($"OldAddressId is NaN at record number {recordNr}");
 
                         if (string.IsNullOrWhiteSpace(streetNameName))
                             return BadRequest($"StreetNameName is required at record number {recordNr}");
@@ -114,7 +113,7 @@ namespace AddressRegistry.Api.BackOffice
                             .FindRelationAsync(new AddressPersistentLocalId(oldAddressPersistentLocalId), cancellationToken);
 
                         if (relation is null)
-                            return BadRequest($"No streetname relation found for oldAddressPuri {oldAddressPuri} at record number {recordNr}");
+                            return BadRequest($"No streetname relation found for oldAddressPuri {oldAddressId} at record number {recordNr}");
 
                         records.Add(new CsvRecord
                         {

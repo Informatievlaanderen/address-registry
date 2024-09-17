@@ -7,6 +7,7 @@ namespace AddressRegistry.Api.BackOffice
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Abstractions;
     using Abstractions.Requests;
     using Abstractions.SqsRequests;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
@@ -34,6 +35,7 @@ namespace AddressRegistry.Api.BackOffice
         /// <param name="nisCode"></param>
         /// <param name="persistentLocalIdGenerator"></param>
         /// <param name="streetNameConsumerContext"></param>
+        /// <param name="backOfficeContext"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpPost("acties/voorstellen/gemeentefusie/{niscode}")]
@@ -49,6 +51,7 @@ namespace AddressRegistry.Api.BackOffice
             [FromRoute(Name = "niscode")] string nisCode,
             [FromServices] IPersistentLocalIdGenerator persistentLocalIdGenerator,
             [FromServices] StreetNameConsumerContext streetNameConsumerContext,
+            [FromServices] BackOfficeContext backOfficeContext,
             CancellationToken cancellationToken = default)
         {
             if (file == null || file.Length == 0)
@@ -78,27 +81,18 @@ namespace AddressRegistry.Api.BackOffice
                     {
                         recordNr++;
 
-                        var oldStreetNamePuri = csv.GetField<string>("OUD straatnaamid");
-                        var oldAddressPuri = csv.GetField<string>("OUD adresid");
+                        var oldAddressId = csv.GetField<string>("OUD adresid");
                         var streetNameName = csv.GetField<string>("NIEUW straatnaam");
                         var streetNameHomonymAddition = csv.GetField<string?>("NIEUW homoniemtoevoeging");
                         var houseNumber = csv.GetField<string>("NIEUW huisnummer");
                         var boxNumber = csv.GetField<string?>("NIEUW busnummer");
                         var postalCode = csv.GetField<string>("NIEUW postcode");
 
-                        if (string.IsNullOrWhiteSpace(oldStreetNamePuri))
-                            return BadRequest($"OldStreetNamePuri is required at record number {recordNr}");
+                        if (string.IsNullOrWhiteSpace(oldAddressId))
+                            return BadRequest($"OldAddressId is required at record number {recordNr}");
 
-                        if (!OsloPuriValidator.TryParseIdentifier(oldStreetNamePuri, out var oldStreetNamePersistentLocalIdAsString)
-                            || !int.TryParse(oldStreetNamePersistentLocalIdAsString, out var oldStreetNamePersistentLocalId))
-                            return BadRequest($"OldStreetNamePuri is NaN at record number {recordNr}");
-
-                        if (string.IsNullOrWhiteSpace(oldAddressPuri))
-                            return BadRequest($"OldAddressPuri is required at record number {recordNr}");
-
-                        if (!OsloPuriValidator.TryParseIdentifier(oldAddressPuri, out var oldAddressPersistentLocalIdAsString)
-                            || !int.TryParse(oldAddressPersistentLocalIdAsString, out var oldAddressNamePersistentLocalId))
-                            return BadRequest($"OldAddressPuri is NaN at record number {recordNr}");
+                        if (!int.TryParse(oldAddressId, out var oldAddressPersistentLocalId))
+                            return BadRequest($"OldAddressId is NaN at record number {recordNr}");
 
                         if (string.IsNullOrWhiteSpace(streetNameName))
                             return BadRequest($"StreetNameName is required at record number {recordNr}");
@@ -115,11 +109,17 @@ namespace AddressRegistry.Api.BackOffice
                         if (string.IsNullOrWhiteSpace(postalCode))
                             return BadRequest($"PostalCode is required at record number {recordNr}");
 
+                        var relation = await backOfficeContext
+                            .FindRelationAsync(new AddressPersistentLocalId(oldAddressPersistentLocalId), cancellationToken);
+
+                        if (relation is null)
+                            return BadRequest($"No streetname relation found for oldAddressId {oldAddressId} at record number {recordNr}");
+
                         records.Add(new CsvRecord
                         {
                             RecordNumber = recordNr,
-                            OldStreetNamePersistentLocalId = oldStreetNamePersistentLocalId,
-                            OldAddressPersistentLocalId = oldAddressNamePersistentLocalId,
+                            OldStreetNamePersistentLocalId = relation.StreetNamePersistentLocalId,
+                            OldAddressPersistentLocalId = oldAddressPersistentLocalId,
                             StreetNameName = streetNameName.Trim(),
                             StreetNameHomonymAddition =
                                 string.IsNullOrWhiteSpace(streetNameHomonymAddition) ? null : streetNameHomonymAddition.Trim(),
@@ -172,6 +172,14 @@ namespace AddressRegistry.Api.BackOffice
                 if (boxNumberAddressRecords.Count != boxNumberAddressRecords.Select(x => new { x.HouseNumber, x.BoxNumber }).Distinct().Count())
                 {
                     return BadRequest($"Box numbers are not unique for street '{streetNameName}' and '{streetNameHomonymAddition}'");
+                }
+
+                foreach (var boxNumberAddressRecord in boxNumberAddressRecords)
+                {
+                    if (houseNumberAddressRecords.All(x => x.HouseNumber != boxNumberAddressRecord.HouseNumber))
+                    {
+                        return BadRequest($"Box number '{boxNumberAddressRecord.BoxNumber}' does not have a corresponding house number '{boxNumberAddressRecord.HouseNumber}' for street '{streetNameName}' at record number {boxNumberAddressRecord.RecordNumber}");
+                    }
                 }
 
                 sqsRequests.Add(new ProposeAddressesForMunicipalityMergerSqsRequest(

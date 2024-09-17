@@ -15,6 +15,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddressesForMunicipa
     using Microsoft.AspNetCore.Mvc;
     using Moq;
     using NodaTime;
+    using StreetName;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -28,7 +29,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddressesForMunicipa
         }
 
         [Fact]
-        public void ThenTicketLocationsAreReturned()
+        public async Task ThenTicketLocationsAreReturned()
         {
             var persistentLocalIdOne = Fixture.Create<PersistentLocalId>();
             var persistentLocalIdTwo = Fixture.Create<PersistentLocalId>();
@@ -81,11 +82,18 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddressesForMunicipa
             });
             streetNameConsumerContext.SaveChanges();
 
+            var backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
+
             const int oldStreetNamePersistenLocalIdOne = 59111;
             const int oldStreetNamePersistenLocalIdTwo = 59112;
             const int oldAddressPersistenLocalIdOne = 2268196;
             const int oldAddressPersistenLocalIdTwo = 2268197;
             const int oldAddressPersistenLocalIdThree = 2268198;
+
+            await backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(new AddressPersistentLocalId(oldAddressPersistenLocalIdOne), new StreetNamePersistentLocalId(oldStreetNamePersistenLocalIdOne));
+            await backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(new AddressPersistentLocalId(oldAddressPersistenLocalIdTwo), new StreetNamePersistentLocalId(oldStreetNamePersistenLocalIdOne));
+            await backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(new AddressPersistentLocalId(oldAddressPersistenLocalIdThree), new StreetNamePersistentLocalId(oldStreetNamePersistenLocalIdTwo));
+
             const string houseNumberOne = "14";
             const string houseNumberTwo = "30";
             const string boxNumber = "b";
@@ -93,14 +101,15 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddressesForMunicipa
             var result =
                 _controller.ProposeForMunicipalityMerger(
                     CsvHelpers.CreateFormFileFromString($"""
-                                                         OUD straatnaamid;OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
-                                                         https://data.vlaanderen.be/id/straatnaam/{oldStreetNamePersistenLocalIdOne};https://data.vlaanderen.be/id/adres/{oldAddressPersistenLocalIdOne};{newStreetNameNameOne};{newStreetNameHomonymAdditionOne};{houseNumberOne};;{postalCode}
-                                                         https://data.vlaanderen.be/id/straatnaam/{oldStreetNamePersistenLocalIdOne};https://data.vlaanderen.be/id/adres/{oldAddressPersistenLocalIdTwo};{newStreetNameNameOne};{newStreetNameHomonymAdditionOne};{houseNumberOne};{boxNumber};{postalCode}
-                                                         https://data.vlaanderen.be/id/straatnaam/{oldStreetNamePersistenLocalIdTwo};https://data.vlaanderen.be/id/adres/{oldAddressPersistenLocalIdThree};{newStreetNameNameTwo};;{houseNumberTwo};;{postalCode}
+                                                         OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
+                                                         {oldAddressPersistenLocalIdOne};{newStreetNameNameOne};{newStreetNameHomonymAdditionOne};{houseNumberOne};;{postalCode}
+                                                         {oldAddressPersistenLocalIdTwo};{newStreetNameNameOne};{newStreetNameHomonymAdditionOne};{houseNumberOne};{boxNumber};{postalCode}
+                                                         {oldAddressPersistenLocalIdThree};{newStreetNameNameTwo};;{houseNumberTwo};;{postalCode}
                                                          """),
                     nisCode,
                     persistentLocalIdGenerator.Object,
                     streetNameConsumerContext,
+                    backOfficeContext,
                     CancellationToken.None).GetAwaiter().GetResult();
 
             result.Should().BeOfType<OkObjectResult>();

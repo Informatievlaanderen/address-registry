@@ -1,3 +1,10 @@
+## [4.18.7](https://github.com/informatievlaanderen/address-registry/compare/v4.18.6...v4.18.7) (2024-09-24)
+
+
+### Bug Fixes
+
+* ci deploy lambda ([c8fd265](https://github.com/informatievlaanderen/address-registry/commit/c8fd2655f004856480cc456438f168e80c0eacf2))
+
 ## [4.18.6](https://github.com/informatievlaanderen/address-registry/compare/v4.18.5...v4.18.6) (2024-09-17)
 
 

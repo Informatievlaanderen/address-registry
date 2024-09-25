@@ -1,5 +1,6 @@
 namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddressesForMunicipalityMerger
 {
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice;
@@ -68,7 +69,8 @@ OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW bus
                     CancellationToken.None).GetAwaiter().GetResult();
 
             result.Should().BeOfType<BadRequestObjectResult>();
-            ((BadRequestObjectResult)result).Value.Should().BeEquivalentTo("OldAddressId is required at record number 1");
+            var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
+            errorMessages.Should().Contain("OldAddressId is required at record number 1");
         }
 
         [Fact]
@@ -86,7 +88,8 @@ abc;Vagevuurstraat;;14;;8755"),
                     CancellationToken.None).GetAwaiter().GetResult();
 
             result.Should().BeOfType<BadRequestObjectResult>();
-            ((BadRequestObjectResult)result).Value.Should().BeEquivalentTo("OldAddressId is NaN at record number 1");
+            var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
+            errorMessages.Should().Contain("OldAddressId is NaN at record number 1");
         }
 
         [Fact]
@@ -104,7 +107,8 @@ OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW bus
                     CancellationToken.None).GetAwaiter().GetResult();
 
             result.Should().BeOfType<BadRequestObjectResult>();
-            ((BadRequestObjectResult)result).Value.Should().BeEquivalentTo("StreetNameName is required at record number 1");
+            var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
+            errorMessages.Should().Contain("StreetNameName is required at record number 1");
         }
 
         [Fact]
@@ -122,7 +126,8 @@ OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW bus
                     CancellationToken.None).GetAwaiter().GetResult();
 
             result.Should().BeOfType<BadRequestObjectResult>();
-            ((BadRequestObjectResult)result).Value.Should().BeEquivalentTo("HouseNumber is required at record number 1");
+            var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
+            errorMessages.Should().Contain("HouseNumber is required at record number 1");
         }
 
         [Fact]
@@ -140,7 +145,8 @@ OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW bus
                     CancellationToken.None).GetAwaiter().GetResult();
 
             result.Should().BeOfType<BadRequestObjectResult>();
-            ((BadRequestObjectResult)result).Value.Should().BeEquivalentTo("HouseNumber is invalid at record number 1");
+            var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
+            errorMessages.Should().Contain("HouseNumber is invalid at record number 1");
         }
 
         [Fact]
@@ -158,7 +164,8 @@ OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW bus
                     CancellationToken.None).GetAwaiter().GetResult();
 
             result.Should().BeOfType<BadRequestObjectResult>();
-            ((BadRequestObjectResult)result).Value.Should().BeEquivalentTo("BoxNumber is invalid at record number 1");
+            var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
+            errorMessages.Should().Contain("BoxNumber is invalid at record number 1");
         }
 
         [Fact]
@@ -176,7 +183,8 @@ OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW bus
                     CancellationToken.None).GetAwaiter().GetResult();
 
             result.Should().BeOfType<BadRequestObjectResult>();
-            ((BadRequestObjectResult)result).Value.Should().BeEquivalentTo("PostalCode is required at record number 1");
+            var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
+            errorMessages.Should().Contain("PostalCode is required at record number 1");
         }
 
         [Fact]
@@ -194,7 +202,8 @@ OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW bus
                     CancellationToken.None).GetAwaiter().GetResult();
 
             result.Should().BeOfType<BadRequestObjectResult>();
-            ((BadRequestObjectResult)result).Value.Should().BeEquivalentTo("No streetname relation found for oldAddressId 2268196 at record number 1");
+            var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
+            errorMessages.Should().Contain("No streetname relation found for oldAddressId 2268196 at record number 1");
         }
 
         [Fact]
@@ -223,13 +232,14 @@ OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW bus
 {addressPersistentLocalIdOne};Vagevuurstraat;;15;;8755
 "),
                     "10000",
-                    Mock.Of<IPersistentLocalIdGenerator>(),
+                    new FakePersistentLocalIdGenerator(),
                     dbContext,
                     backOfficeContext,
                     CancellationToken.None).GetAwaiter().GetResult();
 
             result.Should().BeOfType<BadRequestObjectResult>();
-            ((BadRequestObjectResult)result).Value.Should().BeEquivalentTo("OldAddressPuri is not unique");
+            var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
+            errorMessages.Should().Contain($"OldAddressPersistentLocalId {addressPersistentLocalIdOne} is not unique");
         }
 
         [Fact]
@@ -260,13 +270,14 @@ OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW bus
 {addressPersistentLocalIdTwo};Vagevuurstraat;;14;;8755
 "),
                     "10000",
-                    Mock.Of<IPersistentLocalIdGenerator>(),
+                    new FakePersistentLocalIdGenerator(),
                     dbContext,
                     backOfficeContext,
                     CancellationToken.None).GetAwaiter().GetResult();
 
             result.Should().BeOfType<BadRequestObjectResult>();
-            ((BadRequestObjectResult)result).Value.Should().BeEquivalentTo("House numbers are not unique for street 'Vagevuurstraat' and ''");
+            var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
+            errorMessages.Should().Contain("House number '14' is not unique for street (Name=Vagevuurstraat, HomonymAddition=)");
         }
 
         [Fact]
@@ -297,13 +308,14 @@ OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW bus
 {addressPersistentLocalIdTwo};Vagevuurstraat;;14;A;8755
 "),
                     "10000",
-                    Mock.Of<IPersistentLocalIdGenerator>(),
+                    new FakePersistentLocalIdGenerator(),
                     dbContext,
                     backOfficeContext,
                     CancellationToken.None).GetAwaiter().GetResult();
 
             result.Should().BeOfType<BadRequestObjectResult>();
-            ((BadRequestObjectResult)result).Value.Should().BeEquivalentTo("Box numbers are not unique for street 'Vagevuurstraat' and ''");
+            var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
+            errorMessages.Should().Contain("Box number 'A' is not unique for street (Name=Vagevuurstraat, HomonymAddition=) and house number '14'");
         }
     }
 }

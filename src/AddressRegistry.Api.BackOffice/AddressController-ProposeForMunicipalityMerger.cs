@@ -60,6 +60,7 @@ namespace AddressRegistry.Api.BackOffice
             if (!Path.GetExtension(file.FileName).Equals(".csv", StringComparison.CurrentCultureIgnoreCase))
                 return BadRequest("Only CSV files are allowed.");
 
+            var errorMessages = new List<string>();
             var records = new List<CsvRecord>();
             using (var stream = new MemoryStream())
             {
@@ -81,6 +82,8 @@ namespace AddressRegistry.Api.BackOffice
                     {
                         recordNr++;
 
+                        var recordErrorMessages = new List<string>();
+
                         var oldAddressId = csv.GetField<string>("OUD adresid");
                         var streetNameName = csv.GetField<string>("NIEUW straatnaam");
                         var streetNameHomonymAddition = csv.GetField<string?>("NIEUW homoniemtoevoeging");
@@ -89,51 +92,66 @@ namespace AddressRegistry.Api.BackOffice
                         var postalCode = csv.GetField<string>("NIEUW postcode");
 
                         if (string.IsNullOrWhiteSpace(oldAddressId))
-                            return BadRequest($"OldAddressId is required at record number {recordNr}");
+                            recordErrorMessages.Add($"OldAddressId is required at record number {recordNr}");
 
-                        if (!int.TryParse(oldAddressId, out var oldAddressPersistentLocalId))
-                            return BadRequest($"OldAddressId is NaN at record number {recordNr}");
+                        if (!string.IsNullOrWhiteSpace(oldAddressId)
+                            & !int.TryParse(oldAddressId, out var oldAddressPersistentLocalId))
+                            recordErrorMessages.Add($"OldAddressId is NaN at record number {recordNr}");
 
                         if (string.IsNullOrWhiteSpace(streetNameName))
-                            return BadRequest($"StreetNameName is required at record number {recordNr}");
+                            recordErrorMessages.Add($"StreetNameName is required at record number {recordNr}");
 
                         if (string.IsNullOrWhiteSpace(houseNumber))
-                            return BadRequest($"HouseNumber is required at record number {recordNr}");
-
-                        if (!HouseNumber.HasValidFormat(houseNumber))
-                            return BadRequest($"HouseNumber is invalid at record number {recordNr}");
+                        {
+                            recordErrorMessages.Add($"HouseNumber is required at record number {recordNr}");
+                        }
+                        else if (!HouseNumber.HasValidFormat(houseNumber))
+                        {
+                            recordErrorMessages.Add($"HouseNumber is invalid at record number {recordNr}");
+                        }
 
                         if (!string.IsNullOrWhiteSpace(boxNumber) && !BoxNumber.HasValidFormat(boxNumber))
-                            return BadRequest($"BoxNumber is invalid at record number {recordNr}");
+                            recordErrorMessages.Add($"BoxNumber is invalid at record number {recordNr}");
 
                         if (string.IsNullOrWhiteSpace(postalCode))
-                            return BadRequest($"PostalCode is required at record number {recordNr}");
+                            recordErrorMessages.Add($"PostalCode is required at record number {recordNr}");
 
                         var relation = await backOfficeContext
                             .FindRelationAsync(new AddressPersistentLocalId(oldAddressPersistentLocalId), cancellationToken);
 
                         if (relation is null)
-                            return BadRequest($"No streetname relation found for oldAddressId {oldAddressId} at record number {recordNr}");
+                            recordErrorMessages.Add($"No streetname relation found for oldAddressId {oldAddressId} at record number {recordNr}");
+
+                        if (recordErrorMessages.Any())
+                        {
+                            errorMessages.AddRange(recordErrorMessages);
+                            continue;
+                        }
 
                         records.Add(new CsvRecord
                         {
                             RecordNumber = recordNr,
-                            OldStreetNamePersistentLocalId = relation.StreetNamePersistentLocalId,
+                            OldStreetNamePersistentLocalId = relation!.StreetNamePersistentLocalId,
                             OldAddressPersistentLocalId = oldAddressPersistentLocalId,
-                            StreetNameName = streetNameName.Trim(),
+                            StreetNameName = streetNameName!.Trim(),
                             StreetNameHomonymAddition =
                                 string.IsNullOrWhiteSpace(streetNameHomonymAddition) ? null : streetNameHomonymAddition.Trim(),
-                            HouseNumber = houseNumber.Trim(),
+                            HouseNumber = houseNumber!.Trim(),
                             BoxNumber = string.IsNullOrWhiteSpace(boxNumber) ? null : boxNumber.Trim(),
-                            PostalCode = postalCode.Trim()
+                            PostalCode = postalCode!.Trim()
                         });
                     }
                 }
             }
 
-            if (records.Count != records.Select(x => x.OldAddressPersistentLocalId).Distinct().Count())
+            var nonUniqueOldAddressPersistentLocalIds = records
+                .GroupBy(x => x.OldAddressPersistentLocalId)
+                .Where(x => x.Count() > 1)
+                .Select(x => x.Key)
+                .ToList();
+            foreach (var oldAddressPersistentLocalId in nonUniqueOldAddressPersistentLocalIds)
             {
-                return BadRequest("OldAddressPuri is not unique");
+                errorMessages.Add($"OldAddressPersistentLocalId {oldAddressPersistentLocalId} is not unique");
             }
 
             var addressesByStreetNameRecords = records
@@ -148,6 +166,28 @@ namespace AddressRegistry.Api.BackOffice
             {
                 var (streetNameName, streetNameHomonymAddition) = streetName;
 
+                var houseNumberAddressRecords = addressRecords.Where(x => x.BoxNumber is null).ToList();
+                var nonUniqueHouseNumberAddressRecords = houseNumberAddressRecords
+                    .GroupBy(x => x.HouseNumber)
+                    .Where(x => x.Count() > 1)
+                    .Select(x => x.First())
+                    .ToList();
+                foreach(var addressRecord in nonUniqueHouseNumberAddressRecords)
+                {
+                    errorMessages.Add($"House number '{addressRecord.HouseNumber}' is not unique for street (Name={streetNameName}, HomonymAddition={streetNameHomonymAddition})");
+                }
+
+                var boxNumberAddressRecords = addressRecords.Where(x => x.BoxNumber is not null).ToList();
+                var nonUniqueBoxNumberAddressRecords = boxNumberAddressRecords
+                    .GroupBy(x => new { x.HouseNumber, x.BoxNumber })
+                    .Where(x => x.Count() > 1)
+                    .Select(x => x.First())
+                    .ToList();
+                foreach(var addressRecord in nonUniqueBoxNumberAddressRecords)
+                {
+                    errorMessages.Add($"Box number '{addressRecord.BoxNumber}' is not unique for street (Name={streetNameName}, HomonymAddition={streetNameHomonymAddition}) and house number '{addressRecord.HouseNumber}'");
+                }
+
                 var streetNameLatestItem = await streetNameConsumerContext.StreetNameLatestItems.SingleOrDefaultAsync(
                     x =>
                         // String comparisons translate to case-insensitive checks on SQL (=desired behavior)
@@ -159,27 +199,8 @@ namespace AddressRegistry.Api.BackOffice
 
                 if (streetNameLatestItem is null)
                 {
-                    return BadRequest($"No streetNameLatestItem found for {nisCode}, '{streetNameName}' and '{streetNameHomonymAddition}'");
-                }
-
-                var houseNumberAddressRecords = addressRecords.Where(x => x.BoxNumber is null).ToList();
-                if (houseNumberAddressRecords.Count != houseNumberAddressRecords.Select(x => x.HouseNumber).Distinct().Count())
-                {
-                    return BadRequest($"House numbers are not unique for street '{streetNameName}' and '{streetNameHomonymAddition}'");
-                }
-
-                var boxNumberAddressRecords = addressRecords.Where(x => x.BoxNumber is not null).ToList();
-                if (boxNumberAddressRecords.Count != boxNumberAddressRecords.Select(x => new { x.HouseNumber, x.BoxNumber }).Distinct().Count())
-                {
-                    return BadRequest($"Box numbers are not unique for street '{streetNameName}' and '{streetNameHomonymAddition}'");
-                }
-
-                foreach (var boxNumberAddressRecord in boxNumberAddressRecords)
-                {
-                    if (houseNumberAddressRecords.All(x => x.HouseNumber != boxNumberAddressRecord.HouseNumber))
-                    {
-                        return BadRequest($"Box number '{boxNumberAddressRecord.BoxNumber}' does not have a corresponding house number '{boxNumberAddressRecord.HouseNumber}' for street '{streetNameName}' at record number {boxNumberAddressRecord.RecordNumber}");
-                    }
+                    errorMessages.Add($"No streetNameLatestItem found for NisCode {nisCode} and street (Name={streetNameName}, HomonymAddition={streetNameHomonymAddition})");
+                    continue;
                 }
 
                 sqsRequests.Add(new ProposeAddressesForMunicipalityMergerSqsRequest(
@@ -192,6 +213,11 @@ namespace AddressRegistry.Api.BackOffice
                         x.OldStreetNamePersistentLocalId,
                         x.OldAddressPersistentLocalId)).ToList(),
                     new ProvenanceData(CreateProvenance(Modification.Insert, $"Fusie {nisCode}"))));
+            }
+
+            if (errorMessages.Any())
+            {
+                return BadRequest(errorMessages);
             }
 
             var results = await Task.WhenAll(sqsRequests.Select(sqsRequest => _mediator.Send(sqsRequest, cancellationToken)));

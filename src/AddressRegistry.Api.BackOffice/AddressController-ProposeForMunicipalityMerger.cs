@@ -84,12 +84,15 @@ namespace AddressRegistry.Api.BackOffice
 
                         var recordErrorMessages = new List<string>();
 
-                        var oldAddressId = csv.GetField<string>("OUD adresid");
-                        var streetNameName = csv.GetField<string>("NIEUW straatnaam");
-                        var streetNameHomonymAddition = csv.GetField<string?>("NIEUW homoniemtoevoeging");
-                        var houseNumber = csv.GetField<string>("NIEUW huisnummer");
-                        var boxNumber = csv.GetField<string?>("NIEUW busnummer");
-                        var postalCode = csv.GetField<string>("NIEUW postcode");
+                        var oldAddressId = csv.GetField<string>("OUD adresid")?.Trim();
+                        var streetNameName = csv.GetField<string>("NIEUW straatnaam")?.Trim();
+                        var streetNameHomonymAddition = csv.GetField<string?>("NIEUW homoniemtoevoeging")?.Trim();
+                        var houseNumber = csv.GetField<string>("NIEUW huisnummer")?.Trim();
+                        var boxNumber = csv.GetField<string?>("NIEUW busnummer")?.Trim();
+                        var postalCode = csv.GetField<string>("NIEUW postcode")?.Trim();
+                        csv.TryGetField<string>("Geen nummer validatie", out var disableValidationAsString);
+                        var disableValidation = disableValidationAsString?.Trim().ToLower() == "x"
+                                                || disableValidationAsString?.Trim().ToLower() == "true";
 
                         if (string.IsNullOrWhiteSpace(oldAddressId))
                             recordErrorMessages.Add($"OldAddressId is required at record number {recordNr}");
@@ -105,12 +108,12 @@ namespace AddressRegistry.Api.BackOffice
                         {
                             recordErrorMessages.Add($"HouseNumber is required at record number {recordNr}");
                         }
-                        else if (!HouseNumber.HasValidFormat(houseNumber))
+                        else if (!disableValidation && !HouseNumber.HasValidFormat(houseNumber))
                         {
                             recordErrorMessages.Add($"HouseNumber is invalid at record number {recordNr}");
                         }
 
-                        if (!string.IsNullOrWhiteSpace(boxNumber) && !BoxNumber.HasValidFormat(boxNumber))
+                        if (!string.IsNullOrWhiteSpace(boxNumber) && !disableValidation && !BoxNumber.HasValidFormat(boxNumber))
                             recordErrorMessages.Add($"BoxNumber is invalid at record number {recordNr}");
 
                         if (string.IsNullOrWhiteSpace(postalCode))
@@ -133,12 +136,12 @@ namespace AddressRegistry.Api.BackOffice
                             RecordNumber = recordNr,
                             OldStreetNamePersistentLocalId = relation!.StreetNamePersistentLocalId,
                             OldAddressPersistentLocalId = oldAddressPersistentLocalId,
-                            StreetNameName = streetNameName!.Trim(),
+                            StreetNameName = streetNameName!,
                             StreetNameHomonymAddition =
-                                string.IsNullOrWhiteSpace(streetNameHomonymAddition) ? null : streetNameHomonymAddition.Trim(),
-                            HouseNumber = houseNumber!.Trim(),
-                            BoxNumber = string.IsNullOrWhiteSpace(boxNumber) ? null : boxNumber.Trim(),
-                            PostalCode = postalCode!.Trim()
+                                string.IsNullOrWhiteSpace(streetNameHomonymAddition) ? null : streetNameHomonymAddition,
+                            HouseNumber = houseNumber!,
+                            BoxNumber = string.IsNullOrWhiteSpace(boxNumber) ? null : boxNumber,
+                            PostalCode = postalCode!
                         });
                     }
                 }

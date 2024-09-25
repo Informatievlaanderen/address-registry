@@ -115,8 +115,10 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddressesForMunicipa
             result.Should().BeOfType<OkObjectResult>();
             ((OkObjectResult)result).Value.Should().BeEquivalentTo(new[]
             {
-                ticketIdOne, ticketIdTwo
-            }.Select(x => $"{PublicTicketUrl}/tickets/{x:D}"));
+                "Id,TicketId",
+                $"{newStreetNamePersistentLocalIdOne},{PublicTicketUrl}/tickets/{ticketIdOne:D}",
+                $"{newStreetNamePersistentLocalIdTwo},{PublicTicketUrl}/tickets/{ticketIdTwo:D}"
+            });
 
             MockMediator.Verify(x =>
                 x.Send(It.IsAny<ProposeAddressesForMunicipalityMergerSqsRequest>(), CancellationToken.None), Times.Exactly(2));

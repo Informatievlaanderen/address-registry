@@ -202,8 +202,6 @@ namespace AddressRegistry.StreetName
                 throw new BoxNumberPostalCodeDoesNotMatchHouseNumberPostalCodeException();
             }
 
-            StreetNameAddress.GuardGeometry(geometryMethod, geometrySpecification);
-
             ApplyChange(new AddressWasProposedForMunicipalityMerger(
                 PersistentLocalId,
                 addressPersistentLocalId,

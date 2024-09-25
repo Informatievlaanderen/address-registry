@@ -231,12 +231,20 @@ namespace AddressRegistry.Api.BackOffice
                 return BadRequest(errorMessages);
             }
 
-            var results = await Task.WhenAll(sqsRequests.Select(sqsRequest => _mediator.Send(sqsRequest, cancellationToken)));
+            var results = await Task.WhenAll(sqsRequests.Select(async sqsRequest =>
+            {
+                var result = await _mediator.Send(sqsRequest, cancellationToken);
+                return new {
+                    SqsRequest = sqsRequest,
+                    TicketUrl = result.Location.ToString().Replace(_ticketingOptions.InternalBaseUrl, _ticketingOptions.PublicBaseUrl)
+                };
+            }));
 
-            return Ok(results.Select(x =>
-                x.Location
-                    .ToString()
-                    .Replace(_ticketingOptions.InternalBaseUrl, _ticketingOptions.PublicBaseUrl)));
+            var csvLines = new List<string> { "Id,TicketId" }
+                .Concat(results.Select(x => $"{x.SqsRequest.StreetNamePersistentLocalId},{x.TicketUrl}"))
+                .ToList();
+
+            return Ok(csvLines);
         }
     }
 

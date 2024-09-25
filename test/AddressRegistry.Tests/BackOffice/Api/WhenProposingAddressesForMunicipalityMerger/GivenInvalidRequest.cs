@@ -149,6 +149,27 @@ OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW bus
             errorMessages.Should().Contain("HouseNumber is invalid at record number 1");
         }
 
+        [Theory]
+        [InlineData("x")]
+        [InlineData("TRue")]
+        public void WithInvalidHouseNumberAndDisabledNumberValidation_ThenStopAtOtherError(string geenNummerValidatie)
+        {
+            var result =
+                _controller.ProposeForMunicipalityMerger(
+                    CsvHelpers.CreateFormFileFromString(@$"
+OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode;Geen nummer validatie
+2268196;Vagevuurstraat;;x;;8755;{geenNummerValidatie}"),
+                    "10000",
+                    Mock.Of<IPersistentLocalIdGenerator>(),
+                    new FakeStreetNameConsumerContextFactory().CreateDbContext(),
+                    new FakeBackOfficeContextFactory().CreateDbContext(),
+                    CancellationToken.None).GetAwaiter().GetResult();
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+            var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
+            errorMessages.Should().NotContain("HouseNumber is invalid at record number 1");
+        }
+
         [Fact]
         public void WithInvalidBoxNumber_ThenReturnsBadRequest()
         {
@@ -166,6 +187,27 @@ OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW bus
             result.Should().BeOfType<BadRequestObjectResult>();
             var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
             errorMessages.Should().Contain("BoxNumber is invalid at record number 1");
+        }
+
+        [Theory]
+        [InlineData("x")]
+        [InlineData("TRue")]
+        public void WithInvalidBoxNumberAndDisabledNumberValidation_ThenStopAtOtherError(string geenNummerValidatie)
+        {
+            var result =
+                _controller.ProposeForMunicipalityMerger(
+                    CsvHelpers.CreateFormFileFromString(@$"
+OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode;Geen nummer validatie
+2268196;Vagevuurstraat;;1;-;8755;{geenNummerValidatie}"),
+                    "10000",
+                    Mock.Of<IPersistentLocalIdGenerator>(),
+                    new FakeStreetNameConsumerContextFactory().CreateDbContext(),
+                    new FakeBackOfficeContextFactory().CreateDbContext(),
+                    CancellationToken.None).GetAwaiter().GetResult();
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+            var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
+            errorMessages.Should().NotContain("BoxNumber is invalid at record number 1");
         }
 
         [Fact]

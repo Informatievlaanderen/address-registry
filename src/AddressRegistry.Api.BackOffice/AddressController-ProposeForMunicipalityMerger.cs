@@ -191,6 +191,14 @@ namespace AddressRegistry.Api.BackOffice
                     errorMessages.Add($"Box number '{addressRecord.BoxNumber}' is not unique for street (Name={streetNameName}, HomonymAddition={streetNameHomonymAddition}) and house number '{addressRecord.HouseNumber}'");
                 }
 
+                foreach (var boxNumberAddressRecord in boxNumberAddressRecords)
+                {
+                    if (houseNumberAddressRecords.All(x => x.HouseNumber != boxNumberAddressRecord.HouseNumber))
+                    {
+                        errorMessages.Add($"Box number '{boxNumberAddressRecord.BoxNumber}' does not have a corresponding house number '{boxNumberAddressRecord.HouseNumber}' for street '{streetNameName}' at record number {boxNumberAddressRecord.RecordNumber}");
+                    }
+                }
+
                 var streetNameLatestItem = await streetNameConsumerContext.StreetNameLatestItems.SingleOrDefaultAsync(
                     x =>
                         // String comparisons translate to case-insensitive checks on SQL (=desired behavior)
@@ -223,12 +231,20 @@ namespace AddressRegistry.Api.BackOffice
                 return BadRequest(errorMessages);
             }
 
-            var results = await Task.WhenAll(sqsRequests.Select(sqsRequest => _mediator.Send(sqsRequest, cancellationToken)));
+            var results = await Task.WhenAll(sqsRequests.Select(async sqsRequest =>
+            {
+                var result = await _mediator.Send(sqsRequest, cancellationToken);
+                return new {
+                    SqsRequest = sqsRequest,
+                    TicketUrl = result.Location.ToString().Replace(_ticketingOptions.InternalBaseUrl, _ticketingOptions.PublicBaseUrl)
+                };
+            }));
 
-            return Ok(results.Select(x =>
-                x.Location
-                    .ToString()
-                    .Replace(_ticketingOptions.InternalBaseUrl, _ticketingOptions.PublicBaseUrl)));
+            var csvLines = new List<string> { "Id,TicketId" }
+                .Concat(results.Select(x => $"{x.SqsRequest.StreetNamePersistentLocalId},{x.TicketUrl}"))
+                .ToList();
+
+            return Ok(csvLines);
         }
     }
 

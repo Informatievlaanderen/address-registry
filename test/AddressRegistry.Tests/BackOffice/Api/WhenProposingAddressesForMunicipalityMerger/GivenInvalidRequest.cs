@@ -359,5 +359,40 @@ OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW bus
             var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
             errorMessages.Should().Contain("Box number 'A' is not unique for street (Name=Vagevuurstraat, HomonymAddition=) and house number '14'");
         }
+
+        [Fact]
+        public async Task WithBoxNumberWithoutParentAddress_ThenReturnsBadRequest()
+        {
+            var dbContext = new FakeStreetNameConsumerContextFactory().CreateDbContext();
+            dbContext.StreetNameLatestItems.Add(new StreetNameLatestItem
+            {
+                PersistentLocalId = 1,
+                NisCode = "10000",
+                NameDutch = "Vagevuurstraat",
+                HomonymAdditionDutch = null
+            });
+            dbContext.SaveChanges();
+
+            var backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
+            var addressPersistentLocalIdOne = 2268196;
+
+            await backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(new AddressPersistentLocalId(addressPersistentLocalIdOne), new StreetNamePersistentLocalId(1));
+
+            var result =
+                _controller.ProposeForMunicipalityMerger(
+                    CsvHelpers.CreateFormFileFromString(@$"
+OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
+{addressPersistentLocalIdOne};Vagevuurstraat;;14;A;8755
+"),
+                    "10000",
+                    new FakePersistentLocalIdGenerator(),
+                    dbContext,
+                    backOfficeContext,
+                    CancellationToken.None).GetAwaiter().GetResult();
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+            var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
+            errorMessages.Should().Contain("Box number 'A' does not have a corresponding house number '14' for street 'Vagevuurstraat' at record number 1");
+        }
     }
 }

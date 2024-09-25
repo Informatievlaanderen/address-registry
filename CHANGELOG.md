@@ -1,3 +1,10 @@
+## [4.19.1](https://github.com/informatievlaanderen/address-registry/compare/v4.19.0...v4.19.1) (2024-09-25)
+
+
+### Bug Fixes
+
+* take loss of single-quote into account for matching streetname ([#1237](https://github.com/informatievlaanderen/address-registry/issues/1237)) ([83d2fe2](https://github.com/informatievlaanderen/address-registry/commit/83d2fe2b2494ea0892036dd63dc5e6a20707e4a9))
+
 # [4.19.0](https://github.com/informatievlaanderen/address-registry/compare/v4.18.8...v4.19.0) (2024-09-25)
 
 

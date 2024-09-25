@@ -1,3 +1,10 @@
+## [4.19.2](https://github.com/informatievlaanderen/address-registry/compare/v4.19.1...v4.19.2) (2024-09-25)
+
+
+### Bug Fixes
+
+* restore validate parent housenumber address existance + remove geometrymethod validations for propose for municipality merger ([#1238](https://github.com/informatievlaanderen/address-registry/issues/1238)) ([3e424d5](https://github.com/informatievlaanderen/address-registry/commit/3e424d5f8a0245c0b2236233e8a3b6f51e002c65))
+
 ## [4.19.1](https://github.com/informatievlaanderen/address-registry/compare/v4.19.0...v4.19.1) (2024-09-25)
 
 

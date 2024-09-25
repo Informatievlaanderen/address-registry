@@ -1,3 +1,10 @@
+## [4.18.8](https://github.com/informatievlaanderen/address-registry/compare/v4.18.7...v4.18.8) (2024-09-25)
+
+
+### Bug Fixes
+
+* return multiple error messages at once for propose for municipality merger ([#1235](https://github.com/informatievlaanderen/address-registry/issues/1235)) ([5c5d9e8](https://github.com/informatievlaanderen/address-registry/commit/5c5d9e830582edcf9b4a14e3bb1a7a7faea1ec60))
+
 ## [4.18.7](https://github.com/informatievlaanderen/address-registry/compare/v4.18.6...v4.18.7) (2024-09-24)
 
 

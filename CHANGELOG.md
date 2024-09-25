@@ -1,3 +1,10 @@
+# [4.19.0](https://github.com/informatievlaanderen/address-registry/compare/v4.18.8...v4.19.0) (2024-09-25)
+
+
+### Features
+
+* disable number validation per record for propose for municipality merger ([31e8c0d](https://github.com/informatievlaanderen/address-registry/commit/31e8c0ddb51bd7d2dad15ff8475a2549249e3d9e))
+
 ## [4.18.8](https://github.com/informatievlaanderen/address-registry/compare/v4.18.7...v4.18.8) (2024-09-25)
 
 

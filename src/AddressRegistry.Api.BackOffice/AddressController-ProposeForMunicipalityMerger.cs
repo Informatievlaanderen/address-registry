@@ -240,7 +240,7 @@ namespace AddressRegistry.Api.BackOffice
                 };
             }));
 
-            var csvLines = new List<string> { "Id,TicketId" }
+            var csvLines = new List<string> { "Id,Ticket" }
                 .Concat(results.Select(x => $"{x.SqsRequest.StreetNamePersistentLocalId},{x.TicketUrl}"))
                 .ToList();
 

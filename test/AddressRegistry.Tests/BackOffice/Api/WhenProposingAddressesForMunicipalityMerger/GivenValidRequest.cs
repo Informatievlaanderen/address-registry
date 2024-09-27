@@ -115,7 +115,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddressesForMunicipa
             result.Should().BeOfType<OkObjectResult>();
             ((OkObjectResult)result).Value.Should().BeEquivalentTo(new[]
             {
-                "Id,TicketId",
+                "Id,Ticket",
                 $"{newStreetNamePersistentLocalIdOne},{PublicTicketUrl}/tickets/{ticketIdOne:D}",
                 $"{newStreetNamePersistentLocalIdTwo},{PublicTicketUrl}/tickets/{ticketIdTwo:D}"
             });

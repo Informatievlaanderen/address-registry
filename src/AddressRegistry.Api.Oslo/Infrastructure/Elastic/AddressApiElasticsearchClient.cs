@@ -9,6 +9,7 @@
     {
         private const string Keyword = "keyword";
         private static readonly string NameSpelling = $"{ToCamelCase(nameof(Projections.Elastic.AddressSearch.Name.Spelling))}";
+        private const string FullAddress = "fullAddress";
 
         private readonly ElasticsearchClient _elasticsearchClient;
         private readonly string _indexAlias;

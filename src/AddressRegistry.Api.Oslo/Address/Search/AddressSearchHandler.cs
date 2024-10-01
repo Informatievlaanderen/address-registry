@@ -36,84 +36,20 @@
 
             if (ContainsNumberAfterSpace(query))
             {
-                var addressExtraction = ExtractAddressComponents(query);
-                var response = await _addressApiElasticsearchClient.SearchAddresses(addressExtraction.streetName,
-                    addressExtraction.houseNumber,
-                    addressExtraction.boxNumber,
-                    addressExtraction.postalCode,
-                    string.IsNullOrWhiteSpace(request.Filtering.Filter.MunicipalityOrPostalName)
-                        ? addressExtraction.municipalityOrPostalName
-                        : request.Filtering.Filter.MunicipalityOrPostalName,
-                    !string.IsNullOrWhiteSpace(request.Filtering.Filter.MunicipalityOrPostalName),
-                    pagination.Limit);
-
+                var response = await _addressApiElasticsearchClient.SearchAddresses(query, request.Filtering.Filter.MunicipalityOrPostalName, pagination.Limit);
+                var language = response.Language ?? Language.nl;
                 return new AddressSearchResponse(response.Addresses
                     .AsEnumerable()
                     .Select(x => new AddressSearchItem(
                         $"{_responseOptions.Naamruimte.Trim('/')}/{x.AddressPersistentLocalId}",
                         x.AddressPersistentLocalId.ToString(),
                         new Uri(string.Format(_responseOptions.DetailUrl, x.AddressPersistentLocalId)),
-                        x.FullAddress.FirstOrDefault(name => name.Language == Language.nl)?.Spelling ?? x.FullAddress.First().Spelling))
+                        x.FullAddress.FirstOrDefault(name => name.Language == language)?.Spelling ?? x.FullAddress.First().Spelling))
                     .Take(pagination.Limit)
                     .ToList());
             }
 
             return await SearchStreetNames(query, request.Filtering.Filter.MunicipalityOrPostalName, pagination.Limit);
-        }
-
-        // Define regex patterns
-        private static readonly Regex StreetNameRegex = new Regex(@"^(.*?)(?=\d)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        private static readonly Regex HouseNumberRegex = new Regex(@"\d[\w\-/_]*", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        private static readonly Regex BoxNumberRegex = new Regex(@"(?:bus|bte|boite|boîte|box)\s*([\w/_\-.]+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        private static readonly Regex postalCodeRegex = new Regex(@"\b\d{4}\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        private static readonly Regex municipalityRegex = new Regex(@"\b([a-zA-Z\s\-]+)$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
-        private static (string streetName, string houseNumber, string? boxNumber, string? postalCode, string? municipalityOrPostalName) ExtractAddressComponents(string address)
-        {
-            // Extract street name
-            var streetMatch = StreetNameRegex.Match(address);
-            var streetName = streetMatch.Success ? streetMatch.Value.Trim() : address;
-
-            // Extract house number
-            var houseMatch = HouseNumberRegex.Match(address);
-            var houseNumber = houseMatch.Success ? houseMatch.Value.Trim() : string.Empty;
-
-            if (!string.IsNullOrEmpty(houseNumber))
-                houseNumber = Regex.Replace(houseNumber, @"\s*(bus|bte|boite|boîte|box).*", "", RegexOptions.IgnoreCase);
-
-            // Extract box number
-            var boxMatch = BoxNumberRegex.Match(address);
-            var boxNumber = boxMatch.Success ? boxMatch.Groups[1].Value.Trim() : null;
-
-            var postalCodeMatch = postalCodeRegex.Match(address);
-            var postalCode = postalCodeMatch.Success ? postalCodeMatch.Value.Trim() : null;
-
-            string municipality = null;
-            var cleanedAddress = address
-                .Replace(streetName, "")
-                .Replace(houseNumber, "");
-
-            if (boxNumber is not null)
-            {
-                cleanedAddress = cleanedAddress
-                    .Replace("bus", "", StringComparison.OrdinalIgnoreCase)
-                    .Replace("bte", "", StringComparison.OrdinalIgnoreCase)
-                    .Replace("boite", "", StringComparison.OrdinalIgnoreCase)
-                    .Replace("boîte", "", StringComparison.OrdinalIgnoreCase)
-                    .Replace("box", "", StringComparison.OrdinalIgnoreCase)
-                    .Replace(boxNumber, "");
-            }
-
-            if(postalCode is not null)
-                cleanedAddress = cleanedAddress.Replace(postalCode, "");
-
-            cleanedAddress = cleanedAddress.Trim(", ".ToCharArray()); // Trim commas and spaces
-
-            // Match remaining part as municipality
-            var municipalityMatch = municipalityRegex.Match(cleanedAddress);
-            municipality = municipalityMatch.Success ? municipalityMatch.Groups[1].Value.Trim() : null;
-
-            return (streetName, houseNumber, boxNumber, postalCode, municipality);
         }
 
         private async Task<AddressSearchResponse> SearchStreetNames(string query, string? municipalityOrPostalNameQuery, int limit)

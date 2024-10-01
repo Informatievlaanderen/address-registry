@@ -24,7 +24,7 @@
         public GivenSearchQueryAndMunicipalityOrPostalName()
         {
             _mockAddressSearchApi = new Mock<IAddressApiElasticsearchClient>();
-            _mockAddressSearchApi.Setup(x => x.SearchAddresses(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<int>()))
+            _mockAddressSearchApi.Setup(x => x.SearchAddresses(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>()))
                 .ReturnsAsync(new AddressSearchResult(new List<AddressSearchDocument>().AsQueryable(), 0));
 
             var mockResponseOptions = new Mock<IOptions<ResponseOptions>>();
@@ -33,25 +33,20 @@
         }
 
         [Theory]
-        [InlineData("bla bla 1", "gent", "bla bla", "1", null, null, null)]
-        [InlineData("bla 2A", "gent", "bla", "2A", null, null ,null)]
-        [InlineData("foo 3 bar", "gent", "foo", "3", null, null, "bar")]
-        [InlineData("veldstraat 5 bus 1 gen", "gent", "veldstraat", "5", "1", null, "gen")]
-        [InlineData("veldstraat 5A bus 1_3 9000 get", "gent", "veldstraat", "5A", "1_3", "9000", "get")]
-        [InlineData("veldstraat 5 bus A, 9000 abc", "gent", "veldstraat", "5", "A", "9000", "abc")]
-        [InlineData("veldstraat 5 bus 1.2, 9000 def", "gent", "veldstraat", "5", "1.2", "9000", "def")]
-        [InlineData("veldstraat 5 bte 1.2, 9000 foo", "gent", "veldstraat", "5", "1.2", "9000", "foo")]
-        [InlineData("veldstraat 5 boite 1.2, 9000 bar", "gent", "veldstraat", "5", "1.2", "9000", "gar")]
-        [InlineData("veldstraat 5 boîte 1.2, 9000 genter", "gent", "veldstraat", "5", "1.2", "9000", "genter")]
-        [InlineData("veldstraat 5 box 1.2, 9000 gents", "gent", "veldstraat", "5", "1.2", "9000", "gents")]
+        [InlineData("bla bla 1", null)]
+        [InlineData("bla 2A", "gent")]
+        [InlineData("foo 3 bar", "gent")]
+        [InlineData("veldstraat 5 bus 1 gen", "gent")]
+        [InlineData("veldstraat 5A bus 1_3 9000 get", "gent")]
+        [InlineData("veldstraat 5 bus A, 9000 abc", "gent")]
+        [InlineData("veldstraat 5 bus 1.2, 9000 def", "gent")]
+        [InlineData("veldstraat 5 bte 1.2, 9000 foo", "gent")]
+        [InlineData("veldstraat 5 boite 1.2, 9000 bar", "gent")]
+        [InlineData("veldstraat 5 boîte 1.2, 9000 genter", "gent")]
+        [InlineData("veldstraat 5 box 1.2, 9000 gents", "gent")]
         public async Task WithHouseNumber_ThenNoResults(
             string query,
-            string municipalityNameOrPostalNameQuery,
-            string streetName,
-            string houseNumber,
-            string? boxNumber,
-            string? postalCode,
-            string? municipalityOrPostalName)
+            string municipalityNameOrPostalNameQuery)
         {
             var limit = 20;
             await _sut.Handle(
@@ -61,7 +56,7 @@
                     new PaginationRequest(0, limit)),
                 CancellationToken.None);
 
-            _mockAddressSearchApi.Verify(x => x.SearchAddresses(streetName, houseNumber, boxNumber, postalCode, municipalityNameOrPostalNameQuery, true, limit), Times.Once);
+            _mockAddressSearchApi.Verify(x => x.SearchAddresses(query, municipalityNameOrPostalNameQuery, limit), Times.Once);
         }
 
         [Theory]

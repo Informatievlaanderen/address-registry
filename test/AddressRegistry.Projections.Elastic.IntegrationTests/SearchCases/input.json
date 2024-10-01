@@ -1,0 +1,67 @@
+{
+  "queryObject": {
+    "query": {
+      "bool": {
+        "filter": {
+          "term": {
+            "active": {
+              "value": true
+            }
+          }
+        },
+        "must": {
+          "nested": {
+            "path": "fullAddress",
+            "query": {
+              "match_phrase": {
+                "fullAddress.spelling": {
+                  "query": "{{input}}",
+                  "slop": 10
+                }
+              }
+            },
+            "inner_hits": {
+              "size": 1
+            }
+          }
+        }
+      }
+    },
+    "sort": [
+      {
+        "_score": {
+          "order": "desc"
+        }
+      },
+      {
+        "fullAddress.spelling.keyword": {
+          "order": "asc",
+          "nested": {
+            "path": "fullAddress"
+          }
+        }
+      }
+    ],
+    "size": 10
+  },
+  "inputs": [
+    "gent 4 st niklaas",
+    "gent 4 sint-niklaas",
+    "gentstraat 4 st niklaas",
+    "st-niklaas 4 gent",
+    "st niklaas 4 gent",
+    "st-niklaas 4, gent",
+    "st niklaas 4, gent",
+    "gent st-niklaas 4",
+    "gent st niklaas 4",
+    "gent, st-niklaas 4",
+    "gent, st niklaas 4",
+    "gent 9000, st niklaas 4",
+    "gent 4 9111",
+    "9000, st niklaas 4",
+    "9000 Gent, Sint-Niklaasstraat 48 b",
+    "9000 Gent, Sint-Niklaasstraat 48 bus 01",
+    "Grand-Place 4, 9600 Renaix",
+    "Grote Markt 4, 9600 Ronse"
+  ]
+}

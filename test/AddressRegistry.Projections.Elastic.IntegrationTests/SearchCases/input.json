@@ -19,10 +19,10 @@
                   "slop": 10
                 }
               }
+            },
+            "inner_hits": {
+              "size": 1
             }
-          },
-          "inner_hits": {
-            "size": 1
           }
         }
       }
@@ -60,6 +60,8 @@
     "gent 4 9111",
     "9000, st niklaas 4",
     "9000 Gent, Sint-Niklaasstraat 48 b",
-    "9000 Gent, Sint-Niklaasstraat 48 bus 01"
+    "9000 Gent, Sint-Niklaasstraat 48 bus 01",
+    "Grand-Place 4, 9600 Renaix",
+    "Grote Markt 4, 9600 Ronse"
   ]
 }

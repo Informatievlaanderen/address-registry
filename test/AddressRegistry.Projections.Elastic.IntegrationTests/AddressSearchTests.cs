@@ -21,6 +21,7 @@
     {
         private readonly ElasticsearchClient _elasticClient;
         private readonly AddressApiElasticsearchClient _addressClient;
+        private readonly string _elasticAlias;
 
         public AddressSearchTests()
         {
@@ -35,10 +36,10 @@
             var elasticUrl = elasticConfig.GetValue<string>("Uri") ?? throw new ArgumentNullException("Elastic Uri is not set");
             var elasticUsername = elasticConfig.GetValue<string>("Username");
             var elasticPassword = elasticConfig.GetValue<string>("Password");
-            var elasticAlias = elasticConfig.GetValue<string>("IndexAlias") ?? throw new ArgumentNullException("Elastic IndexAlias is not set");
+            _elasticAlias = elasticConfig.GetValue<string>("IndexAlias") ?? throw new ArgumentNullException("Elastic IndexAlias is not set");
 
             var clientSettings = new ElasticsearchClientSettings(new Uri(elasticUrl))
-                .DefaultIndex(elasticAlias)
+                .DefaultIndex(_elasticAlias)
                 .EnableDebugMode()
                 .DisableDirectStreaming();
 
@@ -46,7 +47,7 @@
                 clientSettings.Authentication(new BasicAuthentication(elasticUsername, elasticPassword));
 
             _elasticClient = new ElasticsearchClient(clientSettings);
-            _addressClient = new AddressApiElasticsearchClient(_elasticClient, elasticAlias, new NullLoggerFactory());
+            _addressClient = new AddressApiElasticsearchClient(_elasticClient, _elasticAlias, new NullLoggerFactory());
         }
 
         [Fact]
@@ -62,7 +63,8 @@
                 var formattedJsonString = jsonString.Replace("{{input}}", input);
 
                 using var stream = new MemoryStream(Encoding.UTF8.GetBytes(formattedJsonString));
-                var searchRequest = _elasticClient.SourceSerializer.Deserialize<SearchRequest>(stream);
+                var searchRequest = _elasticClient.SourceSerializer.Deserialize<SearchRequestWithIndex>(stream);
+                searchRequest.SetIndex(_elasticAlias);
 
                 var addressResponses = await _addressClient.SearchAddresses(input, null);
 
@@ -71,14 +73,17 @@
                 response.IsValidResponse.Should().BeTrue(response.DebugInformation);
                 response.Documents.Should().NotBeEmpty();
 
+                var language = addressResponses.Language;
+
                 outputs.Add(new OutputTestCase(
                     input,
-                    response.Documents.Select(x => x.FullAddress.First().Spelling).ToArray(),
-                    addressResponses.Addresses.Select(x => x.FullAddress.First().Spelling).ToArray()));
+                    response.Documents.Select(x => x.FullAddress.Single(x => x.Language == language).Spelling).ToArray(),
+                    addressResponses.Addresses.Select(x => x.FullAddress.Single(x => x.Language == language).Spelling).ToArray(),
+                    language));
             }
 
             await File.WriteAllTextAsync("SearchCases/output.md",
-                FormatOutput(inputTestCase.QueryObject.ToJsonString(new JsonSerializerOptions()
+                FormatOutput(inputTestCase.QueryObject.ToJsonString(new JsonSerializerOptions
                 {
                     WriteIndented = true,
                 }), outputs));
@@ -98,6 +103,7 @@
             foreach (var output in outputs)
             {
                 stringBuilder.AppendLine($"### Input: {output.Input}");
+                stringBuilder.AppendLine($"Language: {output.Language}");
 
                 if (output.AreResultsEqual)
                 {
@@ -132,6 +138,14 @@
 
             return stringBuilder.ToString();
         }
+
+        private sealed class SearchRequestWithIndex : SearchRequest
+        {
+            public void SetIndex(string indexName)
+            {
+                RouteValues.Add("index", indexName);
+            }
+        }
     }
 
     public sealed class InputTestCase
@@ -145,12 +159,14 @@
         public string Input { get; set; }
         public string[] ElasticResults { get; set; }
         public string[] AddressClientResults { get; set; }
+        public Language? Language { get; }
 
-        public OutputTestCase(string input, string[] elasticResults, string[] addressClientResults)
+        public OutputTestCase(string input, string[] elasticResults, string[] addressClientResults, Language? language)
         {
             Input = input;
             ElasticResults = elasticResults;
             AddressClientResults = addressClientResults;
+            Language = language;
         }
 
         public bool AreResultsEqual => ElasticResults.SequenceEqual(AddressClientResults);

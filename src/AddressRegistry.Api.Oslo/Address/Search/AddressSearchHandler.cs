@@ -37,13 +37,14 @@
             if (ContainsNumberAfterSpace(query))
             {
                 var response = await _addressApiElasticsearchClient.SearchAddresses(query, request.Filtering.Filter.MunicipalityOrPostalName, pagination.Limit);
+                var language = response.Language ?? Language.nl;
                 return new AddressSearchResponse(response.Addresses
                     .AsEnumerable()
                     .Select(x => new AddressSearchItem(
                         $"{_responseOptions.Naamruimte.Trim('/')}/{x.AddressPersistentLocalId}",
                         x.AddressPersistentLocalId.ToString(),
                         new Uri(string.Format(_responseOptions.DetailUrl, x.AddressPersistentLocalId)),
-                        x.FullAddress.FirstOrDefault(name => name.Language == Language.nl)?.Spelling ?? x.FullAddress.First().Spelling))
+                        x.FullAddress.FirstOrDefault(name => name.Language == language)?.Spelling ?? x.FullAddress.First().Spelling))
                     .Take(pagination.Limit)
                     .ToList());
             }

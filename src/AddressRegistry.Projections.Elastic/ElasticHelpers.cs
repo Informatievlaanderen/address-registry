@@ -24,6 +24,7 @@
             "m, maurits",
             "w, winston",
             "monseigneur, mgr, msg",
+            "bte => boite"
         ];
 
         public static readonly List<string> DutchNumeralSynonyms =

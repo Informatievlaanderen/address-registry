@@ -114,7 +114,15 @@
                                 }
                             })
                         )
-                        .Sort(x => x.Score(new ScoreSort {Order = SortOrder.Desc}));
+                        .Sort(new Action<SortOptionsDescriptor<AddressSearchDocument>>[]
+                        {
+                            s => s.Score(new ScoreSort {Order = SortOrder.Desc}),
+                            s => s.Field($"{fullAddress}.{NameSpelling}.{Keyword}",
+                                c =>
+                                    c.Nested(n =>
+                                            n.Path(fullAddress)
+                                        ).Order(SortOrder.Asc))
+                        });
                 });
 
             if (!searchResponse.IsValidResponse)

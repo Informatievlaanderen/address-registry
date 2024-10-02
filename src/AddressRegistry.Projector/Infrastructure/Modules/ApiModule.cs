@@ -143,12 +143,6 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                         context.Resolve<IOptions<ExtractConfig>>(),
                         DbaseCodePage.Western_European_ANSI.ToEncoding(),
                         new WKBReader()),
-                    ConnectedProjectionSettings.Default)
-                .RegisterProjections<AddressCrabHouseNumberIdExtractProjection, ExtractContext>(
-                    context => new AddressCrabHouseNumberIdExtractProjection(DbaseCodePage.Western_European_ANSI.ToEncoding()),
-                    ConnectedProjectionSettings.Default)
-                .RegisterProjections<AddressCrabSubaddressIdExtractProjection, ExtractContext>(
-                    context => new AddressCrabSubaddressIdExtractProjection(DbaseCodePage.Western_European_ANSI.ToEncoding()),
                     ConnectedProjectionSettings.Default);
         }
 

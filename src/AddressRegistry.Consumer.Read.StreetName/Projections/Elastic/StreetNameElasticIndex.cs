@@ -82,7 +82,7 @@
                             )
                             .Nested("names", ConfigureNames())
                             .Nested("homonymAdditions", ConfigureNames())
-                            .Nested(x => x.FullStreetName, ConfigureNames(StreetNameFullSearchIndexAnalyzer))
+                            .Nested(x => x.FullStreetNames, ConfigureNames(StreetNameFullSearchIndexAnalyzer))
                     ));
             }, ct);
 

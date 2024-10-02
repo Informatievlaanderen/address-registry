@@ -10,7 +10,7 @@
     public interface IStreetNameElasticsearchClient
     {
         Task CreateDocument(StreetNameSearchDocument document, CancellationToken ct);
-        Task<ICollection<StreetNameSearchDocument>> GetDocuments(IEnumerable<int> streetNamePersistentLocalIds, CancellationToken ct);
+        Task<StreetNameSearchDocument> GetDocument(int streetNamePersistentLocalId, CancellationToken ct);
         Task UpdateDocument(StreetNameSearchDocument document, CancellationToken ct);
         Task PartialUpdateDocument(int streetNamePersistentLocalId, StreetNameSearchPartialDocument document, CancellationToken ct);
         Task DeleteDocument(int streetNamePersistentLocalId, CancellationToken ct);
@@ -49,39 +49,16 @@
             }
         }
 
-        public async Task<ICollection<StreetNameSearchDocument>> GetDocuments(IEnumerable<int> streetNamePersistentLocalIds, CancellationToken ct)
+        public async Task<StreetNameSearchDocument> GetDocument(int streetNamePersistentLocalId, CancellationToken ct)
         {
-            var persistentLocalIds = streetNamePersistentLocalIds.ToList();
-            if (persistentLocalIds.Count == 0)
+            var response = await _elasticClient.GetAsync<StreetNameSearchDocument>(_indexName, streetNamePersistentLocalId, ct);
+
+            if (!response.IsValidResponse || response.Source is null)
             {
-                return new List<StreetNameSearchDocument>();
+                throw new ElasticsearchClientException($"Failed trying to get document for id {streetNamePersistentLocalId}", response.ElasticsearchServerError, response.DebugInformation);
             }
 
-            var response = await _elasticClient.MultiGetAsync<StreetNameSearchDocument>(_indexName,
-                configureRequest =>
-                {
-                    configureRequest.Ids(new Ids(persistentLocalIds.Select(x => new Id(x).ToString())));
-                }, ct);
-
-            if (!response.IsValidResponse)
-            {
-                throw new ElasticsearchClientException("Failed trying to get documents", response.ElasticsearchServerError, response.DebugInformation);
-            }
-
-            var result = new List<StreetNameSearchDocument>();
-
-            foreach (var docResponse in response.Docs)
-            {
-                docResponse.Match(doc =>
-                    {
-                        if (doc.Source is not null)
-                        {
-                            result.Add(doc.Source);
-                        }
-                    }, error => throw new ElasticsearchClientException($"Failed trying to get document for {error.Id}. Type={error.Error.Type}, Reason={error.Error.Reason}, StackTrace={error.Error.StackTrace}"));
-            }
-
-            return result;
+            return response.Source;
         }
 
         public async Task PartialUpdateDocument(int streetNamePersistentLocalId, StreetNameSearchPartialDocument document, CancellationToken ct)

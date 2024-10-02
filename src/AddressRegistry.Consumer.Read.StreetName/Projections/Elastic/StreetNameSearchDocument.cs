@@ -19,7 +19,7 @@
         public Name[] Names { get; set; }
         public Name[] HomonymAdditions { get; set; }
 
-        public Name[] FullStreetName => BuildFullStreetName();
+        public Name[] FullStreetNames => BuildFullStreetName();
 
 
         public StreetNameSearchDocument(
@@ -28,7 +28,7 @@
             StreetNameStatus status,
             Municipality municipality,
             Name[] names,
-            Name[]? homonymAdditions)
+            Name[]? homonymAdditions = null)
         {
             StreetNamePersistentLocalId = streetNamePersistentLocalId;
             VersionTimestamp = versionTimestamp;

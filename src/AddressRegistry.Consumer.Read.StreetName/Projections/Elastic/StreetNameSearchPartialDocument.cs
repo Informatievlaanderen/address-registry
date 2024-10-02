@@ -2,6 +2,7 @@
 {
     using System;
     using System.Text.Json.Serialization;
+    using AddressRegistry.Infrastructure.Elastic;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using NodaTime;
 
@@ -10,10 +11,10 @@
         public DateTimeOffset VersionTimestamp { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public AddressRegistry.StreetName.StreetNameStatus? Status { get; set; }
+        public StreetNameStatus? Status { get; set; }
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool? Active => Status is not null
-            ? Status is AddressRegistry.StreetName.StreetNameStatus.Proposed or AddressRegistry.StreetName.StreetNameStatus.Current
+            ? Status is StreetNameStatus.Proposed or StreetNameStatus.Current
             : null;
 
         public StreetNameSearchPartialDocument(Instant versionTimestamp)

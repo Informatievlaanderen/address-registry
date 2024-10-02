@@ -340,6 +340,30 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
         }
 
         [Fact]
+        public async Task StreetNameNamesWereChanged()
+        {
+            var streetNamePersistentLocalId = _fixture.Create<StreetNamePersistentLocalId>();
+
+            var e = new StreetNameNamesWereChanged(
+                _fixture.Create<Guid>().ToString(),
+                streetNamePersistentLocalId,
+                _names,
+                _provenance);
+
+            Given(_streetNameWasProposedV2, e);
+            await Then(async ctx =>
+            {
+                var result = await ctx.StreetNameLatestItems.FindAsync((int)streetNamePersistentLocalId);
+                result.Should().NotBeNull();
+                result!.PersistentLocalId.Should().Be(e.PersistentLocalId);
+                result.Status.Should().Be(AddressRegistry.Consumer.Read.StreetName.Projections.StreetNameStatus.Proposed);
+                result.VersionTimestamp.Should().Be(InstantPattern.General.Parse(e.Provenance.Timestamp).Value);
+
+                AssertNames(result);
+            });
+        }
+
+        [Fact]
         public async Task StreetNameNamesWereCorrected()
         {
             var streetNamePersistentLocalId = _fixture.Create<StreetNamePersistentLocalId>();

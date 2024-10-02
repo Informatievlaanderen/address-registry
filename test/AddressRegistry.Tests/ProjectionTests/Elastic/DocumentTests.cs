@@ -5,6 +5,7 @@
     using AddressRegistry.StreetName;
     using FluentAssertions;
     using global::AutoFixture;
+    using Infrastructure.Elastic;
     using NetTopologySuite.Geometries;
     using Projections.Elastic.AddressSearch;
     using Xunit;

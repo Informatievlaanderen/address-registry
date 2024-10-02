@@ -5,12 +5,12 @@
     using System.Linq;
     using System.Text.Json;
     using System.Threading.Tasks;
+    using AddressRegistry.Infrastructure.Elastic;
     using global::Elastic.Clients.Elasticsearch;
-    using global::Elastic.Clients.Elasticsearch.Core.Search;
     using global::Elastic.Clients.Elasticsearch.QueryDsl;
     using Microsoft.Extensions.Logging;
     using Projections.Elastic.AddressSearch;
-    using Name = Projections.Elastic.AddressSearch.Name;
+    using Name = AddressRegistry.Infrastructure.Elastic.Name;
 
     public sealed partial class AddressApiElasticsearchClient
     {

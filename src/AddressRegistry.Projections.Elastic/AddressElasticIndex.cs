@@ -1,12 +1,11 @@
 ﻿namespace AddressRegistry.Projections.Elastic
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using AddressRegistry.Infrastructure.Elastic;
+    using AddressRegistry.Infrastructure.Elastic.Exceptions;
     using AddressSearch;
-    using Exceptions;
     using global::Elastic.Clients.Elasticsearch;
     using global::Elastic.Clients.Elasticsearch.Analysis;
     using global::Elastic.Clients.Elasticsearch.IndexManagement;
@@ -14,7 +13,7 @@
     using Microsoft.Extensions.Configuration;
     using ExistsRequest = global::Elastic.Clients.Elasticsearch.IndexManagement.ExistsRequest;
 
-    public sealed class ElasticIndex
+    public sealed class AddressElasticIndex : ElasticIndexBase
     {
         public const string AddressSearchNormalizer = "AddressSearchNormalizer";
         public const string TextNumberNormalizer = "TextNumberNormalizer";
@@ -22,43 +21,26 @@
         public const string AddressFullSearchIndexAnalyzer = "AddressFullSearchIndexAnalyzer";
         public const string AddressFullSearchAnalyzer = "AddressFullSearchAnalyzer";
 
-        private readonly ElasticsearchClient _client;
-        private readonly string _name;
-        private readonly string _alias;
-
-        public ElasticIndex(
+        public AddressElasticIndex(
             ElasticsearchClient client,
             IConfiguration configuration)
-            : this(client, ElasticIndexOptions.LoadFromConfiguration(configuration))
-        {
-        }
+            : this(client, ElasticIndexOptions.LoadFromConfiguration(configuration.GetSection("Elastic")))
+        { }
 
-        public ElasticIndex(
+        public AddressElasticIndex(
             ElasticsearchClient client,
             ElasticIndexOptions options)
-        {
-            _client = client;
-            _name = options.Name;
-            _alias = options.Alias;
-        }
-
-        public async Task CreateAliasIfNotExist(CancellationToken ct)
-        {
-            var aliasResponse = await _client.Indices.GetAliasAsync(new GetAliasRequest(Names.Parse(_alias)), ct);
-            if (aliasResponse.IsValidResponse && aliasResponse.Aliases.Any())
-                return;
-
-            await _client.Indices.PutAliasAsync(new PutAliasRequest(_name, _alias), ct);
-        }
+            :base(client, options)
+        { }
 
         public async Task CreateIndexIfNotExist(CancellationToken ct)
         {
-            var indexName = Indices.Index(_name);
-            var response = await _client.Indices.ExistsAsync(new ExistsRequest(indexName), ct);
+            var indexName = Indices.Index(IndexName);
+            var response = await Client.Indices.ExistsAsync(new ExistsRequest(indexName), ct);
             if (response.Exists)
                 return;
 
-            var createResponse = await _client.Indices.CreateAsync<AddressSearchDocument>(indexName, c =>
+            var createResponse = await Client.Indices.CreateAsync<AddressSearchDocument>(indexName, c =>
             {
                 c.Settings(x => x
                     .MaxResultWindow(1_000_500) // Linked to public-api offset of 1_000_000 + limit of 500
@@ -196,21 +178,5 @@
                 .CharFilter(new [] { "underscore_replace", "dot_replace", "quote_replace", "hyphen_replace" })
                 .Filter(new [] { "lowercase", "asciifolding", "dutch_abbreviation_synonyms", "dutch_numeral_synonyms" })
             );
-    }
-
-    public sealed class ElasticIndexOptions
-    {
-        public string Name { get; init; }
-        public string Alias { get; init; }
-
-        public static ElasticIndexOptions LoadFromConfiguration(IConfiguration configuration)
-        {
-            var elasticOptions = configuration.GetSection("Elastic");
-            return new ElasticIndexOptions
-            {
-                Name = elasticOptions["IndexName"]!,
-                Alias = elasticOptions["IndexAlias"]!
-            };
-        }
     }
 }

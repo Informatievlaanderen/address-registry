@@ -4,8 +4,8 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using AddressRegistry.Infrastructure.Elastic.Exceptions;
     using AddressSearch;
-    using Exceptions;
     using global::Elastic.Clients.Elasticsearch;
 
     public interface IAddressElasticsearchClient

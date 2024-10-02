@@ -6,13 +6,14 @@
     using System.Text.Json;
     using System.Text.Json.Serialization;
     using System.Threading.Tasks;
+    using AddressRegistry.Infrastructure.Elastic;
     using AddressRegistry.Projections.Elastic.AddressSearch;
     using global::Elastic.Clients.Elasticsearch;
     using global::Elastic.Clients.Elasticsearch.Aggregations;
     using global::Elastic.Clients.Elasticsearch.Core.Search;
     using global::Elastic.Clients.Elasticsearch.QueryDsl;
     using Microsoft.Extensions.Logging;
-    using Name = Projections.Elastic.AddressSearch.Name;
+    using Name = AddressRegistry.Infrastructure.Elastic.Name;
 
     public sealed class StreetNameSearchResult
     {

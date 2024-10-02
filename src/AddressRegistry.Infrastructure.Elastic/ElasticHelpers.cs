@@ -1,4 +1,4 @@
-﻿namespace AddressRegistry.Projections.Elastic
+﻿namespace AddressRegistry.Infrastructure.Elastic
 {
     using System.Collections.Generic;
 

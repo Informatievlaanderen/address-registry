@@ -209,7 +209,7 @@ namespace AddressRegistry.Projector.Infrastructure
                 projectionsManager.Resume(_projectionsCancellationTokenSource.Token);
             });
 
-            var elasticIndex = new ElasticIndex(
+            var elasticIndex = new AddressElasticIndex(
                 _applicationContainer.Resolve<ElasticsearchClient>(),
                 _configuration);
 

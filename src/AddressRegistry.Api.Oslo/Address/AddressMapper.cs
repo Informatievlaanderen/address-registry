@@ -5,6 +5,7 @@ namespace AddressRegistry.Api.Oslo.Address
     using System.Linq;
     using System.Text;
     using System.Xml;
+    using AddressRegistry.Infrastructure.Elastic;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.SpatialTools.GeometryCoordinates;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;

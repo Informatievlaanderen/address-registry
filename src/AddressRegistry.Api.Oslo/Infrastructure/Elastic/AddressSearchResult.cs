@@ -1,6 +1,7 @@
 ﻿namespace AddressRegistry.Api.Oslo.Infrastructure.Elastic
 {
     using System.Linq;
+    using AddressRegistry.Infrastructure.Elastic;
     using Projections.Elastic.AddressSearch;
 
     public sealed class AddressSearchResult

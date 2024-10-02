@@ -21,6 +21,7 @@
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing;
     using EventExtensions;
     using global::AutoFixture;
+    using Infrastructure.Elastic;
     using Microsoft.EntityFrameworkCore;
     using Moq;
     using NetTopologySuite.Geometries;

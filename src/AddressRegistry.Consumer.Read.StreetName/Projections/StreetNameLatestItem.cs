@@ -68,14 +68,6 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections
             => Enum.Parse<StreetNameStatus>(status);
     }
 
-    public enum StreetNameStatus
-    {
-        Proposed = 0,
-        Current = 1,
-        Retired = 2,
-        Rejected = 3
-    }
-
     public enum StreetNameLanguage
     {
         Dutch = 0,

@@ -5,6 +5,7 @@ namespace AddressRegistry.Infrastructure
         public const string Default = "AddressRegistry";
         public const string Import = "AddressRegistryImport";
         public const string Legacy = "AddressRegistryLegacy";
+        public const string AddressMatch = "AddressRegistryAddressMatch";
         public const string Extract = "AddressRegistryExtract";
         public const string Elastic = "AddressRegistryElastic";
         public const string Sequence = "AddressRegistrySequence";
@@ -26,6 +27,7 @@ namespace AddressRegistry.Infrastructure
     public static class MigrationTables
     {
         public const string Legacy = "__EFMigrationsHistoryLegacy";
+        public const string AddressMatch = "__EFMigrationsHistoryAddressMatch";
         public const string Extract = "__EFMigrationsHistoryExtract";
         public const string Elastic = "__EFMigrationsHistoryElastic";
         public const string RedisDataMigration = "__EFMigrationsHistoryDataMigration";

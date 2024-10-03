@@ -100,7 +100,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
                         .Register(c =>
                         {
                             var bootstrapServers = hostContext.Configuration["Kafka:BootstrapServers"];
-                            var topic = $"{hostContext.Configuration["Topic"]}" ?? throw new ArgumentException("Configuration has no AddressTopic.");
+                            var topic = $"{hostContext.Configuration["Topic"]}" ?? throw new ArgumentException("Configuration has no StreetNameTopic.");
                             var suffix = hostContext.Configuration["ConsumerGroupSuffix"];
                             var consumerGroupId = $"AddressRegistry.StreetNameLatestItemConsumer.{topic}{suffix}";
 
@@ -146,7 +146,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
                         .Register(c =>
                         {
                             var bootstrapServers = hostContext.Configuration["Kafka:BootstrapServers"];
-                            var topic = $"{hostContext.Configuration["Topic"]}" ?? throw new ArgumentException("Configuration has no Postal Topic.");
+                            var topic = $"{hostContext.Configuration["Topic"]}" ?? throw new ArgumentException("Configuration has no StreetNameTopic Topic.");
                             var suffix = hostContext.Configuration["ConsumerGroupSuffix"];
                             var consumerGroupId = $"AddressRegistry.StreetNameElasticConsumer.{topic}{suffix}";
 

@@ -51,7 +51,7 @@
             _addressClient = new AddressApiElasticsearchClient(_elasticClient, _elasticAlias, new NullLoggerFactory());
         }
 
-        [Fact]
+        [Fact(Skip = "This is a test that should be run manually")]
         public async Task Test()
         {
             var outputs = new List<OutputTestCase>();

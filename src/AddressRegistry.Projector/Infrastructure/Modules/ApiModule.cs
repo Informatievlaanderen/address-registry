@@ -1,6 +1,7 @@
 namespace AddressRegistry.Projector.Infrastructure.Modules
 {
     using AddressRegistry.Infrastructure;
+    using AddressRegistry.Projections.AddressMatch;
     using AddressRegistry.Projections.Elastic;
     using AddressRegistry.Projections.Elastic.AddressSearch;
     using AddressRegistry.Projections.Elastic.Infrastructure;
@@ -93,6 +94,8 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
             RegisterLegacyProjectionsV2(builder);
             RegisterWfsProjectionsV2(builder);
             RegisterWmsProjectionsV2(builder);
+            RegisterAddressMatchProjections(builder);
+
             if(_configuration.GetSection("Integration").GetValue("Enabled", false))
                 RegisterIntegrationProjections(builder);
 
@@ -179,6 +182,23 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .RegisterProjections<AddressListProjectionsV2, LegacyContext>(ConnectedProjectionSettings.Default)
                 .RegisterProjections<AddressSyndicationProjections, LegacyContext>(
                     () => new AddressSyndicationProjections(),
+                    ConnectedProjectionSettings.Default);
+        }
+
+        private void RegisterAddressMatchProjections(ContainerBuilder builder)
+        {
+            builder
+                .RegisterModule(
+                    new AddressMatchModule(
+                        _configuration,
+                        _services,
+                        _loggerFactory));
+            builder
+                .RegisterProjectionMigrator<AddressMatchContextMigrationFactory>(
+                    _configuration,
+                    _loggerFactory)
+                .RegisterProjections<AddressRegistry.Projections.AddressMatch.AddressDetailV2WithParent.AddressDetailProjectionsV2WithParent, AddressMatchContext>(
+                    () => new AddressRegistry.Projections.AddressMatch.AddressDetailV2WithParent.AddressDetailProjectionsV2WithParent(),
                     ConnectedProjectionSettings.Default);
         }
 

@@ -1,3 +1,10 @@
+## [4.21.1](https://github.com/informatievlaanderen/address-registry/compare/v4.21.0...v4.21.1) (2024-10-04)
+
+
+### Bug Fixes
+
+* streetname consumer startup ([4522128](https://github.com/informatievlaanderen/address-registry/commit/4522128b94aee4de5862abd01edf8250d8ef0324))
+
 # [4.21.0](https://github.com/informatievlaanderen/address-registry/compare/v4.20.0...v4.21.0) (2024-10-04)
 
 

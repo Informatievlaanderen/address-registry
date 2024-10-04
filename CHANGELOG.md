@@ -1,3 +1,10 @@
+## [4.21.2](https://github.com/informatievlaanderen/address-registry/compare/v4.21.1...v4.21.2) (2024-10-04)
+
+
+### Bug Fixes
+
+* **streetname:** startup elastic consumer dependency ([46b6d5e](https://github.com/informatievlaanderen/address-registry/commit/46b6d5e397f770abca8c17069e528404b2731410))
+
 ## [4.21.1](https://github.com/informatievlaanderen/address-registry/compare/v4.21.0...v4.21.1) (2024-10-04)
 
 

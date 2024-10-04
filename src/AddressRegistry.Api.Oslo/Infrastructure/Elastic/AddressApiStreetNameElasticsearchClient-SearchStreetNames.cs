@@ -6,25 +6,26 @@
     using System.Text.Json;
     using System.Threading.Tasks;
     using AddressRegistry.Infrastructure.Elastic;
+    using Consumer.Read.StreetName.Projections.Elastic;
     using global::Elastic.Clients.Elasticsearch;
     using global::Elastic.Clients.Elasticsearch.QueryDsl;
     using Microsoft.Extensions.Logging;
-    using Projections.Elastic.AddressSearch;
     using Name = AddressRegistry.Infrastructure.Elastic.Name;
+    using PostalInfo = Projections.Elastic.AddressSearch.PostalInfo;
 
-    public sealed partial class AddressApiElasticsearchClient
+    public sealed partial class AddressApiStreetNameElasticsearchClient
     {
-        public async Task<AddressSearchResult> SearchAddresses(
-            string addressQuery,
+        public async Task<StreetNameSearchResult> SearchStreetNames(
+            string query,
             string? municipalityOrPostalName,
-            int? size = 10)
+            int size = 10)
         {
             var municipalityNames =
-                $"{ToCamelCase(nameof(AddressSearchDocument.Municipality))}.{ToCamelCase(nameof(AddressSearchDocument.Municipality.Names))}";
+                $"{ToCamelCase(nameof(StreetNameSearchDocument.Municipality))}.{ToCamelCase(nameof(StreetNameSearchDocument.Municipality.Names))}";
             var postalNames =
-                $"{ToCamelCase(nameof(AddressSearchDocument.PostalInfo))}.{ToCamelCase(nameof(AddressSearchDocument.PostalInfo.Names))}";
+                $"{ToCamelCase(nameof(StreetNameSearchDocument.PostalInfos))}.{ToCamelCase(nameof(PostalInfo.Names))}";
 
-            var searchResponse = await ElasticsearchClient.SearchAsync<AddressSearchDocument>(IndexAlias,
+            var searchResponse = await ElasticsearchClient.SearchAsync<StreetNameSearchDocument>(IndexAlias,
                 descriptor =>
                 {
                     descriptor
@@ -32,22 +33,42 @@
                         .Query(q =>
                             q.Bool(x =>
                             {
-                                x.Filter(f => f.Term(t => t.Field(ToCamelCase(nameof(AddressSearchDocument.Active))!).Value(true)));
+                                x.Filter(f => f.Term(t => t.Field(ToCamelCase(nameof(StreetNameSearchDocument.Active))!).Value(true)));
 
-                                var mustQuery = new List<Action<QueryDescriptor<AddressSearchDocument>>>();
-                                var shouldMunicipalityOrPostalQueries = new List<Action<QueryDescriptor<AddressSearchDocument>>>();
+                                var mustQueries = new List<Action<QueryDescriptor<StreetNameSearchDocument>>>();
+                                var shouldMunicipalityOrPostalQueries = new List<Action<QueryDescriptor<StreetNameSearchDocument>>>();
 
-                                mustQuery.Add(q2 =>
-                                    q2.Nested(full =>
-                                        full
-                                            .Path(FullAddress)
-                                            .Query(fullAddressQuery => fullAddressQuery.MatchPhrase(mp =>
-                                                mp
-                                                    .Field($"{FullAddress}.{NameSpelling}")
-                                                    .Query(addressQuery)
-                                                    .Slop(10)))
-                                            .InnerHits(c =>
-                                                c.Size(1))));
+                                mustQueries.Add(q2 =>
+                                    q2.Bool(b =>
+                                    {
+                                        b.Must(must =>
+                                            must.Nested(full =>
+                                                full
+                                                    .Path(_fullStreetNames)
+                                                    .Query(fullAddressQuery =>
+                                                    {
+                                                        fullAddressQuery.Bool(b => b.Should(s =>
+                                                        {
+                                                            if (!query.Contains(' '))
+                                                            {
+                                                                s.Prefix(p =>
+                                                                    p
+                                                                        .Field($"{_fullStreetNames}.{NameSpelling}")
+                                                                        .Value(query)
+                                                                        .Boost(3));
+                                                            }
+
+                                                            s.MatchPhrase(mp =>
+                                                                mp
+                                                                    .Field($"{_fullStreetNames}.{NameSpelling}")
+                                                                    .Query(query)
+                                                                    .Slop(10));
+                                                        }));
+                                                    })
+                                                    .InnerHits(c =>
+                                                        c.Size(1))
+                                            ));
+                                    }));
 
                                 //query municipality names
                                 if (!string.IsNullOrWhiteSpace(municipalityOrPostalName))
@@ -102,37 +123,38 @@
                                 if (!string.IsNullOrWhiteSpace(municipalityOrPostalName))
                                 {
                                     x.Must(
-                                        must => must.Bool(b => b.Should(mustQuery.ToArray())),
+                                        must => must.Bool(b => b.Should(mustQueries.ToArray())),
                                         must => must.Bool(b => b.Should(shouldMunicipalityOrPostalQueries.ToArray())));
                                 }
                                 else
                                 {
-                                    x.Must(must => must.Bool(b => b.Should(mustQuery.ToArray())));
+                                    x.Must(
+                                        must => must.Bool(b => b.Should(mustQueries.ToArray())));
                                 }
                             })
                         )
-                        .Sort(new Action<SortOptionsDescriptor<AddressSearchDocument>>[]
+                        .Sort(new Action<SortOptionsDescriptor<StreetNameSearchDocument>>[]
                         {
                             s => s.Score(new ScoreSort { Order = SortOrder.Desc }),
-                            s => s.Field($"{FullAddress}.{NameSpelling}.{Keyword}",
+                            s => s.Field($"{_fullStreetNames}.{NameSpelling}.{Keyword}",
                                 c =>
                                     c.Nested(n =>
-                                        n.Path(FullAddress)
+                                        n.Path(_fullStreetNames)
                                     ).Order(SortOrder.Asc))
                         });
                 });
 
             if (!searchResponse.IsValidResponse)
             {
-                _logger.LogWarning("Failed to search for addresses: {Error}", searchResponse.ElasticsearchServerError);
-                return new AddressSearchResult(Enumerable.Empty<AddressSearchDocument>().ToList(), 0);
+                _logger.LogWarning("Failed to search for streetnames: {Error}", searchResponse.ElasticsearchServerError);
+                return new StreetNameSearchResult(Enumerable.Empty<StreetNameSearchDocument>().ToList(), 0);
             }
 
             var language = DetermineLanguage(searchResponse);
-            return new AddressSearchResult(searchResponse.Documents, searchResponse.Total, language);
+            return new StreetNameSearchResult(searchResponse.Documents, searchResponse.Total, language);
         }
 
-        private static Language? DetermineLanguage(SearchResponse<AddressSearchDocument> response)
+        private static Language? DetermineLanguage(SearchResponse<StreetNameSearchDocument> response)
         {
             if (!response.Hits.Any())
             {
@@ -140,17 +162,17 @@
             }
 
             var innerHits = response.Hits.First().InnerHits;
-            if (innerHits is null || !innerHits.TryGetValue(FullAddress, out var fullAddressHitResult))
+            if (innerHits is null || !innerHits.TryGetValue("fullStreetNames", out var fullStreetNamesHit))
             {
                 return null;
             }
 
-            if (!fullAddressHitResult.Hits.Hits.Any())
+            if (!fullStreetNamesHit.Hits.Hits.Any())
             {
                 return null;
             }
 
-            if (fullAddressHitResult.Hits.Hits.First().Source is not JsonElement source)
+            if (fullStreetNamesHit.Hits.Hits.First().Source is not JsonElement source)
             {
                 return null;
             }

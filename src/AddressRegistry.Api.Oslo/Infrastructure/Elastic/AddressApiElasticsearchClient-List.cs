@@ -29,10 +29,10 @@
         {
             if (!string.IsNullOrEmpty(status) & !Enum.TryParse(typeof(AdresStatus), status, true, out var parsedStatus))
             {
-                return new AddressSearchResult(Enumerable.Empty<AddressSearchDocument>().AsQueryable(), 0);
+                return new AddressSearchResult(Enumerable.Empty<AddressSearchDocument>().ToList(), 0);
             }
 
-            var searchResponse = await _elasticsearchClient.SearchAsync<AddressSearchDocument>(_indexAlias, descriptor =>
+            var searchResponse = await ElasticsearchClient.SearchAsync<AddressSearchDocument>(IndexAlias, descriptor =>
             {
                 descriptor.Size(size);
                 descriptor.From(from);
@@ -132,10 +132,10 @@
             if (!searchResponse.IsValidResponse)
             {
                 _logger.LogWarning("Failed to search for addresses: {Error}", searchResponse.ElasticsearchServerError);
-                return new AddressSearchResult(Enumerable.Empty<AddressSearchDocument>().AsQueryable(), 0);
+                return new AddressSearchResult(Enumerable.Empty<AddressSearchDocument>().ToList(), 0);
             }
 
-            return new AddressSearchResult(searchResponse.Documents.AsQueryable(), searchResponse.Total);
+            return new AddressSearchResult(searchResponse.Documents, searchResponse.Total);
         }
     }
 }

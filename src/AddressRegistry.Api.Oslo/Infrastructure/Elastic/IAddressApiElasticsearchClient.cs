@@ -5,14 +5,6 @@
 
     public interface IAddressApiElasticsearchClient
     {
-        Task<IEnumerable<StreetNameSearchResult>> SearchStreetNames(string query, int size = 10);
-
-        Task<IEnumerable<StreetNameSearchResult>> SearchStreetNames(
-            string[] streetNameQueries,
-            string municipalityOrPostalName,
-            bool mustBeInMunicipality,
-            int size = 10);
-
         Task<AddressSearchResult> SearchAddresses(
             string addressQuery,
             string? municipalityOrPostalName,

@@ -5,6 +5,7 @@
     using System.Linq;
     using AddressRegistry.Consumer.Read.Municipality.Projections;
     using AddressRegistry.Infrastructure.Elastic;
+    using Postal.Projections;
 
     public sealed class StreetNameSearchDocument
     {
@@ -15,6 +16,8 @@
         public bool Active => Status is StreetNameStatus.Proposed or StreetNameStatus.Current;
 
         public Municipality Municipality { get; set; }
+
+        public PostalInfo[] PostalInfos { get; set; }
 
         public Name[] Names { get; set; }
         public Name[] HomonymAdditions { get; set; }
@@ -27,6 +30,7 @@
             DateTimeOffset versionTimestamp,
             StreetNameStatus status,
             Municipality municipality,
+            PostalInfo[] postalInfos,
             Name[] names,
             Name[]? homonymAdditions = null)
         {
@@ -34,6 +38,7 @@
             VersionTimestamp = versionTimestamp;
             Status = status;
             Municipality = municipality;
+            PostalInfos = postalInfos;
             Names = names;
             HomonymAdditions = homonymAdditions ?? [];
         }
@@ -62,6 +67,48 @@
             return string.IsNullOrWhiteSpace(homonym)
                 ? $"{streetName}, {municipality}".Replace("  ", " ")
                 : $"{streetName}, {municipality} ({homonym})".Replace("  ", " ");
+        }
+    }
+
+    public sealed class PostalInfo
+    {
+        public string PostalCode { get; set; }
+        public Name[] Names { get; set; }
+
+        public PostalInfo()
+        { }
+
+        public PostalInfo(string postalCode, IEnumerable<Name> names)
+        {
+            PostalCode = postalCode;
+            Names = names.ToArray();
+        }
+
+        public static PostalInfo FromPostalLatestItem(PostalLatestItem postalInfoLatestItem)
+        {
+            var names = new List<Name>();
+            foreach (var postalName in postalInfoLatestItem.PostalNames.Where(x => !string.IsNullOrWhiteSpace(x.PostalName)))
+            {
+                switch (postalName.Language)
+                {
+                    case PostalLanguage.Dutch:
+                        names.Add(new Name(postalName.PostalName!, Language.nl));
+                        break;
+                    case PostalLanguage.French:
+                        names.Add(new Name(postalName.PostalName!, Language.fr));
+                        break;
+                    case PostalLanguage.German:
+                        names.Add(new Name(postalName.PostalName!, Language.de));
+                        break;
+                    case PostalLanguage.English:
+                        names.Add(new Name(postalName.PostalName!, Language.en));
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
+            return new PostalInfo(postalInfoLatestItem.PostalCode, names);
         }
     }
 

@@ -11,6 +11,7 @@ namespace AddressRegistry.Consumer.Read.StreetName
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Municipality;
+    using Postal;
     using Projections;
     using Projections.Elastic;
 
@@ -20,6 +21,7 @@ namespace AddressRegistry.Consumer.Read.StreetName
         private readonly IDbContextFactory<StreetNameConsumerContext> _streetNameConsumerContextFactory;
         private readonly IStreetNameElasticsearchClient _elasticsearchClient;
         private readonly IDbContextFactory<MunicipalityConsumerContext> _municipalityConsumerContextFactory;
+        private readonly IDbContextFactory<PostalConsumerContext> _postalConsumerContextFactory;
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly ILogger<StreetNameElasticConsumer> _logger;
 
@@ -28,6 +30,7 @@ namespace AddressRegistry.Consumer.Read.StreetName
             IDbContextFactory<StreetNameConsumerContext> streetNameConsumerContextFactory,
             IStreetNameElasticsearchClient elasticsearchClient,
             IDbContextFactory<MunicipalityConsumerContext> municipalityConsumerContextFactory,
+            IDbContextFactory<PostalConsumerContext> postalConsumerContextFactory,
             IHostApplicationLifetime hostApplicationLifetime,
             ILoggerFactory loggerFactory)
         {
@@ -35,6 +38,7 @@ namespace AddressRegistry.Consumer.Read.StreetName
             _streetNameConsumerContextFactory = streetNameConsumerContextFactory;
             _elasticsearchClient = elasticsearchClient;
             _municipalityConsumerContextFactory = municipalityConsumerContextFactory;
+            _postalConsumerContextFactory = postalConsumerContextFactory;
             _hostApplicationLifetime = hostApplicationLifetime;
 
             _logger = loggerFactory.CreateLogger<StreetNameElasticConsumer>();
@@ -43,7 +47,11 @@ namespace AddressRegistry.Consumer.Read.StreetName
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             var latestItemProjector = new ConnectedProjector<StreetNameConsumerContext>(
-                Resolve.WhenEqualToHandlerMessageType(new StreetNameSearchProjections(_elasticsearchClient, _municipalityConsumerContextFactory).Handlers));
+                Resolve.WhenEqualToHandlerMessageType(new StreetNameSearchProjections(
+                    _elasticsearchClient,
+                    _municipalityConsumerContextFactory,
+                    _postalConsumerContextFactory)
+                    .Handlers));
 
             try
             {

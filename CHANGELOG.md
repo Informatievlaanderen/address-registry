@@ -1,3 +1,15 @@
+# [4.21.0](https://github.com/informatievlaanderen/address-registry/compare/v4.20.0...v4.21.0) (2024-10-04)
+
+
+### Bug Fixes
+
+* publish consumer streetname ([924a071](https://github.com/informatievlaanderen/address-registry/commit/924a071446db4b25c4a94051012099c2d6451358))
+
+
+### Features
+
+* add streetname elastic consumer + refactor elastic infra ([42d3c43](https://github.com/informatievlaanderen/address-registry/commit/42d3c4349f5340d524301f2e87d358317fc73809))
+
 # [4.20.0](https://github.com/informatievlaanderen/address-registry/compare/v4.19.2...v4.20.0) (2024-10-04)
 
 

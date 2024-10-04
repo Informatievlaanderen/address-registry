@@ -252,13 +252,13 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections.Elastic
 
         public static Language MapToLanguage(string language)
         {
-            if (language == StreetNameLatestItemProjections.Dutch)
+            if (string.Equals(language, StreetNameLatestItemProjections.Dutch, StringComparison.OrdinalIgnoreCase))
                 return Language.nl;
-            if (language == StreetNameLatestItemProjections.French)
+            if (string.Equals(language, StreetNameLatestItemProjections.French, StringComparison.OrdinalIgnoreCase))
                 return Language.fr;
-            if (language == StreetNameLatestItemProjections.German)
+            if (string.Equals(language, StreetNameLatestItemProjections.German, StringComparison.OrdinalIgnoreCase))
                 return Language.de;
-            if (language == StreetNameLatestItemProjections.English)
+            if (string.Equals(language, StreetNameLatestItemProjections.English, StringComparison.OrdinalIgnoreCase))
                 return Language.en;
 
             throw new ArgumentOutOfRangeException(nameof(language), language, null);

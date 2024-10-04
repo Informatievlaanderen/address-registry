@@ -8,7 +8,7 @@
     public sealed partial class AddressApiElasticsearchClient : IAddressApiElasticsearchClient
     {
         private const string Keyword = "keyword";
-        private static readonly string NameSpelling = $"{ToCamelCase(nameof(Projections.Elastic.AddressSearch.Name.Spelling))}";
+        private static readonly string NameSpelling = $"{ToCamelCase(nameof(AddressRegistry.Infrastructure.Elastic.Name.Spelling))}";
         private const string FullAddress = "fullAddress";
 
         private readonly ElasticsearchClient _elasticsearchClient;

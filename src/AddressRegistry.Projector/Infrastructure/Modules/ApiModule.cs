@@ -248,7 +248,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                         _configuration,
                         _services,
                         _loggerFactory))
-                .RegisterModule(new ElasticModule(_configuration))
+                .RegisterModule(new AddressRegistry.Projections.Elastic.Infrastructure.ElasticModule(_configuration))
                 .RegisterModule(new StreetNameConsumerModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new PostalConsumerModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new MunicipalityConsumerModule(_configuration, _services, _loggerFactory));

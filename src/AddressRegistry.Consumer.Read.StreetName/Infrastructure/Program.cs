@@ -15,11 +15,15 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer;
     using Destructurama;
+    using Elastic.Clients.Elasticsearch;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using Modules;
+    using Municipality;
+    using Projections.Elastic;
     using Serilog;
     using Serilog.Debugging;
     using Serilog.Extensions.Logging;
@@ -72,6 +76,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
                 .ConfigureServices((hostContext, services) =>
                 {
                     var loggerFactory = new SerilogLoggerFactory(Log.Logger);
+                    services.AddDbContextFactory<MunicipalityConsumerContext>();
 
                     services
                         .AddDbContextFactory<StreetNameConsumerContext>((provider, options) => options
@@ -91,38 +96,11 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
                     var loggerFactory = new SerilogLoggerFactory(Log.Logger);
 
                     builder.Register(c => new Lazy<IPersistentLocalIdGenerator>(() => throw new NotImplementedException("IPersistentLocalIdGenerator not implemented in consumer streetname.")));
-                    builder.Register(c =>
-                    {
-                        var bootstrapServers = hostContext.Configuration["Kafka:BootstrapServers"];
-                        var topic = $"{hostContext.Configuration["Topic"]}" ?? throw new ArgumentException("Configuration has no AddressTopic.");
-                        var suffix = hostContext.Configuration["ConsumerGroupSuffix"];
-                        var consumerGroupId = $"AddressRegistry.StreetNameBosaItemConsumer.{topic}{suffix}";
-
-                        var consumerOptions = new ConsumerOptions(
-                            new BootstrapServers(bootstrapServers),
-                            new Topic(topic),
-                            new ConsumerGroupId(consumerGroupId),
-                            EventsJsonSerializerSettingsProvider.CreateSerializerSettings());
-
-                        consumerOptions.ConfigureSaslAuthentication(new SaslAuthentication(
-                            hostContext.Configuration["Kafka:SaslUserName"],
-                            hostContext.Configuration["Kafka:SaslPassword"]));
-
-                        var offset = hostContext.Configuration["ConsumerOffset"];
-
-                        if (!string.IsNullOrWhiteSpace(offset) && long.TryParse(offset, out var result))
-                        {
-                            consumerOptions.ConfigureOffset(new Offset(result));
-                        }
-
-                        return consumerOptions;
-                    });
-
                     builder
                         .Register(c =>
                         {
                             var bootstrapServers = hostContext.Configuration["Kafka:BootstrapServers"];
-                            var topic = $"{hostContext.Configuration["Topic"]}" ?? throw new ArgumentException("Configuration has no AddressTopic.");
+                            var topic = $"{hostContext.Configuration["Topic"]}" ?? throw new ArgumentException("Configuration has no StreetNameTopic.");
                             var suffix = hostContext.Configuration["ConsumerGroupSuffix"];
                             var consumerGroupId = $"AddressRegistry.StreetNameLatestItemConsumer.{topic}{suffix}";
 
@@ -165,12 +143,48 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
                         .SingleInstance();
 
                     builder
+                        .Register(c =>
+                        {
+                            var bootstrapServers = hostContext.Configuration["Kafka:BootstrapServers"];
+                            var topic = $"{hostContext.Configuration["Topic"]}" ?? throw new ArgumentException("Configuration has no StreetNameTopic Topic.");
+                            var suffix = hostContext.Configuration["ConsumerGroupSuffix"];
+                            var consumerGroupId = $"AddressRegistry.StreetNameElasticConsumer.{topic}{suffix}";
+
+                            var consumerOptions = new ConsumerOptions(
+                                new BootstrapServers(bootstrapServers),
+                                new Topic(topic),
+                                new ConsumerGroupId(consumerGroupId),
+                                EventsJsonSerializerSettingsProvider.CreateSerializerSettings());
+
+                            consumerOptions.ConfigureSaslAuthentication(new SaslAuthentication(
+                                hostContext.Configuration["Kafka:SaslUserName"],
+                                hostContext.Configuration["Kafka:SaslPassword"]));
+
+                            var offset = hostContext.Configuration["ConsumerOffset"];
+
+                            if (!string.IsNullOrWhiteSpace(offset) && long.TryParse(offset, out var result))
+                            {
+                                consumerOptions.ConfigureOffset(new Offset(result));
+                            }
+
+                            return new Consumer(consumerOptions, c.Resolve<ILoggerFactory>());
+                        })
+                        .Keyed<IConsumer>(nameof(StreetNameElasticConsumer))
+                        .SingleInstance();
+
+                    builder
+                        .RegisterModule(new ElasticModule(hostContext.Configuration))
                         .RegisterModule(new CommandHandlingModule(hostContext.Configuration));
 
                     builder.RegisterSnapshotModule(hostContext.Configuration);
 
                     builder
                         .RegisterType<StreetNameLatestItemConsumer>()
+                        .As<IHostedService>()
+                        .SingleInstance();
+
+                    builder
+                        .RegisterType<StreetNameElasticConsumer>()
                         .As<IHostedService>()
                         .SingleInstance();
 
@@ -182,6 +196,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
             var logger = host.Services.GetRequiredService<ILogger<Program>>();
             var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
             var configuration = host.Services.GetRequiredService<IConfiguration>();
+            var elasticsearchClient = host.Services.GetRequiredService<ElasticsearchClient>();
 
             try
             {
@@ -196,6 +211,13 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
                                 configuration.GetConnectionString("ConsumerStreetNameAdmin"),
                                 loggerFactory,
                                 CancellationToken.None);
+
+                            var elasticIndex = new StreetNameElasticIndex(
+                                elasticsearchClient,
+                                configuration);
+
+                            await elasticIndex.CreateIndexIfNotExist(CancellationToken.None);
+                            await elasticIndex.CreateAliasIfNotExist(CancellationToken.None);
 
                             await host.RunAsync().ConfigureAwait(false);
                         },

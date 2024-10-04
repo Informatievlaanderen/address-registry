@@ -6,6 +6,7 @@
     using System.Text.RegularExpressions;
     using System.Threading;
     using System.Threading.Tasks;
+    using AddressRegistry.Infrastructure.Elastic;
     using Be.Vlaanderen.Basisregisters.Api.Search.Pagination;
     using Infrastructure.Elastic;
     using Infrastructure.Options;

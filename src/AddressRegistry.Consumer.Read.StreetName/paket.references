@@ -13,6 +13,8 @@ Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer
 
 Datadog.Trace.Bundle
 
+Elastic.Clients.Elasticsearch
+
 Serilog
 Serilog.Settings.Configuration
 Serilog.Extensions.Logging

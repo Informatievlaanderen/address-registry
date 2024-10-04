@@ -1,4 +1,4 @@
-﻿namespace AddressRegistry.Projections.Elastic.Exceptions
+﻿namespace AddressRegistry.Infrastructure.Elastic.Exceptions
 {
     using System;
     using System.Runtime.Serialization;

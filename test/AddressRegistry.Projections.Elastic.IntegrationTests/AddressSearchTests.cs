@@ -8,6 +8,7 @@
     using System.Text.Json;
     using System.Text.Json.Nodes;
     using System.Threading.Tasks;
+    using AddressRegistry.Infrastructure.Elastic;
     using AddressSearch;
     using Api.Oslo.Infrastructure.Elastic;
     using FluentAssertions;
@@ -50,7 +51,7 @@
             _addressClient = new AddressApiElasticsearchClient(_elasticClient, _elasticAlias, new NullLoggerFactory());
         }
 
-        [Fact]
+        [Fact(Skip = "This is a test that should be run manually")]
         public async Task Test()
         {
             var outputs = new List<OutputTestCase>();
@@ -77,8 +78,8 @@
 
                 outputs.Add(new OutputTestCase(
                     input,
-                    response.Documents.Select(x => x.FullAddress.Single(x => x.Language == language).Spelling).ToArray(),
-                    addressResponses.Addresses.Select(x => x.FullAddress.Single(x => x.Language == language).Spelling).ToArray(),
+                    response.Documents.Select(x => x.FullAddress.Single(name => name.Language == language).Spelling).ToArray(),
+                    addressResponses.Addresses.Select(x => x.FullAddress.Single(name => name.Language == language).Spelling).ToArray(),
                     language));
             }
 

@@ -13,5 +13,4 @@ services:
     environment:
       ELASTIC_PASSWORD: local_development
       discovery.type: single-node
-      xpack.security.enabled: false
-      xpack.security.enrollment.enabled: false
+      xpack.security.enabled: 'false'

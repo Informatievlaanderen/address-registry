@@ -4,6 +4,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using AddressRegistry.Infrastructure.Elastic;
     using AddressRegistry.StreetName;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Consumer.Read.Municipality.Projections;
@@ -210,29 +211,6 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
                     .Where(x => !string.IsNullOrEmpty(x.Spelling))
             );
         }
-    }
-
-    public sealed class Name
-    {
-        public string Spelling { get; set; }
-        public Language Language { get; set; }
-
-        public Name()
-        { }
-
-        public Name(string spelling, Language language)
-        {
-            Spelling = spelling;
-            Language = language;
-        }
-    }
-
-    public enum Language
-    {
-        nl,
-        en,
-        fr,
-        de
     }
 
     public sealed class AddressPosition

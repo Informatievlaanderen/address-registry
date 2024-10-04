@@ -11,6 +11,7 @@ namespace AddressRegistry.Projections.Elastic.IntegrationTests
     using StreetName;
     using Xunit;
 
+    [Xunit.Collection("Elastic")]
     public class AddressElasticsearchClientTests : IClassFixture<ElasticsearchClientTestFixture>
     {
         private readonly ElasticsearchClientTestFixture _clientFixture;

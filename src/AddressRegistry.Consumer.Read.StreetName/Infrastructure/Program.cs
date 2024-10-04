@@ -9,6 +9,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
     using AddressRegistry.Infrastructure.Modules;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
+    using Autofac.Features.AttributeFilters;
     using Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
     using Be.Vlaanderen.Basisregisters.EventHandling;
@@ -185,6 +186,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
 
                     builder
                         .RegisterType<StreetNameElasticConsumer>()
+                        .WithAttributeFiltering()
                         .As<IHostedService>()
                         .SingleInstance();
 

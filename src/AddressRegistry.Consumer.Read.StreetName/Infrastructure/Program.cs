@@ -24,6 +24,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
     using Microsoft.Extensions.Logging;
     using Modules;
     using Municipality;
+    using Municipality.Infrastructure.Modules;
     using Projections.Elastic;
     using Serilog;
     using Serilog.Debugging;
@@ -175,6 +176,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
 
                     builder
                         .RegisterModule(new ElasticModule(hostContext.Configuration))
+                        .RegisterModule(new MunicipalityConsumerModule(hostContext.Configuration, services, loggerFactory))
                         .RegisterModule(new CommandHandlingModule(hostContext.Configuration));
 
                     builder.RegisterSnapshotModule(hostContext.Configuration);

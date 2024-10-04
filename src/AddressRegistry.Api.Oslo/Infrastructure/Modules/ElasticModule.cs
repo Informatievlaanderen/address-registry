@@ -60,6 +60,17 @@
                 .AsSelf()
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();
+
+            builder
+                .Register(c =>
+                    new AddressApiStreetNameElasticsearchClient(
+                        c.Resolve<ElasticsearchClient>(),
+                        elasticOptions["StreetNameIndexAlias"]!,
+                        c.Resolve<ILoggerFactory>()
+                    ))
+                .AsSelf()
+                .AsImplementedInterfaces()
+                .InstancePerLifetimeScope();
         }
     }
 }

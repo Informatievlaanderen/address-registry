@@ -10,6 +10,7 @@
     using Be.Vlaanderen.Basisregisters.Api.Search.Filtering;
     using Be.Vlaanderen.Basisregisters.Api.Search.Pagination;
     using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
+    using Consumer.Read.StreetName.Projections.Elastic;
     using Microsoft.Extensions.Options;
     using Moq;
     using Projections.Elastic.AddressSearch;
@@ -19,15 +20,21 @@
     {
         private readonly AddressSearchHandler _sut;
         private readonly Mock<IAddressApiElasticsearchClient> _mockAddressSearchApi;
+        private readonly Mock<IAddressApiStreetNameElasticsearchClient> _mockAddressStreetNameSearchApi;
 
         public GivenSearchQuery()
         {
             _mockAddressSearchApi = new Mock<IAddressApiElasticsearchClient>();
+            _mockAddressStreetNameSearchApi = new Mock<IAddressApiStreetNameElasticsearchClient>();
+
             _mockAddressSearchApi.Setup(x => x.SearchAddresses(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>()))
-                .ReturnsAsync(new AddressSearchResult(new List<AddressSearchDocument>().AsQueryable(), 0));
+                .ReturnsAsync(new AddressSearchResult(new List<AddressSearchDocument>(), 0));
+            _mockAddressStreetNameSearchApi.Setup(x => x.SearchStreetNames(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>()))
+                .ReturnsAsync(new StreetNameSearchResult(new List<StreetNameSearchDocument>(), 0));
+
             var mockResponseOptions = new Mock<IOptions<ResponseOptions>>();
 
-            _sut = new AddressSearchHandler(_mockAddressSearchApi.Object, mockResponseOptions.Object);
+            _sut = new AddressSearchHandler(_mockAddressSearchApi.Object, _mockAddressStreetNameSearchApi.Object, mockResponseOptions.Object);
         }
 
         [Theory]
@@ -69,17 +76,14 @@
                     new PaginationRequest(0, limit)),
                 CancellationToken.None);
 
-            _mockAddressSearchApi.Verify(x => x.SearchStreetNames(query, limit), Times.Once);
+            _mockAddressStreetNameSearchApi.Verify(x => x.SearchStreetNames(query, null, limit), Times.Once);
         }
 
         [Theory]
-        [InlineData("loppem zedel", new [] {"loppem", "loppem zedel"}, "zedel")]
-        [InlineData("one two three", new [] {"one", "one two", "one two three"}, "three")]
-        [InlineData("one two three four", new [] {"one", "one two", "one two three", "one two three four"}, "four")]
-        public async Task WithMultipleWords_ThenSearchStreetNamesWithMunicipalityOrPostalName(
-            string query,
-            string[] streetNames,
-            string municipalityOrPostalName)
+        [InlineData("loppem zedel")]
+        [InlineData("one two three")]
+        [InlineData("one two three four")]
+        public async Task WithMultipleWords_ThenSearchStreetNamesWithMunicipalityOrPostalName(string query)
         {
             var limit = 50;
             await _sut.Handle(
@@ -89,7 +93,7 @@
                     new PaginationRequest(0, limit)),
                 CancellationToken.None);
 
-            _mockAddressSearchApi.Verify(x => x.SearchStreetNames(streetNames, municipalityOrPostalName, false, limit), Times.Once);
+            _mockAddressStreetNameSearchApi.Verify(x => x.SearchStreetNames(query, null, limit), Times.Once);
         }
     }
 }

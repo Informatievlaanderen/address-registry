@@ -12,20 +12,25 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections.Elastic
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Microsoft.EntityFrameworkCore;
     using NodaTime.Text;
+    using Postal;
 
     [ConnectedProjectionName("API endpoint search straatnamen")]
     [ConnectedProjectionDescription("Projectie die de straatnamen data voor adres zoeken in Elastic Search synchroniseert.")]
     public class StreetNameSearchProjections : ConnectedProjection<StreetNameConsumerContext>
     {
         private readonly Dictionary<Guid, Municipality> _municipalities = new Dictionary<Guid, Municipality>();
+        private readonly IDictionary<string, PostalInfo[]> _postalInfos = new Dictionary<string, PostalInfo[]>();
 
         private readonly IDbContextFactory<MunicipalityConsumerContext> _municipalityConsumerContextFactory;
+        private readonly IDbContextFactory<PostalConsumerContext> _postalConsumerContextFactory;
 
         public StreetNameSearchProjections(
             IStreetNameElasticsearchClient elasticsearchClient,
-            IDbContextFactory<MunicipalityConsumerContext> municipalityConsumerContextFactory)
+            IDbContextFactory<MunicipalityConsumerContext> municipalityConsumerContextFactory,
+            IDbContextFactory<PostalConsumerContext> postalConsumerContextFactory)
         {
             _municipalityConsumerContextFactory = municipalityConsumerContextFactory;
+            _postalConsumerContextFactory = postalConsumerContextFactory;
 
             When<StreetNameWasMigratedToMunicipality>(async (_, message, ct) =>
             {
@@ -39,6 +44,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections.Elastic
                     InstantPattern.General.Parse(message.Provenance.Timestamp).Value.ToBelgianDateTimeOffset(),
                     StreetNameLatestItem.ConvertStringToStatus(message.Status),
                     municipality,
+                    await GetPostalInfo(municipality.NisCode, ct),
                     message.Names.Select(x => new Name(x.Value, MapToLanguage(x.Key))).ToArray(),
                     message.HomonymAdditions.Select(x => new Name(x.Value, MapToLanguage(x.Key))).ToArray());
 
@@ -54,6 +60,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections.Elastic
                     InstantPattern.General.Parse(message.Provenance.Timestamp).Value.ToBelgianDateTimeOffset(),
                     StreetNameStatus.Proposed,
                     municipality,
+                    await GetPostalInfo(municipality.NisCode, ct),
                     message.StreetNameNames.Select(x => new Name(x.Value, MapToLanguage(x.Key))).ToArray());
 
                 await elasticsearchClient.CreateDocument(document, ct);
@@ -68,6 +75,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections.Elastic
                     InstantPattern.General.Parse(message.Provenance.Timestamp).Value.ToBelgianDateTimeOffset(),
                     StreetNameStatus.Proposed,
                     municipality,
+                    await GetPostalInfo(municipality.NisCode, ct),
                     message.StreetNameNames.Select(x => new Name(x.Value, MapToLanguage(x.Key))).ToArray(),
                     message.HomonymAdditions.Select(x => new Name(x.Value, MapToLanguage(x.Key))).ToArray());
 
@@ -280,6 +288,26 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections.Elastic
             _municipalities.Add(municipalityId, Municipality.FromMunicipalityLatestItem(municipalityLatestItem));
 
             return _municipalities[municipalityId];
+        }
+
+        private async Task<PostalInfo[]> GetPostalInfo(string nisCode, CancellationToken ct)
+        {
+            if (_postalInfos.TryGetValue(nisCode, out var value))
+                return value;
+
+            await using var context = await _postalConsumerContextFactory.CreateDbContextAsync(ct);
+            var postalInfoLatestItems = await context.PostalLatestItems
+                .Include(x => x.PostalNames)
+                .AsNoTracking()
+                .Where(p => p.NisCode == nisCode)
+                .ToListAsync(ct);
+
+            if (postalInfoLatestItems == null || postalInfoLatestItems.Count == 0)
+                throw new InvalidOperationException($"PostalInfo with postalCode {nisCode} not found");
+
+            _postalInfos.Add(nisCode, postalInfoLatestItems.Select(PostalInfo.FromPostalLatestItem).ToArray());
+
+            return _postalInfos[nisCode];
         }
     }
 }

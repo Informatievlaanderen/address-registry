@@ -80,6 +80,12 @@
                                         .Nested("names", ConfigureNames());
                                 })
                             )
+                            .Nested(x => x.PostalInfos, config =>
+                            {
+                                config.Properties(property => property
+                                    .Keyword(nameof(PostalInfo.PostalCode))
+                                    .Nested("names", ConfigureNames()));
+                            })
                             .Nested("names", ConfigureNames())
                             .Nested("homonymAdditions", ConfigureNames())
                             .Nested(x => x.FullStreetNames, ConfigureNames(StreetNameFullSearchIndexAnalyzer))

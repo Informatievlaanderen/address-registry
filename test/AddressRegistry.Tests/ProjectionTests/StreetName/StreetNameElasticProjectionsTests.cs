@@ -7,6 +7,8 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
     using System.Threading.Tasks;
     using AddressRegistry.Consumer.Read.Municipality;
     using AddressRegistry.Consumer.Read.Municipality.Projections;
+    using AddressRegistry.Consumer.Read.Postal;
+    using AddressRegistry.Consumer.Read.Postal.Projections;
     using AddressRegistry.Consumer.Read.StreetName;
     using AddressRegistry.Consumer.Read.StreetName.Projections;
     using AddressRegistry.Consumer.Read.StreetName.Projections.Elastic;
@@ -48,11 +50,11 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
             { StreetNameLatestItemProjections.English, "en hom" },
         };
 
-        private readonly TestMunicipalityConsumerContext _municipalityContext;
         private readonly Mock<IDbContextFactory<MunicipalityConsumerContext>> _municipalityDbContextFactory;
         private readonly Mock<IStreetNameElasticsearchClient> _elasticClientMock;
         private readonly Instant _timestamp;
         private readonly MunicipalityLatestItem _municipalityLatestItem;
+        private readonly Mock<IDbContextFactory<PostalConsumerContext>> _postalDbContextFactory;
 
         public StreetNameElasticProjectionsTests(ITestOutputHelper testOutputHelper)
             : base(testOutputHelper)
@@ -78,11 +80,11 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
 
             _elasticClientMock = new Mock<IStreetNameElasticsearchClient>();
 
-            _municipalityContext = new FakeMunicipalityConsumerContextFactory().CreateDbContext();
+            var municipalityContext = new FakeMunicipalityConsumerContextFactory().CreateDbContext();
             _municipalityDbContextFactory = new Mock<IDbContextFactory<MunicipalityConsumerContext>>();
             _municipalityDbContextFactory
                 .Setup(x => x.CreateDbContextAsync(It.IsAny<CancellationToken>()))
-                .ReturnsAsync(_municipalityContext);
+                .ReturnsAsync(municipalityContext);
 
             _municipalityLatestItem = new MunicipalityLatestItem
             {
@@ -91,8 +93,38 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
                 NameDutch = "Gent",
                 NameFrench = "Gand"
             };
-            _municipalityContext.MunicipalityLatestItems.Add(_municipalityLatestItem);
-            _municipalityContext.SaveChanges();
+            municipalityContext.MunicipalityLatestItems.Add(_municipalityLatestItem);
+            municipalityContext.SaveChanges();
+
+            var postalContext = new FakePostalConsumerContextFactory().CreateDbContext();
+            _postalDbContextFactory = new Mock<IDbContextFactory<PostalConsumerContext>>();
+            _postalDbContextFactory
+                .Setup(x => x.CreateDbContextAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(postalContext);
+
+            postalContext.PostalLatestItems.Add(
+                new PostalLatestItem("1234", Instant.FromDateTimeOffset(DateTimeOffset.Now))
+                {
+                    NisCode = nisCode,
+                    PostalNames =
+                    [
+                        new PostalInfoPostalName("1234", PostalLanguage.Dutch, "postalname1"),
+                        new PostalInfoPostalName("1234", PostalLanguage.French, "postalname2")
+                    ],
+                    Status = PostalStatus.Current
+                });
+            postalContext.PostalLatestItems.Add(
+                new PostalLatestItem("5678", Instant.FromDateTimeOffset(DateTimeOffset.Now))
+                {
+                    NisCode = nisCode,
+                    PostalNames =
+                    [
+                        new PostalInfoPostalName("5678", PostalLanguage.Dutch, "postalname3"),
+                        new PostalInfoPostalName("5678", PostalLanguage.French, "postalname4")
+                    ],
+                    Status = PostalStatus.Current
+                });
+            postalContext.SaveChanges();
         }
 
         [Fact]
@@ -129,6 +161,8 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
                         && doc.FullStreetNames.Length == _names.Count
                         && doc.Municipality.NisCode == _municipalityLatestItem.NisCode
                         && doc.Municipality.Names.Length == 2
+                        && doc.PostalInfos.Length == 2
+                        && doc.PostalInfos.Sum(y => y.Names.Length) == 4
                         ),
                     It.IsAny<CancellationToken>()));
 
@@ -152,6 +186,8 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
                         && doc.FullStreetNames.Length == _names.Count
                         && doc.Municipality.NisCode == _streetNameWasProposedV2.NisCode
                         && doc.Municipality.Names.Length == 2
+                        && doc.PostalInfos.Length == 2
+                        && doc.PostalInfos.Sum(y => y.Names.Length) == 4
                     ),
                     It.IsAny<CancellationToken>()));
 
@@ -187,6 +223,8 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
                         && doc.FullStreetNames.Length == _names.Count
                         && doc.Municipality.NisCode == streetNameWasProposed.NisCode
                         && doc.Municipality.Names.Length == 2
+                        && doc.PostalInfos.Length == 2
+                        && doc.PostalInfos.Sum(y => y.Names.Length) == 4
                     ),
                     It.IsAny<CancellationToken>()));
 
@@ -448,6 +486,7 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
                     DateTimeOffset.Now,
                     StreetNameStatus.Proposed,
                     new Municipality(_streetNameWasProposedV2.NisCode, [new Name("Gent", Language.nl), new Name("Gand", Language.fr)]),
+                    [new PostalInfo("1234", [new Name("Gent", Language.nl), new Name("Gand", Language.fr)])],
                     _names.Select(x => new Name(x.Value, StreetNameSearchProjections.MapToLanguage(x.Key))).ToArray(),
                     _homonyms.Select(x => new Name(x.Value, StreetNameSearchProjections.MapToLanguage(x.Key))).ToArray()
                     ));
@@ -487,6 +526,7 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
                     DateTimeOffset.Now,
                     StreetNameStatus.Proposed,
                     new Municipality(_streetNameWasProposedV2.NisCode, [new Name("Gent", Language.nl), new Name("Gand", Language.fr)]),
+                    [new PostalInfo("1234", [new Name("Gent", Language.nl), new Name("Gand", Language.fr)])],
                     _names.Select(x => new Name(x.Value, StreetNameSearchProjections.MapToLanguage(x.Key))).ToArray(),
                     _homonyms.Select(x => new Name(x.Value, StreetNameSearchProjections.MapToLanguage(x.Key))).ToArray()
                 ));
@@ -526,6 +566,7 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
                     DateTimeOffset.Now,
                     StreetNameStatus.Proposed,
                     new Municipality(_streetNameWasProposedV2.NisCode, [new Name("Gent", Language.nl), new Name("Gand", Language.fr)]),
+                    [new PostalInfo("1234", [new Name("Gent", Language.nl), new Name("Gand", Language.fr)])],
                     _names.Select(x => new Name(x.Value, StreetNameSearchProjections.MapToLanguage(x.Key))).ToArray(),
                     _homonyms.Select(x => new Name(x.Value, StreetNameSearchProjections.MapToLanguage(x.Key))).ToArray()
                 ));
@@ -565,6 +606,7 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
                     DateTimeOffset.Now,
                     StreetNameStatus.Proposed,
                     new Municipality(_streetNameWasProposedV2.NisCode, [new Name("Gent", Language.nl), new Name("Gand", Language.fr)]),
+                    [new PostalInfo("1234", [new Name("Gent", Language.nl), new Name("Gand", Language.fr)])],
                     _names.Select(x => new Name(x.Value, StreetNameSearchProjections.MapToLanguage(x.Key))).ToArray(),
                     _homonyms.Select(x => new Name(x.Value, StreetNameSearchProjections.MapToLanguage(x.Key))).ToArray()
                 ));
@@ -619,6 +661,6 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
         }
 
         protected override StreetNameSearchProjections CreateProjection()
-            => new StreetNameSearchProjections(_elasticClientMock.Object, _municipalityDbContextFactory.Object);
+            => new StreetNameSearchProjections(_elasticClientMock.Object, _municipalityDbContextFactory.Object, _postalDbContextFactory.Object);
     }
 }

@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AddressRegistry.Consumer.Read.Municipality\AddressRegistry.Consumer.Read.Municipality.csproj" />
+    <ProjectReference Include="..\AddressRegistry.Consumer.Read.Postal\AddressRegistry.Consumer.Read.Postal.csproj" />
     <ProjectReference Include="..\AddressRegistry.Infrastructure.Elastic\AddressRegistry.Infrastructure.Elastic.csproj" />
     <ProjectReference Include="..\AddressRegistry.Infrastructure\AddressRegistry.Infrastructure.csproj" />
   </ItemGroup>

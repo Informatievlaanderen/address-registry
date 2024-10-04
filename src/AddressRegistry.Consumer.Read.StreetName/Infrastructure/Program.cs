@@ -25,6 +25,8 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
     using Modules;
     using Municipality;
     using Municipality.Infrastructure.Modules;
+    using Postal;
+    using Postal.Infrastructure.Modules;
     using Projections.Elastic;
     using Serilog;
     using Serilog.Debugging;
@@ -79,6 +81,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
                 {
                     var loggerFactory = new SerilogLoggerFactory(Log.Logger);
                     services.AddDbContextFactory<MunicipalityConsumerContext>();
+                    services.AddDbContextFactory<PostalConsumerContext>();
 
                     services
                         .AddDbContextFactory<StreetNameConsumerContext>((provider, options) => options
@@ -149,7 +152,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
                         {
                             var bootstrapServers = hostContext.Configuration["Kafka:BootstrapServers"];
                             var topic = $"{hostContext.Configuration["Topic"]}" ?? throw new ArgumentException("Configuration has no StreetNameTopic Topic.");
-                            var suffix = hostContext.Configuration["ConsumerGroupSuffix"];
+                            var suffix = hostContext.Configuration["ElasticConsumerGroupSuffix"];
                             var consumerGroupId = $"AddressRegistry.StreetNameElasticConsumer.{topic}{suffix}";
 
                             var consumerOptions = new ConsumerOptions(
@@ -162,7 +165,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
                                 hostContext.Configuration["Kafka:SaslUserName"],
                                 hostContext.Configuration["Kafka:SaslPassword"]));
 
-                            var offset = hostContext.Configuration["ConsumerOffset"];
+                            var offset = hostContext.Configuration["ElasticConsumerOffset"];
 
                             if (!string.IsNullOrWhiteSpace(offset) && long.TryParse(offset, out var result))
                             {
@@ -177,6 +180,7 @@ namespace AddressRegistry.Consumer.Read.StreetName.Infrastructure
                     builder
                         .RegisterModule(new ElasticModule(hostContext.Configuration))
                         .RegisterModule(new MunicipalityConsumerModule(hostContext.Configuration, services, loggerFactory))
+                        .RegisterModule(new PostalConsumerModule(hostContext.Configuration, services, loggerFactory))
                         .RegisterModule(new CommandHandlingModule(hostContext.Configuration));
 
                     builder.RegisterSnapshotModule(hostContext.Configuration);

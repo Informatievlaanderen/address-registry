@@ -7,7 +7,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
     using Consumer.Read.Municipality.Projections;
     using Consumer.Read.StreetName.Projections;
     using Convertors;
-    using Projections.Legacy.AddressDetailV2WithParent;
+    using Projections.AddressMatch.AddressDetailV2WithParent;
 
     public sealed class AddressMatchBuilder : IEnumerable<AddressMatchBuilder.MunicipalityWrapper>, IProvidesRepresentationsForScoring
     {

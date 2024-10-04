@@ -3,7 +3,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
     using System.Collections.Generic;
     using Consumer.Read.Municipality.Projections;
     using Consumer.Read.StreetName.Projections;
-    using Projections.Legacy.AddressDetailV2WithParent;
+    using Projections.AddressMatch.AddressDetailV2WithParent;
 
     /// <summary>
     /// Implements an algorithm for matching AdresMatchQueryComponents to Gemeentes, Straatnamen or Adressen and scoring the results.

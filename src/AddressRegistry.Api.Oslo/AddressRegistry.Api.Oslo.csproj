@@ -32,6 +32,7 @@
     <ProjectReference Include="..\AddressRegistry.Consumer.Read.Municipality\AddressRegistry.Consumer.Read.Municipality.csproj" />
     <ProjectReference Include="..\AddressRegistry.Consumer.Read.StreetName\AddressRegistry.Consumer.Read.StreetName.csproj" />
     <ProjectReference Include="..\AddressRegistry.Consumer.Read.Postal\AddressRegistry.Consumer.Read.Postal.csproj" />
+    <ProjectReference Include="..\AddressRegistry.Projections.AddressMatch\AddressRegistry.Projections.AddressMatch.csproj" />
     <ProjectReference Include="..\AddressRegistry.Projections.Elastic\AddressRegistry.Projections.Elastic.csproj" />
     <ProjectReference Include="..\AddressRegistry.Projections.Legacy\AddressRegistry.Projections.Legacy.csproj" />
     <ProjectReference Include="..\AddressRegistry\AddressRegistry.csproj" />

@@ -8,12 +8,9 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
     using Consumer.Read.StreetName;
     using Consumer.Read.StreetName.Projections;
     using Microsoft.EntityFrameworkCore;
-    using Projections.Legacy;
-    using Projections.Legacy.AddressDetailV2WithParent;
 
     public class AddressMatchContextV2 : DbContext
     {
-        public DbSet<AddressDetailItemV2WithParent> AddressDetailV2WithParent { get; set; }
         public DbSet<MunicipalityLatestItem> MunicipalityLatestItems { get; set; }
         public DbSet<StreetNameLatestItem> StreetNameLatestItems { get; set; }
         public DbSet<PostalLatestItem> PostalInfoLatestItems { get; set; }
@@ -33,7 +30,6 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(LegacyContext).GetTypeInfo().Assembly);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(PostalConsumerContext).GetTypeInfo().Assembly);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(MunicipalityConsumerContext).GetTypeInfo().Assembly);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(StreetNameConsumerContext).GetTypeInfo().Assembly);

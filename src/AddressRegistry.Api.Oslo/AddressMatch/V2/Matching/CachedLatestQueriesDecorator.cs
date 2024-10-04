@@ -9,7 +9,8 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
     using Consumer.Read.StreetName.Projections;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Caching.Memory;
-    using Projections.Legacy.AddressDetailV2WithParent;
+    using Projections.AddressMatch;
+    using Projections.AddressMatch.AddressDetailV2WithParent;
 
     public interface ILatestQueries
     {
@@ -25,6 +26,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
     public sealed class CachedLatestQueriesDecorator : CachedService, ILatestQueries
     {
         private readonly AddressMatchContextV2 _context;
+        private readonly AddressMatchContext _addressMatchContext;
         private static readonly TimeSpan AllStreetNamesCacheDuration = TimeSpan.FromDays(1);
         private static readonly TimeSpan AllMunicipalitiesCacheDuration = TimeSpan.FromDays(1);
         private static readonly TimeSpan AllPostalInfoCacheDuration = TimeSpan.FromDays(1);
@@ -34,8 +36,13 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
 
         public CachedLatestQueriesDecorator(
             IMemoryCache memoryCache,
-            AddressMatchContextV2 context)
-            : base(memoryCache) => _context = context;
+            AddressMatchContextV2 context,
+            AddressMatchContext addressMatchContext)
+            : base(memoryCache)
+        {
+            _context = context;
+            _addressMatchContext = addressMatchContext;
+        }
 
         public IDictionary<string, MunicipalityLatestItem> GetAllLatestMunicipalities() =>
             GetOrAdd(
@@ -89,7 +96,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
             var streetName = FindLatestStreetNameById(streetNamePersistentLocalId);
 
             // no caching for addresses
-            var query = _context
+            var query = _addressMatchContext
                 .AddressDetailV2WithParent
                 .Where(x => !x.Removed)
                 .Where(x => x.StreetNamePersistentLocalId == streetName.PersistentLocalId);

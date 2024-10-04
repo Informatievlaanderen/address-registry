@@ -14,6 +14,7 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Projections.AddressMatch;
     using Projections.Legacy;
 
     public class ApiModule : Module
@@ -51,6 +52,7 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
         {
             builder
                 .RegisterModule(new LegacyModule(_configuration, _services, _loggerFactory))
+                .RegisterModule(new AddressMatchModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new PostalConsumerModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new MunicipalityConsumerModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new StreetNameConsumerModule(_configuration, _services, _loggerFactory));

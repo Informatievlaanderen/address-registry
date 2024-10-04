@@ -7,7 +7,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2
     using Convertors;
     using Infrastructure.Options;
     using Matching;
-    using Projections.Legacy.AddressDetailV2WithParent;
+    using Projections.AddressMatch.AddressDetailV2WithParent;
     using Responses;
 
     internal class AddressMapper : IMapper<AddressDetailItemV2WithParent, AddressMatchScoreableItemV2>

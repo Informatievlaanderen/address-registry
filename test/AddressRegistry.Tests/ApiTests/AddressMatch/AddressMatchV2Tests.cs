@@ -19,7 +19,7 @@ namespace AddressRegistry.Tests.ApiTests.AddressMatch
     using Moq;
     using NetTopologySuite.Geometries;
     using NodaTime;
-    using Projections.Legacy.AddressDetailV2WithParent;
+    using Projections.AddressMatch.AddressDetailV2WithParent;
     using StreetName;
     using Xunit;
     using Xunit.Abstractions;

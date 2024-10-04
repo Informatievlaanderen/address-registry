@@ -2,7 +2,7 @@ namespace AddressRegistry.Api.Oslo.AddressMatch.V2.Matching
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Projections.Legacy.AddressDetailV2WithParent;
+    using Projections.AddressMatch.AddressDetailV2WithParent;
 
     internal sealed class AddressMatcher<TResult> : ScoreableObjectMatcherBase<AddressMatchBuilder, TResult>
         where TResult : class, IScoreable

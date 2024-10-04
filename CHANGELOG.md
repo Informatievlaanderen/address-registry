@@ -1,3 +1,10 @@
+## [4.21.3](https://github.com/informatievlaanderen/address-registry/compare/v4.21.2...v4.21.3) (2024-10-04)
+
+
+### Bug Fixes
+
+* **consumer:** compare language ignore case ([1bc549d](https://github.com/informatievlaanderen/address-registry/commit/1bc549d697a191a9a3a3d209c1adeb28e0841aeb))
+
 ## [4.21.2](https://github.com/informatievlaanderen/address-registry/compare/v4.21.1...v4.21.2) (2024-10-04)
 
 

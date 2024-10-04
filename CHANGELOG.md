@@ -1,3 +1,17 @@
+# [4.20.0](https://github.com/informatievlaanderen/address-registry/compare/v4.19.2...v4.20.0) (2024-10-04)
+
+
+### Bug Fixes
+
+* disable CRAB extract projections ([55a8878](https://github.com/informatievlaanderen/address-registry/commit/55a887812f3477da49145460b5c7c80e79ae93cc))
+* propose for municipality merger response csv header ([#1239](https://github.com/informatievlaanderen/address-registry/issues/1239)) ([8977e47](https://github.com/informatievlaanderen/address-registry/commit/8977e47f8d4d6722799778cef0ad4d0c3df7b5c5))
+
+
+### Features
+
+* add addressmatch projections ([2746e2b](https://github.com/informatievlaanderen/address-registry/commit/2746e2b83a9287f430bff87d89512bb6debfaf6c))
+* **search:** add abbreviations and numeral synonyms + full address search ([f1cd168](https://github.com/informatievlaanderen/address-registry/commit/f1cd168e0e38640d3a1c871bbd6919e785971f20))
+
 ## [4.19.2](https://github.com/informatievlaanderen/address-registry/compare/v4.19.1...v4.19.2) (2024-09-25)
 
 

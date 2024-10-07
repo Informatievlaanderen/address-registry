@@ -1,3 +1,10 @@
+## [4.22.1](https://github.com/informatievlaanderen/address-registry/compare/v4.22.0...v4.22.1) (2024-10-07)
+
+
+### Bug Fixes
+
+* possible no postinfo found ([90bb143](https://github.com/informatievlaanderen/address-registry/commit/90bb143eb51656591250dc8806c4804af3ecf0b3))
+
 # [4.22.0](https://github.com/informatievlaanderen/address-registry/compare/v4.21.3...v4.22.0) (2024-10-07)
 
 

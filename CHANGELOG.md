@@ -1,3 +1,10 @@
+# [4.22.0](https://github.com/informatievlaanderen/address-registry/compare/v4.21.3...v4.22.0) (2024-10-07)
+
+
+### Features
+
+* add postalinfo to streetname ([33a3d59](https://github.com/informatievlaanderen/address-registry/commit/33a3d594b4abb6cdef9af1c5965dd764259c1134))
+
 ## [4.21.3](https://github.com/informatievlaanderen/address-registry/compare/v4.21.2...v4.21.3) (2024-10-04)
 
 

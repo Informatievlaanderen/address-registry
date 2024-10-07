@@ -17,5 +17,6 @@
     {
         public string? Query { get; init; }
         public string? MunicipalityOrPostalName { get; init; }
+        public string? Status { get; init; }
     }
 }

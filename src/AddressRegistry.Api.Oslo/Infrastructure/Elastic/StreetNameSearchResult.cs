@@ -16,5 +16,7 @@
             Total = total;
             Language = language;
         }
+
+        public static StreetNameSearchResult Empty => new StreetNameSearchResult(new List<StreetNameSearchDocument>(), 0);
     }
 }

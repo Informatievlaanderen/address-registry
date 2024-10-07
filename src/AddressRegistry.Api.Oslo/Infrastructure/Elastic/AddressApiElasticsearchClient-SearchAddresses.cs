@@ -10,6 +10,7 @@
     using global::Elastic.Clients.Elasticsearch.QueryDsl;
     using Microsoft.Extensions.Logging;
     using Projections.Elastic.AddressSearch;
+    using StreetName;
     using Name = AddressRegistry.Infrastructure.Elastic.Name;
 
     public sealed partial class AddressApiElasticsearchClient
@@ -17,7 +18,8 @@
         public async Task<AddressSearchResult> SearchAddresses(
             string addressQuery,
             string? municipalityOrPostalName,
-            int? size = 10)
+            AddressStatus? status,
+            int size = 10)
         {
             var municipalityNames =
                 $"{ToCamelCase(nameof(AddressSearchDocument.Municipality))}.{ToCamelCase(nameof(AddressSearchDocument.Municipality.Names))}";
@@ -32,7 +34,10 @@
                         .Query(q =>
                             q.Bool(x =>
                             {
-                                x.Filter(f => f.Term(t => t.Field(ToCamelCase(nameof(AddressSearchDocument.Active))!).Value(true)));
+                                if(status is not null)
+                                    x.Filter(f => f.Term(t => t.Field(ToCamelCase(nameof(AddressSearchDocument.Status))!).Value(status.ToString())));
+                                else
+                                    x.Filter(f => f.Term(t => t.Field(ToCamelCase(nameof(AddressSearchDocument.Active))!).Value(true)));
 
                                 var mustQuery = new List<Action<QueryDescriptor<AddressSearchDocument>>>();
                                 var shouldMunicipalityOrPostalQueries = new List<Action<QueryDescriptor<AddressSearchDocument>>>();
@@ -125,7 +130,7 @@
             if (!searchResponse.IsValidResponse)
             {
                 _logger.LogWarning("Failed to search for addresses: {Error}", searchResponse.ElasticsearchServerError);
-                return new AddressSearchResult(Enumerable.Empty<AddressSearchDocument>().ToList(), 0);
+                return AddressSearchResult.Empty;
             }
 
             var language = DetermineLanguage(searchResponse);

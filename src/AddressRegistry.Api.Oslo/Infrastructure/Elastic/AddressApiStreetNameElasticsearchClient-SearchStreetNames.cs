@@ -6,6 +6,7 @@
     using System.Text.Json;
     using System.Threading.Tasks;
     using AddressRegistry.Infrastructure.Elastic;
+    using Consumer.Read.StreetName.Projections;
     using Consumer.Read.StreetName.Projections.Elastic;
     using global::Elastic.Clients.Elasticsearch;
     using global::Elastic.Clients.Elasticsearch.QueryDsl;
@@ -18,6 +19,7 @@
         public async Task<StreetNameSearchResult> SearchStreetNames(
             string query,
             string? municipalityOrPostalName,
+            StreetNameStatus? status,
             int size = 10)
         {
             var municipalityNames =
@@ -33,7 +35,10 @@
                         .Query(q =>
                             q.Bool(x =>
                             {
-                                x.Filter(f => f.Term(t => t.Field(ToCamelCase(nameof(StreetNameSearchDocument.Active))!).Value(true)));
+                                if(status is not null)
+                                    x.Filter(f => f.Term(t => t.Field(ToCamelCase(nameof(StreetNameSearchDocument.Status))!).Value(status.ToString())));
+                                else
+                                    x.Filter(f => f.Term(t => t.Field(ToCamelCase(nameof(StreetNameSearchDocument.Active))!).Value(true)));
 
                                 var mustQueries = new List<Action<QueryDescriptor<StreetNameSearchDocument>>>();
                                 var shouldMunicipalityOrPostalQueries = new List<Action<QueryDescriptor<StreetNameSearchDocument>>>();
@@ -147,7 +152,7 @@
             if (!searchResponse.IsValidResponse)
             {
                 _logger.LogWarning("Failed to search for streetnames: {Error}", searchResponse.ElasticsearchServerError);
-                return new StreetNameSearchResult(Enumerable.Empty<StreetNameSearchDocument>().ToList(), 0);
+                return StreetNameSearchResult.Empty;
             }
 
             var language = DetermineLanguage(searchResponse);

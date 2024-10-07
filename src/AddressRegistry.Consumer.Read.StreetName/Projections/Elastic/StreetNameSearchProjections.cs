@@ -302,10 +302,10 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections.Elastic
                 .Where(p => p.NisCode == nisCode)
                 .ToListAsync(ct);
 
-            if (postalInfoLatestItems == null || postalInfoLatestItems.Count == 0)
-                throw new InvalidOperationException($"PostalInfo with postalCode {nisCode} not found");
-
-            _postalInfos.Add(nisCode, postalInfoLatestItems.Select(PostalInfo.FromPostalLatestItem).ToArray());
+            if (postalInfoLatestItems.Count == 0)
+                _postalInfos.Add(nisCode, []);
+            else
+                _postalInfos.Add(nisCode, postalInfoLatestItems.Select(PostalInfo.FromPostalLatestItem).ToArray());
 
             return _postalInfos[nisCode];
         }

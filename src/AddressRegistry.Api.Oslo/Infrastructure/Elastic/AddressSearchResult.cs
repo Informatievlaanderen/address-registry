@@ -16,5 +16,7 @@
             Total = total;
             Language = language;
         }
+
+        public static AddressSearchResult Empty => new AddressSearchResult(new List<AddressSearchDocument>(), 0);
     }
 }

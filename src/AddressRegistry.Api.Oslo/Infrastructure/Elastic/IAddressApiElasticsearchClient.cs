@@ -2,13 +2,15 @@
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using StreetName;
 
     public interface IAddressApiElasticsearchClient
     {
         Task<AddressSearchResult> SearchAddresses(
             string addressQuery,
             string? municipalityOrPostalName,
-            int? size = 10);
+            AddressStatus? status,
+            int size = 10);
 
         Task<AddressSearchResult> ListAddresses(
             string? streetNameId,

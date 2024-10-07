@@ -1,7 +1,6 @@
 ﻿namespace AddressRegistry.Tests.ApiTests.AddressSearch
 {
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Api.Oslo.Address.Search;
@@ -14,7 +13,9 @@
     using Microsoft.Extensions.Options;
     using Moq;
     using Projections.Elastic.AddressSearch;
+    using StreetName;
     using Xunit;
+    using StreetNameStatus = Consumer.Read.StreetName.Projections.StreetNameStatus;
 
     public class GivenSearchQueryAndMunicipalityOrPostalName
     {
@@ -27,9 +28,9 @@
             _mockAddressSearchApi = new Mock<IAddressApiElasticsearchClient>();
             _mockAddressStreetNameSearchApi = new Mock<IAddressApiStreetNameElasticsearchClient>();
 
-            _mockAddressSearchApi.Setup(x => x.SearchAddresses(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>()))
+            _mockAddressSearchApi.Setup(x => x.SearchAddresses(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<AddressStatus?>(), It.IsAny<int>()))
                 .ReturnsAsync(new AddressSearchResult(new List<AddressSearchDocument>(), 0));
-            _mockAddressStreetNameSearchApi.Setup(x => x.SearchStreetNames(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>()))
+            _mockAddressStreetNameSearchApi.Setup(x => x.SearchStreetNames(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<StreetNameStatus?>(), It.IsAny<int>()))
                 .ReturnsAsync(new StreetNameSearchResult(new List<StreetNameSearchDocument>(), 0));
 
             var mockResponseOptions = new Mock<IOptions<ResponseOptions>>();
@@ -61,7 +62,7 @@
                     new PaginationRequest(0, limit)),
                 CancellationToken.None);
 
-            _mockAddressSearchApi.Verify(x => x.SearchAddresses(query, municipalityNameOrPostalNameQuery, limit), Times.Once);
+            _mockAddressSearchApi.Verify(x => x.SearchAddresses(query, municipalityNameOrPostalNameQuery, null, limit), Times.Once);
         }
 
         [Theory]
@@ -77,7 +78,7 @@
                     new PaginationRequest(0, limit)),
                 CancellationToken.None);
 
-            _mockAddressStreetNameSearchApi.Verify(x => x.SearchStreetNames(query, municipalityOrPostalName, limit), Times.Once);
+            _mockAddressStreetNameSearchApi.Verify(x => x.SearchStreetNames(query, municipalityOrPostalName, null, limit), Times.Once);
         }
 
         [Theory]
@@ -96,7 +97,7 @@
                     new PaginationRequest(0, limit)),
                 CancellationToken.None);
 
-            _mockAddressStreetNameSearchApi.Verify(x => x.SearchStreetNames(query, municipalityOrPostalName, limit), Times.Once);
+            _mockAddressStreetNameSearchApi.Verify(x => x.SearchStreetNames(query, municipalityOrPostalName, null, limit), Times.Once);
         }
     }
 }

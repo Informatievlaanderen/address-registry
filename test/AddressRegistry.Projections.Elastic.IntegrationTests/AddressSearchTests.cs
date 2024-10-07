@@ -67,7 +67,7 @@
                 var searchRequest = _elasticClient.SourceSerializer.Deserialize<SearchRequestWithIndex>(stream);
                 searchRequest.SetIndex(_elasticAlias);
 
-                var addressResponses = await _addressClient.SearchAddresses(input, null);
+                var addressResponses = await _addressClient.SearchAddresses(input, null, null);
 
                 var response = await _elasticClient.SearchAsync<AddressSearchDocument>(searchRequest);
 

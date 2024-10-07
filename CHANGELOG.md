@@ -1,3 +1,10 @@
+# [4.23.0](https://github.com/informatievlaanderen/address-registry/compare/v4.22.1...v4.23.0) (2024-10-07)
+
+
+### Features
+
+* **oslo:** switch addressmatch projection ([8b87f3a](https://github.com/informatievlaanderen/address-registry/commit/8b87f3a1e8ab7ef26627286aad4853002ff7bf82))
+
 ## [4.22.1](https://github.com/informatievlaanderen/address-registry/compare/v4.22.0...v4.22.1) (2024-10-07)
 
 

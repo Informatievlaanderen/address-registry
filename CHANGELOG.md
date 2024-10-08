@@ -1,3 +1,11 @@
+# [4.24.0](https://github.com/informatievlaanderen/address-registry/compare/v4.23.0...v4.24.0) (2024-10-08)
+
+
+### Features
+
+* add search streetnames + refactor address search ([3a96997](https://github.com/informatievlaanderen/address-registry/commit/3a969976218788cea9fd3e41fb5487d50ef7e6a5))
+* **search:** add status filter ([b235540](https://github.com/informatievlaanderen/address-registry/commit/b235540a2af1eafa1255053c3c6042ace3a07125))
+
 # [4.23.0](https://github.com/informatievlaanderen/address-registry/compare/v4.22.1...v4.23.0) (2024-10-07)
 
 

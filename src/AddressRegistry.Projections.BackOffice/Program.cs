@@ -16,7 +16,6 @@ namespace AddressRegistry.Projections.BackOffice
     using Be.Vlaanderen.Basisregisters.Projector.Modules;
     using Destructurama;
     using Infrastructure;
-    using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +25,7 @@ namespace AddressRegistry.Projections.BackOffice
     using Serilog.Debugging;
     using Serilog.Extensions.Logging;
     using AddressRegistry.Infrastructure;
+    using Microsoft.Extensions.Diagnostics.HealthChecks;
 
     public sealed class ProgramLogger { }
 
@@ -84,7 +84,22 @@ namespace AddressRegistry.Projections.BackOffice
                                 .MigrationsHistoryTable(MigrationTables.BackOffice, Schema.BackOffice)
                             ))
                         .AddHostedService<ProjectorRunner>()
-                        .AddHostedService<ProjectionsHealthCheckRunner>();
+                        .AddHostedService<HealthCheckRunner>();
+
+                    foreach (var connectionString in hostContext.Configuration.GetSection("ConnectionStrings").GetChildren())
+                    {
+                        services.AddHealthChecks()
+                            .AddSqlServer(
+                                connectionString.Value,
+                                name: $"sqlserver-{connectionString.Key.ToLowerInvariant()}",
+                                tags: ["db", "sql", "sqlserver"]);
+                    }
+
+                    services.AddHealthChecks()
+                        .AddDbContextCheck<BackOfficeContext>(
+                            $"dbcontext-{nameof(BackOfficeContext).ToLowerInvariant()}",
+                            tags: ["db", "sql", "sqlserver"])
+                        .AddCheck<ProjectionsHealthCheck>("projections", failureStatus: HealthStatus.Unhealthy, tags: ["projections"]);
                 })
                 .UseServiceProviderFactory(new AutofacServiceProviderFactory())
                 .ConfigureContainer<ContainerBuilder>((hostContext, builder) =>

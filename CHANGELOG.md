@@ -1,3 +1,10 @@
+## [4.24.1](https://github.com/informatievlaanderen/address-registry/compare/v4.24.0...v4.24.1) (2024-10-14)
+
+
+### Bug Fixes
+
+* **backoffice:** backoffice projections healthcheck ([88e7e1f](https://github.com/informatievlaanderen/address-registry/commit/88e7e1fee5e631695eb0140fd539006e4199b691))
+
 # [4.24.0](https://github.com/informatievlaanderen/address-registry/compare/v4.23.0...v4.24.0) (2024-10-08)
 
 

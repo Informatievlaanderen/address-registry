@@ -28,6 +28,7 @@ namespace AddressRegistry.Tests.ProjectionTests.BackOffice
             _fixture = new Fixture();
             _fixture.Customize(new InfrastructureCustomization());
             _fixture.Customize(new WithFixedValidHouseNumber());
+            _fixture.Customize(new WithValidBoxNumber());
 
             _fakeBackOfficeContext = new FakeBackOfficeContextFactory(false).CreateDbContext(Array.Empty<string>());
             BackOfficeContextMock

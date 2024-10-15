@@ -58,8 +58,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
             var proposeChildAddress = new ProposeAddressesForMunicipalityMergerItem(
                 postalCode,
                 Fixture.Create<AddressPersistentLocalId>(),
-                houseNumber,
-                new BoxNumber("1A"),
+                new ProposeAddressesForMunicipalityMergerItem.HouseNumberForMunicipalityMerger(houseNumber),
+                new ProposeAddressesForMunicipalityMergerItem.BoxNumberForMunicipalityMerger("1A"),
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
@@ -133,8 +133,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
             var proposeChildAddress = new ProposeAddressesForMunicipalityMergerItem(
                 Fixture.Create<PostalCode>(),
                 Fixture.Create<AddressPersistentLocalId>(),
-                houseNumber,
-                Fixture.Create<BoxNumber>(),
+                new ProposeAddressesForMunicipalityMergerItem.HouseNumberForMunicipalityMerger(houseNumber),
+                Fixture.Create<ProposeAddressesForMunicipalityMergerItem.BoxNumberForMunicipalityMerger>(),
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
@@ -176,8 +176,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
             var proposeChildAddress = new ProposeAddressesForMunicipalityMergerItem(
                 Fixture.Create<PostalCode>(),
                 Fixture.Create<AddressPersistentLocalId>(),
-                houseNumber,
-                Fixture.Create<BoxNumber>(),
+                new ProposeAddressesForMunicipalityMergerItem.HouseNumberForMunicipalityMerger(houseNumber),
+                Fixture.Create<ProposeAddressesForMunicipalityMergerItem.BoxNumberForMunicipalityMerger>(),
                 GeometryMethod.DerivedFromObject,
                 GeometrySpecification.Municipality,
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
@@ -212,7 +212,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
             var proposeParentAddress = new ProposeAddressesForMunicipalityMergerItem(
                 Fixture.Create<PostalCode>(),
                 Fixture.Create<AddressPersistentLocalId>(),
-                new HouseNumber("1"),
+                new ProposeAddressesForMunicipalityMergerItem.HouseNumberForMunicipalityMerger("1"),
                 boxNumber: null,
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
@@ -280,7 +280,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
             var proposeAddress = new ProposeAddressesForMunicipalityMergerItem(
                 Fixture.Create<PostalCode>(),
                 new AddressPersistentLocalId(addressWasProposedForMunicipalityMerger.AddressPersistentLocalId),
-                new HouseNumber(Fixture.Create<string>()),
+                new ProposeAddressesForMunicipalityMergerItem.HouseNumberForMunicipalityMerger(Fixture.Create<string>()),
                 boxNumber: null,
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
@@ -323,7 +323,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 [new ProposeAddressesForMunicipalityMergerItem(
                     Fixture.Create<PostalCode>(),
                     new AddressPersistentLocalId(200),
-                    new HouseNumber(houseNumberToPropose),
+                    new ProposeAddressesForMunicipalityMergerItem.HouseNumberForMunicipalityMerger(houseNumberToPropose),
                     boxNumber: null,
                     GeometryMethod.AppointedByAdministrator,
                     GeometrySpecification.Entry,
@@ -380,8 +380,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 [new ProposeAddressesForMunicipalityMergerItem(
                     postalCode,
                     new AddressPersistentLocalId(200),
-                    new HouseNumber("1A"),
-                    new BoxNumber(boxNumberToPropose),
+                    new ProposeAddressesForMunicipalityMergerItem.HouseNumberForMunicipalityMerger("1A"),
+                    new ProposeAddressesForMunicipalityMergerItem.BoxNumberForMunicipalityMerger(boxNumberToPropose),
                     GeometryMethod.AppointedByAdministrator,
                     GeometrySpecification.Entry,
                     GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
@@ -466,8 +466,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 [new ProposeAddressesForMunicipalityMergerItem(
                     new PostalCode("9820"),
                     Fixture.Create<AddressPersistentLocalId>(),
-                    houseNumber,
-                    new BoxNumber("1A"),
+                    new ProposeAddressesForMunicipalityMergerItem.HouseNumberForMunicipalityMerger(houseNumber),
+                    new ProposeAddressesForMunicipalityMergerItem.BoxNumberForMunicipalityMerger("1A"),
                     GeometryMethod.AppointedByAdministrator,
                     GeometrySpecification.Entry,
                     GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
@@ -513,7 +513,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 [new ProposeAddressesForMunicipalityMergerItem(
                     new PostalCode("9820"),
                     Fixture.Create<AddressPersistentLocalId>(),
-                    Fixture.Create<HouseNumber>(),
+                    Fixture.Create<ProposeAddressesForMunicipalityMergerItem.HouseNumberForMunicipalityMerger>(),
                     null,
                     GeometryMethod.AppointedByAdministrator,
                     GeometrySpecification.Entry,
@@ -559,7 +559,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 [new ProposeAddressesForMunicipalityMergerItem(
                     new PostalCode("9820"),
                     Fixture.Create<AddressPersistentLocalId>(),
-                    Fixture.Create<HouseNumber>(),
+                    Fixture.Create<ProposeAddressesForMunicipalityMergerItem.HouseNumberForMunicipalityMerger>(),
                     null,
                     GeometryMethod.AppointedByAdministrator,
                     GeometrySpecification.Entry,
@@ -603,7 +603,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
                 [new ProposeAddressesForMunicipalityMergerItem(
                     new PostalCode("9820"),
                     addressPersistentLocalId,
-                    Fixture.Create<HouseNumber>(),
+                    Fixture.Create<ProposeAddressesForMunicipalityMergerItem.HouseNumberForMunicipalityMerger>(),
                     null,
                     GeometryMethod.AppointedByAdministrator,
                     GeometrySpecification.Entry,
@@ -639,7 +639,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
             var proposeParentAddress = new ProposeAddressesForMunicipalityMergerItem(
                 postalCode,
                 Fixture.Create<AddressPersistentLocalId>(),
-                houseNumber,
+                new ProposeAddressesForMunicipalityMergerItem.HouseNumberForMunicipalityMerger(houseNumber),
                 null,
                 GeometryMethod.AppointedByAdministrator,
                 GeometrySpecification.Entry,
@@ -651,8 +651,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenProposingAddressForMunicipali
             var proposeChildAddress = new ProposeAddressesForMunicipalityMergerItem(
                 proposeParentAddress.PostalCode,
                 Fixture.Create<AddressPersistentLocalId>(),
-                proposeParentAddress.HouseNumber,
-                new BoxNumber("1A"),
+                new ProposeAddressesForMunicipalityMergerItem.HouseNumberForMunicipalityMerger(proposeParentAddress.HouseNumber),
+                new ProposeAddressesForMunicipalityMergerItem.BoxNumberForMunicipalityMerger("1A"),
                 proposeParentAddress.GeometryMethod,
                 proposeParentAddress.GeometrySpecification,
                 proposeParentAddress.Position,

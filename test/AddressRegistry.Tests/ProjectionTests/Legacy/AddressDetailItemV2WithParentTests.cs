@@ -30,6 +30,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Legacy
             _fixture.Customize(new WithFixedStreetNamePersistentLocalId());
             _fixture.Customize(new WithExtendedWkbGeometry());
             _fixture.Customize(new WithValidHouseNumber());
+            _fixture.Customize(new WithValidBoxNumber());
         }
 
         [Fact]

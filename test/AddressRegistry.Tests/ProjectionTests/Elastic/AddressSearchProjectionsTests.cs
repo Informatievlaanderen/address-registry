@@ -49,6 +49,7 @@
             _fixture = new Fixture();
             _fixture.Customize(new InfrastructureCustomization());
             _fixture.Customize(new WithValidHouseNumber());
+            _fixture.Customize(new WithValidBoxNumber());
 
             _elasticSearchClient = new Mock<IAddressElasticsearchClient>();
             _postalConsumerContext = new FakePostalConsumerContextFactory().CreateDbContext();

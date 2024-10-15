@@ -82,8 +82,8 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 addresses.Add(new ProposeAddressesForMunicipalityMergerItem(
                     new PostalCode(x.PostalCode),
                     new AddressPersistentLocalId(x.AddressPersistentLocalId),
-                    HouseNumber.Create(x.HouseNumber),
-                    x.BoxNumber is not null ? new BoxNumber(x.BoxNumber) : null,
+                    new ProposeAddressesForMunicipalityMergerItem.HouseNumberForMunicipalityMerger(x.HouseNumber),
+                    x.BoxNumber is not null ? new ProposeAddressesForMunicipalityMergerItem.BoxNumberForMunicipalityMerger(x.BoxNumber) : null,
                     address.Geometry.GeometryMethod,
                     address.Geometry.GeometrySpecification,
                     address.Geometry.Geometry,

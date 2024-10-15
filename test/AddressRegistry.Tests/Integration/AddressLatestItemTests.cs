@@ -30,6 +30,7 @@
             _fixture = new Fixture();
             _fixture.Customize(new InfrastructureCustomization());
             _fixture.Customize(new WithValidHouseNumber());
+            _fixture.Customize(new WithValidBoxNumber());
             _fixture.Customize(new WithExtendedWkbGeometry());
             _fixture.Customize(new WithFixedAddressPersistentLocalId());
             _fixture.Customize(new WithFixedStreetNamePersistentLocalId());

@@ -35,6 +35,7 @@ namespace AddressRegistry.Tests
             Fixture.Register(() => (ISnapshotStrategy)NoSnapshotStrategy.Instance);
             Fixture.Customize(new InfrastructureCustomization());
             Fixture.Customize(new WithValidHouseNumber());
+            Fixture.Customize(new WithValidBoxNumber());
         }
 
         protected override void ConfigureCommandHandling(ContainerBuilder builder)

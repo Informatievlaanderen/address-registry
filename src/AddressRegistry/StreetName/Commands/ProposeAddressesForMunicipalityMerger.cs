@@ -68,8 +68,8 @@ namespace AddressRegistry.StreetName.Commands
         public ProposeAddressesForMunicipalityMergerItem(
             PostalCode postalCode,
             AddressPersistentLocalId addressPersistentLocalId,
-            HouseNumber houseNumber,
-            BoxNumber? boxNumber,
+            HouseNumberForMunicipalityMerger houseNumber,
+            BoxNumberForMunicipalityMerger? boxNumber,
             GeometryMethod geometryMethod,
             GeometrySpecification geometrySpecification,
             ExtendedWkbGeometry position,
@@ -79,8 +79,8 @@ namespace AddressRegistry.StreetName.Commands
         {
             PostalCode = postalCode;
             AddressPersistentLocalId = addressPersistentLocalId;
-            HouseNumber = houseNumber;
-            BoxNumber = boxNumber;
+            HouseNumber = new HouseNumber(houseNumber.HouseNumber);
+            BoxNumber = boxNumber is null ? null : new BoxNumber(boxNumber.BoxNumber);
             GeometryMethod = geometryMethod;
             GeometrySpecification = geometrySpecification;
             Position = position;
@@ -102,5 +102,8 @@ namespace AddressRegistry.StreetName.Commands
             yield return MergedStreetNamePersistentLocalId;
             yield return MergedAddressPersistentLocalId;
         }
+
+        public record HouseNumberForMunicipalityMerger(string HouseNumber);
+        public record BoxNumberForMunicipalityMerger(string BoxNumber);
     }
 }

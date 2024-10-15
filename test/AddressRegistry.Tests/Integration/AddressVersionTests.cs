@@ -34,6 +34,7 @@
             _fixture = new Fixture();
             _fixture.Customize(new InfrastructureCustomization());
             _fixture.Customize(new WithValidHouseNumber());
+            _fixture.Customize(new WithValidBoxNumber());
             _fixture.Customize(new WithFixedAddressId());
             _fixture.Customize(new WithExtendedWkbGeometry());
             _fixture.Customize(new WithFixedStreetNamePersistentLocalId());

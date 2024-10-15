@@ -34,6 +34,7 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV2
             _fixture.Customize(new WithFixedStreetNamePersistentLocalId());
             _fixture.Customize<AddressStatus>(_ => new WithoutUnknownStreetNameAddressStatus());
             _fixture.Customize(new WithValidHouseNumber());
+            _fixture.Customize(new WithValidBoxNumber());
             _fixture.Customize(new WithExtendedWkbGeometry());
             _fixture.Customize(new InfrastructureCustomization());
 

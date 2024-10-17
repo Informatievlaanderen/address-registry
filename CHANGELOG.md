@@ -1,3 +1,10 @@
+## [4.24.2](https://github.com/informatievlaanderen/address-registry/compare/v4.24.1...v4.24.2) (2024-10-17)
+
+
+### Bug Fixes
+
+* **oslo:** search addresses the moment it contains a number ([9285cb4](https://github.com/informatievlaanderen/address-registry/commit/9285cb435712ac5fbc83623064501d8571f8a896))
+
 ## [4.24.1](https://github.com/informatievlaanderen/address-registry/compare/v4.24.0...v4.24.1) (2024-10-14)
 
 

@@ -40,7 +40,7 @@
 
             var query = request.Filtering.Filter.Query;
 
-            if (ContainsNumberAfterSpace(query))
+            if (ContainsNumber(query))
             {
                 AddressStatus? addressStatus = null;
                 if(!string.IsNullOrWhiteSpace(request.Filtering.Filter.Status) && !Enum.TryParse<AdresStatus>(request.Filtering.Filter.Status, true, out _))
@@ -88,9 +88,9 @@
                 .ToList());
         }
 
-        private static bool ContainsNumberAfterSpace(string input)
+        private static bool ContainsNumber(string input)
         {
-            return Regex.IsMatch(input, @"\s\d\w*");
+            return Regex.IsMatch(input, @"\d");
         }
 
         private Consumer.Read.StreetName.Projections.StreetNameStatus Map(StraatnaamStatus straatnaamStatus)

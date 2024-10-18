@@ -1,3 +1,10 @@
+## [4.24.3](https://github.com/informatievlaanderen/address-registry/compare/v4.24.2...v4.24.3) (2024-10-18)
+
+
+### Bug Fixes
+
+* **merger:** invalid housenumber needs to go through + refactor ctor boxnumber ([db17aba](https://github.com/informatievlaanderen/address-registry/commit/db17abaa80036351fc0ca3ee758df49231c4b008))
+
 ## [4.24.2](https://github.com/informatievlaanderen/address-registry/compare/v4.24.1...v4.24.2) (2024-10-17)
 
 

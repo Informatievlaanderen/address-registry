@@ -3,6 +3,9 @@ AspNetCore.HealthChecks.SqlServer
 Be.Vlaanderen.Basisregisters.Api
 Be.Vlaanderen.Basisregisters.GrAr.Extracts
 
+NetTopologySuite.IO.GeoPackage
+Microsoft.Data.Sqlite
+
 Datadog.Trace.Bundle
 
 SourceLink.Embed.AllSourceFiles

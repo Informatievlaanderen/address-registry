@@ -99,25 +99,25 @@ namespace AddressRegistry.Api.BackOffice
 
                         if (!string.IsNullOrWhiteSpace(oldAddressId)
                             & !int.TryParse(oldAddressId, out var oldAddressPersistentLocalId))
-                            recordErrorMessages.Add($"OldAddressId is NaN at record number {recordNr}");
+                            recordErrorMessages.Add($"OldAddressId '{oldAddressId}' is NaN at record number {recordNr}");
 
                         if (string.IsNullOrWhiteSpace(streetNameName))
-                            recordErrorMessages.Add($"StreetNameName is required at record number {recordNr}");
+                            recordErrorMessages.Add($"StreetNameName is required at record number {recordNr} (OldAddressId={oldAddressId})");
 
                         if (string.IsNullOrWhiteSpace(houseNumber))
                         {
-                            recordErrorMessages.Add($"HouseNumber is required at record number {recordNr}");
+                            recordErrorMessages.Add($"HouseNumber is required at record number {recordNr} (OldAddressId={oldAddressId})");
                         }
                         else if (!disableValidation && !HouseNumber.HasValidFormat(houseNumber))
                         {
-                            recordErrorMessages.Add($"HouseNumber is invalid at record number {recordNr}");
+                            recordErrorMessages.Add($"HouseNumber '{houseNumber}' is invalid at record number {recordNr} (OldAddressId={oldAddressId})");
                         }
 
                         if (!string.IsNullOrWhiteSpace(boxNumber) && !disableValidation && !BoxNumber.HasValidFormat(boxNumber))
-                            recordErrorMessages.Add($"BoxNumber is invalid at record number {recordNr}");
+                            recordErrorMessages.Add($"BoxNumber '{boxNumber}' is invalid at record number {recordNr} (OldAddressId={oldAddressId})");
 
                         if (string.IsNullOrWhiteSpace(postalCode))
-                            recordErrorMessages.Add($"PostalCode is required at record number {recordNr}");
+                            recordErrorMessages.Add($"PostalCode is required at record number {recordNr} (OldAddressId={oldAddressId})");
 
                         var relation = await backOfficeContext
                             .FindRelationAsync(new AddressPersistentLocalId(oldAddressPersistentLocalId), cancellationToken);

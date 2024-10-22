@@ -89,7 +89,7 @@ abc;Vagevuurstraat;;14;;8755"),
 
             result.Should().BeOfType<BadRequestObjectResult>();
             var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
-            errorMessages.Should().Contain("OldAddressId is NaN at record number 1");
+            errorMessages.Should().Contain("OldAddressId 'abc' is NaN at record number 1");
         }
 
         [Fact]
@@ -108,7 +108,7 @@ OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW bus
 
             result.Should().BeOfType<BadRequestObjectResult>();
             var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
-            errorMessages.Should().Contain("StreetNameName is required at record number 1");
+            errorMessages.Should().Contain("StreetNameName is required at record number 1 (OldAddressId=2268196)");
         }
 
         [Fact]
@@ -127,7 +127,7 @@ OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW bus
 
             result.Should().BeOfType<BadRequestObjectResult>();
             var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
-            errorMessages.Should().Contain("HouseNumber is required at record number 1");
+            errorMessages.Should().Contain("HouseNumber is required at record number 1 (OldAddressId=2268196)");
         }
 
         [Fact]
@@ -146,7 +146,7 @@ OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW bus
 
             result.Should().BeOfType<BadRequestObjectResult>();
             var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
-            errorMessages.Should().Contain("HouseNumber is invalid at record number 1");
+            errorMessages.Should().Contain("HouseNumber 'x' is invalid at record number 1 (OldAddressId=2268196)");
         }
 
         [Theory]
@@ -186,7 +186,7 @@ OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW bus
 
             result.Should().BeOfType<BadRequestObjectResult>();
             var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
-            errorMessages.Should().Contain("BoxNumber is invalid at record number 1");
+            errorMessages.Should().Contain("BoxNumber '-' is invalid at record number 1 (OldAddressId=2268196)");
         }
 
         [Theory]
@@ -226,7 +226,7 @@ OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW bus
 
             result.Should().BeOfType<BadRequestObjectResult>();
             var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
-            errorMessages.Should().Contain("PostalCode is required at record number 1");
+            errorMessages.Should().Contain("PostalCode is required at record number 1 (OldAddressId=2268196)");
         }
 
         [Fact]

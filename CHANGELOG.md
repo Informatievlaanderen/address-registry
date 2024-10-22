@@ -1,3 +1,10 @@
+## [4.25.1](https://github.com/informatievlaanderen/address-registry/compare/v4.25.0...v4.25.1) (2024-10-22)
+
+
+### Bug Fixes
+
+* propose for merger output as csv ([#1253](https://github.com/informatievlaanderen/address-registry/issues/1253)) ([c6c7578](https://github.com/informatievlaanderen/address-registry/commit/c6c757833c60ca12c71473ced3183be515c8e162))
+
 # [4.25.0](https://github.com/informatievlaanderen/address-registry/compare/v4.24.3...v4.25.0) (2024-10-22)
 
 

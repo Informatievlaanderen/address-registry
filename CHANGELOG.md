@@ -1,3 +1,16 @@
+# [4.25.0](https://github.com/informatievlaanderen/address-registry/compare/v4.24.3...v4.25.0) (2024-10-22)
+
+
+### Bug Fixes
+
+* propose merger validation messages ([8aa3d37](https://github.com/informatievlaanderen/address-registry/commit/8aa3d37bbd3498bde0ff74317e95481c43912b3d))
+
+
+### Features
+
+* add snapshot reproducer ([9fe680f](https://github.com/informatievlaanderen/address-registry/commit/9fe680fedb22709ad515bec68f89cec465c15a80))
+* **wfs:** add geolocation view GAWR-6625 ([477624d](https://github.com/informatievlaanderen/address-registry/commit/477624d8ea12e22684a59589f3d92310dfd91633))
+
 ## [4.24.3](https://github.com/informatievlaanderen/address-registry/compare/v4.24.2...v4.24.3) (2024-10-18)
 
 

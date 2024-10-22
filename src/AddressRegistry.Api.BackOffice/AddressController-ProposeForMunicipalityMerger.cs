@@ -243,8 +243,9 @@ namespace AddressRegistry.Api.BackOffice
             var csvLines = new List<string> { "Id,Ticket" }
                 .Concat(results.Select(x => $"{x.SqsRequest.StreetNamePersistentLocalId},{x.TicketUrl}"))
                 .ToList();
+            var csvContent = string.Join("\r\n", csvLines);
 
-            return Ok(csvLines);
+            return Ok(csvContent);
         }
     }
 

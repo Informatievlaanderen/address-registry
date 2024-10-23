@@ -140,14 +140,14 @@
             var duplicateEvents = records
                 .GroupBy(x => new
                 {
-                    AddressPersistentLocalId = x.address_persistent_local_id,
+                    AddressPersistentLocalId = x.persistent_local_id,
                     TimeStamp = x.version_timestamp.ToString("yyyyMMddHHmmss") // Format the timestamp to seconds as OSLO API doesn't return the milliseconds of the timestamp
                 })
                 .Where(x => x.Count() > 1)
                 .Select(x =>
                 {
                     var latest = x.MaxBy(y => y.position)!;
-                    return (persistent_local_id: latest.address_persistent_local_id, latest.position);
+                    return (latest.persistent_local_id, latest.position);
                 })
                 .ToList();
 
@@ -156,7 +156,7 @@
 
         private sealed class AddressPosition
         {
-            public int address_persistent_local_id { get; init; }
+            public int persistent_local_id { get; init; }
             public long position { get; init; }
             public DateTimeOffset version_timestamp { get; init; }
         }

@@ -10,9 +10,9 @@ namespace AddressRegistry.Api.BackOffice
     using Abstractions;
     using Abstractions.Requests;
     using Abstractions.SqsRequests;
+    using AddressRegistry.Infrastructure;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.Auth.AcmIdm;
-    using Be.Vlaanderen.Basisregisters.GrAr.Edit.Validators;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Consumer.Read.StreetName;
     using CsvHelper;
@@ -216,13 +216,23 @@ namespace AddressRegistry.Api.BackOffice
 
                 sqsRequests.Add(new ProposeAddressesForMunicipalityMergerSqsRequest(
                     streetNameLatestItem.PersistentLocalId,
-                    addressRecords.Select(x => new ProposeAddressesForMunicipalityMergerSqsRequestItem(
-                        x.PostalCode,
-                        persistentLocalIdGenerator.GenerateNextPersistentLocalId(),
-                        x.HouseNumber,
-                        x.BoxNumber,
-                        x.OldStreetNamePersistentLocalId,
-                        x.OldAddressPersistentLocalId)).ToList(),
+                    houseNumberAddressRecords
+                        .Select(x => new ProposeAddressesForMunicipalityMergerSqsRequestItem(
+                            x.PostalCode,
+                            persistentLocalIdGenerator.GenerateNextPersistentLocalId(),
+                            x.HouseNumber,
+                            null,
+                            x.OldStreetNamePersistentLocalId,
+                            x.OldAddressPersistentLocalId))
+                        .Concat(boxNumberAddressRecords
+                            .Select(x => new ProposeAddressesForMunicipalityMergerSqsRequestItem(
+                                x.PostalCode,
+                                persistentLocalIdGenerator.GenerateNextPersistentLocalId(),
+                                x.HouseNumber,
+                                x.BoxNumber,
+                                x.OldStreetNamePersistentLocalId,
+                                x.OldAddressPersistentLocalId)))
+                        .ToList(),
                     new ProvenanceData(CreateProvenance(Modification.Insert, $"Fusie {nisCode}"))));
             }
 
@@ -233,15 +243,34 @@ namespace AddressRegistry.Api.BackOffice
 
             var results = await Task.WhenAll(sqsRequests.Select(async sqsRequest =>
             {
-                var result = await _mediator.Send(sqsRequest, cancellationToken);
-                return new {
-                    SqsRequest = sqsRequest,
-                    TicketUrl = result.Location.ToString().Replace(_ticketingOptions.InternalBaseUrl, _ticketingOptions.PublicBaseUrl)
-                };
+                const int batchSize = 500;
+                var batchedAddresses = sqsRequest.Addresses.SplitBySize(batchSize);
+
+                var actualRequests = batchedAddresses
+                    .Select(addresses =>
+                        new ProposeAddressesForMunicipalityMergerSqsRequest(
+                            sqsRequest.StreetNamePersistentLocalId,
+                            addresses.ToList(),
+                            sqsRequest.ProvenanceData));
+
+                var sqsResults = new List<(ProposeAddressesForMunicipalityMergerSqsRequest SqsRequest, string TicketUrl)>();
+                foreach (var actualRequest in actualRequests)
+                {
+                    var result = await _mediator.Send(actualRequest, cancellationToken);
+                    sqsResults.Add(
+                    (
+                        actualRequest,
+                        result.Location.ToString().Replace(_ticketingOptions.InternalBaseUrl, _ticketingOptions.PublicBaseUrl)
+                    ));
+                }
+
+                return sqsResults;
             }));
 
             var csvLines = new List<string> { "Id,Ticket" }
-                .Concat(results.Select(x => $"{x.SqsRequest.StreetNamePersistentLocalId},{x.TicketUrl}"))
+                .Concat(results
+                    .SelectMany(x => x)
+                    .Select(x => $"{x.SqsRequest.StreetNamePersistentLocalId},{x.TicketUrl}"))
                 .ToList();
             var csvContent = string.Join(Environment.NewLine, csvLines);
 

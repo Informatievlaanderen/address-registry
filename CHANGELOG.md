@@ -1,3 +1,10 @@
+## [4.25.3](https://github.com/informatievlaanderen/address-registry/compare/v4.25.2...v4.25.3) (2024-10-23)
+
+
+### Bug Fixes
+
+* **producer:** correct name reproducer  address persistentlocalid ([bdd5568](https://github.com/informatievlaanderen/address-registry/commit/bdd5568ad8d5220b6ff1333e600dd2bb0db259c5))
+
 ## [4.25.2](https://github.com/informatievlaanderen/address-registry/compare/v4.25.1...v4.25.2) (2024-10-23)
 
 

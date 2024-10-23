@@ -1,3 +1,10 @@
+## [4.25.2](https://github.com/informatievlaanderen/address-registry/compare/v4.25.1...v4.25.2) (2024-10-23)
+
+
+### Bug Fixes
+
+* **producer:** add logging + catch gone when reproducing ([6c21fc3](https://github.com/informatievlaanderen/address-registry/commit/6c21fc3ea90cb1ce7d39ee9befd3375e9e9690a4))
+
 ## [4.25.1](https://github.com/informatievlaanderen/address-registry/compare/v4.25.0...v4.25.1) (2024-10-22)
 
 

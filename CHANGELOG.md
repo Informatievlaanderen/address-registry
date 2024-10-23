@@ -1,3 +1,10 @@
+## [4.25.4](https://github.com/informatievlaanderen/address-registry/compare/v4.25.3...v4.25.4) (2024-10-23)
+
+
+### Bug Fixes
+
+* batch too large sqs requests ([9b864c9](https://github.com/informatievlaanderen/address-registry/commit/9b864c9113ebc5bc460f26037d1c12ea017f3a26))
+
 ## [4.25.3](https://github.com/informatievlaanderen/address-registry/compare/v4.25.2...v4.25.3) (2024-10-23)
 
 

@@ -3,6 +3,8 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net;
+    using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.GrAr.Notifications;
@@ -15,7 +17,7 @@
     using NodaTime;
     using Npgsql;
 
-    public class SnapshotReproducer : BackgroundService
+    public class AddressSnapshotReproducer : BackgroundService
     {
         private readonly string _integrationConnectionString;
         private readonly IOsloProxy _osloProxy;
@@ -23,9 +25,9 @@
         private readonly IClock _clock;
         private readonly INotificationService _notificationService;
         private readonly int _utcHourToRunWithin;
-        private readonly ILogger<SnapshotReproducer> _logger;
+        private readonly ILogger<AddressSnapshotReproducer> _logger;
 
-        public SnapshotReproducer(
+        public AddressSnapshotReproducer(
             string integrationConnectionString,
             IOsloProxy osloProxy,
             IProducer producer,
@@ -41,7 +43,7 @@
             _utcHourToRunWithin = utcHourToRunWithin;
             _clock = clock;
 
-            _logger = loggerFactory.CreateLogger<SnapshotReproducer>();
+            _logger = loggerFactory.CreateLogger<AddressSnapshotReproducer>();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -61,10 +63,22 @@
                         //reproduce
                         foreach (var id in idsToProcess)
                         {
-                            await FindAndProduce(async () =>
-                                    await _osloProxy.GetSnapshot(id.PersistentLocalId.ToString(), stoppingToken),
-                                id.Position,
-                                stoppingToken);
+                            try
+                            {
+                                await FindAndProduce(async () =>
+                                        await _osloProxy.GetSnapshot(id.PersistentLocalId.ToString(), stoppingToken),
+                                    id.Position,
+                                    stoppingToken);
+                            }
+                            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Gone)
+                            {
+                                _logger.LogInformation($"Snapshot '{id}' gone");
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.LogError($"Error while reproducing snapshot {id}", ex);
+                                throw;
+                            }
                         }
 
                         await Task.Delay(TimeSpan.FromHours(1), stoppingToken);

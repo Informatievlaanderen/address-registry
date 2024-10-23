@@ -114,10 +114,10 @@ namespace AddressRegistry.Producer.Snapshot.Oslo.Infrastructure.Modules
             var connectionString = _configuration.GetConnectionString("Integration");
             var utcHourToRunWithin = _configuration.GetValue<int>("SnapshotReproducerUtcHour");
 
-            _services.AddHostedService<SnapshotReproducer>(provider =>
+            _services.AddHostedService<AddressSnapshotReproducer>(provider =>
             {
                 var producerOptions = CreateProducerOptions();
-                return new SnapshotReproducer(
+                return new AddressSnapshotReproducer(
                     connectionString!,
                     provider.GetRequiredService<IOsloProxy>(),
                     new Producer(producerOptions),

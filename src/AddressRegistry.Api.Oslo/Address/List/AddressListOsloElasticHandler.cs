@@ -56,7 +56,7 @@
             return new AddressListOsloResponse
             {
                 Adressen = addressListItemResponsesV2,
-                Volgende = paginationInfo.BuildNextUri((int)addressSearchResult.Total, _responseOptions.VolgendeUrl),
+                Volgende = paginationInfo.BuildNextUri(addressListItemResponsesV2.Count, _responseOptions.VolgendeUrl),
                 Context = _responseOptions.ContextUrlList,
                 Sorting = request.Sorting,
                 Pagination = paginationInfo

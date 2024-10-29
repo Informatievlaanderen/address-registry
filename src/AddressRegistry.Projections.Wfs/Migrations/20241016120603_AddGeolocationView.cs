@@ -33,7 +33,7 @@ SELECT
         ELSE NULL
     END AS 'VOLLEDIGADRES',
     CASE WHEN a.Removed = 1 THEN NULL ELSE 'Point' END AS 'ADRESPOSITIE_GEOMETRIE_TYPE',
-    CASE WHEN a.Removed = 1 THEN NULL ELSE CONCAT('<gml:Point srsName=""https://www.opengis.net/def/crs/EPSG/0/31370"" xmlns:gml=""http://www.opengis.net/gml/3.2""><gml:pos>', a.[Position].STX, ' ', a.[Position].STY, '</gml:pos></gml:Point>') END AS 'ADRESPOSITIE_GEOMETRIE_GML',
+    CASE WHEN a.Removed = 1 THEN NULL ELSE CONCAT('<gml:Point srsName=""https://www.opengis.net/def/crs/EPSG/0/31370"" xmlns:gml=""http://www.opengis.net/gml/3.2""><gml:pos>', REPLACE(REPLACE(Position.STAsText(), 'POINT (', ''), ')', ''), '</gml:pos></gml:Point>') END AS 'ADRESPOSITIE_GEOMETRIE_GML',
     CASE WHEN a.Removed = 1 THEN NULL ELSE LOWER(LEFT(a.[PositionMethod], 1)) + SUBSTRING(a.[PositionMethod], 2, LEN(a.[PositionMethod])) END AS 'ADRESPOSITIE_POSITIEGEOMETRIEMETHODE',
     CASE WHEN a.Removed = 1 THEN NULL ELSE LOWER(LEFT(a.[PositionSpecification], 1)) + SUBSTRING(a.[PositionSpecification], 2, LEN(a.[PositionSpecification])) END AS 'ADRESPOSITIE_POSITIESPECIFICATIE',
     CASE WHEN a.Removed = 1 THEN NULL ELSE LOWER(LEFT(a.[Status], 1)) + SUBSTRING(a.[Status], 2, LEN(a.[Status])) END AS 'ADRESSTATUS',

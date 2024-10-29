@@ -1,3 +1,10 @@
+## [4.25.5](https://github.com/informatievlaanderen/address-registry/compare/v4.25.4...v4.25.5) (2024-10-29)
+
+
+### Bug Fixes
+
+* use received collection count to determine if there's a next page available ([2729325](https://github.com/informatievlaanderen/address-registry/commit/27293258696adfb5b813d741bfaeb9012f7aa3f1))
+
 ## [4.25.4](https://github.com/informatievlaanderen/address-registry/compare/v4.25.3...v4.25.4) (2024-10-23)
 
 

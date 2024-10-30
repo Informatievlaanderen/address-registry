@@ -31,8 +31,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddressesForMunicipa
                     "10000",
                     Mock.Of<IPersistentLocalIdGenerator>(),
                     new FakeStreetNameConsumerContextFactory().CreateDbContext(),
-                    new FakeBackOfficeContextFactory().CreateDbContext(),
-                    CancellationToken.None).GetAwaiter().GetResult();
+                    new FakeBackOfficeContextFactory().CreateDbContext()).GetAwaiter().GetResult();
 
             result.Should().BeOfType<BadRequestObjectResult>();
             ((BadRequestObjectResult)result).Value.Should().BeEquivalentTo("Please upload a CSV file.");
@@ -47,8 +46,7 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddressesForMunicipa
                     "10000",
                     Mock.Of<IPersistentLocalIdGenerator>(),
                     new FakeStreetNameConsumerContextFactory().CreateDbContext(),
-                    new FakeBackOfficeContextFactory().CreateDbContext(),
-                    CancellationToken.None).GetAwaiter().GetResult();
+                    new FakeBackOfficeContextFactory().CreateDbContext()).GetAwaiter().GetResult();
 
             result.Should().BeOfType<BadRequestObjectResult>();
             ((BadRequestObjectResult)result).Value.Should().BeEquivalentTo("Only CSV files are allowed.");
@@ -60,13 +58,12 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddressesForMunicipa
             var result =
                 _controller.ProposeForMunicipalityMerger(
                     CsvHelpers.CreateFormFileFromString(@"
-OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
-;Vagevuurstraat;;14;;8755"),
+OUD adresid;OUD huisnummer;OUD busnummer;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
+;;;Vagevuurstraat;;14;;8755"),
                     "10000",
                     Mock.Of<IPersistentLocalIdGenerator>(),
                     new FakeStreetNameConsumerContextFactory().CreateDbContext(),
-                    new FakeBackOfficeContextFactory().CreateDbContext(),
-                    CancellationToken.None).GetAwaiter().GetResult();
+                    new FakeBackOfficeContextFactory().CreateDbContext()).GetAwaiter().GetResult();
 
             result.Should().BeOfType<BadRequestObjectResult>();
             var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
@@ -79,13 +76,12 @@ OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW bus
             var result =
                 _controller.ProposeForMunicipalityMerger(
                     CsvHelpers.CreateFormFileFromString(@"
-OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
-abc;Vagevuurstraat;;14;;8755"),
+OUD adresid;OUD huisnummer;OUD busnummer;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
+abc;;;Vagevuurstraat;;14;;8755"),
                     "10000",
                     Mock.Of<IPersistentLocalIdGenerator>(),
                     new FakeStreetNameConsumerContextFactory().CreateDbContext(),
-                    new FakeBackOfficeContextFactory().CreateDbContext(),
-                    CancellationToken.None).GetAwaiter().GetResult();
+                    new FakeBackOfficeContextFactory().CreateDbContext()).GetAwaiter().GetResult();
 
             result.Should().BeOfType<BadRequestObjectResult>();
             var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
@@ -98,13 +94,12 @@ abc;Vagevuurstraat;;14;;8755"),
             var result =
                 _controller.ProposeForMunicipalityMerger(
                     CsvHelpers.CreateFormFileFromString(@"
-OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
-2268196;;;14;;8755"),
+OUD adresid;OUD huisnummer;OUD busnummer;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
+2268196;;;;;14;;8755"),
                     "10000",
                     Mock.Of<IPersistentLocalIdGenerator>(),
                     new FakeStreetNameConsumerContextFactory().CreateDbContext(),
-                    new FakeBackOfficeContextFactory().CreateDbContext(),
-                    CancellationToken.None).GetAwaiter().GetResult();
+                    new FakeBackOfficeContextFactory().CreateDbContext()).GetAwaiter().GetResult();
 
             result.Should().BeOfType<BadRequestObjectResult>();
             var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
@@ -117,13 +112,12 @@ OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW bus
             var result =
                 _controller.ProposeForMunicipalityMerger(
                     CsvHelpers.CreateFormFileFromString(@"
-OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
-2268196;Vagevuurstraat;;;;8755"),
+OUD adresid;OUD huisnummer;OUD busnummer;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
+2268196;;;Vagevuurstraat;;;;8755"),
                     "10000",
                     Mock.Of<IPersistentLocalIdGenerator>(),
                     new FakeStreetNameConsumerContextFactory().CreateDbContext(),
-                    new FakeBackOfficeContextFactory().CreateDbContext(),
-                    CancellationToken.None).GetAwaiter().GetResult();
+                    new FakeBackOfficeContextFactory().CreateDbContext()).GetAwaiter().GetResult();
 
             result.Should().BeOfType<BadRequestObjectResult>();
             var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
@@ -136,17 +130,34 @@ OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW bus
             var result =
                 _controller.ProposeForMunicipalityMerger(
                     CsvHelpers.CreateFormFileFromString(@"
-OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
-2268196;Vagevuurstraat;;x;;8755"),
+OUD adresid;OUD huisnummer;OUD busnummer;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
+2268196;;;Vagevuurstraat;;x;;8755"),
                     "10000",
                     Mock.Of<IPersistentLocalIdGenerator>(),
                     new FakeStreetNameConsumerContextFactory().CreateDbContext(),
-                    new FakeBackOfficeContextFactory().CreateDbContext(),
-                    CancellationToken.None).GetAwaiter().GetResult();
+                    new FakeBackOfficeContextFactory().CreateDbContext()).GetAwaiter().GetResult();
 
             result.Should().BeOfType<BadRequestObjectResult>();
             var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
             errorMessages.Should().Contain("HouseNumber 'x' is invalid at record number 1 (OldAddressId=2268196)");
+        }
+
+        [Fact]
+        public void WithInvalidHouseNumberAndOldHouseNumberIsSame_ThenStopAtOtherError()
+        {
+            var result =
+                _controller.ProposeForMunicipalityMerger(
+                    CsvHelpers.CreateFormFileFromString(@$"
+OUD adresid;OUD huisnummer;OUD busnummer;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
+2268196;a;;Vagevuurstraat;;x;;8755"),
+                    "10000",
+                    Mock.Of<IPersistentLocalIdGenerator>(),
+                    new FakeStreetNameConsumerContextFactory().CreateDbContext(),
+                    new FakeBackOfficeContextFactory().CreateDbContext()).GetAwaiter().GetResult();
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+            var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
+            errorMessages.Should().NotContain("HouseNumber is invalid at record number 1 (OldAddressId=2268196)");
         }
 
         [Theory]
@@ -157,17 +168,16 @@ OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW bus
             var result =
                 _controller.ProposeForMunicipalityMerger(
                     CsvHelpers.CreateFormFileFromString(@$"
-OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode;Geen nummer validatie
-2268196;Vagevuurstraat;;x;;8755;{geenNummerValidatie}"),
+OUD adresid;OUD huisnummer;OUD busnummer;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode;Geen nummer validatie
+2268196;;;Vagevuurstraat;;x;;8755;{geenNummerValidatie}"),
                     "10000",
                     Mock.Of<IPersistentLocalIdGenerator>(),
                     new FakeStreetNameConsumerContextFactory().CreateDbContext(),
-                    new FakeBackOfficeContextFactory().CreateDbContext(),
-                    CancellationToken.None).GetAwaiter().GetResult();
+                    new FakeBackOfficeContextFactory().CreateDbContext()).GetAwaiter().GetResult();
 
             result.Should().BeOfType<BadRequestObjectResult>();
             var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
-            errorMessages.Should().NotContain("HouseNumber is invalid at record number 1");
+            errorMessages.Should().NotContain("HouseNumber is invalid at record number 1 (OldAddressId=2268196)");
         }
 
         [Fact]
@@ -176,13 +186,12 @@ OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW bus
             var result =
                 _controller.ProposeForMunicipalityMerger(
                     CsvHelpers.CreateFormFileFromString(@"
-OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
-2268196;Vagevuurstraat;;1;-;8755"),
+OUD adresid;OUD huisnummer;OUD busnummer;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
+2268196;;;Vagevuurstraat;;1;-;8755"),
                     "10000",
                     Mock.Of<IPersistentLocalIdGenerator>(),
                     new FakeStreetNameConsumerContextFactory().CreateDbContext(),
-                    new FakeBackOfficeContextFactory().CreateDbContext(),
-                    CancellationToken.None).GetAwaiter().GetResult();
+                    new FakeBackOfficeContextFactory().CreateDbContext()).GetAwaiter().GetResult();
 
             result.Should().BeOfType<BadRequestObjectResult>();
             var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
@@ -197,17 +206,34 @@ OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW bus
             var result =
                 _controller.ProposeForMunicipalityMerger(
                     CsvHelpers.CreateFormFileFromString(@$"
-OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode;Geen nummer validatie
-2268196;Vagevuurstraat;;1;-;8755;{geenNummerValidatie}"),
+OUD adresid;OUD huisnummer;OUD busnummer;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode;Geen nummer validatie
+2268196;;;Vagevuurstraat;;1;-;8755;{geenNummerValidatie}"),
                     "10000",
                     Mock.Of<IPersistentLocalIdGenerator>(),
                     new FakeStreetNameConsumerContextFactory().CreateDbContext(),
-                    new FakeBackOfficeContextFactory().CreateDbContext(),
-                    CancellationToken.None).GetAwaiter().GetResult();
+                    new FakeBackOfficeContextFactory().CreateDbContext()).GetAwaiter().GetResult();
 
             result.Should().BeOfType<BadRequestObjectResult>();
             var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
-            errorMessages.Should().NotContain("BoxNumber is invalid at record number 1");
+            errorMessages.Should().NotContain("BoxNumber is invalid at record number 1 (OldAddressId=2268196)");
+        }
+
+        [Fact]
+        public void WithInvalidBoxNumberAndOldBoxNumberIsSame_ThenStopAtOtherError()
+        {
+            var result =
+                _controller.ProposeForMunicipalityMerger(
+                    CsvHelpers.CreateFormFileFromString(@$"
+OUD adresid;OUD huisnummer;OUD busnummer;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
+2268196;;-;Vagevuurstraat;;1;-;8755"),
+                    "10000",
+                    Mock.Of<IPersistentLocalIdGenerator>(),
+                    new FakeStreetNameConsumerContextFactory().CreateDbContext(),
+                    new FakeBackOfficeContextFactory().CreateDbContext()).GetAwaiter().GetResult();
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+            var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
+            errorMessages.Should().NotContain("BoxNumber is invalid at record number 1 (OldAddressId=2268196)");
         }
 
         [Fact]
@@ -216,13 +242,12 @@ OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW bus
             var result =
                 _controller.ProposeForMunicipalityMerger(
                     CsvHelpers.CreateFormFileFromString(@"
-OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
-2268196;Vagevuurstraat;;14;;"),
+OUD adresid;OUD huisnummer;OUD busnummer;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
+2268196;;;Vagevuurstraat;;14;;"),
                     "10000",
                     Mock.Of<IPersistentLocalIdGenerator>(),
                     new FakeStreetNameConsumerContextFactory().CreateDbContext(),
-                    new FakeBackOfficeContextFactory().CreateDbContext(),
-                    CancellationToken.None).GetAwaiter().GetResult();
+                    new FakeBackOfficeContextFactory().CreateDbContext()).GetAwaiter().GetResult();
 
             result.Should().BeOfType<BadRequestObjectResult>();
             var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
@@ -235,13 +260,12 @@ OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW bus
             var result =
                 _controller.ProposeForMunicipalityMerger(
                     CsvHelpers.CreateFormFileFromString(@"
-OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
-2268196;Vagevuurstraat;;14;;8755"),
+OUD adresid;OUD huisnummer;OUD busnummer;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
+2268196;;;Vagevuurstraat;;14;;8755"),
                     "10000",
                     Mock.Of<IPersistentLocalIdGenerator>(),
                     new FakeStreetNameConsumerContextFactory().CreateDbContext(),
-                    new FakeBackOfficeContextFactory().CreateDbContext(),
-                    CancellationToken.None).GetAwaiter().GetResult();
+                    new FakeBackOfficeContextFactory().CreateDbContext()).GetAwaiter().GetResult();
 
             result.Should().BeOfType<BadRequestObjectResult>();
             var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
@@ -269,15 +293,14 @@ OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW bus
             var result =
                 _controller.ProposeForMunicipalityMerger(
                     CsvHelpers.CreateFormFileFromString($@"
-OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
-{addressPersistentLocalIdOne};Vagevuurstraat;;14;;8755
-{addressPersistentLocalIdOne};Vagevuurstraat;;15;;8755
+OUD adresid;OUD huisnummer;OUD busnummer;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
+{addressPersistentLocalIdOne};;;Vagevuurstraat;;14;;8755
+{addressPersistentLocalIdOne};;;Vagevuurstraat;;15;;8755
 "),
                     "10000",
                     new FakePersistentLocalIdGenerator(),
                     dbContext,
-                    backOfficeContext,
-                    CancellationToken.None).GetAwaiter().GetResult();
+                    backOfficeContext).GetAwaiter().GetResult();
 
             result.Should().BeOfType<BadRequestObjectResult>();
             var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
@@ -307,15 +330,14 @@ OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW bus
             var result =
                 _controller.ProposeForMunicipalityMerger(
                     CsvHelpers.CreateFormFileFromString(@$"
-OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
-{addressPersistentLocalIdOne};Vagevuurstraat;;14;;8755
-{addressPersistentLocalIdTwo};Vagevuurstraat;;14;;8755
+OUD adresid;OUD huisnummer;OUD busnummer;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
+{addressPersistentLocalIdOne};;;Vagevuurstraat;;14;;8755
+{addressPersistentLocalIdTwo};;;Vagevuurstraat;;14;;8755
 "),
                     "10000",
                     new FakePersistentLocalIdGenerator(),
                     dbContext,
-                    backOfficeContext,
-                    CancellationToken.None).GetAwaiter().GetResult();
+                    backOfficeContext).GetAwaiter().GetResult();
 
             result.Should().BeOfType<BadRequestObjectResult>();
             var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
@@ -345,15 +367,14 @@ OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW bus
             var result =
                 _controller.ProposeForMunicipalityMerger(
                     CsvHelpers.CreateFormFileFromString(@$"
-OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
-{addressPersistentLocalIdOne};Vagevuurstraat;;14;A;8755
-{addressPersistentLocalIdTwo};Vagevuurstraat;;14;A;8755
+OUD adresid;OUD huisnummer;OUD busnummer;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
+{addressPersistentLocalIdOne};;;Vagevuurstraat;;14;A;8755
+{addressPersistentLocalIdTwo};;;Vagevuurstraat;;14;A;8755
 "),
                     "10000",
                     new FakePersistentLocalIdGenerator(),
                     dbContext,
-                    backOfficeContext,
-                    CancellationToken.None).GetAwaiter().GetResult();
+                    backOfficeContext).GetAwaiter().GetResult();
 
             result.Should().BeOfType<BadRequestObjectResult>();
             var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
@@ -381,14 +402,13 @@ OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW bus
             var result =
                 _controller.ProposeForMunicipalityMerger(
                     CsvHelpers.CreateFormFileFromString(@$"
-OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
-{addressPersistentLocalIdOne};Vagevuurstraat;;14;A;8755
+OUD adresid;OUD huisnummer;OUD busnummer;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
+{addressPersistentLocalIdOne};;;Vagevuurstraat;;14;A;8755
 "),
                     "10000",
                     new FakePersistentLocalIdGenerator(),
                     dbContext,
-                    backOfficeContext,
-                    CancellationToken.None).GetAwaiter().GetResult();
+                    backOfficeContext).GetAwaiter().GetResult();
 
             result.Should().BeOfType<BadRequestObjectResult>();
             var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);

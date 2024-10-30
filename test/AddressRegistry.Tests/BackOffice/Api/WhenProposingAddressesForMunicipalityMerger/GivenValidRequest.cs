@@ -101,16 +101,15 @@ namespace AddressRegistry.Tests.BackOffice.Api.WhenProposingAddressesForMunicipa
             var result =
                 _controller.ProposeForMunicipalityMerger(
                     CsvHelpers.CreateFormFileFromString($"""
-                                                         OUD adresid;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
-                                                         {oldAddressPersistenLocalIdOne};{newStreetNameNameOne};{newStreetNameHomonymAdditionOne};{houseNumberOne};;{postalCode}
-                                                         {oldAddressPersistenLocalIdTwo};{newStreetNameNameOne};{newStreetNameHomonymAdditionOne};{houseNumberOne};{boxNumber};{postalCode}
-                                                         {oldAddressPersistenLocalIdThree};{newStreetNameNameTwo};;{houseNumberTwo};;{postalCode}
+                                                         OUD adresid;OUD huisnummer;OUD busnummer;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode
+                                                         {oldAddressPersistenLocalIdOne};;;{newStreetNameNameOne};{newStreetNameHomonymAdditionOne};{houseNumberOne};;{postalCode}
+                                                         {oldAddressPersistenLocalIdTwo};;;{newStreetNameNameOne};{newStreetNameHomonymAdditionOne};{houseNumberOne};{boxNumber};{postalCode}
+                                                         {oldAddressPersistenLocalIdThree};;;{newStreetNameNameTwo};;{houseNumberTwo};;{postalCode}
                                                          """),
                     nisCode,
                     persistentLocalIdGenerator.Object,
                     streetNameConsumerContext,
-                    backOfficeContext,
-                    CancellationToken.None).GetAwaiter().GetResult();
+                    backOfficeContext).GetAwaiter().GetResult();
 
             result.Should().BeOfType<OkObjectResult>();
             ((OkObjectResult)result).Value.Should().BeEquivalentTo($@"Id,Ticket

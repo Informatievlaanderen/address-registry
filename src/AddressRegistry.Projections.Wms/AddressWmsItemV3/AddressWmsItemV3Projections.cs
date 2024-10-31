@@ -1,6 +1,7 @@
-namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
+namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
 {
     using System;
+    using AddressRegistry.StreetName.Events;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
@@ -9,14 +10,13 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
     using NetTopologySuite.Geometries;
     using NetTopologySuite.IO;
     using NodaTime;
-    using StreetName.Events;
     using AddressStatus = StreetName.AddressStatus;
     using GeometryMethod = StreetName.GeometryMethod;
     using GeometrySpecification = StreetName.GeometrySpecification;
 
     [ConnectedProjectionName("WMS adressen")]
     [ConnectedProjectionDescription("Projectie die de adressen data voor het WMS adressenregister voorziet.")]
-    public class AddressWmsItemV2Projections : ConnectedProjection<WmsContext>
+    public class AddressWmsItemV3Projections : ConnectedProjection<WmsContext>
     {
         public static readonly string AdresStatusInGebruik = AdresStatus.InGebruik.ToString();
         public static readonly string AdresStatusGehistoreerd = AdresStatus.Gehistoreerd.ToString();
@@ -25,7 +25,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 
         private readonly WKBReader _wkbReader;
 
-        public AddressWmsItemV2Projections(WKBReader wkbReader)
+        public AddressWmsItemV3Projections(WKBReader wkbReader)
         {
             _wkbReader = wkbReader;
 
@@ -35,7 +35,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
             {
                 foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
                 {
-                    await context.FindAndUpdateAddressDetailV2(
+                    await context.FindAndUpdateAddressDetailV3(
                         addressPersistentLocalId,
                         address => { UpdateVersionTimestampIfNewer(address, message.Message.Provenance.Timestamp); },
                         ct,
@@ -49,7 +49,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
             {
                 foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
                 {
-                    await context.FindAndUpdateAddressDetailV2(
+                    await context.FindAndUpdateAddressDetailV3(
                         addressPersistentLocalId,
                         address => { UpdateVersionTimestampIfNewer(address, message.Message.Provenance.Timestamp); },
                         ct,
@@ -63,7 +63,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
             {
                 foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
                 {
-                    await context.FindAndUpdateAddressDetailV2(
+                    await context.FindAndUpdateAddressDetailV3(
                         addressPersistentLocalId,
                         address => { UpdateVersionTimestampIfNewer(address, message.Message.Provenance.Timestamp); },
                         ct,
@@ -77,7 +77,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
             {
                 foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
                 {
-                    await context.FindAndUpdateAddressDetailV2(
+                    await context.FindAndUpdateAddressDetailV3(
                         addressPersistentLocalId,
                         address => { UpdateVersionTimestampIfNewer(address, message.Message.Provenance.Timestamp); },
                         ct,
@@ -92,7 +92,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
             // Address
             When<Envelope<AddressWasMigratedToStreetName>>(async (context, message, ct) =>
             {
-                var addressWmsItem = new AddressWmsItemV2(
+                var addressWmsItem = new AddressWmsItemV3(
                     message.Message.AddressPersistentLocalId,
                     message.Message.ParentPersistentLocalId,
                     message.Message.StreetNamePersistentLocalId,
@@ -107,20 +107,20 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
                     message.Message.IsRemoved,
                     message.Message.Provenance.Timestamp);
 
-                await context.UpdateHouseNumberLabelsV2(addressWmsItem, ct, includeAddressInUpdate: true);
+                await context.UpdateHouseNumberLabelsV3(addressWmsItem, ct, includeAddressInUpdate: true);
 
                 await context
-                    .AddressWmsItemsV2
+                    .AddressWmsItemsV3
                     .AddAsync(addressWmsItem, ct);
 
                 if (message.Message.ParentPersistentLocalId.HasValue)
                 {
-                    var parent = await context.FindAddressDetailV2(message.Message.ParentPersistentLocalId.Value, ct);
+                    var parent = await context.FindAddressDetailV3(message.Message.ParentPersistentLocalId.Value, ct);
                     if (parent.Position == addressWmsItem.Position)
                     {
-                        await context.FindAndUpdateAddressDetailV2(
+                        await context.FindAndUpdateAddressDetailV3(
                             message.Message.ParentPersistentLocalId.Value,
-                            address => { address.LabelType = WmsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition; },
+                            address => { },
                             ct,
                             updateHouseNumberLabelsBeforeAddressUpdate: false,
                             updateHouseNumberLabelsAfterAddressUpdate: false);
@@ -130,7 +130,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 
             When<Envelope<AddressWasProposedV2>>(async (context, message, ct) =>
             {
-                var addressWmsItem = new AddressWmsItemV2(
+                var addressWmsItem = new AddressWmsItemV3(
                     message.Message.AddressPersistentLocalId,
                     message.Message.ParentPersistentLocalId,
                     message.Message.StreetNamePersistentLocalId,
@@ -145,20 +145,20 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
                     removed: false,
                     message.Message.Provenance.Timestamp);
 
-                await context.UpdateHouseNumberLabelsV2(addressWmsItem, ct, includeAddressInUpdate: true);
+                await context.UpdateHouseNumberLabelsV3(addressWmsItem, ct, includeAddressInUpdate: true);
 
                 await context
-                    .AddressWmsItemsV2
+                    .AddressWmsItemsV3
                     .AddAsync(addressWmsItem, ct);
 
                 if (message.Message.ParentPersistentLocalId.HasValue)
                 {
-                    var parent = await context.FindAddressDetailV2(message.Message.ParentPersistentLocalId.Value, ct);
+                    var parent = await context.FindAddressDetailV3(message.Message.ParentPersistentLocalId.Value, ct);
                     if (parent.Position == addressWmsItem.Position)
                     {
-                        await context.FindAndUpdateAddressDetailV2(
+                        await context.FindAndUpdateAddressDetailV3(
                             message.Message.ParentPersistentLocalId.Value,
-                            address => { address.LabelType = WmsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition; },
+                            address => { },
                             ct,
                             updateHouseNumberLabelsBeforeAddressUpdate: false,
                             updateHouseNumberLabelsAfterAddressUpdate: false);
@@ -168,7 +168,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 
             When<Envelope<AddressWasProposedForMunicipalityMerger>>(async (context, message, ct) =>
             {
-                var addressWmsItem = new AddressWmsItemV2(
+                var addressWmsItem = new AddressWmsItemV3(
                     message.Message.AddressPersistentLocalId,
                     message.Message.ParentPersistentLocalId,
                     message.Message.StreetNamePersistentLocalId,
@@ -183,20 +183,20 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
                     removed: false,
                     message.Message.Provenance.Timestamp);
 
-                await context.UpdateHouseNumberLabelsV2(addressWmsItem, ct, includeAddressInUpdate: true);
+                await context.UpdateHouseNumberLabelsV3(addressWmsItem, ct, includeAddressInUpdate: true);
 
                 await context
-                    .AddressWmsItemsV2
+                    .AddressWmsItemsV3
                     .AddAsync(addressWmsItem, ct);
 
                 if (message.Message.ParentPersistentLocalId.HasValue)
                 {
-                    var parent = await context.FindAddressDetailV2(message.Message.ParentPersistentLocalId.Value, ct);
+                    var parent = await context.FindAddressDetailV3(message.Message.ParentPersistentLocalId.Value, ct);
                     if (parent.Position == addressWmsItem.Position)
                     {
-                        await context.FindAndUpdateAddressDetailV2(
+                        await context.FindAndUpdateAddressDetailV3(
                             message.Message.ParentPersistentLocalId.Value,
-                            address => { address.LabelType = WmsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition; },
+                            address => { },
                             ct,
                             updateHouseNumberLabelsBeforeAddressUpdate: false,
                             updateHouseNumberLabelsAfterAddressUpdate: false);
@@ -206,7 +206,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 
             When<Envelope<AddressWasApproved>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
@@ -220,7 +220,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 
             When<Envelope<AddressWasCorrectedFromApprovedToProposed>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
@@ -234,7 +234,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 
             When<Envelope<AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
@@ -248,7 +248,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 
             When<Envelope<AddressWasRejected>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
@@ -262,7 +262,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 
             When<Envelope<AddressWasRejectedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
@@ -276,7 +276,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 
             When<Envelope<AddressWasRejectedBecauseHouseNumberWasRejected>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
@@ -290,7 +290,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 
             When<Envelope<AddressWasRejectedBecauseHouseNumberWasRetired>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
@@ -304,7 +304,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 
             When<Envelope<AddressWasRejectedBecauseStreetNameWasRejected>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
@@ -318,7 +318,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 
             When<Envelope<AddressWasRetiredBecauseStreetNameWasRejected>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
@@ -332,7 +332,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 
             When<Envelope<AddressWasRejectedBecauseStreetNameWasRetired>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
@@ -346,7 +346,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 
             When<Envelope<AddressWasCorrectedFromRejectedToProposed>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
@@ -360,7 +360,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 
             When<Envelope<AddressWasDeregulated>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
@@ -375,19 +375,21 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 
             When<Envelope<AddressWasRegularized>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
                         address.OfficiallyAssigned = true;
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct);
+                    ct,
+                    updateHouseNumberLabelsBeforeAddressUpdate: false,
+                    updateHouseNumberLabelsAfterAddressUpdate: false);
             });
 
             When<Envelope<AddressWasRetiredV2>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
@@ -401,7 +403,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 
             When<Envelope<AddressWasRetiredBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
@@ -415,7 +417,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 
             When<Envelope<AddressWasRetiredBecauseHouseNumberWasRetired>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
@@ -429,7 +431,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 
             When<Envelope<AddressWasRetiredBecauseStreetNameWasRetired>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
@@ -443,7 +445,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 
             When<Envelope<AddressWasCorrectedFromRetiredToCurrent>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
@@ -457,55 +459,63 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 
             When<Envelope<AddressPostalCodeWasChangedV2>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
                         address.PostalCode = message.Message.PostalCode;
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct);
+                    ct,
+                    updateHouseNumberLabelsBeforeAddressUpdate: false,
+                    updateHouseNumberLabelsAfterAddressUpdate: false);
 
                 foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
                 {
-                    await context.FindAndUpdateAddressDetailV2(
+                    await context.FindAndUpdateAddressDetailV3(
                         boxNumberPersistentLocalId,
                         address =>
                         {
                             address.PostalCode = message.Message.PostalCode;
                             UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                         },
-                        ct);
+                        ct,
+                        updateHouseNumberLabelsBeforeAddressUpdate: false,
+                        updateHouseNumberLabelsAfterAddressUpdate: false);
                 }
             });
 
             When<Envelope<AddressPostalCodeWasCorrectedV2>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
                         address.PostalCode = message.Message.PostalCode;
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct);
+                    ct,
+                    updateHouseNumberLabelsBeforeAddressUpdate: false,
+                    updateHouseNumberLabelsAfterAddressUpdate: false);
 
                 foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
                 {
-                    await context.FindAndUpdateAddressDetailV2(
+                    await context.FindAndUpdateAddressDetailV3(
                         boxNumberPersistentLocalId,
                         address =>
                         {
                             address.PostalCode = message.Message.PostalCode;
                             UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                         },
-                        ct);
+                        ct,
+                        updateHouseNumberLabelsBeforeAddressUpdate: false,
+                        updateHouseNumberLabelsAfterAddressUpdate: false);
                 }
             });
 
             When<Envelope<AddressHouseNumberWasCorrectedV2>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
@@ -513,11 +523,12 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
                     ct,
+                    updateHouseNumberLabelsBeforeAddressUpdate: false,
                     updateHouseNumberLabelsAfterAddressUpdate: true);
 
                 foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
                 {
-                    await context.FindAndUpdateAddressDetailV2(
+                    await context.FindAndUpdateAddressDetailV3(
                         boxNumberPersistentLocalId,
                         address =>
                         {
@@ -525,25 +536,28 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
                             UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                         },
                         ct,
+                        updateHouseNumberLabelsBeforeAddressUpdate: false,
                         updateHouseNumberLabelsAfterAddressUpdate: true);
                 }
             });
 
             When<Envelope<AddressBoxNumberWasCorrectedV2>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
                         address.BoxNumber = message.Message.BoxNumber;
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct);
+                    ct,
+                    updateHouseNumberLabelsBeforeAddressUpdate: false,
+                    updateHouseNumberLabelsAfterAddressUpdate: false);
             });
 
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
@@ -557,16 +571,16 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
                     updateHouseNumberLabelsAfterAddressUpdate: true,
                     allowUpdateRemovedAddress: true);
 
-                var wmsItemV2 = await context.FindAddressDetailV2(message.Message.AddressPersistentLocalId, ct);
+                var wmsItemV3 = await context.FindAddressDetailV3(message.Message.AddressPersistentLocalId, ct);
 
-                if (wmsItemV2.ParentAddressPersistentLocalId.HasValue)
+                if (wmsItemV3.ParentAddressPersistentLocalId.HasValue)
                 {
-                    var parent = await context.FindAddressDetailV2(wmsItemV2.ParentAddressPersistentLocalId.Value, ct);
-                    if (parent.Position == wmsItemV2.Position)
+                    var parent = await context.FindAddressDetailV3(wmsItemV3.ParentAddressPersistentLocalId.Value, ct);
+                    if (parent.Position == wmsItemV3.Position)
                     {
-                        await context.FindAndUpdateAddressDetailV2(
-                            wmsItemV2.ParentAddressPersistentLocalId.Value,
-                            address => { address.LabelType = WmsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition; },
+                        await context.FindAndUpdateAddressDetailV3(
+                            wmsItemV3.ParentAddressPersistentLocalId.Value,
+                            address => { },
                             ct,
                             updateHouseNumberLabelsBeforeAddressUpdate: false,
                             updateHouseNumberLabelsAfterAddressUpdate: false);
@@ -576,7 +590,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 
             When<Envelope<AddressPositionWasCorrectedV2>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
@@ -590,16 +604,16 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
                     updateHouseNumberLabelsAfterAddressUpdate: true,
                     allowUpdateRemovedAddress: true);
 
-                var wmsItemV2 = await context.FindAddressDetailV2(message.Message.AddressPersistentLocalId, ct);
+                var wmsItemV3 = await context.FindAddressDetailV3(message.Message.AddressPersistentLocalId, ct);
 
-                if (wmsItemV2.ParentAddressPersistentLocalId.HasValue)
+                if (wmsItemV3.ParentAddressPersistentLocalId.HasValue)
                 {
-                    var parent = await context.FindAddressDetailV2(wmsItemV2.ParentAddressPersistentLocalId.Value, ct);
-                    if (parent.Position == wmsItemV2.Position)
+                    var parent = await context.FindAddressDetailV3(wmsItemV3.ParentAddressPersistentLocalId.Value, ct);
+                    if (parent.Position == wmsItemV3.Position)
                     {
-                        await context.FindAndUpdateAddressDetailV2(
-                            wmsItemV2.ParentAddressPersistentLocalId.Value,
-                            address => { address.LabelType = WmsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition; },
+                        await context.FindAndUpdateAddressDetailV3(
+                            wmsItemV3.ParentAddressPersistentLocalId.Value,
+                            address => { },
                             ct,
                             updateHouseNumberLabelsBeforeAddressUpdate: false,
                             updateHouseNumberLabelsAfterAddressUpdate: false);
@@ -609,7 +623,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 
             When<Envelope<AddressHouseNumberWasReaddressed>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
@@ -629,7 +643,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 
                 foreach (var readdressedBoxNumber in message.Message.ReaddressedBoxNumbers)
                 {
-                    await context.FindAndUpdateAddressDetailV2(
+                    await context.FindAndUpdateAddressDetailV3(
                         readdressedBoxNumber.DestinationAddressPersistentLocalId,
                         address =>
                         {
@@ -651,7 +665,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 
             When<Envelope<AddressWasProposedBecauseOfReaddress>>(async (context, message, ct) =>
             {
-                var addressWmsItem = new AddressWmsItemV2(
+                var addressWmsItem = new AddressWmsItemV3(
                     message.Message.AddressPersistentLocalId,
                     message.Message.ParentPersistentLocalId,
                     message.Message.StreetNamePersistentLocalId,
@@ -666,20 +680,20 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
                     removed: false,
                     message.Message.Provenance.Timestamp);
 
-                await context.UpdateHouseNumberLabelsV2(addressWmsItem, ct, includeAddressInUpdate: true);
+                await context.UpdateHouseNumberLabelsV3(addressWmsItem, ct, includeAddressInUpdate: true);
 
                 await context
-                    .AddressWmsItemsV2
+                    .AddressWmsItemsV3
                     .AddAsync(addressWmsItem, ct);
 
                 if (message.Message.ParentPersistentLocalId.HasValue)
                 {
-                    var parent = await context.FindAddressDetailV2(message.Message.ParentPersistentLocalId.Value, ct);
+                    var parent = await context.FindAddressDetailV3(message.Message.ParentPersistentLocalId.Value, ct);
                     if (parent.Position == addressWmsItem.Position)
                     {
-                        await context.FindAndUpdateAddressDetailV2(
+                        await context.FindAndUpdateAddressDetailV3(
                             message.Message.ParentPersistentLocalId.Value,
-                            address => { address.LabelType = WmsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition; },
+                            address => { },
                             ct,
                             updateHouseNumberLabelsBeforeAddressUpdate: false,
                             updateHouseNumberLabelsAfterAddressUpdate: false);
@@ -689,7 +703,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 
             When<Envelope<AddressWasRejectedBecauseOfReaddress>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
@@ -703,7 +717,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 
             When<Envelope<AddressWasRetiredBecauseOfReaddress>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
@@ -717,52 +731,55 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 
             When<Envelope<AddressWasRemovedV2>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
                         address.Removed = true;
-                        address.SetHouseNumberLabel(null);
+                        address.SetHouseNumberLabel(null, address.LabelType);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
                     ct,
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: false,
                     allowUpdateRemovedAddress: true);
             });
 
             When<Envelope<AddressWasRemovedBecauseStreetNameWasRemoved>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
                         address.Removed = true;
-                        address.SetHouseNumberLabel(null);
+                        address.SetHouseNumberLabel(null, address.LabelType);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
                     ct,
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: false,
                     allowUpdateRemovedAddress: true);
             });
 
             When<Envelope<AddressWasRemovedBecauseHouseNumberWasRemoved>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
                         address.Removed = true;
-                        address.SetHouseNumberLabel(null);
+                        address.SetHouseNumberLabel(null, address.LabelType);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
                     ct,
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: false,
                     allowUpdateRemovedAddress: true);
             });
 
             When<Envelope<AddressRegularizationWasCorrected>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
@@ -771,13 +788,14 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
                     ct,
-                    updateHouseNumberLabelsBeforeAddressUpdate: false, // TODO: review
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true,
                     allowUpdateRemovedAddress: true);
             });
 
             When<Envelope<AddressDeregulationWasCorrected>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
@@ -785,13 +803,14 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
                     ct,
-                    updateHouseNumberLabelsBeforeAddressUpdate: false, // TODO: review
+                    updateHouseNumberLabelsBeforeAddressUpdate: false,
+                    updateHouseNumberLabelsAfterAddressUpdate: false,
                     allowUpdateRemovedAddress: true);
             });
 
             When<Envelope<AddressRemovalWasCorrected>>(async (context, message, ct) =>
             {
-                await context.FindAndUpdateAddressDetailV2(
+                await context.FindAndUpdateAddressDetailV3(
                     message.Message.AddressPersistentLocalId,
                     address =>
                     {
@@ -809,14 +828,15 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
                     },
                     ct,
                     updateHouseNumberLabelsAfterAddressUpdate: true,
+                    updateHouseNumberLabelsBeforeAddressUpdate: false,
                     allowUpdateRemovedAddress: true);
             });
         }
 
-        private static void UpdateVersionTimestamp(AddressWmsItemV2 addressWmsItem, Instant versionTimestamp)
+        private static void UpdateVersionTimestamp(AddressWmsItemV3 addressWmsItem, Instant versionTimestamp)
             => addressWmsItem.VersionTimestamp = versionTimestamp;
 
-        private static void UpdateVersionTimestampIfNewer(AddressWmsItemV2 addressWmsItem, Instant versionTimestamp)
+        private static void UpdateVersionTimestampIfNewer(AddressWmsItemV3 addressWmsItem, Instant versionTimestamp)
         {
             if (versionTimestamp > addressWmsItem.VersionTimestamp)
             {

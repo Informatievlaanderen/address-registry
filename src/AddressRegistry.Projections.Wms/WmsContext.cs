@@ -8,6 +8,7 @@ namespace AddressRegistry.Projections.Wms
     {
         public override string ProjectionStateSchema => Schema.Wms;
         public DbSet<AddressWmsItemV2.AddressWmsItemV2> AddressWmsItemsV2 => Set<AddressWmsItemV2.AddressWmsItemV2>();
+        public DbSet<AddressWmsItemV3.AddressWmsItemV3> AddressWmsItemsV3 => Set<AddressWmsItemV3.AddressWmsItemV3>();
 
         public WmsContext() { }
 

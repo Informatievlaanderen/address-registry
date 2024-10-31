@@ -2,7 +2,7 @@ namespace AddressRegistry.Projections.Wms
 {
     public enum WmsAddressLabelType
     {
-        HouseNumberWithoutBoxes = 0,
-        BoxNumberOrHouseNumberWithBoxesOnSamePosition = 1
+        HouseNumberWithoutBoxNumbersOnSamePosition = 0,
+        HouseNumberWithBoxNumbersOnSamePosition = 1
     }
 }

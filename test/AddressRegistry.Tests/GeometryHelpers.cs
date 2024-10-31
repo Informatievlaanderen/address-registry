@@ -58,6 +58,12 @@ namespace AddressRegistry.Tests
             return new WkbGeometry(WkbWriter.Write(geometry));
         }
 
+        public static AddressRegistry.StreetName.ExtendedWkbGeometry CreateEwkbFromWkt(string wkt)
+        {
+            var geometry = new WKTReader { DefaultSRID = SpatialReferenceSystemId.Lambert72 }.Read(wkt);
+            return new StreetName.ExtendedWkbGeometry(WkbWriter.Write(geometry));
+        }
+
         public static GMLReader CreateGmlReader() =>
             new GMLReader(
                 new GeometryFactory(

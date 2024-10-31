@@ -1,4 +1,4 @@
-namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
+namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
 {
     using System;
     using AddressRegistry.Infrastructure;
@@ -9,12 +9,12 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
     using NetTopologySuite.Geometries;
     using NodaTime;
 
-    public class AddressWmsItemV2
+    public class AddressWmsItemV3
     {
-        protected AddressWmsItemV2()
+        protected AddressWmsItemV3()
         { }
 
-        public AddressWmsItemV2(
+        public AddressWmsItemV3(
             int addressPersistentLocalId,
             int? parentAddressPersistentLocalId,
             int streetNamePersistentLocalId,
@@ -82,10 +82,11 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
 
         public string? VersionAsString { get; protected set; }
 
-        public void SetHouseNumberLabel(string? label)
+        public void SetHouseNumberLabel(string? label, WmsAddressLabelType labelType)
         {
             HouseNumberLabel = label;
             HouseNumberLabelLength = label?.Length;
+            LabelType = labelType;
         }
 
         public void SetPosition(Point position)
@@ -96,11 +97,11 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV2
         }
     }
 
-    public class AddressWmsItemV2Configuration : IEntityTypeConfiguration<AddressWmsItemV2>
+    public class AddressWmsItemV3Configuration : IEntityTypeConfiguration<AddressWmsItemV3>
     {
-        internal const string TableName = "AddressWmsV2";
+        internal const string TableName = "AddressWmsV3";
 
-        public void Configure(EntityTypeBuilder<AddressWmsItemV2> b)
+        public void Configure(EntityTypeBuilder<AddressWmsItemV3> b)
         {
             b.ToTable(TableName, Schema.Wms)
                 .HasKey(p => p.AddressPersistentLocalId)

@@ -69,6 +69,27 @@ namespace AddressRegistry.Tests.EventExtensions
             return newEvent;
         }
 
+        public static AddressRemovalWasCorrected WithBoxNumber(
+            this AddressRemovalWasCorrected @event,
+            BoxNumber? boxNumber)
+        {
+            var newEvent = new AddressRemovalWasCorrected(
+                new StreetNamePersistentLocalId(@event.StreetNamePersistentLocalId),
+                new AddressPersistentLocalId(@event.AddressPersistentLocalId),
+                @event.Status,
+                @event.PostalCode is not null ? new PostalCode(@event.PostalCode) : null,
+                new HouseNumber(@event.HouseNumber),
+                boxNumber,
+                @event.GeometryMethod,
+                @event.GeometrySpecification,
+                new ExtendedWkbGeometry(@event.ExtendedWkbGeometry),
+                @event.OfficiallyAssigned,
+                @event.ParentPersistentLocalId is not null ? new AddressPersistentLocalId(@event.ParentPersistentLocalId.Value) : null);
+            ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
+
+            return newEvent;
+        }
+
         public static AddressRemovalWasCorrected WithGeometry(
             this AddressRemovalWasCorrected @event,
             ExtendedWkbGeometry extendedWkbGeometry)

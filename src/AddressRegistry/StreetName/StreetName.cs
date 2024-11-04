@@ -56,6 +56,11 @@ namespace AddressRegistry.StreetName
 
             foreach (var address in StreetNameAddresses.ProposedStreetNameAddressesFromMunicipalityMerger.Where(x => x.IsBoxNumberAddress))
             {
+                if (address.Parent!.Status != AddressStatus.Current)
+                {
+                    address.Parent.Approve();
+                }
+
                 address.Approve();
             }
         }

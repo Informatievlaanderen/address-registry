@@ -1,3 +1,10 @@
+## [4.26.1](https://github.com/informatievlaanderen/address-registry/compare/v4.26.0...v4.26.1) (2024-11-04)
+
+
+### Bug Fixes
+
+* approve streetname boxnumber ([b07b19f](https://github.com/informatievlaanderen/address-registry/commit/b07b19fd45bfd5d697d0f022c0ed46af4ad98492))
+
 # [4.26.0](https://github.com/informatievlaanderen/address-registry/compare/v4.25.5...v4.26.0) (2024-11-04)
 
 

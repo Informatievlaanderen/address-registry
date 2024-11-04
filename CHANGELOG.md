@@ -1,3 +1,16 @@
+# [4.26.0](https://github.com/informatievlaanderen/address-registry/compare/v4.25.5...v4.26.0) (2024-11-04)
+
+
+### Bug Fixes
+
+* **merger:** approve housenumber when boxnumber is approved ([4aacf64](https://github.com/informatievlaanderen/address-registry/commit/4aacf645ada312090035edfaf38819ecd04c4cd0))
+* **streetname:** consumer elastic index postalCode mapping ([7d020dd](https://github.com/informatievlaanderen/address-registry/commit/7d020dd882f941489a81ee6065f4d643d8b1be47))
+
+
+### Features
+
+* **backoffice:** add dryrun parameter + change validation ([c535821](https://github.com/informatievlaanderen/address-registry/commit/c535821d03796fa174a4eafe9f6d9634652f19bb))
+
 ## [4.25.5](https://github.com/informatievlaanderen/address-registry/compare/v4.25.4...v4.25.5) (2024-10-29)
 
 

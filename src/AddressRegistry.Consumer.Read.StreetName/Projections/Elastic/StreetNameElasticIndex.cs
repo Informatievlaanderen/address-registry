@@ -83,7 +83,7 @@
                             .Nested(x => x.PostalInfos, config =>
                             {
                                 config.Properties(property => property
-                                    .Keyword(nameof(PostalInfo.PostalCode))
+                                    .Keyword("postalCode")
                                     .Nested("names", ConfigureNames()));
                             })
                             .Nested("names", ConfigureNames())

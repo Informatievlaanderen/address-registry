@@ -50,11 +50,6 @@ namespace AddressRegistry.StreetName
         {
             GuardNotRemovedAddress();
 
-            if (DesiredStatusAfterMunicipalityMerger == AddressStatus.Proposed)
-            {
-                return;
-            }
-
             if (Parent is not null && Parent.Status != AddressStatus.Current)
             {
                 throw new ParentAddressHasInvalidStatusException();

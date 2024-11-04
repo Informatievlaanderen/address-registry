@@ -49,12 +49,16 @@ namespace AddressRegistry.StreetName
                 ApplyChange(new StreetNameWasApproved(PersistentLocalId));
             }
 
-            foreach (var address in StreetNameAddresses.ProposedStreetNameAddressesFromMunicipalityMerger.Where(x => x.IsHouseNumberAddress))
+            foreach (var address in StreetNameAddresses
+                         .ProposedStreetNameAddressesFromMunicipalityMerger
+                         .Where(x => x is { IsHouseNumberAddress: true, DesiredStatusAfterMunicipalityMerger: AddressStatus.Current }))
             {
                 address.Approve();
             }
 
-            foreach (var address in StreetNameAddresses.ProposedStreetNameAddressesFromMunicipalityMerger.Where(x => x.IsBoxNumberAddress))
+            foreach (var address in StreetNameAddresses
+                         .ProposedStreetNameAddressesFromMunicipalityMerger
+                         .Where(x => x is { IsBoxNumberAddress: true, DesiredStatusAfterMunicipalityMerger: AddressStatus.Current }))
             {
                 if (address.Parent!.Status != AddressStatus.Current)
                 {

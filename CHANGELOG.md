@@ -1,3 +1,10 @@
+# [4.27.0](https://github.com/informatievlaanderen/address-registry/compare/v4.26.1...v4.27.0) (2024-11-05)
+
+
+### Features
+
+* add projection fix WMS label GAWR-5413 ([3eb11c0](https://github.com/informatievlaanderen/address-registry/commit/3eb11c06ee2b8ea0fea0241e52132da5fbfac2b2))
+
 ## [4.26.1](https://github.com/informatievlaanderen/address-registry/compare/v4.26.0...v4.26.1) (2024-11-04)
 
 

@@ -208,6 +208,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
 
             var groupedOrderedAddresses = addresses
                 .Where(i => !i.Removed)
+                .OrderBy(x => x.HouseNumber, houseNumberComparer)
                 .GroupBy(x => x.StreetNamePersistentLocalId)
                 .ToDictionary(x => x, y => y.ToList());
 

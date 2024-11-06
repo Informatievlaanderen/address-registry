@@ -211,6 +211,7 @@
                     expectedVersion.ParentPersistentLocalId.Should().Be(addressWasProposedV2.ParentPersistentLocalId);
                     expectedVersion.Status.Should().Be(AddressStatus.Current);
                     expectedVersion.OsloStatus.Should().Be(AddressStatus.Current.Map());
+
                     expectedVersion.OfficiallyAssigned.Should().BeTrue();
                     expectedVersion.Removed.Should().BeFalse();
 
@@ -218,6 +219,9 @@
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasApproved.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasApproved.Provenance.Timestamp);
                     expectedVersion.Type.Should().Be("EventName");
+
+                    expectedVersion.OsloPositionMethod.Should().NotBeNullOrEmpty();
+                    expectedVersion.OsloPositionSpecification.Should().NotBeNullOrEmpty();
                 });
         }
 
@@ -263,6 +267,9 @@
 
                     expectedVersion.VersionTimestamp.Should().Be(addressWasCorrectedFromApprovedToProposed.Provenance.Timestamp);
                     expectedVersion.Type.Should().Be("EventName");
+
+                    expectedVersion.OsloPositionMethod.Should().NotBeNullOrEmpty();
+                    expectedVersion.OsloPositionSpecification.Should().NotBeNullOrEmpty();
                 });
         }
 
@@ -313,6 +320,9 @@
                     expectedVersion.VersionTimestamp.Should()
                         .Be(addressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected.Provenance.Timestamp);
                     expectedVersion.Type.Should().Be("EventName");
+
+                    expectedVersion.OsloPositionMethod.Should().NotBeNullOrEmpty();
+                    expectedVersion.OsloPositionSpecification.Should().NotBeNullOrEmpty();
                 });
         }
 
@@ -357,6 +367,9 @@
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRejected.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
                     expectedVersion.Type.Should().Be("EventName");
+
+                    expectedVersion.OsloPositionMethod.Should().NotBeNullOrEmpty();
+                    expectedVersion.OsloPositionSpecification.Should().NotBeNullOrEmpty();
                 });
         }
 
@@ -401,6 +414,9 @@
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRejected.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
                     expectedVersion.Type.Should().Be("EventName");
+
+                    expectedVersion.OsloPositionMethod.Should().NotBeNullOrEmpty();
+                    expectedVersion.OsloPositionSpecification.Should().NotBeNullOrEmpty();
                 });
         }
 
@@ -447,6 +463,9 @@
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRejectedBecauseHouseNumberWasRejected.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRejectedBecauseHouseNumberWasRejected.Provenance.Timestamp);
                     expectedVersion.Type.Should().Be("EventName");
+
+                    expectedVersion.OsloPositionMethod.Should().NotBeNullOrEmpty();
+                    expectedVersion.OsloPositionSpecification.Should().NotBeNullOrEmpty();
                 });
         }
 
@@ -493,6 +512,9 @@
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRejectedBecauseHouseNumberWasRetired.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRejectedBecauseHouseNumberWasRetired.Provenance.Timestamp);
                     expectedVersion.Type.Should().Be("EventName");
+
+                    expectedVersion.OsloPositionMethod.Should().NotBeNullOrEmpty();
+                    expectedVersion.OsloPositionSpecification.Should().NotBeNullOrEmpty();
                 });
         }
 
@@ -538,6 +560,9 @@
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRejectedBecauseStreetNameWasRejected.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRejectedBecauseStreetNameWasRejected.Provenance.Timestamp);
                     expectedVersion.Type.Should().Be("EventName");
+
+                    expectedVersion.OsloPositionMethod.Should().NotBeNullOrEmpty();
+                    expectedVersion.OsloPositionSpecification.Should().NotBeNullOrEmpty();
                 });
         }
 
@@ -584,6 +609,9 @@
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRetiredBecauseStreetNameWasRejected.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRetiredBecauseStreetNameWasRejected.Provenance.Timestamp);
                     expectedVersion.Type.Should().Be("EventName");
+
+                    expectedVersion.OsloPositionMethod.Should().NotBeNullOrEmpty();
+                    expectedVersion.OsloPositionSpecification.Should().NotBeNullOrEmpty();
                 });
         }
 
@@ -630,6 +658,9 @@
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRejectedBecauseStreetNameWasRetired.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRejectedBecauseStreetNameWasRetired.Provenance.Timestamp);
                     expectedVersion.Type.Should().Be("EventName");
+
+                    expectedVersion.OsloPositionMethod.Should().NotBeNullOrEmpty();
+                    expectedVersion.OsloPositionSpecification.Should().NotBeNullOrEmpty();
                 });
         }
 
@@ -676,6 +707,9 @@
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasDeregulated.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasDeregulated.Provenance.Timestamp);
                     expectedVersion.Type.Should().Be("EventName");
+
+                    expectedVersion.OsloPositionMethod.Should().NotBeNullOrEmpty();
+                    expectedVersion.OsloPositionSpecification.Should().NotBeNullOrEmpty();
                 });
         }
 
@@ -722,6 +756,9 @@
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRegularized.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRegularized.Provenance.Timestamp);
                     expectedVersion.Type.Should().Be("EventName");
+
+                    expectedVersion.OsloPositionMethod.Should().NotBeNullOrEmpty();
+                    expectedVersion.OsloPositionSpecification.Should().NotBeNullOrEmpty();
                 });
         }
 
@@ -768,6 +805,9 @@
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRetiredV2.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRetiredV2.Provenance.Timestamp);
                     expectedVersion.Type.Should().Be("EventName");
+
+                    expectedVersion.OsloPositionMethod.Should().NotBeNullOrEmpty();
+                    expectedVersion.OsloPositionSpecification.Should().NotBeNullOrEmpty();
                 });
         }
 
@@ -814,6 +854,9 @@
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRetired.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRetired.Provenance.Timestamp);
                     expectedVersion.Type.Should().Be("EventName");
+
+                    expectedVersion.OsloPositionMethod.Should().NotBeNullOrEmpty();
+                    expectedVersion.OsloPositionSpecification.Should().NotBeNullOrEmpty();
                 });
         }
 
@@ -860,6 +903,9 @@
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRetiredBecauseHouseNumberWasRetired.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRetiredBecauseHouseNumberWasRetired.Provenance.Timestamp);
                     expectedVersion.Type.Should().Be("EventName");
+
+                    expectedVersion.OsloPositionMethod.Should().NotBeNullOrEmpty();
+                    expectedVersion.OsloPositionSpecification.Should().NotBeNullOrEmpty();
                 });
         }
 
@@ -906,6 +952,9 @@
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRetiredBecauseStreetNameWasRetired.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRetiredBecauseStreetNameWasRetired.Provenance.Timestamp);
                     expectedVersion.Type.Should().Be("EventName");
+
+                    expectedVersion.OsloPositionMethod.Should().NotBeNullOrEmpty();
+                    expectedVersion.OsloPositionSpecification.Should().NotBeNullOrEmpty();
                 });
         }
 
@@ -952,6 +1001,9 @@
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasCorrectedFromRetiredToCurrent.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasCorrectedFromRetiredToCurrent.Provenance.Timestamp);
                     expectedVersion.Type.Should().Be("EventName");
+
+                    expectedVersion.OsloPositionMethod.Should().NotBeNullOrEmpty();
+                    expectedVersion.OsloPositionSpecification.Should().NotBeNullOrEmpty();
                 });
         }
 
@@ -1022,6 +1074,9 @@
                     expectedBoxNumberVersion.Namespace.Should().Be(Namespace);
                     expectedBoxNumberVersion.PuriId.Should().Be($"{Namespace}/{boxNumberPersistentLocalId}");
                     expectedBoxNumberVersion.VersionTimestamp.Should().Be(addressPostalCodeWasChangedV2.Provenance.Timestamp);
+
+                    expectedVersion.OsloPositionMethod.Should().NotBeNullOrEmpty();
+                    expectedVersion.OsloPositionSpecification.Should().NotBeNullOrEmpty();
                 });
         }
 
@@ -1095,6 +1150,9 @@
                     expectedBoxNumberVersion.Namespace.Should().Be(Namespace);
                     expectedBoxNumberVersion.PuriId.Should().Be($"{Namespace}/{boxNumberPersistentLocalId}");
                     expectedBoxNumberVersion.VersionTimestamp.Should().Be(addressPostalCodeWasCorrectedV2.Provenance.Timestamp);
+
+                    expectedVersion.OsloPositionMethod.Should().NotBeNullOrEmpty();
+                    expectedVersion.OsloPositionSpecification.Should().NotBeNullOrEmpty();
                 });
         }
 
@@ -1154,6 +1212,9 @@
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressHouseNumberWasCorrectedV2.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressHouseNumberWasCorrectedV2.Provenance.Timestamp);
+
+                    expectedVersion.OsloPositionMethod.Should().NotBeNullOrEmpty();
+                    expectedVersion.OsloPositionSpecification.Should().NotBeNullOrEmpty();
                 });
         }
 
@@ -1197,6 +1258,9 @@
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressBoxNumberWasCorrectedV2.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressBoxNumberWasCorrectedV2.Provenance.Timestamp);
+
+                    expectedVersion.OsloPositionMethod.Should().NotBeNullOrEmpty();
+                    expectedVersion.OsloPositionSpecification.Should().NotBeNullOrEmpty();
                 });
         }
 
@@ -1515,6 +1579,9 @@
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRejectedBecauseOfReaddress.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRejectedBecauseOfReaddress.Provenance.Timestamp);
+
+                    expectedVersion.OsloPositionMethod.Should().NotBeNullOrEmpty();
+                    expectedVersion.OsloPositionSpecification.Should().NotBeNullOrEmpty();
                 });
         }
 
@@ -1558,6 +1625,9 @@
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRetiredBecauseOfReaddress.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRetiredBecauseOfReaddress.Provenance.Timestamp);
+
+                    expectedVersion.OsloPositionMethod.Should().NotBeNullOrEmpty();
+                    expectedVersion.OsloPositionSpecification.Should().NotBeNullOrEmpty();
                 });
         }
 
@@ -1599,6 +1669,9 @@
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRemovedV2.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRemovedV2.Provenance.Timestamp);
+
+                    expectedVersion.OsloPositionMethod.Should().NotBeNullOrEmpty();
+                    expectedVersion.OsloPositionSpecification.Should().NotBeNullOrEmpty();
                 });
         }
 
@@ -1641,6 +1714,9 @@
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRemovedBecauseStreetNameWasRemoved.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRemovedBecauseStreetNameWasRemoved.Provenance.Timestamp);
+
+                    expectedVersion.OsloPositionMethod.Should().NotBeNullOrEmpty();
+                    expectedVersion.OsloPositionSpecification.Should().NotBeNullOrEmpty();
                 });
         }
 
@@ -1684,6 +1760,9 @@
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasRemovedBecauseHouseNumberWasRemoved.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasRemovedBecauseHouseNumberWasRemoved.Provenance.Timestamp);
+
+                    expectedVersion.OsloPositionMethod.Should().NotBeNullOrEmpty();
+                    expectedVersion.OsloPositionSpecification.Should().NotBeNullOrEmpty();
                 });
         }
 
@@ -1729,6 +1808,9 @@
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressWasCorrectedFromRejectedToProposed.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressWasCorrectedFromRejectedToProposed.Provenance.Timestamp);
+
+                    expectedVersion.OsloPositionMethod.Should().NotBeNullOrEmpty();
+                    expectedVersion.OsloPositionSpecification.Should().NotBeNullOrEmpty();
                 });
         }
 
@@ -1776,6 +1858,9 @@
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressRegularizationWasCorrected.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressRegularizationWasCorrected.Provenance.Timestamp);
+
+                    expectedVersion.OsloPositionMethod.Should().NotBeNullOrEmpty();
+                    expectedVersion.OsloPositionSpecification.Should().NotBeNullOrEmpty();
                 });
         }
 
@@ -1820,6 +1905,9 @@
                     expectedVersion.Namespace.Should().Be(Namespace);
                     expectedVersion.PuriId.Should().Be($"{Namespace}/{addressDeregulationWasCorrected.AddressPersistentLocalId}");
                     expectedVersion.VersionTimestamp.Should().Be(addressDeregulationWasCorrected.Provenance.Timestamp);
+
+                    expectedVersion.OsloPositionMethod.Should().NotBeNullOrEmpty();
+                    expectedVersion.OsloPositionSpecification.Should().NotBeNullOrEmpty();
                 });
         }
 

@@ -9,23 +9,25 @@ namespace AddressRegistry.Api.BackOffice.Abstractions
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Design;
     using Microsoft.Extensions.Configuration;
-    using StreetName;
 
     public class BackOfficeContext : DbContext
     {
+        public DbSet<AddressPersistentIdStreetNamePersistentId> AddressPersistentIdStreetNamePersistentIds
+            => Set<AddressPersistentIdStreetNamePersistentId>();
+        public DbSet<MunicipalityMergerAddress> MunicipalityMergerAddresses
+            => Set<MunicipalityMergerAddress>();
+
         public BackOfficeContext() { }
 
         public BackOfficeContext(DbContextOptions<BackOfficeContext> options)
             : base(options) { }
-
-        public DbSet<AddressPersistentIdStreetNamePersistentId> AddressPersistentIdStreetNamePersistentIds { get; set; }
 
         public async Task<AddressPersistentIdStreetNamePersistentId> AddIdempotentAddressStreetNameIdRelation(
             int addressPersistentLocalId,
             int streetNamePersistentLocalId,
             CancellationToken cancellationToken)
         {
-            var relation = await FindRelationAsync(new AddressPersistentLocalId(addressPersistentLocalId), cancellationToken);
+            var relation = await FindRelationAsync(addressPersistentLocalId, cancellationToken);
             if (relation is not null)
             {
                 return relation;
@@ -58,12 +60,59 @@ namespace AddressRegistry.Api.BackOffice.Abstractions
             return relation;
         }
 
-        public async Task<AddressPersistentIdStreetNamePersistentId?> FindRelationAsync(AddressPersistentLocalId addressPersistentLocalId, CancellationToken cancellationToken)
+        public async Task<AddressPersistentIdStreetNamePersistentId?> FindRelationAsync(
+            int addressPersistentLocalId,
+            CancellationToken cancellationToken)
         {
             var relation = await AddressPersistentIdStreetNamePersistentIds.FindAsync(
-                new object?[] { (int)addressPersistentLocalId },
+                [addressPersistentLocalId],
                 cancellationToken);
-            
+
+            return relation;
+        }
+
+        public async Task<MunicipalityMergerAddress> AddIdempotentMunicipalityMergerAddress(
+            int oldAddressPersistentLocalId,
+            int newStreetNamePersistentLocalId,
+            int newAddressPersistentLocalId,
+            CancellationToken cancellationToken)
+        {
+            var relation = await MunicipalityMergerAddresses.FindAsync([oldAddressPersistentLocalId], cancellationToken);
+            if (relation is not null)
+            {
+                return relation;
+            }
+
+            try
+            {
+                var oldStreetNamePersistentLocalId = await FindRelationAsync(oldAddressPersistentLocalId, cancellationToken);
+
+                relation = new MunicipalityMergerAddress(
+                    oldStreetNamePersistentLocalId!.StreetNamePersistentLocalId,
+                    oldAddressPersistentLocalId,
+                    newStreetNamePersistentLocalId,
+                    newAddressPersistentLocalId);
+                await MunicipalityMergerAddresses.AddAsync(relation, cancellationToken);
+
+                await SaveChangesAsync(cancellationToken);
+            }
+            catch (DbUpdateException exception)
+            {
+                // It can happen that the back office projections were faster adding the relation than the executor (or vice versa).
+                if (exception.InnerException is not SqlException { Number: 2627 })
+                {
+                    throw;
+                }
+
+                relation = await MunicipalityMergerAddresses.FirstOrDefaultAsync(
+                    x => x.OldAddressPersistentLocalId == oldAddressPersistentLocalId, cancellationToken);
+
+                if (relation is null)
+                {
+                    throw;
+                }
+            }
+
             return relation;
         }
 
@@ -82,21 +131,18 @@ namespace AddressRegistry.Api.BackOffice.Abstractions
 
             modelBuilder.Entity<AddressPersistentIdStreetNamePersistentId>()
                 .Property(x => x.StreetNamePersistentLocalId);
-        }
-    }
 
-    public class AddressPersistentIdStreetNamePersistentId
-    {
-        public int AddressPersistentLocalId { get; set; }
-        public int StreetNamePersistentLocalId { get; set; }
+            modelBuilder.Entity<MunicipalityMergerAddress>()
+                .ToTable("MunicipalityMergerAddresses", Schema.BackOffice)
+                .HasKey(x => x.OldAddressPersistentLocalId)
+                .IsClustered();
 
-        private AddressPersistentIdStreetNamePersistentId()
-        { }
+            modelBuilder.Entity<MunicipalityMergerAddress>()
+                .Property(x => x.OldAddressPersistentLocalId)
+                .ValueGeneratedNever();
 
-        public AddressPersistentIdStreetNamePersistentId(int addressPersistentLocalId, int streetNamePersistentLocalId)
-        {
-            AddressPersistentLocalId = addressPersistentLocalId;
-            StreetNamePersistentLocalId = streetNamePersistentLocalId;
+            modelBuilder.Entity<MunicipalityMergerAddress>()
+                .HasIndex(x => x.OldStreetNamePersistentLocalId);
         }
     }
 

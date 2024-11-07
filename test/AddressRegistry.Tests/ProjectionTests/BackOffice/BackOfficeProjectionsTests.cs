@@ -91,20 +91,41 @@ namespace AddressRegistry.Tests.ProjectionTests.BackOffice
         {
             var addressWasProposedForMunicipalityMerger = _fixture.Create<AddressWasProposedForMunicipalityMerger>();
 
+            var mergedStreetNamePersistentLocalId = _fixture.Create<int>();
+            _fakeBackOfficeContext.AddressPersistentIdStreetNamePersistentIds
+                .Add(new AddressPersistentIdStreetNamePersistentId(
+                    addressWasProposedForMunicipalityMerger.MergedAddressPersistentLocalId,
+                    mergedStreetNamePersistentLocalId));
+            await _fakeBackOfficeContext.SaveChangesAsync();
+
             await Sut
-                .Given(new Envelope<AddressWasProposedForMunicipalityMerger>(new Envelope(addressWasProposedForMunicipalityMerger, new Dictionary<string, object>
-                {
-                    { Envelope.CreatedUtcMetadataKey, DateTime.UtcNow }
-                })))
+                .Given(new Envelope<AddressWasProposedForMunicipalityMerger>(new Envelope(
+                    addressWasProposedForMunicipalityMerger,
+                    new Dictionary<string, object> { { Envelope.CreatedUtcMetadataKey, DateTime.UtcNow } })))
                 .Then(async _ =>
                 {
                     await Task.Delay(TimeSpan.FromSeconds(DelayInSeconds + 1));
-                    var result = await _fakeBackOfficeContext
+                    var addressPersistentIdStreetNamePersistentId = await _fakeBackOfficeContext
                         .AddressPersistentIdStreetNamePersistentIds
                         .FindAsync(addressWasProposedForMunicipalityMerger.AddressPersistentLocalId);
 
-                    result.Should().NotBeNull();
-                    result!.StreetNamePersistentLocalId.Should().Be(addressWasProposedForMunicipalityMerger.StreetNamePersistentLocalId);
+                    addressPersistentIdStreetNamePersistentId.Should().NotBeNull();
+                    addressPersistentIdStreetNamePersistentId!.StreetNamePersistentLocalId
+                        .Should().Be(addressWasProposedForMunicipalityMerger.StreetNamePersistentLocalId);
+
+                    var municipalityMergerAddress = await _fakeBackOfficeContext
+                        .MunicipalityMergerAddresses
+                        .FindAsync(addressWasProposedForMunicipalityMerger.MergedAddressPersistentLocalId);
+
+                    municipalityMergerAddress.Should().NotBeNull();
+                    municipalityMergerAddress!.NewAddressPersistentLocalId
+                        .Should().Be(addressWasProposedForMunicipalityMerger.AddressPersistentLocalId);
+                    municipalityMergerAddress.NewStreetNamePersistentLocalId
+                        .Should().Be(addressWasProposedForMunicipalityMerger.StreetNamePersistentLocalId);
+                    municipalityMergerAddress.OldAddressPersistentLocalId
+                        .Should().Be(addressWasProposedForMunicipalityMerger.MergedAddressPersistentLocalId);
+                    municipalityMergerAddress.OldStreetNamePersistentLocalId
+                        .Should().Be(mergedStreetNamePersistentLocalId);
                 });
         }
 

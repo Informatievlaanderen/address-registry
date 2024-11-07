@@ -32,6 +32,12 @@ namespace AddressRegistry.Projections.BackOffice
                 await using var backOfficeContext = await backOfficeContextFactory.CreateDbContextAsync(cancellationToken);
                 await backOfficeContext.AddIdempotentAddressStreetNameIdRelation(
                     message.Message.AddressPersistentLocalId, message.Message.StreetNamePersistentLocalId, cancellationToken);
+
+                await backOfficeContext.AddIdempotentMunicipalityMergerAddress(
+                    message.Message.MergedAddressPersistentLocalId,
+                    message.Message.StreetNamePersistentLocalId,
+                    message.Message.AddressPersistentLocalId,
+                    cancellationToken);
             });
 
             When<Envelope<AddressWasProposedBecauseOfReaddress>>(async (_, message, cancellationToken) =>

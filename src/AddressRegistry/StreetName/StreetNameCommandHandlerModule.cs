@@ -106,15 +106,9 @@ namespace AddressRegistry.StreetName
                     var streetNameStreamId = new StreetNameStreamId(message.Command.PersistentLocalId);
                     var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
 
-                    var newStreetNames = new List<StreetName>();
-                    foreach (var newPersistentLocalId in message.Command.NewPersistentLocalIds.Distinct())
-                    {
-                        var newStreetNameStreamId = new StreetNameStreamId(newPersistentLocalId);
-                        var newStreetName = await getStreetNames().GetAsync(newStreetNameStreamId, ct);
-                        newStreetNames.Add(newStreetName);
-                    }
-
-                    streetName.RejectStreetNameBecauseOfMunicipalityMerger(newStreetNames);
+                    streetName.RejectStreetNameBecauseOfMunicipalityMerger(
+                        message.Command.NewPersistentLocalIds.Distinct().ToArray(),
+                        message.Command.NewAddressPersistentLocalIdsByMerged);
                 });
 
             For<RetireStreetName>()
@@ -138,15 +132,9 @@ namespace AddressRegistry.StreetName
                     var streetNameStreamId = new StreetNameStreamId(message.Command.PersistentLocalId);
                     var streetName = await getStreetNames().GetAsync(streetNameStreamId, ct);
 
-                    var newStreetNames = new List<StreetName>();
-                    foreach (var newPersistentLocalId in message.Command.NewPersistentLocalIds.Distinct())
-                    {
-                        var newStreetNameStreamId = new StreetNameStreamId(newPersistentLocalId);
-                        var newStreetName = await getStreetNames().GetAsync(newStreetNameStreamId, ct);
-                        newStreetNames.Add(newStreetName);
-                    }
-
-                    streetName.RetireStreetNameBecauseOfMunicipalityMerger(newStreetNames);
+                    streetName.RetireStreetNameBecauseOfMunicipalityMerger(
+                        message.Command.NewPersistentLocalIds.Distinct().ToArray(),
+                        message.Command.NewAddressPersistentLocalIdsByMerged);
                 });
 
             For<RemoveStreetName>()

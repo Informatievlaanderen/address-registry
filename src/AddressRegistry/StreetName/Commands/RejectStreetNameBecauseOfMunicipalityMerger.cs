@@ -12,16 +12,19 @@ namespace AddressRegistry.StreetName.Commands
         private static readonly Guid Namespace = new Guid("8c625a28-3602-42de-8a4f-c2e15033b360");
 
         public StreetNamePersistentLocalId PersistentLocalId { get; }
-        public IReadOnlyList<StreetNamePersistentLocalId> NewPersistentLocalIds { get; set; }
+        public IReadOnlyList<StreetNamePersistentLocalId> NewPersistentLocalIds { get; }
+        public IDictionary<AddressPersistentLocalId, AddressPersistentLocalId> NewAddressPersistentLocalIdsByMerged { get; }
         public Provenance Provenance { get; }
 
         public RejectStreetNameBecauseOfMunicipalityMerger(
             StreetNamePersistentLocalId persistentLocalId,
             IEnumerable<StreetNamePersistentLocalId> newPersistentLocalIds,
+            IDictionary<AddressPersistentLocalId, AddressPersistentLocalId> newAddressPersistentLocalIdsByMerged,
             Provenance provenance)
         {
             PersistentLocalId = persistentLocalId;
             NewPersistentLocalIds = newPersistentLocalIds.ToList();
+            NewAddressPersistentLocalIdsByMerged = newAddressPersistentLocalIdsByMerged;
             Provenance = provenance;
         }
 
@@ -38,6 +41,11 @@ namespace AddressRegistry.StreetName.Commands
             foreach (var newPersistentLocalId in NewPersistentLocalIds)
             {
                 yield return newPersistentLocalId;
+            }
+
+            foreach (var mergedAddressPersistentLocalId in NewAddressPersistentLocalIdsByMerged.Select(x => x.Key))
+            {
+                yield return mergedAddressPersistentLocalId;
             }
 
             foreach (var field in Provenance.GetIdentityFields())

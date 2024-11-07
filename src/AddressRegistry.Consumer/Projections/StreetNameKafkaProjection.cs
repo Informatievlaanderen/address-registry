@@ -4,10 +4,12 @@ namespace AddressRegistry.Consumer.Projections
     using System.Linq;
     using AddressRegistry.StreetName;
     using AddressRegistry.StreetName.Commands;
+    using Api.BackOffice.Abstractions;
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts;
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts.StreetNameRegistry;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
+    using Microsoft.EntityFrameworkCore;
     using NodaTime.Text;
     using Contracts = Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common;
 
@@ -100,31 +102,11 @@ namespace AddressRegistry.Consumer.Projections
                 );
             }
 
-            if (type == typeof(StreetNameWasRejectedBecauseOfMunicipalityMerger))
-            {
-                var msg = (StreetNameWasRejectedBecauseOfMunicipalityMerger)message;
-                return new RejectStreetNameBecauseOfMunicipalityMerger(
-                    new StreetNamePersistentLocalId(msg.PersistentLocalId),
-                    msg.NewPersistentLocalIds.Select(x => new StreetNamePersistentLocalId(x)),
-                    FromProvenance(msg.Provenance)
-                );
-            }
-
             if (type == typeof(StreetNameWasRetiredV2))
             {
                 var msg = (StreetNameWasRetiredV2)message;
                 return new RetireStreetName(
                     new StreetNamePersistentLocalId(msg.PersistentLocalId),
-                    FromProvenance(msg.Provenance)
-                );
-            }
-
-            if (type == typeof(StreetNameWasRetiredBecauseOfMunicipalityMerger))
-            {
-                var msg = (StreetNameWasRetiredBecauseOfMunicipalityMerger)message;
-                return new RetireStreetNameBecauseOfMunicipalityMerger(
-                    new StreetNamePersistentLocalId(msg.PersistentLocalId),
-                    msg.NewPersistentLocalIds.Select(x => new StreetNamePersistentLocalId(x)),
                     FromProvenance(msg.Provenance)
                 );
             }
@@ -159,7 +141,7 @@ namespace AddressRegistry.Consumer.Projections
             throw new InvalidOperationException($"No command found for {type.FullName}");
         }
 
-        public StreetNameKafkaProjection()
+        public StreetNameKafkaProjection(IDbContextFactory<BackOfficeContext> backOfficeContextFactory)
         {
             When<StreetNameWasMigratedToMunicipality>(async (commandHandler, message, ct) =>
             {
@@ -208,7 +190,21 @@ namespace AddressRegistry.Consumer.Projections
 
             When<StreetNameWasRejectedBecauseOfMunicipalityMerger>(async (commandHandler, message, ct) =>
             {
-                var command = GetCommand(message);
+                await using var backOfficeContext = await backOfficeContextFactory.CreateDbContextAsync(ct);
+
+                var addressPersistentLocalIdsByMerged = await backOfficeContext.MunicipalityMergerAddresses
+                    .Where(x => x.OldStreetNamePersistentLocalId == message.PersistentLocalId)
+                    .ToDictionaryAsync(
+                        x => new AddressPersistentLocalId(x.OldAddressPersistentLocalId),
+                        x => new AddressPersistentLocalId(x.NewAddressPersistentLocalId),
+                        cancellationToken: ct);
+
+                var command = new RejectStreetNameBecauseOfMunicipalityMerger(
+                    new StreetNamePersistentLocalId(message.PersistentLocalId),
+                    message.NewPersistentLocalIds.Select(x => new StreetNamePersistentLocalId(x)),
+                    addressPersistentLocalIdsByMerged,
+                    FromProvenance(message.Provenance)
+                );
                 await commandHandler.Handle(command, ct);
             });
 
@@ -243,7 +239,21 @@ namespace AddressRegistry.Consumer.Projections
 
             When<StreetNameWasRetiredBecauseOfMunicipalityMerger>(async (commandHandler, message, ct) =>
             {
-                var command = GetCommand(message);
+                await using var backOfficeContext = await backOfficeContextFactory.CreateDbContextAsync(ct);
+
+                var addressPersistentLocalIdsByMerged = await backOfficeContext.MunicipalityMergerAddresses
+                    .Where(x => x.OldStreetNamePersistentLocalId == message.PersistentLocalId)
+                    .ToDictionaryAsync(
+                        x => new AddressPersistentLocalId(x.OldAddressPersistentLocalId),
+                        x => new AddressPersistentLocalId(x.NewAddressPersistentLocalId),
+                        cancellationToken: ct);
+
+                var command = new RetireStreetNameBecauseOfMunicipalityMerger(
+                    new StreetNamePersistentLocalId(message.PersistentLocalId),
+                    message.NewPersistentLocalIds.Select(x => new StreetNamePersistentLocalId(x)),
+                    addressPersistentLocalIdsByMerged,
+                    FromProvenance(message.Provenance)
+                );
                 await commandHandler.Handle(command, ct);
             });
 

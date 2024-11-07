@@ -15,7 +15,6 @@ namespace AddressRegistry.StreetName.Events
         public const string EventName = "StreetNameWasRejectedBecauseOfMunicipalityMerger"; // BE CAREFUL CHANGING THIS!!
 
         public int StreetNamePersistentLocalId { get; }
-
         public List<int> NewStreetNamePersistentLocalIds { get; }
         public ProvenanceData Provenance { get; private set; }
 

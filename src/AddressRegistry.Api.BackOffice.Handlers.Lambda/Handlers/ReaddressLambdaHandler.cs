@@ -59,7 +59,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 await IdempotentCommandHandler.Dispatch(
                     readdressCommand.CreateCommandId(),
                     readdressCommand,
-                    request.Metadata,
+                    request.Metadata!,
                     cancellationToken);
 
                 addressesAdded = readdressCommand.ExecutionContext.AddressesAdded;
@@ -126,7 +126,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                         await scope.Resolve<IIdempotentCommandHandler>().Dispatch(
                             rejectOrRetireAddresses.CreateCommandId(),
                             rejectOrRetireAddresses,
-                            request.Metadata,
+                            request.Metadata!,
                             cancellationToken);
                     }
                     catch (IdempotencyException)
@@ -179,7 +179,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                     await _backOfficeContext.FindRelationAsync(addressPersistentLocalId, cancellationToken);
 
                 var readdressAddressItem = new ReaddressAddressItem(
-                    new StreetNamePersistentLocalId(relation.StreetNamePersistentLocalId),
+                    new StreetNamePersistentLocalId(relation!.StreetNamePersistentLocalId),
                     addressPersistentLocalId,
                     HouseNumber.Create(item.DoelHuisnummer));
 
@@ -191,7 +191,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
 
         private static List<RetireAddressItem> MapRetireAddressItems(
             IEnumerable<string>? addressesToRetire,
-            IEnumerable<ReaddressAddressItem> addressesToReaddress)
+            IList<ReaddressAddressItem> addressesToReaddress)
         {
             var retireAddressItems = new List<RetireAddressItem>();
 
@@ -244,7 +244,7 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             return request.Request.HerAdresseer
                 .Select(x => new
                 {
-                    PersistentLocalId = Convert.ToInt32(x.BronAdresId.AsIdentifier().Map(x => x).Value),
+                    PersistentLocalId = Convert.ToInt32(x.BronAdresId.AsIdentifier().Map(y => y).Value),
                     Puri = x.BronAdresId
                 })
                 .Single(x => x.PersistentLocalId == addressPersistentLocalId)

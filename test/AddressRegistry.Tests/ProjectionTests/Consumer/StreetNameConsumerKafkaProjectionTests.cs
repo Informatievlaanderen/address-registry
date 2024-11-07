@@ -8,14 +8,17 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
     using AddressRegistry.Consumer.Projections;
     using AddressRegistry.StreetName;
     using AddressRegistry.StreetName.Commands;
+    using Api.BackOffice.Abstractions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts;
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts.StreetNameRegistry;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using global::AutoFixture;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging.Abstractions;
     using Moq;
     using NodaTime;
+    using Tests.BackOffice.Infrastructure;
     using Xunit;
     using Xunit.Abstractions;
     using Provenance = Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common.Provenance;
@@ -23,11 +26,14 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
     public class StreetNameConsumerKafkaProjectionTests : KafkaProjectionTest<CommandHandler, StreetNameKafkaProjection>
     {
         private readonly Mock<FakeCommandHandler> _mockCommandHandler;
+        private readonly BackOfficeContext _backOfficeContext;
 
         public StreetNameConsumerKafkaProjectionTests(ITestOutputHelper testOutputHelper)
             : base(testOutputHelper)
         {
             _mockCommandHandler = new Mock<FakeCommandHandler>();
+
+            _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
         }
 
         private class StreetNameEventsGenerator : IEnumerable<object[]>
@@ -46,7 +52,6 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
                 var streetNamePersistentLocalId = _fixture.Create<StreetNamePersistentLocalId>();
                 var municipalityId = _fixture.Create<MunicipalityId>().ToString();
                 var nisCode = _fixture.Create<string>();
-                var retirementDate = _fixture.Create<Instant>().ToString();
                 var provenance = new Provenance(
                     Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
                     Application.StreetNameRegistry.ToString(),
@@ -63,10 +68,8 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
                     new object[] { new StreetNameWasApproved(municipalityId, streetNamePersistentLocalId, provenance) },
                     new object[] { new StreetNameWasCorrectedFromApprovedToProposed(municipalityId, streetNamePersistentLocalId, provenance) },
                     new object[] { new StreetNameWasRejected(municipalityId, streetNamePersistentLocalId, provenance) },
-                    new object[] { new StreetNameWasRejectedBecauseOfMunicipalityMerger(municipalityId, streetNamePersistentLocalId, [], provenance) },
                     new object[] { new StreetNameWasCorrectedFromRejectedToProposed(municipalityId, streetNamePersistentLocalId, provenance) },
                     new object[] { new StreetNameWasRetiredV2(municipalityId, streetNamePersistentLocalId, provenance) },
-                    new object[] { new StreetNameWasRetiredBecauseOfMunicipalityMerger(municipalityId, streetNamePersistentLocalId, [], provenance) },
                     new object[] { new StreetNameWasCorrectedFromRetiredToCurrent(municipalityId, streetNamePersistentLocalId, provenance) },
                     new object[] { new StreetNameWasRemovedV2(municipalityId, streetNamePersistentLocalId, provenance) }
 
@@ -89,7 +92,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
             _mockCommandHandler.Setup(commandHandler => commandHandler.Handle(command, default)).Returns(Task.CompletedTask);
 
             Given(command);
-            await Then(ct =>
+            await Then(_ =>
             {
                 _mockCommandHandler.Verify(commandHandler => commandHandler.Handle(It.IsAny<IHasCommandProvenance>(), default), Times.AtMostOnce());
                 return Task.CompletedTask;
@@ -122,7 +125,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
             await Then(async _ =>
             {
                 _mockCommandHandler.Verify(
-                    x => x.Handle(It.Is<IHasCommandProvenance>(x => x is ImportMigratedStreetName), CancellationToken.None),
+                    x => x.Handle(It.Is<IHasCommandProvenance>(y => y is ImportMigratedStreetName), CancellationToken.None),
                     Times.Once);
                 await Task.CompletedTask;
             });
@@ -147,7 +150,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
             await Then(async _ =>
             {
                 _mockCommandHandler.Verify(
-                    x => x.Handle(It.Is<IHasCommandProvenance>(x => x is ImportStreetName), CancellationToken.None),
+                    x => x.Handle(It.Is<IHasCommandProvenance>(y => y is ImportStreetName), CancellationToken.None),
                     Times.Once);
                 await Task.CompletedTask;
             });
@@ -198,7 +201,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
             await Then(async _ =>
             {
                 _mockCommandHandler.Verify(
-                    x => x.Handle(It.Is<IHasCommandProvenance>(x => x is ApproveStreetName), CancellationToken.None),
+                    x => x.Handle(It.Is<IHasCommandProvenance>(y => y is ApproveStreetName), CancellationToken.None),
                     Times.Once);
                 await Task.CompletedTask;
             });
@@ -221,7 +224,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
             await Then(async _ =>
             {
                 _mockCommandHandler.Verify(
-                    x => x.Handle(It.Is<IHasCommandProvenance>(x => x is CorrectStreetNameApproval), CancellationToken.None),
+                    x => x.Handle(It.Is<IHasCommandProvenance>(y => y is CorrectStreetNameApproval), CancellationToken.None),
                     Times.Once);
                 await Task.CompletedTask;
             });
@@ -244,7 +247,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
             await Then(async _ =>
             {
                 _mockCommandHandler.Verify(
-                    x => x.Handle(It.Is<IHasCommandProvenance>(x => x is CorrectStreetNameRejection), CancellationToken.None),
+                    x => x.Handle(It.Is<IHasCommandProvenance>(y => y is CorrectStreetNameRejection), CancellationToken.None),
                     Times.Once);
                 await Task.CompletedTask;
             });
@@ -267,7 +270,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
             await Then(async _ =>
             {
                 _mockCommandHandler.Verify(
-                    x => x.Handle(It.Is<IHasCommandProvenance>(x => x is RejectStreetName), CancellationToken.None),
+                    x => x.Handle(It.Is<IHasCommandProvenance>(y => y is RejectStreetName), CancellationToken.None),
                     Times.Once);
                 await Task.CompletedTask;
             });
@@ -287,11 +290,35 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
                     Organisation.Aiv.ToString(),
                     "test"));
 
+            var firstMunicipalityMergerAddress = new MunicipalityMergerAddress(
+                @event.PersistentLocalId,
+                Fixture.Create<int>(),
+                Fixture.Create<int>(),
+                Fixture.Create<int>());
+            var secondMunicipalityMergerAddress = new MunicipalityMergerAddress(
+                @event.PersistentLocalId,
+                firstMunicipalityMergerAddress.OldAddressPersistentLocalId + 1,
+                firstMunicipalityMergerAddress.NewStreetNamePersistentLocalId + 1,
+                firstMunicipalityMergerAddress.NewAddressPersistentLocalId + 1);
+            var otherMunicipalityMergerAddress = new MunicipalityMergerAddress(
+                @event.PersistentLocalId + 100,
+                firstMunicipalityMergerAddress.OldAddressPersistentLocalId + 100,
+                firstMunicipalityMergerAddress.NewStreetNamePersistentLocalId + 100,
+                firstMunicipalityMergerAddress.NewAddressPersistentLocalId + 100);
+            _backOfficeContext.MunicipalityMergerAddresses.Add(firstMunicipalityMergerAddress);
+            _backOfficeContext.MunicipalityMergerAddresses.Add(secondMunicipalityMergerAddress);
+            _backOfficeContext.MunicipalityMergerAddresses.Add(otherMunicipalityMergerAddress);
+            await _backOfficeContext.SaveChangesAsync();
+
             Given(@event);
             await Then(async _ =>
             {
                 _mockCommandHandler.Verify(
-                    x => x.Handle(It.Is<IHasCommandProvenance>(y => y is RejectStreetNameBecauseOfMunicipalityMerger), CancellationToken.None),
+                    x => x.Handle(
+                        It.Is<IHasCommandProvenance>(y =>
+                            y is RejectStreetNameBecauseOfMunicipalityMerger
+                            && ((RejectStreetNameBecauseOfMunicipalityMerger)y).NewAddressPersistentLocalIdsByMerged.Count == 2),
+                        CancellationToken.None),
                     Times.Once);
                 await Task.CompletedTask;
             });
@@ -314,7 +341,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
             await Then(async _ =>
             {
                 _mockCommandHandler.Verify(
-                    x => x.Handle(It.Is<IHasCommandProvenance>(x => x is RetireStreetName), CancellationToken.None),
+                    x => x.Handle(It.Is<IHasCommandProvenance>(y => y is RetireStreetName), CancellationToken.None),
                     Times.Once);
                 await Task.CompletedTask;
             });
@@ -334,11 +361,35 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
                     Organisation.Aiv.ToString(),
                     "test"));
 
+            var firstMunicipalityMergerAddress = new MunicipalityMergerAddress(
+                @event.PersistentLocalId,
+                Fixture.Create<int>(),
+                Fixture.Create<int>(),
+                Fixture.Create<int>());
+            var secondMunicipalityMergerAddress = new MunicipalityMergerAddress(
+                @event.PersistentLocalId,
+                firstMunicipalityMergerAddress.OldAddressPersistentLocalId + 1,
+                firstMunicipalityMergerAddress.NewStreetNamePersistentLocalId + 1,
+                firstMunicipalityMergerAddress.NewAddressPersistentLocalId + 1);
+            var otherMunicipalityMergerAddress = new MunicipalityMergerAddress(
+                @event.PersistentLocalId + 100,
+                firstMunicipalityMergerAddress.OldAddressPersistentLocalId + 100,
+                firstMunicipalityMergerAddress.NewStreetNamePersistentLocalId + 100,
+                firstMunicipalityMergerAddress.NewAddressPersistentLocalId + 100);
+            _backOfficeContext.MunicipalityMergerAddresses.Add(firstMunicipalityMergerAddress);
+            _backOfficeContext.MunicipalityMergerAddresses.Add(secondMunicipalityMergerAddress);
+            _backOfficeContext.MunicipalityMergerAddresses.Add(otherMunicipalityMergerAddress);
+            await _backOfficeContext.SaveChangesAsync();
+
             Given(@event);
             await Then(async _ =>
             {
                 _mockCommandHandler.Verify(
-                    x => x.Handle(It.Is<IHasCommandProvenance>(y => y is RetireStreetNameBecauseOfMunicipalityMerger), CancellationToken.None),
+                    x => x.Handle(
+                        It.Is<IHasCommandProvenance>(y =>
+                            y is RetireStreetNameBecauseOfMunicipalityMerger
+                            && ((RetireStreetNameBecauseOfMunicipalityMerger)y).NewAddressPersistentLocalIdsByMerged.Count == 2),
+                        CancellationToken.None),
                     Times.Once);
                 await Task.CompletedTask;
             });
@@ -392,7 +443,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
             await Then(async _ =>
             {
                 _mockCommandHandler.Verify(
-                    x => x.Handle(It.Is<IHasCommandProvenance>(x => x is CorrectStreetNameRetirement), CancellationToken.None),
+                    x => x.Handle(It.Is<IHasCommandProvenance>(y => y is CorrectStreetNameRetirement), CancellationToken.None),
                     Times.Once);
                 await Task.CompletedTask;
             });
@@ -415,7 +466,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
             await Then(async _ =>
             {
                 _mockCommandHandler.Verify(
-                    x => x.Handle(It.Is<IHasCommandProvenance>(x => x is RemoveStreetName), CancellationToken.None),
+                    x => x.Handle(It.Is<IHasCommandProvenance>(y => y is RemoveStreetName), CancellationToken.None),
                     Times.Once);
                 await Task.CompletedTask;
             });
@@ -428,7 +479,12 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
 
         protected override StreetNameKafkaProjection CreateProjection()
         {
-            return new StreetNameKafkaProjection();
+            var backOfficeContextFactory = new Mock<IDbContextFactory<BackOfficeContext>>();
+            backOfficeContextFactory
+                .Setup(x => x.CreateDbContextAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(_backOfficeContext);
+
+            return new StreetNameKafkaProjection(backOfficeContextFactory.Object);
         }
     }
 

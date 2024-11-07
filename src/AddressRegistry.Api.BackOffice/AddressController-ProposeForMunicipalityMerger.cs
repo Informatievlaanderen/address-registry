@@ -124,7 +124,7 @@ namespace AddressRegistry.Api.BackOffice
                             recordErrorMessages.Add($"PostalCode is required at record number {recordNr} (OldAddressId={oldAddressId})");
 
                         var relation = await backOfficeContext
-                            .FindRelationAsync(new AddressPersistentLocalId(oldAddressPersistentLocalId), cancellationToken);
+                            .FindRelationAsync(oldAddressPersistentLocalId, cancellationToken);
 
                         if (relation is null)
                             recordErrorMessages.Add($"No streetname relation found for oldAddressId {oldAddressId} at record number {recordNr}");

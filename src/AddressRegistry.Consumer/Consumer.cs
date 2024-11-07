@@ -3,9 +3,11 @@ namespace AddressRegistry.Consumer
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Api.BackOffice.Abstractions;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Projections;
@@ -15,6 +17,7 @@ namespace AddressRegistry.Consumer
         private readonly ILifetimeScope _lifetimeScope;
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly IIdempotentConsumer<IdempotentConsumerContext> _idempotentConsumer;
+        private readonly IDbContextFactory<BackOfficeContext> _backOfficeContextFactory;
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<Consumer> _logger;
 
@@ -22,11 +25,13 @@ namespace AddressRegistry.Consumer
             ILifetimeScope lifetimeScope,
             IHostApplicationLifetime hostApplicationLifetime,
             IIdempotentConsumer<IdempotentConsumerContext> idempotentConsumer,
+            IDbContextFactory<BackOfficeContext> backOfficeContextFactory,
             ILoggerFactory loggerFactory)
         {
             _lifetimeScope = lifetimeScope;
             _hostApplicationLifetime = hostApplicationLifetime;
             _idempotentConsumer = idempotentConsumer;
+            _backOfficeContextFactory = backOfficeContextFactory;
 
             _loggerFactory = loggerFactory;
             _logger = loggerFactory.CreateLogger<Consumer>();
@@ -36,7 +41,7 @@ namespace AddressRegistry.Consumer
         {
             var commandHandler = new CommandHandler(_lifetimeScope, _loggerFactory);
             var commandHandlingProjector = new ConnectedProjector<CommandHandler>(
-                Resolve.WhenEqualToHandlerMessageType(new StreetNameKafkaProjection().Handlers));
+                Resolve.WhenEqualToHandlerMessageType(new StreetNameKafkaProjection(_backOfficeContextFactory).Handlers));
 
             try
             {

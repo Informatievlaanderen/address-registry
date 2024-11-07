@@ -34,7 +34,7 @@ namespace AddressRegistry.Tests.ProjectionTests.Consumer
                 {
                     var expectedStreetName = await ct.StreetNameConsumerItems.FindAsync(streetNameWasImported.MunicipalityId);
                     expectedStreetName.Should().NotBeNull();
-                    expectedStreetName.StreetNameId.Should().Be(streetNameWasImported.StreetNameId);
+                    expectedStreetName!.StreetNameId.Should().Be(streetNameWasImported.StreetNameId);
                     expectedStreetName.PersistentLocalId.Should().Be(streetNameWasImported.StreetNamePersistentLocalId);
                 });
         }

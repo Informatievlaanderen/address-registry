@@ -6,6 +6,7 @@ namespace AddressRegistry.Consumer.Infrastructure
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Infrastructure;
+    using Api.BackOffice.Abstractions;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore;
@@ -26,7 +27,7 @@ namespace AddressRegistry.Consumer.Infrastructure
     using Serilog.Debugging;
     using Serilog.Extensions.Logging;
     using SqlStreamStore;
-    using Consumer = AddressRegistry.Consumer.Consumer;
+    using Consumer = Consumer;
 
     public sealed class Program
     {
@@ -41,7 +42,7 @@ namespace AddressRegistry.Consumer.Infrastructure
                     "FirstChanceException event raised in {AppDomain}.",
                     AppDomain.CurrentDomain.FriendlyName);
 
-            AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) =>
+            AppDomain.CurrentDomain.UnhandledException += (_, eventArgs) =>
                 Log.Fatal((Exception)eventArgs.ExceptionObject, "Encountered a fatal exception, exiting program.");
 
             Log.Information("Initializing AddressRegistry.Consumer");
@@ -96,10 +97,22 @@ namespace AddressRegistry.Consumer.Infrastructure
                                 sqlServerOptions.MigrationsHistoryTable(MigrationTables.ConsumerProjections, Schema.ConsumerProjections);
                             }));
 
+                    services
+                        .AddDbContextFactory<BackOfficeContext>((_, options) => options
+                            .UseLoggerFactory(loggerFactory)
+                            .UseSqlServer(
+                                hostContext.Configuration.GetConnectionString("BackOffice"),
+                                sqlServerOptions =>
+                                {
+                                    sqlServerOptions.EnableRetryOnFailure();
+                                    sqlServerOptions.MigrationsHistoryTable(MigrationTables.BackOffice, Schema.BackOffice);
+                                }
+                            ));
+
                     services.ConfigureIdempotency(
                         hostContext.Configuration
                             .GetSection(IdempotencyConfiguration.Section)
-                            .Get<IdempotencyConfiguration>()
+                            .Get<IdempotencyConfiguration>()!
                             .ConnectionString!,
                         new IdempotencyMigrationsTableInfo(Schema.Import),
                         new IdempotencyTableInfo(Schema.Import),
@@ -113,7 +126,7 @@ namespace AddressRegistry.Consumer.Infrastructure
 
                     containerBuilder.Register(c =>
                     {
-                        var bootstrapServers = hostContext.Configuration["Kafka:BootstrapServers"];
+                        var bootstrapServers = hostContext.Configuration["Kafka:BootstrapServers"]!;
                         var topic = $"{hostContext.Configuration["StreetNameTopic"]}" ?? throw new ArgumentException("Configuration has no StreetNameTopic.");
                         var suffix = hostContext.Configuration["StreetNameConsumerGroupSuffix"];
                         var consumerGroupId = $"AddressRegistry.Consumer.{topic}{suffix}";
@@ -125,14 +138,14 @@ namespace AddressRegistry.Consumer.Infrastructure
                             EventsJsonSerializerSettingsProvider.CreateSerializerSettings());
 
                         consumerOptions.ConfigureSaslAuthentication(new SaslAuthentication(
-                            hostContext.Configuration["Kafka:SaslUserName"],
-                            hostContext.Configuration["Kafka:SaslPassword"]));
+                            hostContext.Configuration["Kafka:SaslUserName"]!,
+                            hostContext.Configuration["Kafka:SaslPassword"]!));
 
                         var offset = hostContext.Configuration["StreetNameTopicOffset"];
 
                         if (!string.IsNullOrWhiteSpace(offset) && long.TryParse(offset, out var result))
                         {
-                            var ignoreDataCheck = hostContext.Configuration.GetValue<bool>("IgnoreStreetNameTopicOffsetDataCheck", false);
+                            var ignoreDataCheck = hostContext.Configuration.GetValue("IgnoreStreetNameTopicOffsetDataCheck", false);
 
                             if (!ignoreDataCheck)
                             {
@@ -193,7 +206,7 @@ namespace AddressRegistry.Consumer.Infrastructure
                             AddressRegistry.Infrastructure.MigrationsHelper.EnsureSqlSnapshotStoreSchema<Program>(host.Services.GetRequiredService<MsSqlSnapshotStore>(), loggerFactory);
 
                             await MigrationsHelper.RunAsync(
-                                configuration.GetConnectionString("ConsumerAdmin"),
+                                configuration.GetConnectionString("ConsumerAdmin")!,
                                 loggerFactory,
                                 CancellationToken.None);
 

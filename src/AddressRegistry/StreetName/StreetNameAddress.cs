@@ -201,7 +201,7 @@ namespace AddressRegistry.StreetName
             }
         }
 
-        public void RejectBecauseOfMunicipalityMerger(IEnumerable<StreetName> newStreetNames)
+        public void RejectBecauseOfMunicipalityMerger(AddressPersistentLocalId? newAddressPersistentLocalId)
         {
             if (IsRemoved)
             {
@@ -210,8 +210,6 @@ namespace AddressRegistry.StreetName
 
             if (Status == AddressStatus.Proposed)
             {
-                var newAddressPersistentLocalId = GetNewAddressPersistentLocalId(newStreetNames);
-
                 Apply(new AddressWasRejectedBecauseOfMunicipalityMerger(
                     _streetNamePersistentLocalId,
                     AddressPersistentLocalId,
@@ -237,7 +235,7 @@ namespace AddressRegistry.StreetName
             }
         }
 
-        public void RetireBecauseOfMunicipalityMerger(IEnumerable<StreetName> newStreetNames)
+        public void RetireBecauseOfMunicipalityMerger(AddressPersistentLocalId? newAddressPersistentLocalId)
         {
             if (IsRemoved)
             {
@@ -246,8 +244,6 @@ namespace AddressRegistry.StreetName
 
             if (Status == AddressStatus.Current)
             {
-                var newAddressPersistentLocalId = GetNewAddressPersistentLocalId(newStreetNames);
-
                 Apply(new AddressWasRetiredBecauseOfMunicipalityMerger(
                     _streetNamePersistentLocalId,
                     AddressPersistentLocalId,

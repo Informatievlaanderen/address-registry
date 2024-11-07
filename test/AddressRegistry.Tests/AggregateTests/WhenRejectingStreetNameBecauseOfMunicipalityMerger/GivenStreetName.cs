@@ -36,6 +36,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingStreetNameBecauseOfM
             var command = new RejectStreetNameBecauseOfMunicipalityMerger(
                 streetNamePersistentLocalId,
                 [],
+                new Dictionary<AddressPersistentLocalId, AddressPersistentLocalId>(),
                 Fixture.Create<Provenance>());
 
             var streetNameWasImported = new StreetNameWasImported(
@@ -62,6 +63,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingStreetNameBecauseOfM
             var command = new RejectStreetNameBecauseOfMunicipalityMerger(
                 streetNamePersistentLocalId,
                 [],
+                new Dictionary<AddressPersistentLocalId, AddressPersistentLocalId>(),
                 Fixture.Create<Provenance>());
 
             var streetNameWasImported = new StreetNameWasImported(
@@ -134,6 +136,13 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingStreetNameBecauseOfM
             var command = new RejectStreetNameBecauseOfMunicipalityMerger(
                 streetNamePersistentLocalId,
                 [newStreetNamePersistentLocalId],
+                new Dictionary<AddressPersistentLocalId, AddressPersistentLocalId>
+                {
+                    { oldProposedHouseNumberAddressPersistentLocalId, newProposedHouseNumberAddressPersistentLocalId },
+                    { oldProposedBoxNumberAddressPersistentLocalId, newProposedBoxNumberAddressPersistentLocalId },
+                    { oldCurrentHouseNumberAddressPersistentLocalId, newCurrentHouseNumberAddressPersistentLocalId },
+                    { oldCurrentBoxNumberAddressPersistentLocalId, newCurrentBoxNumberAddressPersistentLocalId },
+                },
                 Fixture.Create<Provenance>());
 
             var streetNameWasImported = new StreetNameWasImported(
@@ -224,6 +233,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingStreetNameBecauseOfM
             var command = new RejectStreetNameBecauseOfMunicipalityMerger(
                 streetNamePersistentLocalId,
                 [],
+                new Dictionary<AddressPersistentLocalId, AddressPersistentLocalId>(),
                 Fixture.Create<Provenance>());
 
             var streetNameWasImported = new StreetNameWasImported(

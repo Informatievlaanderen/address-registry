@@ -1,3 +1,11 @@
+## [4.27.1](https://github.com/informatievlaanderen/address-registry/compare/v4.27.0...v4.27.1) (2024-11-08)
+
+
+### Bug Fixes
+
+* AddressWasRetired/Rejected BecauseOfMunicipalityMerger empty NewAddressPersistentLocalId ([bb3a018](https://github.com/informatievlaanderen/address-registry/commit/bb3a018160205d39bb3ccf9c077202fef6d1a1af))
+* **integration:** copy version oslo fields GAWR-6667 ([08ae64b](https://github.com/informatievlaanderen/address-registry/commit/08ae64bc0d1be909c19ed7ecd11ad7c5dbdb2012))
+
 # [4.27.0](https://github.com/informatievlaanderen/address-registry/compare/v4.26.1...v4.27.0) (2024-11-05)
 
 

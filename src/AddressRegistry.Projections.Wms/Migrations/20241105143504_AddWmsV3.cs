@@ -6,6 +6,8 @@ using NetTopologySuite.Geometries;
 
 namespace AddressRegistry.Projections.Wms.Migrations
 {
+    using Infrastructure;
+
     /// <inheritdoc />
     public partial class AddWmsV3 : Migration
     {
@@ -74,6 +76,21 @@ namespace AddressRegistry.Projections.Wms.Migrations
                 schema: "wms.address",
                 table: "AddressWmsV3",
                 column: "StreetNamePersistentLocalId");
+
+            migrationBuilder.Sql(
+                $"CREATE SPATIAL INDEX [SPATIAL_Address_Position] ON [{Schema.Wms}].[AddressWmsV3] ([Position])\n" +
+                @"USING  GEOMETRY_GRID
+	                WITH (
+		                BOUNDING_BOX =(22279.17, 153050.23, 258873.3, 244022.31),
+		                GRIDS =(
+			                LEVEL_1 = MEDIUM,
+			                LEVEL_2 = MEDIUM,
+			                LEVEL_3 = MEDIUM,
+			                LEVEL_4 = MEDIUM),
+	                CELLS_PER_OBJECT = 5)
+	                GO");
+
+            //manually switch views!
         }
 
         /// <inheritdoc />

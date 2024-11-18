@@ -8,6 +8,7 @@ namespace AddressRegistry.StreetName.Events
     using DataStructures;
     using Newtonsoft.Json;
 
+    [HideEvent]
     [EventName("StreetNameSnapshot")]
     [EventSnapshot(nameof(SnapshotContainer) + "<StreetNameSnapshot>", typeof(SnapshotContainer))]
     [EventDescription("Snapshot of StreetName with Addresses")]

@@ -7,6 +7,7 @@ namespace AddressRegistry.StreetName.Events
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Newtonsoft.Json;
 
+    [HideEvent]
     [EventTags(Tag.StreetName)]
     [EventName(EventName)]
     [EventDescription("De straatnaam werd gehistoreerd in functie van een gemeentefusie.")]

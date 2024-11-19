@@ -1,3 +1,10 @@
+## [4.27.2](https://github.com/informatievlaanderen/address-registry/compare/v4.27.1...v4.27.2) (2024-11-19)
+
+
+### Bug Fixes
+
+* hide events + fix produce correct boxnumber ([efbd9d4](https://github.com/informatievlaanderen/address-registry/commit/efbd9d495a5714839381c3f7e799fae2438c4c57))
+
 ## [4.27.1](https://github.com/informatievlaanderen/address-registry/compare/v4.27.0...v4.27.1) (2024-11-08)
 
 

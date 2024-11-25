@@ -1,6 +1,9 @@
 namespace AddressRegistry.Projections.Wfs.AddressWfs
 {
     using System;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
@@ -80,6 +83,20 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
                     UpdateVersionTimestampIfNewer(item, message.Message.Provenance.Timestamp);
                 }
             });
+
+            When<Envelope<MigratedStreetNameWasImported>>(DoNothing);
+            When<Envelope<StreetNameWasImported>>(DoNothing);
+            When<Envelope<StreetNameWasApproved>>(DoNothing);
+            When<Envelope<StreetNameWasCorrectedFromApprovedToProposed>>(DoNothing);
+            When<Envelope<StreetNameWasCorrectedFromRetiredToCurrent>>(DoNothing);
+            When<Envelope<StreetNameWasCorrectedFromRejectedToProposed>>(DoNothing);
+            When<Envelope<StreetNameWasRejected>>(DoNothing);
+            When<Envelope<StreetNameWasRejectedBecauseOfMunicipalityMerger>>(DoNothing);
+            When<Envelope<StreetNameWasRetired>>(DoNothing);
+            When<Envelope<StreetNameWasRetiredBecauseOfMunicipalityMerger>>(DoNothing);
+            When<Envelope<StreetNameWasRemoved>>(DoNothing);
+            When<Envelope<StreetNameWasReaddressed>>(DoNothing);
+            When<Envelope<StreetNameWasRenamed>>(DoNothing);
 
             #endregion StreetName
 
@@ -677,5 +694,7 @@ namespace AddressRegistry.Projections.Wfs.AddressWfs
 
         public static string? ConvertGeometrySpecificationToString(GeometrySpecification? specification) =>
             MapGeometrySpecificationToPositieSpecificatie(specification)?.ToString();
+
+        private static Task DoNothing<T>(WfsContext context, Envelope<T> envelope, CancellationToken ct) where T: IMessage => Task.CompletedTask;
     }
 }

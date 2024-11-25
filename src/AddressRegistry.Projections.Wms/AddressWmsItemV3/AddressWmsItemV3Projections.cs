@@ -1,7 +1,10 @@
 namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
 {
     using System;
+    using System.Threading;
+    using System.Threading.Tasks;
     using AddressRegistry.StreetName.Events;
+    using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
@@ -87,6 +90,19 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                 }
             });
 
+            When<Envelope<MigratedStreetNameWasImported>>(DoNothing);
+            When<Envelope<StreetNameWasImported>>(DoNothing);
+            When<Envelope<StreetNameWasApproved>>(DoNothing);
+            When<Envelope<StreetNameWasCorrectedFromApprovedToProposed>>(DoNothing);
+            When<Envelope<StreetNameWasCorrectedFromRetiredToCurrent>>(DoNothing);
+            When<Envelope<StreetNameWasCorrectedFromRejectedToProposed>>(DoNothing);
+            When<Envelope<StreetNameWasRejected>>(DoNothing);
+            When<Envelope<StreetNameWasRejectedBecauseOfMunicipalityMerger>>(DoNothing);
+            When<Envelope<StreetNameWasRetired>>(DoNothing);
+            When<Envelope<StreetNameWasRetiredBecauseOfMunicipalityMerger>>(DoNothing);
+            When<Envelope<StreetNameWasRemoved>>(DoNothing);
+            When<Envelope<StreetNameWasReaddressed>>(DoNothing);
+            When<Envelope<StreetNameWasRenamed>>(DoNothing);
             #endregion StreetName
 
             // Address
@@ -897,5 +913,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                 _ => throw new ArgumentOutOfRangeException(nameof(geometrySpecification), geometrySpecification, null)
             };
         }
+
+        private static Task DoNothing<T>(WmsContext context, Envelope<T> envelope, CancellationToken ct) where T: IMessage => Task.CompletedTask;
     }
 }

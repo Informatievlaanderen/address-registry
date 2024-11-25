@@ -4,6 +4,7 @@ namespace AddressRegistry.Producer
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Producer;
@@ -24,6 +25,11 @@ namespace AddressRegistry.Producer
             _producer = producer;
 
             // StreetName Aggregate Events
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetName.AddressBoxNumberWasCorrectedV2>>(async (_, message, ct) =>
+            {
+                await Produce(message.Message.StreetNamePersistentLocalId, message.Message.ToContract(), message.Position, ct);
+            });
+
             When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetName.AddressWasRemovedBecauseHouseNumberWasRemoved>>(async (_, message, ct) =>
             {
                 await Produce(message.Message.StreetNamePersistentLocalId, message.Message.ToContract(), message.Position, ct);
@@ -213,6 +219,23 @@ namespace AddressRegistry.Producer
             {
                 await Produce(message.Message.StreetNamePersistentLocalId, message.Message.ToContract(), message.Position, ct);
             });
+
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetName.MigratedStreetNameWasImported>>(DoNothing);
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetName.StreetNameWasImported>>(DoNothing);
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetName.StreetNameWasApproved>>(DoNothing);
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetName.StreetNameWasCorrectedFromApprovedToProposed>>(DoNothing);
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetName.StreetNameWasCorrectedFromRetiredToCurrent>>(DoNothing);
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetName.StreetNameWasCorrectedFromRejectedToProposed>>(DoNothing);
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetName.StreetNameWasRejected>>(DoNothing);
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetName.StreetNameWasRejectedBecauseOfMunicipalityMerger>>(DoNothing);
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetName.StreetNameWasRetired>>(DoNothing);
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetName.StreetNameWasRetiredBecauseOfMunicipalityMerger>>(DoNothing);
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetName.StreetNameWasRemoved>>(DoNothing);
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetName.StreetNameWasRenamed>>(DoNothing);
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetName.StreetNameNamesWereChanged>>(DoNothing);
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetName.StreetNameNamesWereCorrected>>(DoNothing);
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetName.StreetNameHomonymAdditionsWereCorrected>>(DoNothing);
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<StreetName.StreetNameHomonymAdditionsWereRemoved>>(DoNothing);
         }
 
         private async Task Produce<T>(int persistentLocalId, T message, long storePosition, CancellationToken cancellationToken = default)
@@ -229,5 +252,7 @@ namespace AddressRegistry.Producer
                 throw new InvalidOperationException(result.Error + Environment.NewLine + result.ErrorReason);
             }
         }
+
+        private static Task DoNothing<T>(ProducerContext context, Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<T> envelope, CancellationToken ct) where T: IMessage => Task.CompletedTask;
     }
 }

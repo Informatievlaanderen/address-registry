@@ -1,6 +1,8 @@
 namespace AddressRegistry.Projections.AddressMatch.AddressDetailV2WithParent
 {
     using System;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Pipes;
@@ -83,6 +85,19 @@ namespace AddressRegistry.Projections.AddressMatch.AddressDetailV2WithParent
                 }
             });
 
+            When<Envelope<MigratedStreetNameWasImported>>(DoNothing);
+            When<Envelope<StreetNameWasImported>>(DoNothing);
+            When<Envelope<StreetNameWasApproved>>(DoNothing);
+            When<Envelope<StreetNameWasCorrectedFromApprovedToProposed>>(DoNothing);
+            When<Envelope<StreetNameWasCorrectedFromRetiredToCurrent>>(DoNothing);
+            When<Envelope<StreetNameWasCorrectedFromRejectedToProposed>>(DoNothing);
+            When<Envelope<StreetNameWasRejected>>(DoNothing);
+            When<Envelope<StreetNameWasRejectedBecauseOfMunicipalityMerger>>(DoNothing);
+            When<Envelope<StreetNameWasRetired>>(DoNothing);
+            When<Envelope<StreetNameWasRetiredBecauseOfMunicipalityMerger>>(DoNothing);
+            When<Envelope<StreetNameWasRemoved>>(DoNothing);
+            When<Envelope<StreetNameWasReaddressed>>(DoNothing);
+            When<Envelope<StreetNameWasRenamed>>(DoNothing);
             #endregion StreetName
 
             // Address
@@ -754,5 +769,7 @@ namespace AddressRegistry.Projections.AddressMatch.AddressDetailV2WithParent
                 addressDetailItem.VersionTimestamp = versionTimestamp;
             }
         }
+
+        private static Task DoNothing<T>(AddressMatchContext context, Envelope<T> envelope, CancellationToken ct) where T: IMessage => Task.CompletedTask;
     }
 }

@@ -1,9 +1,12 @@
 ﻿namespace AddressRegistry.Projections.Integration.LatestItem
 {
+    using System.Threading;
+    using System.Threading.Tasks;
     using AddressRegistry.Projections.Integration.Convertors;
     using AddressRegistry.Projections.Integration.Infrastructure;
     using AddressRegistry.StreetName;
     using AddressRegistry.StreetName.Events;
+    using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
@@ -64,6 +67,20 @@
                         ct);
                 }
             });
+
+            When<Envelope<MigratedStreetNameWasImported>>(DoNothing);
+            When<Envelope<StreetNameWasImported>>(DoNothing);
+            When<Envelope<StreetNameWasApproved>>(DoNothing);
+            When<Envelope<StreetNameWasCorrectedFromApprovedToProposed>>(DoNothing);
+            When<Envelope<StreetNameWasCorrectedFromRetiredToCurrent>>(DoNothing);
+            When<Envelope<StreetNameWasCorrectedFromRejectedToProposed>>(DoNothing);
+            When<Envelope<StreetNameWasRejected>>(DoNothing);
+            When<Envelope<StreetNameWasRejectedBecauseOfMunicipalityMerger>>(DoNothing);
+            When<Envelope<StreetNameWasRetired>>(DoNothing);
+            When<Envelope<StreetNameWasRetiredBecauseOfMunicipalityMerger>>(DoNothing);
+            When<Envelope<StreetNameWasRemoved>>(DoNothing);
+            When<Envelope<StreetNameWasReaddressed>>(DoNothing);
+            When<Envelope<StreetNameWasRenamed>>(DoNothing);
             #endregion StreetName
 
             // Address
@@ -760,5 +777,7 @@
 
         private static void UpdateVersionTimestamp(AddressLatestItem addressLatestItem, Instant versionTimestamp)
             => addressLatestItem.VersionTimestamp = versionTimestamp;
+
+        private static Task DoNothing<T>(IntegrationContext context, Envelope<T> envelope, CancellationToken ct) where T: IMessage => Task.CompletedTask;
     }
 }

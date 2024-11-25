@@ -1,7 +1,10 @@
 ﻿namespace AddressRegistry.Projections.Integration.Version
 {
     using System;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Address.Events;
+    using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
@@ -629,6 +632,24 @@
                     ct);
             });
 
+            When<Envelope<MigratedStreetNameWasImported>>(DoNothing);
+            When<Envelope<StreetNameWasImported>>(DoNothing);
+            When<Envelope<StreetNameWasApproved>>(DoNothing);
+            When<Envelope<StreetNameWasCorrectedFromApprovedToProposed>>(DoNothing);
+            When<Envelope<StreetNameWasCorrectedFromRetiredToCurrent>>(DoNothing);
+            When<Envelope<StreetNameWasCorrectedFromRejectedToProposed>>(DoNothing);
+            When<Envelope<StreetNameWasRejected>>(DoNothing);
+            When<Envelope<StreetNameWasRejectedBecauseOfMunicipalityMerger>>(DoNothing);
+            When<Envelope<StreetNameWasRetired>>(DoNothing);
+            When<Envelope<StreetNameWasRetiredBecauseOfMunicipalityMerger>>(DoNothing);
+            When<Envelope<StreetNameWasRemoved>>(DoNothing);
+            When<Envelope<StreetNameWasReaddressed>>(DoNothing);
+            When<Envelope<StreetNameWasRenamed>>(DoNothing);
+            When<Envelope<StreetNameNamesWereChanged>>(DoNothing);
+            When<Envelope<StreetNameNamesWereCorrected>>(DoNothing);
+            When<Envelope<StreetNameHomonymAdditionsWereCorrected>>(DoNothing);
+            When<Envelope<StreetNameHomonymAdditionsWereRemoved>>(DoNothing);
+
             #region Legacy
 
             When<Envelope<AddressWasRegistered>>(async (context, message, ct) =>
@@ -987,5 +1008,7 @@
 
             #endregion
         }
+
+        private static Task DoNothing<T>(IntegrationContext context, Envelope<T> envelope, CancellationToken ct) where T: IMessage => Task.CompletedTask;
     }
 }

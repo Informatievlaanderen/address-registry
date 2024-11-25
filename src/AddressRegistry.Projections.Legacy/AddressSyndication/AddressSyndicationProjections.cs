@@ -1,9 +1,11 @@
 namespace AddressRegistry.Projections.Legacy.AddressSyndication
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using Address.Events;
     using Address.Events.Crab;
+    using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
@@ -324,14 +326,36 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     ct);
             });
 
-            When<Envelope<AddressHouseNumberWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
-            When<Envelope<AddressHouseNumberStatusWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
-            When<Envelope<AddressHouseNumberPositionWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
-            When<Envelope<AddressHouseNumberMailCantonWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
-            When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
-            When<Envelope<AddressSubaddressPositionWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
-            When<Envelope<AddressSubaddressStatusWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<AddressHouseNumberWasImportedFromCrab>>(DoNothing);
+            When<Envelope<AddressHouseNumberStatusWasImportedFromCrab>>(DoNothing);
+            When<Envelope<AddressHouseNumberPositionWasImportedFromCrab>>(DoNothing);
+            When<Envelope<AddressHouseNumberMailCantonWasImportedFromCrab>>(DoNothing);
+            When<Envelope<AddressSubaddressWasImportedFromCrab>>(DoNothing);
+            When<Envelope<AddressSubaddressPositionWasImportedFromCrab>>(DoNothing);
+            When<Envelope<AddressSubaddressStatusWasImportedFromCrab>>(DoNothing);
             #endregion Legacy Events
+
+            #region StreetName
+
+            When<Envelope<MigratedStreetNameWasImported>>(DoNothing);
+            When<Envelope<StreetNameWasImported>>(DoNothing);
+            When<Envelope<StreetNameWasApproved>>(DoNothing);
+            When<Envelope<StreetNameWasCorrectedFromApprovedToProposed>>(DoNothing);
+            When<Envelope<StreetNameWasCorrectedFromRetiredToCurrent>>(DoNothing);
+            When<Envelope<StreetNameWasCorrectedFromRejectedToProposed>>(DoNothing);
+            When<Envelope<StreetNameWasRejected>>(DoNothing);
+            When<Envelope<StreetNameWasRejectedBecauseOfMunicipalityMerger>>(DoNothing);
+            When<Envelope<StreetNameWasRetired>>(DoNothing);
+            When<Envelope<StreetNameWasRetiredBecauseOfMunicipalityMerger>>(DoNothing);
+            When<Envelope<StreetNameWasRemoved>>(DoNothing);
+            When<Envelope<StreetNameWasReaddressed>>(DoNothing);
+            When<Envelope<StreetNameWasRenamed>>(DoNothing);
+            When<Envelope<StreetNameHomonymAdditionsWereCorrected>>(DoNothing);
+            When<Envelope<StreetNameHomonymAdditionsWereRemoved>>(DoNothing);
+            When<Envelope<StreetNameNamesWereChanged>>(DoNothing);
+            When<Envelope<StreetNameNamesWereCorrected>>(DoNothing);
+
+            #endregion
 
             When<Envelope<AddressWasMigratedToStreetName>>(async (context, message, ct) =>
             {
@@ -1052,9 +1076,6 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
             });
         }
 
-        private static async Task DoNothing()
-        {
-            await Task.Yield();
-        }
+        private static Task DoNothing<T>(LegacyContext context, Envelope<T> envelope, CancellationToken ct) where T: IMessage => Task.CompletedTask;
     }
 }

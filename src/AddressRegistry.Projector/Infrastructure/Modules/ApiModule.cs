@@ -6,8 +6,6 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using AddressRegistry.Projections.Elastic.AddressSearch;
     using AddressRegistry.Projections.Elastic.Infrastructure;
     using AddressRegistry.Projections.Extract;
-    using AddressRegistry.Projections.Extract.AddressCrabHouseNumberIdExtract;
-    using AddressRegistry.Projections.Extract.AddressCrabSubaddressIdExtract;
     using AddressRegistry.Projections.Extract.AddressExtract;
     using AddressRegistry.Projections.Integration;
     using AddressRegistry.Projections.Integration.Infrastructure;

@@ -21,6 +21,11 @@ namespace AddressRegistry.StreetName
             return new HouseNumber(houseNumber);
         }
 
+        public bool EqualsCaseSensitive(HouseNumber houseNumber)
+        {
+            return Value.Equals(houseNumber.Value);
+        }
+
         public static bool HasValidFormat(string houseNumber) => FormatRegex.IsMatch(houseNumber);
 
         protected override IEnumerable<object> Reflect()

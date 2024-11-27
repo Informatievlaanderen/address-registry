@@ -226,6 +226,38 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressBoxNumber
         }
 
         [Fact]
+        public void WithCaseSensitiveChange_ThenAddressBoxNumberWasCorrected()
+        {
+            var houseNumberAddressWasProposedV2 = Fixture.Create<AddressWasProposedV2>()
+                .AsHouseNumberAddress();
+
+            var boxNumberAddressWasProposedV2 = Fixture.Create<AddressWasProposedV2>()
+                .AsBoxNumberAddress(
+                    new AddressPersistentLocalId(houseNumberAddressWasProposedV2.AddressPersistentLocalId),
+                    new BoxNumber("a"))
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(houseNumberAddressWasProposedV2.AddressPersistentLocalId + 1))
+                .WithHouseNumber(new HouseNumber(houseNumberAddressWasProposedV2.HouseNumber));
+
+            var command = new CorrectAddressBoxNumber(
+                Fixture.Create<StreetNamePersistentLocalId>(),
+                new AddressPersistentLocalId(boxNumberAddressWasProposedV2.AddressPersistentLocalId),
+                new BoxNumber("A"),
+                Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(_streamId,
+                    Fixture.Create<StreetNameWasImported>(),
+                    houseNumberAddressWasProposedV2,
+                    boxNumberAddressWasProposedV2)
+                .When(command)
+                .Then(new Fact(_streamId,
+                    new AddressBoxNumberWasCorrectedV2(
+                        Fixture.Create<StreetNamePersistentLocalId>(),
+                        new AddressPersistentLocalId(command.AddressPersistentLocalId),
+                        command.BoxNumber))));
+        }
+
+        [Fact]
         public void StateCheck()
         {
             // Arrange

@@ -382,7 +382,7 @@ namespace AddressRegistry.StreetName
                 throw new AddressHasBoxNumberException();
             }
 
-            if (HouseNumber == houseNumber)
+            if (HouseNumber.EqualsCaseSensitive(houseNumber))
             {
                 return;
             }
@@ -407,14 +407,14 @@ namespace AddressRegistry.StreetName
                 throw new AddressHasNoBoxNumberException();
             }
 
-            if (BoxNumber == boxNumber)
-            {
-                return;
-            }
-
             GuardAddressStatus(AddressStatus.Proposed, AddressStatus.Current);
 
             guardBoxNumberAddressIsUnique();
+
+            if (BoxNumber.EqualsCaseSensitive(boxNumber))
+            {
+                return;
+            }
 
             Apply(new AddressBoxNumberWasCorrectedV2(
                 _streetNamePersistentLocalId,

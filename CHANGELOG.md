@@ -1,3 +1,11 @@
+## [4.27.3](https://github.com/informatievlaanderen/address-registry/compare/v4.27.2...v4.27.3) (2024-11-27)
+
+
+### Bug Fixes
+
+* add missing event-handlers + test ([43a855a](https://github.com/informatievlaanderen/address-registry/commit/43a855a1f873c93d16066535722e7d0460dfcc4f))
+* apply case sensitive house number and box number corrections GAWR-6686 ([ec03947](https://github.com/informatievlaanderen/address-registry/commit/ec039473bdbe095fe72dcde99ba201425b1b04cf))
+
 ## [4.27.2](https://github.com/informatievlaanderen/address-registry/compare/v4.27.1...v4.27.2) (2024-11-19)
 
 

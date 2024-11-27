@@ -1,3 +1,10 @@
+## [4.27.4](https://github.com/informatievlaanderen/address-registry/compare/v4.27.3...v4.27.4) (2024-11-27)
+
+
+### Bug Fixes
+
+* clean up v1 extract ([1e69f51](https://github.com/informatievlaanderen/address-registry/commit/1e69f513c3463b97cc69d7fc15f2ca9e6a81602c))
+
 ## [4.27.3](https://github.com/informatievlaanderen/address-registry/compare/v4.27.2...v4.27.3) (2024-11-27)
 
 

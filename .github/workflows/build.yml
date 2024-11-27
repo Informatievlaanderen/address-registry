@@ -88,7 +88,7 @@ jobs:
         SONAR_TOKEN: ${{ secrets.VBR_SONAR_TOKEN }}
       shell: bash
       run: |
-        ./.sonar/scanner/dotnet-sonarscanner begin /k:"Informatievlaanderen_address-registry" /o:"informatievlaanderen" /d:sonar.token="${{ secrets.VBR_SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.dotcover.reportsPaths=dotCover.Output.html > /dev/null 2>&1
+        ./.sonar/scanner/dotnet-sonarscanner begin /k:"Informatievlaanderen_address-registry" /o:"informatievlaanderen" /d:sonar.token="${{ secrets.VBR_SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.exclusions="**/dotCover.Output/**/*.*, dotCover.Output/src/*.html" /d:sonar.cs.dotcover.reportsPaths="~/temp/dotCover.Output.html" > /dev/null 2>&1
 
     - name: Build
       shell: bash
@@ -97,7 +97,7 @@ jobs:
 
     - name: Test
       shell: bash
-      run: dotnet dotcover test --dcReportType=HTML --nologo --no-build --filter 'FullyQualifiedName!~IntegrationTests' AddressRegistry.sln
+      run: dotnet dotcover test --dcOutput="~/temp/dotCover.Output.html" --dcReportType=HTML --nologo --no-build --filter 'FullyQualifiedName!~IntegrationTests' AddressRegistry.sln
 
     - name: Sonar end build & analyze
       env:

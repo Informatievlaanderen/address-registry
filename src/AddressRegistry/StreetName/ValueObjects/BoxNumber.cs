@@ -22,6 +22,11 @@ namespace AddressRegistry.StreetName
             return new BoxNumber(boxNumber);
         }
 
+        public bool EqualsCaseSensitive(BoxNumber boxNumber)
+        {
+            return Value.Equals(boxNumber.Value);
+        }
+
         public static bool HasValidFormat(string boxNumber)
         {
             if (boxNumber == "0")

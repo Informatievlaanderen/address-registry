@@ -1,3 +1,10 @@
+# [4.28.0](https://github.com/informatievlaanderen/address-registry/compare/v4.27.4...v4.28.0) (2024-11-28)
+
+
+### Features
+
+* add address v3 producer ([2073464](https://github.com/informatievlaanderen/address-registry/commit/2073464db0c1f6b7f75d162666f105252fedd780))
+
 ## [4.27.4](https://github.com/informatievlaanderen/address-registry/compare/v4.27.3...v4.27.4) (2024-11-27)
 
 

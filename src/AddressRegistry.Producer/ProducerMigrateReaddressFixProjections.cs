@@ -243,6 +243,11 @@ namespace AddressRegistry.Producer
                     eventsToBatch.Add(@event);
                 }
 
+                if (eventsToBatch.Count == 0)
+                {
+                    return;
+                }
+
                 var streetNameWasReaddressed = new StreetNameWasReaddressed(
                     message.Message.StreetNamePersistentLocalId,
                     eventsToBatch

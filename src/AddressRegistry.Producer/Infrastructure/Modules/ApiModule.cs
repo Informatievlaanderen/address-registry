@@ -125,6 +125,31 @@ namespace AddressRegistry.Producer.Infrastructure.Modules
                     return new ProducerMigrateReaddressFixProjections(
                         new Producer(producerOptions),
                         c.Resolve<IReadonlyStreamStore>());
+                }, connectedProjectionSettings)
+                .RegisterProjections<ProducerProjectionsV3, ProducerContext>(c =>
+                {
+                    var bootstrapServers = _configuration["Kafka:BootstrapServers"]!;
+                    var topic =
+                        $"{_configuration[ProducerProjectionsV3.AddressTopicKey]}"
+                        ?? throw new ArgumentException($"Configuration has no value for {ProducerProjectionsV3.AddressTopicKey}");
+                    var producerOptions = new ProducerOptions(
+                            new BootstrapServers(bootstrapServers),
+                            new Topic(topic),
+                            true,
+                            EventsJsonSerializerSettingsProvider.CreateSerializerSettings())
+                        .ConfigureEnableIdempotence();
+
+                    if (!string.IsNullOrEmpty(_configuration["Kafka:SaslUserName"])
+                        && !string.IsNullOrEmpty(_configuration["Kafka:SaslPassword"]))
+                    {
+                        producerOptions.ConfigureSaslAuthentication(new SaslAuthentication(
+                            _configuration["Kafka:SaslUserName"]!,
+                            _configuration["Kafka:SaslPassword"]!));
+                    }
+
+                    return new ProducerProjectionsV3(
+                        new Producer(producerOptions),
+                        c.Resolve<IReadonlyStreamStore>());
                 }, connectedProjectionSettings);
         }
     }

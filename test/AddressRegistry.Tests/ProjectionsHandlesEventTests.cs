@@ -15,10 +15,8 @@
     using Consumer.Read.Municipality;
     using Consumer.Read.Postal;
     using Consumer.Read.StreetName;
-    using Consumer.Read.StreetName.Projections;
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Internal;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Options;
     using Moq;
@@ -48,6 +46,7 @@
     using SqlStreamStore;
     using StreetName.Events;
     using Xunit;
+    using ProducerContext = Producer.Snapshot.Oslo.ProducerContext;
 
     public sealed class ProjectionsHandlesEventsTests
     {
@@ -269,14 +268,15 @@
                 new AddressExtractProjectionsV2(Mock.Of<IReadonlyStreamStore>(), new EventDeserializer((_, _) => new object()), new OptionsWrapper<ExtractConfig>(new ExtractConfig()), Encoding.UTF8, new WKBReader())
             }];
 
-            yield return [new List<ConnectedProjection<AddressRegistry.Producer.Snapshot.Oslo.ProducerContext>>
+            yield return [new List<ConnectedProjection<ProducerContext>>
             {
                 new ProducerProjections(Mock.Of<IProducer>(), Mock.Of<ISnapshotManager>(), "")
             }];
 
             yield return [new List<ConnectedProjection<AddressRegistry.Producer.ProducerContext>>
             {
-                new ProducerMigrateProjections(Mock.Of<IProducer>())
+                new ProducerMigrateProjections(Mock.Of<IProducer>()),
+                new ProducerMigrateReaddressFixProjections(Mock.Of<IProducer>(), Mock.Of<IStreamStore>())
             }];
 
             yield return [new List<ConnectedProjection<ElasticRunnerContext>>

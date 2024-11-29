@@ -1,7 +1,6 @@
 ﻿namespace AddressRegistry.Tests.ApiTests.AddressSearch
 {
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Api.Oslo.Address.Search;
@@ -9,7 +8,6 @@
     using Api.Oslo.Infrastructure.Options;
     using Be.Vlaanderen.Basisregisters.Api.Search.Filtering;
     using Be.Vlaanderen.Basisregisters.Api.Search.Pagination;
-    using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
     using Consumer.Read.StreetName.Projections.Elastic;
     using Microsoft.Extensions.Options;
     using Moq;
@@ -58,7 +56,6 @@
             await _sut.Handle(
                 new AddressSearchRequest(
                     new FilteringHeader<AddressSearchFilter>(new AddressSearchFilter { Query = query }),
-                    new SortingHeader("fake", SortOrder.Ascending),
                     new PaginationRequest(0, limit)),
                 CancellationToken.None);
 
@@ -74,7 +71,6 @@
             await _sut.Handle(
                 new AddressSearchRequest(
                     new FilteringHeader<AddressSearchFilter>(new AddressSearchFilter { Query = query }),
-                    new SortingHeader("fake", SortOrder.Ascending),
                     new PaginationRequest(0, limit)),
                 CancellationToken.None);
 
@@ -91,7 +87,6 @@
             await _sut.Handle(
                 new AddressSearchRequest(
                     new FilteringHeader<AddressSearchFilter>(new AddressSearchFilter { Query = query }),
-                    new SortingHeader("fake", SortOrder.Ascending),
                     new PaginationRequest(0, limit)),
                 CancellationToken.None);
 

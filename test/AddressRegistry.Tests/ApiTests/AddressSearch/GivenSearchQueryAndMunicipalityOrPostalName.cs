@@ -8,7 +8,6 @@
     using Api.Oslo.Infrastructure.Options;
     using Be.Vlaanderen.Basisregisters.Api.Search.Filtering;
     using Be.Vlaanderen.Basisregisters.Api.Search.Pagination;
-    using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
     using Consumer.Read.StreetName.Projections.Elastic;
     using Microsoft.Extensions.Options;
     using Moq;
@@ -57,8 +56,7 @@
             var limit = 20;
             await _sut.Handle(
                 new AddressSearchRequest(
-                    new FilteringHeader<AddressSearchFilter>(new AddressSearchFilter { Query = query, MunicipalityOrPostalName = municipalityNameOrPostalNameQuery}),
-                    new SortingHeader("fake", SortOrder.Ascending),
+                    new FilteringHeader<AddressSearchFilter>(new AddressSearchFilter { Query = query, MunicipalityName = municipalityNameOrPostalNameQuery}),
                     new PaginationRequest(0, limit)),
                 CancellationToken.None);
 
@@ -73,8 +71,7 @@
             var limit = 10;
             await _sut.Handle(
                 new AddressSearchRequest(
-                    new FilteringHeader<AddressSearchFilter>(new AddressSearchFilter { Query = query, MunicipalityOrPostalName = municipalityOrPostalName}),
-                    new SortingHeader("fake", SortOrder.Ascending),
+                    new FilteringHeader<AddressSearchFilter>(new AddressSearchFilter { Query = query, MunicipalityName = municipalityOrPostalName}),
                     new PaginationRequest(0, limit)),
                 CancellationToken.None);
 
@@ -92,8 +89,7 @@
             var limit = 50;
             await _sut.Handle(
                 new AddressSearchRequest(
-                    new FilteringHeader<AddressSearchFilter>(new AddressSearchFilter { Query = query, MunicipalityOrPostalName = municipalityOrPostalName}),
-                    new SortingHeader("fake", SortOrder.Ascending),
+                    new FilteringHeader<AddressSearchFilter>(new AddressSearchFilter { Query = query, MunicipalityName = municipalityOrPostalName}),
                     new PaginationRequest(0, limit)),
                 CancellationToken.None);
 

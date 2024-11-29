@@ -8,7 +8,6 @@
     using Api.Oslo.Infrastructure.Options;
     using Be.Vlaanderen.Basisregisters.Api.Search.Filtering;
     using Be.Vlaanderen.Basisregisters.Api.Search.Pagination;
-    using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
     using Consumer.Read.StreetName.Projections.Elastic;
     using FluentAssertions;
     using Microsoft.Extensions.Options;
@@ -55,7 +54,6 @@
             await _sut.Handle(
                 new AddressSearchRequest(
                     new FilteringHeader<AddressSearchFilter>(new AddressSearchFilter { Query = query, Status = status}),
-                    new SortingHeader("fake", SortOrder.Ascending),
                     new PaginationRequest(0, limit)),
                 CancellationToken.None);
 
@@ -73,7 +71,6 @@
             var result = await _sut.Handle(
                 new AddressSearchRequest(
                     new FilteringHeader<AddressSearchFilter>(new AddressSearchFilter { Query = query, Status = status}),
-                    new SortingHeader("fake", SortOrder.Ascending),
                     new PaginationRequest(0, 10)),
                 CancellationToken.None);
 
@@ -97,7 +94,6 @@
             await _sut.Handle(
                 new AddressSearchRequest(
                     new FilteringHeader<AddressSearchFilter>(new AddressSearchFilter { Query = query, Status = status}),
-                    new SortingHeader("fake", SortOrder.Ascending),
                     new PaginationRequest(0, limit)),
                 CancellationToken.None);
 
@@ -115,7 +111,6 @@
             var result = await _sut.Handle(
                 new AddressSearchRequest(
                     new FilteringHeader<AddressSearchFilter>(new AddressSearchFilter { Query = query, Status = status}),
-                    new SortingHeader("fake", SortOrder.Ascending),
                     new PaginationRequest(0, 10)),
                 CancellationToken.None);
 

@@ -106,13 +106,12 @@ namespace AddressRegistry.Api.Oslo.Address
         public async Task<IActionResult> Search(CancellationToken cancellationToken = default)
         {
             var filtering = Request.ExtractFilteringRequest<AddressSearchFilter>();
-            var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
             if(!filtering.ShouldFilter)
                 return Ok(new AddressSearchResponse([]));
 
-            var result = await _mediator.Send(new AddressSearchRequest(filtering, sorting, pagination), cancellationToken);
+            var result = await _mediator.Send(new AddressSearchRequest(filtering, pagination), cancellationToken);
 
             return Ok(result);
         }

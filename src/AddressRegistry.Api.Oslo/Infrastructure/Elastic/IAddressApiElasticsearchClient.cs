@@ -8,7 +8,7 @@
     {
         Task<AddressSearchResult> SearchAddresses(
             string addressQuery,
-            string? municipalityOrPostalName,
+            string? municipalityName,
             AddressStatus? status,
             int size = 10);
 

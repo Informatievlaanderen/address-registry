@@ -34,6 +34,12 @@
 
         public async Task<AddressSearchResponse> Handle(AddressSearchRequest request, CancellationToken cancellationToken)
         {
+            string? nisCode;
+            if (!string.IsNullOrWhiteSpace(request.Filtering.Filter.MunicipalityName))
+            {
+
+            }
+
             var pagination = (PaginationRequest)request.Pagination;
             if (string.IsNullOrWhiteSpace(request.Filtering.Filter.Query))
                 return new AddressSearchResponse([]);
@@ -51,7 +57,7 @@
 
                 var response = await _addressApiElasticsearchClient.SearchAddresses(
                     query,
-                    request.Filtering.Filter.MunicipalityOrPostalName,
+                    request.Filtering.Filter.MunicipalityName,
                     addressStatus,
                     pagination.Limit);
 
@@ -75,7 +81,7 @@
                 Enum.TryParse<StraatnaamStatus>(request.Filtering.Filter.Status, true, out var straatNaamStatus))
                 streetNameStatus = Map(straatNaamStatus);
 
-            var streetNameResponse = await _addressApiStreetNameElasticsearchClient.SearchStreetNames(query, request.Filtering.Filter.MunicipalityOrPostalName, streetNameStatus, pagination.Limit);
+            var streetNameResponse = await _addressApiStreetNameElasticsearchClient.SearchStreetNames(query, request.Filtering.Filter.MunicipalityName, streetNameStatus, pagination.Limit);
             var streetNameLanguage = streetNameResponse.Language ?? Language.nl;
             return new AddressSearchResponse(streetNameResponse.StreetNames
                 .AsEnumerable()

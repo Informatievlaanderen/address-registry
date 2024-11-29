@@ -17,14 +17,12 @@
     {
         public async Task<AddressSearchResult> SearchAddresses(
             string addressQuery,
-            string? municipalityOrPostalName,
+            string? municipalityName,
             AddressStatus? status,
             int size = 10)
         {
             var municipalityNames =
                 $"{ToCamelCase(nameof(AddressSearchDocument.Municipality))}.{ToCamelCase(nameof(AddressSearchDocument.Municipality.Names))}";
-            var postalNames =
-                $"{ToCamelCase(nameof(AddressSearchDocument.PostalInfo))}.{ToCamelCase(nameof(AddressSearchDocument.PostalInfo.Names))}";
 
             var searchResponse = await ElasticsearchClient.SearchAsync<AddressSearchDocument>(IndexAlias,
                 descriptor =>
@@ -40,7 +38,7 @@
                                     x.Filter(f => f.Term(t => t.Field(ToCamelCase(nameof(AddressSearchDocument.Active))!).Value(true)));
 
                                 var mustQuery = new List<Action<QueryDescriptor<AddressSearchDocument>>>();
-                                var shouldMunicipalityOrPostalQueries = new List<Action<QueryDescriptor<AddressSearchDocument>>>();
+                                var shouldMunicipalityQueries = new List<Action<QueryDescriptor<AddressSearchDocument>>>();
 
                                 mustQuery.Add(q2 =>
                                     q2.Nested(full =>
@@ -55,60 +53,35 @@
                                                 c.Size(1))));
 
                                 //query municipality names
-                                if (!string.IsNullOrWhiteSpace(municipalityOrPostalName))
-                                    shouldMunicipalityOrPostalQueries.Add(q2 =>
+                                if (!string.IsNullOrWhiteSpace(municipalityName))
+                                    shouldMunicipalityQueries.Add(q2 =>
                                         q2.Nested(nested => nested
                                             .Path(municipalityNames!)
                                             .Query(nestedQuery => nestedQuery
                                                 .Bool(b => b
                                                     .Should(
-                                                        m => m
-                                                            .ConstantScore(cs =>
-                                                                cs.Filter(f => f.Prefix(pfx =>
-                                                                        pfx.Field($"{municipalityNames}.{NameSpelling}.{Keyword}"!)
-                                                                            .Value(municipalityOrPostalName)))
-                                                                    .Boost(3)),
+                                                        // m => m
+                                                        //     .ConstantScore(cs =>
+                                                        //         cs.Filter(f => f.Prefix(pfx =>
+                                                        //                 pfx.Field($"{municipalityNames}.{NameSpelling}.{Keyword}"!)
+                                                        //                     .Value(municipalityName)))
+                                                        //             .Boost(3)),
                                                         m => m
                                                             .ConstantScore(cs =>
                                                                 cs.Filter(f => f.Match(m2 =>
                                                                     m2.Field($"{municipalityNames}.{NameSpelling}"!)
-                                                                        .Query(municipalityOrPostalName))))
+                                                                        .Query(municipalityName))))
                                                     )
                                                 )
                                             )
                                         )
                                     );
 
-                                //query postal names
-                                if (!string.IsNullOrWhiteSpace(municipalityOrPostalName))
-                                {
-                                    shouldMunicipalityOrPostalQueries.Add(q2 =>
-                                        q2.Nested(nested => nested
-                                            .Path(postalNames!)
-                                            .Query(nestedQuery => nestedQuery
-                                                .Bool(b => b
-                                                    .Should(
-                                                        m => m
-                                                            .ConstantScore(cs =>
-                                                                cs.Filter(f => f.Prefix(pfx =>
-                                                                        pfx.Field($"{postalNames}.{NameSpelling}.{Keyword}"!)
-                                                                            .Value(municipalityOrPostalName)))
-                                                                    .Boost(3)),
-                                                        m => m
-                                                            .ConstantScore(cs =>
-                                                                cs.Filter(f => f.Match(m2 =>
-                                                                    m2.Field($"{postalNames}.{NameSpelling}"!).Query(municipalityOrPostalName))))
-                                                    )
-                                                )
-                                            )
-                                        ));
-                                }
-
-                                if (!string.IsNullOrWhiteSpace(municipalityOrPostalName))
+                                if (!string.IsNullOrWhiteSpace(municipalityName))
                                 {
                                     x.Must(
                                         must => must.Bool(b => b.Should(mustQuery.ToArray())),
-                                        must => must.Bool(b => b.Should(shouldMunicipalityOrPostalQueries.ToArray())));
+                                        must => must.Bool(b => b.Should(shouldMunicipalityQueries.ToArray())));
                                 }
                                 else
                                 {

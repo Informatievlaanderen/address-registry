@@ -15,6 +15,7 @@
     using MediatR;
     using Microsoft.Extensions.Options;
     using StreetName;
+    using StreetNameStatus = Consumer.Read.StreetName.Projections.StreetNameStatus;
 
     public sealed class AddressSearchHandler : IRequestHandler<AddressSearchRequest, AddressSearchResponse>
     {
@@ -37,28 +38,34 @@
 
         public async Task<AddressSearchResponse> Handle(AddressSearchRequest request, CancellationToken cancellationToken)
         {
-            var nisCode = request.Filtering.Filter.NisCode;
-
-            if (string.IsNullOrWhiteSpace(request.Filtering.Filter.NisCode)
-                && !string.IsNullOrWhiteSpace(request.Filtering.Filter.MunicipalityName))
+            if (string.IsNullOrWhiteSpace(request.Filtering.Filter.Query))
             {
-                nisCode = _municipalityCache.GetNisCodeByName(request.Filtering.Filter.MunicipalityName);
+                return new AddressSearchResponse([]);
+            }
+
+            if (!TryGetValidNisCode(request.Filtering.Filter, out var nisCode))
+            {
+                return new AddressSearchResponse([]);
             }
 
             var pagination = (PaginationRequest)request.Pagination;
-            if (string.IsNullOrWhiteSpace(request.Filtering.Filter.Query))
-                return new AddressSearchResponse([]);
 
             var query = request.Filtering.Filter.Query;
 
             if (ContainsNumber(query))
             {
                 AddressStatus? addressStatus = null;
-                if(!string.IsNullOrWhiteSpace(request.Filtering.Filter.Status) && !Enum.TryParse<AdresStatus>(request.Filtering.Filter.Status, true, out _))
+                if (!string.IsNullOrWhiteSpace(request.Filtering.Filter.Status) &&
+                    !Enum.TryParse<AdresStatus>(request.Filtering.Filter.Status, true, out _))
+                {
                     return new AddressSearchResponse([]);
+                }
 
-                if(!string.IsNullOrWhiteSpace(request.Filtering.Filter.Status) && Enum.TryParse<AdresStatus>(request.Filtering.Filter.Status, true, out var status))
+                if (!string.IsNullOrWhiteSpace(request.Filtering.Filter.Status) &&
+                    Enum.TryParse<AdresStatus>(request.Filtering.Filter.Status, true, out var status))
+                {
                     addressStatus = status.ConvertFromAdresStatus();
+                }
 
                 var response = await _addressApiElasticsearchClient.SearchAddresses(
                     query,
@@ -67,6 +74,7 @@
                     pagination.Limit);
 
                 var language = response.Language ?? Language.nl;
+
                 return new AddressSearchResponse(response.Addresses
                     .AsEnumerable()
                     .Select(x => new AddressSearchItem(
@@ -78,15 +86,22 @@
                     .ToList());
             }
 
-            Consumer.Read.StreetName.Projections.StreetNameStatus? streetNameStatus = null;
-            if(!string.IsNullOrWhiteSpace(request.Filtering.Filter.Status) && !Enum.TryParse<StraatnaamStatus>(request.Filtering.Filter.Status, true, out _))
+            StreetNameStatus? streetNameStatus = null;
+            if (!string.IsNullOrWhiteSpace(request.Filtering.Filter.Status) &&
+                !Enum.TryParse<StraatnaamStatus>(request.Filtering.Filter.Status, true, out _))
+            {
                 return new AddressSearchResponse([]);
+            }
 
             if (!string.IsNullOrWhiteSpace(request.Filtering.Filter.Status) &&
                 Enum.TryParse<StraatnaamStatus>(request.Filtering.Filter.Status, true, out var straatNaamStatus))
+            {
                 streetNameStatus = Map(straatNaamStatus);
+            }
 
-            var streetNameResponse = await _addressApiStreetNameElasticsearchClient.SearchStreetNames(query, request.Filtering.Filter.MunicipalityName, streetNameStatus, pagination.Limit);
+            var streetNameResponse = await _addressApiStreetNameElasticsearchClient
+                .SearchStreetNames(query, request.Filtering.Filter.MunicipalityName, streetNameStatus, pagination.Limit);
+
             var streetNameLanguage = streetNameResponse.Language ?? Language.nl;
             return new AddressSearchResponse(streetNameResponse.StreetNames
                 .AsEnumerable()
@@ -99,26 +114,43 @@
                 .ToList());
         }
 
+        private bool TryGetValidNisCode(AddressSearchFilter filter, out string? nisCode)
+        {
+            nisCode = filter.NisCode;
+
+            if (!string.IsNullOrWhiteSpace(nisCode))
+            {
+                return _municipalityCache.IsNisCodeValid(nisCode);
+            }
+
+            if (!string.IsNullOrWhiteSpace(filter.MunicipalityName))
+            {
+                nisCode = _municipalityCache.GetNisCodeByName(filter.MunicipalityName);
+
+                if (string.IsNullOrWhiteSpace(nisCode))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         private static bool ContainsNumber(string input)
         {
             return Regex.IsMatch(input, @"\d");
         }
 
-        private Consumer.Read.StreetName.Projections.StreetNameStatus Map(StraatnaamStatus straatnaamStatus)
+        private StreetNameStatus Map(StraatnaamStatus straatnaamStatus)
         {
-            switch (straatnaamStatus)
+            return straatnaamStatus switch
             {
-                case StraatnaamStatus.Voorgesteld:
-                    return Consumer.Read.StreetName.Projections.StreetNameStatus.Proposed;
-                case StraatnaamStatus.InGebruik:
-                    return Consumer.Read.StreetName.Projections.StreetNameStatus.Current;
-                case StraatnaamStatus.Gehistoreerd:
-                    return Consumer.Read.StreetName.Projections.StreetNameStatus.Retired;
-                case StraatnaamStatus.Afgekeurd:
-                    return Consumer.Read.StreetName.Projections.StreetNameStatus.Rejected;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(straatnaamStatus), straatnaamStatus, null);
-            }
+                StraatnaamStatus.Voorgesteld => StreetNameStatus.Proposed,
+                StraatnaamStatus.InGebruik => StreetNameStatus.Current,
+                StraatnaamStatus.Gehistoreerd => StreetNameStatus.Retired,
+                StraatnaamStatus.Afgekeurd => StreetNameStatus.Rejected,
+                _ => throw new ArgumentOutOfRangeException(nameof(straatnaamStatus), straatnaamStatus, null)
+            };
         }
     }
 }

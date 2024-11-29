@@ -7,10 +7,12 @@
     using Consumer.Read.Municipality.Projections;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Caching.Memory;
+    using StreetName;
 
     public interface IMunicipalityCache
     {
         string? GetNisCodeByName(string name);
+        bool IsNisCodeValid(string nisCode);
     }
 
     public class MunicipalityCache: IMunicipalityCache
@@ -33,7 +35,12 @@
             return _memoryCache.TryGetValue(CreateCacheKey(name), out var nisCode) ? (string)nisCode! : null;
         }
 
-        private string CreateCacheKey(string value) => $"{CacheKeyPrefix}{value}";
+        public bool IsNisCodeValid(string nisCode)
+        {
+            return NisCode.IsValid(nisCode) && _memoryCache.TryGetValue(CreateCacheKey(nisCode), out _);
+        }
+
+        private string CreateCacheKey(string value) => $"{CacheKeyPrefix}{value}".ToLower();
 
         public async Task InitializeCache()
         {
@@ -56,6 +63,8 @@
 
             foreach (var municipality in municipalities.Where(x => x.Status == MunicipalityStatus.Retired))
             {
+                _memoryCache.Remove(CreateCacheKey(municipality.NisCode));
+
                 if (!string.IsNullOrWhiteSpace(municipality.NameDutch))
                 {
                     _memoryCache.Remove(CreateCacheKey(municipality.NameDutch));
@@ -79,6 +88,8 @@
 
             foreach (var municipality in municipalities.Where(x => x.Status != MunicipalityStatus.Retired))
             {
+                _memoryCache.Set(CreateCacheKey(municipality.NisCode), true);
+
                 if (!string.IsNullOrWhiteSpace(municipality.NameDutch))
                 {
                     _memoryCache.Set(CreateCacheKey(municipality.NameDutch), municipality.NisCode);

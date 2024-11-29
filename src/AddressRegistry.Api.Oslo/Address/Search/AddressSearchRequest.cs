@@ -14,5 +14,12 @@
         public string? NisCode { get; init; }
         public string? MunicipalityName { get; init; }
         public string? Status { get; init; }
+        public ResultType? ResultType { get; init; }
+    }
+
+    public enum ResultType
+    {
+        Address,
+        StreetName
     }
 }

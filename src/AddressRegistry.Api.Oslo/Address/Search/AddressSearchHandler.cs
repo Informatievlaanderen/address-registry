@@ -100,7 +100,7 @@
             }
 
             var streetNameResponse = await _addressApiStreetNameElasticsearchClient
-                .SearchStreetNames(query, request.Filtering.Filter.MunicipalityName, streetNameStatus, pagination.Limit);
+                .SearchStreetNames(query, nisCode, streetNameStatus, pagination.Limit);
 
             var streetNameLanguage = streetNameResponse.Language ?? Language.nl;
             return new AddressSearchResponse(streetNameResponse.StreetNames

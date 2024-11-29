@@ -20,24 +20,29 @@
     {
         private readonly IAddressApiElasticsearchClient _addressApiElasticsearchClient;
         private readonly IAddressApiStreetNameElasticsearchClient _addressApiStreetNameElasticsearchClient;
+        private readonly IMunicipalityCache _municipalityCache;
         private readonly ResponseOptions _responseOptions;
 
         public AddressSearchHandler(
             IAddressApiElasticsearchClient addressApiElasticsearchClient,
             IAddressApiStreetNameElasticsearchClient addressApiStreetNameElasticsearchClient,
-            IOptions<ResponseOptions> responseOptions)
+            IOptions<ResponseOptions> responseOptions,
+            IMunicipalityCache municipalityCache)
         {
             _addressApiElasticsearchClient = addressApiElasticsearchClient;
             _addressApiStreetNameElasticsearchClient = addressApiStreetNameElasticsearchClient;
+            _municipalityCache = municipalityCache;
             _responseOptions = responseOptions.Value;
         }
 
         public async Task<AddressSearchResponse> Handle(AddressSearchRequest request, CancellationToken cancellationToken)
         {
-            string? nisCode;
-            if (!string.IsNullOrWhiteSpace(request.Filtering.Filter.MunicipalityName))
-            {
+            var nisCode = request.Filtering.Filter.NisCode;
 
+            if (string.IsNullOrWhiteSpace(request.Filtering.Filter.NisCode)
+                && !string.IsNullOrWhiteSpace(request.Filtering.Filter.MunicipalityName))
+            {
+                nisCode = _municipalityCache.GetNisCodeByName(request.Filtering.Filter.MunicipalityName);
             }
 
             var pagination = (PaginationRequest)request.Pagination;
@@ -57,7 +62,7 @@
 
                 var response = await _addressApiElasticsearchClient.SearchAddresses(
                     query,
-                    request.Filtering.Filter.MunicipalityName,
+                    nisCode,
                     addressStatus,
                     pagination.Limit);
 

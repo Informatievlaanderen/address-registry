@@ -8,7 +8,12 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Caching.Memory;
 
-    public class MunicipalityCache
+    public interface IMunicipalityCache
+    {
+        string? GetNisCodeByName(string name);
+    }
+
+    public class MunicipalityCache: IMunicipalityCache
     {
         private const string CacheKeyPrefix = "municipality_";
 
@@ -32,6 +37,7 @@
 
         public async Task InitializeCache()
         {
+            //TODO-rik call InitializeCache on startup?
             var entry = _memoryCache.CreateEntry(CreateCacheKey("$manager"));
             entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(4);
             entry.PostEvictionCallbacks.Add(new PostEvictionCallbackRegistration
@@ -47,29 +53,6 @@
             await using var context = await _municipalityConsumerContextFactory.CreateDbContextAsync();
 
             var municipalities = await context.MunicipalityLatestItems.ToListAsync();
-
-            foreach (var municipality in municipalities.Where(x => x.Status != MunicipalityStatus.Retired))
-            {
-                if (!string.IsNullOrWhiteSpace(municipality.NameDutch))
-                {
-                    _memoryCache.Set(CreateCacheKey(municipality.NameDutch), municipality.NisCode);
-                }
-
-                if (!string.IsNullOrWhiteSpace(municipality.NameFrench))
-                {
-                    _memoryCache.Set(CreateCacheKey(municipality.NameFrench), municipality.NisCode);
-                }
-
-                if (!string.IsNullOrWhiteSpace(municipality.NameEnglish))
-                {
-                    _memoryCache.Set(CreateCacheKey(municipality.NameEnglish), municipality.NisCode);
-                }
-
-                if (!string.IsNullOrWhiteSpace(municipality.NameGerman))
-                {
-                    _memoryCache.Set(CreateCacheKey(municipality.NameGerman), municipality.NisCode);
-                }
-            }
 
             foreach (var municipality in municipalities.Where(x => x.Status == MunicipalityStatus.Retired))
             {
@@ -93,29 +76,29 @@
                     _memoryCache.Remove(CreateCacheKey(municipality.NameGerman));
                 }
             }
-        }
-    }
 
-    public sealed class CachedMunicipality
-    {
-        public string NisCode { get; }
-        public string? NameDutch { get; }
-        public string? NameFrench { get; }
-        public string? NameGerman { get; }
-        public string? NameEnglish { get; }
+            foreach (var municipality in municipalities.Where(x => x.Status != MunicipalityStatus.Retired))
+            {
+                if (!string.IsNullOrWhiteSpace(municipality.NameDutch))
+                {
+                    _memoryCache.Set(CreateCacheKey(municipality.NameDutch), municipality.NisCode);
+                }
 
-        public CachedMunicipality(
-            string nisCode,
-            string? nameDutch,
-            string? nameFrench,
-            string? nameGerman,
-            string? nameEnglish)
-        {
-            NisCode = nisCode;
-            NameDutch = nameDutch;
-            NameFrench = nameFrench;
-            NameGerman = nameGerman;
-            NameEnglish = nameEnglish;
+                if (!string.IsNullOrWhiteSpace(municipality.NameFrench))
+                {
+                    _memoryCache.Set(CreateCacheKey(municipality.NameFrench), municipality.NisCode);
+                }
+
+                if (!string.IsNullOrWhiteSpace(municipality.NameEnglish))
+                {
+                    _memoryCache.Set(CreateCacheKey(municipality.NameEnglish), municipality.NisCode);
+                }
+
+                if (!string.IsNullOrWhiteSpace(municipality.NameGerman))
+                {
+                    _memoryCache.Set(CreateCacheKey(municipality.NameGerman), municipality.NisCode);
+                }
+            }
         }
     }
 }

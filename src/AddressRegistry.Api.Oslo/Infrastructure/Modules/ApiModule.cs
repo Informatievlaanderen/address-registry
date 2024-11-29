@@ -2,6 +2,7 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
 {
     using System;
     using Address;
+    using Address.Search;
     using AddressMatch.V2;
     using AddressMatch.V2.Matching;
     using Autofac;
@@ -60,6 +61,11 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
             builder
                 .RegisterAssemblyTypes(typeof(ILatestQueries).Assembly)
                 .AsImplementedInterfaces();
+
+            builder
+                .RegisterType<MunicipalityCache>()
+                .As<IMunicipalityCache>()
+                .SingleInstance();
 
             builder
                 .RegisterType<ProblemDetailsHelper>()

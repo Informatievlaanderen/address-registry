@@ -17,13 +17,10 @@
     {
         public async Task<AddressSearchResult> SearchAddresses(
             string addressQuery,
-            string? municipalityName,
+            string? nisCode,
             AddressStatus? status,
             int size = 10)
         {
-            var municipalityNames =
-                $"{ToCamelCase(nameof(AddressSearchDocument.Municipality))}.{ToCamelCase(nameof(AddressSearchDocument.Municipality.Names))}";
-
             var searchResponse = await ElasticsearchClient.SearchAsync<AddressSearchDocument>(IndexAlias,
                 descriptor =>
                 {
@@ -32,15 +29,31 @@
                         .Query(q =>
                             q.Bool(x =>
                             {
-                                if(status is not null)
-                                    x.Filter(f => f.Term(t => t.Field(ToCamelCase(nameof(AddressSearchDocument.Status))!).Value(status.ToString())));
+                                var conditions = new List<Action<QueryDescriptor<AddressSearchDocument>>>();
+
+                                if (status is not null)
+                                {
+                                    conditions.Add(m => m.Term(t => t
+                                        .Field($"{ToCamelCase(nameof(AddressSearchDocument.Status))}"!)
+                                        .Value(status.ToString()!)));
+                                }
                                 else
-                                    x.Filter(f => f.Term(t => t.Field(ToCamelCase(nameof(AddressSearchDocument.Active))!).Value(true)));
+                                {
+                                    conditions.Add(m => m.Term(t => t
+                                        .Field($"{ToCamelCase(nameof(AddressSearchDocument.Active))}"!)
+                                        .Value(true)));
+                                }
 
-                                var mustQuery = new List<Action<QueryDescriptor<AddressSearchDocument>>>();
-                                var shouldMunicipalityQueries = new List<Action<QueryDescriptor<AddressSearchDocument>>>();
+                                //TODO-rik in List gebeurt gemeenteNaam filter via elastic, mss beter ook zo ipv cache of de List aanpassen om de cache te gebruiken?
 
-                                mustQuery.Add(q2 =>
+                                if (!string.IsNullOrWhiteSpace(nisCode))
+                                {
+                                    conditions.Add(m => m.Term(t => t
+                                        .Field($"{ToCamelCase(nameof(AddressSearchDocument.Municipality))}.{ToCamelCase(nameof(AddressSearchDocument.Municipality.NisCode))}"!)
+                                        .Value(nisCode)));
+                                }
+
+                                conditions.Add(q2 =>
                                     q2.Nested(full =>
                                         full
                                             .Path(FullAddress)
@@ -52,41 +65,7 @@
                                             .InnerHits(c =>
                                                 c.Size(1))));
 
-                                //query municipality names
-                                if (!string.IsNullOrWhiteSpace(municipalityName))
-                                    shouldMunicipalityQueries.Add(q2 =>
-                                        q2.Nested(nested => nested
-                                            .Path(municipalityNames!)
-                                            .Query(nestedQuery => nestedQuery
-                                                .Bool(b => b
-                                                    .Should(
-                                                        // m => m
-                                                        //     .ConstantScore(cs =>
-                                                        //         cs.Filter(f => f.Prefix(pfx =>
-                                                        //                 pfx.Field($"{municipalityNames}.{NameSpelling}.{Keyword}"!)
-                                                        //                     .Value(municipalityName)))
-                                                        //             .Boost(3)),
-                                                        m => m
-                                                            .ConstantScore(cs =>
-                                                                cs.Filter(f => f.Match(m2 =>
-                                                                    m2.Field($"{municipalityNames}.{NameSpelling}"!)
-                                                                        .Query(municipalityName))))
-                                                    )
-                                                )
-                                            )
-                                        )
-                                    );
-
-                                if (!string.IsNullOrWhiteSpace(municipalityName))
-                                {
-                                    x.Must(
-                                        must => must.Bool(b => b.Should(mustQuery.ToArray())),
-                                        must => must.Bool(b => b.Should(shouldMunicipalityQueries.ToArray())));
-                                }
-                                else
-                                {
-                                    x.Must(must => must.Bool(b => b.Should(mustQuery.ToArray())));
-                                }
+                                x.Must(conditions.ToArray());
                             })
                         )
                         .Sort(new Action<SortOptionsDescriptor<AddressSearchDocument>>[]

@@ -151,7 +151,7 @@
 
             if (!string.IsNullOrWhiteSpace(nisCode))
             {
-                return _municipalityCache.IsNisCodeValid(nisCode);
+                return _municipalityCache.NisCodeExists(nisCode);
             }
 
             if (!string.IsNullOrWhiteSpace(filter.MunicipalityName))

@@ -9,6 +9,7 @@
     using Be.Vlaanderen.Basisregisters.Api.Search.Filtering;
     using Be.Vlaanderen.Basisregisters.Api.Search.Pagination;
     using Consumer.Read.StreetName.Projections.Elastic;
+    using FluentAssertions;
     using Microsoft.Extensions.Options;
     using Moq;
     using Projections.Elastic.AddressSearch;
@@ -21,6 +22,7 @@
         private readonly AddressSearchHandler _sut;
         private readonly Mock<IAddressApiElasticsearchClient> _mockAddressSearchApi;
         private readonly Mock<IAddressApiStreetNameElasticsearchClient> _mockAddressStreetNameSearchApi;
+        private readonly Mock<IMunicipalityCache> _mockMunicipalityCache;
 
         public GivenSearchQueryAndMunicipalityName()
         {
@@ -29,13 +31,16 @@
 
             _mockAddressSearchApi.Setup(x => x.SearchAddresses(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<AddressStatus?>(), It.IsAny<int>()))
                 .ReturnsAsync(new AddressSearchResult(new List<AddressSearchDocument>(), 0));
-            _mockAddressStreetNameSearchApi.Setup(x => x.SearchStreetNames(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<StreetNameStatus?>(), It.IsAny<int>()))
+            _mockAddressStreetNameSearchApi.Setup(x =>
+                    x.SearchStreetNames(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<StreetNameStatus?>(), It.IsAny<int>()))
                 .ReturnsAsync(new StreetNameSearchResult(new List<StreetNameSearchDocument>(), 0));
 
             var mockResponseOptions = new Mock<IOptions<ResponseOptions>>();
 
+            _mockMunicipalityCache = new Mock<IMunicipalityCache>();
+
             _sut = new AddressSearchHandler(_mockAddressSearchApi.Object, _mockAddressStreetNameSearchApi.Object, mockResponseOptions.Object,
-                Mock.Of<IMunicipalityCache>(),
+                _mockMunicipalityCache.Object,
                 new QueryParser(Mock.Of<IPostalCache>()));
         }
 
@@ -53,49 +58,85 @@
         [InlineData("veldstraat 5 box 1.2, 9000 gents", "gent")]
         public async Task WithHouseNumber_ThenNoResults(
             string query,
-            string municipalityName)
+            string? municipalityName)
         {
+            string? expectedNisCode = null;
+            if (municipalityName is not null)
+            {
+                expectedNisCode = "44012";
+                _mockMunicipalityCache
+                    .Setup(x => x.GetNisCodeByName(municipalityName))
+                    .Returns(expectedNisCode);
+            }
+
             var limit = 20;
             await _sut.Handle(
                 new AddressSearchRequest(
-                    new FilteringHeader<AddressSearchFilter>(new AddressSearchFilter { Query = query, MunicipalityName = municipalityName}),
+                    new FilteringHeader<AddressSearchFilter>(new AddressSearchFilter { Query = query, MunicipalityName = municipalityName }),
                     new PaginationRequest(0, limit)),
                 CancellationToken.None);
 
-            _mockAddressSearchApi.Verify(x => x.SearchAddresses(query, municipalityName, null, limit), Times.Once);
+            _mockAddressSearchApi.Verify(x => x.SearchAddresses(query, expectedNisCode, null, limit), Times.Once);
         }
 
         [Theory]
         [InlineData("loppem", "muni")]
         [InlineData("street", "postal")]
-        public async Task WithOneWordAndMunicipalityOrPostalName1_ThenSearchStreetNames(string query, string municipalityName)
+        public async Task WithOneWordAndMunicipality_ThenSearchStreetNames(string query, string municipalityName)
         {
+            var expectedNisCode = "44012";
+            _mockMunicipalityCache
+                .Setup(x => x.GetNisCodeByName(municipalityName))
+                .Returns(expectedNisCode);
+
             var limit = 10;
             await _sut.Handle(
                 new AddressSearchRequest(
-                    new FilteringHeader<AddressSearchFilter>(new AddressSearchFilter { Query = query, MunicipalityName = municipalityName}),
+                    new FilteringHeader<AddressSearchFilter>(new AddressSearchFilter { Query = query, MunicipalityName = municipalityName }),
                     new PaginationRequest(0, limit)),
                 CancellationToken.None);
 
-            _mockAddressStreetNameSearchApi.Verify(x => x.SearchStreetNames(query, municipalityName, null, limit), Times.Once);
+            _mockAddressStreetNameSearchApi.Verify(x => x.SearchStreetNames(query, expectedNisCode, null, limit), Times.Once);
         }
 
         [Theory]
         [InlineData("loppem", "zedel")]
         [InlineData("one two", "three")]
         [InlineData("one two three", "four")]
-        public async Task WithMultipleWords_ThenSearchStreetNamesWithMunicipalityOrPostalName(
+        public async Task WithMultipleWords_ThenSearchStreetNamesWithMunicipality(
             string query,
             string municipalityName)
         {
+            var expectedNisCode = "44012";
+            _mockMunicipalityCache
+                .Setup(x => x.GetNisCodeByName(municipalityName))
+                .Returns(expectedNisCode);
+
             var limit = 50;
             await _sut.Handle(
                 new AddressSearchRequest(
-                    new FilteringHeader<AddressSearchFilter>(new AddressSearchFilter { Query = query, MunicipalityName = municipalityName}),
+                    new FilteringHeader<AddressSearchFilter>(new AddressSearchFilter { Query = query, MunicipalityName = municipalityName }),
                     new PaginationRequest(0, limit)),
                 CancellationToken.None);
 
-            _mockAddressStreetNameSearchApi.Verify(x => x.SearchStreetNames(query, municipalityName, null, limit), Times.Once);
+            _mockAddressStreetNameSearchApi.Verify(x => x.SearchStreetNames(query, expectedNisCode, null, limit), Times.Once);
+        }
+
+        [Fact]
+        public async Task WithNonExistingMunicipality_ThenNone()
+        {
+            var limit = 50;
+            var result = await _sut.Handle(
+                new AddressSearchRequest(
+                    new FilteringHeader<AddressSearchFilter>(new AddressSearchFilter
+                    {
+                        Query = "bla bla bli",
+                        MunicipalityName = "Amsterdam"
+                    }),
+                    new PaginationRequest(0, limit)),
+                CancellationToken.None);
+
+            result.Results.Should().BeEmpty();
         }
     }
 }

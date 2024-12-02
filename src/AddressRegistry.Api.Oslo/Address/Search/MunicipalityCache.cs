@@ -12,7 +12,7 @@
     public interface IMunicipalityCache
     {
         string? GetNisCodeByName(string name);
-        bool IsNisCodeValid(string nisCode);
+        bool NisCodeExists(string nisCode);
     }
 
     public class MunicipalityCache: IMunicipalityCache
@@ -40,7 +40,7 @@
             return _memoryCache.TryGetValue(CreateCacheKey(name), out var nisCode) ? (string)nisCode! : null;
         }
 
-        public bool IsNisCodeValid(string nisCode)
+        public bool NisCodeExists(string nisCode)
         {
             return NisCode.IsValid(nisCode) && _memoryCache.TryGetValue(CreateCacheKey(nisCode), out _);
         }

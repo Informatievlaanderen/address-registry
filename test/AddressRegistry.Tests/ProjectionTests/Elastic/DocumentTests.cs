@@ -68,11 +68,15 @@
             document.HouseNumber = "123";
             document.BoxNumber = "A";
 
-            document.FullAddress.Length.Should().Be(2);
+            document.FullAddress.Length.Should().Be(4);
             document.FullAddress[0].Language.Should().Be(Language.nl);
             document.FullAddress[0].Spelling.Should().Be("Straatnaam 123 bus A, 1234 Gemeente");
-            document.FullAddress[1].Language.Should().Be(Language.fr);
-            document.FullAddress[1].Spelling.Should().Be("Rue 123 boîte A, 1234 Ville");
+            document.FullAddress[1].Language.Should().Be(Language.nl);
+            document.FullAddress[1].Spelling.Should().Be("Straatnaam 123 bus A, 1234 Postcode");
+            document.FullAddress[2].Language.Should().Be(Language.fr);
+            document.FullAddress[2].Spelling.Should().Be("Rue 123 boîte A, 1234 Ville");
+            document.FullAddress[3].Language.Should().Be(Language.fr);
+            document.FullAddress[3].Spelling.Should().Be("Rue 123 boîte A, 1234 Code postal");
         }
 
         [Fact]
@@ -125,11 +129,15 @@
             document.HouseNumber = "123";
             document.BoxNumber = null;
 
-            document.FullAddress.Length.Should().Be(2);
+            document.FullAddress.Length.Should().Be(4);
             document.FullAddress[0].Language.Should().Be(Language.nl);
             document.FullAddress[0].Spelling.Should().Be("Straatnaam 123, 1234 Gemeente");
-            document.FullAddress[1].Language.Should().Be(Language.fr);
-            document.FullAddress[1].Spelling.Should().Be("Rue 123, 1234 Ville");
+            document.FullAddress[1].Language.Should().Be(Language.nl);
+            document.FullAddress[1].Spelling.Should().Be("Straatnaam 123, 1234 Postcode");
+            document.FullAddress[2].Language.Should().Be(Language.fr);
+            document.FullAddress[2].Spelling.Should().Be("Rue 123, 1234 Ville");
+            document.FullAddress[3].Language.Should().Be(Language.fr);
+            document.FullAddress[3].Spelling.Should().Be("Rue 123, 1234 Code postal");
         }
 
         [Fact]

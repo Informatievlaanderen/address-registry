@@ -152,7 +152,7 @@
                             && doc.StreetName.StreetNamePersistentLocalId == @event.StreetNamePersistentLocalId
                             && doc.StreetName.Names.Length == 2
                             && doc.StreetName.HomonymAdditions.Length == 2
-                            && doc.FullAddress.Length == 2
+                            && doc.FullAddress.Length == 3
                             && doc.AddressPosition.GeometryMethod == @event.GeometryMethod
                             && doc.AddressPosition.GeometrySpecification == @event.GeometrySpecification
                             && doc.AddressPosition.GeometryAsWkt == expectedPoint.AsText()
@@ -231,7 +231,7 @@
                             && doc.StreetName.StreetNamePersistentLocalId == @event.StreetNamePersistentLocalId
                             && doc.StreetName.Names.Length == 2
                             && doc.StreetName.HomonymAdditions.Length == 2
-                            && doc.FullAddress.Length == 2
+                            && doc.FullAddress.Length == 3
                             && doc.AddressPosition.GeometryMethod == @event.GeometryMethod
                             && doc.AddressPosition.GeometrySpecification == @event.GeometrySpecification &&
                             doc.AddressPosition.GeometryAsWkt == expectedPoint.AsText()
@@ -310,7 +310,7 @@
                             && doc.StreetName.StreetNamePersistentLocalId == @event.StreetNamePersistentLocalId
                             && doc.StreetName.Names.Length == 2
                             && doc.StreetName.HomonymAdditions.Length == 2
-                            && doc.FullAddress.Length == 2
+                            && doc.FullAddress.Length == 3
                             && doc.AddressPosition.GeometryMethod == @event.GeometryMethod
                             && doc.AddressPosition.GeometrySpecification == @event.GeometrySpecification &&
                             doc.AddressPosition.GeometryAsWkt == expectedPoint.AsText()
@@ -389,7 +389,7 @@
                             && doc.StreetName.StreetNamePersistentLocalId == @event.StreetNamePersistentLocalId
                             && doc.StreetName.Names.Length == 2
                             && doc.StreetName.HomonymAdditions.Length == 2
-                            && doc.FullAddress.Length == 2
+                            && doc.FullAddress.Length == 3
                             && doc.AddressPosition.GeometryMethod == @event.GeometryMethod
                             && doc.AddressPosition.GeometrySpecification == @event.GeometrySpecification &&
                             doc.AddressPosition.GeometryAsWkt == expectedPoint.AsText()
@@ -1558,7 +1558,7 @@
                             && doc.StreetName.StreetNamePersistentLocalId == @event.StreetNamePersistentLocalId
                             && doc.StreetName.Names.Length == 2
                             && doc.StreetName.HomonymAdditions.Length == 2
-                            && doc.FullAddress.Length == 2
+                            && doc.FullAddress.Length == 3
                             && doc.AddressPosition.GeometryMethod == @event.GeometryMethod
                             && doc.AddressPosition.GeometrySpecification == @event.GeometrySpecification
                             && doc.AddressPosition.GeometryAsWkt == expectedPoint.AsText()
@@ -1587,6 +1587,13 @@
                     var document = _fixture.Create<AddressSearchDocument>();
                     document.AddressPersistentLocalId = x;
                     document.VersionTimestamp = _fixture.Create<DateTimeOffset>();
+                    document.PostalInfo = new PostalInfo(
+                        _fixture.Create<string>(),
+                        [
+                            new Name(_fixture.Create<string>(), Language.nl),
+                            new Name(_fixture.Create<string>(), Language.fr),
+                            new Name(_fixture.Create<string>(), Language.en)
+                        ]);
                     return document;
                 })
                 .ToArray();
@@ -1627,7 +1634,7 @@
                                 && doc.StreetName.StreetNamePersistentLocalId == @event.StreetNamePersistentLocalId
                                 && doc.StreetName.Names.Length == 2
                                 && doc.StreetName.HomonymAdditions.Length == 2
-                                && doc.FullAddress.Length == 2
+                                && doc.FullAddress.Length == 4
                             ),
                             It.IsAny<CancellationToken>()));
                     }
@@ -1652,6 +1659,13 @@
                     var document = _fixture.Create<AddressSearchDocument>();
                     document.AddressPersistentLocalId = x;
                     document.VersionTimestamp = _fixture.Create<DateTimeOffset>();
+                    document.PostalInfo = new PostalInfo(
+                        _fixture.Create<string>(),
+                        [
+                            new Name(_fixture.Create<string>(), Language.nl),
+                            new Name(_fixture.Create<string>(), Language.fr),
+                            new Name(_fixture.Create<string>(), Language.en)
+                        ]);
                     return document;
                 })
                 .ToArray();
@@ -1692,7 +1706,7 @@
                                 && doc.StreetName.StreetNamePersistentLocalId == @event.StreetNamePersistentLocalId
                                 && doc.StreetName.Names.Length == 2
                                 && doc.StreetName.HomonymAdditions.Length == 2
-                                && doc.FullAddress.Length == 2
+                                && doc.FullAddress.Length == 4
                             ),
                             It.IsAny<CancellationToken>()));
                     }
@@ -1717,6 +1731,13 @@
                     var document = _fixture.Create<AddressSearchDocument>();
                     document.AddressPersistentLocalId = x;
                     document.VersionTimestamp = _fixture.Create<DateTimeOffset>();
+                    document.PostalInfo = new PostalInfo(
+                        _fixture.Create<string>(),
+                        [
+                            new Name(_fixture.Create<string>(), Language.nl),
+                            new Name(_fixture.Create<string>(), Language.fr),
+                            new Name(_fixture.Create<string>(), Language.en)
+                        ]);
                     return document;
                 })
                 .ToArray();
@@ -1757,7 +1778,7 @@
                                 && doc.StreetName.StreetNamePersistentLocalId == @event.StreetNamePersistentLocalId
                                 && doc.StreetName.Names.Length == 2
                                 && doc.StreetName.HomonymAdditions.Length == 2
-                                && doc.FullAddress.Length == 2
+                                && doc.FullAddress.Length == 4
                             ),
                             It.IsAny<CancellationToken>()));
                     }
@@ -1782,6 +1803,13 @@
                     var document = _fixture.Create<AddressSearchDocument>();
                     document.AddressPersistentLocalId = x;
                     document.VersionTimestamp = _fixture.Create<DateTimeOffset>();
+                    document.PostalInfo = new PostalInfo(
+                        _fixture.Create<string>(),
+                        [
+                            new Name(_fixture.Create<string>(), Language.nl),
+                            new Name(_fixture.Create<string>(), Language.fr),
+                            new Name(_fixture.Create<string>(), Language.en)
+                        ]);
                     return document;
                 })
                 .ToArray();
@@ -1822,7 +1850,7 @@
                                 && doc.StreetName.StreetNamePersistentLocalId == @event.StreetNamePersistentLocalId
                                 && doc.StreetName.Names.Length == 2
                                 && doc.StreetName.HomonymAdditions.Length == 2
-                                && doc.FullAddress.Length == 2
+                                && doc.FullAddress.Length == 4
                             ),
                             It.IsAny<CancellationToken>()));
                     }

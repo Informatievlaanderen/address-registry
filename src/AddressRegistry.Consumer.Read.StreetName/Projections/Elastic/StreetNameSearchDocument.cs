@@ -54,6 +54,16 @@
                             HomonymAdditions.SingleOrDefault(x => x.Language == name.Language)?.Spelling,
                             Municipality.Names.SingleOrDefault(x => x.Language == name.Language)?.Spelling ?? Municipality.Names.First().Spelling),
                         name.Language));
+
+                foreach (var postalName in PostalInfos.SelectMany(x => x.Names).Where(x => x.Language == name.Language))
+                {
+                    fullNames.Add(
+                        new Name(FormatFullAddress(
+                                name.Spelling,
+                                HomonymAdditions.SingleOrDefault(x => x.Language == name.Language)?.Spelling,
+                                postalName.Spelling),
+                            name.Language));
+                }
             }
 
             return fullNames.ToArray();

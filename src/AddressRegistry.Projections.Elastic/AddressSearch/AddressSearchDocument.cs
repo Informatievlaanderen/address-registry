@@ -75,6 +75,22 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
                             Municipality.Names.SingleOrDefault(x => x.Language == name.Language)?.Spelling ?? Municipality.Names.First().Spelling,
                             name.Language),
                         name.Language));
+
+                if (PostalInfo is not null)
+                {
+                    foreach (var postalName in PostalInfo.Names.Where(x => x.Language == name.Language))
+                    {
+                        fullAddresses.Add(
+                            new Name(FormatFullAddress(
+                                    name.Spelling,
+                                    HouseNumber,
+                                    BoxNumber,
+                                    PostalInfo?.PostalCode,
+                                    postalName.Spelling,
+                                    name.Language),
+                                name.Language));
+                    }
+                }
             }
 
             return fullAddresses.ToArray();

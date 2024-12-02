@@ -44,7 +44,6 @@
 
         public async Task InitializeCache()
         {
-            //TODO-rik call InitializeCache on startup?
             var entry = _memoryCache.CreateEntry(CreateCacheKey("$manager"));
             entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(4);
             entry.PostEvictionCallbacks.Add(new PostEvictionCallbackRegistration

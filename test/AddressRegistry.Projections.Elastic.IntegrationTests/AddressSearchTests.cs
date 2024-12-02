@@ -16,6 +16,7 @@
     using global::Elastic.Transport;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging.Abstractions;
+    using StreetName;
     using Xunit;
 
     public sealed class AddressSearchTests
@@ -51,7 +52,8 @@
             _addressClient = new AddressApiElasticsearchClient(_elasticClient, _elasticAlias, new NullLoggerFactory());
         }
 
-        [Fact(Skip = "This is a test that should be run manually")]
+        //[Fact(Skip = "This is a test that should be run manually")]
+        [Fact] //TODO-rik temp
         public async Task Test()
         {
             var outputs = new List<OutputTestCase>();
@@ -67,7 +69,8 @@
                 var searchRequest = _elasticClient.SourceSerializer.Deserialize<SearchRequestWithIndex>(stream);
                 searchRequest.SetIndex(_elasticAlias);
 
-                var addressResponses = await _addressClient.SearchAddresses(input, null, null);
+                var addressResponses = await _addressClient.SearchAddresses("k", "11002", AddressStatus.Retired);
+                var nisCodes = addressResponses.Addresses.Select(x => x.Municipality.NisCode).Distinct().ToList();
 
                 var response = await _elasticClient.SearchAsync<AddressSearchDocument>(searchRequest);
 

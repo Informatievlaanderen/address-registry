@@ -3,6 +3,7 @@ namespace AddressRegistry.Api.Oslo.Infrastructure
     using System;
     using System.Linq;
     using System.Reflection;
+    using Address.Search;
     using Asp.Versioning.ApiExplorer;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
@@ -155,6 +156,14 @@ namespace AddressRegistry.Api.Oslo.Infrastructure
                         AfterMiddleware = x => x.UseMiddleware<AddNoCacheHeadersMiddleware>(),
                     }
                 });
+
+            using var scope = serviceProvider.CreateScope();
+
+            var municipalityCache = scope.ServiceProvider.GetRequiredService<MunicipalityCache>();
+            municipalityCache.InitializeCache().GetAwaiter().GetResult();
+
+            var postalCache = scope.ServiceProvider.GetRequiredService<PostalCache>();
+            postalCache.InitializeCache().GetAwaiter().GetResult();
         }
 
         private static string GetApiLeadingText(ApiVersionDescription description)

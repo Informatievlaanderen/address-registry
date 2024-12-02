@@ -65,6 +65,13 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
             builder
                 .RegisterType<MunicipalityCache>()
                 .As<IMunicipalityCache>()
+                .AsSelf()
+                .SingleInstance();
+
+            builder
+                .RegisterType<PostalCache>()
+                .As<IPostalCache>()
+                .AsSelf()
                 .SingleInstance();
 
             builder

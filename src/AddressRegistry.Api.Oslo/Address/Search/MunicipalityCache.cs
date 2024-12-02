@@ -32,6 +32,11 @@
 
         public string? GetNisCodeByName(string name)
         {
+            if (NisCode.IsValid(name))
+            {
+                return null;
+            }
+
             return _memoryCache.TryGetValue(CreateCacheKey(name), out var nisCode) ? (string)nisCode! : null;
         }
 

@@ -7,12 +7,10 @@
     using Consumer.Read.Postal.Projections;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Caching.Memory;
-    using StreetName;
 
     public interface IPostalCache
     {
-        string? GetPostalCodeByName(string name);
-        bool IsPostalCodeValid(string postalCode);
+        string? GetNisCodeByPostalCode(string postalCode);
     }
 
     public class PostalCache: IPostalCache
@@ -30,14 +28,9 @@
             _memoryCache = memoryCache;
         }
 
-        public string? GetPostalCodeByName(string name)
+        public string? GetNisCodeByPostalCode(string postalCode)
         {
-            return _memoryCache.TryGetValue(CreateCacheKey(name), out var nisCode) ? (string)nisCode! : null;
-        }
-
-        public bool IsPostalCodeValid(string nisCode)
-        {
-            return NisCode.IsValid(nisCode) && _memoryCache.TryGetValue(CreateCacheKey(nisCode), out _);
+            return _memoryCache.TryGetValue(CreateCacheKey(postalCode), out var nisCode) ? (string)nisCode! : null;
         }
 
         private string CreateCacheKey(string value) => $"{CacheKeyPrefix}{value}".ToLower();
@@ -48,66 +41,26 @@
             entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(4);
             entry.PostEvictionCallbacks.Add(new PostEvictionCallbackRegistration
             {
-                EvictionCallback = (_, _, _, _) => UpdateCachedMunicipalities().GetAwaiter().GetResult()
+                EvictionCallback = (_, _, _, _) => UpdateCachedPostals().GetAwaiter().GetResult()
             });
 
-            await UpdateCachedMunicipalities();
+            await UpdateCachedPostals();
         }
 
-        private async Task UpdateCachedMunicipalities()
+        private async Task UpdateCachedPostals()
         {
             await using var context = await _postalConsumerContextFactory.CreateDbContextAsync();
 
-            var municipalities = await context.PostalLatestItems.ToListAsync();
+            var postals = await context.PostalLatestItems.ToListAsync();
 
-            foreach (var postal in municipalities.Where(x => x.Status == PostalStatus.Retired))
+            foreach (var postal in postals.Where(x => x.Status == PostalStatus.Retired))
             {
-                _memoryCache.Remove(CreateCacheKey(postal.NisCode));
-
-                if (!string.IsNullOrWhiteSpace(postal.NameDutch))
-                {
-                    _memoryCache.Remove(CreateCacheKey(postal.NameDutch));
-                }
-
-                if (!string.IsNullOrWhiteSpace(postal.NameFrench))
-                {
-                    _memoryCache.Remove(CreateCacheKey(postal.NameFrench));
-                }
-
-                if (!string.IsNullOrWhiteSpace(postal.NameEnglish))
-                {
-                    _memoryCache.Remove(CreateCacheKey(postal.NameEnglish));
-                }
-
-                if (!string.IsNullOrWhiteSpace(postal.NameGerman))
-                {
-                    _memoryCache.Remove(CreateCacheKey(postal.NameGerman));
-                }
+                _memoryCache.Remove(CreateCacheKey(postal.PostalCode));
             }
 
-            foreach (var postal in municipalities.Where(x => x.Status != PostalStatus.Retired))
+            foreach (var postal in postals.Where(x => x.Status != PostalStatus.Retired && x.NisCode is not null))
             {
-                _memoryCache.Set(CreateCacheKey(postal.NisCode), true);
-
-                if (!string.IsNullOrWhiteSpace(postal.NameDutch))
-                {
-                    _memoryCache.Set(CreateCacheKey(postal.NameDutch), postal.NisCode);
-                }
-
-                if (!string.IsNullOrWhiteSpace(postal.NameFrench))
-                {
-                    _memoryCache.Set(CreateCacheKey(postal.NameFrench), postal.NisCode);
-                }
-
-                if (!string.IsNullOrWhiteSpace(postal.NameEnglish))
-                {
-                    _memoryCache.Set(CreateCacheKey(postal.NameEnglish), postal.NisCode);
-                }
-
-                if (!string.IsNullOrWhiteSpace(postal.NameGerman))
-                {
-                    _memoryCache.Set(CreateCacheKey(postal.NameGerman), postal.NisCode);
-                }
+                _memoryCache.Set(CreateCacheKey(postal.PostalCode), postal.NisCode);
             }
         }
     }

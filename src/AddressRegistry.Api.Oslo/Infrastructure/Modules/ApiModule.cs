@@ -69,6 +69,10 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
                 .SingleInstance();
 
             builder
+                .RegisterType<QueryParser>()
+                .SingleInstance();
+
+            builder
                 .RegisterType<PostalCache>()
                 .As<IPostalCache>()
                 .AsSelf()

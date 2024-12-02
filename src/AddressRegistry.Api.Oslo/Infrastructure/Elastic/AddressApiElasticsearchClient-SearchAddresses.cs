@@ -44,8 +44,6 @@
                                         .Value(true)));
                                 }
 
-                                //TODO-rik in List gebeurt gemeenteNaam filter via elastic, mss beter ook zo ipv cache of de List aanpassen om de cache te gebruiken?
-
                                 if (!string.IsNullOrWhiteSpace(nisCode))
                                 {
                                     conditions.Add(m => m.Term(t => t

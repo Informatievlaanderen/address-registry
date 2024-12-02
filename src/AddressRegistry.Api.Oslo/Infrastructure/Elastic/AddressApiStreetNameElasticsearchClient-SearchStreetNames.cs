@@ -98,7 +98,7 @@
                 _logger.LogWarning("Failed to search for streetnames: {Error}", searchResponse.ElasticsearchServerError);
                 return StreetNameSearchResult.Empty;
             }
-
+            
             var language = DetermineLanguage(searchResponse);
             return new StreetNameSearchResult(searchResponse.Documents, searchResponse.Total, language);
         }

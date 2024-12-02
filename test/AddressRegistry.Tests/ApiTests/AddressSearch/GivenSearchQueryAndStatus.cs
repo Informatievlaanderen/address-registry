@@ -35,7 +35,9 @@
 
             var mockResponseOptions = new Mock<IOptions<ResponseOptions>>();
 
-            _sut = new AddressSearchHandler(_mockAddressSearchApi.Object, _mockAddressStreetNameSearchApi.Object, mockResponseOptions.Object, Mock.Of<IMunicipalityCache>());
+            _sut = new AddressSearchHandler(_mockAddressSearchApi.Object, _mockAddressStreetNameSearchApi.Object, mockResponseOptions.Object,
+                Mock.Of<IMunicipalityCache>(),
+                new QueryParser(Mock.Of<IPostalCache>()));
         }
 
         [Theory]

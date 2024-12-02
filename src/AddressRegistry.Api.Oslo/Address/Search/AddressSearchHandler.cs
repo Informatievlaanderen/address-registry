@@ -22,17 +22,20 @@
         private readonly IAddressApiElasticsearchClient _addressApiElasticsearchClient;
         private readonly IAddressApiStreetNameElasticsearchClient _addressApiStreetNameElasticsearchClient;
         private readonly IMunicipalityCache _municipalityCache;
+        private readonly QueryParser _queryParser;
         private readonly ResponseOptions _responseOptions;
 
         public AddressSearchHandler(
             IAddressApiElasticsearchClient addressApiElasticsearchClient,
             IAddressApiStreetNameElasticsearchClient addressApiStreetNameElasticsearchClient,
             IOptions<ResponseOptions> responseOptions,
-            IMunicipalityCache municipalityCache)
+            IMunicipalityCache municipalityCache,
+            QueryParser queryParser)
         {
             _addressApiElasticsearchClient = addressApiElasticsearchClient;
             _addressApiStreetNameElasticsearchClient = addressApiStreetNameElasticsearchClient;
             _municipalityCache = municipalityCache;
+            _queryParser = queryParser;
             _responseOptions = responseOptions.Value;
         }
 
@@ -59,17 +62,30 @@
 
             if (request.Filtering.Filter.ResultType == ResultType.StreetName)
             {
+                if (query is not null
+                    && _queryParser.TryExtractNisCodeViaPostalCode(ref query, out var queryNisCode))
+                {
+                    if (nisCode is not null && nisCode != queryNisCode)
+                    {
+                        return new AddressSearchResponse([]);
+                    }
+
+                    nisCode = queryNisCode;
+                }
+
                 return await SearchStreetNames(request, query, nisCode, pagination);
             }
 
-            // TODO-rik Add IsPostalCode logic: if postal code, then combine addresses and streetnames (but limit result to 10)
-            if (ContainsNumber(query)
-                && request.Filtering.Filter.ResultType != ResultType.StreetName)
+            var streetNames = await SearchStreetNames(request, query, nisCode, pagination);
+            if (streetNames.Results.Count >= pagination.Limit)
             {
-                return await SearchAddresses(request, query, nisCode, pagination);
+                return streetNames;
             }
 
-            return await SearchStreetNames(request, query, nisCode, pagination);
+            var addresses = await SearchAddresses(request, query, nisCode, pagination);
+            return new AddressSearchResponse(
+                streetNames.Results.Concat(addresses.Results).Take(pagination.Limit).ToList()
+            );
         }
 
         private async Task<AddressSearchResponse> SearchAddresses(

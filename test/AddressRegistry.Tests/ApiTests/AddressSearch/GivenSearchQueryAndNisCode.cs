@@ -16,13 +16,14 @@
     using Xunit;
     using StreetNameStatus = Consumer.Read.StreetName.Projections.StreetNameStatus;
 
-    public class GivenSearchQuery
+    //TODO-rik
+    public class GivenSearchQueryAndNisCode
     {
         private readonly AddressSearchHandler _sut;
         private readonly Mock<IAddressApiElasticsearchClient> _mockAddressSearchApi;
         private readonly Mock<IAddressApiStreetNameElasticsearchClient> _mockAddressStreetNameSearchApi;
 
-        public GivenSearchQuery()
+        public GivenSearchQueryAndNisCode()
         {
             _mockAddressSearchApi = new Mock<IAddressApiElasticsearchClient>();
             _mockAddressStreetNameSearchApi = new Mock<IAddressApiStreetNameElasticsearchClient>();
@@ -40,59 +41,62 @@
         }
 
         [Theory]
-        [InlineData("bla bla 1")]
-        [InlineData("bla 2A")]
-        [InlineData("foo 3 bar")]
-        [InlineData("veldstraat 5 bus 1 gent")]
-        [InlineData("veldstraat 5A bus 1_3 9000 gent")]
-        [InlineData("veldstraat 5 bus A, 9000 gent")]
-        [InlineData("veldstraat 5 bus 1.2, 9000 gent")]
-        [InlineData("veldstraat 5 bte 1.2, 9000 gent")]
-        [InlineData("veldstraat 5 boite 1.2, 9000 gent")]
-        [InlineData("veldstraat 5 boîte 1.2, 9000 gent")]
-        [InlineData("veldstraat 5 box 1.2, 9000 gent")]
-        public async Task WithAddressQuery_ThenAddresPartsAreExtractedResults(
-            string query)
+        [InlineData("bla bla 1", null)]
+        [InlineData("bla 2A", "gent")]
+        [InlineData("foo 3 bar", "gent")]
+        [InlineData("veldstraat 5 bus 1 gen", "gent")]
+        [InlineData("veldstraat 5A bus 1_3 9000 get", "gent")]
+        [InlineData("veldstraat 5 bus A, 9000 abc", "gent")]
+        [InlineData("veldstraat 5 bus 1.2, 9000 def", "gent")]
+        [InlineData("veldstraat 5 bte 1.2, 9000 foo", "gent")]
+        [InlineData("veldstraat 5 boite 1.2, 9000 bar", "gent")]
+        [InlineData("veldstraat 5 boîte 1.2, 9000 genter", "gent")]
+        [InlineData("veldstraat 5 box 1.2, 9000 gents", "gent")]
+        public async Task WithHouseNumber_ThenNoResults(
+            string query,
+            string municipalityName)
         {
-            var limit = 15;
+            var limit = 20;
             await _sut.Handle(
                 new AddressSearchRequest(
-                    new FilteringHeader<AddressSearchFilter>(new AddressSearchFilter { Query = query }),
+                    new FilteringHeader<AddressSearchFilter>(new AddressSearchFilter { Query = query, MunicipalityName = municipalityName}),
                     new PaginationRequest(0, limit)),
                 CancellationToken.None);
 
-            _mockAddressSearchApi.Verify(x => x.SearchAddresses(query, null, null, limit), Times.Once);
+            _mockAddressSearchApi.Verify(x => x.SearchAddresses(query, municipalityName, null, limit), Times.Once);
         }
 
         [Theory]
-        [InlineData("loppem")]
-        [InlineData("street")]
-        public async Task WithOneWord_ThenSearchStreetNames(string query)
+        [InlineData("loppem", "muni")]
+        [InlineData("street", "postal")]
+        public async Task WithOneWordAndMunicipalityOrPostalName1_ThenSearchStreetNames(string query, string municipalityName)
         {
             var limit = 10;
             await _sut.Handle(
                 new AddressSearchRequest(
-                    new FilteringHeader<AddressSearchFilter>(new AddressSearchFilter { Query = query }),
+                    new FilteringHeader<AddressSearchFilter>(new AddressSearchFilter { Query = query, MunicipalityName = municipalityName}),
                     new PaginationRequest(0, limit)),
                 CancellationToken.None);
 
-            _mockAddressStreetNameSearchApi.Verify(x => x.SearchStreetNames(query, null, null, limit), Times.Once);
+            _mockAddressStreetNameSearchApi.Verify(x => x.SearchStreetNames(query, municipalityName, null, limit), Times.Once);
         }
 
         [Theory]
-        [InlineData("loppem zedel")]
-        [InlineData("one two three")]
-        [InlineData("one two three four")]
-        public async Task WithMultipleWords_ThenSearchStreetNamesWithMunicipalityOrPostalName(string query)
+        [InlineData("loppem", "zedel")]
+        [InlineData("one two", "three")]
+        [InlineData("one two three", "four")]
+        public async Task WithMultipleWords_ThenSearchStreetNamesWithMunicipalityOrPostalName(
+            string query,
+            string municipalityName)
         {
             var limit = 50;
             await _sut.Handle(
                 new AddressSearchRequest(
-                    new FilteringHeader<AddressSearchFilter>(new AddressSearchFilter { Query = query }),
+                    new FilteringHeader<AddressSearchFilter>(new AddressSearchFilter { Query = query, MunicipalityName = municipalityName}),
                     new PaginationRequest(0, limit)),
                 CancellationToken.None);
 
-            _mockAddressStreetNameSearchApi.Verify(x => x.SearchStreetNames(query, null, null, limit), Times.Once);
+            _mockAddressStreetNameSearchApi.Verify(x => x.SearchStreetNames(query, municipalityName, null, limit), Times.Once);
         }
     }
 }

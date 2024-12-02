@@ -23,6 +23,7 @@ nuget MediatR 12.2.0
 nuget MediatR.Contracts 2.0.1
 nuget Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite 8.0.3
 nuget NetTopologySuite 2.5.0
+nuget NetTopologySuite.IO.GeoPackage 2.0.0
 nuget ProjNet 2.0.0
 
 nuget Microsoft.EntityFrameworkCore.Design 8.0.3
@@ -31,6 +32,8 @@ nuget Npgsql 8.0.2
 nuget Npgsql.EntityFrameworkCore.PostgreSQL 8.0.2
 nuget Npgsql.EntityFrameworkCore.PostgreSQL.Design 2.0.0-preview1
 nuget Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite 8.0.2
+
+nuget Microsoft.Data.Sqlite 8.0.3
 
 nuget CsvHelper 33.0.1
 

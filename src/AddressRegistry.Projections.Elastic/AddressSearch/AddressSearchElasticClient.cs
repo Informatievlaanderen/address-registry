@@ -1,14 +1,13 @@
-﻿namespace AddressRegistry.Projections.Elastic
+﻿namespace AddressRegistry.Projections.Elastic.AddressSearch
 {
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Infrastructure.Elastic.Exceptions;
-    using AddressSearch;
     using global::Elastic.Clients.Elasticsearch;
 
-    public interface IAddressElasticsearchClient
+    public interface IAddressSearchElasticClient
     {
         Task CreateDocument(AddressSearchDocument document, CancellationToken ct);
         Task<ICollection<AddressSearchDocument>> GetDocuments(IEnumerable<int> addressPersistentLocalIds, CancellationToken ct);
@@ -17,12 +16,12 @@
         Task DeleteDocument(int addressPersistentLocalId, CancellationToken ct);
     }
 
-    public class AddressElasticsearchClient : IAddressElasticsearchClient
+    public class AddressSearchElasticClient : IAddressSearchElasticClient
     {
         private readonly ElasticsearchClient _elasticClient;
         private readonly IndexName _indexName;
 
-        public AddressElasticsearchClient(
+        public AddressSearchElasticClient(
             ElasticsearchClient elasticClient,
             IndexName indexName)
         {

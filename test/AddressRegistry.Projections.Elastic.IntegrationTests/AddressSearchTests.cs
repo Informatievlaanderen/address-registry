@@ -21,7 +21,7 @@
     public sealed class AddressSearchTests
     {
         private readonly ElasticsearchClient _elasticClient;
-        private readonly AddressApiElasticsearchClient _addressClient;
+        private readonly AddressApiElasticsearchClient _addressListClient;
         private readonly string _elasticAlias;
 
         public AddressSearchTests()
@@ -48,7 +48,7 @@
                 clientSettings.Authentication(new BasicAuthentication(elasticUsername, elasticPassword));
 
             _elasticClient = new ElasticsearchClient(clientSettings);
-            _addressClient = new AddressApiElasticsearchClient(_elasticClient, _elasticAlias, new NullLoggerFactory());
+            _addressListClient = new AddressApiElasticsearchClient(_elasticClient, _elasticAlias, new NullLoggerFactory());
         }
 
         [Fact(Skip = "This is a test that should be run manually")]
@@ -67,7 +67,7 @@
                 var searchRequest = _elasticClient.SourceSerializer.Deserialize<SearchRequestWithIndex>(stream);
                 searchRequest.SetIndex(_elasticAlias);
 
-                var addressResponses = await _addressClient.SearchAddresses(input, null, null);
+                var addressResponses = await _addressListClient.SearchAddresses(input, null, null);
 
                 var response = await _elasticClient.SearchAsync<AddressSearchDocument>(searchRequest);
 

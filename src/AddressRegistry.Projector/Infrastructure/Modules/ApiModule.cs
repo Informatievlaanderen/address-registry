@@ -3,6 +3,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using AddressRegistry.Infrastructure;
     using AddressRegistry.Projections.AddressMatch;
     using AddressRegistry.Projections.Elastic;
+    using AddressRegistry.Projections.Elastic.AddressList;
     using AddressRegistry.Projections.Elastic.AddressSearch;
     using AddressRegistry.Projections.Elastic.Infrastructure;
     using AddressRegistry.Projections.Extract;
@@ -264,14 +265,24 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                     _configuration,
                     _loggerFactory)
                 .RegisterProjections<AddressSearchProjections, ElasticRunnerContext>((c) =>
-                        new AddressSearchProjections(c.Resolve<IAddressElasticsearchClient>(),
+                        new AddressSearchProjections(c.Resolve<IAddressSearchElasticClient>(),
                             c.Resolve<IDbContextFactory<MunicipalityConsumerContext>>(),
                             c.Resolve<IDbContextFactory<PostalConsumerContext>>(),
                             c.Resolve<IDbContextFactory<StreetNameConsumerContext>>()),
                     ConnectedProjectionSettings.Configure(x =>
                     {
                         x.ConfigureCatchUpUpdatePositionMessageInterval(1);
-                    }));
+                    }))
+                .RegisterProjections<AddressListProjections, ElasticRunnerContext>((c) =>
+                        new AddressListProjections(c.Resolve<IAddressListElasticClient>(),
+                            c.Resolve<IDbContextFactory<MunicipalityConsumerContext>>(),
+                            c.Resolve<IDbContextFactory<PostalConsumerContext>>(),
+                            c.Resolve<IDbContextFactory<StreetNameConsumerContext>>()),
+                    ConnectedProjectionSettings.Configure(x =>
+                    {
+                        x.ConfigureCatchUpUpdatePositionMessageInterval(1);
+                    }))
+                ;
         }
     }
 }

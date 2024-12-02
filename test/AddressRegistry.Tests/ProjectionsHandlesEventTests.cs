@@ -282,7 +282,7 @@
 
             yield return [new List<ConnectedProjection<ElasticRunnerContext>>
                 {
-                    new AddressSearchProjections(Mock.Of<IAddressElasticsearchClient>(),
+                    new AddressSearchProjections(Mock.Of<IAddressSearchElasticClient>(),
                         Mock.Of<IDbContextFactory<MunicipalityConsumerContext>>(),
                         Mock.Of<IDbContextFactory<PostalConsumerContext>>(),
                         Mock.Of<IDbContextFactory<StreetNameConsumerContext>>())

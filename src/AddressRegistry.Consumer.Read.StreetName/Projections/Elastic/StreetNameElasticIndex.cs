@@ -31,7 +31,7 @@
             : base(client, options)
         { }
 
-        public async Task CreateIndexIfNotExist(CancellationToken ct)
+        public override async Task CreateIndexIfNotExist(CancellationToken ct)
         {
             var indexName = Indices.Index(IndexName);
             var response = await Client.Indices.ExistsAsync(new ExistsRequest(indexName), ct);

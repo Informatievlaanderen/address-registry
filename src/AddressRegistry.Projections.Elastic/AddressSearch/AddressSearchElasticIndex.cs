@@ -1,11 +1,10 @@
-﻿namespace AddressRegistry.Projections.Elastic
+﻿namespace AddressRegistry.Projections.Elastic.AddressSearch
 {
     using System;
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Infrastructure.Elastic;
     using AddressRegistry.Infrastructure.Elastic.Exceptions;
-    using AddressSearch;
     using global::Elastic.Clients.Elasticsearch;
     using global::Elastic.Clients.Elasticsearch.Analysis;
     using global::Elastic.Clients.Elasticsearch.IndexManagement;
@@ -13,7 +12,7 @@
     using Microsoft.Extensions.Configuration;
     using ExistsRequest = global::Elastic.Clients.Elasticsearch.IndexManagement.ExistsRequest;
 
-    public sealed class AddressElasticIndex : ElasticIndexBase
+    public sealed class AddressSearchElasticIndex : ElasticIndexBase
     {
         public const string AddressSearchNormalizer = "AddressSearchNormalizer";
         public const string TextNumberNormalizer = "TextNumberNormalizer";
@@ -21,19 +20,19 @@
         public const string AddressFullSearchIndexAnalyzer = "AddressFullSearchIndexAnalyzer";
         public const string AddressFullSearchAnalyzer = "AddressFullSearchAnalyzer";
 
-        public AddressElasticIndex(
+        public AddressSearchElasticIndex(
             ElasticsearchClient client,
             IConfiguration configuration)
-            : this(client, ElasticIndexOptions.LoadFromConfiguration(configuration.GetSection("Elastic")))
+            : this(client, ElasticIndexOptions.LoadFromConfiguration(configuration.GetSection("Elastic"), indexNameKey: "SearchIndexName", indexAliasKey: "SearchIndexAlias"))
         { }
 
-        public AddressElasticIndex(
+        public AddressSearchElasticIndex(
             ElasticsearchClient client,
             ElasticIndexOptions options)
             :base(client, options)
         { }
 
-        public async Task CreateIndexIfNotExist(CancellationToken ct)
+        public override async Task CreateIndexIfNotExist(CancellationToken ct)
         {
             var indexName = Indices.Index(IndexName);
             var response = await Client.Indices.ExistsAsync(new ExistsRequest(indexName), ct);

@@ -5,6 +5,7 @@ namespace AddressRegistry.Projections.Elastic.IntegrationTests
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Infrastructure.Elastic;
+    using AddressSearch;
     using Be.Vlaanderen.Basisregisters.DockerUtilities;
     using Ductus.FluentDocker.Services;
     using global::Elastic.Clients.Elasticsearch;
@@ -47,7 +48,7 @@ namespace AddressRegistry.Projections.Elastic.IntegrationTests
 
         public async Task CreateIndex(string name)
         {
-            var index = new AddressElasticIndex(Client, new ElasticIndexOptions
+            var index = new AddressSearchElasticIndex(Client, new ElasticIndexOptions
             {
                 Name = name
             });

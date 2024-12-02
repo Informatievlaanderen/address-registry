@@ -27,5 +27,7 @@
 
             await Client.Indices.PutAliasAsync(new PutAliasRequest(IndexName, IndexAlias), ct);
         }
+
+        public abstract Task CreateIndexIfNotExist(CancellationToken ct);
     }
 }

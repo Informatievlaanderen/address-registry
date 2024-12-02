@@ -12,12 +12,12 @@ namespace AddressRegistry.Projections.Elastic.IntegrationTests
     using Xunit;
 
     [Xunit.Collection("Elastic")]
-    public class AddressElasticsearchClientTests : IClassFixture<ElasticsearchClientTestFixture>
+    public class AddressSearchElasticClientTests : IClassFixture<ElasticsearchClientTestFixture>
     {
         private readonly ElasticsearchClientTestFixture _clientFixture;
         private readonly Fixture _fixture;
 
-        public AddressElasticsearchClientTests(ElasticsearchClientTestFixture clientFixture)
+        public AddressSearchElasticClientTests(ElasticsearchClientTestFixture clientFixture)
         {
             _clientFixture = clientFixture;
             _fixture = new Fixture();
@@ -116,11 +116,11 @@ namespace AddressRegistry.Projections.Elastic.IntegrationTests
             actualDocument.Should().BeNull();
         }
 
-        private async Task<IAddressElasticsearchClient> BuildClient()
+        private async Task<IAddressSearchElasticClient> BuildClient()
         {
             var indexName = $"test-{Guid.NewGuid():N}";
             await _clientFixture.CreateIndex(indexName);
-            return new AddressElasticsearchClient(_clientFixture.Client, indexName);
+            return new AddressSearchElasticClient(_clientFixture.Client, indexName);
         }
 
         private void EnsureAllPropertiesAreNotNull(object value)

@@ -36,7 +36,7 @@
         private readonly Fixture _fixture;
         private readonly ConnectedProjectionTest<ElasticRunnerContext, AddressSearchProjections> _sut;
 
-        private readonly Mock<IAddressElasticsearchClient> _elasticSearchClient;
+        private readonly Mock<IAddressSearchElasticClient> _elasticSearchClient;
         private readonly TestMunicipalityConsumerContext _municipalityContext;
         private readonly FakePostalConsumerContext _postalConsumerContext;
         private readonly TestStreetNameConsumerContext _streetNameConsumerContext;
@@ -51,7 +51,7 @@
             _fixture.Customize(new WithValidHouseNumber());
             _fixture.Customize(new WithValidBoxNumber());
 
-            _elasticSearchClient = new Mock<IAddressElasticsearchClient>();
+            _elasticSearchClient = new Mock<IAddressSearchElasticClient>();
             _postalConsumerContext = new FakePostalConsumerContextFactory().CreateDbContext();
             _municipalityContext = new FakeMunicipalityConsumerContextFactory().CreateDbContext();
             _streetNameConsumerContext = new FakeStreetNameConsumerContextFactory().CreateDbContext();

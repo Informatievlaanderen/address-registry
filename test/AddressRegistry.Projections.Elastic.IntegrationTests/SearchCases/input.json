@@ -13,11 +13,26 @@
           "nested": {
             "path": "fullAddress",
             "query": {
-              "match_phrase": {
-                "fullAddress.spelling": {
-                  "query": "{{input}}",
-                  "slop": 10
-                }
+              "bool": {
+                "should": [
+                  {
+                    "match_phrase": {
+                      "fullAddress.spelling": {
+                        "query": "{{input}}",
+                        "slop": 10
+                      }
+                    }
+                  },
+                  {
+                    "match": {
+                      "fullAddress.spelling": {
+                        "query": "{{input}}",
+                        "fuzziness": "auto",
+                        "operator": "and"
+                      }
+                    }
+                  }
+                ]
               }
             },
             "inner_hits": {

@@ -7,13 +7,16 @@
     using System.Text;
     using System.Text.Json;
     using System.Text.Json.Nodes;
+    using System.Text.Json.Serialization;
     using System.Threading.Tasks;
     using AddressRegistry.Infrastructure.Elastic;
     using AddressSearch;
     using Api.Oslo.Infrastructure.Elastic;
     using FluentAssertions;
     using global::Elastic.Clients.Elasticsearch;
+    using global::Elastic.Clients.Elasticsearch.Serialization;
     using global::Elastic.Transport;
+    using global::Elastic.Transport.Extensions;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging.Abstractions;
     using Xunit;
@@ -21,7 +24,7 @@
     public sealed class AddressSearchTests
     {
         private readonly ElasticsearchClient _elasticClient;
-        private readonly AddressApiElasticsearchClient _addressListClient;
+        private readonly AddressApiElasticsearchClient _addressSearchClient;
         private readonly string _elasticAlias;
 
         public AddressSearchTests()
@@ -39,7 +42,10 @@
             var elasticPassword = elasticConfig.GetValue<string>("Password");
             _elasticAlias = elasticConfig.GetValue<string>("IndexAlias") ?? throw new ArgumentNullException("Elastic IndexAlias is not set");
 
-            var clientSettings = new ElasticsearchClientSettings(new Uri(elasticUrl))
+            var clientSettings = new ElasticsearchClientSettings(new SingleNodePool(new Uri(elasticUrl)), (@in, values) =>
+                {
+                    return new DefaultSourceSerializer(values, option => option.Converters.Add(new FuzzinessJsonConverter()));
+                })
                 .DefaultIndex(_elasticAlias)
                 .EnableDebugMode()
                 .DisableDirectStreaming();
@@ -48,12 +54,15 @@
                 clientSettings.Authentication(new BasicAuthentication(elasticUsername, elasticPassword));
 
             _elasticClient = new ElasticsearchClient(clientSettings);
-            _addressListClient = new AddressApiElasticsearchClient(_elasticClient, _elasticAlias, new NullLoggerFactory());
+            _addressSearchClient = new AddressApiElasticsearchClient(_elasticClient, _elasticAlias, new NullLoggerFactory());
         }
 
-        [Fact(Skip = "This is a test that should be run manually")]
+        //[Fact(Skip = "This is a test that should be run manually")]
+        [Fact]
         public async Task Test()
         {
+
+
             var outputs = new List<OutputTestCase>();
             var inputFileAsString = await File.ReadAllTextAsync("SearchCases/input.json");
             var inputTestCase = _elasticClient.SourceSerializer.Deserialize<InputTestCase>(new MemoryStream(Encoding.UTF8.GetBytes(inputFileAsString)));
@@ -67,7 +76,7 @@
                 var searchRequest = _elasticClient.SourceSerializer.Deserialize<SearchRequestWithIndex>(stream);
                 searchRequest.SetIndex(_elasticAlias);
 
-                var addressResponses = await _addressListClient.SearchAddresses(input, null, null);
+                var addressResponses = await _addressSearchClient.SearchAddresses(input, null, null);
 
                 var response = await _elasticClient.SearchAsync<AddressSearchDocument>(searchRequest);
 
@@ -78,8 +87,8 @@
 
                 outputs.Add(new OutputTestCase(
                     input,
-                    response.Documents.Select(x => x.FullAddress.Single(name => name.Language == language).Spelling).ToArray(),
-                    addressResponses.Addresses.Select(x => x.FullAddress.Single(name => name.Language == language).Spelling).ToArray(),
+                    response.Documents.Select(x => x.FullAddress.First(name => name.Language == language).Spelling).ToArray(),
+                    addressResponses.Addresses.Select(x => x.FullAddress.First(name => name.Language == language).Spelling).ToArray(),
                     language));
             }
 
@@ -145,6 +154,23 @@
             public void SetIndex(string indexName)
             {
                 RouteValues.Add("index", indexName);
+            }
+        }
+
+        public class FuzzinessJsonConverter : JsonConverter<Fuzziness>
+        {
+            public override Fuzziness Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                var value = reader.GetString();
+                if(value is null)
+                    throw new InvalidOperationException("Fuzziness value is null");
+
+                return new Fuzziness(value);
+            }
+
+            public override void Write(Utf8JsonWriter writer, Fuzziness value, JsonSerializerOptions options)
+            {
+                writer.WriteStringValue(value.ToString());
             }
         }
     }

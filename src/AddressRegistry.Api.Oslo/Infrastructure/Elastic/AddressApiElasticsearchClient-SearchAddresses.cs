@@ -56,11 +56,19 @@
                                     q2.Nested(full =>
                                         full
                                             .Path(FullAddress)
-                                            .Query(fullAddressQuery => fullAddressQuery.MatchPhrase(mp =>
-                                                mp
-                                                    .Field($"{FullAddress}.{NameSpelling}")
-                                                    .Query(addressQuery)
-                                                    .Slop(10)))
+                                            .Query(fullAddressQuery => fullAddressQuery.Bool(b =>
+                                                b.Should(s =>
+                                                        s.MatchPhrase(mp => mp
+                                                            .Field($"{FullAddress}.{NameSpelling}")
+                                                            .Query(addressQuery)
+                                                            .Slop(10)),
+                                                    s =>
+                                                        s.Match(mp => mp
+                                                            .Field($"{FullAddress}.{NameSpelling}")
+                                                            .Query(addressQuery)
+                                                            .Fuzziness(new Fuzziness("AUTO"))
+                                                            .Operator(Operator.And))
+                                                        )))
                                             .InnerHits(c =>
                                                 c.Size(1))));
 

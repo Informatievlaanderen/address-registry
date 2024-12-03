@@ -45,6 +45,16 @@ namespace AddressRegistry.Consumer.Read.Municipality.Infrastructure.Modules
                         sqlServerOptions.MigrationsHistoryTable(MigrationTables.ConsumerReadMunicipality,
                             Schema.ConsumerReadMunicipality);
                     }), serviceLifetime);
+
+            services.AddDbContextFactory<MunicipalityConsumerContext>((_, options) => options
+                .UseLoggerFactory(loggerFactory)
+                .UseSqlServer(
+                    consumerConnectionString,
+                    sqlServerOptions =>
+                    {
+                        sqlServerOptions.EnableRetryOnFailure();
+                        sqlServerOptions.MigrationsHistoryTable(MigrationTables.ConsumerReadMunicipality, Schema.ConsumerReadMunicipality);
+                    }), serviceLifetime);
         }
 
         private static void RunInMemoryDb(

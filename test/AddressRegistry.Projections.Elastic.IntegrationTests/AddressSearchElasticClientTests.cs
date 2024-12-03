@@ -38,6 +38,9 @@ namespace AddressRegistry.Projections.Elastic.IntegrationTests
 
             var givenDocument = _fixture.Create<AddressSearchDocument>();
             await client.CreateDocument(givenDocument, CancellationToken.None);
+
+            var actualDocument = (await client.GetDocuments([givenDocument.AddressPersistentLocalId], CancellationToken.None)).Single();
+            actualDocument.Should().NotBeNull();
         }
 
         [Fact]

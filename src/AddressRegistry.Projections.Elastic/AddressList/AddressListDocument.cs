@@ -123,7 +123,7 @@ namespace AddressRegistry.Projections.Elastic.AddressList
                         names.Add(new Name(postalName.PostalName!, Language.en));
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException($"No language mapping for {postalName.Language}");
                 }
             }
 

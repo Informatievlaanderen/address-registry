@@ -129,20 +129,20 @@
                 );
         }
 
-        private static NormalizersDescriptor AddAddressListNormalizer(NormalizersDescriptor normalizersDescriptor) =>
+        private static void AddAddressListNormalizer(NormalizersDescriptor normalizersDescriptor) =>
             normalizersDescriptor.Custom(AddressListNormalizer, ca => ca
-                .CharFilter(new[] { "underscore_replace", "dot_replace", "quote_replace", "hyphen_replace" })
-                .Filter(new[] { "lowercase", "asciifolding", "trim" }));
+                .CharFilter(["underscore_replace", "dot_replace", "quote_replace", "hyphen_replace"])
+                .Filter(["lowercase", "asciifolding", "trim"]));
 
-        private static NormalizersDescriptor AddTextNumberNormalizer(NormalizersDescriptor normalizersDescriptor) =>
+        private static void AddTextNumberNormalizer(NormalizersDescriptor normalizersDescriptor) =>
             normalizersDescriptor.Custom(TextNumberNormalizer, ca => ca
-                .Filter(new[] { "lowercase", "asciifolding", "trim" }));
+                .Filter(["lowercase", "asciifolding", "trim"]));
 
-        private static AnalyzersDescriptor AddAddressListIndexAnalyzer(AnalyzersDescriptor analyzersDescriptor)
-            => analyzersDescriptor.Custom(AddressListIndexAnalyzer, ca => ca
-                        .Tokenizer("standard")
-                        .CharFilter(new [] { "underscore_replace", "dot_replace", "quote_replace", "hyphen_replace" })
-                        .Filter(new [] { "lowercase", "asciifolding" })
+        private static void AddAddressListIndexAnalyzer(AnalyzersDescriptor analyzersDescriptor) =>
+            analyzersDescriptor.Custom(AddressListIndexAnalyzer, ca => ca
+                .Tokenizer("standard")
+                .CharFilter(["underscore_replace", "dot_replace", "quote_replace", "hyphen_replace"])
+                .Filter(["lowercase", "asciifolding"])
             );
     }
 }

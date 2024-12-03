@@ -80,11 +80,7 @@
                                                 c.Size(1))
                                     ));
 
-                                if (filterConditions.Any())
-                                {
-                                    x.Filter(filterConditions.ToArray());
-                                }
-
+                                x.Filter(filterConditions.ToArray());
                                 x.Must(mustConditions.ToArray());
                             })
                         )

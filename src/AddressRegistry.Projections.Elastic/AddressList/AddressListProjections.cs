@@ -607,7 +607,7 @@ namespace AddressRegistry.Projections.Elastic.AddressList
                 var document = documents.SingleOrDefault(x => x.AddressPersistentLocalId == addressPersistentLocalId);
                 if (document is null)
                 {
-                    throw new NullReferenceException($"No document received for {addressPersistentLocalId}");
+                    throw new InvalidOperationException($"No document received for {addressPersistentLocalId}");
                 }
 
                 update(document);
@@ -633,7 +633,7 @@ namespace AddressRegistry.Projections.Elastic.AddressList
                 var document = documents.SingleOrDefault(x => x.AddressPersistentLocalId == addressPersistentLocalId);
                 if (document is null)
                 {
-                    throw new NullReferenceException($"No document received for {addressPersistentLocalId}");
+                    throw new InvalidOperationException($"No document received for {addressPersistentLocalId}");
                 }
 
                 var desiredVersionTimestamp = versionTimestamp.ToBelgianDateTimeOffset() > document.VersionTimestamp

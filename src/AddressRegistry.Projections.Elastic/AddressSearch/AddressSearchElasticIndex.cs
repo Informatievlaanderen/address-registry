@@ -140,42 +140,39 @@
                 );
         }
 
-        private static TokenFiltersDescriptor AddDutchSynonymWordsFilter(TokenFiltersDescriptor tokenFiltersDescriptor)
-        {
-            return
-                tokenFiltersDescriptor
-                    .SynonymGraph("dutch_abbreviation_synonyms", sg => sg.Synonyms(ElasticHelpers.DutchAbbreviationSynonyms))
-                    .SynonymGraph("dutch_numeral_synonyms", sg => sg.Synonyms(ElasticHelpers.DutchNumeralSynonyms));
-        }
+        private static void AddDutchSynonymWordsFilter(TokenFiltersDescriptor tokenFiltersDescriptor) =>
+            tokenFiltersDescriptor
+                .SynonymGraph("dutch_abbreviation_synonyms", sg => sg.Synonyms(ElasticHelpers.DutchAbbreviationSynonyms))
+                .SynonymGraph("dutch_numeral_synonyms", sg => sg.Synonyms(ElasticHelpers.DutchNumeralSynonyms));
 
-        private static NormalizersDescriptor AddAddressSearchNormalizer(NormalizersDescriptor normalizersDescriptor) =>
+        private static void AddAddressSearchNormalizer(NormalizersDescriptor normalizersDescriptor) =>
             normalizersDescriptor.Custom(AddressSearchNormalizer, ca => ca
-                .CharFilter(new[] { "underscore_replace", "dot_replace", "quote_replace", "hyphen_replace" })
-                .Filter(new[] { "lowercase", "asciifolding", "trim" }));
+                .CharFilter(["underscore_replace", "dot_replace", "quote_replace", "hyphen_replace"])
+                .Filter(["lowercase", "asciifolding", "trim"]));
 
-        private static NormalizersDescriptor AddTextNumberNormalizer(NormalizersDescriptor normalizersDescriptor) =>
+        private static void AddTextNumberNormalizer(NormalizersDescriptor normalizersDescriptor) =>
             normalizersDescriptor.Custom(TextNumberNormalizer, ca => ca
-                .Filter(new[] { "lowercase", "asciifolding", "trim" }));
+                .Filter(["lowercase", "asciifolding", "trim"]));
 
-        private static AnalyzersDescriptor AddAddressSearchIndexAnalyzer(AnalyzersDescriptor analyzersDescriptor)
-            => analyzersDescriptor.Custom(AddressSearchIndexAnalyzer, ca => ca
-                        .Tokenizer("standard")
-                        .CharFilter(new [] { "underscore_replace", "dot_replace", "quote_replace", "hyphen_replace" })
-                        .Filter(new [] { "lowercase", "asciifolding" })
+        private static void AddAddressSearchIndexAnalyzer(AnalyzersDescriptor analyzersDescriptor) =>
+            analyzersDescriptor.Custom(AddressSearchIndexAnalyzer, ca => ca
+                .Tokenizer("standard")
+                .CharFilter(["underscore_replace", "dot_replace", "quote_replace", "hyphen_replace"])
+                .Filter(["lowercase", "asciifolding"])
             );
 
-        private static AnalyzersDescriptor AddAddressFullSearchIndexAnalyzer(AnalyzersDescriptor analyzersDescriptor)
-            => analyzersDescriptor.Custom(AddressFullSearchIndexAnalyzer, ca => ca
+        private static void AddAddressFullSearchIndexAnalyzer(AnalyzersDescriptor analyzersDescriptor) =>
+            analyzersDescriptor.Custom(AddressFullSearchIndexAnalyzer, ca => ca
                 .Tokenizer("standard")
-                .CharFilter(new [] { "underscore_replace", "dot_replace", "quote_replace", "hyphen_replace" })
-                .Filter(new [] { "lowercase", "asciifolding", "edge_ngram" })
+                .CharFilter(["underscore_replace", "dot_replace", "quote_replace", "hyphen_replace"])
+                .Filter(["lowercase", "asciifolding", "edge_ngram"])
             );
 
-        private static AnalyzersDescriptor AddAddressFullSearchAnalyzer(AnalyzersDescriptor analyzersDescriptor)
-            => analyzersDescriptor.Custom(AddressFullSearchAnalyzer, ca => ca
+        private static void AddAddressFullSearchAnalyzer(AnalyzersDescriptor analyzersDescriptor) =>
+            analyzersDescriptor.Custom(AddressFullSearchAnalyzer, ca => ca
                 .Tokenizer("standard")
-                .CharFilter(new [] { "underscore_replace", "dot_replace", "quote_replace", "hyphen_replace" })
-                .Filter(new [] { "lowercase", "asciifolding", "dutch_abbreviation_synonyms", "dutch_numeral_synonyms" })
+                .CharFilter(["underscore_replace", "dot_replace", "quote_replace", "hyphen_replace"])
+                .Filter(["lowercase", "asciifolding", "dutch_abbreviation_synonyms", "dutch_numeral_synonyms"])
             );
     }
 }

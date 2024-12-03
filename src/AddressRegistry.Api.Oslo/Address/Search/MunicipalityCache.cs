@@ -69,24 +69,16 @@
             {
                 _memoryCache.Remove(CreateCacheKey(municipality.NisCode));
 
-                if (!string.IsNullOrWhiteSpace(municipality.NameDutch))
-                {
-                    _memoryCache.Remove(CreateCacheKey(municipality.NameDutch));
-                }
+                string?[] nameValues = [
+                    municipality.NameDutch,
+                    municipality.NameFrench,
+                    municipality.NameEnglish,
+                    municipality.NameGerman
+                ];
 
-                if (!string.IsNullOrWhiteSpace(municipality.NameFrench))
+                foreach (var name in nameValues.Where(x => !string.IsNullOrWhiteSpace(x)))
                 {
-                    _memoryCache.Remove(CreateCacheKey(municipality.NameFrench));
-                }
-
-                if (!string.IsNullOrWhiteSpace(municipality.NameEnglish))
-                {
-                    _memoryCache.Remove(CreateCacheKey(municipality.NameEnglish));
-                }
-
-                if (!string.IsNullOrWhiteSpace(municipality.NameGerman))
-                {
-                    _memoryCache.Remove(CreateCacheKey(municipality.NameGerman));
+                    _memoryCache.Remove(CreateCacheKey(name!));
                 }
             }
 
@@ -94,24 +86,16 @@
             {
                 _memoryCache.Set(CreateCacheKey(municipality.NisCode), true);
 
-                if (!string.IsNullOrWhiteSpace(municipality.NameDutch))
-                {
-                    _memoryCache.Set(CreateCacheKey(municipality.NameDutch), municipality.NisCode);
-                }
+                string?[] nameValues = [
+                    municipality.NameDutch,
+                    municipality.NameFrench,
+                    municipality.NameEnglish,
+                    municipality.NameGerman
+                ];
 
-                if (!string.IsNullOrWhiteSpace(municipality.NameFrench))
+                foreach (var name in nameValues.Where(x => !string.IsNullOrWhiteSpace(x)))
                 {
-                    _memoryCache.Set(CreateCacheKey(municipality.NameFrench), municipality.NisCode);
-                }
-
-                if (!string.IsNullOrWhiteSpace(municipality.NameEnglish))
-                {
-                    _memoryCache.Set(CreateCacheKey(municipality.NameEnglish), municipality.NisCode);
-                }
-
-                if (!string.IsNullOrWhiteSpace(municipality.NameGerman))
-                {
-                    _memoryCache.Set(CreateCacheKey(municipality.NameGerman), municipality.NisCode);
+                    _memoryCache.Set(CreateCacheKey(name!), municipality.NisCode);
                 }
             }
         }

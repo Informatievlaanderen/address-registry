@@ -45,6 +45,16 @@ namespace AddressRegistry.Consumer.Read.Postal.Infrastructure.Modules
                         sqlServerOptions.MigrationsHistoryTable(MigrationTables.ConsumerReadPostal,
                             Schema.ConsumerReadPostal);
                     }), serviceLifetime);
+
+            services.AddDbContextFactory<PostalConsumerContext>((_, options) => options
+                .UseLoggerFactory(loggerFactory)
+                .UseSqlServer(
+                    consumerConnectionString,
+                    sqlServerOptions =>
+                    {
+                        sqlServerOptions.EnableRetryOnFailure();
+                        sqlServerOptions.MigrationsHistoryTable(MigrationTables.ConsumerReadPostal, Schema.ConsumerReadPostal);
+                    }), serviceLifetime);
         }
 
         private static void RunInMemoryDb(

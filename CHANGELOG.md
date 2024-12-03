@@ -1,3 +1,10 @@
+# [4.29.0](https://github.com/informatievlaanderen/address-registry/compare/v4.28.0...v4.29.0) (2024-12-03)
+
+
+### Features
+
+* add municipalityName and nisCode filters to autocomplete + add elastic AddressList index ([53aae6a](https://github.com/informatievlaanderen/address-registry/commit/53aae6a79a558372887e48a6f697ab14b882612d))
+
 # [4.28.0](https://github.com/informatievlaanderen/address-registry/compare/v4.27.4...v4.28.0) (2024-11-28)
 
 

@@ -85,7 +85,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
                                     name.Spelling,
                                     HouseNumber,
                                     BoxNumber,
-                                    PostalInfo?.PostalCode,
+                                    PostalInfo.PostalCode,
                                     postalName.Spelling,
                                     name.Language),
                                 name.Language));

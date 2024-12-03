@@ -54,7 +54,6 @@
             var pagination = (PaginationRequest)request.Pagination;
             var query = request.Filtering.Filter.Query;
 
-
             if (request.Filtering.Filter.ResultType == ResultType.Address)
             {
                 return await SearchAddresses(request, query, nisCode, pagination);
@@ -165,11 +164,6 @@
             }
 
             return true;
-        }
-
-        private static bool ContainsNumber(string input)
-        {
-            return Regex.IsMatch(input, @"\d");
         }
 
         private static bool TryParseValidAddressStatus(AddressSearchRequest request, out AddressStatus? addressStatus)

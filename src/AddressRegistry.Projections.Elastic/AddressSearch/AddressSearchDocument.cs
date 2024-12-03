@@ -245,9 +245,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             GeometrySpecification geometrySpecification)
         {
             GeometryAsWkt = point.AsText();
-
-            var pointAsWgs84 = CoordinateTransformer.FromLambert72ToWgs84(point);
-            GeometryAsWgs84 = string.Format(CultureInfo.InvariantCulture, "{0}, {1}", pointAsWgs84.X, pointAsWgs84.Y);
+            GeometryAsWgs84 = CoordinateTransformer.FromLambert72ToWgs84Text(point);
 
             GeometryMethod = geometryMethod;
             GeometrySpecification = geometrySpecification;

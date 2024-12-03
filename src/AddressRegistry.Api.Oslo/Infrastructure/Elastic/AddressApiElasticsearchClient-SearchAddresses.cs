@@ -29,29 +29,30 @@
                         .Query(q =>
                             q.Bool(x =>
                             {
-                                var conditions = new List<Action<QueryDescriptor<AddressSearchDocument>>>();
+                                var filterConditions = new List<Action<QueryDescriptor<AddressSearchDocument>>>();
+                                var mustConditions = new List<Action<QueryDescriptor<AddressSearchDocument>>>();
 
                                 if (status is not null)
                                 {
-                                    conditions.Add(m => m.Term(t => t
+                                    filterConditions.Add(m => m.Term(t => t
                                         .Field($"{ToCamelCase(nameof(AddressSearchDocument.Status))}"!)
                                         .Value(status.ToString()!)));
                                 }
                                 else
                                 {
-                                    conditions.Add(m => m.Term(t => t
+                                    filterConditions.Add(m => m.Term(t => t
                                         .Field($"{ToCamelCase(nameof(AddressSearchDocument.Active))}"!)
                                         .Value(true)));
                                 }
 
                                 if (!string.IsNullOrWhiteSpace(nisCode))
                                 {
-                                    conditions.Add(m => m.Term(t => t
+                                    filterConditions.Add(m => m.Term(t => t
                                         .Field($"{ToCamelCase(nameof(AddressSearchDocument.Municipality))}.{ToCamelCase(nameof(AddressSearchDocument.Municipality.NisCode))}"!)
                                         .Value(nisCode)));
                                 }
 
-                                conditions.Add(q2 =>
+                                mustConditions.Add(q2 =>
                                     q2.Nested(full =>
                                         full
                                             .Path(FullAddress)
@@ -63,7 +64,12 @@
                                             .InnerHits(c =>
                                                 c.Size(1))));
 
-                                x.Must(conditions.ToArray());
+                                if (filterConditions.Any())
+                                {
+                                    x.Filter(filterConditions.ToArray());
+                                }
+
+                                x.Must(mustConditions.ToArray());
                             })
                         )
                         .Sort(new Action<SortOptionsDescriptor<AddressSearchDocument>>[]

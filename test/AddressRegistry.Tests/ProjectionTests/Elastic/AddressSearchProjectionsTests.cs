@@ -91,7 +91,7 @@
         {
             var expectedPosition = GeometryHelpers.ExampleExtendedWkb;
             var expectedPoint = (Point)WKBReaderFactory.Create().Read(expectedPosition);
-            var pointAsWgs84 = CoordinateTransformer.FromLambert72ToWgs84(expectedPoint);
+            var pointAsWgs84 = CoordinateTransformer.FromLambert72ToWgs84Text(expectedPoint);
             var @event = _fixture.Create<AddressWasMigratedToStreetName>()
                 .WithPosition(new ExtendedWkbGeometry(expectedPosition));
             var eventMetadata = new Dictionary<string, object>
@@ -156,8 +156,7 @@
                             && doc.AddressPosition.GeometryMethod == @event.GeometryMethod
                             && doc.AddressPosition.GeometrySpecification == @event.GeometrySpecification
                             && doc.AddressPosition.GeometryAsWkt == expectedPoint.AsText()
-                            && doc.AddressPosition.GeometryAsWgs84 ==
-                            string.Format(CultureInfo.InvariantCulture, "{0}, {1}", pointAsWgs84.X, pointAsWgs84.Y)
+                            && doc.AddressPosition.GeometryAsWgs84 == pointAsWgs84
                         ),
                         It.IsAny<CancellationToken>()));
 
@@ -170,7 +169,7 @@
         {
             var expectedPosition = GeometryHelpers.ExampleExtendedWkb;
             var expectedPoint = (Point)WKBReaderFactory.Create().Read(expectedPosition);
-            var pointAsWgs84 = CoordinateTransformer.FromLambert72ToWgs84(expectedPoint);
+            var pointAsWgs84 = CoordinateTransformer.FromLambert72ToWgs84Text(expectedPoint);
             var @event = _fixture.Create<AddressWasProposedV2>()
                 .WithExtendedWkbGeometry(new ExtendedWkbGeometry(expectedPosition));
             var eventMetadata = new Dictionary<string, object>
@@ -235,8 +234,7 @@
                             && doc.AddressPosition.GeometryMethod == @event.GeometryMethod
                             && doc.AddressPosition.GeometrySpecification == @event.GeometrySpecification &&
                             doc.AddressPosition.GeometryAsWkt == expectedPoint.AsText()
-                            && doc.AddressPosition.GeometryAsWgs84 ==
-                            string.Format(CultureInfo.InvariantCulture, "{0}, {1}", pointAsWgs84.X, pointAsWgs84.Y)
+                            && doc.AddressPosition.GeometryAsWgs84 == pointAsWgs84
                         ),
                         It.IsAny<CancellationToken>()));
 
@@ -249,7 +247,7 @@
         {
             var expectedPosition = GeometryHelpers.ExampleExtendedWkb;
             var expectedPoint = (Point)WKBReaderFactory.Create().Read(expectedPosition);
-            var pointAsWgs84 = CoordinateTransformer.FromLambert72ToWgs84(expectedPoint);
+            var pointAsWgs84 = CoordinateTransformer.FromLambert72ToWgs84Text(expectedPoint);
             var @event = _fixture.Create<AddressWasProposedBecauseOfReaddress>()
                 .WithExtendedWkbGeometry(new ExtendedWkbGeometry(expectedPosition));
             var eventMetadata = new Dictionary<string, object>
@@ -314,8 +312,7 @@
                             && doc.AddressPosition.GeometryMethod == @event.GeometryMethod
                             && doc.AddressPosition.GeometrySpecification == @event.GeometrySpecification &&
                             doc.AddressPosition.GeometryAsWkt == expectedPoint.AsText()
-                            && doc.AddressPosition.GeometryAsWgs84 ==
-                            string.Format(CultureInfo.InvariantCulture, "{0}, {1}", pointAsWgs84.X, pointAsWgs84.Y)
+                            && doc.AddressPosition.GeometryAsWgs84 == pointAsWgs84
                         ),
                         It.IsAny<CancellationToken>()));
 
@@ -328,7 +325,7 @@
         {
             var expectedPosition = GeometryHelpers.ExampleExtendedWkb;
             var expectedPoint = (Point)WKBReaderFactory.Create().Read(expectedPosition);
-            var pointAsWgs84 = CoordinateTransformer.FromLambert72ToWgs84(expectedPoint);
+            var pointAsWgs84 = CoordinateTransformer.FromLambert72ToWgs84Text(expectedPoint);
             var @event = _fixture.Create<AddressWasProposedForMunicipalityMerger>()
                 .WithExtendedWkbGeometry(new ExtendedWkbGeometry(expectedPosition));
             var eventMetadata = new Dictionary<string, object>
@@ -393,8 +390,7 @@
                             && doc.AddressPosition.GeometryMethod == @event.GeometryMethod
                             && doc.AddressPosition.GeometrySpecification == @event.GeometrySpecification &&
                             doc.AddressPosition.GeometryAsWkt == expectedPoint.AsText()
-                            && doc.AddressPosition.GeometryAsWgs84 ==
-                            string.Format(CultureInfo.InvariantCulture, "{0}, {1}", pointAsWgs84.X, pointAsWgs84.Y)
+                            && doc.AddressPosition.GeometryAsWgs84 == pointAsWgs84
                         ),
                         It.IsAny<CancellationToken>()));
 
@@ -1268,7 +1264,7 @@
         {
             var expectedPosition = GeometryHelpers.ExampleExtendedWkb;
             var expectedPoint = (Point)WKBReaderFactory.Create().Read(expectedPosition);
-            var pointAsWgs84 = CoordinateTransformer.FromLambert72ToWgs84(expectedPoint);
+            var pointAsWgs84 = CoordinateTransformer.FromLambert72ToWgs84Text(expectedPoint);
             var @event = _fixture.Create<AddressPositionWasChanged>()
                 .WithExtendedWkbGeometry(new ExtendedWkbGeometry(expectedPosition));
             var eventMetadata = new Dictionary<string, object>
@@ -1287,8 +1283,7 @@
                             doc.AddressPosition!.GeometryMethod == @event.GeometryMethod
                             && doc.AddressPosition.GeometrySpecification == @event.GeometrySpecification
                             && doc.AddressPosition.GeometryAsWkt == expectedPoint.AsText()
-                            && doc.AddressPosition.GeometryAsWgs84 ==
-                            string.Format(CultureInfo.InvariantCulture, "{0}, {1}", pointAsWgs84.X, pointAsWgs84.Y)
+                            && doc.AddressPosition.GeometryAsWgs84 == pointAsWgs84
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.OfficiallyAssigned == null
                             && doc.Status == null
@@ -1305,7 +1300,7 @@
         {
             var expectedPosition = GeometryHelpers.ExampleExtendedWkb;
             var expectedPoint = (Point)WKBReaderFactory.Create().Read(expectedPosition);
-            var pointAsWgs84 = CoordinateTransformer.FromLambert72ToWgs84(expectedPoint);
+            var pointAsWgs84 = CoordinateTransformer.FromLambert72ToWgs84Text(expectedPoint);
             var @event = _fixture.Create<AddressPositionWasCorrectedV2>()
                 .WithExtendedWkbGeometry(new ExtendedWkbGeometry(expectedPosition));
             var eventMetadata = new Dictionary<string, object>
@@ -1324,8 +1319,7 @@
                             doc.AddressPosition!.GeometryMethod == @event.GeometryMethod
                             && doc.AddressPosition.GeometrySpecification == @event.GeometrySpecification
                             && doc.AddressPosition.GeometryAsWkt == expectedPoint.AsText()
-                            && doc.AddressPosition.GeometryAsWgs84 ==
-                            string.Format(CultureInfo.InvariantCulture, "{0}, {1}", pointAsWgs84.X, pointAsWgs84.Y)
+                            && doc.AddressPosition.GeometryAsWgs84 == pointAsWgs84
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.OfficiallyAssigned == null
                             && doc.Status == null
@@ -1344,7 +1338,7 @@
 
             var expectedPosition = GeometryHelpers.ExampleExtendedWkb;
             var expectedPoint = (Point)WKBReaderFactory.Create().Read(expectedPosition);
-            var pointAsWgs84 = CoordinateTransformer.FromLambert72ToWgs84(expectedPoint);
+            var pointAsWgs84 = CoordinateTransformer.FromLambert72ToWgs84Text(expectedPoint);
             var @event = _fixture.Create<AddressHouseNumberWasReaddressed>()
                 .WithExtendedWkbGeometry(new ExtendedWkbGeometry(expectedPosition));
 
@@ -1395,8 +1389,7 @@
                             && doc.AddressPosition.GeometryMethod == @event.ReaddressedHouseNumber.SourceGeometryMethod
                             && doc.AddressPosition.GeometrySpecification == @event.ReaddressedHouseNumber.SourceGeometrySpecification
                             && doc.AddressPosition.GeometryAsWkt == expectedPoint.AsText()
-                            && doc.AddressPosition.GeometryAsWgs84 ==
-                            string.Format(CultureInfo.InvariantCulture, "{0}, {1}", pointAsWgs84.X, pointAsWgs84.Y)
+                            && doc.AddressPosition.GeometryAsWgs84 == pointAsWgs84
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                         ),
                         It.IsAny<CancellationToken>()));
@@ -1415,8 +1408,7 @@
                                 && doc.AddressPosition.GeometryMethod == boxNumberAddress.SourceGeometryMethod
                                 && doc.AddressPosition.GeometrySpecification == boxNumberAddress.SourceGeometrySpecification
                                 && doc.AddressPosition.GeometryAsWkt == expectedPoint.AsText()
-                                && doc.AddressPosition.GeometryAsWgs84 ==
-                                string.Format(CultureInfo.InvariantCulture, "{0}, {1}", pointAsWgs84.X, pointAsWgs84.Y)
+                                && doc.AddressPosition.GeometryAsWgs84 == pointAsWgs84
                                 && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             ),
                             It.IsAny<CancellationToken>()));
@@ -1497,7 +1489,7 @@
         {
             var expectedPosition = GeometryHelpers.ExampleExtendedWkb;
             var expectedPoint = (Point)WKBReaderFactory.Create().Read(expectedPosition);
-            var pointAsWgs84 = CoordinateTransformer.FromLambert72ToWgs84(expectedPoint);
+            var pointAsWgs84 = CoordinateTransformer.FromLambert72ToWgs84Text(expectedPoint);
             var @event = _fixture.Create<AddressRemovalWasCorrected>()
                 .WithGeometry(new ExtendedWkbGeometry(expectedPosition));
             var eventMetadata = new Dictionary<string, object>
@@ -1562,8 +1554,7 @@
                             && doc.AddressPosition.GeometryMethod == @event.GeometryMethod
                             && doc.AddressPosition.GeometrySpecification == @event.GeometrySpecification
                             && doc.AddressPosition.GeometryAsWkt == expectedPoint.AsText()
-                            && doc.AddressPosition.GeometryAsWgs84 ==
-                            string.Format(CultureInfo.InvariantCulture, "{0}, {1}", pointAsWgs84.X, pointAsWgs84.Y)
+                            && doc.AddressPosition.GeometryAsWgs84 == pointAsWgs84
                         ),
                         It.IsAny<CancellationToken>()));
 

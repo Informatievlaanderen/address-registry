@@ -29,29 +29,30 @@
                         .Query(q =>
                             q.Bool(x =>
                             {
-                                var conditions = new List<Action<QueryDescriptor<StreetNameSearchDocument>>>();
+                                var filterConditions = new List<Action<QueryDescriptor<StreetNameSearchDocument>>>();
+                                var mustConditions = new List<Action<QueryDescriptor<StreetNameSearchDocument>>>();
 
                                 if (status is not null)
                                 {
-                                    conditions.Add(m => m.Term(t => t
+                                    filterConditions.Add(m => m.Term(t => t
                                         .Field($"{ToCamelCase(nameof(StreetNameSearchDocument.Status))}"!)
                                         .Value(status.ToString()!)));
                                 }
                                 else
                                 {
-                                    conditions.Add(m => m.Term(t => t
+                                    filterConditions.Add(m => m.Term(t => t
                                         .Field($"{ToCamelCase(nameof(StreetNameSearchDocument.Active))}"!)
                                         .Value(true)));
                                 }
 
                                 if (!string.IsNullOrWhiteSpace(nisCode))
                                 {
-                                    conditions.Add(m => m.Term(t => t
+                                    filterConditions.Add(m => m.Term(t => t
                                         .Field($"{ToCamelCase(nameof(StreetNameSearchDocument.Municipality))}.{ToCamelCase(nameof(StreetNameSearchDocument.Municipality.NisCode))}"!)
                                         .Value(nisCode)));
                                 }
 
-                                conditions.Add(q2 =>
+                                mustConditions.Add(q2 =>
                                     q2.Nested(full =>
                                         full
                                             .Path(_fullStreetNames)
@@ -79,7 +80,12 @@
                                                 c.Size(1))
                                     ));
 
-                                x.Must(conditions.ToArray());
+                                if (filterConditions.Any())
+                                {
+                                    x.Filter(filterConditions.ToArray());
+                                }
+
+                                x.Must(mustConditions.ToArray());
                             })
                         )
                         .Sort(new Action<SortOptionsDescriptor<StreetNameSearchDocument>>[]
@@ -98,7 +104,7 @@
                 _logger.LogWarning("Failed to search for streetnames: {Error}", searchResponse.ElasticsearchServerError);
                 return StreetNameSearchResult.Empty;
             }
-            
+
             var language = DetermineLanguage(searchResponse);
             return new StreetNameSearchResult(searchResponse.Documents, searchResponse.Total, language);
         }

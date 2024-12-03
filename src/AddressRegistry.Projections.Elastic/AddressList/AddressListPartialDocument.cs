@@ -12,10 +12,6 @@
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public AddressStatus? Status { get; set; }
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public bool? Active => Status is not null
-            ? Status is AddressStatus.Proposed or AddressStatus.Current
-            : null;
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool? OfficiallyAssigned { get; set; }

@@ -17,8 +17,6 @@
         public const string AddressListNormalizer = "AddressListNormalizer";
         public const string TextNumberNormalizer = "TextNumberNormalizer";
         public const string AddressListIndexAnalyzer = "AddressListIndexAnalyzer";
-        public const string AddressFullSearchIndexAnalyzer = "AddressFullSearchIndexAnalyzer";
-        public const string AddressFullSearchAnalyzer = "AddressFullSearchAnalyzer";
 
         public AddressListElasticIndex(
             ElasticsearchClient client,
@@ -53,11 +51,6 @@
                             .PatternReplace("quote_replace", prcf => prcf.Pattern("\'").Replacement(""))
                             .PatternReplace("hyphen_replace", prcf => prcf.Pattern("-").Replacement(" "))
                         )
-                        .TokenFilters(descriptor =>
-                        {
-                            descriptor.EdgeNGram("edge_ngram", e => e.MinGram(1).MaxGram(20));
-                            AddDutchSynonymWordsFilter(descriptor);
-                        })
                         .Normalizers(descriptor =>
                         {
                             AddAddressListNormalizer(descriptor);
@@ -66,8 +59,6 @@
                         .Analyzers(descriptor =>
                         {
                             AddAddressListIndexAnalyzer(descriptor);
-                            AddAddressFullSearchIndexAnalyzer(descriptor);
-                            AddAddressFullSearchAnalyzer(descriptor);
                         })
                     )
                 );
@@ -78,7 +69,6 @@
                             .IntegerNumber(x => x.ParentAddressPersistentLocalId)
                             .Date(x => x.VersionTimestamp)
                             .Keyword(x => x.Status)
-                            .Boolean(x => x.Active)
                             .Boolean(x => x.OfficiallyAssigned)
                             .Keyword(x => x.HouseNumber, c =>
                                 c.Normalizer(TextNumberNormalizer))
@@ -113,7 +103,6 @@
                                     .Nested("homonymAdditions", ConfigureNames())
                                 )
                             )
-                            .Nested(x => x.FullAddress, ConfigureNames(AddressFullSearchIndexAnalyzer))
                     ));
             }, ct);
 
@@ -134,18 +123,10 @@
                             { "keyword", new KeywordProperty { IgnoreAbove = 256, Normalizer = AddressListNormalizer } }
                         },
                         Analyzer = analyzer,
-                        SearchAnalyzer = AddressFullSearchAnalyzer
+                        SearchAnalyzer = analyzer
                     })
                     .Keyword("language")
                 );
-        }
-
-        private static TokenFiltersDescriptor AddDutchSynonymWordsFilter(TokenFiltersDescriptor tokenFiltersDescriptor)
-        {
-            return
-                tokenFiltersDescriptor
-                    .SynonymGraph("dutch_abbreviation_synonyms", sg => sg.Synonyms(ElasticHelpers.DutchAbbreviationSynonyms))
-                    .SynonymGraph("dutch_numeral_synonyms", sg => sg.Synonyms(ElasticHelpers.DutchNumeralSynonyms));
         }
 
         private static NormalizersDescriptor AddAddressListNormalizer(NormalizersDescriptor normalizersDescriptor) =>
@@ -162,20 +143,6 @@
                         .Tokenizer("standard")
                         .CharFilter(new [] { "underscore_replace", "dot_replace", "quote_replace", "hyphen_replace" })
                         .Filter(new [] { "lowercase", "asciifolding" })
-            );
-
-        private static AnalyzersDescriptor AddAddressFullSearchIndexAnalyzer(AnalyzersDescriptor analyzersDescriptor)
-            => analyzersDescriptor.Custom(AddressFullSearchIndexAnalyzer, ca => ca
-                .Tokenizer("standard")
-                .CharFilter(new [] { "underscore_replace", "dot_replace", "quote_replace", "hyphen_replace" })
-                .Filter(new [] { "lowercase", "asciifolding", "edge_ngram" })
-            );
-
-        private static AnalyzersDescriptor AddAddressFullSearchAnalyzer(AnalyzersDescriptor analyzersDescriptor)
-            => analyzersDescriptor.Custom(AddressFullSearchAnalyzer, ca => ca
-                .Tokenizer("standard")
-                .CharFilter(new [] { "underscore_replace", "dot_replace", "quote_replace", "hyphen_replace" })
-                .Filter(new [] { "lowercase", "asciifolding", "dutch_abbreviation_synonyms", "dutch_numeral_synonyms" })
             );
     }
 }

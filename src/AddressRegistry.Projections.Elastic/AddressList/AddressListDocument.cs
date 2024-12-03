@@ -13,7 +13,6 @@ namespace AddressRegistry.Projections.Elastic.AddressList
     using NetTopologySuite.Geometries;
     using NodaTime;
 
-    //TODO-rik reduce fields + original version
     public sealed class AddressListDocument
     {
         public int AddressPersistentLocalId { get; set; }
@@ -21,7 +20,6 @@ namespace AddressRegistry.Projections.Elastic.AddressList
 
         public DateTimeOffset VersionTimestamp { get; set; }
         public AddressStatus Status { get; set; }
-        public bool Active => Status is AddressStatus.Proposed or AddressStatus.Current;
         public bool OfficiallyAssigned { get; set; }
         public string HouseNumber { get; set; }
         public string? BoxNumber { get; set; }
@@ -29,7 +27,6 @@ namespace AddressRegistry.Projections.Elastic.AddressList
         public Municipality Municipality { get; set; }
         public PostalInfo? PostalInfo { get; set; }
         public StreetName StreetName { get; set; }
-        public Name[] FullAddress => BuildFullAddress();
 
         public AddressPosition AddressPosition { get; set; }
 
@@ -60,61 +57,6 @@ namespace AddressRegistry.Projections.Elastic.AddressList
             PostalInfo = postalInfo;
             StreetName = streetName;
             AddressPosition = addressPosition;
-        }
-
-        private Name[] BuildFullAddress()
-        {
-            var fullAddresses = new List<Name>();
-            foreach (var name in StreetName.Names)
-            {
-                fullAddresses.Add(
-                    new Name(FormatFullAddress(
-                            name.Spelling,
-                            HouseNumber,
-                            BoxNumber,
-                            PostalInfo?.PostalCode,
-                            Municipality.Names.SingleOrDefault(x => x.Language == name.Language)?.Spelling ?? Municipality.Names.First().Spelling,
-                            name.Language),
-                        name.Language));
-
-                if (PostalInfo is not null)
-                {
-                    foreach (var postalName in PostalInfo.Names.Where(x => x.Language == name.Language))
-                    {
-                        fullAddresses.Add(
-                            new Name(FormatFullAddress(
-                                    name.Spelling,
-                                    HouseNumber,
-                                    BoxNumber,
-                                    PostalInfo?.PostalCode,
-                                    postalName.Spelling,
-                                    name.Language),
-                                name.Language));
-                    }
-                }
-            }
-
-            return fullAddresses.ToArray();
-        }
-
-        private static string FormatFullAddress(string streetName, string houseNumber, string? boxNumber, string? postalCode, string municipality,
-            Language language)
-        {
-            if (string.IsNullOrWhiteSpace(boxNumber))
-            {
-                return $"{streetName} {houseNumber}, {postalCode} {municipality}".Replace("  ", " ");
-            }
-
-            var bus = language switch
-            {
-                Language.nl => "bus",
-                Language.en => "box",
-                Language.fr => "boîte",
-                Language.de => "bus",
-                _ => throw new ArgumentOutOfRangeException()
-            };
-
-            return $"{streetName} {houseNumber} {bus} {boxNumber}, {postalCode} {municipality}".Replace("  ", " ");
         }
     }
 

@@ -11,7 +11,7 @@
     using Xunit;
     using StreetName = Projections.Elastic.AddressSearch.StreetName;
 
-    public class DocumentTests
+    public class AddressSearchDocumentTests
     {
         [Fact]
         public void PartialUpdateDocument_PropertiesShouldMatchAddressSearchDocument()

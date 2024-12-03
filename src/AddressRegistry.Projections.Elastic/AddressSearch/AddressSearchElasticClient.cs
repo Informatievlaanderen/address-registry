@@ -1,14 +1,13 @@
-﻿namespace AddressRegistry.Projections.Elastic
+﻿namespace AddressRegistry.Projections.Elastic.AddressSearch
 {
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Infrastructure.Elastic.Exceptions;
-    using AddressSearch;
     using global::Elastic.Clients.Elasticsearch;
 
-    public interface IAddressElasticsearchClient
+    public interface IAddressSearchElasticClient
     {
         Task CreateDocument(AddressSearchDocument document, CancellationToken ct);
         Task<ICollection<AddressSearchDocument>> GetDocuments(IEnumerable<int> addressPersistentLocalIds, CancellationToken ct);
@@ -17,12 +16,12 @@
         Task DeleteDocument(int addressPersistentLocalId, CancellationToken ct);
     }
 
-    public class AddressElasticsearchClient : IAddressElasticsearchClient
+    public class AddressSearchElasticClient : IAddressSearchElasticClient
     {
         private readonly ElasticsearchClient _elasticClient;
         private readonly IndexName _indexName;
 
-        public AddressElasticsearchClient(
+        public AddressSearchElasticClient(
             ElasticsearchClient elasticClient,
             IndexName indexName)
         {
@@ -110,48 +109,5 @@
                 throw new ElasticsearchClientException("Failed trying to delete a document", response.ElasticsearchServerError, response.DebugInformation);
             }
         }
-
-//         public async Task UpdateVersionTimestampIfNewer(IEnumerable<int> addressPersistentLocalIds, DateTimeOffset versionTimestamp, CancellationToken ct)
-//         {
-//             var response = await _elasticClient
-//                 .UpdateByQueryAsync<AddressSearchDocument>(updateByQuery => updateByQuery
-//                     .Indices(Indices.Index(_indexName))
-//                     .Query(queryDescriptor =>
-//                     {
-//                         queryDescriptor
-//                             .Bool(configureBool =>
-//                             {
-//                                 configureBool
-//                                     .Must(
-//                                         q =>
-//                                         {
-//                                             q.Ids(new IdsQuery
-//                                             {
-//                                                 Values = new Ids(addressPersistentLocalIds.Select(x => new Id(x).ToString()))
-//                                             });
-//                                         },
-//                                         q =>
-//                                         {
-//                                             q.Range(new DateRangeQuery(new Field("versionTimestamp"))
-//                                             {
-//                                                 // ToString("o") is required to filter correctly using the timezone
-//                                                 Lt = new DateMathExpression(versionTimestamp.ToString("o")),
-//                                                 Format = "strict_date_time"
-//                                             });
-//                                         });
-//                             });
-//                     })
-//                     .Script(script => script
-//                         .Source("ctx._source.versionTimestamp = params.versionTimestamp")
-//                         .Params(p => p
-//                             .Add("versionTimestamp", versionTimestamp)
-//                         ))
-//                 , ct);
-//
-//             if (!response.IsValidResponse)
-//             {
-//                 throw new ElasticsearchClientException(response.ApiCallDetails.OriginalException);
-//             }
-//         }
     }
 }

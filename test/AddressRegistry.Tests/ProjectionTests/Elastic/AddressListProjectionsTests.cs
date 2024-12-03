@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -26,17 +25,17 @@
     using Moq;
     using NetTopologySuite.Geometries;
     using Projections.Elastic;
-    using Projections.Elastic.AddressSearch;
+    using Projections.Elastic.AddressList;
     using Tests.BackOffice.Infrastructure;
     using Xunit;
     using Envelope = Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope;
 
-    public class AddressSearchProjectionsTests
+    public class AddressListProjectionsTests
     {
         private readonly Fixture _fixture;
-        private readonly ConnectedProjectionTest<ElasticRunnerContext, AddressSearchProjections> _sut;
+        private readonly ConnectedProjectionTest<ElasticRunnerContext, AddressListProjections> _sut;
 
-        private readonly Mock<IAddressSearchElasticClient> _elasticSearchClient;
+        private readonly Mock<IAddressListElasticClient> _elasticSearchClient;
         private readonly TestMunicipalityConsumerContext _municipalityContext;
         private readonly FakePostalConsumerContext _postalConsumerContext;
         private readonly TestStreetNameConsumerContext _streetNameConsumerContext;
@@ -44,14 +43,14 @@
         private readonly Mock<IDbContextFactory<PostalConsumerContext>> _postalDbContextFactory;
         private readonly Mock<IDbContextFactory<StreetNameConsumerContext>> _streetNameDbContextFactory;
 
-        public AddressSearchProjectionsTests()
+        public AddressListProjectionsTests()
         {
             _fixture = new Fixture();
             _fixture.Customize(new InfrastructureCustomization());
             _fixture.Customize(new WithValidHouseNumber());
             _fixture.Customize(new WithValidBoxNumber());
 
-            _elasticSearchClient = new Mock<IAddressSearchElasticClient>();
+            _elasticSearchClient = new Mock<IAddressListElasticClient>();
             _postalConsumerContext = new FakePostalConsumerContextFactory().CreateDbContext();
             _municipalityContext = new FakeMunicipalityConsumerContextFactory().CreateDbContext();
             _streetNameConsumerContext = new FakeStreetNameConsumerContextFactory().CreateDbContext();
@@ -68,7 +67,7 @@
                 .Setup(x => x.CreateDbContextAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(_streetNameConsumerContext);
 
-            _sut = new ConnectedProjectionTest<ElasticRunnerContext, AddressSearchProjections>(CreateContext, CreateProjection);
+            _sut = new ConnectedProjectionTest<ElasticRunnerContext, AddressListProjections>(CreateContext, CreateProjection);
         }
 
         private ElasticRunnerContext CreateContext()
@@ -80,7 +79,7 @@
             return new ElasticRunnerContext(options);
         }
 
-        private AddressSearchProjections CreateProjection() => new(
+        private AddressListProjections CreateProjection() => new(
             _elasticSearchClient.Object,
             _municipalityDbContextFactory.Object,
             _postalDbContextFactory.Object,
@@ -137,7 +136,7 @@
                 .Then(_ =>
                 {
                     _elasticSearchClient.Verify(x => x.CreateDocument(
-                        It.Is<AddressSearchDocument>(doc =>
+                        It.Is<AddressListDocument>(doc =>
                             doc.AddressPersistentLocalId == @event.AddressPersistentLocalId
                             && doc.ParentAddressPersistentLocalId == @event.ParentPersistentLocalId
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
@@ -152,7 +151,6 @@
                             && doc.StreetName.StreetNamePersistentLocalId == @event.StreetNamePersistentLocalId
                             && doc.StreetName.Names.Length == 2
                             && doc.StreetName.HomonymAdditions.Length == 2
-                            && doc.FullAddress.Length == 3
                             && doc.AddressPosition.GeometryMethod == @event.GeometryMethod
                             && doc.AddressPosition.GeometrySpecification == @event.GeometrySpecification
                             && doc.AddressPosition.GeometryAsWkt == expectedPoint.AsText()
@@ -215,7 +213,7 @@
                 .Then(_ =>
                 {
                     _elasticSearchClient.Verify(x => x.CreateDocument(
-                        It.Is<AddressSearchDocument>(doc =>
+                        It.Is<AddressListDocument>(doc =>
                             doc.AddressPersistentLocalId == @event.AddressPersistentLocalId
                             && doc.ParentAddressPersistentLocalId == @event.ParentPersistentLocalId
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
@@ -230,7 +228,6 @@
                             && doc.StreetName.StreetNamePersistentLocalId == @event.StreetNamePersistentLocalId
                             && doc.StreetName.Names.Length == 2
                             && doc.StreetName.HomonymAdditions.Length == 2
-                            && doc.FullAddress.Length == 3
                             && doc.AddressPosition.GeometryMethod == @event.GeometryMethod
                             && doc.AddressPosition.GeometrySpecification == @event.GeometrySpecification &&
                             doc.AddressPosition.GeometryAsWkt == expectedPoint.AsText()
@@ -293,7 +290,7 @@
                 .Then(_ =>
                 {
                     _elasticSearchClient.Verify(x => x.CreateDocument(
-                        It.Is<AddressSearchDocument>(doc =>
+                        It.Is<AddressListDocument>(doc =>
                             doc.AddressPersistentLocalId == @event.AddressPersistentLocalId
                             && doc.ParentAddressPersistentLocalId == @event.ParentPersistentLocalId
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
@@ -308,7 +305,6 @@
                             && doc.StreetName.StreetNamePersistentLocalId == @event.StreetNamePersistentLocalId
                             && doc.StreetName.Names.Length == 2
                             && doc.StreetName.HomonymAdditions.Length == 2
-                            && doc.FullAddress.Length == 3
                             && doc.AddressPosition.GeometryMethod == @event.GeometryMethod
                             && doc.AddressPosition.GeometrySpecification == @event.GeometrySpecification &&
                             doc.AddressPosition.GeometryAsWkt == expectedPoint.AsText()
@@ -371,7 +367,7 @@
                 .Then(_ =>
                 {
                     _elasticSearchClient.Verify(x => x.CreateDocument(
-                        It.Is<AddressSearchDocument>(doc =>
+                        It.Is<AddressListDocument>(doc =>
                             doc.AddressPersistentLocalId == @event.AddressPersistentLocalId
                             && doc.ParentAddressPersistentLocalId == @event.ParentPersistentLocalId
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
@@ -386,7 +382,6 @@
                             && doc.StreetName.StreetNamePersistentLocalId == @event.StreetNamePersistentLocalId
                             && doc.StreetName.Names.Length == 2
                             && doc.StreetName.HomonymAdditions.Length == 2
-                            && doc.FullAddress.Length == 3
                             && doc.AddressPosition.GeometryMethod == @event.GeometryMethod
                             && doc.AddressPosition.GeometrySpecification == @event.GeometrySpecification &&
                             doc.AddressPosition.GeometryAsWkt == expectedPoint.AsText()
@@ -414,9 +409,8 @@
                 {
                     _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
                         @event.AddressPersistentLocalId,
-                        It.Is<AddressSearchPartialDocument>(doc =>
+                        It.Is<AddressListPartialDocument>(doc =>
                             doc.Status == AddressStatus.Current
-                            && doc.Active == true
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
@@ -443,9 +437,8 @@
                 {
                     _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
                         @event.AddressPersistentLocalId,
-                        It.Is<AddressSearchPartialDocument>(doc =>
+                        It.Is<AddressListPartialDocument>(doc =>
                             doc.Status == AddressStatus.Proposed
-                            && doc.Active == true
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
@@ -472,9 +465,8 @@
                 {
                     _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
                         @event.AddressPersistentLocalId,
-                        It.Is<AddressSearchPartialDocument>(doc =>
+                        It.Is<AddressListPartialDocument>(doc =>
                             doc.Status == AddressStatus.Proposed
-                            && doc.Active == true
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
@@ -501,9 +493,8 @@
                 {
                     _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
                         @event.AddressPersistentLocalId,
-                        It.Is<AddressSearchPartialDocument>(doc =>
+                        It.Is<AddressListPartialDocument>(doc =>
                             doc.Status == AddressStatus.Proposed
-                            && doc.Active == true
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
@@ -530,9 +521,8 @@
                 {
                     _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
                         @event.AddressPersistentLocalId,
-                        It.Is<AddressSearchPartialDocument>(doc =>
+                        It.Is<AddressListPartialDocument>(doc =>
                             doc.Status == AddressStatus.Rejected
-                            && doc.Active == false
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
@@ -559,9 +549,8 @@
                 {
                     _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
                         @event.AddressPersistentLocalId,
-                        It.Is<AddressSearchPartialDocument>(doc =>
+                        It.Is<AddressListPartialDocument>(doc =>
                             doc.Status == AddressStatus.Rejected
-                            && doc.Active == false
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
@@ -588,9 +577,8 @@
                 {
                     _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
                         @event.AddressPersistentLocalId,
-                        It.Is<AddressSearchPartialDocument>(doc =>
+                        It.Is<AddressListPartialDocument>(doc =>
                             doc.Status == AddressStatus.Rejected
-                            && doc.Active == false
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
@@ -617,9 +605,8 @@
                 {
                     _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
                         @event.AddressPersistentLocalId,
-                        It.Is<AddressSearchPartialDocument>(doc =>
+                        It.Is<AddressListPartialDocument>(doc =>
                             doc.Status == AddressStatus.Rejected
-                            && doc.Active == false
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
@@ -646,9 +633,8 @@
                 {
                     _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
                         @event.AddressPersistentLocalId,
-                        It.Is<AddressSearchPartialDocument>(doc =>
+                        It.Is<AddressListPartialDocument>(doc =>
                             doc.Status == AddressStatus.Rejected
-                            && doc.Active == false
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
@@ -675,9 +661,8 @@
                 {
                     _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
                         @event.AddressPersistentLocalId,
-                        It.Is<AddressSearchPartialDocument>(doc =>
+                        It.Is<AddressListPartialDocument>(doc =>
                             doc.Status == AddressStatus.Rejected
-                            && doc.Active == false
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
@@ -704,9 +689,8 @@
                 {
                     _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
                         @event.AddressPersistentLocalId,
-                        It.Is<AddressSearchPartialDocument>(doc =>
+                        It.Is<AddressListPartialDocument>(doc =>
                             doc.Status == AddressStatus.Rejected
-                            && doc.Active == false
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
@@ -733,9 +717,8 @@
                 {
                     _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
                         @event.AddressPersistentLocalId,
-                        It.Is<AddressSearchPartialDocument>(doc =>
+                        It.Is<AddressListPartialDocument>(doc =>
                             doc.Status == AddressStatus.Retired
-                            && doc.Active == false
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
@@ -762,9 +745,8 @@
                 {
                     _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
                         @event.AddressPersistentLocalId,
-                        It.Is<AddressSearchPartialDocument>(doc =>
+                        It.Is<AddressListPartialDocument>(doc =>
                             doc.Status == AddressStatus.Retired
-                            && doc.Active == false
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
@@ -791,9 +773,8 @@
                 {
                     _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
                         @event.AddressPersistentLocalId,
-                        It.Is<AddressSearchPartialDocument>(doc =>
+                        It.Is<AddressListPartialDocument>(doc =>
                             doc.Status == AddressStatus.Retired
-                            && doc.Active == false
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
@@ -820,9 +801,8 @@
                 {
                     _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
                         @event.AddressPersistentLocalId,
-                        It.Is<AddressSearchPartialDocument>(doc =>
+                        It.Is<AddressListPartialDocument>(doc =>
                             doc.Status == AddressStatus.Retired
-                            && doc.Active == false
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
@@ -849,9 +829,8 @@
                 {
                     _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
                         @event.AddressPersistentLocalId,
-                        It.Is<AddressSearchPartialDocument>(doc =>
+                        It.Is<AddressListPartialDocument>(doc =>
                             doc.Status == AddressStatus.Retired
-                            && doc.Active == false
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
@@ -878,9 +857,8 @@
                 {
                     _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
                         @event.AddressPersistentLocalId,
-                        It.Is<AddressSearchPartialDocument>(doc =>
+                        It.Is<AddressListPartialDocument>(doc =>
                             doc.Status == AddressStatus.Retired
-                            && doc.Active == false
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
@@ -907,9 +885,8 @@
                 {
                     _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
                         @event.AddressPersistentLocalId,
-                        It.Is<AddressSearchPartialDocument>(doc =>
+                        It.Is<AddressListPartialDocument>(doc =>
                             doc.Status == AddressStatus.Current
-                            && doc.Active == true
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                             && doc.OfficiallyAssigned == null
@@ -936,9 +913,8 @@
                 {
                     _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
                         @event.AddressPersistentLocalId,
-                        It.Is<AddressSearchPartialDocument>(doc =>
+                        It.Is<AddressListPartialDocument>(doc =>
                             doc.Status == AddressStatus.Current
-                            && doc.Active == true
                             && doc.OfficiallyAssigned == false
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
@@ -965,10 +941,9 @@
                 {
                     _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
                         @event.AddressPersistentLocalId,
-                        It.Is<AddressSearchPartialDocument>(doc =>
+                        It.Is<AddressListPartialDocument>(doc =>
                             doc.OfficiallyAssigned == true
                             && doc.Status == null
-                            && doc.Active == null
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                         ),
@@ -994,10 +969,9 @@
                 {
                     _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
                         @event.AddressPersistentLocalId,
-                        It.Is<AddressSearchPartialDocument>(doc =>
+                        It.Is<AddressListPartialDocument>(doc =>
                             doc.OfficiallyAssigned == true
                             && doc.Status == null
-                            && doc.Active == null
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                         ),
@@ -1023,10 +997,9 @@
                 {
                     _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
                         @event.AddressPersistentLocalId,
-                        It.Is<AddressSearchPartialDocument>(doc =>
+                        It.Is<AddressListPartialDocument>(doc =>
                             doc.OfficiallyAssigned == false
                             && doc.Status == AddressStatus.Current
-                            && doc.Active == true
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.AddressPosition == null
                         ),
@@ -1049,7 +1022,7 @@
             var storedDocuments = new[] { @event.AddressPersistentLocalId }.Concat(@event.BoxNumberPersistentLocalIds)
                 .Select(x =>
                 {
-                    var document = _fixture.Create<AddressSearchDocument>();
+                    var document = _fixture.Create<AddressListDocument>();
                     document.AddressPersistentLocalId = x;
                     return document;
                 })
@@ -1075,7 +1048,7 @@
                 .Then(_ =>
                 {
                     _elasticSearchClient.Verify(x => x.UpdateDocument(
-                        It.Is<AddressSearchDocument>(doc =>
+                        It.Is<AddressListDocument>(doc =>
                             doc.AddressPersistentLocalId == @event.AddressPersistentLocalId
                             && doc.PostalInfo!.PostalCode == @event.PostalCode
                             && doc.PostalInfo.Names.Length == 1
@@ -1088,7 +1061,7 @@
                     foreach (var boxNumberAddressPersistentLocalId in @event.BoxNumberPersistentLocalIds)
                     {
                         _elasticSearchClient.Verify(x => x.UpdateDocument(
-                            It.Is<AddressSearchDocument>(doc =>
+                            It.Is<AddressListDocument>(doc =>
                                 doc.AddressPersistentLocalId == boxNumberAddressPersistentLocalId
                                 && doc.PostalInfo!.PostalCode == @event.PostalCode
                                 && doc.PostalInfo.Names.Length == 1
@@ -1116,7 +1089,7 @@
             var storedDocuments = new[] { @event.AddressPersistentLocalId }.Concat(@event.BoxNumberPersistentLocalIds)
                 .Select(x =>
                 {
-                    var document = _fixture.Create<AddressSearchDocument>();
+                    var document = _fixture.Create<AddressListDocument>();
                     document.AddressPersistentLocalId = x;
                     return document;
                 })
@@ -1142,7 +1115,7 @@
                 .Then(_ =>
                 {
                     _elasticSearchClient.Verify(x => x.UpdateDocument(
-                        It.Is<AddressSearchDocument>(doc =>
+                        It.Is<AddressListDocument>(doc =>
                             doc.AddressPersistentLocalId == @event.AddressPersistentLocalId
                             && doc.PostalInfo!.PostalCode == @event.PostalCode
                             && doc.PostalInfo.Names.Length == 1
@@ -1155,7 +1128,7 @@
                     foreach (var boxNumberAddressPersistentLocalId in @event.BoxNumberPersistentLocalIds)
                     {
                         _elasticSearchClient.Verify(x => x.UpdateDocument(
-                            It.Is<AddressSearchDocument>(doc =>
+                            It.Is<AddressListDocument>(doc =>
                                 doc.AddressPersistentLocalId == boxNumberAddressPersistentLocalId
                                 && doc.PostalInfo!.PostalCode == @event.PostalCode
                                 && doc.PostalInfo.Names.Length == 1
@@ -1183,7 +1156,7 @@
             var storedDocuments = new[] { @event.AddressPersistentLocalId }.Concat(@event.BoxNumberPersistentLocalIds)
                 .Select(x =>
                 {
-                    var document = _fixture.Create<AddressSearchDocument>();
+                    var document = _fixture.Create<AddressListDocument>();
                     document.AddressPersistentLocalId = x;
                     return document;
                 })
@@ -1198,7 +1171,7 @@
                 .Then(_ =>
                 {
                     _elasticSearchClient.Verify(x => x.UpdateDocument(
-                        It.Is<AddressSearchDocument>(doc =>
+                        It.Is<AddressListDocument>(doc =>
                             doc.AddressPersistentLocalId == @event.AddressPersistentLocalId
                             && doc.HouseNumber == @event.HouseNumber
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
@@ -1208,7 +1181,7 @@
                     foreach (var boxNumberAddressPersistentLocalId in @event.BoxNumberPersistentLocalIds)
                     {
                         _elasticSearchClient.Verify(x => x.UpdateDocument(
-                            It.Is<AddressSearchDocument>(doc =>
+                            It.Is<AddressListDocument>(doc =>
                                 doc.AddressPersistentLocalId == boxNumberAddressPersistentLocalId
                                 && doc.HouseNumber == @event.HouseNumber
                                 && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
@@ -1233,7 +1206,7 @@
             var storedDocuments = new[] { @event.AddressPersistentLocalId }
                 .Select(x =>
                 {
-                    var document = _fixture.Create<AddressSearchDocument>();
+                    var document = _fixture.Create<AddressListDocument>();
                     document.AddressPersistentLocalId = x;
                     return document;
                 })
@@ -1248,7 +1221,7 @@
                 .Then(_ =>
                 {
                     _elasticSearchClient.Verify(x => x.UpdateDocument(
-                        It.Is<AddressSearchDocument>(doc =>
+                        It.Is<AddressListDocument>(doc =>
                             doc.AddressPersistentLocalId == @event.AddressPersistentLocalId
                             && doc.BoxNumber == @event.BoxNumber
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
@@ -1279,7 +1252,7 @@
                 {
                     _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
                         @event.AddressPersistentLocalId,
-                        It.Is<AddressSearchPartialDocument>(doc =>
+                        It.Is<AddressListPartialDocument>(doc =>
                             doc.AddressPosition!.GeometryMethod == @event.GeometryMethod
                             && doc.AddressPosition.GeometrySpecification == @event.GeometrySpecification
                             && doc.AddressPosition.GeometryAsWkt == expectedPoint.AsText()
@@ -1287,7 +1260,6 @@
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.OfficiallyAssigned == null
                             && doc.Status == null
-                            && doc.Active == null
                         ),
                         It.IsAny<CancellationToken>()));
 
@@ -1315,7 +1287,7 @@
                 {
                     _elasticSearchClient.Verify(x => x.PartialUpdateDocument(
                         @event.AddressPersistentLocalId,
-                        It.Is<AddressSearchPartialDocument>(doc =>
+                        It.Is<AddressListPartialDocument>(doc =>
                             doc.AddressPosition!.GeometryMethod == @event.GeometryMethod
                             && doc.AddressPosition.GeometrySpecification == @event.GeometrySpecification
                             && doc.AddressPosition.GeometryAsWkt == expectedPoint.AsText()
@@ -1323,7 +1295,6 @@
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
                             && doc.OfficiallyAssigned == null
                             && doc.Status == null
-                            && doc.Active == null
                         ),
                         It.IsAny<CancellationToken>()));
 
@@ -1352,7 +1323,7 @@
                     @event.ReaddressedBoxNumbers.Select(x => x.DestinationAddressPersistentLocalId))
                 .Select(x =>
                 {
-                    var document = _fixture.Create<AddressSearchDocument>();
+                    var document = _fixture.Create<AddressListDocument>();
                     document.AddressPersistentLocalId = x;
                     return document;
                 })
@@ -1379,7 +1350,7 @@
                 .Then(_ =>
                 {
                     _elasticSearchClient.Verify(x => x.UpdateDocument(
-                        It.Is<AddressSearchDocument>(doc =>
+                        It.Is<AddressListDocument>(doc =>
                             doc.AddressPersistentLocalId == @event.AddressPersistentLocalId
                             && doc.HouseNumber == @event.ReaddressedHouseNumber.DestinationHouseNumber
                             && doc.PostalInfo!.PostalCode == postalLatestItem.PostalCode
@@ -1397,7 +1368,7 @@
                     foreach (var boxNumberAddress in @event.ReaddressedBoxNumbers)
                     {
                         _elasticSearchClient.Verify(x => x.UpdateDocument(
-                            It.Is<AddressSearchDocument>(doc =>
+                            It.Is<AddressListDocument>(doc =>
                                 doc.AddressPersistentLocalId == boxNumberAddress.DestinationAddressPersistentLocalId
                                 && doc.HouseNumber == boxNumberAddress.DestinationHouseNumber
                                 && doc.BoxNumber == boxNumberAddress.SourceBoxNumber
@@ -1535,7 +1506,7 @@
                 .Then(_ =>
                 {
                     _elasticSearchClient.Verify(x => x.CreateDocument(
-                        It.Is<AddressSearchDocument>(doc =>
+                        It.Is<AddressListDocument>(doc =>
                             doc.AddressPersistentLocalId == @event.AddressPersistentLocalId
                             && doc.ParentAddressPersistentLocalId == @event.ParentPersistentLocalId
                             && doc.VersionTimestamp == @event.Provenance.Timestamp.ToBelgianDateTimeOffset()
@@ -1550,7 +1521,6 @@
                             && doc.StreetName.StreetNamePersistentLocalId == @event.StreetNamePersistentLocalId
                             && doc.StreetName.Names.Length == 2
                             && doc.StreetName.HomonymAdditions.Length == 2
-                            && doc.FullAddress.Length == 3
                             && doc.AddressPosition.GeometryMethod == @event.GeometryMethod
                             && doc.AddressPosition.GeometrySpecification == @event.GeometrySpecification
                             && doc.AddressPosition.GeometryAsWkt == expectedPoint.AsText()
@@ -1575,7 +1545,7 @@
             var storedDocuments = @event.AddressPersistentLocalIds
                 .Select(x =>
                 {
-                    var document = _fixture.Create<AddressSearchDocument>();
+                    var document = _fixture.Create<AddressListDocument>();
                     document.AddressPersistentLocalId = x;
                     document.VersionTimestamp = _fixture.Create<DateTimeOffset>();
                     document.PostalInfo = new PostalInfo(
@@ -1619,13 +1589,12 @@
                         }
 
                         _elasticSearchClient.Verify(x => x.UpdateDocument(
-                            It.Is<AddressSearchDocument>(doc =>
+                            It.Is<AddressListDocument>(doc =>
                                 doc.AddressPersistentLocalId == addressPersistentLocalId
                                 && doc.VersionTimestamp == expectedVersionTimeStamp
                                 && doc.StreetName.StreetNamePersistentLocalId == @event.StreetNamePersistentLocalId
                                 && doc.StreetName.Names.Length == 2
                                 && doc.StreetName.HomonymAdditions.Length == 2
-                                && doc.FullAddress.Length == 4
                             ),
                             It.IsAny<CancellationToken>()));
                     }
@@ -1647,7 +1616,7 @@
             var storedDocuments = @event.AddressPersistentLocalIds
                 .Select(x =>
                 {
-                    var document = _fixture.Create<AddressSearchDocument>();
+                    var document = _fixture.Create<AddressListDocument>();
                     document.AddressPersistentLocalId = x;
                     document.VersionTimestamp = _fixture.Create<DateTimeOffset>();
                     document.PostalInfo = new PostalInfo(
@@ -1691,13 +1660,12 @@
                         }
 
                         _elasticSearchClient.Verify(x => x.UpdateDocument(
-                            It.Is<AddressSearchDocument>(doc =>
+                            It.Is<AddressListDocument>(doc =>
                                 doc.AddressPersistentLocalId == addressPersistentLocalId
                                 && doc.VersionTimestamp == expectedVersionTimeStamp
                                 && doc.StreetName.StreetNamePersistentLocalId == @event.StreetNamePersistentLocalId
                                 && doc.StreetName.Names.Length == 2
                                 && doc.StreetName.HomonymAdditions.Length == 2
-                                && doc.FullAddress.Length == 4
                             ),
                             It.IsAny<CancellationToken>()));
                     }
@@ -1719,7 +1687,7 @@
             var storedDocuments = @event.AddressPersistentLocalIds
                 .Select(x =>
                 {
-                    var document = _fixture.Create<AddressSearchDocument>();
+                    var document = _fixture.Create<AddressListDocument>();
                     document.AddressPersistentLocalId = x;
                     document.VersionTimestamp = _fixture.Create<DateTimeOffset>();
                     document.PostalInfo = new PostalInfo(
@@ -1763,13 +1731,12 @@
                         }
 
                         _elasticSearchClient.Verify(x => x.UpdateDocument(
-                            It.Is<AddressSearchDocument>(doc =>
+                            It.Is<AddressListDocument>(doc =>
                                 doc.AddressPersistentLocalId == addressPersistentLocalId
                                 && doc.VersionTimestamp == expectedVersionTimeStamp
                                 && doc.StreetName.StreetNamePersistentLocalId == @event.StreetNamePersistentLocalId
                                 && doc.StreetName.Names.Length == 2
                                 && doc.StreetName.HomonymAdditions.Length == 2
-                                && doc.FullAddress.Length == 4
                             ),
                             It.IsAny<CancellationToken>()));
                     }
@@ -1791,7 +1758,7 @@
             var storedDocuments = @event.AddressPersistentLocalIds
                 .Select(x =>
                 {
-                    var document = _fixture.Create<AddressSearchDocument>();
+                    var document = _fixture.Create<AddressListDocument>();
                     document.AddressPersistentLocalId = x;
                     document.VersionTimestamp = _fixture.Create<DateTimeOffset>();
                     document.PostalInfo = new PostalInfo(
@@ -1835,13 +1802,12 @@
                         }
 
                         _elasticSearchClient.Verify(x => x.UpdateDocument(
-                            It.Is<AddressSearchDocument>(doc =>
+                            It.Is<AddressListDocument>(doc =>
                                 doc.AddressPersistentLocalId == addressPersistentLocalId
                                 && doc.VersionTimestamp == expectedVersionTimeStamp
                                 && doc.StreetName.StreetNamePersistentLocalId == @event.StreetNamePersistentLocalId
                                 && doc.StreetName.Names.Length == 2
                                 && doc.StreetName.HomonymAdditions.Length == 2
-                                && doc.FullAddress.Length == 4
                             ),
                             It.IsAny<CancellationToken>()));
                     }

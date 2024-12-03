@@ -17,7 +17,7 @@ nuget Datadog.Trace.Bundle 2.49.0
 
 nuget Destructurama.JsonNet 3.0.0
 
-nuget Elastic.Clients.Elasticsearch 8.14.7
+nuget Elastic.Clients.Elasticsearch 8.16.3
 
 nuget MediatR 12.2.0
 nuget MediatR.Contracts 2.0.1

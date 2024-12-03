@@ -1,4 +1,4 @@
-namespace AddressRegistry.Projections.Elastic.AddressSearch
+namespace AddressRegistry.Projections.Elastic.AddressList
 {
     using System;
     using System.Collections.Generic;
@@ -21,22 +21,22 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
     using NetTopologySuite.IO;
     using NodaTime;
 
-    [ConnectedProjectionName("API endpoint search adressen")]
-    [ConnectedProjectionDescription("Projectie die de data voor het zoek adres endpoint in Elastic Search synchroniseert.")]
-    public class AddressSearchProjections : ConnectedProjection<ElasticRunnerContext>
+    [ConnectedProjectionName("API endpoint lijst adressen")]
+    [ConnectedProjectionDescription("Projectie die de data voor het adressenlijst endpoint in Elastic Search synchroniseert.")]
+    public class AddressListProjections : ConnectedProjection<ElasticRunnerContext>
     {
         private readonly IDictionary<string, Municipality> _municipalities = new Dictionary<string, Municipality>();
         private readonly IDictionary<string, PostalInfo> _postalInfos = new Dictionary<string, PostalInfo>();
         private readonly IDictionary<int, StreetNameLatestItem> _streetNames = new Dictionary<int, StreetNameLatestItem>();
 
-        private readonly IAddressSearchElasticClient _searchElasticClient;
+        private readonly IAddressListElasticClient _searchElasticClient;
         private readonly IDbContextFactory<MunicipalityConsumerContext> _municipalityConsumerContextFactory;
         private readonly IDbContextFactory<PostalConsumerContext> _postalConsumerContextFactory;
         private readonly IDbContextFactory<StreetNameConsumerContext> _streetNameConsumerContextFactory;
         private readonly WKBReader _wkbReader;
 
-        public AddressSearchProjections(
-            IAddressSearchElasticClient searchElasticClient,
+        public AddressListProjections(
+            IAddressListElasticClient searchElasticClient,
             IDbContextFactory<MunicipalityConsumerContext> municipalityConsumerContextFactory,
             IDbContextFactory<PostalConsumerContext> postalConsumerContextFactory,
             IDbContextFactory<StreetNameConsumerContext> streetNameConsumerContextFactory)
@@ -99,7 +99,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             {
                 var streetName = await GetStreetName(message.Message.StreetNamePersistentLocalId, ct);
 
-                var document = new AddressSearchDocument(
+                var document = new AddressListDocument(
                     message.Message.AddressPersistentLocalId,
                     message.Message.ParentPersistentLocalId,
                     message.Message.Provenance.Timestamp,
@@ -122,7 +122,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             {
                 var streetName = await GetStreetName(message.Message.StreetNamePersistentLocalId, ct);
 
-                var document = new AddressSearchDocument(
+                var document = new AddressListDocument(
                     message.Message.AddressPersistentLocalId,
                     message.Message.ParentPersistentLocalId,
                     message.Message.Provenance.Timestamp,
@@ -145,7 +145,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             {
                 var streetName = await GetStreetName(message.Message.StreetNamePersistentLocalId, ct);
 
-                var document = new AddressSearchDocument(
+                var document = new AddressListDocument(
                     message.Message.AddressPersistentLocalId,
                     message.Message.ParentPersistentLocalId,
                     message.Message.Provenance.Timestamp,
@@ -168,7 +168,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             {
                 var streetName = await GetStreetName(message.Message.StreetNamePersistentLocalId, ct);
 
-                var document = new AddressSearchDocument(
+                var document = new AddressListDocument(
                     message.Message.AddressPersistentLocalId,
                     message.Message.ParentPersistentLocalId,
                     message.Message.Provenance.Timestamp,
@@ -191,7 +191,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             {
                 await searchElasticClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
-                    new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
+                    new AddressListPartialDocument(message.Message.Provenance.Timestamp)
                     {
                         Status = AddressStatus.Current
                     },
@@ -202,7 +202,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             {
                 await searchElasticClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
-                    new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
+                    new AddressListPartialDocument(message.Message.Provenance.Timestamp)
                     {
                         Status = AddressStatus.Proposed
                     },
@@ -213,7 +213,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             {
                 await searchElasticClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
-                    new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
+                    new AddressListPartialDocument(message.Message.Provenance.Timestamp)
                     {
                         Status = AddressStatus.Proposed
                     },
@@ -224,7 +224,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             {
                 await searchElasticClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
-                    new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
+                    new AddressListPartialDocument(message.Message.Provenance.Timestamp)
                     {
                         Status = AddressStatus.Proposed
                     },
@@ -235,7 +235,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             {
                 await searchElasticClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
-                    new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
+                    new AddressListPartialDocument(message.Message.Provenance.Timestamp)
                     {
                         Status = AddressStatus.Rejected
                     },
@@ -246,7 +246,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             {
                 await searchElasticClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
-                    new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
+                    new AddressListPartialDocument(message.Message.Provenance.Timestamp)
                     {
                         Status = AddressStatus.Rejected
                     },
@@ -257,7 +257,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             {
                 await searchElasticClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
-                    new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
+                    new AddressListPartialDocument(message.Message.Provenance.Timestamp)
                     {
                         Status = AddressStatus.Rejected
                     },
@@ -268,7 +268,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             {
                 await searchElasticClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
-                    new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
+                    new AddressListPartialDocument(message.Message.Provenance.Timestamp)
                     {
                         Status = AddressStatus.Rejected
                     },
@@ -279,7 +279,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             {
                 await searchElasticClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
-                    new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
+                    new AddressListPartialDocument(message.Message.Provenance.Timestamp)
                     {
                         Status = AddressStatus.Rejected
                     },
@@ -290,7 +290,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             {
                 await searchElasticClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
-                    new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
+                    new AddressListPartialDocument(message.Message.Provenance.Timestamp)
                     {
                         Status = AddressStatus.Rejected
                     },
@@ -301,7 +301,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             {
                 await searchElasticClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
-                    new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
+                    new AddressListPartialDocument(message.Message.Provenance.Timestamp)
                     {
                         Status = AddressStatus.Rejected
                     },
@@ -312,7 +312,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             {
                 await searchElasticClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
-                    new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
+                    new AddressListPartialDocument(message.Message.Provenance.Timestamp)
                     {
                         Status = AddressStatus.Retired
                     },
@@ -323,7 +323,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             {
                 await searchElasticClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
-                    new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
+                    new AddressListPartialDocument(message.Message.Provenance.Timestamp)
                     {
                         Status = AddressStatus.Retired
                     },
@@ -334,7 +334,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             {
                 await searchElasticClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
-                    new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
+                    new AddressListPartialDocument(message.Message.Provenance.Timestamp)
                     {
                         Status = AddressStatus.Retired
                     },
@@ -345,7 +345,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             {
                 await searchElasticClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
-                    new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
+                    new AddressListPartialDocument(message.Message.Provenance.Timestamp)
                     {
                         Status = AddressStatus.Retired
                     },
@@ -356,7 +356,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             {
                 await searchElasticClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
-                    new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
+                    new AddressListPartialDocument(message.Message.Provenance.Timestamp)
                     {
                         Status = AddressStatus.Retired
                     },
@@ -367,7 +367,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             {
                 await searchElasticClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
-                    new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
+                    new AddressListPartialDocument(message.Message.Provenance.Timestamp)
                     {
                         Status = AddressStatus.Retired
                     },
@@ -378,7 +378,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             {
                 await searchElasticClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
-                    new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
+                    new AddressListPartialDocument(message.Message.Provenance.Timestamp)
                     {
                         Status = AddressStatus.Current
                     },
@@ -389,7 +389,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             {
                 await searchElasticClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
-                    new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
+                    new AddressListPartialDocument(message.Message.Provenance.Timestamp)
                     {
                         OfficiallyAssigned = false,
                         Status = AddressStatus.Current
@@ -401,7 +401,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             {
                 await searchElasticClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
-                    new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
+                    new AddressListPartialDocument(message.Message.Provenance.Timestamp)
                     {
                         OfficiallyAssigned = true
                     },
@@ -412,7 +412,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             {
                 await searchElasticClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
-                    new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
+                    new AddressListPartialDocument(message.Message.Provenance.Timestamp)
                     {
                         OfficiallyAssigned = true
                     },
@@ -423,7 +423,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             {
                 await searchElasticClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
-                    new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
+                    new AddressListPartialDocument(message.Message.Provenance.Timestamp)
                     {
                         OfficiallyAssigned = false,
                         Status = AddressStatus.Current
@@ -484,7 +484,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             {
                 await searchElasticClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
-                    new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
+                    new AddressListPartialDocument(message.Message.Provenance.Timestamp)
                     {
                         AddressPosition = AddressPosition(
                             message.Message.ExtendedWkbGeometry.ToByteArray(),
@@ -498,7 +498,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             {
                 await searchElasticClient.PartialUpdateDocument(
                     message.Message.AddressPersistentLocalId,
-                    new AddressSearchPartialDocument(message.Message.Provenance.Timestamp)
+                    new AddressListPartialDocument(message.Message.Provenance.Timestamp)
                     {
                         AddressPosition = AddressPosition(
                             message.Message.ExtendedWkbGeometry.ToByteArray(),
@@ -574,7 +574,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
             {
                 var streetName = await GetStreetName(message.Message.StreetNamePersistentLocalId, ct);
 
-                var document = new AddressSearchDocument(
+                var document = new AddressListDocument(
                     message.Message.AddressPersistentLocalId,
                     message.Message.ParentPersistentLocalId,
                     message.Message.Provenance.Timestamp,
@@ -596,7 +596,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
 
         private async Task UpdateDocuments(
             ICollection<int> addressPersistentLocalIds,
-            Action<AddressSearchDocument> update,
+            Action<AddressListDocument> update,
             Instant versionTimestamp,
             CancellationToken ct)
         {
@@ -607,7 +607,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
                 var document = documents.SingleOrDefault(x => x.AddressPersistentLocalId == addressPersistentLocalId);
                 if (document is null)
                 {
-                    throw new NullReferenceException($"No document received for {addressPersistentLocalId}");
+                    throw new InvalidOperationException($"No document received for {addressPersistentLocalId}");
                 }
 
                 update(document);
@@ -633,7 +633,7 @@ namespace AddressRegistry.Projections.Elastic.AddressSearch
                 var document = documents.SingleOrDefault(x => x.AddressPersistentLocalId == addressPersistentLocalId);
                 if (document is null)
                 {
-                    throw new NullReferenceException($"No document received for {addressPersistentLocalId}");
+                    throw new InvalidOperationException($"No document received for {addressPersistentLocalId}");
                 }
 
                 var desiredVersionTimestamp = versionTimestamp.ToBelgianDateTimeOffset() > document.VersionTimestamp

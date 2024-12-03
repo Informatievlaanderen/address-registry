@@ -4,20 +4,20 @@ namespace AddressRegistry.Projections.Elastic.IntegrationTests
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AddressSearch;
+    using AddressList;
     using AutoFixture;
     using FluentAssertions;
     using NetTopologySuite.Geometries;
     using StreetName;
     using Xunit;
 
-    [Xunit.Collection("Elastic")]
-    public class AddressElasticsearchClientTests : IClassFixture<ElasticsearchClientTestFixture>
+    [Collection("Elastic")]
+    public class AddressListElasticClientTests : IClassFixture<ElasticsearchClientTestFixture>
     {
         private readonly ElasticsearchClientTestFixture _clientFixture;
         private readonly Fixture _fixture;
 
-        public AddressElasticsearchClientTests(ElasticsearchClientTestFixture clientFixture)
+        public AddressListElasticClientTests(ElasticsearchClientTestFixture clientFixture)
         {
             _clientFixture = clientFixture;
             _fixture = new Fixture();
@@ -36,8 +36,11 @@ namespace AddressRegistry.Projections.Elastic.IntegrationTests
         {
             var client = await BuildClient();
 
-            var givenDocument = _fixture.Create<AddressSearchDocument>();
+            var givenDocument = _fixture.Create<AddressListDocument>();
             await client.CreateDocument(givenDocument, CancellationToken.None);
+
+            var actualDocument = (await client.GetDocuments([givenDocument.AddressPersistentLocalId], CancellationToken.None)).Single();
+            actualDocument.Should().NotBeNull();
         }
 
         [Fact]
@@ -45,10 +48,10 @@ namespace AddressRegistry.Projections.Elastic.IntegrationTests
         {
             var client = await BuildClient();
 
-            var givenDocument = _fixture.Create<AddressSearchDocument>();
+            var givenDocument = _fixture.Create<AddressListDocument>();
             await client.CreateDocument(givenDocument, CancellationToken.None);
 
-            var updateDocument = _fixture.Create<AddressSearchDocument>();
+            var updateDocument = _fixture.Create<AddressListDocument>();
             updateDocument.AddressPersistentLocalId = givenDocument.AddressPersistentLocalId;
             await client.UpdateDocument(updateDocument, CancellationToken.None);
 
@@ -62,7 +65,7 @@ namespace AddressRegistry.Projections.Elastic.IntegrationTests
         {
             var client = await BuildClient();
 
-            var givenDocument = _fixture.Create<AddressSearchDocument>();
+            var givenDocument = _fixture.Create<AddressListDocument>();
             await client.CreateDocument(givenDocument, CancellationToken.None);
 
             var actualDocument = (await client.GetDocuments([givenDocument.AddressPersistentLocalId], CancellationToken.None)).Single();
@@ -75,10 +78,10 @@ namespace AddressRegistry.Projections.Elastic.IntegrationTests
         {
             var client = await BuildClient();
 
-            var givenDocument = _fixture.Create<AddressSearchDocument>();
+            var givenDocument = _fixture.Create<AddressListDocument>();
             await client.CreateDocument(givenDocument, CancellationToken.None);
 
-            var documentUpdate = new AddressSearchPartialDocument(DateTimeOffset.Now)
+            var documentUpdate = new AddressListPartialDocument(DateTimeOffset.Now)
             {
                 Status = _fixture.Create<AddressStatus>(),
                 OfficiallyAssigned = _fixture.Create<bool>(),
@@ -96,7 +99,6 @@ namespace AddressRegistry.Projections.Elastic.IntegrationTests
 
             actualDocument.AddressPersistentLocalId.Should().Be(givenDocument.AddressPersistentLocalId);
             actualDocument.Status.Should().Be(documentUpdate.Status);
-            actualDocument.Active.Should().Be(documentUpdate.Active!.Value);
             actualDocument.OfficiallyAssigned.Should().Be(documentUpdate.OfficiallyAssigned!.Value);
             actualDocument.AddressPosition.Should().BeEquivalentTo(documentUpdate.AddressPosition);
             actualDocument.VersionTimestamp.Should().Be(documentUpdate.VersionTimestamp);
@@ -107,7 +109,7 @@ namespace AddressRegistry.Projections.Elastic.IntegrationTests
         {
             var client = await BuildClient();
 
-            var givenDocument = _fixture.Create<AddressSearchDocument>();
+            var givenDocument = _fixture.Create<AddressListDocument>();
             await client.CreateDocument(givenDocument, CancellationToken.None);
 
             await client.DeleteDocument(givenDocument.AddressPersistentLocalId, CancellationToken.None);
@@ -116,11 +118,11 @@ namespace AddressRegistry.Projections.Elastic.IntegrationTests
             actualDocument.Should().BeNull();
         }
 
-        private async Task<IAddressElasticsearchClient> BuildClient()
+        private async Task<IAddressListElasticClient> BuildClient()
         {
             var indexName = $"test-{Guid.NewGuid():N}";
             await _clientFixture.CreateIndex(indexName);
-            return new AddressElasticsearchClient(_clientFixture.Client, indexName);
+            return new AddressListElasticClient(_clientFixture.Client, indexName);
         }
 
         private void EnsureAllPropertiesAreNotNull(object value)

@@ -14,8 +14,8 @@ namespace AddressRegistry.Infrastructure.Elastic
         {
             return new ElasticIndexOptions
             {
-                Name = configuration["IndexName"]!,
-                Alias = configuration["IndexAlias"]!
+                Name = configuration[indexNameKey]!,
+                Alias = configuration[indexAliasKey]!
             };
         }
     }

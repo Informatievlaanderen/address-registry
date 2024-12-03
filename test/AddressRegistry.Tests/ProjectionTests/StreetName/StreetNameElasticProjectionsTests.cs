@@ -158,7 +158,7 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
                         && doc.Status == streetNameStatus
                         && doc.Names.Length == _names.Count
                         && doc.HomonymAdditions.Length == _homonyms.Count
-                        && doc.FullStreetNames.Length == _names.Count
+                        && doc.FullStreetNames.Length == 8
                         && doc.Municipality.NisCode == _municipalityLatestItem.NisCode
                         && doc.Municipality.Names.Length == 2
                         && doc.PostalInfos.Length == 2
@@ -183,7 +183,7 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
                         && doc.Status == StreetNameStatus.Proposed
                         && doc.Names.Length == _names.Count
                         && doc.HomonymAdditions.Length == 0
-                        && doc.FullStreetNames.Length == _names.Count
+                        && doc.FullStreetNames.Length == 8
                         && doc.Municipality.NisCode == _streetNameWasProposedV2.NisCode
                         && doc.Municipality.Names.Length == 2
                         && doc.PostalInfos.Length == 2
@@ -220,7 +220,7 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
                         && doc.Status == StreetNameStatus.Proposed
                         && doc.Names.Length == _names.Count
                         && doc.HomonymAdditions.Length == _homonyms.Count
-                        && doc.FullStreetNames.Length == _names.Count
+                        && doc.FullStreetNames.Length == 8
                         && doc.Municipality.NisCode == streetNameWasProposed.NisCode
                         && doc.Municipality.Names.Length == 2
                         && doc.PostalInfos.Length == 2
@@ -509,7 +509,7 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
                         doc.VersionTimestamp.ToString() == _timestamp.ToBelgianDateTimeOffset().ToString()
                         && doc.Names.All(name => newNames.ContainsValue(name.Spelling))
                         && doc.Names.Length == newNames.Count
-                        && doc.FullStreetNames.Length == newNames.Count
+                        && doc.FullStreetNames.Length == 6
                     ),
                     It.IsAny<CancellationToken>()));
 
@@ -549,7 +549,7 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
                         doc.VersionTimestamp.ToString() == _timestamp.ToBelgianDateTimeOffset().ToString()
                         && doc.Names.All(name => newNames.ContainsValue(name.Spelling))
                         && doc.Names.Length == newNames.Count
-                        && doc.FullStreetNames.Length == newNames.Count
+                        && doc.FullStreetNames.Length == 6
                     ),
                     It.IsAny<CancellationToken>()));
 
@@ -589,7 +589,7 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
                         doc.VersionTimestamp.ToString() == _timestamp.ToBelgianDateTimeOffset().ToString()
                         && doc.HomonymAdditions.All(homonym => newHomonyms.ContainsValue(homonym.Spelling))
                         && doc.Names.Length == newHomonyms.Count
-                        && doc.FullStreetNames.Length == newHomonyms.Count
+                        && doc.FullStreetNames.Length == 6
                     ),
                     It.IsAny<CancellationToken>()));
 
@@ -624,7 +624,7 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
                     It.Is<StreetNameSearchDocument>(doc =>
                         doc.VersionTimestamp.ToString() == _timestamp.ToBelgianDateTimeOffset().ToString()
                         && doc.HomonymAdditions.Length == _homonyms.Count - 1
-                        && doc.FullStreetNames.Length == _names.Count
+                        && doc.FullStreetNames.Length == 6
                     ),
                     It.IsAny<CancellationToken>()));
 

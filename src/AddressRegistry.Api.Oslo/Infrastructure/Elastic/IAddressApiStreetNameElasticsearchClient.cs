@@ -7,7 +7,7 @@
     {
         Task<StreetNameSearchResult> SearchStreetNames(
             string query,
-            string? municipalityOrPostalName,
+            string? nisCode,
             StreetNameStatus? status,
             int size = 10);
     }

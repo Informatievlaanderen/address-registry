@@ -26,6 +26,7 @@
     using Projections.AddressMatch;
     using Projections.BackOffice;
     using Projections.Elastic;
+    using Projections.Elastic.AddressList;
     using Projections.Elastic.AddressSearch;
     using Projections.Extract;
     using Projections.Extract.AddressExtract;
@@ -282,7 +283,11 @@
 
             yield return [new List<ConnectedProjection<ElasticRunnerContext>>
                 {
-                    new AddressSearchProjections(Mock.Of<IAddressElasticsearchClient>(),
+                    new AddressSearchProjections(Mock.Of<IAddressSearchElasticClient>(),
+                        Mock.Of<IDbContextFactory<MunicipalityConsumerContext>>(),
+                        Mock.Of<IDbContextFactory<PostalConsumerContext>>(),
+                        Mock.Of<IDbContextFactory<StreetNameConsumerContext>>()),
+                    new AddressListProjections(Mock.Of<IAddressListElasticClient>(),
                         Mock.Of<IDbContextFactory<MunicipalityConsumerContext>>(),
                         Mock.Of<IDbContextFactory<PostalConsumerContext>>(),
                         Mock.Of<IDbContextFactory<StreetNameConsumerContext>>())

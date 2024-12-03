@@ -1,6 +1,8 @@
 ﻿namespace AddressRegistry.Projections.Elastic.Infrastructure
 {
     using System;
+    using AddressList;
+    using AddressSearch;
     using Autofac;
     using global::Elastic.Clients.Elasticsearch;
     using global::Elastic.Transport;
@@ -48,10 +50,16 @@
                 .Register<ElasticsearchClient>(_ => new ElasticsearchClient(clientSettings))
                 .SingleInstance();
 
-            builder.Register<IAddressElasticsearchClient>(c =>
-                    new AddressElasticsearchClient(
+            builder.Register<IAddressSearchElasticClient>(c =>
+                    new AddressSearchElasticClient(
                         c.Resolve<ElasticsearchClient>(),
-                        c.Resolve<IConfiguration>().GetSection(ConfigurationSectionName)["IndexName"]!))
+                        c.Resolve<IConfiguration>().GetSection(ConfigurationSectionName)["SearchIndexName"]!))
+                .SingleInstance();
+
+            builder.Register<IAddressListElasticClient>(c =>
+                    new AddressListElasticClient(
+                        c.Resolve<ElasticsearchClient>(),
+                        c.Resolve<IConfiguration>().GetSection(ConfigurationSectionName)["ListIndexName"]!))
                 .SingleInstance();
         }
     }

@@ -57,73 +57,76 @@
                     {
                         query.Bool(b =>
                         {
-                            var conditions = new List<Action<QueryDescriptor<AddressSearchDocument>>>();
+                            var filterConditions = new List<Action<QueryDescriptor<AddressSearchDocument>>>();
 
                             if (!string.IsNullOrEmpty(streetNameId))
-                                conditions.Add(m => m
+                                filterConditions.Add(m => m
                                     .Term(t => t
                                         .Field(
                                             $"{ToCamelCase(nameof(AddressSearchDocument.StreetName))}.{ToCamelCase(nameof(AddressSearchDocument.StreetName.StreetNamePersistentLocalId))}"
                                             !)
                                         .Value(streetNameId)));
 
-                            var streetNameNames =
-                                $"{ToCamelCase(nameof(AddressSearchDocument.StreetName))}.{ToCamelCase(nameof(AddressSearchDocument.StreetName.Names))}";
                             if (!string.IsNullOrEmpty(streetName))
-                                conditions.Add(m => m.Nested(t => t.Path(streetNameNames!)
+                            {
+                                var streetNameNames = $"{ToCamelCase(nameof(AddressSearchDocument.StreetName))}.{ToCamelCase(nameof(AddressSearchDocument.StreetName.Names))}";
+                                filterConditions.Add(m => m.Nested(t => t.Path(streetNameNames!)
                                     .Query(q => q.Term(t2 => t2
                                         .Field($"{streetNameNames}.{NameSpelling}.{Keyword}"!)
                                         .Value(streetName)))));
+                            }
 
-                            var streetNameHomonymAdditions =
-                                $"{ToCamelCase(nameof(AddressSearchDocument.StreetName))}.{ToCamelCase(nameof(AddressSearchDocument.StreetName.HomonymAdditions))}";
                             if (!string.IsNullOrEmpty(homonymAddition))
-                                conditions.Add(m => m.Nested(t => t.Path(streetNameHomonymAdditions!)
+                            {
+                                var streetNameHomonymAdditions = $"{ToCamelCase(nameof(AddressSearchDocument.StreetName))}.{ToCamelCase(nameof(AddressSearchDocument.StreetName.HomonymAdditions))}";
+                                filterConditions.Add(m => m.Nested(t => t.Path(streetNameHomonymAdditions!)
                                     .Query(q => q.Term(t2 => t2
                                         .Field($"{streetNameHomonymAdditions}.{NameSpelling}.{Keyword}"!)
                                         .Value(homonymAddition)))));
+                            }
 
                             if (!string.IsNullOrEmpty(houseNumber))
-                                conditions.Add(m => m.Term(t => t
+                                filterConditions.Add(m => m.Term(t => t
                                     .Field($"{ToCamelCase(nameof(AddressSearchDocument.HouseNumber))}"!)
                                     .Value(houseNumber)));
 
                             if (!string.IsNullOrEmpty(boxNumber))
-                                conditions.Add(m => m.Term(t => t
+                                filterConditions.Add(m => m.Term(t => t
                                     .Field($"{ToCamelCase(nameof(AddressSearchDocument.BoxNumber))}"!)
                                     .Value(boxNumber)));
 
                             if (!string.IsNullOrEmpty(postalCode))
-                                conditions.Add(m => m.Term(t => t
+                                filterConditions.Add(m => m.Term(t => t
                                     .Field(
                                         $"{ToCamelCase(nameof(AddressSearchDocument.PostalInfo))}.{ToCamelCase(nameof(AddressSearchDocument.PostalInfo.PostalCode))}"
                                         !)
                                     .Value(postalCode)));
 
                             if (!string.IsNullOrEmpty(nisCode))
-                                conditions.Add(m => m.Term(t => t
+                                filterConditions.Add(m => m.Term(t => t
                                     .Field(
                                         $"{ToCamelCase(nameof(AddressSearchDocument.Municipality))}.{ToCamelCase(nameof(AddressSearchDocument.Municipality.NisCode))}"
                                         !)
                                     .Value(nisCode)));
 
-                            var municipalityNames =
-                                $"{ToCamelCase(nameof(AddressSearchDocument.Municipality))}.{ToCamelCase(nameof(AddressSearchDocument.Municipality.Names))}";
                             if (!string.IsNullOrEmpty(municipalityName))
-                                conditions.Add(m => m.Nested(t => t.Path($"{municipalityNames}"!)
+                            {
+                                var municipalityNames = $"{ToCamelCase(nameof(AddressSearchDocument.Municipality))}.{ToCamelCase(nameof(AddressSearchDocument.Municipality.Names))}";
+                                filterConditions.Add(m => m.Nested(t => t.Path($"{municipalityNames}"!)
                                     .Query(q => q.Term(t2 => t2
                                         .Field($"{municipalityNames}.{NameSpelling}.{Keyword}"!)
                                         .Value(municipalityName)))));
+                            }
 
                             if (!string.IsNullOrEmpty(status))
                             {
                                 var addressStatus = ((AdresStatus)parsedStatus!).ConvertFromAdresStatus();
-                                conditions.Add(m => m.Term(t => t
+                                filterConditions.Add(m => m.Term(t => t
                                     .Field($"{ToCamelCase(nameof(AddressSearchDocument.Status))}"!)
                                     .Value(Enum.GetName(addressStatus)!)));
                             }
 
-                            b.Must(conditions.ToArray());
+                            b.Filter(filterConditions.ToArray());
                         });
                     });
                 }

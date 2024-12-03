@@ -96,7 +96,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
             string? status,
             CancellationToken ct)
         {
-            //TODO-rik: should we filter on only housenumbers?
+            //TODO-rik: should we filter on only housenumbers? (pending feedback)
             var localFilteredItems = context
                 .AddressWmsItemsV3
                 .Local

@@ -4,8 +4,11 @@ namespace AddressRegistry.Projector.Infrastructure
     using System.Linq;
     using System.Reflection;
     using System.Threading;
+    using AddressRegistry.Infrastructure.Elastic;
     using AddressRegistry.Infrastructure.Modules;
     using AddressRegistry.Projections.Elastic;
+    using AddressRegistry.Projections.Elastic.AddressList;
+    using AddressRegistry.Projections.Elastic.AddressSearch;
     using AddressRegistry.Projections.Extract;
     using AddressRegistry.Projections.Integration.Infrastructure;
     using AddressRegistry.Projections.Legacy;
@@ -109,38 +112,38 @@ namespace AddressRegistry.Projector.Infrastructure
                                 health.AddSqlServer(
                                     connectionString.Value,
                                     name: $"sqlserver-{connectionString.Key.ToLowerInvariant()}",
-                                    tags: new[] {DatabaseTag, "sql", "sqlserver"});
+                                    tags: new[] { DatabaseTag, "sql", "sqlserver" });
                             }
 
                             foreach (var connectionString in connectionStrings.Where(x => x.Value.Contains("host", StringComparison.OrdinalIgnoreCase)))
                                 health.AddNpgSql(
                                     connectionString.Value,
                                     name: $"npgsql-{connectionString.Key.ToLowerInvariant()}",
-                                    tags: new[] {DatabaseTag, "sql", "npgsql"});
+                                    tags: new[] { DatabaseTag, "sql", "npgsql" });
 
                             health.AddDbContextCheck<ExtractContext>(
                                 $"dbcontext-{nameof(ExtractContext).ToLowerInvariant()}",
-                                tags: new[] {DatabaseTag, "sql", "sqlserver"});
+                                tags: new[] { DatabaseTag, "sql", "sqlserver" });
 
                             health.AddDbContextCheck<LegacyContext>(
                                 $"dbcontext-{nameof(LegacyContext).ToLowerInvariant()}",
-                                tags: new[] {DatabaseTag, "sql", "sqlserver"});
+                                tags: new[] { DatabaseTag, "sql", "sqlserver" });
 
                             health.AddDbContextCheck<LastChangedListContext>(
                                 $"dbcontext-{nameof(LastChangedListContext).ToLowerInvariant()}",
-                                tags: new[] {DatabaseTag, "sql", "sqlserver"});
+                                tags: new[] { DatabaseTag, "sql", "sqlserver" });
 
                             health.AddDbContextCheck<WfsContext>(
                                 $"dbcontext-{nameof(WfsContext).ToLowerInvariant()}",
-                                tags: new[] {DatabaseTag, "sql", "sqlserver"});
+                                tags: new[] { DatabaseTag, "sql", "sqlserver" });
 
                             health.AddDbContextCheck<WmsContext>(
                                 $"dbcontext-{nameof(WmsContext).ToLowerInvariant()}",
-                                tags: new[] {DatabaseTag, "sql", "sqlserver"});
+                                tags: new[] { DatabaseTag, "sql", "sqlserver" });
 
                             health.AddDbContextCheck<ElasticRunnerContext>(
                                 $"dbcontext-{nameof(ElasticRunnerContext).ToLowerInvariant()}",
-                                tags: new[] {DatabaseTag, "sql", "sqlserver"});
+                                tags: new[] { DatabaseTag, "sql", "sqlserver" });
                         }
                     }
                 })
@@ -209,12 +212,20 @@ namespace AddressRegistry.Projector.Infrastructure
                 projectionsManager.Resume(_projectionsCancellationTokenSource.Token);
             });
 
-            var elasticIndex = new AddressElasticIndex(
-                _applicationContainer.Resolve<ElasticsearchClient>(),
-                _configuration);
-
-            elasticIndex.CreateIndexIfNotExist(_projectionsCancellationTokenSource.Token).GetAwaiter().GetResult();
-            elasticIndex.CreateAliasIfNotExist(_projectionsCancellationTokenSource.Token).GetAwaiter().GetResult();
+            var elasticIndices = new ElasticIndexBase[]
+            {
+                new AddressSearchElasticIndex(
+                    _applicationContainer.Resolve<ElasticsearchClient>(),
+                    _configuration),
+                new AddressListElasticIndex(
+                    _applicationContainer.Resolve<ElasticsearchClient>(),
+                    _configuration)
+            };
+            foreach (var elasticIndex in elasticIndices)
+            {
+                elasticIndex.CreateIndexIfNotExist(_projectionsCancellationTokenSource.Token).GetAwaiter().GetResult();
+                elasticIndex.CreateAliasIfNotExist(_projectionsCancellationTokenSource.Token).GetAwaiter().GetResult();
+            }
         }
 
         private static string GetApiLeadingText(ApiVersionDescription description)

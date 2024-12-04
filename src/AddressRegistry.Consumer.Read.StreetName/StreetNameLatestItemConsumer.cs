@@ -59,12 +59,9 @@ namespace AddressRegistry.Consumer.Read.StreetName
             object message,
             StreetNameConsumerContext context)
         {
-            //CancellationToken.None to prevent halfway consumption
             _logger.LogInformation("Handling next message");
 
-            await commandHandlingProjector
-                .ProjectAsync(_commandHandler, message, CancellationToken.None)
-                .ConfigureAwait(false);
+            await commandHandlingProjector.ProjectAsync(_commandHandler, message).ConfigureAwait(false);
 
             await latestItemProjector.ProjectAsync(context, message, CancellationToken.None).ConfigureAwait(false);
 

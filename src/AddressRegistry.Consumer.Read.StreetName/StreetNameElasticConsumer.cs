@@ -5,6 +5,7 @@ namespace AddressRegistry.Consumer.Read.StreetName
     using System.Threading.Tasks;
     using Autofac;
     using Autofac.Features.AttributeFilters;
+    using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Microsoft.EntityFrameworkCore;
@@ -57,14 +58,7 @@ namespace AddressRegistry.Consumer.Read.StreetName
             {
                 await _consumer.ConsumeContinuously(async (message, messageContext) =>
                 {
-                    _logger.LogInformation("Handling next message");
-
-                    await using var context = await _streetNameConsumerContextFactory.CreateDbContextAsync(stoppingToken);
-
-                    await latestItemProjector.ProjectAsync(context, message, stoppingToken).ConfigureAwait(false);
-
-                    await context.UpdateProjectionState(typeof(StreetNameElasticConsumer).FullName, messageContext.Offset, stoppingToken);
-                    await context.SaveChangesAsync(CancellationToken.None);
+                    await ConsumeHandler(latestItemProjector, message, messageContext);
                 }, stoppingToken);
             }
             catch (Exception ex)
@@ -73,6 +67,18 @@ namespace AddressRegistry.Consumer.Read.StreetName
                 _hostApplicationLifetime.StopApplication();
                 throw;
             }
+        }
+
+        private async Task ConsumeHandler(ConnectedProjector<StreetNameConsumerContext> latestItemProjector, object message, MessageContext messageContext)
+        {
+            _logger.LogInformation("Handling next message");
+
+            await using var context = await _streetNameConsumerContextFactory.CreateDbContextAsync();
+
+            await latestItemProjector.ProjectAsync(context, message).ConfigureAwait(false);
+
+            await context.UpdateProjectionState(typeof(StreetNameElasticConsumer).FullName, messageContext.Offset, CancellationToken.None);
+            await context.SaveChangesAsync(CancellationToken.None);
         }
     }
 }

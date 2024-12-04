@@ -242,20 +242,35 @@ namespace AddressRegistry.Consumer.Read.StreetName.Projections.Elastic
 
             if (caseInsensitiveDict.TryGetValue(StreetNameLatestItemProjections.Dutch, out var name))
             {
-                item.Names.Single(x => x.Language == Language.nl).Spelling = name;
+                UpdateOrAddName(item, Language.nl, name);
             }
             if (caseInsensitiveDict.TryGetValue(StreetNameLatestItemProjections.French, out name))
             {
-                item.Names.Single(x => x.Language == Language.fr).Spelling = name;
+                UpdateOrAddName(item, Language.fr, name);
             }
             if (caseInsensitiveDict.TryGetValue(StreetNameLatestItemProjections.German, out name))
             {
-                item.Names.Single(x => x.Language == Language.de).Spelling = name;
+                UpdateOrAddName(item, Language.de, name);
             }
             if (caseInsensitiveDict.TryGetValue(StreetNameLatestItemProjections.English, out name))
             {
-                item.Names.Single(x => x.Language == Language.en).Spelling = name;
+                UpdateOrAddName(item, Language.en, name);
             }
+        }
+
+        private static void UpdateOrAddName(StreetNameSearchDocument item, Language language, string spelling)
+        {
+            var name = item.Names.SingleOrDefault(x => x.Language == language);
+            if (name is null)
+            {
+                name = new Name(spelling, language);
+
+                item.Names = item.Names
+                    .Concat([name])
+                    .ToArray();
+            }
+
+            name.Spelling = spelling;
         }
 
         public static Language MapToLanguage(string language)

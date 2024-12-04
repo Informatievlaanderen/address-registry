@@ -47,14 +47,7 @@ namespace AddressRegistry.Consumer
             {
                 await _idempotentConsumer.ConsumeContinuously(async (message, context) =>
                 {
-                    _logger.LogInformation("Handling next message");
-
-                    await commandHandlingProjector
-                        .ProjectAsync(commandHandler, message, stoppingToken)
-                        .ConfigureAwait(false);
-
-                    //CancellationToken.None to prevent halfway consumption
-                    await context.SaveChangesAsync(CancellationToken.None);
+                    await ConsumeHandler(commandHandlingProjector, commandHandler, message, context);
                 }, stoppingToken);
             }
             catch (Exception ex)
@@ -63,6 +56,17 @@ namespace AddressRegistry.Consumer
                 _hostApplicationLifetime.StopApplication();
                 throw;
             }
+        }
+
+        private async Task ConsumeHandler(ConnectedProjector<CommandHandler> commandHandlingProjector, CommandHandler commandHandler, object message, IdempotentConsumerContext context)
+        {
+            _logger.LogInformation("Handling next message");
+
+            await commandHandlingProjector
+                .ProjectAsync(commandHandler, message)
+                .ConfigureAwait(false);
+
+            await context.SaveChangesAsync(CancellationToken.None);
         }
     }
 }

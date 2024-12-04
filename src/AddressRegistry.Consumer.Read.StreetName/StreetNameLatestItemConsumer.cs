@@ -42,16 +42,7 @@ namespace AddressRegistry.Consumer.Read.StreetName
             {
                 await _kafkaIdemIdempotencyConsumer.ConsumeContinuously(async (message, context) =>
                 {
-                    _logger.LogInformation("Handling next message");
-
-                    await commandHandlingProjector
-                        .ProjectAsync(_commandHandler, message, stoppingToken)
-                        .ConfigureAwait(false);
-
-                    await latestItemProjector.ProjectAsync(context, message, stoppingToken).ConfigureAwait(false);
-
-                    //CancellationToken.None to prevent halfway consumption
-                    await context.SaveChangesAsync(CancellationToken.None);
+                    await ConsumeHandler(commandHandlingProjector, latestItemProjector, message, context);
                 }, stoppingToken);
             }
             catch (Exception ex)
@@ -60,6 +51,24 @@ namespace AddressRegistry.Consumer.Read.StreetName
                 _hostApplicationLifetime.StopApplication();
                 throw;
             }
+        }
+
+        private async Task ConsumeHandler(
+            ConnectedProjector<StreetNameCommandHandler> commandHandlingProjector,
+            ConnectedProjector<StreetNameConsumerContext> latestItemProjector,
+            object message,
+            StreetNameConsumerContext context)
+        {
+            //CancellationToken.None to prevent halfway consumption
+            _logger.LogInformation("Handling next message");
+
+            await commandHandlingProjector
+                .ProjectAsync(_commandHandler, message, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            await latestItemProjector.ProjectAsync(context, message, CancellationToken.None).ConfigureAwait(false);
+
+            await context.SaveChangesAsync(CancellationToken.None);
         }
     }
 }

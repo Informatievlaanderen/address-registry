@@ -1,3 +1,10 @@
+## [4.29.1](https://github.com/informatievlaanderen/address-registry/compare/v4.29.0...v4.29.1) (2024-12-04)
+
+
+### Bug Fixes
+
+* register dbcontextfactory to municipality / postal modules ([9b8b5e3](https://github.com/informatievlaanderen/address-registry/commit/9b8b5e3d61961c5ce0df60ba6b0fd6ee2f37c53e))
+
 # [4.29.0](https://github.com/informatievlaanderen/address-registry/compare/v4.28.0...v4.29.0) (2024-12-03)
 
 

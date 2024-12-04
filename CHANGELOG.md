@@ -1,3 +1,10 @@
+## [4.29.2](https://github.com/informatievlaanderen/address-registry/compare/v4.29.1...v4.29.2) (2024-12-04)
+
+
+### Bug Fixes
+
+* projection deal with new language added to names ([0ea7dcc](https://github.com/informatievlaanderen/address-registry/commit/0ea7dcc2d267e6853618fb971981417a5856af1a))
+
 ## [4.29.1](https://github.com/informatievlaanderen/address-registry/compare/v4.29.0...v4.29.1) (2024-12-04)
 
 

@@ -17,6 +17,7 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts.StreetNameRegistry;
+    using FluentAssertions;
     using global::AutoFixture;
     using Infrastructure.Elastic;
     using Microsoft.EntityFrameworkCore;
@@ -534,6 +535,53 @@ namespace AddressRegistry.Tests.ProjectionTests.StreetName
             var newNames = _names
                 .Select(x => new KeyValuePair<string, string>(x.Key, x.Value + " changed"))
                 .ToDictionary(x => x.Key, x => x.Value);
+
+            var @event = new StreetNameNamesWereChanged(
+                _streetNameWasProposedV2.MunicipalityId,
+                _streetNameWasProposedV2.PersistentLocalId,
+                newNames,
+                _provenance);
+
+            Given(_streetNameWasProposedV2, @event);
+            await Then(_ =>
+            {
+                _elasticClientMock.Verify(x => x.UpdateDocument(
+                    It.Is<StreetNameSearchDocument>(doc =>
+                        doc.VersionTimestamp.ToString() == _timestamp.ToBelgianDateTimeOffset().ToString()
+                        && doc.Names.All(name => newNames.ContainsValue(name.Spelling))
+                        && doc.Names.Length == newNames.Count
+                        && doc.FullStreetNames.Length == 6
+                    ),
+                    It.IsAny<CancellationToken>()));
+
+                return Task.CompletedTask;
+            });
+        }
+
+        [Fact]
+        public async Task StreetNameNamesWereChanged_WithNewLanguage()
+        {
+            var documentNames = _names
+                .Where(x => x.Key != StreetNameLatestItemProjections.German)
+                .Select(x => new Name(x.Value, StreetNameSearchProjections.MapToLanguage(x.Key)))
+                .ToArray();
+
+            _elasticClientMock.Setup(x => x.GetDocument(_streetNameWasProposedV2.PersistentLocalId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new StreetNameSearchDocument(
+                    _streetNameWasProposedV2.PersistentLocalId,
+                    DateTimeOffset.Now,
+                    StreetNameStatus.Proposed,
+                    new Municipality(_streetNameWasProposedV2.NisCode, [new Name("Gent", Language.nl), new Name("Gand", Language.fr)]),
+                    [new PostalInfo("1234", [new Name("Gent", Language.nl), new Name("Gand", Language.fr)])],
+                    documentNames,
+                    _homonyms.Select(x => new Name(x.Value, StreetNameSearchProjections.MapToLanguage(x.Key))).ToArray()
+                ));
+
+            var newNames = _names
+                .Select(x => new KeyValuePair<string, string>(x.Key, x.Value + " changed"))
+                .ToDictionary(x => x.Key, x => x.Value);
+
+            documentNames.Length.Should().NotBe(newNames.Count);
 
             var @event = new StreetNameNamesWereChanged(
                 _streetNameWasProposedV2.MunicipalityId,

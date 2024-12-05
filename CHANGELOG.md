@@ -1,3 +1,11 @@
+## [4.29.3](https://github.com/informatievlaanderen/address-registry/compare/v4.29.2...v4.29.3) (2024-12-05)
+
+
+### Bug Fixes
+
+* don't use CancellationToken for kafka message handler ([1280e03](https://github.com/informatievlaanderen/address-registry/commit/1280e03f62bef138c5f6f9e18b5ef3bbb6c18bfc))
+* don't use CancellationToken for kafka message handler ([f04fe1b](https://github.com/informatievlaanderen/address-registry/commit/f04fe1b38765838172f8c57dd303e22d786ec8a3))
+
 ## [4.29.2](https://github.com/informatievlaanderen/address-registry/compare/v4.29.1...v4.29.2) (2024-12-04)
 
 

@@ -57,8 +57,8 @@
             _addressSearchClient = new AddressApiElasticsearchClient(_elasticClient, _elasticAlias, new NullLoggerFactory());
         }
 
-        //[Fact(Skip = "This is a test that should be run manually")]
-        [Fact]
+        [Fact(Skip = "This is a test that should be run manually")]
+        //[Fact]
         public async Task Test()
         {
 

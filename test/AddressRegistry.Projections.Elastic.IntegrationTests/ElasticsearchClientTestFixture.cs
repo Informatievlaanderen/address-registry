@@ -57,6 +57,7 @@ namespace AddressRegistry.Projections.Elastic.IntegrationTests
 
         public Task DisposeAsync()
         {
+            _dockerService?.Stop();
             _dockerService?.Dispose();
             return Task.CompletedTask;
         }

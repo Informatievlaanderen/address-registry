@@ -87,6 +87,39 @@ namespace AddressRegistry.Tests.ProjectionTests.BackOffice
         }
 
         [Fact]
+        public async Task GivenAddressWasRemovedV2_ThenRelationIsRemoved()
+        {
+            var addressWasRemovedV2 = _fixture.Create<AddressWasRemovedV2>();
+
+            var oldAddressPersistentLocalId = _fixture.Create<int>();
+            await _fakeBackOfficeContext.AddIdempotentAddressStreetNameIdRelation(
+                oldAddressPersistentLocalId,
+                _fixture.Create<int>(),
+                CancellationToken.None);
+
+            await _fakeBackOfficeContext.AddIdempotentMunicipalityMergerAddress(
+                oldAddressPersistentLocalId,
+                addressWasRemovedV2.StreetNamePersistentLocalId,
+                addressWasRemovedV2.AddressPersistentLocalId,
+                CancellationToken.None);
+
+            await Sut
+                .Given(new Envelope<AddressWasRemovedV2>(new Envelope(addressWasRemovedV2, new Dictionary<string, object>
+                {
+                    { Envelope.CreatedUtcMetadataKey, DateTime.UtcNow }
+                })))
+                .Then(async _ =>
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(DelayInSeconds + 1));
+
+                    var result = await _fakeBackOfficeContext.MunicipalityMergerAddresses
+                        .FindAsync(oldAddressPersistentLocalId);
+
+                    result.Should().BeNull();
+                });
+        }
+
+        [Fact]
         public async Task GivenAddressWasProposedForMunicipalityMerger_ThenRelationIsAdded()
         {
             var addressWasProposedForMunicipalityMerger = _fixture.Create<AddressWasProposedForMunicipalityMerger>();

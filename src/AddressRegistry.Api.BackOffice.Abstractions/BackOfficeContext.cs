@@ -71,6 +71,19 @@ namespace AddressRegistry.Api.BackOffice.Abstractions
             return relation;
         }
 
+        public async Task RemoveIdempotentMunicipalityMergerAddress(int newAddressPersistentLocalId, CancellationToken cancellationToken)
+        {
+            var relation = await MunicipalityMergerAddresses.SingleOrDefaultAsync(
+                x => x.NewAddressPersistentLocalId == newAddressPersistentLocalId, cancellationToken: cancellationToken);
+            if (relation is null)
+            {
+                return;
+            }
+
+            MunicipalityMergerAddresses.Remove(relation);
+            await SaveChangesAsync(cancellationToken);
+        }
+
         public async Task<MunicipalityMergerAddress> AddIdempotentMunicipalityMergerAddress(
             int oldAddressPersistentLocalId,
             int newStreetNamePersistentLocalId,

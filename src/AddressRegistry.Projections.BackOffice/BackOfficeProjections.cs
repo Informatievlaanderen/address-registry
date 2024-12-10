@@ -25,6 +25,14 @@ namespace AddressRegistry.Projections.BackOffice
                     message.Message.AddressPersistentLocalId, message.Message.StreetNamePersistentLocalId, cancellationToken);
             });
 
+            When<Envelope<AddressWasRemovedV2>>(async (_, message, cancellationToken) =>
+            {
+                await DelayProjection(message.CreatedUtc, delayInSeconds, cancellationToken);
+
+                await using var backOfficeContext = await backOfficeContextFactory.CreateDbContextAsync(cancellationToken);
+                await backOfficeContext.RemoveIdempotentMunicipalityMergerAddress(message.Message.AddressPersistentLocalId, cancellationToken);
+            });
+
             When<Envelope<AddressWasProposedForMunicipalityMerger>>(async (_, message, cancellationToken) =>
             {
                 await DelayProjection(message.CreatedUtc, delayInSeconds, cancellationToken);

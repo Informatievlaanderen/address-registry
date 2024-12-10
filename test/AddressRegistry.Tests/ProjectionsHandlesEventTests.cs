@@ -201,7 +201,6 @@
                 typeof(AddressWasRejectedBecauseStreetNameWasRetired),
                 typeof(AddressWasRemovedBecauseHouseNumberWasRemoved),
                 typeof(AddressWasRemovedBecauseStreetNameWasRemoved),
-                typeof(AddressWasRemovedV2),
                 typeof(AddressWasRetiredBecauseHouseNumberWasRetired),
                 typeof(AddressWasRetiredBecauseOfMunicipalityMerger),
                 typeof(AddressWasRetiredBecauseOfReaddress),

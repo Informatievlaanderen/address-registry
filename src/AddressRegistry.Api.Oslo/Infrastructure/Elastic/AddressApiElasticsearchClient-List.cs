@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using AddressRegistry.Infrastructure.Elastic.Exceptions;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Adres;
     using Convertors;
     using global::Elastic.Clients.Elasticsearch;
@@ -134,8 +135,7 @@
 
             if (!searchResponse.IsValidResponse)
             {
-                _logger.LogWarning("Failed to search for addresses: {Error}", searchResponse.ElasticsearchServerError);
-                return new AddressSearchResult(Enumerable.Empty<AddressSearchDocument>().ToList(), 0);
+                throw new ElasticsearchClientException("Failed to search for addresses", searchResponse.ElasticsearchServerError, searchResponse.DebugInformation);
             }
 
             return new AddressSearchResult(searchResponse.Documents, searchResponse.Total);

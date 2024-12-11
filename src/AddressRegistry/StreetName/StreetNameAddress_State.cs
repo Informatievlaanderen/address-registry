@@ -314,7 +314,10 @@ namespace AddressRegistry.StreetName
             _lastEvent = @event;
         }
 
-        internal void RestoreSnapshot(StreetNamePersistentLocalId streetNamePersistentLocalId, AddressData addressData)
+        internal void RestoreSnapshot(
+            StreetNamePersistentLocalId streetNamePersistentLocalId,
+            AddressData addressData,
+            StreetNameAddress? parent)
         {
             _streetNamePersistentLocalId = streetNamePersistentLocalId;
             AddressPersistentLocalId = new AddressPersistentLocalId(addressData.AddressPersistentLocalId);
@@ -335,6 +338,9 @@ namespace AddressRegistry.StreetName
                 : null;
             DesiredStatusAfterMunicipalityMerger = addressData.DesiredStatusAfterMunicipalityMerger;
             LegacyAddressId = addressData.LegacyAddressId.HasValue ? new AddressId(addressData.LegacyAddressId.Value) : null;
+
+            SetParent(parent);
+
             _lastSnapshottedEventHash = addressData.LastEventHash;
             _lastSnapshottedProvenance = addressData.LastProvenanceData;
         }

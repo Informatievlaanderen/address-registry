@@ -100,6 +100,9 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda
                 case ReaddressSqsRequest request:
                     await mediator.Send(new ReaddressLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
                     break;
+                case CreateStreetNameSnapshotSqsRequest request:
+                    await mediator.Send(new CreateStreetNameSnapshotLambdaRequest(messageMetadata.MessageGroupId!, request), cancellationToken);
+                    break;
                 default:
                     throw new NotImplementedException(
                         $"{sqsRequest.GetType().Name} has no corresponding SqsLambdaRequest defined.");

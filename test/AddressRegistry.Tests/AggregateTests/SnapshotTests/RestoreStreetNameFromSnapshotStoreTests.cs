@@ -60,7 +60,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                     foreach (var data in houseNumberData)
                     {
                         var streetNameAddress = new StreetNameAddress(o => { });
-                        streetNameAddress.RestoreSnapshot(fixture.Create<StreetNamePersistentLocalId>(), data);
+                        streetNameAddress.RestoreSnapshot(fixture.Create<StreetNamePersistentLocalId>(), data, null);
 
                         houseNumberAddresses.Add(streetNameAddress);
                     }
@@ -94,7 +94,8 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                     foreach (var data in boxNumberData)
                     {
                         var streetNameAddress = new StreetNameAddress(o => { });
-                        streetNameAddress.RestoreSnapshot(fixture.Create<StreetNamePersistentLocalId>(), data);
+                        var parent = houseNumbers.Single(x => x.AddressPersistentLocalId == data.ParentId);
+                        streetNameAddress.RestoreSnapshot(fixture.Create<StreetNamePersistentLocalId>(), data, parent);
 
                         boxNumberAddresses.Add(streetNameAddress);
                     }

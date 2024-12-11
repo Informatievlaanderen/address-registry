@@ -1,7 +1,6 @@
 namespace AddressRegistry.StreetName
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
@@ -25,6 +24,17 @@ namespace AddressRegistry.StreetName
             EventSerializer eventSerializer,
             IProvenanceFactory<StreetName> provenanceFactory)
         {
+            For<CreateSnapshot>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<CreateSnapshot, StreetName>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streamId = new StreetNameStreamId(message.Command.StreetNamePersistentLocalId);
+                    var streetName = await getStreetNames().GetAsync(streamId, ct);
+                    streetName.RequestSnapshot();
+                });
+
             For<ImportMigratedStreetName>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
                 .AddEventHash<ImportMigratedStreetName, StreetName>(getUnitOfWork)

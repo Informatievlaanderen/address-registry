@@ -90,7 +90,7 @@ namespace AddressRegistry.StreetName
             foreach (var address in @event.Addresses.Where(x => !x.ParentId.HasValue))
             {
                 var streetNameAddress = new StreetNameAddress(applier: ApplyChange);
-                streetNameAddress.RestoreSnapshot(PersistentLocalId, address);
+                streetNameAddress.RestoreSnapshot(PersistentLocalId, address, null);
 
                 StreetNameAddresses.Add(streetNameAddress);
             }
@@ -101,8 +101,7 @@ namespace AddressRegistry.StreetName
                     StreetNameAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(address.ParentId!.Value));
 
                 var streetNameAddress = new StreetNameAddress(applier: ApplyChange);
-                streetNameAddress.RestoreSnapshot(PersistentLocalId, address);
-                streetNameAddress.SetParent(parent);
+                streetNameAddress.RestoreSnapshot(PersistentLocalId, address, parent);
 
                 StreetNameAddresses.Add(streetNameAddress);
                 parent.AddChild(streetNameAddress);

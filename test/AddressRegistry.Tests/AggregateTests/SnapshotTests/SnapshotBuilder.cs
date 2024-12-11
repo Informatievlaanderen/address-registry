@@ -31,7 +31,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                 new NisCode(nisCode),
                 snapshot.StreetNameStatus,
                 snapshot.IsRemoved,
-                ReaddStreetNameAddresses(new StreetNamePersistentLocalId(snapshot.StreetNamePersistentLocalId), snapshot.Addresses));
+                ReadStreetNameAddresses(new StreetNamePersistentLocalId(snapshot.StreetNamePersistentLocalId), snapshot.Addresses));
         }
 
         public static StreetNameSnapshot WithMunicipalityId(this StreetNameSnapshot snapshot, Guid municipalityId)
@@ -42,7 +42,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                 new NisCode(snapshot.MigratedNisCode),
                 snapshot.StreetNameStatus,
                 snapshot.IsRemoved,
-                ReaddStreetNameAddresses(new StreetNamePersistentLocalId(snapshot.StreetNamePersistentLocalId), snapshot.Addresses));
+                ReadStreetNameAddresses(new StreetNamePersistentLocalId(snapshot.StreetNamePersistentLocalId), snapshot.Addresses));
         }
 
         public static StreetNameSnapshot WithAddress(
@@ -61,31 +61,32 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
             string eventHash,
             ProvenanceData provenanceData)
         {
-            var addresses = ReaddStreetNameAddresses(new StreetNamePersistentLocalId(snapshot.StreetNamePersistentLocalId), snapshot.Addresses);
+            var addresses = ReadStreetNameAddresses(new StreetNamePersistentLocalId(snapshot.StreetNamePersistentLocalId), snapshot.Addresses);
 
             var newAddress = new StreetNameAddress(o => {});
+
+            var parent = parentAddressPersistentLocalId is not null
+                ? addresses.GetByPersistentLocalId(parentAddressPersistentLocalId)
+                : null;
+
             newAddress.RestoreSnapshot(
                 new StreetNamePersistentLocalId(snapshot.StreetNamePersistentLocalId),
                 new AddressData(
-                addressPersistentLocalId,
-                addressStatus,
-                houseNumber,
-                boxNumber,
-                postalCode,
-                new AddressGeometry(geometryMethod, geometrySpecification, geometryPosition),
-                true,
-                false,
-                parentAddressPersistentLocalId is null ? null : addresses.GetByPersistentLocalId(parentAddressPersistentLocalId),
-                mergedAddressPersistentLocalId,
-                desiredStatus,
-                null,
-                eventHash,
-                provenanceData));
-
-            if (parentAddressPersistentLocalId is not null)
-            {
-                newAddress.SetParent(addresses.GetByPersistentLocalId(parentAddressPersistentLocalId));
-            }
+                    addressPersistentLocalId,
+                    addressStatus,
+                    houseNumber,
+                    boxNumber,
+                    postalCode,
+                    new AddressGeometry(geometryMethod, geometrySpecification, geometryPosition),
+                    true,
+                    false,
+                    parentAddressPersistentLocalId is null ? null : addresses.GetByPersistentLocalId(parentAddressPersistentLocalId),
+                    mergedAddressPersistentLocalId,
+                    desiredStatus,
+                    null,
+                    eventHash,
+                    provenanceData),
+                parent);
 
             addresses.Add(newAddress);
 
@@ -98,7 +99,7 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
                 addresses);
         }
 
-        private static StreetNameAddresses ReaddStreetNameAddresses(
+        private static StreetNameAddresses ReadStreetNameAddresses(
             StreetNamePersistentLocalId streetNamePersistentLocalId,
             IEnumerable<AddressData> addresses)
         {
@@ -106,7 +107,13 @@ namespace AddressRegistry.Tests.AggregateTests.SnapshotTests
             foreach (var snapshotAddress in addresses)
             {
                 var address = new StreetNameAddress(o => { });
-                address.RestoreSnapshot(streetNamePersistentLocalId, snapshotAddress);
+
+                var parent = snapshotAddress.ParentId is not null
+                    ? newAddresses.GetByPersistentLocalId(new AddressPersistentLocalId(snapshotAddress.ParentId.Value))
+                    : null;
+
+                address.RestoreSnapshot(streetNamePersistentLocalId, snapshotAddress, parent);
+
                 newAddresses.Add(address);
             }
 

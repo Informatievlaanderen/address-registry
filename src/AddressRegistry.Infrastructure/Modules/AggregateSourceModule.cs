@@ -8,6 +8,7 @@ namespace AddressRegistry.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
     using Microsoft.Extensions.Configuration;
     using StreetName;
+    using StreetName.Events;
 
     public class AggregateSourceModule : Module
     {
@@ -30,8 +31,10 @@ namespace AddressRegistry.Infrastructure.Modules
                 snapshotStrategy = IntervalStrategy.SnapshotEvery(snapshotInterval);
             }
 
+            var anySnapshot = new AnySnapshotStrategy([snapshotStrategy, new AfterEventTypeStrategy(typeof(StreetNameSnapshotWasRequested))]);
+
             builder
-                .Register(c => new StreetNameFactory(snapshotStrategy))
+                .Register(c => new StreetNameFactory(anySnapshot))
                 .As<IStreetNameFactory>();
 
             builder

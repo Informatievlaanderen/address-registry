@@ -51,7 +51,7 @@
 
     public sealed class ProjectionsHandlesEventsTests
     {
-        private readonly IEnumerable<Type> _eventsToExclude = new[] { typeof(StreetNameSnapshot) };
+        private readonly IEnumerable<Type> _eventsToExclude = new[] { typeof(StreetNameSnapshot), typeof(StreetNameSnapshotWasRequested) };
         private readonly IList<Type> _eventTypes;
 
         public ProjectionsHandlesEventsTests()
@@ -151,7 +151,8 @@
                 typeof(StreetNameWasRemoved),
                 typeof(StreetNameWasRenamed),
                 typeof(StreetNameWasRetired),
-                typeof(StreetNameWasRetiredBecauseOfMunicipalityMerger)
+                typeof(StreetNameWasRetiredBecauseOfMunicipalityMerger),
+                typeof(StreetNameSnapshotWasRequested)
             ]);
         }
 
@@ -224,7 +225,8 @@
                 typeof(StreetNameWasRemoved),
                 typeof(StreetNameWasRenamed),
                 typeof(StreetNameWasRetired),
-                typeof(StreetNameWasRetiredBecauseOfMunicipalityMerger)
+                typeof(StreetNameWasRetiredBecauseOfMunicipalityMerger),
+                typeof(StreetNameSnapshotWasRequested)
             ]);
         }
 

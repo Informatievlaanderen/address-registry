@@ -6,6 +6,7 @@
     using System.Text.Json;
     using System.Threading.Tasks;
     using AddressRegistry.Infrastructure.Elastic;
+    using AddressRegistry.Infrastructure.Elastic.Exceptions;
     using global::Elastic.Clients.Elasticsearch;
     using global::Elastic.Clients.Elasticsearch.QueryDsl;
     using Microsoft.Extensions.Logging;
@@ -89,8 +90,7 @@
 
             if (!searchResponse.IsValidResponse)
             {
-                _logger.LogWarning("Failed to search for addresses: {Error}", searchResponse.ElasticsearchServerError);
-                return AddressSearchResult.Empty;
+                throw new ElasticsearchClientException("Failed to search for addresses", searchResponse.ElasticsearchServerError, searchResponse.DebugInformation);
             }
 
             var language = DetermineLanguage(searchResponse);

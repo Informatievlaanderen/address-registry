@@ -6,6 +6,7 @@
     using System.Text.Json;
     using System.Threading.Tasks;
     using AddressRegistry.Infrastructure.Elastic;
+    using AddressRegistry.Infrastructure.Elastic.Exceptions;
     using Consumer.Read.StreetName.Projections;
     using Consumer.Read.StreetName.Projections.Elastic;
     using global::Elastic.Clients.Elasticsearch;
@@ -97,8 +98,7 @@
 
             if (!searchResponse.IsValidResponse)
             {
-                _logger.LogWarning("Failed to search for streetnames: {Error}", searchResponse.ElasticsearchServerError);
-                return StreetNameSearchResult.Empty;
+                throw new ElasticsearchClientException("Failed to search for streetnames", searchResponse.ElasticsearchServerError, searchResponse.DebugInformation);
             }
 
             var language = DetermineLanguage(searchResponse);

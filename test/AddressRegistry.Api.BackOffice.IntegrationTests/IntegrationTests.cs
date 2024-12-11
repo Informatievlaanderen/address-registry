@@ -39,6 +39,7 @@ namespace AddressRegistry.Api.BackOffice.IntegrationTests
         [InlineData("/v2/adressen/1/acties/wijzigen/adrespositie", "dv_ar_adres_beheer")]
         [InlineData("/v2/adressen/1/acties/wijzigen/postcode", "dv_ar_adres_beheer dv_ar_adres_uitzonderingen")]
         [InlineData("/v2/adressen/acties/heradresseren", "dv_ar_adres_beheer")]
+        [InlineData("/v2/adressen/acties/snapshot", "dv_ar_adres_beheer dv_ar_adres_uitzonderingen")]
         public async Task ReturnsSuccess(string endpoint, string requiredScopes)
         {
             var client = _fixture.TestServer.CreateClient();
@@ -75,6 +76,7 @@ namespace AddressRegistry.Api.BackOffice.IntegrationTests
         [InlineData("/v2/adressen/1/acties/wijzigen/adrespositie")]
         [InlineData("/v2/adressen/1/acties/wijzigen/postcode")]
         [InlineData("/v2/adressen/acties/heradresseren")]
+        [InlineData("/v2/adressen/acties/snapshot")]
         public async Task ReturnsUnauthorized(string endpoint)
         {
             var client = _fixture.TestServer.CreateClient();
@@ -113,6 +115,7 @@ namespace AddressRegistry.Api.BackOffice.IntegrationTests
         [InlineData("/v2/adressen/1/acties/wijzigen/postcode", "dv_ar_adres_beheer")]
         [InlineData("/v2/adressen/1/acties/wijzigen/postcode", "dv_ar_adres_uitzonderingen")]
         [InlineData("/v2/adressen/acties/heradresseren")]
+        [InlineData("/v2/adressen/acties/snapshot", "dv_ar_adres_beheer")]
         public async Task ReturnsForbidden(string endpoint, string scope = "")
         {
             var client = _fixture.TestServer.CreateClient();

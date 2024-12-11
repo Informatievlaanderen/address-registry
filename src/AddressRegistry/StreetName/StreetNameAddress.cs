@@ -27,10 +27,9 @@ namespace AddressRegistry.StreetName
         /// </summary>
         /// <param name="parentStreetNameAddress">The parent instance.</param>
         /// <returns>The instance of which you have set the parent.</returns>
-        public StreetNameAddress SetParent(StreetNameAddress? parentStreetNameAddress)
+        private void SetParent(StreetNameAddress? parentStreetNameAddress)
         {
             Parent = parentStreetNameAddress;
-            return this;
         }
 
         public bool BoxNumberIsUnique(BoxNumber boxNumber)

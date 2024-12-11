@@ -46,7 +46,6 @@
                  sqlConsumerReadStreetNameLatestItemConnection.QueryFirstAsync<DateTimeOffset>(
                     $"SELECT TOP(1) [{nameof(StreetNameLatestItem.VersionTimestamp)}] FROM [{Schema.ConsumerReadStreetName}].[{StreetNameLatestItemConfiguration.TableName}] ORDER BY [{nameof(StreetNameLatestItem.VersionTimestamp)}] DESC");
 
-
             await Task.WhenAll(consumerResult, municipalityLatestItemResult, streetNameLatestItemResult);
 
             return Ok(new object[]

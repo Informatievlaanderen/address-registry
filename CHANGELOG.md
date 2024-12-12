@@ -1,3 +1,12 @@
+## [4.29.4](https://github.com/informatievlaanderen/address-registry/compare/v4.29.3...v4.29.4) (2024-12-12)
+
+
+### Bug Fixes
+
+* **backoffice:** add disable validation for housenumber present check ([27683ae](https://github.com/informatievlaanderen/address-registry/commit/27683aef042756b430cbeb8a7b440caf0ef71046))
+* **backoffice:** remove address from merger relation ([056cd49](https://github.com/informatievlaanderen/address-registry/commit/056cd497ea5344022ea10e7ccef654a2cb356a9d))
+* search via Elastic should return 500 when Elastic fails ([7ae396a](https://github.com/informatievlaanderen/address-registry/commit/7ae396a0636d978c4f12c1a24304df3a50cee328))
+
 ## [4.29.3](https://github.com/informatievlaanderen/address-registry/compare/v4.29.2...v4.29.3) (2024-12-05)
 
 

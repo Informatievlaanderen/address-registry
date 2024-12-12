@@ -414,5 +414,38 @@ OUD adresid;OUD huisnummer;OUD busnummer;NIEUW straatnaam;NIEUW homoniemtoevoegi
             var errorMessages = Xunit.Assert.IsType<List<string>>(((BadRequestObjectResult)result).Value);
             errorMessages.Should().Contain("Box number 'A' does not have a corresponding house number '14' for street 'Vagevuurstraat' at record number 1");
         }
+
+        [Fact]
+        public async Task WithBoxNumberWithoutParentAddressDisabledValidation_ThenReturnsBadRequest()
+        {
+            var dbContext = new FakeStreetNameConsumerContextFactory().CreateDbContext();
+            dbContext.StreetNameLatestItems.Add(new StreetNameLatestItem
+            {
+                PersistentLocalId = 1,
+                NisCode = "10000",
+                NameDutch = "Vagevuurstraat",
+                HomonymAdditionDutch = null
+            });
+            dbContext.SaveChanges();
+
+            var backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext();
+            var addressPersistentLocalIdOne = 2268196;
+
+            await backOfficeContext.AddAddressPersistentIdStreetNamePersistentId(new AddressPersistentLocalId(addressPersistentLocalIdOne), new StreetNamePersistentLocalId(1));
+
+            var result =
+                _controller.ProposeForMunicipalityMerger(
+                    CsvHelpers.CreateFormFileFromString(@$"
+OUD adresid;OUD huisnummer;OUD busnummer;NIEUW straatnaam;NIEUW homoniemtoevoeging;NIEUW huisnummer;NIEUW busnummer;NIEUW postcode;Geen nummer validatie
+{addressPersistentLocalIdOne};;;Vagevuurstraat;;14;A;8755;x
+"),
+                    "10000",
+                    new FakePersistentLocalIdGenerator(),
+                    dbContext,
+                    backOfficeContext,
+                    dryRun:true).GetAwaiter().GetResult();
+
+            result.Should().BeOfType<NoContentResult>();
+        }
     }
 }

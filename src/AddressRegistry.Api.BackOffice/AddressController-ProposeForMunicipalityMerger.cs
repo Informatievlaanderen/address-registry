@@ -145,7 +145,8 @@ namespace AddressRegistry.Api.BackOffice
                                 string.IsNullOrWhiteSpace(streetNameHomonymAddition) ? null : streetNameHomonymAddition,
                             HouseNumber = houseNumber!,
                             BoxNumber = string.IsNullOrWhiteSpace(boxNumber) ? null : boxNumber,
-                            PostalCode = postalCode!
+                            PostalCode = postalCode!,
+                            DisableValidation = disableValidation
                         });
                     }
                 }
@@ -195,7 +196,7 @@ namespace AddressRegistry.Api.BackOffice
                     errorMessages.Add($"Box number '{addressRecord.BoxNumber}' is not unique for street (Name={streetNameName}, HomonymAddition={streetNameHomonymAddition}) and house number '{addressRecord.HouseNumber}'");
                 }
 
-                foreach (var boxNumberAddressRecord in boxNumberAddressRecords)
+                foreach (var boxNumberAddressRecord in boxNumberAddressRecords.Where(x => !x.DisableValidation))
                 {
                     if (houseNumberAddressRecords.All(x => x.HouseNumber != boxNumberAddressRecord.HouseNumber))
                     {
@@ -297,5 +298,7 @@ namespace AddressRegistry.Api.BackOffice
         public required string HouseNumber { get; init; }
         public required string? BoxNumber { get; init; }
         public required string PostalCode { get; init; }
+
+        public bool DisableValidation { get; init; }
     }
 }

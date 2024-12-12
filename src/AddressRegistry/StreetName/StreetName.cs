@@ -329,6 +329,11 @@ namespace AddressRegistry.StreetName
 
         #endregion
 
+        public void RequestSnapshot()
+        {
+            ApplyChange(new StreetNameSnapshotWasRequested(PersistentLocalId));
+        }
+
         public object TakeSnapshot()
         {
             return new StreetNameSnapshot(

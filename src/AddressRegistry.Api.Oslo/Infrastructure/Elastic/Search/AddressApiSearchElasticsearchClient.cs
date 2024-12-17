@@ -1,4 +1,4 @@
-﻿namespace AddressRegistry.Api.Oslo.Infrastructure.Elastic
+﻿namespace AddressRegistry.Api.Oslo.Infrastructure.Elastic.Search
 {
     using System;
     using System.Collections.Generic;
@@ -7,15 +7,23 @@
     using System.Threading.Tasks;
     using AddressRegistry.Infrastructure.Elastic;
     using AddressRegistry.Infrastructure.Elastic.Exceptions;
+    using AddressRegistry.Projections.Elastic.AddressSearch;
+    using AddressRegistry.StreetName;
     using global::Elastic.Clients.Elasticsearch;
     using global::Elastic.Clients.Elasticsearch.QueryDsl;
     using Microsoft.Extensions.Logging;
-    using Projections.Elastic.AddressSearch;
-    using StreetName;
     using Name = AddressRegistry.Infrastructure.Elastic.Name;
 
-    public sealed partial class AddressApiElasticsearchClient
+    public sealed class AddressApiSearchElasticsearchClient: AddressApiElasticsearchClientBase, IAddressApiSearchElasticsearchClient
     {
+        private const string FullAddress = "fullAddress";
+
+        public AddressApiSearchElasticsearchClient(
+            ElasticsearchClient elasticsearchClient,
+            string indexAlias)
+            : base(elasticsearchClient, indexAlias)
+        { }
+
         public async Task<AddressSearchResult> SearchAddresses(
             string addressQuery,
             string? nisCode,

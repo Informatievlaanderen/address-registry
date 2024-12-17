@@ -14,6 +14,7 @@ namespace AddressRegistry.Api.Oslo.Address
     using Consumer.Read.StreetName.Projections;
     using NetTopologySuite.Geometries;
     using NetTopologySuite.Utilities;
+    using Projections.Elastic.AddressList;
     using Projections.Elastic.AddressSearch;
     using Projections.Legacy.AddressListV2;
     using StreetName;
@@ -38,6 +39,25 @@ namespace AddressRegistry.Api.Oslo.Address
                 addressSearchDocument.HouseNumber,
                 addressSearchDocument.BoxNumber,
                 addressSearchDocument.PostalInfo?.PostalCode,
+                defaultMunicipalityName.Spelling,
+                MapElasticLanguageToTaal(defaultMunicipalityName.Language));
+        }
+
+        public static VolledigAdres? GetVolledigAdres(AddressListDocument addressListDocument)
+        {
+            if (string.IsNullOrEmpty(addressListDocument.Municipality.NisCode))
+            {
+                return null;
+            }
+
+            var defaultMunicipalityName = addressListDocument.Municipality.Names.FirstOrDefault(x => x.Language == Language.nl);
+            if(defaultMunicipalityName == null)
+                defaultMunicipalityName = addressListDocument.Municipality.Names.First();
+            return new VolledigAdres(
+                addressListDocument.StreetName.Names.FirstOrDefault(x => x.Language == defaultMunicipalityName.Language)?.Spelling ?? addressListDocument.StreetName.Names.First().Spelling,
+                addressListDocument.HouseNumber,
+                addressListDocument.BoxNumber,
+                addressListDocument.PostalInfo?.PostalCode,
                 defaultMunicipalityName.Spelling,
                 MapElasticLanguageToTaal(defaultMunicipalityName.Language));
         }

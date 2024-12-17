@@ -1,17 +1,16 @@
-﻿namespace AddressRegistry.Api.Oslo.Infrastructure.Elastic
+﻿namespace AddressRegistry.Api.Oslo.Infrastructure.Elastic.Search
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text.Json;
     using System.Threading.Tasks;
+    using AddressRegistry.Consumer.Read.StreetName.Projections;
+    using AddressRegistry.Consumer.Read.StreetName.Projections.Elastic;
     using AddressRegistry.Infrastructure.Elastic;
     using AddressRegistry.Infrastructure.Elastic.Exceptions;
-    using Consumer.Read.StreetName.Projections;
-    using Consumer.Read.StreetName.Projections.Elastic;
     using global::Elastic.Clients.Elasticsearch;
     using global::Elastic.Clients.Elasticsearch.QueryDsl;
-    using Microsoft.Extensions.Logging;
     using Name = AddressRegistry.Infrastructure.Elastic.Name;
 
     public sealed partial class AddressApiStreetNameElasticsearchClient

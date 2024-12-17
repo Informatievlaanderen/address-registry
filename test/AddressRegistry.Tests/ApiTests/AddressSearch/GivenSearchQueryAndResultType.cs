@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
     using Api.Oslo.Address.Search;
     using Api.Oslo.Infrastructure.Elastic;
+    using Api.Oslo.Infrastructure.Elastic.Search;
     using Api.Oslo.Infrastructure.Options;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.Api.Search.Filtering;
@@ -24,7 +25,7 @@
     public class GivenSearchQueryAndResultType
     {
         private readonly AddressSearchHandler _sut;
-        private readonly Mock<IAddressApiElasticsearchClient> _mockAddressSearchApi;
+        private readonly Mock<IAddressApiSearchElasticsearchClient> _mockAddressSearchApi;
         private readonly Mock<IAddressApiStreetNameElasticsearchClient> _mockAddressStreetNameSearchApi;
         private readonly Fixture _fixture;
         private readonly Mock<IPostalCache> _mockPostalCache;
@@ -34,7 +35,7 @@
             _fixture = new Fixture();
             _fixture.Customizations.Add(new WithUniqueInteger());
 
-            _mockAddressSearchApi = new Mock<IAddressApiElasticsearchClient>();
+            _mockAddressSearchApi = new Mock<IAddressApiSearchElasticsearchClient>();
             _mockAddressStreetNameSearchApi = new Mock<IAddressApiStreetNameElasticsearchClient>();
 
             _mockAddressSearchApi.Setup(x => x.SearchAddresses(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<AddressStatus?>(), It.IsAny<int>()))

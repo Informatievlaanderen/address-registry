@@ -3,6 +3,8 @@
     using System;
     using Autofac;
     using Elastic;
+    using Elastic.List;
+    using Elastic.Search;
     using global::Elastic.Clients.Elasticsearch;
     using global::Elastic.Transport;
     using Microsoft.Extensions.Configuration;
@@ -52,10 +54,19 @@
 
             builder
                 .Register(c =>
-                    new AddressApiElasticsearchClient(
+                    new AddressApiSearchElasticsearchClient(
                         c.Resolve<ElasticsearchClient>(),
-                        elasticOptions["IndexAlias"]!,
-                        c.Resolve<ILoggerFactory>()
+                        elasticOptions["AddressSearchIndexAlias"]!
+                    ))
+                .AsSelf()
+                .AsImplementedInterfaces()
+                .InstancePerLifetimeScope();
+
+            builder
+                .Register(c =>
+                    new AddressApiListElasticsearchClient(
+                        c.Resolve<ElasticsearchClient>(),
+                        elasticOptions["AddressListIndexAlias"]!
                     ))
                 .AsSelf()
                 .AsImplementedInterfaces()
@@ -65,8 +76,7 @@
                 .Register(c =>
                     new AddressApiStreetNameElasticsearchClient(
                         c.Resolve<ElasticsearchClient>(),
-                        elasticOptions["StreetNameIndexAlias"]!,
-                        c.Resolve<ILoggerFactory>()
+                        elasticOptions["StreetNameIndexAlias"]!
                     ))
                 .AsSelf()
                 .AsImplementedInterfaces()

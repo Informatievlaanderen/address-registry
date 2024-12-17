@@ -14,6 +14,7 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
     using Consumer.Read.Municipality;
     using Consumer.Read.StreetName;
     using Elastic;
+    using Elastic.List;
     using MediatR;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Options;
@@ -40,11 +41,11 @@ namespace AddressRegistry.Api.Oslo.Infrastructure.Modules
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();
 
-            if (_configuration.GetValue("UseElasticForList", false))
+            if (_configuration.GetValue("UseElasticForList", defaultValue:false))
             {
                 builder.Register(c => (IRequestHandler<AddressListOsloRequest, AddressListOsloResponse>)
                     new AddressListOsloElasticHandler(
-                        c.Resolve<IAddressApiElasticsearchClient>(),
+                        c.Resolve<IAddressApiListElasticsearchClient>(),
                         c.Resolve<IOptions<ResponseOptions>>()))
                     .InstancePerLifetimeScope();
             }

@@ -11,6 +11,7 @@
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Straatnaam;
     using Convertors;
     using Infrastructure.Elastic;
+    using Infrastructure.Elastic.Search;
     using Infrastructure.Options;
     using MediatR;
     using Microsoft.Extensions.Options;
@@ -19,20 +20,20 @@
 
     public sealed class AddressSearchHandler : IRequestHandler<AddressSearchRequest, AddressSearchResponse>
     {
-        private readonly IAddressApiElasticsearchClient _addressApiElasticsearchClient;
+        private readonly IAddressApiSearchElasticsearchClient _addressApiSearchElasticsearchClient;
         private readonly IAddressApiStreetNameElasticsearchClient _addressApiStreetNameElasticsearchClient;
         private readonly IMunicipalityCache _municipalityCache;
         private readonly QueryParser _queryParser;
         private readonly ResponseOptions _responseOptions;
 
         public AddressSearchHandler(
-            IAddressApiElasticsearchClient addressApiElasticsearchClient,
+            IAddressApiSearchElasticsearchClient addressApiSearchElasticsearchClient,
             IAddressApiStreetNameElasticsearchClient addressApiStreetNameElasticsearchClient,
             IOptions<ResponseOptions> responseOptions,
             IMunicipalityCache municipalityCache,
             QueryParser queryParser)
         {
-            _addressApiElasticsearchClient = addressApiElasticsearchClient;
+            _addressApiSearchElasticsearchClient = addressApiSearchElasticsearchClient;
             _addressApiStreetNameElasticsearchClient = addressApiStreetNameElasticsearchClient;
             _municipalityCache = municipalityCache;
             _queryParser = queryParser;
@@ -98,7 +99,7 @@
                 return new AddressSearchResponse([]);
             }
 
-            var response = await _addressApiElasticsearchClient.SearchAddresses(
+            var response = await _addressApiSearchElasticsearchClient.SearchAddresses(
                 query,
                 nisCode,
                 addressStatus,

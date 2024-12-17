@@ -21,7 +21,7 @@ namespace AddressRegistry.Projections.Elastic.AddressList
     using NetTopologySuite.IO;
     using NodaTime;
 
-    [ConnectedProjectionName("API endpoint lijst adressen (elatic)")]
+    [ConnectedProjectionName("API endpoint lijst adressen (elastic)")]
     [ConnectedProjectionDescription("Projectie die de data voor het adressenlijst endpoint in Elastic Search synchroniseert.")]
     public class AddressListProjections : ConnectedProjection<ElasticRunnerContext>
     {

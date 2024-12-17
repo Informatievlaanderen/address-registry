@@ -11,20 +11,18 @@
     using System.Threading.Tasks;
     using AddressRegistry.Infrastructure.Elastic;
     using AddressSearch;
-    using Api.Oslo.Infrastructure.Elastic;
+    using Api.Oslo.Infrastructure.Elastic.Search;
     using FluentAssertions;
     using global::Elastic.Clients.Elasticsearch;
     using global::Elastic.Clients.Elasticsearch.Serialization;
     using global::Elastic.Transport;
-    using global::Elastic.Transport.Extensions;
     using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Logging.Abstractions;
     using Xunit;
 
     public sealed class AddressSearchTests
     {
         private readonly ElasticsearchClient _elasticClient;
-        private readonly AddressApiElasticsearchClient _addressSearchClient;
+        private readonly AddressApiSearchElasticsearchClient _addressSearchClient;
         private readonly string _elasticAlias;
 
         public AddressSearchTests()
@@ -54,7 +52,7 @@
                 clientSettings.Authentication(new BasicAuthentication(elasticUsername, elasticPassword));
 
             _elasticClient = new ElasticsearchClient(clientSettings);
-            _addressSearchClient = new AddressApiElasticsearchClient(_elasticClient, _elasticAlias, new NullLoggerFactory());
+            _addressSearchClient = new AddressApiSearchElasticsearchClient(_elasticClient, _elasticAlias);
         }
 
         [Fact(Skip = "This is a test that should be run manually")]

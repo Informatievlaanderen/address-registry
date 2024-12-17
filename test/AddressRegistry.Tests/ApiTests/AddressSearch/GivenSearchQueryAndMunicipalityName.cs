@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using Api.Oslo.Address.Search;
     using Api.Oslo.Infrastructure.Elastic;
+    using Api.Oslo.Infrastructure.Elastic.Search;
     using Api.Oslo.Infrastructure.Options;
     using Be.Vlaanderen.Basisregisters.Api.Search.Filtering;
     using Be.Vlaanderen.Basisregisters.Api.Search.Pagination;
@@ -20,13 +21,13 @@
     public class GivenSearchQueryAndMunicipalityName
     {
         private readonly AddressSearchHandler _sut;
-        private readonly Mock<IAddressApiElasticsearchClient> _mockAddressSearchApi;
+        private readonly Mock<IAddressApiSearchElasticsearchClient> _mockAddressSearchApi;
         private readonly Mock<IAddressApiStreetNameElasticsearchClient> _mockAddressStreetNameSearchApi;
         private readonly Mock<IMunicipalityCache> _mockMunicipalityCache;
 
         public GivenSearchQueryAndMunicipalityName()
         {
-            _mockAddressSearchApi = new Mock<IAddressApiElasticsearchClient>();
+            _mockAddressSearchApi = new Mock<IAddressApiSearchElasticsearchClient>();
             _mockAddressStreetNameSearchApi = new Mock<IAddressApiStreetNameElasticsearchClient>();
 
             _mockAddressSearchApi.Setup(x => x.SearchAddresses(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<AddressStatus?>(), It.IsAny<int>()))

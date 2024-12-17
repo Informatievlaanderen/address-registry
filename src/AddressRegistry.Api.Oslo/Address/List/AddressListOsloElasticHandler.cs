@@ -5,20 +5,21 @@
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api.Search.Pagination;
     using Infrastructure.Elastic;
+    using Infrastructure.Elastic.List;
     using Infrastructure.Options;
     using MediatR;
     using Microsoft.Extensions.Options;
 
     public class AddressListOsloElasticHandler : IRequestHandler<AddressListOsloRequest, AddressListOsloResponse>
     {
-        private readonly IAddressApiElasticsearchClient _addressApiElasticsearchClient;
+        private readonly IAddressApiListElasticsearchClient _addressApiListElasticsearchClient;
         private readonly ResponseOptions _responseOptions;
 
         public AddressListOsloElasticHandler(
-            IAddressApiElasticsearchClient addressApiElasticsearchClient,
+            IAddressApiListElasticsearchClient addressApiListElasticsearchClient,
             IOptions<ResponseOptions> responseOptions)
         {
-            _addressApiElasticsearchClient = addressApiElasticsearchClient;
+            _addressApiListElasticsearchClient = addressApiListElasticsearchClient;
             _responseOptions = responseOptions.Value;
         }
 
@@ -27,7 +28,7 @@
             var pagination = (PaginationRequest)request.Pagination;
             var filtering = request.Filtering;
 
-            var addressSearchResult = await _addressApiElasticsearchClient.ListAddresses(
+            var addressListResult = await _addressApiListElasticsearchClient.ListAddresses(
                 filtering.Filter?.StreetNameId,
                 filtering.Filter?.StreetName,
                 filtering.Filter?.HomonymAddition,
@@ -40,7 +41,7 @@
                 from: pagination.Offset,
                 size: pagination.Limit);
 
-            var addressListItemResponsesV2 = addressSearchResult.Addresses
+            var addressListItemResponsesV2 = addressListResult.Addresses
                 .Select(address => new AddressListItemOsloResponse(
                     address.AddressPersistentLocalId,
                     _responseOptions.Naamruimte,

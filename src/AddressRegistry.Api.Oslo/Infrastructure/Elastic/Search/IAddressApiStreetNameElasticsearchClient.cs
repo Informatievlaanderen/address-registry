@@ -1,7 +1,7 @@
-﻿namespace AddressRegistry.Api.Oslo.Infrastructure.Elastic
+﻿namespace AddressRegistry.Api.Oslo.Infrastructure.Elastic.Search
 {
     using System.Threading.Tasks;
-    using Consumer.Read.StreetName.Projections;
+    using AddressRegistry.Consumer.Read.StreetName.Projections;
 
     public interface IAddressApiStreetNameElasticsearchClient
     {

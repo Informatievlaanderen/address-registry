@@ -1,4 +1,4 @@
-﻿namespace AddressRegistry.Api.Oslo.Infrastructure.Elastic
+﻿namespace AddressRegistry.Api.Oslo.Infrastructure.Elastic.List
 {
     using System;
     using System.Collections.Generic;
@@ -10,12 +10,17 @@
     using global::Elastic.Clients.Elasticsearch;
     using global::Elastic.Clients.Elasticsearch.Core.Search;
     using global::Elastic.Clients.Elasticsearch.QueryDsl;
-    using Microsoft.Extensions.Logging;
-    using Projections.Elastic.AddressSearch;
+    using Projections.Elastic.AddressList;
 
-    public sealed partial class AddressApiElasticsearchClient
+    public sealed class AddressApiListElasticsearchClient: AddressApiElasticsearchClientBase, IAddressApiListElasticsearchClient
     {
-        public async Task<AddressSearchResult> ListAddresses(
+        public AddressApiListElasticsearchClient(
+            ElasticsearchClient elasticsearchClient,
+            string indexAlias)
+            : base(elasticsearchClient, indexAlias)
+        { }
+
+        public async Task<AddressListResult> ListAddresses(
             string? streetNameId,
             string? streetName,
             string? homonymAddition,
@@ -28,19 +33,20 @@
             int? from,
             int? size)
         {
-            if (!string.IsNullOrEmpty(status) & !Enum.TryParse(typeof(AdresStatus), status, true, out var parsedStatus))
+            object? parsedStatus = null;
+            if (!string.IsNullOrEmpty(status) && !Enum.TryParse(typeof(AdresStatus), status, true, out parsedStatus))
             {
-                return new AddressSearchResult(Enumerable.Empty<AddressSearchDocument>().ToList(), 0);
+                return new AddressListResult(Enumerable.Empty<AddressListDocument>().ToList(), 0);
             }
 
-            var searchResponse = await ElasticsearchClient.SearchAsync<AddressSearchDocument>(IndexAlias, descriptor =>
+            var searchResponse = await ElasticsearchClient.SearchAsync<AddressListDocument>(IndexAlias, descriptor =>
             {
                 descriptor.Size(size);
                 descriptor.From(from);
                 descriptor.TrackTotalHits(new TrackHits(true));
                 descriptor.Sort(new List<SortOptions>
                 {
-                    SortOptions.Field(new Field(ToCamelCase(nameof(AddressSearchDocument.AddressPersistentLocalId))),
+                    SortOptions.Field(new Field(ToCamelCase(nameof(AddressListDocument.AddressPersistentLocalId))),
                         new FieldSort { Order = SortOrder.Asc })
                 });
 
@@ -58,19 +64,19 @@
                     {
                         query.Bool(b =>
                         {
-                            var filterConditions = new List<Action<QueryDescriptor<AddressSearchDocument>>>();
+                            var filterConditions = new List<Action<QueryDescriptor<AddressListDocument>>>();
 
                             if (!string.IsNullOrEmpty(streetNameId))
                                 filterConditions.Add(m => m
                                     .Term(t => t
                                         .Field(
-                                            $"{ToCamelCase(nameof(AddressSearchDocument.StreetName))}.{ToCamelCase(nameof(AddressSearchDocument.StreetName.StreetNamePersistentLocalId))}"
+                                            $"{ToCamelCase(nameof(AddressListDocument.StreetName))}.{ToCamelCase(nameof(AddressListDocument.StreetName.StreetNamePersistentLocalId))}"
                                             !)
                                         .Value(streetNameId)));
 
                             if (!string.IsNullOrEmpty(streetName))
                             {
-                                var streetNameNames = $"{ToCamelCase(nameof(AddressSearchDocument.StreetName))}.{ToCamelCase(nameof(AddressSearchDocument.StreetName.Names))}";
+                                var streetNameNames = $"{ToCamelCase(nameof(AddressListDocument.StreetName))}.{ToCamelCase(nameof(AddressListDocument.StreetName.Names))}";
                                 filterConditions.Add(m => m.Nested(t => t.Path(streetNameNames!)
                                     .Query(q => q.Term(t2 => t2
                                         .Field($"{streetNameNames}.{NameSpelling}.{Keyword}"!)
@@ -79,7 +85,7 @@
 
                             if (!string.IsNullOrEmpty(homonymAddition))
                             {
-                                var streetNameHomonymAdditions = $"{ToCamelCase(nameof(AddressSearchDocument.StreetName))}.{ToCamelCase(nameof(AddressSearchDocument.StreetName.HomonymAdditions))}";
+                                var streetNameHomonymAdditions = $"{ToCamelCase(nameof(AddressListDocument.StreetName))}.{ToCamelCase(nameof(AddressListDocument.StreetName.HomonymAdditions))}";
                                 filterConditions.Add(m => m.Nested(t => t.Path(streetNameHomonymAdditions!)
                                     .Query(q => q.Term(t2 => t2
                                         .Field($"{streetNameHomonymAdditions}.{NameSpelling}.{Keyword}"!)
@@ -88,31 +94,31 @@
 
                             if (!string.IsNullOrEmpty(houseNumber))
                                 filterConditions.Add(m => m.Term(t => t
-                                    .Field($"{ToCamelCase(nameof(AddressSearchDocument.HouseNumber))}"!)
+                                    .Field($"{ToCamelCase(nameof(AddressListDocument.HouseNumber))}"!)
                                     .Value(houseNumber)));
 
                             if (!string.IsNullOrEmpty(boxNumber))
                                 filterConditions.Add(m => m.Term(t => t
-                                    .Field($"{ToCamelCase(nameof(AddressSearchDocument.BoxNumber))}"!)
+                                    .Field($"{ToCamelCase(nameof(AddressListDocument.BoxNumber))}"!)
                                     .Value(boxNumber)));
 
                             if (!string.IsNullOrEmpty(postalCode))
                                 filterConditions.Add(m => m.Term(t => t
                                     .Field(
-                                        $"{ToCamelCase(nameof(AddressSearchDocument.PostalInfo))}.{ToCamelCase(nameof(AddressSearchDocument.PostalInfo.PostalCode))}"
+                                        $"{ToCamelCase(nameof(AddressListDocument.PostalInfo))}.{ToCamelCase(nameof(AddressListDocument.PostalInfo.PostalCode))}"
                                         !)
                                     .Value(postalCode)));
 
                             if (!string.IsNullOrEmpty(nisCode))
                                 filterConditions.Add(m => m.Term(t => t
                                     .Field(
-                                        $"{ToCamelCase(nameof(AddressSearchDocument.Municipality))}.{ToCamelCase(nameof(AddressSearchDocument.Municipality.NisCode))}"
+                                        $"{ToCamelCase(nameof(AddressListDocument.Municipality))}.{ToCamelCase(nameof(AddressListDocument.Municipality.NisCode))}"
                                         !)
                                     .Value(nisCode)));
 
                             if (!string.IsNullOrEmpty(municipalityName))
                             {
-                                var municipalityNames = $"{ToCamelCase(nameof(AddressSearchDocument.Municipality))}.{ToCamelCase(nameof(AddressSearchDocument.Municipality.Names))}";
+                                var municipalityNames = $"{ToCamelCase(nameof(AddressListDocument.Municipality))}.{ToCamelCase(nameof(AddressListDocument.Municipality.Names))}";
                                 filterConditions.Add(m => m.Nested(t => t.Path($"{municipalityNames}"!)
                                     .Query(q => q.Term(t2 => t2
                                         .Field($"{municipalityNames}.{NameSpelling}.{Keyword}"!)
@@ -123,7 +129,7 @@
                             {
                                 var addressStatus = ((AdresStatus)parsedStatus!).ConvertFromAdresStatus();
                                 filterConditions.Add(m => m.Term(t => t
-                                    .Field($"{ToCamelCase(nameof(AddressSearchDocument.Status))}"!)
+                                    .Field($"{ToCamelCase(nameof(AddressListDocument.Status))}"!)
                                     .Value(Enum.GetName(addressStatus)!)));
                             }
 
@@ -138,7 +144,7 @@
                 throw new ElasticsearchClientException("Failed to search for addresses", searchResponse.ElasticsearchServerError, searchResponse.DebugInformation);
             }
 
-            return new AddressSearchResult(searchResponse.Documents, searchResponse.Total);
+            return new AddressListResult(searchResponse.Documents, searchResponse.Total);
         }
     }
 }

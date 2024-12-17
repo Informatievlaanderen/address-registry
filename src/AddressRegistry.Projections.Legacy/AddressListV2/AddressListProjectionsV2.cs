@@ -12,7 +12,7 @@ namespace AddressRegistry.Projections.Legacy.AddressListV2
     using StreetName;
     using StreetName.Events;
 
-    [ConnectedProjectionName("API endpoint lijst adressen")]
+    [ConnectedProjectionName("API endpoint lijst adressen (db)")]
     [ConnectedProjectionDescription("Projectie die de adressen data voor de adressen lijst voorziet.")]
     public class AddressListProjectionsV2 : ConnectedProjection<LegacyContext>
     {

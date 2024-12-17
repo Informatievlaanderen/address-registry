@@ -13,7 +13,7 @@ namespace AddressRegistry.Projections.AddressMatch.AddressDetailV2WithParent
     using StreetName;
     using StreetName.Events;
 
-    [ConnectedProjectionName("API endpoint detail adressen")]
+    [ConnectedProjectionName("API endpoint adresmatch")]
     [ConnectedProjectionDescription("Projectie die de adressen data voor het adressen detail voorziet.")]
     public class AddressDetailProjectionsV2WithParent : ConnectedProjection<AddressMatchContext>
     {

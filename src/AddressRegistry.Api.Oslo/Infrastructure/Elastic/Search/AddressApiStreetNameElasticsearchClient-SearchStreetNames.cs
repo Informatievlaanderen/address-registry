@@ -58,23 +58,20 @@
                                             .Path(_fullStreetNames)
                                             .Query(fullAddressQuery =>
                                             {
-                                                fullAddressQuery.Bool(b => b.Should(s =>
-                                                {
-                                                    if (!query.Contains(' '))
-                                                    {
+                                                fullAddressQuery.Bool(b => b.Should(
+                                                    s =>
                                                         s.Prefix(p =>
                                                             p
                                                                 .Field($"{_fullStreetNames}.{NameSpelling}")
                                                                 .Value(query)
-                                                                .Boost(3));
-                                                    }
-
-                                                    s.MatchPhrase(mp =>
-                                                        mp
-                                                            .Field($"{_fullStreetNames}.{NameSpelling}")
-                                                            .Query(query)
-                                                            .Slop(10));
-                                                }));
+                                                                .Boost(3)),
+                                                    s=>
+                                                        s.MatchPhrase(mp =>
+                                                            mp
+                                                                .Field($"{_fullStreetNames}.{NameSpelling}")
+                                                                .Query(query)
+                                                                .Slop(10))
+                                                ));
                                             })
                                             .InnerHits(c =>
                                                 c.Size(1))

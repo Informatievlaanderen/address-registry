@@ -60,24 +60,22 @@
                 return await SearchAddresses(request, query, nisCode, pagination);
             }
 
-            if (request.Filtering.Filter.ResultType == ResultType.StreetName)
+            var streetNameNisCode = nisCode;
+            if (query is not null && _queryParser.TryExtractNisCodeViaPostalCode(ref query, out var queryNisCode))
             {
-                if (query is not null
-                    && _queryParser.TryExtractNisCodeViaPostalCode(ref query, out var queryNisCode))
+                if (request.Filtering.Filter.ResultType == ResultType.StreetName && nisCode is not null && nisCode != queryNisCode)
                 {
-                    if (nisCode is not null && nisCode != queryNisCode)
-                    {
-                        return new AddressSearchResponse([]);
-                    }
-
-                    nisCode = queryNisCode;
+                    return new AddressSearchResponse([]);
                 }
 
-                return await SearchStreetNames(request, query, nisCode, pagination);
+                if (nisCode is null || nisCode == queryNisCode)
+                {
+                    streetNameNisCode = queryNisCode;
+                }
             }
 
-            var streetNames = await SearchStreetNames(request, query, nisCode, pagination);
-            if (streetNames.Results.Count >= pagination.Limit)
+            var streetNames = await SearchStreetNames(request, query, streetNameNisCode, pagination);
+            if (request.Filtering.Filter.ResultType == ResultType.StreetName || streetNames.Results.Count >= pagination.Limit)
             {
                 return streetNames;
             }

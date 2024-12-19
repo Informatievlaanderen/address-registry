@@ -1,3 +1,11 @@
+## [4.29.6](https://github.com/informatievlaanderen/address-registry/compare/v4.29.5...v4.29.6) (2024-12-19)
+
+
+### Bug Fixes
+
+* **elastic:** always extract postal search streetnames ([8cccef9](https://github.com/informatievlaanderen/address-registry/commit/8cccef9ca330ecc1365d2c9881e5b1956a12cc35))
+* **elastic:** search by prefix streetname always ([ca04fa1](https://github.com/informatievlaanderen/address-registry/commit/ca04fa1e6aa90b3d300c7f18410195002e402ee7))
+
 ## [4.29.5](https://github.com/informatievlaanderen/address-registry/compare/v4.29.4...v4.29.5) (2024-12-18)
 
 ## [4.29.4](https://github.com/informatievlaanderen/address-registry/compare/v4.29.3...v4.29.4) (2024-12-12)

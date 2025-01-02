@@ -56,7 +56,10 @@ namespace AddressRegistry.Api.BackOffice.Infrastructure
                 ? baseUrl.Substring(0, baseUrl.Length - 1)
                 : baseUrl;
 
-            services.AddAcmIdmAuthentication(oAuth2IntrospectionOptions!);
+            services
+                .AddDistributedMemoryCache()
+                .AddAcmIdmAuthentication(oAuth2IntrospectionOptions!);
+
             services
                 .ConfigureDefaultForApi<Startup>(new StartupConfigureOptions
                     {

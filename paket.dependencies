@@ -49,7 +49,7 @@ nuget Be.vlaanderen.basisregisters.SnapshotVerifier 9.0.1
 
 nuget Be.Vlaanderen.Basisregisters.Api 23.1.0
 
-nuget Be.Vlaanderen.Basisregisters.Auth.AcmIdm 3.0.0
+nuget Be.Vlaanderen.Basisregisters.Auth.AcmIdm 3.3.0
 
 nuget Be.Vlaanderen.Basisregisters.Aws.DistributedMutex 4.0.1
 nuget Be.Vlaanderen.Basisregisters.Aws.Lambda 4.0.0

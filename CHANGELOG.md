@@ -1,3 +1,10 @@
+# [4.30.0](https://github.com/informatievlaanderen/address-registry/compare/v4.29.6...v4.30.0) (2025-01-02)
+
+
+### Features
+
+* add cache introspection ([142783e](https://github.com/informatievlaanderen/address-registry/commit/142783ed117eed69e5dcf6b0a8710c9541f2ea26))
+
 ## [4.29.6](https://github.com/informatievlaanderen/address-registry/compare/v4.29.5...v4.29.6) (2024-12-19)
 
 

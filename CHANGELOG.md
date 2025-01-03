@@ -1,3 +1,10 @@
+# [4.31.0](https://github.com/informatievlaanderen/address-registry/compare/v4.30.0...v4.31.0) (2025-01-03)
+
+
+### Features
+
+* add snapshot on request ([2636902](https://github.com/informatievlaanderen/address-registry/commit/2636902d12907c0c1ce2d0b82ff5974e27aaaa76))
+
 # [4.30.0](https://github.com/informatievlaanderen/address-registry/compare/v4.29.6...v4.30.0) (2025-01-02)
 
 

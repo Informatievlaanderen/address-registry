@@ -287,6 +287,131 @@ namespace AddressRegistry.Api.Oslo.Address.Sync
   </Object></Content>]]>
 </content>
 </entry>
+<entry>
+    <id>132217759</id>
+    <title>AddressWasMigratedToStreetName-132217759</title>
+    <updated>2023-11-01T11:44:38+01:00</updated>
+    <published>2023-11-01T11:44:38+01:00</published>
+    <link href=""https://data.vlaanderen.be/id/adres/3064179"" rel=""related"" />
+    <author>
+      <name>Digitaal Vlaanderen</name>
+    </author>
+    <category term=""adressen"" />
+    <content><![CDATA[<Content xmlns:i=""http://www.w3.org/2001/XMLSchema-instance"">
+  <Event>
+    <AddressWasMigratedToStreetName>
+      <StreetNamePersistentLocalId>44935</StreetNamePersistentLocalId>
+      <AddressId>996b2463-0ce2-541e-95a0-0f51f8478d0e</AddressId>
+      <StreetNameId>b4b0e993-cc85-53b6-836b-7ec08e7c6910</StreetNameId>
+      <AddressPersistentLocalId>3064179</AddressPersistentLocalId>
+      <Status>Current</Status>
+      <HouseNumber>174B</HouseNumber>
+      <BoxNumber />
+      <GeometryMethod>DerivedFromObject</GeometryMethod>
+      <GeometrySpecification>BuildingUnit</GeometrySpecification>
+      <ExtendedWkbGeometry>01010000208A7A0000EC51B81E6108F2403D0AD7A394D50941</ExtendedWkbGeometry>
+      <OfficiallyAssigned>true</OfficiallyAssigned>
+      <PostalCode>8310</PostalCode>
+      <IsCompleted>true</IsCompleted>
+      <IsRemoved>false</IsRemoved>
+      <ParentPersistentLocalId />
+      <Provenance>
+        <Timestamp>2023-11-01T10:44:38Z</Timestamp>
+        <Organisation>DigitaalVlaanderen</Organisation>
+        <Reason>Migrate Address aggregate to StreetName.</Reason>
+      </Provenance>
+    </AddressWasMigratedToStreetName>
+  </Event>
+  <Object>
+    <Id>3064179</Id>
+    <Identificator>
+      <Id>https://data.vlaanderen.be/id/adres/3064179</Id>
+      <Naamruimte>https://data.vlaanderen.be/id/adres</Naamruimte>
+      <ObjectId>3064179</ObjectId>
+      <VersieId>2023-11-01T11:44:38+01:00</VersieId>
+    </Identificator>
+    <StraatnaamId>44935</StraatnaamId>
+    <PostCode>8310</PostCode>
+    <Huisnummer>174B</Huisnummer>
+    <Busnummer i:nil=""true"" />
+    <AdresStatus>InGebruik</AdresStatus>
+    <AdresPositie>
+      <point>
+        <pos>73862.07 211634.58</pos>
+      </point>
+    </AdresPositie>
+    <PositieGeometrieMethode>AfgeleidVanObject</PositieGeometrieMethode>
+    <PositieSpecificatie>Gebouweenheid</PositieSpecificatie>
+    <IsCompleet>true</IsCompleet>
+    <OfficieelToegekend>true</OfficieelToegekend>
+    <Creatie>
+      <Tijdstip>2023-11-01T11:44:38+01:00</Tijdstip>
+      <Organisatie>Digitaal Vlaanderen</Organisatie>
+      <Reden>Migrate Address aggregate to StreetName.</Reden>
+    </Creatie>
+  </Object>
+</Content>]]></content>
+</entry>
+<entry>
+    <id>140807758</id>
+    <title>AddressWasProposedV2-140807758</title>
+    <updated>2024-11-21T10:14:32+01:00</updated>
+    <published>2024-11-21T10:14:32+01:00</published>
+    <link href=""https://data.vlaanderen.be/id/adres/30408210"" rel=""related"" />
+    <author>
+      <name>Andere</name>
+    </author>
+    <category term=""adressen"" />
+    <content><![CDATA[<Content xmlns:i=""http://www.w3.org/2001/XMLSchema-instance"">
+  <Event>
+    <AddressWasProposedV2>
+      <StreetNamePersistentLocalId>13813</StreetNamePersistentLocalId>
+      <AddressPersistentLocalId>30408210</AddressPersistentLocalId>
+      <ParentPersistentLocalId />
+      <PostalCode>2440</PostalCode>
+      <HouseNumber>28</HouseNumber>
+      <BoxNumber />
+      <GeometryMethod>DerivedFromObject</GeometryMethod>
+      <GeometrySpecification>BuildingUnit</GeometrySpecification>
+      <ExtendedWkbGeometry>010100000048E17A148485074166666666FE1B0941</ExtendedWkbGeometry>
+      <Provenance>
+        <Timestamp>2024-11-21T09:14:32Z</Timestamp>
+        <Organisation>Other</Organisation>
+        <Reason>
+        </Reason>
+      </Provenance>
+    </AddressWasProposedV2>
+  </Event>
+  <Object>
+    <Id>30408210</Id>
+    <Identificator>
+      <Id>https://data.vlaanderen.be/id/adres/30408210</Id>
+      <Naamruimte>https://data.vlaanderen.be/id/adres</Naamruimte>
+      <ObjectId>30408210</ObjectId>
+      <VersieId>2024-11-21T10:14:32+01:00</VersieId>
+    </Identificator>
+    <StraatnaamId>13813</StraatnaamId>
+    <PostCode>2440</PostCode>
+    <Huisnummer>28</Huisnummer>
+    <Busnummer i:nil=""true"" />
+    <AdresStatus>Voorgesteld</AdresStatus>
+    <AdresPositie>
+      <point>
+        <pos>192688.51 205695.80</pos>
+      </point>
+    </AdresPositie>
+    <PositieGeometrieMethode>AfgeleidVanObject</PositieGeometrieMethode>
+    <PositieSpecificatie>Gebouweenheid</PositieSpecificatie>
+    <IsCompleet>true</IsCompleet>
+    <OfficieelToegekend>true</OfficieelToegekend>
+    <Creatie>
+      <Tijdstip>2024-11-21T10:14:32+01:00</Tijdstip>
+      <Organisatie>Andere</Organisatie>
+      <Reden />
+    </Creatie>
+  </Object>
+</Content>]]></content>
+</entry>
 </feed>";
 
         public XmlElement GetExamples()

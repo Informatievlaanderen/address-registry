@@ -28,7 +28,8 @@
         {
             return _backOfficeContext
                 .AddressPersistentIdStreetNamePersistentIds
-                .SingleOrDefault(x => x.StreetNamePersistentLocalId == request.Request.StreetNamePersistentLocalId)
+                .FirstOrDefault(x =>
+                    x.StreetNamePersistentLocalId == request.Request.StreetNamePersistentLocalId)
                 ?.StreetNamePersistentLocalId.ToString();
         }
 

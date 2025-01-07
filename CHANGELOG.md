@@ -1,3 +1,10 @@
+## [4.32.1](https://github.com/informatievlaanderen/address-registry/compare/v4.32.0...v4.32.1) (2025-01-07)
+
+
+### Bug Fixes
+
+* create streetname snapshot sqs handler ([e2f5a48](https://github.com/informatievlaanderen/address-registry/commit/e2f5a4861271770f1c156aecbf4032e5f6194807))
+
 # [4.32.0](https://github.com/informatievlaanderen/address-registry/compare/v4.31.0...v4.32.0) (2025-01-07)
 
 

@@ -1,3 +1,10 @@
+# [4.32.0](https://github.com/informatievlaanderen/address-registry/compare/v4.31.0...v4.32.0) (2025-01-07)
+
+
+### Features
+
+* **api:** add feed docs GAWR-5321 ([320f8d1](https://github.com/informatievlaanderen/address-registry/commit/320f8d1b80c89ec501d93ee15c7085dd9d7cc415))
+
 # [4.31.0](https://github.com/informatievlaanderen/address-registry/compare/v4.30.0...v4.31.0) (2025-01-03)
 
 

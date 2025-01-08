@@ -1,3 +1,10 @@
+## [4.32.2](https://github.com/informatievlaanderen/address-registry/compare/v4.32.1...v4.32.2) (2025-01-08)
+
+
+### Bug Fixes
+
+* **consumer-postal:** correct find relation ([c586447](https://github.com/informatievlaanderen/address-registry/commit/c5864471aec30b7931c89e338864c4b581c32ada))
+
 ## [4.32.1](https://github.com/informatievlaanderen/address-registry/compare/v4.32.0...v4.32.1) (2025-01-07)
 
 

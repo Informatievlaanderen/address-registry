@@ -75,6 +75,8 @@ namespace AddressRegistry.Consumer.Read.Postal
             if (postalLatestItem == null)
                 throw DatabaseItemNotFound(postalCode);
 
+            await context.Entry(postalLatestItem).Collection(x => x.PostalNames).LoadAsync(ct);
+
             updateFunc(postalLatestItem);
 
             return postalLatestItem;

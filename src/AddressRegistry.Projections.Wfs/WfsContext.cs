@@ -1,6 +1,5 @@
 namespace AddressRegistry.Projections.Wfs
 {
-    using AddressDetail;
     using AddressWfs;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
     using Infrastructure;
@@ -9,7 +8,6 @@ namespace AddressRegistry.Projections.Wfs
     public class WfsContext : RunnerDbContext<WfsContext>
     {
         public override string ProjectionStateSchema => Schema.Wfs;
-        public DbSet<AddressDetailItem> AddressDetail { get; set; }
         public DbSet<AddressWfsItem> AddressWfsItems { get; set; }
 
 

@@ -28,7 +28,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
 
         private readonly WKBReader _wkbReader;
 
-        public AddressWmsItemV3Projections(WKBReader wkbReader)
+        public AddressWmsItemV3Projections(WKBReader wkbReader, IHouseNumberLabelUpdater houseNumberLabelUpdater)
         {
             _wkbReader = wkbReader;
 
@@ -41,10 +41,10 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                     await context.FindAndUpdateAddressDetailV3(
                         addressPersistentLocalId,
                         address => { UpdateVersionTimestampIfNewer(address, message.Message.Provenance.Timestamp); },
-                        ct,
+                        houseNumberLabelUpdater,
                         updateHouseNumberLabelsBeforeAddressUpdate: false,
                         updateHouseNumberLabelsAfterAddressUpdate: false,
-                        allowUpdateRemovedAddress: true);
+                        allowUpdateRemovedAddress: true, ct: ct);
                 }
             });
 
@@ -55,10 +55,10 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                     await context.FindAndUpdateAddressDetailV3(
                         addressPersistentLocalId,
                         address => { UpdateVersionTimestampIfNewer(address, message.Message.Provenance.Timestamp); },
-                        ct,
+                        houseNumberLabelUpdater,
                         updateHouseNumberLabelsBeforeAddressUpdate: false,
                         updateHouseNumberLabelsAfterAddressUpdate: false,
-                        allowUpdateRemovedAddress: true);
+                        allowUpdateRemovedAddress: true, ct: ct);
                 }
             });
 
@@ -69,10 +69,10 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                     await context.FindAndUpdateAddressDetailV3(
                         addressPersistentLocalId,
                         address => { UpdateVersionTimestampIfNewer(address, message.Message.Provenance.Timestamp); },
-                        ct,
+                        houseNumberLabelUpdater,
                         updateHouseNumberLabelsBeforeAddressUpdate: false,
                         updateHouseNumberLabelsAfterAddressUpdate: false,
-                        allowUpdateRemovedAddress: true);
+                        allowUpdateRemovedAddress: true, ct: ct);
                 }
             });
 
@@ -83,10 +83,10 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                     await context.FindAndUpdateAddressDetailV3(
                         addressPersistentLocalId,
                         address => { UpdateVersionTimestampIfNewer(address, message.Message.Provenance.Timestamp); },
-                        ct,
+                        houseNumberLabelUpdater,
                         updateHouseNumberLabelsBeforeAddressUpdate: false,
                         updateHouseNumberLabelsAfterAddressUpdate: false,
-                        allowUpdateRemovedAddress: true);
+                        allowUpdateRemovedAddress: true, ct: ct);
                 }
             });
 
@@ -123,7 +123,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                     message.Message.IsRemoved,
                     message.Message.Provenance.Timestamp);
 
-                await context.UpdateHouseNumberLabelsV3(addressWmsItem, ct, includeAddressInUpdate: true);
+                await houseNumberLabelUpdater.UpdateHouseNumberLabels(context, addressWmsItem, ct, includeAddressInUpdate: true);
 
                 await context
                     .AddressWmsItemsV3
@@ -137,9 +137,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         await context.FindAndUpdateAddressDetailV3(
                             message.Message.ParentPersistentLocalId.Value,
                             address => { },
-                            ct,
+                            houseNumberLabelUpdater,
                             updateHouseNumberLabelsBeforeAddressUpdate: false,
-                            updateHouseNumberLabelsAfterAddressUpdate: false);
+                            updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
                     }
                 }
             });
@@ -161,7 +161,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                     removed: false,
                     message.Message.Provenance.Timestamp);
 
-                await context.UpdateHouseNumberLabelsV3(addressWmsItem, ct, includeAddressInUpdate: true);
+                await houseNumberLabelUpdater.UpdateHouseNumberLabels(context, addressWmsItem, ct, includeAddressInUpdate: true);
 
                 await context
                     .AddressWmsItemsV3
@@ -175,9 +175,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         await context.FindAndUpdateAddressDetailV3(
                             message.Message.ParentPersistentLocalId.Value,
                             address => { },
-                            ct,
+                            houseNumberLabelUpdater,
                             updateHouseNumberLabelsBeforeAddressUpdate: false,
-                            updateHouseNumberLabelsAfterAddressUpdate: false);
+                            updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
                     }
                 }
             });
@@ -199,7 +199,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                     removed: false,
                     message.Message.Provenance.Timestamp);
 
-                await context.UpdateHouseNumberLabelsV3(addressWmsItem, ct, includeAddressInUpdate: true);
+                await houseNumberLabelUpdater.UpdateHouseNumberLabels(context, addressWmsItem, ct, includeAddressInUpdate: true);
 
                 await context
                     .AddressWmsItemsV3
@@ -213,9 +213,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         await context.FindAndUpdateAddressDetailV3(
                             message.Message.ParentPersistentLocalId.Value,
                             address => { },
-                            ct,
+                            houseNumberLabelUpdater,
                             updateHouseNumberLabelsBeforeAddressUpdate: false,
-                            updateHouseNumberLabelsAfterAddressUpdate: false);
+                            updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
                     }
                 }
             });
@@ -229,9 +229,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.Status = MapStatus(AddressStatus.Current);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
-                    updateHouseNumberLabelsAfterAddressUpdate: true);
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasCorrectedFromApprovedToProposed>>(async (context, message, ct) =>
@@ -243,9 +243,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.Status = MapStatus(AddressStatus.Proposed);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
-                    updateHouseNumberLabelsAfterAddressUpdate: true);
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected>>(async (context, message, ct) =>
@@ -257,9 +257,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.Status = MapStatus(AddressStatus.Proposed);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
-                    updateHouseNumberLabelsAfterAddressUpdate: true);
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasRejected>>(async (context, message, ct) =>
@@ -271,9 +271,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.Status = MapStatus(AddressStatus.Rejected);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
-                    updateHouseNumberLabelsAfterAddressUpdate: true);
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasRejectedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
@@ -285,9 +285,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.Status = MapStatus(AddressStatus.Rejected);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
-                    updateHouseNumberLabelsAfterAddressUpdate: true);
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasRejectedBecauseHouseNumberWasRejected>>(async (context, message, ct) =>
@@ -299,9 +299,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.Status = MapStatus(AddressStatus.Rejected);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
-                    updateHouseNumberLabelsAfterAddressUpdate: true);
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasRejectedBecauseHouseNumberWasRetired>>(async (context, message, ct) =>
@@ -313,9 +313,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.Status = MapStatus(AddressStatus.Rejected);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
-                    updateHouseNumberLabelsAfterAddressUpdate: true);
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasRejectedBecauseStreetNameWasRejected>>(async (context, message, ct) =>
@@ -327,9 +327,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.Status = MapStatus(AddressStatus.Rejected);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
-                    updateHouseNumberLabelsAfterAddressUpdate: true);
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasRetiredBecauseStreetNameWasRejected>>(async (context, message, ct) =>
@@ -341,9 +341,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.Status = MapStatus(AddressStatus.Retired);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
-                    updateHouseNumberLabelsAfterAddressUpdate: true);
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasRejectedBecauseStreetNameWasRetired>>(async (context, message, ct) =>
@@ -355,9 +355,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.Status = MapStatus(AddressStatus.Rejected);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
-                    updateHouseNumberLabelsAfterAddressUpdate: true);
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasCorrectedFromRejectedToProposed>>(async (context, message, ct) =>
@@ -369,9 +369,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.Status = MapStatus(AddressStatus.Proposed);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
-                    updateHouseNumberLabelsAfterAddressUpdate: true);
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasDeregulated>>(async (context, message, ct) =>
@@ -384,9 +384,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.Status = MapStatus(AddressStatus.Current);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
-                    updateHouseNumberLabelsAfterAddressUpdate: true);
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasRegularized>>(async (context, message, ct) =>
@@ -398,9 +398,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.OfficiallyAssigned = true;
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: false,
-                    updateHouseNumberLabelsAfterAddressUpdate: false);
+                    updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
             });
 
             When<Envelope<AddressWasRetiredV2>>(async (context, message, ct) =>
@@ -412,9 +412,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.Status = MapStatus(AddressStatus.Retired);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
-                    updateHouseNumberLabelsAfterAddressUpdate: true);
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasRetiredBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
@@ -426,9 +426,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.Status = MapStatus(AddressStatus.Retired);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
-                    updateHouseNumberLabelsAfterAddressUpdate: true);
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasRetiredBecauseHouseNumberWasRetired>>(async (context, message, ct) =>
@@ -440,9 +440,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.Status = MapStatus(AddressStatus.Retired);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
-                    updateHouseNumberLabelsAfterAddressUpdate: true);
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasRetiredBecauseStreetNameWasRetired>>(async (context, message, ct) =>
@@ -454,9 +454,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.Status = MapStatus(AddressStatus.Retired);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
-                    updateHouseNumberLabelsAfterAddressUpdate: true);
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasCorrectedFromRetiredToCurrent>>(async (context, message, ct) =>
@@ -468,9 +468,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.Status = MapStatus(AddressStatus.Current);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
-                    updateHouseNumberLabelsAfterAddressUpdate: true);
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressPostalCodeWasChangedV2>>(async (context, message, ct) =>
@@ -482,9 +482,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.PostalCode = message.Message.PostalCode;
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: false,
-                    updateHouseNumberLabelsAfterAddressUpdate: false);
+                    updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
 
                 foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
                 {
@@ -495,9 +495,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                             address.PostalCode = message.Message.PostalCode;
                             UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                         },
-                        ct,
+                        houseNumberLabelUpdater,
                         updateHouseNumberLabelsBeforeAddressUpdate: false,
-                        updateHouseNumberLabelsAfterAddressUpdate: false);
+                        updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
                 }
             });
 
@@ -510,9 +510,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.PostalCode = message.Message.PostalCode;
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: false,
-                    updateHouseNumberLabelsAfterAddressUpdate: false);
+                    updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
 
                 foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
                 {
@@ -523,9 +523,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                             address.PostalCode = message.Message.PostalCode;
                             UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                         },
-                        ct,
+                        houseNumberLabelUpdater,
                         updateHouseNumberLabelsBeforeAddressUpdate: false,
-                        updateHouseNumberLabelsAfterAddressUpdate: false);
+                        updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
                 }
             });
 
@@ -538,9 +538,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.HouseNumber = message.Message.HouseNumber;
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: false,
-                    updateHouseNumberLabelsAfterAddressUpdate: true);
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
 
                 foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
                 {
@@ -551,9 +551,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                             address.HouseNumber = message.Message.HouseNumber;
                             UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                         },
-                        ct,
+                        houseNumberLabelUpdater,
                         updateHouseNumberLabelsBeforeAddressUpdate: false,
-                        updateHouseNumberLabelsAfterAddressUpdate: true);
+                        updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
                 }
             });
 
@@ -566,9 +566,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.BoxNumber = message.Message.BoxNumber;
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: false,
-                    updateHouseNumberLabelsAfterAddressUpdate: false);
+                    updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
             });
 
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>
@@ -582,10 +582,10 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.SetPosition(ParsePosition(message.Message.ExtendedWkbGeometry));
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
                     updateHouseNumberLabelsAfterAddressUpdate: true,
-                    allowUpdateRemovedAddress: true);
+                    allowUpdateRemovedAddress: true, ct: ct);
 
                 var wmsItemV3 = await context.FindAddressDetailV3(message.Message.AddressPersistentLocalId, ct);
 
@@ -597,9 +597,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         await context.FindAndUpdateAddressDetailV3(
                             wmsItemV3.ParentAddressPersistentLocalId.Value,
                             address => { },
-                            ct,
+                            houseNumberLabelUpdater,
                             updateHouseNumberLabelsBeforeAddressUpdate: false,
-                            updateHouseNumberLabelsAfterAddressUpdate: false);
+                            updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
                     }
                 }
             });
@@ -615,10 +615,10 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.SetPosition(ParsePosition(message.Message.ExtendedWkbGeometry));
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
                     updateHouseNumberLabelsAfterAddressUpdate: true,
-                    allowUpdateRemovedAddress: true);
+                    allowUpdateRemovedAddress: true, ct: ct);
 
                 var wmsItemV3 = await context.FindAddressDetailV3(message.Message.AddressPersistentLocalId, ct);
 
@@ -630,9 +630,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         await context.FindAndUpdateAddressDetailV3(
                             wmsItemV3.ParentAddressPersistentLocalId.Value,
                             address => { },
-                            ct,
+                            houseNumberLabelUpdater,
                             updateHouseNumberLabelsBeforeAddressUpdate: false,
-                            updateHouseNumberLabelsAfterAddressUpdate: false);
+                            updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
                     }
                 }
             });
@@ -653,9 +653,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.SetPosition(ParsePosition(message.Message.ReaddressedHouseNumber.SourceExtendedWkbGeometry));
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
-                    updateHouseNumberLabelsAfterAddressUpdate: true);
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
 
                 foreach (var readdressedBoxNumber in message.Message.ReaddressedBoxNumbers)
                 {
@@ -673,9 +673,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                             address.SetPosition(ParsePosition(readdressedBoxNumber.SourceExtendedWkbGeometry));
                             UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                         },
-                        ct,
+                        houseNumberLabelUpdater,
                         updateHouseNumberLabelsBeforeAddressUpdate: true,
-                        updateHouseNumberLabelsAfterAddressUpdate: true);
+                        updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
                 }
             });
 
@@ -696,7 +696,7 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                     removed: false,
                     message.Message.Provenance.Timestamp);
 
-                await context.UpdateHouseNumberLabelsV3(addressWmsItem, ct, includeAddressInUpdate: true);
+                await houseNumberLabelUpdater.UpdateHouseNumberLabels(context, addressWmsItem, ct, includeAddressInUpdate: true);
 
                 await context
                     .AddressWmsItemsV3
@@ -710,9 +710,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         await context.FindAndUpdateAddressDetailV3(
                             message.Message.ParentPersistentLocalId.Value,
                             address => { },
-                            ct,
+                            houseNumberLabelUpdater,
                             updateHouseNumberLabelsBeforeAddressUpdate: false,
-                            updateHouseNumberLabelsAfterAddressUpdate: false);
+                            updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
                     }
                 }
             });
@@ -726,9 +726,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.Status = MapStatus(AddressStatus.Rejected);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
-                    updateHouseNumberLabelsAfterAddressUpdate: true);
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasRetiredBecauseOfReaddress>>(async (context, message, ct) =>
@@ -740,9 +740,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.Status = MapStatus(AddressStatus.Retired);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
-                    updateHouseNumberLabelsAfterAddressUpdate: true);
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasRemovedV2>>(async (context, message, ct) =>
@@ -755,10 +755,10 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.SetHouseNumberLabel(null, address.LabelType);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
                     updateHouseNumberLabelsAfterAddressUpdate: false,
-                    allowUpdateRemovedAddress: true);
+                    allowUpdateRemovedAddress: true, ct: ct);
             });
 
             When<Envelope<AddressWasRemovedBecauseStreetNameWasRemoved>>(async (context, message, ct) =>
@@ -771,10 +771,10 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.SetHouseNumberLabel(null, address.LabelType);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
                     updateHouseNumberLabelsAfterAddressUpdate: false,
-                    allowUpdateRemovedAddress: true);
+                    allowUpdateRemovedAddress: true, ct: ct);
             });
 
             When<Envelope<AddressWasRemovedBecauseHouseNumberWasRemoved>>(async (context, message, ct) =>
@@ -787,10 +787,10 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.SetHouseNumberLabel(null, address.LabelType);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
                     updateHouseNumberLabelsAfterAddressUpdate: false,
-                    allowUpdateRemovedAddress: true);
+                    allowUpdateRemovedAddress: true, ct: ct);
             });
 
             When<Envelope<AddressRegularizationWasCorrected>>(async (context, message, ct) =>
@@ -803,10 +803,10 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.Status = MapStatus(AddressStatus.Current);
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: true,
                     updateHouseNumberLabelsAfterAddressUpdate: true,
-                    allowUpdateRemovedAddress: true);
+                    allowUpdateRemovedAddress: true, ct: ct);
             });
 
             When<Envelope<AddressDeregulationWasCorrected>>(async (context, message, ct) =>
@@ -818,10 +818,10 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                         address.OfficiallyAssigned = true;
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: false,
                     updateHouseNumberLabelsAfterAddressUpdate: false,
-                    allowUpdateRemovedAddress: true);
+                    allowUpdateRemovedAddress: true, ct: ct);
             });
 
             When<Envelope<AddressRemovalWasCorrected>>(async (context, message, ct) =>
@@ -842,10 +842,9 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
 
                         UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct,
-                    updateHouseNumberLabelsAfterAddressUpdate: true,
+                    houseNumberLabelUpdater,
                     updateHouseNumberLabelsBeforeAddressUpdate: false,
-                    allowUpdateRemovedAddress: true);
+                    updateHouseNumberLabelsAfterAddressUpdate: true, allowUpdateRemovedAddress: true, ct: ct);
             });
         }
 

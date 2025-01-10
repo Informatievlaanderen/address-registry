@@ -4,13 +4,35 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
     using System.Threading.Tasks;
     using AddressRegistry.StreetName;
     using AddressRegistry.StreetName.Events;
+    using AutoFixture;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
+    using EventExtensions;
     using FluentAssertions;
+    using global::AutoFixture;
+    using NetTopologySuite.IO;
     using Projections.Wms;
+    using Projections.Wms.AddressWmsItemV3;
     using Xunit;
 
-    public partial class AddressWmsItemV3HouseNumberLabelTests
+    public class AddressWmsItemV3HouseNumberLabelTests2 : AddressWmsItemV3ProjectionTest
     {
+        private readonly Fixture _fixture;
+        private readonly WKBReader _wkbReader;
+
+        public AddressWmsItemV3HouseNumberLabelTests2()
+        {
+            _fixture = new Fixture();
+            _fixture.Customize(new WithFixedAddressPersistentLocalId());
+            _fixture.Customize(new WithFixedStreetNamePersistentLocalId());
+            _fixture.Customize<AddressStatus>(_ => new WithoutUnknownStreetNameAddressStatus());
+            _fixture.Customize(new WithValidHouseNumber());
+            _fixture.Customize(new WithValidBoxNumber());
+            _fixture.Customize(new WithExtendedWkbGeometry());
+            _fixture.Customize(new InfrastructureCustomization());
+
+            _wkbReader = WKBReaderFactory.Create();
+        }
+
         /*
          * Case 1: Huisnummer + busnummer(s) Ooststraat 5       In gebruik (1,2) = _5_
          * Case 1: Huisnummer + busnummer(s) Ooststraat 5 bus 1 In gebruik (1,2) = _5_
@@ -450,6 +472,81 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     thirtyThreeBoxOneProjection.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
                     thirtyFiveProjection.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
                 });
+        }
+
+        protected override AddressWmsItemV3Projections CreateProjection()
+            =>  new AddressWmsItemV3Projections(_wkbReader, new HouseNumberLabelUpdaterUpdater());
+
+        private AddressWasMigratedToStreetName CreateAddressWasMigratedToStreetName(
+            AddressPersistentLocalId addressPersistentLocalId,
+            HouseNumber houseNumber,
+            AddressStatus addressStatus,
+            ExtendedWkbGeometry? position = null)
+        {
+            var @event = _fixture.Create<AddressWasMigratedToStreetName>()
+                .WithAddressPersistentLocalId(addressPersistentLocalId)
+                .WithParentAddressPersistentLocalId(null)
+                .WithHouseNumber(houseNumber)
+                .WithStatus(addressStatus)
+                .WithBoxNumber(null)
+                .WithNotRemoved();
+
+            if (position is not null)
+            {
+                @event = @event.WithPosition(position);
+            }
+
+            return @event;
+        }
+
+        private AddressWasMigratedToStreetName CreateAddressWasMigratedToStreetName(
+            AddressPersistentLocalId addressPersistentLocalId,
+            HouseNumber houseNumber,
+            BoxNumber? boxNumber,
+            AddressPersistentLocalId? parentAddressPersistentLocalId,
+            AddressStatus addressStatus,
+            ExtendedWkbGeometry? position = null)
+        {
+            var @event = _fixture.Create<AddressWasMigratedToStreetName>()
+                .WithAddressPersistentLocalId(addressPersistentLocalId)
+                .WithParentAddressPersistentLocalId(parentAddressPersistentLocalId)
+                .WithHouseNumber(houseNumber)
+                .WithStatus(addressStatus)
+                .WithBoxNumber(boxNumber)
+                .WithNotRemoved();
+
+            if (position is not null)
+            {
+                @event = @event.WithPosition(position);
+            }
+
+            return @event;
+        }
+
+        private AddressWasMigratedToStreetName CreateAddressWasMigratedToStreetName(
+            AddressPersistentLocalId addressPersistentLocalId,
+            StreetNamePersistentLocalId? streetNamePersistentLocalId,
+            HouseNumber houseNumber,
+            AddressStatus addressStatus,
+            ExtendedWkbGeometry? position = null)
+        {
+            var @event = _fixture.Create<AddressWasMigratedToStreetName>()
+                .WithAddressPersistentLocalId(addressPersistentLocalId)
+                .WithParentAddressPersistentLocalId(null)
+                .WithHouseNumber(houseNumber)
+                .WithStatus(addressStatus)
+                .WithBoxNumber(null)
+                .WithNotRemoved();
+
+            if (streetNamePersistentLocalId is not null)
+                @event = @event.WithStreetNamePersistentLocalId(streetNamePersistentLocalId);
+
+            if (position is not null)
+            {
+                @event = @event.WithPosition(position);
+            }
+
+            return @event;
         }
     }
 }

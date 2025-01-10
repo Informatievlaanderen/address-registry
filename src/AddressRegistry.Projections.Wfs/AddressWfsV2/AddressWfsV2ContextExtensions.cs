@@ -30,3 +30,4 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
             => new ProjectionItemNotFoundException<AddressWfsProjections>(addressPersistentLocalId.ToString());
     }
 }
+

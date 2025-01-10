@@ -1,6 +1,7 @@
 namespace AddressRegistry.Tests.ProjectionTests.WmsV3
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.Api.BackOffice.Abstractions;
     using AddressRegistry.Projections.Wms;
@@ -16,9 +17,11 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using FluentAssertions;
     using global::AutoFixture;
+    using Moq;
     using NetTopologySuite.Geometries;
     using NetTopologySuite.IO;
     using NodaTime;
+    using Projections.Wfs.AddressWfsV2;
     using Xunit;
     using Envelope = Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope;
 
@@ -26,6 +29,7 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
     {
         private readonly Fixture _fixture;
         private readonly WKBReader _wkbReader;
+        private readonly Mock<IHouseNumberLabelUpdater> _houseNumberLabelUpdaterMock;
 
         public AddressWmsItemV3ProjectionTests()
         {
@@ -39,10 +43,11 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
             _fixture.Customize(new InfrastructureCustomization());
 
             _wkbReader = WKBReaderFactory.Create();
+            _houseNumberLabelUpdaterMock = new Mock<IHouseNumberLabelUpdater>();
         }
 
         protected override AddressWmsItemV3Projections CreateProjection()
-            =>  new AddressWmsItemV3Projections(_wkbReader);
+            =>  new AddressWmsItemV3Projections(_wkbReader, _houseNumberLabelUpdaterMock.Object);
 
         [Fact]
         public async Task WhenAddressWasMigratedToStreetName_HouseNumber()
@@ -61,7 +66,6 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem.StreetNamePersistentLocalId.Should().Be(addressWasMigratedToStreetName.StreetNamePersistentLocalId);
                     addressWmsItem.HouseNumber.Should().Be(addressWasMigratedToStreetName.HouseNumber);
                     addressWmsItem.BoxNumber.Should().Be(addressWasMigratedToStreetName.BoxNumber);
-                    addressWmsItem.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithoutBoxNumbersOnSamePosition);
                     addressWmsItem.PostalCode.Should().Be(addressWasMigratedToStreetName.PostalCode);
                     addressWmsItem.Status.Should().Be(AddressWmsItemV3Projections.MapStatus(addressWasMigratedToStreetName.Status));
                     addressWmsItem.OfficiallyAssigned.Should().Be(addressWasMigratedToStreetName.OfficiallyAssigned);
@@ -70,11 +74,17 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem.PositionSpecification.Should().Be(AddressWmsItemV3Projections.ConvertGeometrySpecificationToString(addressWasMigratedToStreetName.GeometrySpecification));
                     addressWmsItem.Removed.Should().Be(addressWasMigratedToStreetName.IsRemoved);
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasMigratedToStreetName.Provenance.Timestamp);
+
+                    _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                        It.IsAny<WmsContext>(),
+                        It.IsAny<AddressWmsItemV3>(),
+                        It.IsAny<CancellationToken>(),
+                        true), Times.Once);
                 });
         }
 
         [Fact]
-        public async Task WhenAddressWasMigratedToStreetName_HouseNumberWithBoxNumberOnSamePosition()
+        public async Task WhenAddressWasMigratedToStreetName_HouseNumberWithBoxNumber()
         {
             var houseNumberAddressWasMigratedToStreetName = _fixture.Create<AddressWasMigratedToStreetName>()
                 .WithBoxNumber(null)
@@ -101,43 +111,23 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                 {
                     var houseNumberAddressWmsItem = await ct.AddressWmsItemsV3.FindAsync(houseNumberAddressWasMigratedToStreetName.AddressPersistentLocalId);
                     houseNumberAddressWmsItem.Should().NotBeNull();
-                    houseNumberAddressWmsItem!.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
                     var boxNumberAddressWmsItem = await ct.AddressWmsItemsV3.FindAsync(boxNumberAddressWasMigratedToStreetName.AddressPersistentLocalId);
                     boxNumberAddressWmsItem.Should().NotBeNull();
                     boxNumberAddressWmsItem!.ParentAddressPersistentLocalId.Should()
                         .Be(houseNumberAddressWasMigratedToStreetName.AddressPersistentLocalId);
-                    boxNumberAddressWmsItem.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
                 });
-        }
 
-        [Fact]
-        public async Task WhenAddressWasMigratedToStreetName_HouseNumberWithBoxNumberOnDifferentPosition()
-        {
-            var houseNumberAddressWasMigratedToStreetName = _fixture.Create<AddressWasMigratedToStreetName>()
-                .WithBoxNumber(null)
-                .WithParentAddressPersistentLocalId(null)
-                .WithNotRemoved();
-            var boxNumberAddressWasMigratedToStreetName = _fixture.Create<AddressWasMigratedToStreetName>()
-                .WithPosition(new ExtendedWkbGeometry(GeometryHelpers.ExampleExtendedWkb))
-                .WithAddressPersistentLocalId(new AddressPersistentLocalId(houseNumberAddressWasMigratedToStreetName.AddressPersistentLocalId + 1))
-                .WithBoxNumber(_fixture.Create<BoxNumber>())
-                .WithParentAddressPersistentLocalId(new AddressPersistentLocalId(houseNumberAddressWasMigratedToStreetName.AddressPersistentLocalId));
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(2));
 
-            await Sut
-                .Given(
-                    new Envelope<AddressWasMigratedToStreetName>(new Envelope(houseNumberAddressWasMigratedToStreetName, new Dictionary<string, object>())),
-                    new Envelope<AddressWasMigratedToStreetName>(new Envelope(boxNumberAddressWasMigratedToStreetName, new Dictionary<string, object>())))
-                .Then(async ct =>
-                {
-                    var houseNumberAddressWmsItem = await ct.AddressWmsItemsV3.FindAsync(houseNumberAddressWasMigratedToStreetName.AddressPersistentLocalId);
-                    houseNumberAddressWmsItem.Should().NotBeNull();
-                    houseNumberAddressWmsItem!.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithoutBoxNumbersOnSamePosition);
-                    var boxNumberAddressWmsItem = await ct.AddressWmsItemsV3.FindAsync(boxNumberAddressWasMigratedToStreetName.AddressPersistentLocalId);
-                    boxNumberAddressWmsItem.Should().NotBeNull();
-                    boxNumberAddressWmsItem!.ParentAddressPersistentLocalId.Should()
-                        .Be(houseNumberAddressWasMigratedToStreetName.AddressPersistentLocalId);
-                    boxNumberAddressWmsItem.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
-                });
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Never);
         }
 
         [Fact]
@@ -156,7 +146,6 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem.ParentAddressPersistentLocalId.Should().BeNull();
                     addressWmsItem.HouseNumber.Should().Be(addressWasProposedV2.HouseNumber);
                     addressWmsItem.BoxNumber.Should().BeNull();
-                    addressWmsItem.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithoutBoxNumbersOnSamePosition);
                     addressWmsItem.PostalCode.Should().Be(addressWasProposedV2.PostalCode);
                     addressWmsItem.Status.Should().Be(AddressWmsItemV3Projections.MapStatus(AddressStatus.Proposed));
                     addressWmsItem.OfficiallyAssigned.Should().BeTrue();
@@ -166,6 +155,12 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem.Removed.Should().BeFalse();
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasProposedV2.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Once);
         }
 
         [Fact]
@@ -184,7 +179,6 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem.ParentAddressPersistentLocalId.Should().BeNull();
                     addressWmsItem.HouseNumber.Should().Be(addressWasProposedForMunicipalityMerger.HouseNumber);
                     addressWmsItem.BoxNumber.Should().BeNull();
-                    addressWmsItem.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithoutBoxNumbersOnSamePosition);
                     addressWmsItem.PostalCode.Should().Be(addressWasProposedForMunicipalityMerger.PostalCode);
                     addressWmsItem.Status.Should().Be(AddressWmsItemV3Projections.MapStatus(AddressStatus.Proposed));
                     addressWmsItem.OfficiallyAssigned.Should().Be(addressWasProposedForMunicipalityMerger.OfficiallyAssigned);
@@ -194,6 +188,12 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem.Removed.Should().BeFalse();
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasProposedForMunicipalityMerger.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Once);
         }
 
         [Fact]
@@ -218,7 +218,6 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem.ParentAddressPersistentLocalId.Should().Be(houseNumberWasMigrated.AddressPersistentLocalId);
                     addressWmsItem.HouseNumber.Should().Be(addressWasProposedV2.HouseNumber);
                     addressWmsItem.BoxNumber.Should().Be(addressWasProposedV2.BoxNumber);
-                    addressWmsItem.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
                     addressWmsItem.PostalCode.Should().Be(addressWasProposedV2.PostalCode);
                     addressWmsItem.Status.Should().Be(AddressWmsItemV3Projections.MapStatus(AddressStatus.Proposed));
                     addressWmsItem.OfficiallyAssigned.Should().BeTrue();
@@ -228,6 +227,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem.Removed.Should().BeFalse();
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasProposedV2.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(2));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Never);
         }
 
         [Fact]
@@ -256,6 +267,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem!.Status.Should().Be(AddressWmsItemV3Projections.MapStatus(AddressStatus.Current));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasApproved.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(2));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Once);
         }
 
         [Fact]
@@ -291,6 +314,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem!.Status.Should().Be(AddressWmsItemV3Projections.MapStatus(AddressStatus.Proposed));
                     addressWmsItem.VersionTimestamp.Should().Be(addressApprovalWasCorrected.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(3));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Exactly(2));
         }
 
         [Fact]
@@ -326,6 +361,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem!.Status.Should().Be(AddressWmsItemV3Projections.MapStatus(AddressStatus.Proposed));
                     addressWmsItem.VersionTimestamp.Should().Be(addressApprovalWasCorrected.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(3));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Exactly(2));
         }
 
         [Fact]
@@ -354,6 +401,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem!.Status.Should().Be(AddressWmsItemV3Projections.MapStatus(AddressStatus.Rejected));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(2));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Once);
         }
 
         [Fact]
@@ -382,6 +441,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem!.Status.Should().Be(AddressWmsItemV3Projections.MapStatus(AddressStatus.Rejected));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(2));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Once);
         }
 
         [Fact]
@@ -410,6 +481,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem!.Status.Should().Be(AddressWmsItemV3Projections.MapStatus(AddressStatus.Rejected));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(2));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Once);
         }
 
         [Fact]
@@ -438,6 +521,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem!.Status.Should().Be(AddressWmsItemV3Projections.MapStatus(AddressStatus.Rejected));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRejectedBecauseHouseNumberWasRetired.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(2));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Once);
         }
 
         [Fact]
@@ -466,6 +561,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem!.Status.Should().Be(AddressWmsItemV3Projections.MapStatus(AddressStatus.Rejected));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(2));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Once);
         }
 
         [Fact]
@@ -494,6 +601,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem!.Status.Should().Be(AddressWmsItemV3Projections.MapStatus(AddressStatus.Retired));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRetired.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(2));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Once);
         }
 
         [Fact]
@@ -522,6 +641,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem!.Status.Should().Be(AddressWmsItemV3Projections.MapStatus(AddressStatus.Rejected));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(2));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Once);
         }
 
         [Fact]
@@ -557,6 +688,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem!.Status.Should().Be(AddressWmsItemV3Projections.MapStatus(AddressStatus.Proposed));
                     addressWmsItem.VersionTimestamp.Should().Be(addressRejectionWasCorrected.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(3));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Exactly(2));
         }
 
         [Fact]
@@ -586,6 +729,58 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem.Status.Should().Be(AddressWmsItemV3Projections.MapStatus(AddressStatus.Current));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasDeregulated.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(2));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Once);
+        }
+
+        [Fact]
+        public async Task WhenAddressWasRegularized()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>();
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressWasRegularized = _fixture.Create<AddressWasRegularized>();
+            var deregulatedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasRegularized.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressWasRegularized>(new Envelope(addressWasRegularized, deregulatedMetadata)))
+                .Then(async ct =>
+                {
+                    var addressWmsItem = await ct.AddressWmsItemsV3.FindAsync(addressWasRegularized.AddressPersistentLocalId);
+                    addressWmsItem.Should().NotBeNull();
+                    addressWmsItem!.OfficiallyAssigned.Should().BeTrue();
+                    addressWmsItem.VersionTimestamp.Should().Be(addressWasRegularized.Provenance.Timestamp);
+                });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Once);
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Never);
         }
 
         [Fact]
@@ -621,6 +816,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem!.Status.Should().Be(AddressWmsItemV3Projections.MapStatus(AddressStatus.Retired));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRetiredV2.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(3));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Exactly(2));
         }
 
         [Fact]
@@ -656,6 +863,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem!.Status.Should().Be(AddressWmsItemV3Projections.MapStatus(AddressStatus.Retired));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRetired.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(3));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Exactly(2));
         }
 
         [Fact]
@@ -691,6 +910,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem!.Status.Should().Be(AddressWmsItemV3Projections.MapStatus(AddressStatus.Retired));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRetiredBecauseHouseNumberWasRetired.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(3));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Exactly(2));
         }
 
         [Fact]
@@ -726,6 +957,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem!.Status.Should().Be(AddressWmsItemV3Projections.MapStatus(AddressStatus.Retired));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRetiredBecauseHouseNumberWasRetired.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(3));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Exactly(2));
         }
 
         [Fact]
@@ -768,6 +1011,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem!.Status.Should().Be(AddressWmsItemV3Projections.MapStatus(AddressStatus.Current));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasCorrectedFromRetiredToCurrent.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(4));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Exactly(3));
         }
 
         [Fact]
@@ -817,6 +1072,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     boxNumberAddressWmsItem!.PostalCode.Should().BeEquivalentTo(addressPostalCodeWasChangedV2.PostalCode);
                     boxNumberAddressWmsItem.VersionTimestamp.Should().Be(addressPostalCodeWasChangedV2.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(2));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Never);
         }
 
         [Fact]
@@ -866,6 +1133,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     boxNumberAddressWmsItem!.PostalCode.Should().BeEquivalentTo(addressPostalCodeWasCorrectedV2.PostalCode);
                     boxNumberAddressWmsItem.VersionTimestamp.Should().Be(addressPostalCodeWasCorrectedV2.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(2));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Never);
         }
 
         [Fact]
@@ -915,6 +1194,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     boxNumberAddressWmsItem!.HouseNumber.Should().BeEquivalentTo(addressHouseNumberWasCorrectedV2.HouseNumber);
                     boxNumberAddressWmsItem.VersionTimestamp.Should().Be(addressHouseNumberWasCorrectedV2.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(4));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Never);
         }
 
         [Fact]
@@ -957,6 +1248,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     boxNumberAddressWmsItem!.BoxNumber.Should().BeEquivalentTo(addressBoxNumberWasCorrectedV2.BoxNumber);
                     boxNumberAddressWmsItem.VersionTimestamp.Should().Be(addressBoxNumberWasCorrectedV2.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Once);
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Never);
         }
 
         [Fact]
@@ -987,6 +1290,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem.Position.Should().Be((Point) _wkbReader.Read(addressPositionWasChanged.ExtendedWkbGeometry.ToByteArray()));
                     addressWmsItem.VersionTimestamp.Should().Be(addressPositionWasChanged.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(2));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Once);
         }
 
         [Fact]
@@ -1040,13 +1355,23 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     var houseNumberWmsItem = await ct.AddressWmsItemsV3.FindAsync(addressWasMigrated.AddressPersistentLocalId);
                     houseNumberWmsItem.Should().NotBeNull();
                     houseNumberWmsItem!.Position.Should().Be((Point)_wkbReader.Read(houseNumberPositionWasChanged.ExtendedWkbGeometry.ToByteArray()));
-                    houseNumberWmsItem.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
 
                     var boxNumberWmsItem = await ct.AddressWmsItemsV3.FindAsync(boxNumberWasProposed.AddressPersistentLocalId);
                     boxNumberWmsItem.Should().NotBeNull();
                     boxNumberWmsItem!.Position.Should().Be(houseNumberWmsItem.Position);
-                    boxNumberWmsItem.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(4));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Exactly(2));
         }
 
         [Fact]
@@ -1077,6 +1402,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem.Position.Should().Be((Point)_wkbReader.Read(addressPositionWasCorrectedV2.ExtendedWkbGeometry.ToByteArray()));
                     addressWmsItem.VersionTimestamp.Should().Be(addressPositionWasCorrectedV2.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(2));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Once);
         }
 
         [Fact]
@@ -1130,13 +1467,23 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     var houseNumberWmsItem = await ct.AddressWmsItemsV3.FindAsync(addressWasMigrated.AddressPersistentLocalId);
                     houseNumberWmsItem.Should().NotBeNull();
                     houseNumberWmsItem!.Position.Should().Be((Point)_wkbReader.Read(houseNumberPositionWasCorrected.ExtendedWkbGeometry.ToByteArray()));
-                    houseNumberWmsItem.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
 
                     var boxNumberWmsItem = await ct.AddressWmsItemsV3.FindAsync(boxNumberWasProposed.AddressPersistentLocalId);
                     boxNumberWmsItem.Should().NotBeNull();
                     boxNumberWmsItem!.Position.Should().Be(houseNumberWmsItem.Position);
-                    boxNumberWmsItem.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(4));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Exactly(2));
         }
 
         [Fact]
@@ -1232,6 +1579,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     boxNumberItem.Position.Should().Be((Point)_wkbReader.Read(readdressedBoxNumber.SourceExtendedWkbGeometry.ToByteArray()));
                     boxNumberItem.VersionTimestamp.Should().Be(addressHouseNumberWasReaddressed.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(4));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Exactly(2));
         }
 
         [Fact]
@@ -1248,7 +1607,6 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem!.StreetNamePersistentLocalId.Should().Be(addressWasProposed.StreetNamePersistentLocalId);
                     addressWmsItem.HouseNumber.Should().Be(addressWasProposed.HouseNumber);
                     addressWmsItem.BoxNumber.Should().Be(addressWasProposed.BoxNumber);
-                    addressWmsItem.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
                     addressWmsItem.PostalCode.Should().Be(addressWasProposed.PostalCode);
                     addressWmsItem.Status.Should().Be(AddressWmsItemV3Projections.MapStatus(AddressStatus.Proposed));
                     addressWmsItem.OfficiallyAssigned.Should().BeTrue();
@@ -1258,6 +1616,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem.Removed.Should().BeFalse();
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasProposed.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(1));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Never);
         }
 
         [Fact]
@@ -1286,6 +1656,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem!.Status.Should().Be(AddressWmsItemV3Projections.MapStatus(AddressStatus.Rejected));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRejected.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(2));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Once);
         }
 
         [Fact]
@@ -1321,6 +1703,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem!.Status.Should().Be(AddressWmsItemV3Projections.MapStatus(AddressStatus.Retired));
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRetired.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(3));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Exactly(2));
         }
 
         [Fact]
@@ -1349,6 +1743,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem!.Removed.Should().BeTrue();
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRemoved.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Once);
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Once);
         }
 
         [Fact]
@@ -1377,6 +1783,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem!.Removed.Should().BeTrue();
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRemovedBecauseStreetNameWasRemoved.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Once);
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Once);
         }
 
         [Fact]
@@ -1405,6 +1823,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem!.Removed.Should().BeTrue();
                     addressWmsItem.VersionTimestamp.Should().Be(addressWasRemoved.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Once);
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Once);
         }
 
         [Fact]
@@ -1441,6 +1871,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem.OfficiallyAssigned.Should().BeFalse();
                     addressWmsItem.VersionTimestamp.Should().Be(addressRegularizationWasCorrected.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(2));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Once);
         }
 
         [Fact]
@@ -1476,6 +1918,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     addressWmsItem.OfficiallyAssigned.Should().BeTrue();
                     addressWmsItem.VersionTimestamp.Should().Be(addressDeregulationWasCorrected.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(2));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Once);
         }
 
         [Fact]
@@ -1521,6 +1975,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
 
                     addressWmsItem.VersionTimestamp.Should().Be(@event.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Exactly(2));
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Never);
         }
 
         [Fact]
@@ -1548,6 +2014,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     item.Should().NotBeNull();
                     item.VersionTimestamp.Should().Be(streetNameNamesWereCorrected.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Once);
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Never);
         }
 
         [Fact]
@@ -1575,6 +2053,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     item.Should().NotBeNull();
                     item.VersionTimestamp.Should().Be(streetNameNamesWereChanged.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Once);
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Never);
         }
 
         [Fact]
@@ -1611,6 +2101,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     item.Should().NotBeNull();
                     item.VersionTimestamp.Should().Be(addressWasProposedV2.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Once);
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Never);
         }
 
         [Fact]
@@ -1647,6 +2149,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     item.Should().NotBeNull();
                     item.VersionTimestamp.Should().Be(addressWasProposedV2.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Once);
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Never);
         }
 
         [Fact]
@@ -1674,6 +2188,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     item.Should().NotBeNull();
                     item.VersionTimestamp.Should().Be(streetNameHomonymAdditionsWereCorrected.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Once);
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Never);
         }
 
         [Fact]
@@ -1701,6 +2227,18 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     item.Should().NotBeNull();
                     item.VersionTimestamp.Should().Be(streetNameHomonymAdditionsWereRemoved.Provenance.Timestamp);
                 });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Once);
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WmsContext>(),
+                It.IsAny<AddressWmsItemV3>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Never);
         }
     }
 }

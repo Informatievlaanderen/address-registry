@@ -227,6 +227,10 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                         _services,
                         _loggerFactory));
 
+            builder.RegisterType<IHouseNumberLabelUpdater>()
+                .As<HouseNumberLabelUpdaterUpdater>()
+                .AsSelf();
+
             var wmsProjectionSettings = ConnectedProjectionSettings
                 .Configure(settings =>
                     settings.ConfigureLinearBackoff<SqlException>(_configuration, "Wms"));
@@ -238,8 +242,8 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .RegisterProjections<AddressWmsItemV2Projections, WmsContext>(() =>
                         new AddressWmsItemV2Projections(WKBReaderFactory.CreateForLegacy()),
                     wmsProjectionSettings)
-                .RegisterProjections<AddressWmsItemV3Projections, WmsContext>(() =>
-                    new AddressWmsItemV3Projections(WKBReaderFactory.CreateForLegacy()),
+                .RegisterProjections<AddressWmsItemV3Projections, WmsContext>(c =>
+                    new AddressWmsItemV3Projections(WKBReaderFactory.CreateForLegacy(), c.Resolve<IHouseNumberLabelUpdater>()),
                     wmsProjectionSettings);
         }
 

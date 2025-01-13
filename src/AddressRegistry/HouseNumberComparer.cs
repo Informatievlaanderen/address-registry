@@ -1,10 +1,11 @@
-﻿namespace AddressRegistry.Projections.Wms
+﻿namespace AddressRegistry
 {
     using System;
     using System.Collections.Generic;
     using System.Text.RegularExpressions;
 
-    public class HouseNumberComparer : IComparer<string>
+    public sealed class HouseNumberComparer : IComparer<string>
+
     {
         private static readonly Regex HouseNumberDigits =
             new (@"\d+", RegexOptions.Compiled);

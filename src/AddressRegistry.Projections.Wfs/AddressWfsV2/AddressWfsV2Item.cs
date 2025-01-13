@@ -16,6 +16,7 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
 
         public AddressWfsV2Item(
             int addressPersistentLocalId,
+            int? parentAddressPersistentLocalId,
             int streetNamePersistentLocalId,
             string? postalCode,
             string houseNumber,
@@ -28,21 +29,26 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
             bool removed,
             Instant versionTimestamp)
         {
-            BoxNumber = boxNumber;
-            OfficiallyAssigned = officiallyAssigned;
-            Position = position;
-            PositionMethod = positionMethod;
-            PositionSpecification = positionSpecification;
             AddressPersistentLocalId = addressPersistentLocalId;
+            ParentAddressPersistentLocalId = parentAddressPersistentLocalId;
             StreetNamePersistentLocalId = streetNamePersistentLocalId;
             PostalCode = postalCode;
             HouseNumber = houseNumber;
+            BoxNumber = boxNumber;
+            LabelType = string.IsNullOrWhiteSpace(boxNumber)
+                ? WfsAddressLabelType.HouseNumberWithoutBoxNumbersOnSamePosition
+                : WfsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition;
             Status = status;
+            OfficiallyAssigned = officiallyAssigned;
+            SetPosition(position);
+            PositionMethod = positionMethod;
+            PositionSpecification = positionSpecification;
             Removed = removed;
             VersionTimestamp = versionTimestamp;
         }
 
         public int AddressPersistentLocalId { get; set; }
+        public int? ParentAddressPersistentLocalId { get; set; }
         public int StreetNamePersistentLocalId { get; set; }
         public string? PostalCode { get; set; }
         public string HouseNumber { get; set; }
@@ -103,6 +109,7 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
 
             b.Ignore(x => x.VersionTimestamp);
 
+            b.Property(p => p.ParentAddressPersistentLocalId);
             b.Property(p => p.StreetNamePersistentLocalId);
             b.Property(p => p.PostalCode);
             b.Property(p => p.HouseNumber);
@@ -117,8 +124,8 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
 
             b.Property(p => p.HouseNumberLabel);
             b.Property<int>("HouseNumberLabelLength")
-                .HasComputedColumnSql("LEN(HouseNumberLabel)")
-                .ValueGeneratedOnAddOrUpdate();
+                .HasComputedColumnSql("LEN(HouseNumberLabel)", stored: true);
+
             b.Property(p => p.LabelType);
 
             b.HasIndex(p => p.StreetNamePersistentLocalId);

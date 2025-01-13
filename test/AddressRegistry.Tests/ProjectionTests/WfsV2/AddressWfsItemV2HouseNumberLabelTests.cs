@@ -1,4 +1,4 @@
-namespace AddressRegistry.Tests.ProjectionTests.WmsV3
+namespace AddressRegistry.Tests.ProjectionTests.WfsV2
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -10,16 +10,16 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
     using FluentAssertions;
     using global::AutoFixture;
     using NetTopologySuite.IO;
-    using Projections.Wms;
-    using Projections.Wms.AddressWmsItemV3;
+    using Projections.Wfs;
+    using Projections.Wfs.AddressWfsV2;
     using Xunit;
 
-    public class AddressWmsItemV3HouseNumberLabelTests2 : AddressWmsItemV3ProjectionTest
+    public class AddressWfsItemV2HouseNumberLabelTests : AddressWfsItemV2ProjectionTest
     {
         private readonly Fixture _fixture;
         private readonly WKBReader _wkbReader;
 
-        public AddressWmsItemV3HouseNumberLabelTests2()
+        public AddressWfsItemV2HouseNumberLabelTests()
         {
             _fixture = new Fixture();
             _fixture.Customize(new WithFixedAddressPersistentLocalId());
@@ -67,24 +67,20 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     new Envelope<AddressWasMigratedToStreetName>(new Envelope(fiveBoxOne, new Dictionary<string, object>())))
                 .Then(async ct =>
                 {
-                    var fiveProjection = await ct.AddressWmsItemsV3.FindAsync(five.AddressPersistentLocalId);
+                    var fiveProjection = await ct.AddressWfsV2Items.FindAsync(five.AddressPersistentLocalId);
                     fiveProjection.Should().NotBeNull();
-                    var fiveBoxOneProjection = await ct.AddressWmsItemsV3.FindAsync(fiveBoxOne.AddressPersistentLocalId);
+                    var fiveBoxOneProjection = await ct.AddressWfsV2Items.FindAsync(fiveBoxOne.AddressPersistentLocalId);
                     fiveBoxOneProjection.Should().NotBeNull();
-                    var fiveBoxTwoProjection = await ct.AddressWmsItemsV3.FindAsync(fiveBoxTwo.AddressPersistentLocalId);
+                    var fiveBoxTwoProjection = await ct.AddressWfsV2Items.FindAsync(fiveBoxTwo.AddressPersistentLocalId);
                     fiveBoxTwoProjection.Should().NotBeNull();
 
                     fiveProjection!.HouseNumberLabel.Should().Be("5");
                     fiveBoxOneProjection!.HouseNumberLabel.Should().Be("5");
                     fiveBoxTwoProjection!.HouseNumberLabel.Should().Be("5");
 
-                    fiveProjection.HouseNumberLabelLength.Should().Be(1);
-                    fiveBoxOneProjection.HouseNumberLabelLength.Should().Be(1);
-                    fiveBoxTwoProjection.HouseNumberLabelLength.Should().Be(1);
-
-                    fiveProjection.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
-                    fiveBoxOneProjection.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
-                    fiveBoxTwoProjection.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
+                    fiveProjection.LabelType.Should().Be(WfsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
+                    fiveBoxOneProjection.LabelType.Should().Be(WfsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
+                    fiveBoxTwoProjection.LabelType.Should().Be(WfsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
                 });
         }
 
@@ -116,24 +112,20 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     new Envelope<AddressWasMigratedToStreetName>(new Envelope(twelve, new Dictionary<string, object>())))
                 .Then(async ct =>
                 {
-                    var tenProjection = await ct.AddressWmsItemsV3.FindAsync(ten.AddressPersistentLocalId);
+                    var tenProjection = await ct.AddressWfsV2Items.FindAsync(ten.AddressPersistentLocalId);
                     tenProjection.Should().NotBeNull();
-                    var twelveProjection = await ct.AddressWmsItemsV3.FindAsync(twelve.AddressPersistentLocalId);
+                    var twelveProjection = await ct.AddressWfsV2Items.FindAsync(twelve.AddressPersistentLocalId);
                     twelveProjection.Should().NotBeNull();
-                    var sixteenProjection = await ct.AddressWmsItemsV3.FindAsync(sixteen.AddressPersistentLocalId);
+                    var sixteenProjection = await ct.AddressWfsV2Items.FindAsync(sixteen.AddressPersistentLocalId);
                     sixteenProjection.Should().NotBeNull();
 
                     tenProjection!.HouseNumberLabel.Should().Be("10-16");
                     twelveProjection!.HouseNumberLabel.Should().Be("10-16");
                     sixteenProjection!.HouseNumberLabel.Should().Be("10-16");
 
-                    tenProjection.HouseNumberLabelLength.Should().Be(5);
-                    twelveProjection.HouseNumberLabelLength.Should().Be(5);
-                    sixteenProjection.HouseNumberLabelLength.Should().Be(5);
-
-                    tenProjection.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithoutBoxNumbersOnSamePosition);
-                    twelveProjection.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithoutBoxNumbersOnSamePosition);
-                    sixteenProjection.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithoutBoxNumbersOnSamePosition);
+                    tenProjection.LabelType.Should().Be(WfsAddressLabelType.HouseNumberWithoutBoxNumbersOnSamePosition);
+                    twelveProjection.LabelType.Should().Be(WfsAddressLabelType.HouseNumberWithoutBoxNumbersOnSamePosition);
+                    sixteenProjection.LabelType.Should().Be(WfsAddressLabelType.HouseNumberWithoutBoxNumbersOnSamePosition);
                 });
         }
 
@@ -167,24 +159,20 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     new Envelope<AddressWasMigratedToStreetName>(new Envelope(twentyEightBoxOne, new Dictionary<string, object>())))
                 .Then(async ct =>
                 {
-                    var twenty8 = await ct.AddressWmsItemsV3.FindAsync(twentyEight.AddressPersistentLocalId);
+                    var twenty8 = await ct.AddressWfsV2Items.FindAsync(twentyEight.AddressPersistentLocalId);
                     twenty8.Should().NotBeNull();
-                    var twenty8Box1 = await ct.AddressWmsItemsV3.FindAsync(twentyEightBoxOne.AddressPersistentLocalId);
+                    var twenty8Box1 = await ct.AddressWfsV2Items.FindAsync(twentyEightBoxOne.AddressPersistentLocalId);
                     twenty8Box1.Should().NotBeNull();
-                    var thirty0 = await ct.AddressWmsItemsV3.FindAsync(thirty.AddressPersistentLocalId);
+                    var thirty0 = await ct.AddressWfsV2Items.FindAsync(thirty.AddressPersistentLocalId);
                     thirty0.Should().NotBeNull();
 
                     twenty8!.HouseNumberLabel.Should().Be("28-30");
                     twenty8Box1!.HouseNumberLabel.Should().Be("28-30");
                     thirty0!.HouseNumberLabel.Should().Be("28-30");
 
-                    twenty8.HouseNumberLabelLength.Should().Be(5);
-                    twenty8Box1.HouseNumberLabelLength.Should().Be(5);
-                    thirty0.HouseNumberLabelLength.Should().Be(5);
-
-                    twenty8.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
-                    twenty8Box1.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
-                    thirty0.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
+                    twenty8.LabelType.Should().Be(WfsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
+                    twenty8Box1.LabelType.Should().Be(WfsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
+                    thirty0.LabelType.Should().Be(WfsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
                 });
         }
 
@@ -210,19 +198,16 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     new Envelope<AddressWasMigratedToStreetName>(new Envelope(fiftyEight, new Dictionary<string, object>())))
                 .Then(async ct =>
                 {
-                    var fifty6 = await ct.AddressWmsItemsV3.FindAsync(fiftySix.AddressPersistentLocalId);
+                    var fifty6 = await ct.AddressWfsV2Items.FindAsync(fiftySix.AddressPersistentLocalId);
                     fifty6.Should().NotBeNull();
-                    var fifty8 = await ct.AddressWmsItemsV3.FindAsync(fiftyEight.AddressPersistentLocalId);
+                    var fifty8 = await ct.AddressWfsV2Items.FindAsync(fiftyEight.AddressPersistentLocalId);
                     fifty8.Should().NotBeNull();
 
                     fifty6!.HouseNumberLabel.Should().Be("56");
                     fifty8!.HouseNumberLabel.Should().Be("58");
 
-                    fifty6.HouseNumberLabelLength.Should().Be(2);
-                    fifty8.HouseNumberLabelLength.Should().Be(2);
-
-                    fifty6.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithoutBoxNumbersOnSamePosition);
-                    fifty8.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithoutBoxNumbersOnSamePosition);
+                    fifty6.LabelType.Should().Be(WfsAddressLabelType.HouseNumberWithoutBoxNumbersOnSamePosition);
+                    fifty8.LabelType.Should().Be(WfsAddressLabelType.HouseNumberWithoutBoxNumbersOnSamePosition);
                 });
         }
 
@@ -255,24 +240,20 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     new Envelope<AddressWasMigratedToStreetName>(new Envelope(four, new Dictionary<string, object>())))
                 .Then(async ct =>
                 {
-                    var twoProjection = await ct.AddressWmsItemsV3.FindAsync(two.AddressPersistentLocalId);
+                    var twoProjection = await ct.AddressWfsV2Items.FindAsync(two.AddressPersistentLocalId);
                     twoProjection.Should().NotBeNull();
-                    var fourProjection = await ct.AddressWmsItemsV3.FindAsync(four.AddressPersistentLocalId);
+                    var fourProjection = await ct.AddressWfsV2Items.FindAsync(four.AddressPersistentLocalId);
                     fourProjection.Should().NotBeNull();
-                    var otherStreetProjection = await ct.AddressWmsItemsV3.FindAsync(otherStreet.AddressPersistentLocalId);
+                    var otherStreetProjection = await ct.AddressWfsV2Items.FindAsync(otherStreet.AddressPersistentLocalId);
                     otherStreetProjection.Should().NotBeNull();
 
                     twoProjection!.HouseNumberLabel.Should().Be("2-4 ; 128");
                     fourProjection!.HouseNumberLabel.Should().Be("2-4 ; 128");
                     otherStreetProjection!.HouseNumberLabel.Should().Be("2-4 ; 128");
 
-                    twoProjection.HouseNumberLabelLength.Should().Be(9);
-                    fourProjection.HouseNumberLabelLength.Should().Be(9);
-                    otherStreetProjection.HouseNumberLabelLength.Should().Be(9);
-
-                    twoProjection.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithoutBoxNumbersOnSamePosition);
-                    fourProjection.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithoutBoxNumbersOnSamePosition);
-                    otherStreetProjection.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithoutBoxNumbersOnSamePosition);
+                    twoProjection.LabelType.Should().Be(WfsAddressLabelType.HouseNumberWithoutBoxNumbersOnSamePosition);
+                    fourProjection.LabelType.Should().Be(WfsAddressLabelType.HouseNumberWithoutBoxNumbersOnSamePosition);
+                    otherStreetProjection.LabelType.Should().Be(WfsAddressLabelType.HouseNumberWithoutBoxNumbersOnSamePosition);
                 });
         }
 
@@ -307,24 +288,20 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     new Envelope<AddressWasMigratedToStreetName>(new Envelope(thirteenBoxOne, new Dictionary<string, object>())))
                 .Then(async ct =>
                 {
-                    var thirteenProjection = await ct.AddressWmsItemsV3.FindAsync(thirteen.AddressPersistentLocalId);
+                    var thirteenProjection = await ct.AddressWfsV2Items.FindAsync(thirteen.AddressPersistentLocalId);
                     thirteenProjection.Should().NotBeNull();
-                    var thirteenBoxOneProjection = await ct.AddressWmsItemsV3.FindAsync(thirteenBoxOne.AddressPersistentLocalId);
+                    var thirteenBoxOneProjection = await ct.AddressWfsV2Items.FindAsync(thirteenBoxOne.AddressPersistentLocalId);
                     thirteenBoxOneProjection.Should().NotBeNull();
-                    var sixteenProjection = await ct.AddressWmsItemsV3.FindAsync(otherStreet.AddressPersistentLocalId);
+                    var sixteenProjection = await ct.AddressWfsV2Items.FindAsync(otherStreet.AddressPersistentLocalId);
                     sixteenProjection.Should().NotBeNull();
 
                     thirteenProjection!.HouseNumberLabel.Should().Be("7 ; 13");
                     thirteenBoxOneProjection!.HouseNumberLabel.Should().Be("7 ; 13");
                     sixteenProjection!.HouseNumberLabel.Should().Be("7 ; 13");
 
-                    thirteenProjection.HouseNumberLabelLength.Should().Be(6);
-                    thirteenBoxOneProjection.HouseNumberLabelLength.Should().Be(6);
-                    sixteenProjection.HouseNumberLabelLength.Should().Be(6);
-
-                    thirteenProjection.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
-                    thirteenBoxOneProjection.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
-                    sixteenProjection.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
+                    thirteenProjection.LabelType.Should().Be(WfsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
+                    thirteenBoxOneProjection.LabelType.Should().Be(WfsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
+                    sixteenProjection.LabelType.Should().Be(WfsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
                 });
         }
 
@@ -353,19 +330,16 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     new Envelope<AddressWasMigratedToStreetName>(new Envelope(eightyOneBoxOne, new Dictionary<string, object>())))
                 .Then(async ct =>
                 {
-                    var eightyOneProjection = await ct.AddressWmsItemsV3.FindAsync(eightyOne.AddressPersistentLocalId);
+                    var eightyOneProjection = await ct.AddressWfsV2Items.FindAsync(eightyOne.AddressPersistentLocalId);
                     eightyOneProjection.Should().NotBeNull();
-                    var eightyOneBoxOneProjection = await ct.AddressWmsItemsV3.FindAsync(eightyOneBoxOne.AddressPersistentLocalId);
+                    var eightyOneBoxOneProjection = await ct.AddressWfsV2Items.FindAsync(eightyOneBoxOne.AddressPersistentLocalId);
                     eightyOneBoxOneProjection.Should().NotBeNull();
 
                     eightyOneProjection!.HouseNumberLabel.Should().Be("81");
                     eightyOneBoxOneProjection!.HouseNumberLabel.Should().Be("81");
 
-                    eightyOneProjection.HouseNumberLabelLength.Should().Be(2);
-                    eightyOneBoxOneProjection.HouseNumberLabelLength.Should().Be(2);
-
-                    eightyOneProjection.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithoutBoxNumbersOnSamePosition);
-                    eightyOneBoxOneProjection.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
+                    eightyOneProjection.LabelType.Should().Be(WfsAddressLabelType.HouseNumberWithoutBoxNumbersOnSamePosition);
+                    eightyOneBoxOneProjection.LabelType.Should().Be(WfsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
                 });
         }
 
@@ -400,24 +374,20 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     new Envelope<AddressWasMigratedToStreetName>(new Envelope(eightyOneBoxOne, new Dictionary<string, object>())))
                 .Then(async ct =>
                 {
-                    var seventyNineProjection = await ct.AddressWmsItemsV3.FindAsync(seventyNine.AddressPersistentLocalId);
+                    var seventyNineProjection = await ct.AddressWfsV2Items.FindAsync(seventyNine.AddressPersistentLocalId);
                     seventyNineProjection.Should().NotBeNull();
-                    var eightyOneProjection = await ct.AddressWmsItemsV3.FindAsync(eightyOne.AddressPersistentLocalId);
+                    var eightyOneProjection = await ct.AddressWfsV2Items.FindAsync(eightyOne.AddressPersistentLocalId);
                     eightyOneProjection.Should().NotBeNull();
-                    var eightyOneBoxOneProjection = await ct.AddressWmsItemsV3.FindAsync(eightyOneBoxOne.AddressPersistentLocalId);
+                    var eightyOneBoxOneProjection = await ct.AddressWfsV2Items.FindAsync(eightyOneBoxOne.AddressPersistentLocalId);
                     eightyOneBoxOneProjection.Should().NotBeNull();
 
                     seventyNineProjection!.HouseNumberLabel.Should().Be("79-81");
                     eightyOneProjection!.HouseNumberLabel.Should().Be("79-81");
                     eightyOneBoxOneProjection!.HouseNumberLabel.Should().Be("81");
 
-                    seventyNineProjection.HouseNumberLabelLength.Should().Be(5);
-                    eightyOneProjection.HouseNumberLabelLength.Should().Be(5);
-                    eightyOneBoxOneProjection.HouseNumberLabelLength.Should().Be(2);
-
-                    seventyNineProjection.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithoutBoxNumbersOnSamePosition);
-                    eightyOneProjection.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithoutBoxNumbersOnSamePosition);
-                    eightyOneBoxOneProjection.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
+                    seventyNineProjection.LabelType.Should().Be(WfsAddressLabelType.HouseNumberWithoutBoxNumbersOnSamePosition);
+                    eightyOneProjection.LabelType.Should().Be(WfsAddressLabelType.HouseNumberWithoutBoxNumbersOnSamePosition);
+                    eightyOneBoxOneProjection.LabelType.Should().Be(WfsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
                 });
         }
 
@@ -453,29 +423,25 @@ namespace AddressRegistry.Tests.ProjectionTests.WmsV3
                     new Envelope<AddressWasMigratedToStreetName>(new Envelope(thirtyThreeBoxOne, new Dictionary<string, object>())))
                 .Then(async ct =>
                 {
-                    var thirtyThreeProjection = await ct.AddressWmsItemsV3.FindAsync(thirtyThree.AddressPersistentLocalId);
+                    var thirtyThreeProjection = await ct.AddressWfsV2Items.FindAsync(thirtyThree.AddressPersistentLocalId);
                     thirtyThreeProjection.Should().NotBeNull();
-                    var thirtyThreeBoxOneProjection = await ct.AddressWmsItemsV3.FindAsync(thirtyThreeBoxOne.AddressPersistentLocalId);
+                    var thirtyThreeBoxOneProjection = await ct.AddressWfsV2Items.FindAsync(thirtyThreeBoxOne.AddressPersistentLocalId);
                     thirtyThreeBoxOneProjection.Should().NotBeNull();
-                    var thirtyFiveProjection = await ct.AddressWmsItemsV3.FindAsync(thirtyFive.AddressPersistentLocalId);
+                    var thirtyFiveProjection = await ct.AddressWfsV2Items.FindAsync(thirtyFive.AddressPersistentLocalId);
                     thirtyFiveProjection.Should().NotBeNull();
 
                     thirtyThreeProjection!.HouseNumberLabel.Should().Be("33");
                     thirtyThreeBoxOneProjection!.HouseNumberLabel.Should().Be("33-35");
                     thirtyFiveProjection!.HouseNumberLabel.Should().Be("33-35");
 
-                    thirtyThreeProjection.HouseNumberLabelLength.Should().Be(2);
-                    thirtyThreeBoxOneProjection.HouseNumberLabelLength.Should().Be(5);
-                    thirtyFiveProjection.HouseNumberLabelLength.Should().Be(5);
-
-                    thirtyThreeProjection.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithoutBoxNumbersOnSamePosition);
-                    thirtyThreeBoxOneProjection.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
-                    thirtyFiveProjection.LabelType.Should().Be(WmsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
+                    thirtyThreeProjection.LabelType.Should().Be(WfsAddressLabelType.HouseNumberWithoutBoxNumbersOnSamePosition);
+                    thirtyThreeBoxOneProjection.LabelType.Should().Be(WfsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
+                    thirtyFiveProjection.LabelType.Should().Be(WfsAddressLabelType.HouseNumberWithBoxNumbersOnSamePosition);
                 });
         }
 
-        protected override AddressWmsItemV3Projections CreateProjection()
-            =>  new AddressWmsItemV3Projections(_wkbReader, new HouseNumberLabelUpdater());
+        protected override AddressWfsV2Projections CreateProjection()
+            =>  new AddressWfsV2Projections(_wkbReader, new HouseNumberLabelUpdater());
 
         private AddressWasMigratedToStreetName CreateAddressWasMigratedToStreetName(
             AddressPersistentLocalId addressPersistentLocalId,

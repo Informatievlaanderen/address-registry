@@ -9,6 +9,7 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
+    using Microsoft.EntityFrameworkCore.Metadata.Conventions;
     using NetTopologySuite.Geometries;
     using NetTopologySuite.IO;
     using NodaTime;
@@ -26,7 +27,7 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
 
         private readonly WKBReader _wkbReader;
 
-        public AddressWfsV2Projections(WKBReader wkbReader)
+        public AddressWfsV2Projections(WKBReader wkbReader, IHouseNumberLabelUpdater houseNumberLabelUpdater)
         {
             _wkbReader = wkbReader;
 
@@ -36,11 +37,12 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
             {
                 foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
                 {
-                    var item = await context.FindAndUpdateAddressDetail(addressPersistentLocalId,
-                        x =>  { },
-                        ct);
-
-                    UpdateVersionTimestampIfNewer(item, message.Message.Provenance.Timestamp);
+                    await context.FindAndUpdateAddressDetail(addressPersistentLocalId,
+                        x =>  { UpdateVersionTimestampIfNewer(x, message.Message.Provenance.Timestamp); },
+                        houseNumberLabelUpdater,
+                        updateHouseNumberLabelsBeforeAddressUpdate: false,
+                        updateHouseNumberLabelsAfterAddressUpdate: false,
+                        allowUpdateRemovedAddress: true, ct: ct);
                 }
             });
 
@@ -48,11 +50,12 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
             {
                 foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
                 {
-                    var item = await context.FindAndUpdateAddressDetail(addressPersistentLocalId,
-                        x =>  { },
-                        ct);
-
-                    UpdateVersionTimestampIfNewer(item, message.Message.Provenance.Timestamp);
+                    await context.FindAndUpdateAddressDetail(addressPersistentLocalId,
+                        address => { UpdateVersionTimestampIfNewer(address, message.Message.Provenance.Timestamp); },
+                        houseNumberLabelUpdater,
+                        updateHouseNumberLabelsBeforeAddressUpdate: false,
+                        updateHouseNumberLabelsAfterAddressUpdate: false,
+                        allowUpdateRemovedAddress: true, ct: ct);
                 }
             });
 
@@ -60,11 +63,12 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
             {
                 foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
                 {
-                    var item = await context.FindAndUpdateAddressDetail(addressPersistentLocalId,
-                        x =>  { },
-                        ct);
-
-                    UpdateVersionTimestampIfNewer(item, message.Message.Provenance.Timestamp);
+                    await context.FindAndUpdateAddressDetail(addressPersistentLocalId,
+                        address => { UpdateVersionTimestampIfNewer(address, message.Message.Provenance.Timestamp); },
+                        houseNumberLabelUpdater,
+                        updateHouseNumberLabelsBeforeAddressUpdate: false,
+                        updateHouseNumberLabelsAfterAddressUpdate: false,
+                        allowUpdateRemovedAddress: true, ct: ct);
                 }
             });
 
@@ -72,11 +76,12 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
             {
                 foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
                 {
-                    var item = await context.FindAndUpdateAddressDetail(addressPersistentLocalId,
-                        x =>  { },
-                        ct);
-
-                    UpdateVersionTimestampIfNewer(item, message.Message.Provenance.Timestamp);
+                    await context.FindAndUpdateAddressDetail(addressPersistentLocalId,
+                        address => { UpdateVersionTimestampIfNewer(address, message.Message.Provenance.Timestamp); },
+                        houseNumberLabelUpdater,
+                        updateHouseNumberLabelsBeforeAddressUpdate: false,
+                        updateHouseNumberLabelsAfterAddressUpdate: false,
+                        allowUpdateRemovedAddress: true, ct: ct);
                 }
             });
 
@@ -101,6 +106,7 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
             {
                 var addressWfsItem = new AddressWfsV2Item(
                     message.Message.AddressPersistentLocalId,
+                    message.Message.ParentPersistentLocalId,
                     message.Message.StreetNamePersistentLocalId,
                     message.Message.PostalCode,
                     message.Message.HouseNumber,
@@ -113,15 +119,32 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
                     message.Message.IsRemoved,
                     message.Message.Provenance.Timestamp);
 
+                await houseNumberLabelUpdater.UpdateHouseNumberLabels(context, addressWfsItem, ct, includeAddressInUpdate: true);
+
                 await context
                     .AddressWfsV2Items
                     .AddAsync(addressWfsItem, ct);
+
+                if (message.Message.ParentPersistentLocalId.HasValue)
+                {
+                    var parent = await context.FindAddressDetail(message.Message.ParentPersistentLocalId.Value, ct);
+                    if (parent.Position == addressWfsItem.Position)
+                    {
+                        await context.FindAndUpdateAddressDetail(
+                            message.Message.ParentPersistentLocalId.Value,
+                            _ => { },
+                            houseNumberLabelUpdater,
+                            updateHouseNumberLabelsBeforeAddressUpdate: false,
+                            updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
+                    }
+                }
             });
 
             When<Envelope<AddressWasProposedV2>>(async (context, message, ct) =>
             {
                 var addressWfsItem = new AddressWfsV2Item(
                     message.Message.AddressPersistentLocalId,
+                    message.Message.ParentPersistentLocalId,
                     message.Message.StreetNamePersistentLocalId,
                     message.Message.PostalCode,
                     message.Message.HouseNumber,
@@ -134,15 +157,32 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
                     removed: false,
                     message.Message.Provenance.Timestamp);
 
+                await houseNumberLabelUpdater.UpdateHouseNumberLabels(context, addressWfsItem, ct, includeAddressInUpdate: true);
+
                 await context
                     .AddressWfsV2Items
                     .AddAsync(addressWfsItem, ct);
+
+                if (message.Message.ParentPersistentLocalId.HasValue)
+                {
+                    var parent = await context.FindAddressDetail(message.Message.ParentPersistentLocalId.Value, ct);
+                    if (parent.Position == addressWfsItem.Position)
+                    {
+                        await context.FindAndUpdateAddressDetail(
+                            message.Message.ParentPersistentLocalId.Value,
+                            address => { },
+                            houseNumberLabelUpdater,
+                            updateHouseNumberLabelsBeforeAddressUpdate: false,
+                            updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
+                    }
+                }
             });
 
             When<Envelope<AddressWasProposedForMunicipalityMerger>>(async (context, message, ct) =>
             {
                 var addressWfsItem = new AddressWfsV2Item(
                     message.Message.AddressPersistentLocalId,
+                    message.Message.ParentPersistentLocalId,
                     message.Message.StreetNamePersistentLocalId,
                     message.Message.PostalCode,
                     message.Message.HouseNumber,
@@ -155,293 +195,465 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
                     removed: false,
                     message.Message.Provenance.Timestamp);
 
+                await houseNumberLabelUpdater.UpdateHouseNumberLabels(context, addressWfsItem, ct, includeAddressInUpdate: true);
+
                 await context
                     .AddressWfsV2Items
                     .AddAsync(addressWfsItem, ct);
+
+                if (message.Message.ParentPersistentLocalId.HasValue)
+                {
+                    var parent = await context.FindAddressDetail(message.Message.ParentPersistentLocalId.Value, ct);
+                    if (parent.Position == addressWfsItem.Position)
+                    {
+                        await context.FindAndUpdateAddressDetail(
+                            message.Message.ParentPersistentLocalId.Value,
+                            address => { },
+                            houseNumberLabelUpdater,
+                            updateHouseNumberLabelsBeforeAddressUpdate: false,
+                            updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
+                    }
+                }
             });
 
             When<Envelope<AddressWasApproved>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item => item.Status = MapStatus(AddressStatus.Current),
-                    ct);
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.Status = MapStatus(AddressStatus.Current);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasCorrectedFromApprovedToProposed>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item => item.Status = MapStatus(AddressStatus.Proposed),
-                    ct);
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.Status = MapStatus(AddressStatus.Proposed);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item => item.Status = MapStatus(AddressStatus.Proposed),
-                    ct);
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.Status = MapStatus(AddressStatus.Proposed);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasRejected>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item => item.Status = MapStatus(AddressStatus.Rejected),
-                    ct);
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.Status = MapStatus(AddressStatus.Rejected);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasRejectedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item => item.Status = MapStatus(AddressStatus.Rejected),
-                    ct);
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.Status = MapStatus(AddressStatus.Rejected);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasRejectedBecauseHouseNumberWasRejected>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item => item.Status = MapStatus(AddressStatus.Rejected),
-                    ct);
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.Status = MapStatus(AddressStatus.Rejected);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasRejectedBecauseHouseNumberWasRetired>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item => item.Status = MapStatus(AddressStatus.Rejected),
-                    ct);
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.Status = MapStatus(AddressStatus.Rejected);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasRejectedBecauseStreetNameWasRejected>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item => item.Status = MapStatus(AddressStatus.Rejected),
-                    ct);
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.Status = MapStatus(AddressStatus.Rejected);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasRetiredBecauseStreetNameWasRejected>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item => item.Status = MapStatus(AddressStatus.Retired),
-                    ct);
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.Status = MapStatus(AddressStatus.Retired);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasRejectedBecauseStreetNameWasRetired>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item => item.Status = MapStatus(AddressStatus.Rejected),
-                    ct);
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.Status = MapStatus(AddressStatus.Rejected);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasDeregulated>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item =>
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
                     {
-                        item.OfficiallyAssigned = false;
-                        item.Status = AdresStatusInGebruik;
+                        address.OfficiallyAssigned = false;
+                        address.Status = MapStatus(AddressStatus.Current);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct);
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasRegularized>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item => item.OfficiallyAssigned = true,
-                    ct);
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.OfficiallyAssigned = true;
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: false,
+                    updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
             });
 
             When<Envelope<AddressWasRetiredV2>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item => item.Status = MapStatus(AddressStatus.Retired),
-                    ct);
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.Status = MapStatus(AddressStatus.Retired);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasRetiredBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item => item.Status = MapStatus(AddressStatus.Retired),
-                    ct);
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.Status = MapStatus(AddressStatus.Retired);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasRetiredBecauseHouseNumberWasRetired>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item => item.Status = MapStatus(AddressStatus.Retired),
-                    ct);
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.Status = MapStatus(AddressStatus.Retired);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasRetiredBecauseStreetNameWasRetired>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item => item.Status = MapStatus(AddressStatus.Retired),
-                    ct);
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.Status = MapStatus(AddressStatus.Retired);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasCorrectedFromRetiredToCurrent>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item => item.Status = MapStatus(AddressStatus.Current),
-                    ct);
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.Status = MapStatus(AddressStatus.Current);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressPostalCodeWasChangedV2>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item => item.PostalCode = message.Message.PostalCode,
-                    ct);
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.PostalCode = message.Message.PostalCode;
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: false,
+                    updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
 
                 foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
                 {
-                    var boxNumberItem = await context.FindAndUpdateAddressDetail(boxNumberPersistentLocalId,
-                        x => x.PostalCode = message.Message.PostalCode,
-                        ct);
-
-                    UpdateVersionTimestamp(boxNumberItem, message.Message.Provenance.Timestamp);
+                    await context.FindAndUpdateAddressDetail(
+                        boxNumberPersistentLocalId,
+                        address =>
+                        {
+                            address.PostalCode = message.Message.PostalCode;
+                            UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                        },
+                        houseNumberLabelUpdater,
+                        updateHouseNumberLabelsBeforeAddressUpdate: false,
+                        updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
                 }
             });
 
             When<Envelope<AddressPostalCodeWasCorrectedV2>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item => item.PostalCode = message.Message.PostalCode,
-                    ct);
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.PostalCode = message.Message.PostalCode;
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: false,
+                    updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
 
                 foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
                 {
-                    var boxNumberItem = await context.FindAndUpdateAddressDetail(boxNumberPersistentLocalId,
-                        x => x.PostalCode = message.Message.PostalCode,
-                        ct);
-
-                    UpdateVersionTimestamp(boxNumberItem, message.Message.Provenance.Timestamp);
+                    await context.FindAndUpdateAddressDetail(
+                        boxNumberPersistentLocalId,
+                        address =>
+                        {
+                            address.PostalCode = message.Message.PostalCode;
+                            UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                        },
+                        houseNumberLabelUpdater,
+                        updateHouseNumberLabelsBeforeAddressUpdate: false,
+                        updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
                 }
             });
 
             When<Envelope<AddressHouseNumberWasCorrectedV2>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item => item.HouseNumber = message.Message.HouseNumber,
-                    ct);
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.HouseNumber = message.Message.HouseNumber;
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: false,
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
 
                 foreach (var boxNumberPersistentLocalId in message.Message.BoxNumberPersistentLocalIds)
                 {
-                    var boxNumberItem = await context.FindAndUpdateAddressDetail(boxNumberPersistentLocalId,
-                        x => x.HouseNumber = message.Message.HouseNumber,
-                        ct);
-
-                    UpdateVersionTimestamp(boxNumberItem, message.Message.Provenance.Timestamp);
+                    await context.FindAndUpdateAddressDetail(
+                        boxNumberPersistentLocalId,
+                        address =>
+                        {
+                            address.HouseNumber = message.Message.HouseNumber;
+                            UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                        },
+                        houseNumberLabelUpdater,
+                        updateHouseNumberLabelsBeforeAddressUpdate: false,
+                        updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
                 }
             });
 
             When<Envelope<AddressBoxNumberWasCorrectedV2>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item => item.BoxNumber = message.Message.BoxNumber,
-                    ct);
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.BoxNumber = message.Message.BoxNumber;
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: false,
+                    updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
             });
 
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item =>
+                await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
+                    address =>
                     {
-                        item.PositionMethod = ConvertGeometryMethodToString(message.Message.GeometryMethod);
-                        item.PositionSpecification = ConvertGeometrySpecificationToString(message.Message.GeometrySpecification);
-                        item.Position = ParsePosition(message.Message.ExtendedWkbGeometry);
+                        address.PositionMethod = ConvertGeometryMethodToString(message.Message.GeometryMethod);
+                        address.PositionSpecification = ConvertGeometrySpecificationToString(message.Message.GeometrySpecification);
+                        address.SetPosition(ParsePosition(message.Message.ExtendedWkbGeometry));
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct);
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true,
+                    allowUpdateRemovedAddress: true, ct: ct);
 
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                var wfsItem = await context.FindAddressDetail(message.Message.AddressPersistentLocalId, ct);
+                if (wfsItem.ParentAddressPersistentLocalId.HasValue)
+                {
+                    var parent = await context.FindAddressDetail(wfsItem.ParentAddressPersistentLocalId.Value, ct);
+                    if (parent.Position == wfsItem.Position)
+                    {
+                        await context.FindAndUpdateAddressDetail(
+                            wfsItem.ParentAddressPersistentLocalId.Value,
+                            _ => { },
+                            houseNumberLabelUpdater,
+                            updateHouseNumberLabelsBeforeAddressUpdate: false,
+                            updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
+                    }
+                }
             });
 
             When<Envelope<AddressPositionWasCorrectedV2>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item =>
+                await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
+                    address =>
                     {
-                        item.PositionMethod = ConvertGeometryMethodToString(message.Message.GeometryMethod);
-                        item.PositionSpecification = ConvertGeometrySpecificationToString(message.Message.GeometrySpecification);
-                        item.Position = ParsePosition(message.Message.ExtendedWkbGeometry);
+                        address.PositionMethod = ConvertGeometryMethodToString(message.Message.GeometryMethod);
+                        address.PositionSpecification = ConvertGeometrySpecificationToString(message.Message.GeometrySpecification);
+                        address.SetPosition(ParsePosition(message.Message.ExtendedWkbGeometry));
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct);
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true,
+                    allowUpdateRemovedAddress: true, ct: ct);
 
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                var wfsItem = await context.FindAddressDetail(message.Message.AddressPersistentLocalId, ct);
+
+                if (wfsItem.ParentAddressPersistentLocalId.HasValue)
+                {
+                    var parent = await context.FindAddressDetail(wfsItem.ParentAddressPersistentLocalId.Value, ct);
+                    if (parent.Position == wfsItem.Position)
+                    {
+                        await context.FindAndUpdateAddressDetail(
+                            wfsItem.ParentAddressPersistentLocalId.Value,
+                            _ => { },
+                            houseNumberLabelUpdater,
+                            updateHouseNumberLabelsBeforeAddressUpdate: false,
+                            updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
+                    }
+                }
             });
 
             When<Envelope<AddressHouseNumberWasReaddressed>>(async (context, message, ct) =>
             {
-                var houseNumberItem = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item =>
+                await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
+                    address =>
                     {
-                        item.Status = MapStatus(message.Message.ReaddressedHouseNumber.SourceStatus);
-                        item.HouseNumber = message.Message.ReaddressedHouseNumber.DestinationHouseNumber;
-                        item.PostalCode = message.Message.ReaddressedHouseNumber.SourcePostalCode;
-                        item.OfficiallyAssigned = message.Message.ReaddressedHouseNumber.SourceIsOfficiallyAssigned;
-                        item.PositionMethod = ConvertGeometryMethodToString(message.Message.ReaddressedHouseNumber.SourceGeometryMethod);
-                        item.PositionSpecification = ConvertGeometrySpecificationToString(message.Message.ReaddressedHouseNumber.SourceGeometrySpecification);
-                        item.Position = ParsePosition(message.Message.ReaddressedHouseNumber.SourceExtendedWkbGeometry);
+                        address.Status = MapStatus(message.Message.ReaddressedHouseNumber.SourceStatus);
+                        address.HouseNumber = message.Message.ReaddressedHouseNumber.DestinationHouseNumber;
+                        address.PostalCode = message.Message.ReaddressedHouseNumber.SourcePostalCode;
+                        address.OfficiallyAssigned = message.Message.ReaddressedHouseNumber.SourceIsOfficiallyAssigned;
+                        address.PositionMethod = ConvertGeometryMethodToString(message.Message.ReaddressedHouseNumber.SourceGeometryMethod);
+                        address.PositionSpecification =
+                            ConvertGeometrySpecificationToString(message.Message.ReaddressedHouseNumber.SourceGeometrySpecification);
+                        address.SetPosition(ParsePosition(message.Message.ReaddressedHouseNumber.SourceExtendedWkbGeometry));
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct);
-
-                UpdateVersionTimestamp(houseNumberItem, message.Message.Provenance.Timestamp);
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
 
                 foreach (var readdressedBoxNumber in message.Message.ReaddressedBoxNumbers)
                 {
-                    var boxNumberItem = await context.FindAndUpdateAddressDetail(readdressedBoxNumber.DestinationAddressPersistentLocalId,
-                        item =>
+                    await context.FindAndUpdateAddressDetail(
+                        readdressedBoxNumber.DestinationAddressPersistentLocalId,
+                        address =>
                         {
-                            item.Status = MapStatus(readdressedBoxNumber.SourceStatus);
-                            item.HouseNumber = readdressedBoxNumber.DestinationHouseNumber;
-                            item.BoxNumber = readdressedBoxNumber.SourceBoxNumber;
-                            item.PostalCode = readdressedBoxNumber.SourcePostalCode;
-                            item.OfficiallyAssigned = readdressedBoxNumber.SourceIsOfficiallyAssigned;
-                            item.PositionMethod = ConvertGeometryMethodToString(readdressedBoxNumber.SourceGeometryMethod);
-                            item.PositionSpecification = ConvertGeometrySpecificationToString(readdressedBoxNumber.SourceGeometrySpecification);
-                            item.Position = ParsePosition(readdressedBoxNumber.SourceExtendedWkbGeometry);
+                            address.Status = MapStatus(readdressedBoxNumber.SourceStatus);
+                            address.HouseNumber = readdressedBoxNumber.DestinationHouseNumber;
+                            address.BoxNumber = readdressedBoxNumber.SourceBoxNumber;
+                            address.PostalCode = readdressedBoxNumber.SourcePostalCode;
+                            address.OfficiallyAssigned = readdressedBoxNumber.SourceIsOfficiallyAssigned;
+                            address.PositionMethod = ConvertGeometryMethodToString(readdressedBoxNumber.SourceGeometryMethod);
+                            address.PositionSpecification = ConvertGeometrySpecificationToString(readdressedBoxNumber.SourceGeometrySpecification);
+                            address.SetPosition(ParsePosition(readdressedBoxNumber.SourceExtendedWkbGeometry));
+                            UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                         },
-                        ct);
-
-                    UpdateVersionTimestamp(boxNumberItem, message.Message.Provenance.Timestamp);
+                        houseNumberLabelUpdater,
+                        updateHouseNumberLabelsBeforeAddressUpdate: true,
+                        updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
                 }
             });
 
@@ -449,6 +661,7 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
             {
                 var addressWfsItem = new AddressWfsV2Item(
                     message.Message.AddressPersistentLocalId,
+                    message.Message.ParentPersistentLocalId,
                     message.Message.StreetNamePersistentLocalId,
                     message.Message.PostalCode,
                     message.Message.HouseNumber,
@@ -461,108 +674,168 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
                     removed: false,
                     message.Message.Provenance.Timestamp);
 
+                await houseNumberLabelUpdater.UpdateHouseNumberLabels(context, addressWfsItem, ct, includeAddressInUpdate: true);
+
                 await context
                     .AddressWfsV2Items
                     .AddAsync(addressWfsItem, ct);
+
+                if (message.Message.ParentPersistentLocalId.HasValue)
+                {
+                    var parent = await context.FindAddressDetail(message.Message.ParentPersistentLocalId.Value, ct);
+                    if (parent.Position == addressWfsItem.Position)
+                    {
+                        await context.FindAndUpdateAddressDetail(
+                            message.Message.ParentPersistentLocalId.Value,
+                            _ => { },
+                            houseNumberLabelUpdater,
+                            updateHouseNumberLabelsBeforeAddressUpdate: false,
+                            updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
+                    }
+                }
             });
 
             When<Envelope<AddressWasRejectedBecauseOfReaddress>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item => item.Status = MapStatus(AddressStatus.Rejected),
-                    ct);
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.Status = MapStatus(AddressStatus.Rejected);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasRetiredBecauseOfReaddress>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item => item.Status = MapStatus(AddressStatus.Retired),
-                    ct);
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.Status = MapStatus(AddressStatus.Retired);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressWasRemovedV2>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item => item.Removed = true,
-                    ct);
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.Removed = true;
+                        address.HouseNumberLabel = null;
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: false,
+                    allowUpdateRemovedAddress: true, ct: ct);
             });
 
              When<Envelope<AddressWasRemovedBecauseStreetNameWasRemoved>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item => item.Removed = true,
-                    ct);
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.Removed = true;
+                        address.HouseNumberLabel = null;
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: false,
+                    allowUpdateRemovedAddress: true, ct: ct);
             });
 
             When<Envelope<AddressWasRemovedBecauseHouseNumberWasRemoved>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item => item.Removed = true,
-                    ct);
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.Removed = true;
+                        address.HouseNumberLabel = null;
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: false,
+                    allowUpdateRemovedAddress: true, ct: ct);
             });
 
             When<Envelope<AddressWasCorrectedFromRejectedToProposed>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item => item.Status = MapStatus(AddressStatus.Proposed),
-                    ct);
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
+                    {
+                        address.Status = MapStatus(AddressStatus.Proposed);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true, ct: ct);
             });
 
             When<Envelope<AddressRegularizationWasCorrected>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item =>
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
                     {
-                        item.OfficiallyAssigned = false;
-                        item.Status = AdresStatusInGebruik;
+                        address.OfficiallyAssigned = false;
+                        address.Status = MapStatus(AddressStatus.Current);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct);
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: true,
+                    updateHouseNumberLabelsAfterAddressUpdate: true,
+                    allowUpdateRemovedAddress: true, ct: ct);
             });
 
             When<Envelope<AddressDeregulationWasCorrected>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item =>
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
                     {
-                        item.OfficiallyAssigned = true;
+                        address.OfficiallyAssigned = true;
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
                     },
-                    ct);
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: false,
+                    updateHouseNumberLabelsAfterAddressUpdate: false,
+                    allowUpdateRemovedAddress: true, ct: ct);
             });
 
             When<Envelope<AddressRemovalWasCorrected>>(async (context, message, ct) =>
             {
-                var item = await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,
-                    item =>
+                await context.FindAndUpdateAddressDetail(
+                    message.Message.AddressPersistentLocalId,
+                    address =>
                     {
-                        item.PostalCode = message.Message.PostalCode;
-                        item.HouseNumber = message.Message.HouseNumber;
-                        item.BoxNumber = message.Message.BoxNumber;
-                        item.Status = MapStatus(message.Message.Status);
-                        item.OfficiallyAssigned = message.Message.OfficiallyAssigned;
-                        item.Position = ParsePosition(message.Message.ExtendedWkbGeometry);
-                        item.PositionMethod = ConvertGeometryMethodToString(message.Message.GeometryMethod)!;
-                        item.PositionSpecification = ConvertGeometrySpecificationToString(message.Message.GeometrySpecification)!;
-                        item.Removed = false;
-                    },
-                    ct);
+                        address.PostalCode = message.Message.PostalCode;
+                        address.HouseNumber = message.Message.HouseNumber;
+                        address.BoxNumber = message.Message.BoxNumber;
+                        address.Status = MapStatus(message.Message.Status);
+                        address.OfficiallyAssigned = message.Message.OfficiallyAssigned;
+                        address.SetPosition(ParsePosition(message.Message.ExtendedWkbGeometry));
+                        address.PositionMethod = ConvertGeometryMethodToString(message.Message.GeometryMethod)!;
+                        address.PositionSpecification = ConvertGeometrySpecificationToString(message.Message.GeometrySpecification)!;
+                        address.Removed = false;
 
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                        UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                    },
+                    houseNumberLabelUpdater,
+                    updateHouseNumberLabelsBeforeAddressUpdate: false,
+                    updateHouseNumberLabelsAfterAddressUpdate: true, allowUpdateRemovedAddress: true, ct: ct);
             });
         }
 
@@ -594,65 +867,43 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
             }
         }
 
-        private static PositieGeometrieMethode? MapGeometryMethodToPositieGeometrieMethode(
-            GeometryMethod? geometryMethod)
+        private static PositieGeometrieMethode MapGeometryMethodToPositieGeometrieMethode(GeometryMethod geometryMethod)
         {
-            if (geometryMethod == null)
-                return null;
-
-            switch (geometryMethod)
+            return geometryMethod switch
             {
-                case GeometryMethod.Interpolated:
-                    return PositieGeometrieMethode.Geinterpoleerd;
-                case GeometryMethod.AppointedByAdministrator:
-                    return PositieGeometrieMethode.AangeduidDoorBeheerder;
-                case GeometryMethod.DerivedFromObject:
-                    return PositieGeometrieMethode.AfgeleidVanObject;
-                default:
-                    return null;
-            }
+                GeometryMethod.Interpolated => PositieGeometrieMethode.Geinterpoleerd,
+                GeometryMethod.AppointedByAdministrator => PositieGeometrieMethode.AangeduidDoorBeheerder,
+                GeometryMethod.DerivedFromObject => PositieGeometrieMethode.AfgeleidVanObject,
+                _ => throw new ArgumentOutOfRangeException(nameof(geometryMethod), geometryMethod, null)
+            };
         }
 
-        public static string? ConvertGeometryMethodToString(GeometryMethod? method) =>
-            MapGeometryMethodToPositieGeometrieMethode(method)?
+        public static string ConvertGeometryMethodToString(GeometryMethod method) =>
+            MapGeometryMethodToPositieGeometrieMethode(method)
             .ToString()
             .Replace("Geinterpoleerd", "Geïnterpoleerd");
 
-        private static PositieSpecificatie? MapGeometrySpecificationToPositieSpecificatie(
-            GeometrySpecification? geometrySpecification)
+        private static PositieSpecificatie MapGeometrySpecificationToPositieSpecificatie(
+            GeometrySpecification geometrySpecification)
         {
-            if (geometrySpecification == null)
-                return null;
-
-            switch (geometrySpecification)
+            return geometrySpecification switch
             {
-                case GeometrySpecification.Municipality:
-                    return PositieSpecificatie.Gemeente;
-                case GeometrySpecification.Street:
-                    return PositieSpecificatie.Straat;
-                case GeometrySpecification.Parcel:
-                    return PositieSpecificatie.Perceel;
-                case GeometrySpecification.Lot:
-                    return PositieSpecificatie.Lot;
-                case GeometrySpecification.Stand:
-                    return PositieSpecificatie.Standplaats;
-                case GeometrySpecification.Berth:
-                    return PositieSpecificatie.Ligplaats;
-                case GeometrySpecification.Building:
-                    return PositieSpecificatie.Gebouw;
-                case GeometrySpecification.BuildingUnit:
-                    return PositieSpecificatie.Gebouweenheid;
-                case GeometrySpecification.Entry:
-                    return PositieSpecificatie.Ingang;
-                case GeometrySpecification.RoadSegment:
-                    return PositieSpecificatie.Wegsegment;
-                default:
-                    return null;
-            }
+                GeometrySpecification.Municipality => PositieSpecificatie.Gemeente,
+                GeometrySpecification.Street => PositieSpecificatie.Straat,
+                GeometrySpecification.Parcel => PositieSpecificatie.Perceel,
+                GeometrySpecification.Lot => PositieSpecificatie.Lot,
+                GeometrySpecification.Stand => PositieSpecificatie.Standplaats,
+                GeometrySpecification.Berth => PositieSpecificatie.Ligplaats,
+                GeometrySpecification.Building => PositieSpecificatie.Gebouw,
+                GeometrySpecification.BuildingUnit => PositieSpecificatie.Gebouweenheid,
+                GeometrySpecification.Entry => PositieSpecificatie.Ingang,
+                GeometrySpecification.RoadSegment => PositieSpecificatie.Wegsegment,
+                _ => throw new ArgumentOutOfRangeException(nameof(geometrySpecification), geometrySpecification, null)
+            };
         }
 
-        public static string? ConvertGeometrySpecificationToString(GeometrySpecification? specification) =>
-            MapGeometrySpecificationToPositieSpecificatie(specification)?.ToString();
+        public static string ConvertGeometrySpecificationToString(GeometrySpecification specification) =>
+            MapGeometrySpecificationToPositieSpecificatie(specification).ToString();
 
         private static Task DoNothing<T>(WfsContext context, Envelope<T> envelope, CancellationToken ct) where T: IMessage => Task.CompletedTask;
     }

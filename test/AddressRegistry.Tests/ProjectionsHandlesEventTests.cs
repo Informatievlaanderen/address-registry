@@ -251,7 +251,7 @@
 
             yield return [new List<ConnectedProjection<WmsContext>>
             {
-                new AddressWmsItemV3Projections(new WKBReader(), new HouseNumberLabelUpdaterUpdater())
+                new AddressWmsItemV3Projections(new WKBReader(), new HouseNumberLabelUpdater())
             }];
 
             yield return [new List<ConnectedProjection<LastChangedListContext>>

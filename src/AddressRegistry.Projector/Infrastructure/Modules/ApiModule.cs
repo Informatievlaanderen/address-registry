@@ -20,6 +20,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using AddressRegistry.Projections.Legacy.AddressSyndication;
     using AddressRegistry.Projections.Wfs;
     using AddressRegistry.Projections.Wfs.AddressWfs;
+    using AddressRegistry.Projections.Wfs.AddressWfsV2;
     using AddressRegistry.Projections.Wms;
     using AddressRegistry.Projections.Wms.AddressWmsItemV2;
     using AddressRegistry.Projections.Wms.AddressWmsItemV3;
@@ -47,6 +48,8 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
     using Microsoft.Extensions.Options;
     using NetTopologySuite.IO;
     using SqlStreamStore;
+    using HouseNumberLabelUpdater = AddressRegistry.Projections.Wms.AddressWmsItemV3.HouseNumberLabelUpdater;
+    using IHouseNumberLabelUpdater = AddressRegistry.Projections.Wms.AddressWmsItemV3.IHouseNumberLabelUpdater;
 
     public class ApiModule : Module
     {
@@ -209,13 +212,20 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .Configure(settings =>
                     settings.ConfigureLinearBackoff<SqlException>(_configuration, "Wfs"));
 
+            builder.RegisterType<AddressRegistry.Projections.Wfs.AddressWfsV2.IHouseNumberLabelUpdater>()
+                .As<AddressRegistry.Projections.Wfs.AddressWfsV2.HouseNumberLabelUpdater>()
+                .AsSelf();
+
             builder
                 .RegisterProjectionMigrator<WfsContextMigrationFactory>(
                     _configuration,
                     _loggerFactory)
                 .RegisterProjections<AddressWfsProjections, WfsContext>(() =>
                         new AddressWfsProjections(WKBReaderFactory.CreateForLegacy()),
-                    wfsProjectionSettings);
+                    wfsProjectionSettings)
+                .RegisterProjections<AddressWfsV2Projections, WfsContext>(c =>
+                    new AddressWfsV2Projections(WKBReaderFactory.CreateForLegacy(), c.Resolve<AddressRegistry.Projections.Wfs.AddressWfsV2.IHouseNumberLabelUpdater>()),
+                wfsProjectionSettings);
         }
 
         private void RegisterWmsProjectionsV2(ContainerBuilder builder)
@@ -228,7 +238,7 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                         _loggerFactory));
 
             builder.RegisterType<IHouseNumberLabelUpdater>()
-                .As<HouseNumberLabelUpdaterUpdater>()
+                .As<HouseNumberLabelUpdater>()
                 .AsSelf();
 
             var wmsProjectionSettings = ConnectedProjectionSettings

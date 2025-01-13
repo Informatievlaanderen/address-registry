@@ -1,9 +1,8 @@
-﻿namespace AddressRegistry.Tests.ProjectionTests.WmsV3
+﻿namespace AddressRegistry.Tests
 {
     using System.Linq;
-    using AddressRegistry.Projections.Wms;
-    using AddressRegistry.StreetName;
     using FluentAssertions;
+    using StreetName;
     using Xunit;
 
     public class HouseNumberComparerTests

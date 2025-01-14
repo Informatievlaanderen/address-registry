@@ -1,3 +1,10 @@
+## [4.33.1](https://github.com/informatievlaanderen/address-registry/compare/v4.33.0...v4.33.1) (2025-01-14)
+
+
+### Bug Fixes
+
+* **projector:** correct registration of housenumberlabelupdater ([e896858](https://github.com/informatievlaanderen/address-registry/commit/e8968586ba91a63f452d4ae41e804c50d688b239))
+
 # [4.33.0](https://github.com/informatievlaanderen/address-registry/compare/v4.32.2...v4.33.0) (2025-01-14)
 
 

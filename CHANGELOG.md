@@ -1,3 +1,10 @@
+## [4.33.2](https://github.com/informatievlaanderen/address-registry/compare/v4.33.1...v4.33.2) (2025-01-14)
+
+
+### Bug Fixes
+
+* **wfs:** correct computed length column ([39fefef](https://github.com/informatievlaanderen/address-registry/commit/39fefef185e0890209822709d0cc5d5ce8185903))
+
 ## [4.33.1](https://github.com/informatievlaanderen/address-registry/compare/v4.33.0...v4.33.1) (2025-01-14)
 
 

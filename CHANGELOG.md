@@ -1,3 +1,12 @@
+# [4.33.0](https://github.com/informatievlaanderen/address-registry/compare/v4.32.2...v4.33.0) (2025-01-14)
+
+
+### Features
+
+* **wfs:** add wfsv2 with housenumberlabel GAWR-5318 ([7fab434](https://github.com/informatievlaanderen/address-registry/commit/7fab4348883e0b895614010ffbb61dc1befe1772))
+* **wfs:** remove old WFS (based on crab) ([885dd5e](https://github.com/informatievlaanderen/address-registry/commit/885dd5ee36337963d2898120713960bf4b01d4de))
+* **wfs:** WIP: add wfsv2 with housenumberlabel GAWR-5318 ([4d785c4](https://github.com/informatievlaanderen/address-registry/commit/4d785c4000de445a29643fd77c64a08af2a799a7))
+
 ## [4.32.2](https://github.com/informatievlaanderen/address-registry/compare/v4.32.1...v4.32.2) (2025-01-08)
 
 

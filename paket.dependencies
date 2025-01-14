@@ -71,7 +71,7 @@ nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing 14.0.0
 nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit 14.0.0
 nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication 14.0.0
 
-nuget Be.Vlaanderen.Basisregisters.Projector 15.0.0
+nuget Be.Vlaanderen.Basisregisters.Projector 15.2.0
 
 nuget Be.Vlaanderen.Basisregisters.Crab 4.0.0
 nuget Be.Vlaanderen.Basisregisters.Crab.Autofac 4.0.0

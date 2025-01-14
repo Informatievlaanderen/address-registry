@@ -35,7 +35,7 @@ namespace AddressRegistry.Projections.Wfs.Migrations
                     Removed = table.Column<bool>(type: "bit", nullable: false),
                     VersionTimestamp = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     VersionAsString = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    HouseNumberLabelLength = table.Column<int>(type: "int", nullable: false, computedColumnSql: "LEN(HouseNumberLabel)", stored: true)
+                    HouseNumberLabelLength = table.Column<int>(type: "int", nullable: false, computedColumnSql: "CAST(LEN(HouseNumberLabel) AS INT)", stored: true)
                 },
                 constraints: table =>
                 {

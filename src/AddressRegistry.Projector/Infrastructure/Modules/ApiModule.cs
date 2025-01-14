@@ -212,8 +212,8 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                 .Configure(settings =>
                     settings.ConfigureLinearBackoff<SqlException>(_configuration, "Wfs"));
 
-            builder.RegisterType<AddressRegistry.Projections.Wfs.AddressWfsV2.IHouseNumberLabelUpdater>()
-                .As<AddressRegistry.Projections.Wfs.AddressWfsV2.HouseNumberLabelUpdater>()
+            builder.RegisterType<AddressRegistry.Projections.Wfs.AddressWfsV2.HouseNumberLabelUpdater>()
+                .As<AddressRegistry.Projections.Wfs.AddressWfsV2.IHouseNumberLabelUpdater>()
                 .AsSelf();
 
             builder
@@ -237,8 +237,8 @@ namespace AddressRegistry.Projector.Infrastructure.Modules
                         _services,
                         _loggerFactory));
 
-            builder.RegisterType<IHouseNumberLabelUpdater>()
-                .As<HouseNumberLabelUpdater>()
+            builder.RegisterType<HouseNumberLabelUpdater>()
+                .As<IHouseNumberLabelUpdater>()
                 .AsSelf();
 
             var wmsProjectionSettings = ConnectedProjectionSettings

@@ -385,7 +385,7 @@ NUGET
       Microsoft.EntityFrameworkCore (>= 8.0.2)
       Microsoft.Extensions.Logging (>= 8.0)
       xunit (>= 2.7)
-    Be.Vlaanderen.Basisregisters.Projector (15.0)
+    Be.Vlaanderen.Basisregisters.Projector (15.2)
       Autofac (>= 8.0)
       Autofac.Extensions.DependencyInjection (>= 9.0)
       Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector (>= 14.0)

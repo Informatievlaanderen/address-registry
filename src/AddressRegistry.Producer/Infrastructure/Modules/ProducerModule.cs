@@ -9,22 +9,24 @@ namespace AddressRegistry.Producer.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Producer;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer.MigrationExtensions;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac;
     using Be.Vlaanderen.Basisregisters.Projector;
     using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
     using Be.Vlaanderen.Basisregisters.Projector.Modules;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using SqlStreamStore;
 
-    public class ApiModule : Module
+    public class ProducerModule : Module
     {
         private readonly IConfiguration _configuration;
         private readonly IServiceCollection _services;
         private readonly ILoggerFactory _loggerFactory;
 
-        public ApiModule(
+        public ProducerModule(
             IConfiguration configuration,
             IServiceCollection services,
             ILoggerFactory loggerFactory)
@@ -61,12 +63,26 @@ namespace AddressRegistry.Producer.Infrastructure.Modules
 
         private void RegisterProjections(ContainerBuilder builder)
         {
-            builder
-                .RegisterModule(
-                    new ProducerModule(
-                        _configuration,
-                        _services,
-                        _loggerFactory));
+            var logger = _loggerFactory.CreateLogger<ProducerModule>();
+            var connectionString = _configuration.GetConnectionString("ProducerProjections");
+
+            var hasConnectionString = !string.IsNullOrWhiteSpace(connectionString);
+            if (hasConnectionString)
+            {
+                RunOnSqlServer(_services, _loggerFactory, connectionString);
+            }
+            else
+            {
+                RunInMemoryDb(_services, _loggerFactory, logger);
+            }
+
+            logger.LogInformation(
+                "Added {Context} to services:" +
+                Environment.NewLine +
+                "\tSchema: {Schema}" +
+                Environment.NewLine +
+                "\tTableName: {TableName}",
+                nameof(ProducerContext), Schema.Producer, MigrationTables.Producer);
 
             var connectedProjectionSettings = ConnectedProjectionSettings.Configure(x =>
             {
@@ -151,6 +167,35 @@ namespace AddressRegistry.Producer.Infrastructure.Modules
                         new Producer(producerOptions),
                         c.Resolve<IReadonlyStreamStore>());
                 }, connectedProjectionSettings);
+        }
+
+        private static void RunOnSqlServer(
+            IServiceCollection services,
+            ILoggerFactory loggerFactory,
+            string producerConnectionString)
+        {
+            services
+                .AddDbContext<ProducerContext>((_, options) => options
+                    .UseLoggerFactory(loggerFactory)
+                    .UseSqlServer(producerConnectionString, sqlServerOptions =>
+                    {
+                        sqlServerOptions.EnableRetryOnFailure();
+                        sqlServerOptions.MigrationsHistoryTable(MigrationTables.Producer, Schema.Producer);
+                    })
+                    .UseExtendedSqlServerMigrations());
+        }
+
+        private static void RunInMemoryDb(
+            IServiceCollection services,
+            ILoggerFactory loggerFactory,
+            ILogger logger)
+        {
+            services
+                .AddDbContext<ProducerContext>(options => options
+                    .UseLoggerFactory(loggerFactory)
+                    .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { }));
+
+            logger.LogWarning("Running InMemory for {Context}!", nameof(ProducerContext));
         }
     }
 }

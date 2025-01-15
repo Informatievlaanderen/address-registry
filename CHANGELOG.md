@@ -1,3 +1,10 @@
+## [4.33.3](https://github.com/informatievlaanderen/address-registry/compare/v4.33.2...v4.33.3) (2025-01-15)
+
+
+### Bug Fixes
+
+* **wfs:** computed column handle null labels ([a35267f](https://github.com/informatievlaanderen/address-registry/commit/a35267f4debc1cda71fca0244d156cf4ad2018a6))
+
 ## [4.33.2](https://github.com/informatievlaanderen/address-registry/compare/v4.33.1...v4.33.2) (2025-01-14)
 
 

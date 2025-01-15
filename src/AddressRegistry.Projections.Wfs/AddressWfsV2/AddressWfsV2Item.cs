@@ -124,7 +124,7 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
 
             b.Property(p => p.HouseNumberLabel);
             b.Property<int>("HouseNumberLabelLength")
-                .HasComputedColumnSql("LEN(HouseNumberLabel)", stored: true);
+                .HasComputedColumnSql("CAST(LEN(ISNULL(HouseNumberLabel, '')) AS INT)", stored: true);
 
             b.Property(p => p.LabelType);
 

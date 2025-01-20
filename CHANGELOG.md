@@ -1,3 +1,10 @@
+# [4.34.0](https://github.com/informatievlaanderen/address-registry/compare/v4.33.4...v4.34.0) (2025-01-20)
+
+
+### Features
+
+* **wms:** switch views to V3 ([17b5cda](https://github.com/informatievlaanderen/address-registry/commit/17b5cda79e316ad938add1c405ea113cd060b43a))
+
 ## [4.33.4](https://github.com/informatievlaanderen/address-registry/compare/v4.33.3...v4.33.4) (2025-01-17)
 
 ## [4.33.3](https://github.com/informatievlaanderen/address-registry/compare/v4.33.2...v4.33.3) (2025-01-15)

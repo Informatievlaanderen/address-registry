@@ -1,3 +1,10 @@
+# [4.35.0](https://github.com/informatievlaanderen/address-registry/compare/v4.34.0...v4.35.0) (2025-01-29)
+
+
+### Features
+
+* remove v1 producer ([a828f2a](https://github.com/informatievlaanderen/address-registry/commit/a828f2aac0a611f16cc8d3f4b5f937bf696cb24a))
+
 # [4.34.0](https://github.com/informatievlaanderen/address-registry/compare/v4.33.4...v4.34.0) (2025-01-20)
 
 

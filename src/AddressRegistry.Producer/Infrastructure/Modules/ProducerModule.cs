@@ -94,29 +94,6 @@ namespace AddressRegistry.Producer.Infrastructure.Modules
                 .RegisterProjectionMigrator<ProducerContextMigrationFactory>(
                     _configuration,
                     _loggerFactory)
-                .RegisterProjections<ProducerMigrateProjections, ProducerContext>(() =>
-                {
-                    var bootstrapServers = _configuration["Kafka:BootstrapServers"]!;
-                    var topic =
-                        $"{_configuration[ProducerMigrateProjections.AddressTopicKey]}"
-                        ?? throw new ArgumentException($"Configuration has no value for {ProducerMigrateProjections.AddressTopicKey}");
-                    var producerOptions = new ProducerOptions(
-                            new BootstrapServers(bootstrapServers),
-                            new Topic(topic),
-                            true,
-                            EventsJsonSerializerSettingsProvider.CreateSerializerSettings())
-                        .ConfigureEnableIdempotence();
-
-                    if (!string.IsNullOrEmpty(_configuration["Kafka:SaslUserName"])
-                        && !string.IsNullOrEmpty(_configuration["Kafka:SaslPassword"]))
-                    {
-                        producerOptions.ConfigureSaslAuthentication(new SaslAuthentication(
-                            _configuration["Kafka:SaslUserName"]!,
-                            _configuration["Kafka:SaslPassword"]!));
-                    }
-
-                    return new ProducerMigrateProjections(new Producer(producerOptions));
-                }, connectedProjectionSettings)
                 .RegisterProjections<ProducerMigrateReaddressFixProjections, ProducerContext>(c =>
                 {
                     var bootstrapServers = _configuration["Kafka:BootstrapServers"]!;

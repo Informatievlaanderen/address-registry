@@ -277,7 +277,6 @@
 
             yield return [new List<ConnectedProjection<AddressRegistry.Producer.ProducerContext>>
             {
-                new ProducerMigrateProjections(Mock.Of<IProducer>()),
                 new ProducerMigrateReaddressFixProjections(Mock.Of<IProducer>(), Mock.Of<IStreamStore>()),
                 new ProducerProjectionsV3(Mock.Of<IProducer>(), Mock.Of<IStreamStore>())
             }];

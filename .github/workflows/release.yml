@@ -502,8 +502,8 @@ jobs:
       shell: bash
       run: |
         echo Push Lambda functions to S3 DevOps
-        echo aws s3 cp ~/lambda.zip s3://s3-vbr-lam-ar-sqsbackofficefunction-362233117987/$SEMVER/lambda.zip
-        aws s3 cp ~/lambda.zip s3://s3-vbr-lam-ar-sqsbackofficefunction-362233117987/$SEMVER/lambda.zip
+        echo aws s3 cp ~/lambda.zip s3://devops-api-deploy-v4-lambda-362233117987/ar-sqsbackofficefunction/$SEMVER/lambda.zip
+        aws s3 cp ~/lambda.zip s3://devops-api-deploy-v4-lambda-362233117987/ar-sqsbackofficefunction/$SEMVER/lambda.zip
       env:
         SEMVER: ${{ needs.release.outputs.version }}
 
@@ -749,6 +749,7 @@ jobs:
     steps:
     - name: Deploy services
       env:
+        #https://<host>/<project>/<domain>/<application>/<environment>/deploy/v4
         BUILD_URL: ${{ vars.VBR_AWS_BUILD_API_DEVOPS }}/${{matrix.services}}
         STATUS_URL: ${{ vars.VBR_AWS_BUILD_STATUS_API_DEVOPS }}/${{matrix.services}}
       uses: informatievlaanderen/awscurl-polling-action/polling-action@main
@@ -823,7 +824,7 @@ jobs:
         aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
     - name: Promote Lambda(s)
-      uses: Informatievlaanderen/build-pipeline/.github/actions/deploy-lambda@main
+      uses: Informatievlaanderen/build-pipeline/.github/actions/deploy-lambda-v4@main
       with:
         function-name: ar-sqsbackofficefunction
         deploy-url: ${{ vars.VBR_AWS_DEPLOY_LAMBDA_DEVOPS_BASEURL }}
@@ -973,7 +974,7 @@ jobs:
         aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
     - name: Promote Lambda(s)
-      uses: Informatievlaanderen/build-pipeline/.github/actions/deploy-lambda@main
+      uses: Informatievlaanderen/build-pipeline/.github/actions/deploy-lambda-v4@main
       with:
         function-name: ar-sqsbackofficefunction
         deploy-url: ${{ vars.VBR_AWS_DEPLOY_LAMBDA_DEVOPS_BASEURL }}

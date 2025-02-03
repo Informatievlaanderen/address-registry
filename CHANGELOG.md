@@ -1,3 +1,10 @@
+## [4.35.1](https://github.com/informatievlaanderen/address-registry/compare/v4.35.0...v4.35.1) (2025-02-03)
+
+
+### Bug Fixes
+
+* **ci:** update pipelines ([6dd0358](https://github.com/informatievlaanderen/address-registry/commit/6dd035802700fdde6d04579cb287c83156772d66))
+
 # [4.35.0](https://github.com/informatievlaanderen/address-registry/compare/v4.34.0...v4.35.0) (2025-01-29)
 
 

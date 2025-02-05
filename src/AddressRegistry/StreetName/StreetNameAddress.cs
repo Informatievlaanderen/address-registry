@@ -403,7 +403,7 @@ namespace AddressRegistry.StreetName
 
             if (BoxNumber is null)
             {
-                throw new AddressHasNoBoxNumberException();
+                throw new AddressHasNoBoxNumberException(AddressPersistentLocalId);
             }
 
             GuardAddressStatus(AddressStatus.Proposed, AddressStatus.Current);
@@ -643,7 +643,7 @@ namespace AddressRegistry.StreetName
         {
             if (!validStatuses.Contains(Status))
             {
-                throw new AddressHasInvalidStatusException();
+                throw new AddressHasInvalidStatusException(AddressPersistentLocalId);
             }
         }
 

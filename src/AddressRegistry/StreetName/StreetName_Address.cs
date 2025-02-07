@@ -309,7 +309,6 @@ namespace AddressRegistry.StreetName
         public void CorrectAddressBoxNumbers(IDictionary<AddressPersistentLocalId, BoxNumber> addressBoxNumbers)
         {
             GuardStreetNameStatusForChangeAndCorrection();
-            GuardUniqueBoxNumbers();
 
             StreetNameAddress? houseNumberAddress = null;
 
@@ -324,48 +323,19 @@ namespace AddressRegistry.StreetName
                 if (houseNumberAddress is null)
                 {
                     houseNumberAddress = addressToCorrect.Parent;
-                    GuardUniqueBoxNumbersAfterUpdate();
                 }
                 else if (houseNumberAddress != addressToCorrect.Parent)
                 {
                     throw new BoxNumberHouseNumberDoesNotMatchParentHouseNumberException(addressToCorrect.AddressPersistentLocalId, houseNumberAddress.AddressPersistentLocalId);
                 }
 
+                //TODO-rik create new bulk event (and statecheck unit test), for feeds flatten with own counter (identity) for position
                 addressToCorrect.CorrectBoxNumber(
                     addressBoxNumber.Value,
                     () => { });
             }
 
-            void GuardUniqueBoxNumbers()
-            {
-                var notUniqueBoxNumbers = addressBoxNumbers
-                    .GroupBy(x => x.Value, x => x)
-                    .Where(x => x.Count() > 1)
-                    .ToList();
-                if (notUniqueBoxNumbers.Any())
-                {
-                    var notUniqueRecord = notUniqueBoxNumbers.First().First();
-                    var address = StreetNameAddresses.GetByPersistentLocalId(notUniqueRecord.Key);
-
-                    throw new AddressAlreadyExistsException(address.HouseNumber, notUniqueRecord.Value);
-                }
-            }
-
-            void GuardUniqueBoxNumbersAfterUpdate()
-            {
-                var updatedBoxNumbers = houseNumberAddress!.Children
-                    .Where(x => x.IsActive)
-                    .Select(x => addressBoxNumbers.TryGetValue(x.AddressPersistentLocalId, out var boxNumber) ? boxNumber : x.BoxNumber)
-                    .ToList();
-                var notUniqueBoxNumbers = updatedBoxNumbers
-                    .GroupBy(x => x, x => x)
-                    .Where(x => x.Count() > 1)
-                    .ToList();
-                if (notUniqueBoxNumbers.Any())
-                {
-                    throw new AddressAlreadyExistsException(houseNumberAddress.HouseNumber, notUniqueBoxNumbers.First().First());
-                }
-            }
+            GuardUniqueBoxNumbers(houseNumberAddress!);
         }
 
         public void CorrectAddressApproval(AddressPersistentLocalId addressPersistentLocalId)
@@ -515,6 +485,23 @@ namespace AddressRegistry.StreetName
             }
 
             return address.LastEventHash;
+        }
+
+        private void GuardUniqueBoxNumbers(StreetNameAddress houseNumberAddress)
+        {
+            var boxNumbers = houseNumberAddress!.Children
+                .Where(x => x.IsActive)
+                .Select(x => x.BoxNumber)
+                .ToList();
+            var notUniqueBoxNumbers = boxNumbers
+                .GroupBy(x => x, x => x)
+                .Where(x => x.Count() > 1)
+                .Select(x => x.First())
+                .ToList();
+            if (notUniqueBoxNumbers.Any())
+            {
+                throw new AddressAlreadyExistsException(houseNumberAddress.HouseNumber, notUniqueBoxNumbers.First());
+            }
         }
 
         private void GuardActiveStreetName()

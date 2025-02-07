@@ -107,40 +107,6 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressBoxNumbers
         }
 
         [Fact]
-        public void WithDuplicateBoxNumbers_ThenThrowsAddressAlreadyExistsException()
-        {
-            var houseNumberAddressWasProposed = Fixture.Create<AddressWasProposedV2>()
-                .AsHouseNumberAddress();
-
-            var boxNumberAddressWasProposed = Fixture.Create<AddressWasProposedV2>()
-                .AsBoxNumberAddress(
-                    new AddressPersistentLocalId(houseNumberAddressWasProposed.AddressPersistentLocalId),
-                    new BoxNumber("A"))
-                .WithAddressPersistentLocalId(new AddressPersistentLocalId(houseNumberAddressWasProposed.AddressPersistentLocalId + 1))
-                .WithHouseNumber(new HouseNumber(houseNumberAddressWasProposed.HouseNumber));
-
-            var command = new CorrectAddressBoxNumbers(
-                Fixture.Create<StreetNamePersistentLocalId>(),
-                new Dictionary<AddressPersistentLocalId, BoxNumber>
-                {
-                    { new AddressPersistentLocalId(boxNumberAddressWasProposed.AddressPersistentLocalId), new BoxNumber("B") },
-                    { new AddressPersistentLocalId(2), new BoxNumber("B") }
-                },
-                Fixture.Create<Provenance>());
-
-            Assert(new Scenario()
-                .Given(_streamId,
-                    Fixture.Create<StreetNameWasImported>(),
-                    houseNumberAddressWasProposed,
-                    boxNumberAddressWasProposed
-                )
-                .When(command)
-                .Throws(new AddressAlreadyExistsException(
-                    new HouseNumber(houseNumberAddressWasProposed.HouseNumber),
-                    new BoxNumber("B"))));
-        }
-
-        [Fact]
         public void WithAddressWithoutBoxNumber_ThenThrowsAddressHasNoBoxNumberException()
         {
             var houseNumberAddressWasProposed = Fixture.Create<AddressWasProposedV2>()
@@ -166,7 +132,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressBoxNumbers
         }
 
         [Fact]
-        public void WithDuplicateBoxNumbersAfterUpdate_ThenThrowsAddressAlreadyExistsException()
+        public void WithDuplicateBoxNumbers_ThenThrowsAddressAlreadyExistsException()
         {
             var houseNumberAddressWasProposed = Fixture.Create<AddressWasProposedV2>()
                 .AsHouseNumberAddress();
@@ -189,7 +155,8 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressBoxNumbers
                 Fixture.Create<StreetNamePersistentLocalId>(),
                 new Dictionary<AddressPersistentLocalId, BoxNumber>
                 {
-                    { new AddressPersistentLocalId(boxNumberAddress1WasProposed.AddressPersistentLocalId), new BoxNumber("B") }
+                    { new AddressPersistentLocalId(boxNumberAddress1WasProposed.AddressPersistentLocalId), new BoxNumber("B") },
+                    { new AddressPersistentLocalId(boxNumberAddress2WasProposed.AddressPersistentLocalId), new BoxNumber("B") }
                 },
                 Fixture.Create<Provenance>());
 

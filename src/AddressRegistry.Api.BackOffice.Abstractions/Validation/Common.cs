@@ -26,8 +26,10 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
             {
                 public const string Code = "AdresIsOnbestaand";
                 public const string Message = "Onbestaand adres.";
+                public static string MessageWithAdresId(string addressId) => $"Onbestaand adres '{addressId}'.";
 
                 public static TicketError ToTicketError() => new(Message, Code);
+                public static TicketError ToTicketError(string addressId) => new(MessageWithAdresId(addressId), Code);
             }
 
             public static class AddressInconsistentHouseNumber
@@ -98,8 +100,10 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
             {
                 public const string Code = "AdresOngeldigBusnummerformaat";
                 public const string Message = "Ongeldig busnummerformaat.";
+                public static string MessageWithBoxNumber(string boxNumber) => $"Ongeldig busnummerformaat: {boxNumber}.";
 
                 public static TicketError ToTicketError() => new(Message, Code);
+                public static TicketError ToTicketError(string boxNumber) => new(MessageWithBoxNumber(boxNumber), Code);
             }
 
             public static class Position

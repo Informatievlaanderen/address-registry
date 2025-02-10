@@ -61,9 +61,11 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
         {
             return exception switch
             {
+                //TODO-rik add unit lambda tests
+                //TODO-rik ex handling
                 AddressHasInvalidStatusException => ValidationErrors.Common.PostalCode.CannotBeChanged.ToTicketError(),
                 StreetNameHasInvalidStatusException => ValidationErrors.Common.StreetNameStatusInvalidForAction.ToTicketError(),
-                BoxNumberHasInvalidFormatException => ValidationErrors.Common.BoxNumberInvalidFormat.ToTicketError(),
+                BoxNumberHasInvalidFormatException ex => ValidationErrors.Common.BoxNumberInvalidFormat.ToTicketError(),
                 AddressHasNoBoxNumberException => ValidationErrors.CorrectBoxNumber.HasNoBoxNumber.ToTicketError(),
                 AddressAlreadyExistsException => ValidationErrors.Common.AddressAlreadyExists.ToTicketError(),
                 _ => null

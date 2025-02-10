@@ -18,15 +18,6 @@ namespace AddressRegistry.Api.BackOffice
 
     public partial class AddressController
     {
-        /// <summary>
-        /// Correctie van meerdere busnummers van een adres.
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="validator"></param>
-        /// <param name="cancellationToken"></param>
-        /// <response code="202">Aanvraag tot correctie adres busnummer wordt reeds verwerkt.</response>
-        /// <response code="400">Als de adres status niet 'voorgesteld' of 'ingebruik' is.</response>
-        /// <returns></returns>
         [HttpPost("/acties/corrigeren/busnummers")]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -55,6 +46,7 @@ namespace AddressRegistry.Api.BackOffice
             }
             catch (AggregateIdIsNotFoundException)
             {
+                // Should be impossible due to validator
                 throw new ApiException(ValidationErrors.Common.AddressNotFound.Message, StatusCodes.Status404NotFound);
             }
         }

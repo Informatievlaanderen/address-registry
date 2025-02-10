@@ -311,13 +311,19 @@ namespace AddressRegistry.StreetName
             GuardStreetNameStatusForChangeAndCorrection();
 
             StreetNameAddress? houseNumberAddress = null;
+            var updatingAddressBoxNumbers = new Dictionary<AddressPersistentLocalId, BoxNumber>();
 
             foreach (var addressBoxNumber in addressBoxNumbers)
             {
-                var addressToCorrect = StreetNameAddresses.GetByPersistentLocalId(addressBoxNumber.Key);
+                var addressToCorrect = StreetNameAddresses.GetNotRemovedByPersistentLocalId(addressBoxNumber.Key);
                 if (addressToCorrect.IsHouseNumberAddress)
                 {
                     throw new AddressHasNoBoxNumberException(addressToCorrect.AddressPersistentLocalId);
+                }
+
+                if (!addressToCorrect.IsActive)
+                {
+                    throw new AddressHasInvalidStatusException(addressToCorrect.AddressPersistentLocalId);
                 }
 
                 if (houseNumberAddress is null)
@@ -329,13 +335,21 @@ namespace AddressRegistry.StreetName
                     throw new BoxNumberHouseNumberDoesNotMatchParentHouseNumberException(addressToCorrect.AddressPersistentLocalId, houseNumberAddress.AddressPersistentLocalId);
                 }
 
-                //TODO-rik create new bulk event (and statecheck unit test), for feeds flatten with own counter (identity) for position
-                addressToCorrect.CorrectBoxNumber(
-                    addressBoxNumber.Value,
-                    () => { });
+                if (!addressToCorrect.BoxNumber!.EqualsCaseSensitive(addressBoxNumber.Value))
+                {
+                    updatingAddressBoxNumbers.Add(addressToCorrect.AddressPersistentLocalId, addressBoxNumber.Value);
+                }
             }
 
-            GuardUniqueBoxNumbers(houseNumberAddress!);
+            if (updatingAddressBoxNumbers.Any())
+            {
+                //TODO-rik for feeds flatten with own counter (identity) for position
+                ApplyChange(new AddressBoxNumbersWereCorrected(
+                    PersistentLocalId,
+                    updatingAddressBoxNumbers));
+
+                GuardUniqueBoxNumbers(houseNumberAddress!);
+            }
         }
 
         public void CorrectAddressApproval(AddressPersistentLocalId addressPersistentLocalId)

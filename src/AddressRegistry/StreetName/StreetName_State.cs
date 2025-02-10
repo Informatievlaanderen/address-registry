@@ -62,6 +62,7 @@ namespace AddressRegistry.StreetName
             Register<AddressPostalCodeWasCorrectedV2>(When);
             Register<AddressHouseNumberWasCorrectedV2>(When);
             Register<AddressBoxNumberWasCorrectedV2>(When);
+            Register<AddressBoxNumbersWereCorrected>(When);
             Register<AddressWasCorrectedFromApprovedToProposed>(When);
             Register<AddressWasCorrectedFromApprovedToProposedBecauseHouseNumberWasCorrected>(When);
             Register<AddressWasCorrectedFromRejectedToProposed>(When);
@@ -296,6 +297,16 @@ namespace AddressRegistry.StreetName
         private void When(AddressHouseNumberWasCorrectedV2 @event) => RouteToAddress(@event);
 
         private void When(AddressBoxNumberWasCorrectedV2 @event) => RouteToAddress(@event);
+
+        private void When(AddressBoxNumbersWereCorrected @event)
+        {
+            foreach (var addressBoxNumber in @event.AddressBoxNumbers)
+            {
+                StreetNameAddresses
+                    .GetByPersistentLocalId(new AddressPersistentLocalId(addressBoxNumber.Key))
+                    .Route(@event);
+            }
+        }
 
         private void When(AddressWasCorrectedFromApprovedToProposed @event) => RouteToAddress(@event);
 

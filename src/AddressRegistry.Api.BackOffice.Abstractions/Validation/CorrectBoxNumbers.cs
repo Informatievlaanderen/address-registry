@@ -1,12 +1,9 @@
-using TicketingService.Abstractions;
-
 namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
 {
     public static partial class ValidationErrors
     {
         public static class CorrectBoxNumbers
         {
-            //TODO-rik
             public static class EmptyBoxNumbers
             {
                 public const string Code = "BusnummersLijstLeeg";

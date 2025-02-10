@@ -62,12 +62,14 @@ namespace AddressRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             return exception switch
             {
                 //TODO-rik add unit lambda tests
-                //TODO-rik ex handling
-                AddressHasInvalidStatusException => ValidationErrors.Common.PostalCode.CannotBeChanged.ToTicketError(),
+                BoxNumberHasInvalidFormatException => ValidationErrors.Common.BoxNumberInvalidFormat.ToTicketError(),
                 StreetNameHasInvalidStatusException => ValidationErrors.Common.StreetNameStatusInvalidForAction.ToTicketError(),
-                BoxNumberHasInvalidFormatException ex => ValidationErrors.Common.BoxNumberInvalidFormat.ToTicketError(),
-                AddressHasNoBoxNumberException => ValidationErrors.CorrectBoxNumber.HasNoBoxNumber.ToTicketError(),
-                AddressAlreadyExistsException => ValidationErrors.Common.AddressAlreadyExists.ToTicketError(),
+                AddressIsNotFoundException ex => ValidationErrors.Common.AddressNotFoundWithId.ToTicketError((int)ex.AddressPersistentLocalId!),
+                AddressIsRemovedException ex => ValidationErrors.Common.AddressRemovedWithId.ToTicketError((int)ex.AddressPersistentLocalId!),
+                AddressHasNoBoxNumberException ex => ValidationErrors.CorrectBoxNumbers.HasNoBoxNumber.ToTicketError((int)ex.AddressPersistentLocalId!),
+                AddressHasInvalidStatusException ex => ValidationErrors.CorrectBoxNumbers.AddressInvalidStatus.ToTicketError((int)ex.AddressPersistentLocalId!),
+                BoxNumberHouseNumberDoesNotMatchParentHouseNumberException => ValidationErrors.CorrectBoxNumbers.MultipleHouseNumberAddresses.ToTicketError(),
+                AddressAlreadyExistsException ex => ValidationErrors.CorrectBoxNumbers.AddressAlreadyExists.ToTicketError(ex.HouseNumber!, ex.BoxNumber!),
                 _ => null
             };
         }

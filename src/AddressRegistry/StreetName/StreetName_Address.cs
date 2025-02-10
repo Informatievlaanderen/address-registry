@@ -332,7 +332,7 @@ namespace AddressRegistry.StreetName
                 }
                 else if (houseNumberAddress != addressToCorrect.Parent)
                 {
-                    throw new BoxNumberHouseNumberDoesNotMatchParentHouseNumberException(addressToCorrect.AddressPersistentLocalId, houseNumberAddress.AddressPersistentLocalId);
+                    throw new BoxNumberHouseNumberDoesNotMatchParentHouseNumberException();
                 }
 
                 if (!addressToCorrect.BoxNumber!.EqualsCaseSensitive(addressBoxNumber.Value))

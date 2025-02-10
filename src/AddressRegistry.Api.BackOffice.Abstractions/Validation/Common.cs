@@ -22,14 +22,29 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
                 public static TicketError ToTicketError() => new(Message, Code);
             }
 
+            public static class AddressRemovedWithId
+            {
+                public const string Code = "VerwijderdAdres"; //TODO-pr
+                public static string Message(int persistentLocalId) => $"Verwijderd adres '{persistentLocalId}'.";
+
+                public static TicketError ToTicketError(int persistentLocalId) => new(Message(persistentLocalId), Code);
+            }
+
             public static class AddressNotFound
             {
                 public const string Code = "AdresIsOnbestaand";
                 public const string Message = "Onbestaand adres.";
-                public static string MessageWithAdresId(string addressId) => $"Onbestaand adres '{addressId}'.";
 
                 public static TicketError ToTicketError() => new(Message, Code);
-                public static TicketError ToTicketError(string addressId) => new(MessageWithAdresId(addressId), Code);
+            }
+
+            public static class AddressNotFoundWithId
+            {
+                public const string Code = "AdresIsOnbestaand"; //TODO-pr
+                public static string Message(string addressId) => $"Onbestaand adres '{addressId}'.";
+
+                public static TicketError ToTicketError(string addressId) => new(Message(addressId), Code);
+                public static TicketError ToTicketError(int persistentLocalId) => new(Message(persistentLocalId.ToString()), Code);
             }
 
             public static class AddressInconsistentHouseNumber

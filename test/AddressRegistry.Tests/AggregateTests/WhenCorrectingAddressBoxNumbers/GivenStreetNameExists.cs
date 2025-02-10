@@ -338,10 +338,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressBoxNumbers
                     boxNumberAddress2WasProposed
                 )
                 .When(command)
-                .Throws(new BoxNumberHouseNumberDoesNotMatchParentHouseNumberException(
-                    new AddressPersistentLocalId(21),
-                    new AddressPersistentLocalId(2)
-                )));
+                .Throws(new BoxNumberHouseNumberDoesNotMatchParentHouseNumberException()));
         }
 
         [Fact]

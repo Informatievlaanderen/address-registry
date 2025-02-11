@@ -571,6 +571,23 @@ namespace AddressRegistry.Projections.Wms.AddressWmsItemV3
                     updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
             });
 
+            When<Envelope<AddressBoxNumbersWereCorrected>>(async (context, message, ct) =>
+            {
+                foreach (var addressBoxNumber in message.Message.AddressBoxNumbers)
+                {
+                    await context.FindAndUpdateAddressDetailV3(
+                        addressBoxNumber.Key,
+                        address =>
+                        {
+                            address.BoxNumber = addressBoxNumber.Value;
+                            UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                        },
+                        houseNumberLabelUpdater,
+                        updateHouseNumberLabelsBeforeAddressUpdate: false,
+                        updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
+                }
+            });
+
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressDetailV3(

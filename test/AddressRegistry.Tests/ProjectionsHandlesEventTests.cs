@@ -99,6 +99,7 @@
 
             AssertHandleEvents(projectionsToTest, [
                 typeof(AddressBoxNumberWasCorrectedV2),
+                typeof(AddressBoxNumbersWereCorrected),
                 typeof(AddressDeregulationWasCorrected),
                 typeof(AddressHouseNumberWasCorrectedV2),
                 typeof(AddressHouseNumberWasReaddressed),
@@ -176,6 +177,7 @@
 
             AssertHandleEvents(projectionsToTest, [
                 typeof(AddressBoxNumberWasCorrectedV2),
+                typeof(AddressBoxNumbersWereCorrected),
                 typeof(AddressDeregulationWasCorrected),
                 typeof(AddressHouseNumberWasCorrectedV2),
                 typeof(AddressHouseNumberWasReaddressed),

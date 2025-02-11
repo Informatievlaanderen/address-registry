@@ -553,6 +553,23 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
                     updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
             });
 
+            When<Envelope<AddressBoxNumbersWereCorrected>>(async (context, message, ct) =>
+            {
+                foreach (var addressBoxNumber in message.Message.AddressBoxNumbers)
+                {
+                    await context.FindAndUpdateAddressDetail(
+                        addressBoxNumber.Key,
+                        address =>
+                        {
+                            address.BoxNumber = addressBoxNumber.Value;
+                            UpdateVersionTimestamp(address, message.Message.Provenance.Timestamp);
+                        },
+                        houseNumberLabelUpdater,
+                        updateHouseNumberLabelsBeforeAddressUpdate: false,
+                        updateHouseNumberLabelsAfterAddressUpdate: false, ct: ct);
+                }
+            });
+
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateAddressDetail(message.Message.AddressPersistentLocalId,

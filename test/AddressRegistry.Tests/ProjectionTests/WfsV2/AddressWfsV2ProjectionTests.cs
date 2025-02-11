@@ -1,6 +1,7 @@
 namespace AddressRegistry.Tests.ProjectionTests.WfsV2
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using AddressRegistry.StreetName;
@@ -1247,6 +1248,63 @@ namespace AddressRegistry.Tests.ProjectionTests.WfsV2
                     boxNumberAddressWfsItem.Should().NotBeNull();
                     boxNumberAddressWfsItem!.BoxNumber.Should().BeEquivalentTo(addressBoxNumberWasCorrectedV2.BoxNumber);
                     boxNumberAddressWfsItem.VersionTimestamp.Should().Be(addressBoxNumberWasCorrectedV2.Provenance.Timestamp);
+                });
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WfsContext>(),
+                It.IsAny<AddressWfsV2Item>(),
+                It.IsAny<CancellationToken>(),
+                true), Times.Once);
+
+            _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(
+                It.IsAny<WfsContext>(),
+                It.IsAny<AddressWfsV2Item>(),
+                It.IsAny<CancellationToken>(),
+                false), Times.Never);
+        }
+
+        [Fact]
+        public async Task WhenAddressBoxNumbersWereCorrected()
+        {
+            var addressWasProposedV2 = _fixture.Create<AddressWasProposedV2>()
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(1))
+                .WithParentAddressPersistentLocalId(null)
+                .WithHouseNumber(new HouseNumber("101"))
+                .WithBoxNumber(new BoxNumber("A1"));
+            var proposedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasProposedV2.GetHash() }
+            };
+
+            var addressBoxNumbersWereCorrected = new AddressBoxNumbersWereCorrected(
+                new StreetNamePersistentLocalId(2),
+                new Dictionary<AddressPersistentLocalId, BoxNumber>
+                {
+                    {new AddressPersistentLocalId(addressWasProposedV2.AddressPersistentLocalId), new BoxNumber("1B") }
+                });
+            ((ISetProvenance)addressBoxNumbersWereCorrected).SetProvenance(_fixture.Create<Provenance>());
+
+            var boxNumberWasCorrectedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressBoxNumbersWereCorrected.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<AddressWasProposedV2>(new Envelope(addressWasProposedV2, proposedMetadata)),
+                    new Envelope<AddressBoxNumbersWereCorrected>(new Envelope(addressBoxNumbersWereCorrected, boxNumberWasCorrectedMetadata)))
+                .Then(async ct =>
+                {
+                    var boxNumber = addressBoxNumbersWereCorrected.AddressBoxNumbers.First();
+                    var addressWfsItem = await ct.AddressWfsV2Items.FindAsync(boxNumber.Key);
+                    addressWfsItem.Should().NotBeNull();
+                    addressWfsItem!.BoxNumber.Should().Be(boxNumber.Value);
+                    addressWfsItem.VersionTimestamp.Should().Be(addressBoxNumbersWereCorrected.Provenance.Timestamp);
+
+                    var boxNumberAddressWfsItem = await ct.AddressWfsV2Items.FindAsync(boxNumber.Key);
+                    boxNumberAddressWfsItem.Should().NotBeNull();
+                    boxNumberAddressWfsItem!.BoxNumber.Should().BeEquivalentTo(boxNumber.Value);
+                    boxNumberAddressWfsItem.VersionTimestamp.Should().Be(addressBoxNumbersWereCorrected.Provenance.Timestamp);
                 });
 
             _houseNumberLabelUpdaterMock.Verify(x => x.UpdateHouseNumberLabels(

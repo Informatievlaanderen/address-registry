@@ -825,7 +825,6 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                     ct);
             });
 
-            // todo-pr change position to auto-increment
             When<Envelope<AddressBoxNumbersWereCorrected>>(async (context, message, ct) =>
             {
                 foreach (var (addressPersistentLocalId, boxNumber) in message.Message.AddressBoxNumbers)

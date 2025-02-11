@@ -142,6 +142,14 @@ namespace AddressRegistry.Projections.LastChangedList
                 await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressPersistentLocalId.ToString(), message.Position, context, ct);
             });
 
+            When<Envelope<AddressBoxNumbersWereCorrected>>(async (context, message, ct) =>
+            {
+                foreach (var (boxNumberPersistentLocalId, _) in message.Message.AddressBoxNumbers)
+                {
+                    await GetLastChangedRecordsAndUpdatePosition(boxNumberPersistentLocalId.ToString(), message.Position, context, ct);
+                }
+            });
+
             When<Envelope<AddressPostalCodeWasRemoved>>(async (context, message, ct) =>
             {
                 await GetLastChangedRecordsAndUpdatePosition(message.Message.AddressId.ToString(), message.Position, context, ct);

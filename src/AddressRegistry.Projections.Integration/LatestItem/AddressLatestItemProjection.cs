@@ -2,16 +2,16 @@
 {
     using System.Threading;
     using System.Threading.Tasks;
-    using AddressRegistry.Projections.Integration.Convertors;
-    using AddressRegistry.Projections.Integration.Infrastructure;
-    using AddressRegistry.StreetName;
-    using AddressRegistry.StreetName.Events;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
+    using Convertors;
+    using Infrastructure;
     using Microsoft.Extensions.Options;
     using NodaTime;
+    using StreetName;
+    using StreetName.Events;
 
     [ConnectedProjectionName("Integratie adres latest item")]
     [ConnectedProjectionDescription("Projectie die de laatste adres data voor de integratie database bijhoudt.")]
@@ -504,6 +504,22 @@
                         UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
                     },
                     ct);
+            });
+
+            When<Envelope<AddressBoxNumbersWereCorrected>>(async (context, message, ct) =>
+            {
+                foreach (var (addressPersistentLocalId, boxNumber) in message.Message.AddressBoxNumbers)
+                {
+                    await context.FindAndUpdateAddressLatestItem(
+                        addressPersistentLocalId,
+                        message.Position,
+                        boxNumberItem =>
+                        {
+                            boxNumberItem.BoxNumber = boxNumber;
+                            UpdateVersionTimestamp(boxNumberItem, message.Message.Provenance.Timestamp);
+                        },
+                        ct);
+                }
             });
 
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>

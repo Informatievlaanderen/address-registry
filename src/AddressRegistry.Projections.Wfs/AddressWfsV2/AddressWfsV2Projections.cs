@@ -9,7 +9,6 @@ namespace AddressRegistry.Projections.Wfs.AddressWfsV2
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
-    using Microsoft.EntityFrameworkCore.Metadata.Conventions;
     using NetTopologySuite.Geometries;
     using NetTopologySuite.IO;
     using NodaTime;

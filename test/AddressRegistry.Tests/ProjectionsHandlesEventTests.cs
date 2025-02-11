@@ -51,7 +51,7 @@
 
     public sealed class ProjectionsHandlesEventsTests
     {
-        private readonly IEnumerable<Type> _eventsToExclude = new[] { typeof(StreetNameSnapshot), typeof(StreetNameSnapshotWasRequested) };
+        private readonly IEnumerable<Type> _eventsToExclude = [typeof(StreetNameSnapshot), typeof(StreetNameSnapshotWasRequested)];
         private readonly IList<Type> _eventTypes;
 
         public ProjectionsHandlesEventsTests()

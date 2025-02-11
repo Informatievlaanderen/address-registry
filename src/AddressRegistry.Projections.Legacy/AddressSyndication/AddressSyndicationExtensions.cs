@@ -29,7 +29,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
                 .LatestPosition(addressPersistentLocalId, ct);
             var addressBoxNumberSyndicationHelper = await context
                 .AddressBoxNumberSyndicationHelper
-                .FindAsync(new object[] {addressPersistentLocalId}, cancellationToken: ct);
+                .FindAsync([addressPersistentLocalId], cancellationToken: ct);
 
             if (addressSyndicationItem == null)
                 throw DatabaseItemNotFound(addressPersistentLocalId);
@@ -65,7 +65,7 @@ namespace AddressRegistry.Projections.Legacy.AddressSyndication
         {
             var addressBoxNumberSyndicationHelper = await context
                 .AddressBoxNumberSyndicationHelper
-                .FindAsync(new object[] { addressPersistentLocalId }, cancellationToken: ct);
+                .FindAsync([addressPersistentLocalId], cancellationToken: ct);
 
             if (addressBoxNumberSyndicationHelper is not null)
             {

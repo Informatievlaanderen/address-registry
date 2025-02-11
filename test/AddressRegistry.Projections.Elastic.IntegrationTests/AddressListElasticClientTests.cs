@@ -86,6 +86,7 @@ namespace AddressRegistry.Projections.Elastic.IntegrationTests
                 Status = _fixture.Create<AddressStatus>(),
                 OfficiallyAssigned = _fixture.Create<bool>(),
                 AddressPosition = _fixture.Create<AddressPosition>(),
+                BoxNumber = _fixture.Create<string>()
             };
 
             EnsureAllPropertiesAreNotNull(documentUpdate);
@@ -101,6 +102,7 @@ namespace AddressRegistry.Projections.Elastic.IntegrationTests
             actualDocument.Status.Should().Be(documentUpdate.Status);
             actualDocument.OfficiallyAssigned.Should().Be(documentUpdate.OfficiallyAssigned!.Value);
             actualDocument.AddressPosition.Should().BeEquivalentTo(documentUpdate.AddressPosition);
+            actualDocument.BoxNumber.Should().BeEquivalentTo(documentUpdate.BoxNumber);
             actualDocument.VersionTimestamp.Should().Be(documentUpdate.VersionTimestamp);
         }
 

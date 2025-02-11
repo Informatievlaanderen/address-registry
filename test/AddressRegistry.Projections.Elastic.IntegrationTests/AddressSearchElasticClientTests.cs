@@ -11,7 +11,7 @@ namespace AddressRegistry.Projections.Elastic.IntegrationTests
     using StreetName;
     using Xunit;
 
-    [Xunit.Collection("Elastic")]
+    [Collection("Elastic")]
     public class AddressSearchElasticClientTests : IClassFixture<ElasticsearchClientTestFixture>
     {
         private readonly ElasticsearchClientTestFixture _clientFixture;
@@ -86,6 +86,7 @@ namespace AddressRegistry.Projections.Elastic.IntegrationTests
                 Status = _fixture.Create<AddressStatus>(),
                 OfficiallyAssigned = _fixture.Create<bool>(),
                 AddressPosition = _fixture.Create<AddressPosition>(),
+                BoxNumber = _fixture.Create<string>()
             };
 
             EnsureAllPropertiesAreNotNull(documentUpdate);
@@ -102,6 +103,7 @@ namespace AddressRegistry.Projections.Elastic.IntegrationTests
             actualDocument.Active.Should().Be(documentUpdate.Active!.Value);
             actualDocument.OfficiallyAssigned.Should().Be(documentUpdate.OfficiallyAssigned!.Value);
             actualDocument.AddressPosition.Should().BeEquivalentTo(documentUpdate.AddressPosition);
+            actualDocument.BoxNumber.Should().BeEquivalentTo(documentUpdate.BoxNumber);
             actualDocument.VersionTimestamp.Should().Be(documentUpdate.VersionTimestamp);
         }
 

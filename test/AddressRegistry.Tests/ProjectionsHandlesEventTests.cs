@@ -42,11 +42,13 @@
     using Projections.Legacy.AddressSyndication;
     using Projections.Wfs;
     using Projections.Wfs.AddressWfs;
+    using Projections.Wfs.AddressWfsV2;
     using Projections.Wms;
     using Projections.Wms.AddressWmsItemV3;
     using SqlStreamStore;
     using StreetName.Events;
     using Xunit;
+    using HouseNumberLabelUpdater = Projections.Wms.AddressWmsItemV3.HouseNumberLabelUpdater;
     using ProducerContext = Producer.Snapshot.Oslo.ProducerContext;
 
     public sealed class ProjectionsHandlesEventsTests
@@ -248,7 +250,8 @@
 
             yield return [new List<ConnectedProjection<WfsContext>>
             {
-                new AddressWfsProjections(new WKBReader())
+                new AddressWfsProjections(new WKBReader()),
+                new AddressWfsV2Projections(new WKBReader(), new Projections.Wfs.AddressWfsV2.HouseNumberLabelUpdater())
             }];
 
             yield return [new List<ConnectedProjection<WmsContext>>

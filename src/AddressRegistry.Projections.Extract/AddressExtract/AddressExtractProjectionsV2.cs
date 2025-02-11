@@ -408,6 +408,16 @@ namespace AddressRegistry.Projections.Extract.AddressExtract
                 UpdateVersie(item, message.Message.Provenance.Timestamp);
             });
 
+            When<Envelope<AddressBoxNumbersWereCorrected>>(async (context, message, ct) =>
+            {
+                foreach (var (addressPersistentLocalId, boxNumber) in message.Message.AddressBoxNumbers)
+                {
+                    var item = await context.AddressExtractV2.FindAsync(addressPersistentLocalId, cancellationToken: ct);
+                    UpdateDbaseRecordField(item, record => record.busnr.Value = boxNumber );
+                    UpdateVersie(item, message.Message.Provenance.Timestamp);
+                }
+            });
+
             When<Envelope<AddressPositionWasChanged>>(async (context, message, ct) =>
             {
                 var item = await context.AddressExtractV2.FindAsync(message.Message.AddressPersistentLocalId, cancellationToken: ct);

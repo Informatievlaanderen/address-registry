@@ -159,7 +159,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenDeregulatingAddress
                     streetNameWasImported,
                     addressWasMigratedToStreetName)
                 .When(deregulateAddress)
-                .Throws(new AddressHasInvalidStatusException()));
+                .Throws(new AddressHasInvalidStatusException(deregulateAddress.AddressPersistentLocalId)));
         }
 
         [Fact]

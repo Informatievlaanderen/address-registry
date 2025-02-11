@@ -171,7 +171,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressPostalCode
                     Fixture.Create<StreetNameWasImported>().WithMunicipalityId(Fixture.Create<MunicipalityId>()),
                     addressWasMigratedToStreetName)
                 .When(command)
-                .Throws(new AddressHasInvalidStatusException()));
+                .Throws(new AddressHasInvalidStatusException(command.AddressPersistentLocalId)));
         }
 
         [Fact]

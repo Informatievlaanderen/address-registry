@@ -31,7 +31,7 @@ namespace AddressRegistry.Tests.BackOffice.Validators
             result.Errors.Count.Should().Be(1);
             result.ShouldHaveValidationErrorFor(nameof(CorrectAddressBoxNumbersRequest.Busnummers))
                 .WithErrorCode("BusnummersLijstLeeg")
-                .WithErrorMessage("De lijst van busnummers kan niet leeg zijn.");
+                .WithErrorMessage("De lijst van busnummers mag niet leeg zijn.");
         }
 
         [Fact]
@@ -57,11 +57,11 @@ namespace AddressRegistry.Tests.BackOffice.Validators
 
             result.Errors.Should().HaveCount(2);
             result.ShouldHaveValidationErrorFor("Busnummers[0]")
-                .WithErrorCode("DubbeleAdressenNietToegestaan")
-                .WithErrorMessage("Het adresId zit meerdere keren in lijst van busnummers: http://adres/1.");
+                .WithErrorCode("AdresIdReedsInLijstBusnummers")
+                .WithErrorMessage("Het adresId zit reeds in lijst van busnummers: http://adres/1.");
             result.ShouldHaveValidationErrorFor("Busnummers[1]")
-                .WithErrorCode("DubbeleAdressenNietToegestaan")
-                .WithErrorMessage("Het adresId zit meerdere keren in lijst van busnummers: http://adres/1.");
+                .WithErrorCode("AdresIdReedsInLijstBusnummers")
+                .WithErrorMessage("Het adresId zit reeds in lijst van busnummers: http://adres/1.");
         }
 
         [Fact]
@@ -88,11 +88,11 @@ namespace AddressRegistry.Tests.BackOffice.Validators
 
             result.Errors.Should().HaveCount(2);
             result.ShouldHaveValidationErrorFor("Busnummers[0]")
-                .WithErrorCode("DubbeleBusnummersNietToegestaan")
-                .WithErrorMessage("Het busnummer zit meerdere keren in lijst van busnummers: A.");
+                .WithErrorCode("BusnummerReedsInLijstBusnummers")
+                .WithErrorMessage("Het busnummer zit reeds in lijst van busnummers: A.");
             result.ShouldHaveValidationErrorFor("Busnummers[1]")
-                .WithErrorCode("DubbeleBusnummersNietToegestaan")
-                .WithErrorMessage("Het busnummer zit meerdere keren in lijst van busnummers: A.");
+                .WithErrorCode("BusnummerReedsInLijstBusnummers")
+                .WithErrorMessage("Het busnummer zit reeds in lijst van busnummers: A.");
         }
 
         [Fact]

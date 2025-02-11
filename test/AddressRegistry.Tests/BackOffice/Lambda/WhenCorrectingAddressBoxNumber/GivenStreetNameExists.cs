@@ -108,7 +108,7 @@ namespace AddressRegistry.Tests.BackOffice.Lambda.WhenCorrectingAddressBoxNumber
                 new FakeRetryPolicy(),
                 ticketing.Object,
                 Mock.Of<IStreetNames>(),
-                MockExceptionIdempotentCommandHandler<AddressHasInvalidStatusException>().Object);
+                MockExceptionIdempotentCommandHandler(() => Fixture.Create<AddressHasInvalidStatusException>()).Object);
 
             // Act
             await sut.Handle(new CorrectAddressBoxNumberLambdaRequest(Fixture.Create<int>().ToString(), new CorrectAddressBoxNumberSqsRequest()

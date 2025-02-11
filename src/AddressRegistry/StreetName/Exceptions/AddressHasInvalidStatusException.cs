@@ -8,8 +8,6 @@ namespace AddressRegistry.StreetName.Exceptions
     {
         public AddressPersistentLocalId? AddressPersistentLocalId { get; }
 
-        public AddressHasInvalidStatusException()
-        { }
 
         public AddressHasInvalidStatusException(AddressPersistentLocalId addressPersistentLocalId)
         {

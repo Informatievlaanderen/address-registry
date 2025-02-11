@@ -178,7 +178,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressBoxNumber
                     houseNumberAddressWasMigrated,
                     boxNumberAddressWasMigrated)
                 .When(command)
-                .Throws(new AddressHasInvalidStatusException()));
+                .Throws(new AddressHasInvalidStatusException(command.AddressPersistentLocalId)));
         }
 
         [Fact]
@@ -194,7 +194,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressBoxNumber
                     Fixture.Create<StreetNameWasImported>(),
                     houseNumberAddressWasProposed)
                 .When(command)
-                .Throws(new AddressHasNoBoxNumberException()));
+                .Throws(new AddressHasNoBoxNumberException(command.AddressPersistentLocalId)));
         }
 
         [Fact]

@@ -304,7 +304,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRejectingAddress
                     streetNameWasImported,
                     addressWasMigratedToStreetName)
                 .When(rejectAddress)
-                .Throws(new AddressHasInvalidStatusException()));
+                .Throws(new AddressHasInvalidStatusException(rejectAddress.AddressPersistentLocalId)));
         }
 
         [Fact]

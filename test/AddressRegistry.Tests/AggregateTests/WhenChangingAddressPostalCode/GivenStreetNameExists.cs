@@ -146,7 +146,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenChangingAddressPostalCode
                 .Given(_streamId,
                     addressWasMigratedToStreetName)
                 .When(command)
-                .Throws(new AddressHasInvalidStatusException()));
+                .Throws(new AddressHasInvalidStatusException(command.AddressPersistentLocalId)));
         }
 
         [Fact]

@@ -165,7 +165,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenRegularizingAddress
                     streetNameWasImported,
                     addressWasMigratedToStreetName)
                 .When(regularizeAddress)
-                .Throws(new AddressHasInvalidStatusException()));
+                .Throws(new AddressHasInvalidStatusException(regularizeAddress.AddressPersistentLocalId)));
         }
 
         [Fact]

@@ -195,7 +195,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressRetirement
                     Fixture.Create<StreetNameWasImported>(),
                     addressWasMigrated)
                 .When(command)
-                .Throws(new AddressHasInvalidStatusException()));
+                .Throws(new AddressHasInvalidStatusException(command.AddressPersistentLocalId)));
         }
 
         [Fact]

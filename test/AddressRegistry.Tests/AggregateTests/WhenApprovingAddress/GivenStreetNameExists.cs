@@ -113,7 +113,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenApprovingAddress
                     migratedStreetNameWasImported,
                     addressWasMigratedToStreetName)
                 .When(command)
-                .Throws(new AddressHasInvalidStatusException()));
+                .Throws(new AddressHasInvalidStatusException(command.AddressPersistentLocalId)));
         }
 
         [Fact]

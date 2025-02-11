@@ -9,7 +9,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
             public static class EmptyBoxNumbers
             {
                 public const string Code = "BusnummersLijstLeeg";
-                public const string Message = "De lijst van busnummers kan niet leeg zijn.";
+                public const string Message = "De lijst van busnummers mag niet leeg zijn.";
             }
 
             public static class AddressInvalidStatus
@@ -22,7 +22,7 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
 
             public static class MultipleHouseNumberAddresses
             {
-                public const string Code = "VerschillendeHuisnummersNietToegestaan";
+                public const string Code = "VerschillendeHuisnummersNietToegestaanInLijstBusnummers";
                 public const string Message = "Lijst bevat verschillende huisnummers.";
 
                 public static TicketError ToTicketError() => new(Message, Code);
@@ -46,14 +46,14 @@ namespace AddressRegistry.Api.BackOffice.Abstractions.Validation
 
             public static class DuplicateAddressId
             {
-                public const string Code = "DubbeleAdressenNietToegestaan";
-                public static string Message(string addressId) => $"Het adresId zit meerdere keren in lijst van busnummers: {addressId}.";
+                public const string Code = "AdresIdReedsInLijstBusnummers";
+                public static string Message(string addressId) => $"Het adresId zit reeds in lijst van busnummers: {addressId}.";
             }
 
             public static class DuplicateBoxNumber
             {
-                public const string Code = "DubbeleBusnummersNietToegestaan";
-                public static string Message(string boxNumber) => $"Het busnummer zit meerdere keren in lijst van busnummers: {boxNumber}.";
+                public const string Code = "BusnummerReedsInLijstBusnummers";
+                public static string Message(string boxNumber) => $"Het busnummer zit reeds in lijst van busnummers: {boxNumber}.";
             }
         }
     }

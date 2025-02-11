@@ -95,7 +95,7 @@ namespace AddressRegistry.Tests.AggregateTests.WhenCorrectingAddressDeregulation
                     streetNameWasImported,
                     addressWasMigratedToStreetName)
                 .When(command)
-                .Throws(new AddressHasInvalidStatusException()));
+                .Throws(new AddressHasInvalidStatusException(command.AddressPersistentLocalId)));
         }
 
         [Fact]

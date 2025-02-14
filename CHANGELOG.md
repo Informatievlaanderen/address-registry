@@ -1,3 +1,10 @@
+# [4.36.0](https://github.com/informatievlaanderen/address-registry/compare/v4.35.1...v4.36.0) (2025-02-14)
+
+
+### Features
+
+* bulk correction of boxnumbers GAWR-6751 ([60d522e](https://github.com/informatievlaanderen/address-registry/commit/60d522e59da0aa7d96e5cb50271ba01cafe9919d))
+
 ## [4.35.1](https://github.com/informatievlaanderen/address-registry/compare/v4.35.0...v4.35.1) (2025-02-03)
 
 
